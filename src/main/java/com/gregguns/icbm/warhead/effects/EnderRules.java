@@ -25,6 +25,19 @@ public final class EnderRules {
 
     private EnderRules() {}
 
+    /** Highest Y a landing scan starts at in a dimension with a bedrock roof (the Nether's ceiling is at 127). */
+    public static final int ROOFED_SCAN_TOP = 120;
+
+    /**
+     * @param hasNoSky    whether the dimension has a ceiling and no sky (the Nether)
+     * @param heightValue the world's height value for the column, which in such a dimension is the roof
+     * @return the Y the downward search for a landing floor starts at: never on or above the roof
+     */
+    public static int scanTop(boolean hasNoSky, int heightValue) {
+        int top = Math.min(250, heightValue);
+        return hasNoSky ? Math.min(top, ROOFED_SCAN_TOP) : top;
+    }
+
     /**
      * The change of one velocity component for an entity at {@code delta} blocks from the center on that axis. Zero at
      * the center and at the radius, strongest halfway; it always points at the center. With radius 20 this is ICBM's

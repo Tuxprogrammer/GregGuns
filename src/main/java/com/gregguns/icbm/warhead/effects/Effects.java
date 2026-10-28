@@ -134,10 +134,10 @@ public final class Effects {
                 .number())) {
             return false;
         }
-        EntityPlayer p0 = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+        EntityPlayer p = ctx.breaker();
         if (!ExplosionRules.mayBreakBlocks(
             true,
-            p0 != null,
+            p != null,
             ctx.world()
                 .getGameRules()
                 .getGameRuleBooleanValue("mobGriefing"))) {
@@ -145,7 +145,6 @@ public final class Effects {
         }
         Block block = ctx.world()
             .getBlock(x, y, z);
-        EntityPlayer p = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
         return p == null || BlockBreakGuard.mayBreak(
             ctx.world(),
             x,
@@ -201,7 +200,7 @@ public final class Effects {
             ctx.y(),
             ctx.z(),
             (float) Math.max(ctx.radius(), 3.0));
-        EntityPlayer breaker = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+        EntityPlayer breaker = ctx.breaker();
         for (int[] p : cells) {
             ProjectileExplosion.breakBlock(
                 ctx.world(),

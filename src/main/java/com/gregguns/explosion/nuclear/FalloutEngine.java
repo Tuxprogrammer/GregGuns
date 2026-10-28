@@ -238,7 +238,9 @@ public final class FalloutEngine {
     private boolean placeFallout(WorldServer world, FalloutSavedData.Job job, int x, int y, int z, int depth,
         int variant, double distance) {
         double inner = FalloutMath.INNER_SHARE * job.radius;
-        boolean hot = job.grade >= 1 && distance <= inner;
+        // Hot earth and trinitite thin out smoothly from ground zero to the rim of the inner fireball (D155).
+        double hotChance = FalloutMath.hotChance(distance, inner, job.grade);
+        boolean hot = FalloutMath.roll(job.seed, x, z, 4 + depth) < hotChance;
         if (depth == 0 && distance <= inner * FalloutMath.GOO_REACH
             && job.goo < ExplosionsConfig.falloutMaxGoo
             && FalloutMath.roll(job.seed, x, z, 3) < FalloutMath.gooChance(distance, inner)) {
@@ -250,7 +252,7 @@ public final class FalloutEngine {
             }
             return false;
         }
-        if (variant == FalloutBlocks.SAND && distance <= inner) {
+        if (variant == FalloutBlocks.SAND && FalloutMath.roll(job.seed, x, z, 7 + depth) < hotChance) {
             return world.setBlock(x, y, z, FalloutBlocks.trinitite(), 0, 2);
         }
         return world.setBlock(x, y, z, FalloutBlocks.irradiated(), variant | (hot ? FalloutBlocks.HOT_BIT : 0), 2);
@@ -322,7 +324,6 @@ public final class FalloutEngine {
         }
         int total = decay.blocks.length / 3;
         int end = Math.min(total, decay.cursor + ExplosionsConfig.falloutRevertPerTick);
-        boolean heldByGoo = false;
         for (; decay.cursor < end; decay.cursor++) {
             int x = decay.blocks[decay.cursor * 3];
             int y = decay.blocks[decay.cursor * 3 + 1];
@@ -339,7 +340,9 @@ public final class FalloutEngine {
                 decay.blocks[at] = x;
                 decay.blocks[at + 1] = y;
                 decay.blocks[at + 2] = z;
-                heldByGoo = true;
+                // Goo has no age cap: the record waits as long as the goo stands. Extended right where the entry is
+                // kept, not at the end of the pass (a pass spans many ticks, and the last slice may hold no goo).
+                decay.deadline = Math.max(decay.deadline, now + FalloutSavedData.Decay.MAX_AGE_TICKS);
             } else {
                 Block there = world.getBlock(x, y, z);
                 if (there == FalloutBlocks.irradiated()) {
@@ -363,10 +366,6 @@ public final class FalloutEngine {
                 decay.cursor = 0;
                 decay.kept = 0;
                 decay.due = now + RETRY_TICKS;
-                if (heldByGoo) {
-                    // Goo has no age cap: the record waits as long as the goo stands.
-                    decay.deadline = now + FalloutSavedData.Decay.MAX_AGE_TICKS;
-                }
             } else {
                 d.decays.remove(decay);
             }

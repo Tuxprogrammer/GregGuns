@@ -51,4 +51,27 @@ class FalloutMathTest {
         assertEquals(1, NuclearScale.falloutRadius(0.0, 96));
         assertEquals(38.4, NuclearScale.killRadius(64.0), 1e-9);
     }
+
+    @Test
+    void hotEarthFallsSmoothlyFromGroundZeroToTheInnerRim() {
+        assertEquals(1.0, FalloutMath.hotChance(0.0, 20.0, Fallout.GRADE_ZPM), 1e-9);
+        double prev = 1.0;
+        for (double d = 1.0; d < 20.0; d += 1.0) {
+            double c = FalloutMath.hotChance(d, 20.0, Fallout.GRADE_ZPM);
+            assertTrue(c < prev && c > 0.0, "strictly falling inside the rim at " + d);
+            prev = c;
+        }
+        assertEquals(0.0, FalloutMath.hotChance(20.0, 20.0, Fallout.GRADE_ZPM));
+        assertEquals(0.0, FalloutMath.hotChance(5.0, 20.0, Fallout.GRADE_LAUNCHER)); // tier factor
+        assertEquals(0.0, FalloutMath.hotChance(Double.NaN, 20.0, Fallout.GRADE_ZPM));
+        // The expected hot share of the inner disc is one half, under HOT_SHARE of the cap once the inner disc is
+        // 40% of the radius: the fissile bound (25% of the core) keeps holding.
+        double sum = 0.0;
+        double area = 0.0;
+        for (double d = 0.05; d < 20.0; d += 0.1) {
+            sum += FalloutMath.hotChance(d, 20.0, Fallout.GRADE_ZPM) * d;
+            area += d;
+        }
+        assertEquals(0.5, sum / area, 0.01);
+    }
 }

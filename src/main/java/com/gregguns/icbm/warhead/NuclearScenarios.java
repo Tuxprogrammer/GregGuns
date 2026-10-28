@@ -156,6 +156,7 @@ final class NuclearScenarios {
             final ScenarioResult[] verdict = { null };
             final int[] before = { 0 };
             final int[] lastReload = { 0 };
+            final int[] chunksLost = { 0 };
             final int budgetMs = 6;
             return ScenarioResult.pending(name(), 20 * 60 * 20, ticks -> {
                 try {
@@ -181,6 +182,20 @@ final class NuclearScenarios {
                             return verdict[0];
                         }
                         return null;
+                    }
+                    // Keep the cube's chunks pinned every tick: an unloaded chunk reads as air to the blast's snapshot
+                    // and is
+                    // never broken ("never load a chunk"), which left a partial crater (350k of 447k blocks, the center
+                    // column still stone) when the server queued them for unload under load. loadChunk takes a chunk
+                    // off
+                    // the unload queue again; the count of ticks that found one gone goes into the failure message.
+                    for (int x = (cx - half) >> 4; x <= (cx + half) >> 4; x++) {
+                        for (int z = (cz - half) >> 4; z <= (cz + half) >> 4; z++) {
+                            if (!cps.chunkExists(x, z)) {
+                                chunksLost[0]++;
+                            }
+                            cps.loadChunk(x, z);
+                        }
                     }
                     if (stage[0] == 0) {
                         // Far from every slot the chunks are not loaded, and setBlock into an unloaded chunk does
@@ -287,11 +302,26 @@ final class NuclearScenarios {
                             + (long) (0.45 * hemisphere)
                             + "), broke "
                             + broken);
+                    // The crater floor, not the first non-air block: the air cells in the center column below the blast
+                    // (a stray block left on the column cannot hide the crater), with what is there if it is short.
                     int depth = 0;
-                    while (depth < half && w.getBlock(cx, cy - 1 - depth, cz) == Blocks.air) {
-                        depth++;
+                    for (int d = 0; d < half; d++) {
+                        if (w.getBlock(cx, cy - 1 - d, cz) == Blocks.air) {
+                            depth++;
+                        }
                     }
-                    out.check(depth >= r - 4, "the crater should be about " + r + " deep, was " + depth);
+                    out.check(
+                        depth >= r - 4,
+                        "the crater should be about " + r
+                            + " deep, was "
+                            + depth
+                            + " (just under the center: "
+                            + Block.blockRegistry.getNameForObject(w.getBlock(cx, cy - 1, cz))
+                            + ", loaded: "
+                            + cps.chunkExists(cx >> 4, cz >> 4)
+                            + ", chunk-ticks found unloaded: "
+                            + chunksLost[0]
+                            + ")");
                     out.note(
                         "nuclear r" + r
                             + ": broken "

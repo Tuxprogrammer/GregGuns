@@ -146,8 +146,8 @@ public final class BlastEngine {
     }
 
     /**
-     * Ends the running blasts of one explosive near a point, as a cancelled blast (no aftermath). Antimatter uses it to
-     * annihilate red matter (D133). Safe to call from an effect while the engine iterates: a cancelled job only turns
+     * Ends the running blasts of one explosive near a point, as a canceled blast (no aftermath). Antimatter uses it to
+     * annihilate red matter (D133). Safe to call from an effect while the engine iterates: a canceled job only turns
      * done and is dropped at the end of the tick.
      *
      * @param world       the world
@@ -210,7 +210,23 @@ public final class BlastEngine {
     }
 
     /**
-     * @return true when the blast most recently accepted by {@link #start} has finished (or was cancelled), whatever
+     * @param explosiveId an explosive id
+     * @return blasts of that explosive running now (scenarios)
+     */
+    public int activeBlasts(String explosiveId) {
+        int n = 0;
+        for (BlastJob j : jobs) {
+            if (!j.isDone() && j.def()
+                .id()
+                .equals(explosiveId)) {
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /**
+     * @return true when the blast most recently accepted by {@link #start} has finished (or was canceled), whatever
      *         other blasts are running; true when none was ever started. Scenarios wait on this, not on the
      *         engine-wide counters.
      */

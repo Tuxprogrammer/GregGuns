@@ -51,4 +51,13 @@ class EnderRulesTest {
         assertFalse(EnderRules.inTeleportRange(3.0, 3.0, 0.0));
         assertTrue(EnderRules.inTeleportRange(0.0, 0.0, 4.0));
     }
+
+    @Test
+    void theNetherScanStartsBelowTheBedrockRoof() {
+        // The Nether's height value is its roof (128): a scan from there lands on the bedrock ceiling.
+        assertEquals(EnderRules.ROOFED_SCAN_TOP, EnderRules.scanTop(true, 128));
+        assertEquals(64, EnderRules.scanTop(true, 64));
+        assertEquals(250, EnderRules.scanTop(false, 255));
+        assertEquals(128, EnderRules.scanTop(false, 128));
+    }
 }

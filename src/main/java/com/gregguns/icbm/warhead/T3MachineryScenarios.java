@@ -205,6 +205,10 @@ final class T3MachineryScenarios {
                 return ScenarioResult.fail(name(), "no chest tile entity");
             }
             chest.setInventorySlotContents(0, new ItemStack(Blocks.quartz_block, 5));
+            // Not plain terrain: a torch and a door stay where they are (a flying block must come back as its item).
+            ctx.setBlock(2, 0, 0, Blocks.torch, 5);
+            ctx.setBlock(-2, 0, 0, Blocks.wooden_door, 0);
+            ctx.setBlock(-2, 1, 0, Blocks.wooden_door, 8);
             for (int dy = 0; dy < 4; dy++) {
                 ctx.setBlock(0, dy, 0, Blocks.quartz_block, 0);
             }
@@ -241,6 +245,10 @@ final class T3MachineryScenarios {
             final boolean[] midChecked = { false };
             return ScenarioResult.pending(name(), 1500, ticks -> {
                 peak[0] = Math.max(peak[0], flying(w));
+                if (ticks == 40) {
+                    // Deterministic: the lift must not wait for catch-up ticks or a busy box (review item 5).
+                    early.check(peak[0] > 0, "blocks were lifted within the first 40 ticks, with no lag to lean on");
+                }
                 if (ticks == 150 && !midChecked[0]) {
                     midChecked[0] = true;
                     early.check(peak[0] > 0, "blocks were lifted into flying blocks");
@@ -248,6 +256,10 @@ final class T3MachineryScenarios {
                         peak[0] <= IcbmConfig.antigravMaxBlocks,
                         "at most " + IcbmConfig.antigravMaxBlocks + " flying blocks at once, saw " + peak[0]);
                     early.check(w.getBlock(ox, oy, oz) != Blocks.quartz_block, "the quartz column was lifted first");
+                    early.check(
+                        w.getBlock(ox + 2, oy, oz) == Blocks.torch && w.getBlock(ox - 2, oy, oz) == Blocks.wooden_door
+                            && w.getBlock(ox - 2, oy + 1, oz) == Blocks.wooden_door,
+                        "a torch and a door are not plain terrain and were not lifted");
                     early.check(
                         w.getBlock(ox + 3, oy, oz + 3) == Blocks.chest && chest == w.getTileEntity(ox + 3, oy, oz + 3)
                             && ((IInventory) chest).getStackInSlot(0) != null

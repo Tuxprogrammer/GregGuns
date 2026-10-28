@@ -182,7 +182,8 @@ public final class FalloutSavedData extends WorldSavedData {
     public java.util.List<int[]> gooPositions() {
         java.util.List<int[]> out = new java.util.ArrayList<>(gooBlocks.size());
         for (long k : gooBlocks) {
-            out.add(new int[] { (int) (k >> 38), (int) (k & 0xFFF), (int) ((k >> 12) & 0x3FFFFFF) });
+            out.add(new int[] { (int) (k >> 38), (int) (k & 0xFFF), (int) (k >> 12) << 6 >> 6 }); // z sign-extended, as
+                                                                                                  // writeToNBT does
         }
         return out;
     }

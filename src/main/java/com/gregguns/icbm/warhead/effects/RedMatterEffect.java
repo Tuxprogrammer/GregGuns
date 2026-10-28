@@ -17,6 +17,9 @@ import com.gregguns.icbm.explosive.BlastContext;
 import com.gregguns.icbm.explosive.BlastEffect;
 import com.gregguns.icbm.fx.OrbBroadcast;
 import com.gregguns.icbm.fx.OrbKind;
+import com.gregguns.icbm.fx.OrbPlan;
+
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 
 /**
  * The red matter warhead (UHV, D10, D132): a ball of annihilation that lives for a bounded time. It is a blast effect,
@@ -105,7 +108,14 @@ final class RedMatterEffect implements BlastEffect {
         }
         reach(ctx, radius);
         if (age % RedMatterModel.ANNOUNCE_PERIOD == 0) {
-            OrbBroadcast.send(world, OrbKind.RED_MATTER, ctx.x(), ctx.y(), ctx.z(), radius, lifetime - age);
+            OrbBroadcast.send(
+                world,
+                OrbKind.RED_MATTER,
+                ctx.x(),
+                ctx.y(),
+                ctx.z(),
+                radius,
+                OrbPlan.lease(lifetime - age, RedMatterModel.ANNOUNCE_PERIOD));
         }
         return true;
     }
@@ -129,9 +139,11 @@ final class RedMatterEffect implements BlastEffect {
         int cz = (int) Math.floor(ctx.z());
         int room = Math.min(RedMatterModel.EDITS_PER_SLICE, RedMatterModel.EDITS_PER_TICK - s.getInteger(EDITS));
         List<int[]> batch = new ArrayList<>();
+        int[] d = new int[3];
+        int weight = 0;
         int visited = 0;
-        while (visited < RedMatterModel.CELLS_PER_SLICE && cursor < total && batch.size() < room) {
-            int[] d = RedMatterModel.decode(cursor, radius);
+        while (visited < RedMatterModel.CELLS_PER_SLICE && cursor < total && weight < room) {
+            RedMatterModel.decodeInto(cursor, radius, d);
             cursor++;
             visited++;
             if (!RedMatterModel.inShell(d[0], d[1], d[2], inner, radius)) {
@@ -150,11 +162,15 @@ final class RedMatterEffect implements BlastEffect {
                 continue;
             }
             batch.add(new int[] { x, y, z });
+            // A GT machine can explode in a chain when it breaks (BlockMachines.onBlockExploded), so it weighs more
+            // against the slice's edit room; the walk then stops sooner and the scheduler checks the budget again.
+            weight += world.getTileEntity(x, y, z) instanceof IGregTechTileEntity ? RedMatterModel.MACHINE_EDIT_WEIGHT
+                : 1;
         }
         if (!batch.isEmpty()) {
             List<int[]> kept = Effects.vetted(ctx, batch);
             Effects.breakVetted(ctx, kept);
-            s.setInteger(EDITS, s.getInteger(EDITS) + batch.size());
+            s.setInteger(EDITS, s.getInteger(EDITS) + weight);
             s.setInteger(EATEN, s.getInteger(EATEN) + kept.size());
         }
         s.setInteger(CURSOR, cursor);
@@ -233,6 +249,7 @@ final class RedMatterEffect implements BlastEffect {
 
     @Override
     public void onFinish(BlastContext ctx) {
+        // The sound is the body's own end; a body that antimatter cancels ends under the antimatter flash instead.
         if (ctx.completed() && !ctx.world().isRemote) {
             ctx.world()
                 .playSoundEffect(ctx.x(), ctx.y(), ctx.z(), "random.explode", 3.0F, 0.4F);

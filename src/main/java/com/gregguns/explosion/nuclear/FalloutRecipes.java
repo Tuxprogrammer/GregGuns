@@ -62,12 +62,12 @@ public final class FalloutRecipes {
 
         centrifuge(rubble, FalloutYield.RUBBLE, Tier.HV, false);
         centrifuge(hotRubble, FalloutYield.HOT_RUBBLE, Tier.HV, false);
-        // Trinitite: macerated first (LV), then centrifuged.
+        // Trinitite: macerated first (HV, D69: it exists only after a ZPM-grade blast), then centrifuged.
         GTValues.RA.stdBuilder()
             .itemInputs(shard)
             .itemOutputs(crushed)
             .duration(200)
-            .eut(GTValues.VP[Tier.LV.voltageIndex()])
+            .eut(GTValues.VP[Tier.HV.voltageIndex()])
             .addTo(RecipeMaps.maceratorRecipes);
         centrifuge(crushed, FalloutYield.CRUSHED_TRINITITE, Tier.HV, false);
         // Goo: dissolved in nitric acid (LuV), then centrifuged (EV) with the noble gases.

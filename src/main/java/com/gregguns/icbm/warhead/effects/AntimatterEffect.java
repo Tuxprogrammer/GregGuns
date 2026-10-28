@@ -3,11 +3,15 @@ package com.gregguns.icbm.warhead.effects;
 import com.gregguns.icbm.blast.BlastEngine;
 import com.gregguns.icbm.explosive.BlastContext;
 import com.gregguns.icbm.explosive.BlastEffect;
+import com.gregguns.icbm.fx.OrbBroadcast;
+import com.gregguns.icbm.fx.OrbKind;
+import com.gregguns.icbm.fx.OrbPlan;
+import com.gregguns.icbm.warhead.WarheadBlast;
 
 /**
  * The antimatter warhead (UV, D30, D130, D133): the engine already digs the crater and annihilates the kill zone
- * (bosses
- * included) through the shared blast engine. The effect adds one thing: antimatter and red matter cannot coexist, so
+ * (bosses included) through the shared blast engine. The effect adds one thing: antimatter and red matter cannot
+ * coexist, so
  * every red matter body within {@link RedMatterModel#ANTIMATTER_REACH} ends the moment antimatter goes off (the ICBM
  * rule). It leaves no fallout: it never calls the fallout system (D21).
  */
@@ -20,15 +24,21 @@ final class AntimatterEffect implements BlastEffect {
             return;
         }
         // The flash: one swelling ball to the blast radius, cheap on the client (no particles, no block scan).
-        com.gregguns.icbm.fx.OrbBroadcast.send(
+        OrbBroadcast.send(
             ctx.world(),
-            com.gregguns.icbm.fx.OrbKind.ANTIMATTER,
+            OrbKind.ANTIMATTER,
             ctx.x(),
             ctx.y(),
             ctx.z(),
             (int) Math.ceil(ctx.radius()),
-            com.gregguns.icbm.fx.OrbPlan.FLASH_TICKS);
+            OrbPlan.FLASH_TICKS);
         BlastEngine.instance()
-            .cancelNear(ctx.world(), "redmatter", ctx.x(), ctx.y(), ctx.z(), RedMatterModel.ANTIMATTER_REACH);
+            .cancelNear(
+                ctx.world(),
+                WarheadBlast.REDMATTER.id(),
+                ctx.x(),
+                ctx.y(),
+                ctx.z(),
+                RedMatterModel.ANTIMATTER_REACH);
     }
 }

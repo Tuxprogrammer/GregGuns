@@ -19,6 +19,19 @@ public final class OrbPlan {
     private OrbPlan() {}
 
     /**
+     * The life to announce for a body that is re-announced every {@code period} ticks: a short lease, so a body that
+     * ends
+     * early (or is canceled) fades from the screen within about two periods instead of at its nominal end.
+     *
+     * @param ticksLeft ticks the body would run if nothing ends it
+     * @param period    ticks between announcements
+     * @return the life to put in the packet, ticks
+     */
+    public static int lease(int ticksLeft, int period) {
+        return Math.max(1, Math.min(ticksLeft, 2 * period));
+    }
+
+    /**
      * @param kind   the orb
      * @param radius the radius the server announced, blocks
      * @param age    ticks since the client first saw it
