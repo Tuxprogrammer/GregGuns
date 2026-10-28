@@ -129,6 +129,29 @@ def machine_block(folder: str, tier: str, ppu=150) -> K.Path:
                     yaw=-38, pitch=28, ppu=ppu)
 
 
+def radar_cells() -> tuple:
+    """{(x, y, z): char} from RadarShape.PIECES (aisles front to back, rows top to bottom)."""
+    src = _src("icbm/defense/RadarShape.java")
+    body = re.search(r"String\[\]\[\]\[\]\s+PIECES\s*=\s*\{(.*?)\};", src, re.S).group(1)
+    aisles = [re.findall(r'"([^"]*)"', g) for g in re.findall(r"\{([^{}]*)\}", body)]
+    assert len(aisles) == 3 and all(len(a) == 3 for a in aisles), "RadarShape layout changed"
+    return B.stack_aisles([aisles]), aisles
+
+
+def radar_build(folder: str, label: str) -> S.Build:
+    """The small radar: a 3x3 base two high and a pedestal; the dish is drawn apart (render_obj)."""
+    cells, _ = radar_cells()
+    casing = NTM_CASINGS / "radar_casing.png"
+    ctrl = B.composite(casing, NTM_MACHINES / folder / "OVERLAY_FRONT.png", cache=K.TEXCACHE, name=f"d4-{folder}-ctrl")
+    b = S.Build(f"d4-{folder}-multi")
+    b.define("casing", "Radar Casing", S._wall("radar_casing"))
+    b.define("ctrl", label, (casing, casing, ctrl))
+    b.put(cells, {"C": "casing", "H": "casing", "~": ("ctrl", FRONT)})
+    b.hatch((0, 0, 1), "energy_hatch", LEFT, casing)
+    b.hatch((2, 0, 1), "maintenance_hatch", RIGHT, casing)
+    return b
+
+
 def tower_cells() -> dict:
     """{(x, y, z): char} from RadarTowerShape.PIECES (aisles front to back, rows top to bottom)."""
     src = _src("icbm/defense/RadarTowerShape.java")
@@ -144,7 +167,7 @@ def tower_build() -> S.Build:
     gc_beam = S._casing("gantry_beam")
     ctrl = B.composite(casing, NTM_MACHINES / "radar_tower/OVERLAY_FRONT.png", cache=K.TEXCACHE, name="d4-tower-ctrl")
     b = S.Build("d4-tower")
-    b.define("casing", "Radar Casing", casing)
+    b.define("casing", "Radar Casing", S._wall("radar_casing"))
     b.define("beam", "Gantry Beam", gc_beam)
     b.define("ctrl", "Radar Tower", (casing, casing, ctrl))
     b.put(cells, {"C": "casing", "H": "casing", "B": "beam", "~": ("ctrl", FRONT)})
@@ -225,10 +248,10 @@ def threat_diagram() -> str:
 </svg>"""
 
 
-def radar_card(title: str, tier: str, pic: K.Path, rng: int, extra: str) -> str:
+def radar_card(title: str, tier: str, pic: K.Path, dish: K.Path, rng: int, extra: str) -> str:
     amp = TIER_V[tier] // 4
     return (f'<div class="card"><div style="display:flex;align-items:center;gap:12px"><h2>{esc(title)}</h2>{chip(tier)}</div>'
-            f'<div class="spot" style="display:flex;justify-content:center;padding:6px 0;margin:6px 0">{img(pic, h=150)}</div>'
+            f'<div class="spot" style="display:flex;justify-content:center;align-items:center;gap:10px;padding:6px 0;margin:6px 0">{img(pic, h=170)}{img(dish, h=70)}</div>'
             f'<div class="kv"><span class="k">Range</span><span class="v">{n(rng)} blocks</span>'
             f'<span class="k">Power</span><span class="v">{n(amp)} EU/t while it scans</span>'
             f'<span class="k">Scan</span><span class="v">every {n(SCAN_TICKS)} ticks</span>{extra}</div></div>')
@@ -258,8 +281,11 @@ def aisle_grid(rows: list[str], label: str) -> str:
 
 
 def sheet() -> str:
-    hv = machine_block("radar_hv", "HV")
-    ev = machine_block("radar_ev", "EV")
+    hv = radar_build("radar_hv", "Radar (HV)").render(yaw=-32, pitch=24, ppu=58, tag="", marks=True)
+    ev = radar_build("radar_ev", "Radar (EV)").render(yaw=-32, pitch=24, ppu=58, tag="", marks=True)
+    dish_img = render_obj("radar_dish", "radar_dish", "radar-dish", yaw=35, pitch=20, ppu=70)
+    n_rc = sum(r.count("C") + r.count("H") for a in radar_cells()[1] for r in a)
+    min_rc = int(_const("icbm/defense/RadarShape.java", "CASING_MINIMUM"))
     bat = machine_block("air_defense_battery", "HV", ppu=170)
     emp = machine_block("emp_tower", "EV", ppu=170)
     tb = tower_build()
@@ -273,13 +299,14 @@ def sheet() -> str:
 
     # ---- the three radars
     tower_extra = ""
-    radars = (radar_card("Radar", "HV", hv, RANGES[0], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
-              + radar_card("Radar", "EV", ev, RANGES[1], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
+    radars = (radar_card("Radar", "HV", hv, dish_img, RANGES[0], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
+              + radar_card("Radar", "EV", ev, dish_img, RANGES[1], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
               + f"""<div class="card"><h2>What it tells you</h2><div class="pt" style="margin-top:6px">A missile is a <b>contact</b> from the moment it climbs until it lands. The radar sorts every contact in range, nearest first, and flags as <b>incoming</b> only those whose <b>predicted impact point</b> is inside your protected radius, edge included. A missile that passes right over the radar but lands elsewhere is no threat; one that flies past and lands inside is.</div>
-<div class="label" style="margin:14px 0 4px">Its screen shows</div><div class="pt">Offline, scanning, tracking or <b>threat</b>; contacts in range and incoming; the nearest contact; the protected radius field; Save link to stick.</div></div>""")
+<div class="label" style="margin:14px 0 4px">Build it</div><div class="pt"><b>{n_rc} Radar Casing</b> (at least {min_rc}): a 3 &times; 3 base two high with one on top for the dish to stand on, the controller in the middle of the front wall. An Energy Hatch of the controller&#39;s tier and a Maintenance Hatch go in any casing of the base. No structure, no radar: the controller does nothing alone. The dish turns while it scans.</div>
+<div class="label" style="margin:14px 0 4px">Its screen shows</div><div class="pt">Offline, scanning, tracking or <b>threat</b>; contacts in range and incoming; the nearest contact; and, on the controller's R button, the protected radius field.</div></div>""")
 
-    link_steps = f"""<div class="step"><span class="num">1</span><div class="t"><b>Power the radar and set its protected radius.</b> Open its screen and type the radius: {n(MIN_RADIUS)} blocks up to its range, {n(DEFAULT_RADIUS)} to begin with.</div></div>
-<div class="step"><span class="num">2</span><div class="t"><b>Save its link on a Data Stick.</b> Right-click the radar (or the tower&#39;s controller) with the stick, or press Save link in a radar&#39;s screen. The stick keeps the radar&#39;s dimension and position.</div></div>
+    link_steps = f"""<div class="step"><span class="num">1</span><div class="t"><b>Power the radar and set its protected radius.</b> Open the controller's screen, press R and type the radius: {n(MIN_RADIUS)} blocks up to its range, {n(DEFAULT_RADIUS)} to begin with.</div></div>
+<div class="step"><span class="num">2</span><div class="t"><b>Save its link on a Data Stick.</b> Right-click the radar&#39;s controller (or the tower&#39;s) with the stick. The stick keeps the radar&#39;s dimension and position.</div></div>
 <div class="step"><span class="num">3</span><div class="t"><b>Put the stick in the battery&#39;s stick slot.</b> The battery now listens to that radar. The radar must be powered, loaded and in the same dimension; a link never loads a chunk.</div></div>"""
 
     # ---- the radar tower
@@ -294,9 +321,9 @@ def sheet() -> str:
 <span class="muted" style="font-size:18px">3 &times; 3 &times; 7 blocks, a mast on top</span>
 <span style="font-size:16px;margin-left:auto" class="muted">{pip("#38c6d9")} controller &nbsp; {pip("#ff8a1f")} hatches</span></div>
 <div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;margin-top:8px">{img(tower_img, h=520, style="max-width:100%")}</div>
-<div class="muted" style="font-size:16px;margin-top:6px">One tower reaches farther than any single-block radar, and the better its Energy Hatch, the farther it sees. It reads the same missiles and gives the same outputs as the single blocks.</div></div>
+<div class="muted" style="font-size:16px;margin-top:6px">One tower reaches farther than either small radar, and the better its Energy Hatch, the farther it sees. It carries the same spinning dish, half again as large, and gives the same outputs.</div></div>
 <div class="card"><div class="label" style="margin-bottom:6px">Build it</div>
-<div class="pt"><b>{n_c + n_h} Radar Casing</b> (at least {min_casing}; hatches may replace the rest) &middot; the walls. Make four at a time in the Assembler at IV from 6 tungsten steel plates.</div>
+<div class="pt"><b>{n_c + n_h} Radar Casing</b> (at least {min_casing}; hatches may replace the rest) &middot; the walls. Make four at a time in the Assembler at HV from 6 stainless steel plates.</div>
 <div class="pt" style="margin-top:8px"><b>{n_b} Gantry Beam</b> &middot; the mast up the middle, standing two blocks above the walls.</div>
 <div class="pt" style="margin-top:8px"><b>1 Radar Tower controller</b> (IV) &middot; the front wall, second row up from the bottom.</div>
 <div class="pt" style="margin-top:8px"><b>Hatches</b> go in the {n_h} outlined casing blocks of the bottom ring: at least one <b>Energy Hatch</b> and one <b>Maintenance Hatch</b>. Below an IV Energy Hatch the tower stays off and says why.</div>
@@ -376,7 +403,7 @@ def sheet() -> str:
     # ---- outputs
     outputs = f"""<div class="card" style="margin-top:18px"><h2>Redstone, covers and computers</h2>
 <table class="t" style="margin-top:6px"><tr><th>Machine</th><th>Redstone</th><th>GT covers</th><th>OpenComputers (through an Adapter)</th></tr>
-<tr><td>Radars and Radar Tower</td><td>Out: strength 1 to {MAX_REDSTONE} on every side, the number of incoming missiles; 0 when none</td><td>A machine-state cover reads the single blocks&#39; threat flag</td><td><b>gg_radar</b>: contacts, incoming, protected radius; signals on contact, incoming, lost</td></tr>
+<tr><td>Radars and Radar Tower</td><td>Out: strength 1 to {MAX_REDSTONE} on every side, the number of incoming missiles; 0 when none</td><td>A machine-state cover reads running; read a threat from the redstone</td><td><b>gg_radar</b>: contacts, incoming, protected radius; signals on contact, incoming, lost</td></tr>
 <tr><td>Air-Defense Battery</td><td>Out: 15 while it engages a threat in range, else 0</td><td>A machine-state cover reads engaging</td><td><b>gg_air_defense</b>: SAM count, fire at a contact, hold fire or auto; signals on fire and hit</td></tr>
 <tr><td>EMP Tower</td><td>In: a rising edge fires one pulse</td><td>A machine controller cover fires on a rising edge; a machine-state cover reads ready</td><td><b>gg_emp_tower</b>: fire; signals when ready and when fired</td></tr></table>
 <div class="muted" style="font-size:16px;margin-top:8px">A radar and a battery link through a Data Stick, never the air: the stick carries the radar&#39;s address. The handheld tools use no links but the warhead the detonator points at.</div></div>"""
@@ -386,10 +413,10 @@ def sheet() -> str:
 <div class="spot" style="display:flex;justify-content:space-around;align-items:center;padding:6px">{img(hv, h=110)}{img(bat, h=110)}{img(emp, h=110)}</div></div>"""
 
     body = f"""{top}
-<div class="label" style="margin:22px 0 10px">Radars &middot; the single blocks</div>
+<div class="label" style="margin:22px 0 10px">Radars &middot; a small multiblock with a spinning dish</div>
 <div style="display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:18px">{radars}</div>
 <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:18px">
-<div class="card"><h2>Range by tier</h2><div class="muted" style="font-size:17px;margin-bottom:6px">A flat circle: height does not matter. The two blocks are HV and EV; a Radar Tower is IV and up, by its Energy Hatch.</div>{range_bars()}</div>
+<div class="card"><h2>Range by tier</h2><div class="muted" style="font-size:17px;margin-bottom:6px">A flat circle: height does not matter. The two small radars are HV and EV (the controller&#39;s tier); a Radar Tower is IV and up, by its Energy Hatch.</div>{range_bars()}</div>
 <div class="card"><h2>How a radar decides</h2><div style="margin-top:4px">{threat_diagram()}</div></div></div>
 {tower_card}
 <div class="label" style="margin:26px 0 10px">Air defense</div>{battery}
