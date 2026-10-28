@@ -1,8 +1,10 @@
 package com.gregguns.icbm.worldgen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.inventory.InventoryBasic;
@@ -31,6 +33,7 @@ public final class ComplexContentScenarios {
         registry.register(new LootCeiling());
         registry.register(new Bonuses());
         registry.register(new Machines());
+        registry.register(new Sweep());
     }
 
     private static String id(ItemStack s) {
@@ -156,11 +159,110 @@ public final class ComplexContentScenarios {
                         out.check(p.tier() <= c, role + "@" + c + " picked tier " + p.tier());
                         if (p.hull()) {
                             hulls.add(role + "@" + SiloCeiling.name(c));
+                            out.check(
+                                !(role == MachineRole.GENERATOR || role == MachineRole.BATTERY_BUFFER
+                                    || role == MachineRole.WORKBENCH
+                                    || role == MachineRole.PUMP),
+                                role + "@" + SiloCeiling.name(c) + " fell back to a hull though GT has the machine");
                         }
                     }
                 }
             }
-            out.note("hull fallbacks: " + hulls.size());
+            out.note("hull fallbacks (roles GT has no single block for): " + hulls.size());
+            return out.build();
+        }
+    }
+
+    private static final class Sweep implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.complex.loot_sweep";
+        }
+
+        @Override
+        public String description() {
+            return "Over many generated complexes in every dimension that hosts one (Ross128's rolled ceiling included),"
+                + " every real chest the contents pass fills holds only items from its key's table at or below the"
+                + " dimension's ceiling, or its own bonus items, and no machine is above the ceiling (exit box 3, D38).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            SiloChests.register();
+            int chests = 0;
+            int stacks = 0;
+            int bad = 0;
+            Set<Integer> rossSeen = new HashSet<>();
+            Map<String, Set<String>> allowedCache = new HashMap<>();
+            for (String dim : com.gregguns.icbm.complex.PlanetTable.names()) {
+                Integer tier = com.gregguns.icbm.complex.PlanetTable.tierOf(dim);
+                boolean rolled = tier != null && tier == com.gregguns.icbm.complex.PlanetTable.ROLLED;
+                int seeds = rolled ? 24 : 4;
+                int dimStacks = 0;
+                for (int n = 0; n < seeds; n++) {
+                    long seed = 0x7000L * (n + 1) + dim.hashCode();
+                    com.gregguns.icbm.complex.ComplexPlan plan = com.gregguns.icbm.complex.ComplexLayout
+                        .generate(seed, n, 9);
+                    int ceiling = rolled ? SiloCeiling.roll(plan.seed(), SiloCeiling.DEFAULT_ROSS_WEIGHTS)
+                        : Math.max(SiloCeiling.EV, com.gregguns.icbm.complex.PlanetTable.ceilingVoltage(dim));
+                    if (rolled) {
+                        rossSeen.add(ceiling);
+                    }
+                    ActivityLevel level = ActivityLevel.values()[n % ActivityLevel.values().length];
+                    for (Placement p : ComplexContents.build(plan, level, ceiling, new int[] { 100, 200 })) {
+                        if (p.kind() == Placement.Kind.MACHINE) {
+                            out.check(p.tier() <= ceiling, dim + " machine tier " + p.tier() + " > " + ceiling);
+                            MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead());
+                            if (pick != null && p.role() != MachineRole.NASA_WORKBENCH
+                                && p.role() != MachineRole.LAUNCH_CONTROL
+                                && p.role() != MachineRole.MAGAZINE_CASING) {
+                                out.check(pick.tier() <= ceiling, dim + " picked machine tier " + pick.tier());
+                            }
+                            continue;
+                        }
+                        if (p.kind() != Placement.Kind.CHEST) {
+                            continue;
+                        }
+                        chests++;
+                        InventoryBasic inv = new InventoryBasic("loot", false, 27);
+                        SiloChests.fill(inv, p, seed, n, 9);
+                        Set<String> allowed = allowedCache.computeIfAbsent(p.key() + "@" + ceiling, k -> {
+                            Set<String> a = new HashSet<>();
+                            for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {
+                                ItemStack st = LootCategories.stack(l.ref(), 1);
+                                if (st != null) {
+                                    a.add(id(st));
+                                }
+                            }
+                            return a;
+                        });
+                        Set<String> own = new HashSet<>(allowed);
+                        for (Placement.Bonus b : p.bonuses()) {
+                            ItemStack st = SiloBonusItems.stack(b, p);
+                            if (st != null) {
+                                own.add(id(st));
+                            }
+                        }
+                        for (int i = 0; i < inv.getSizeInventory(); i++) {
+                            ItemStack st = inv.getStackInSlot(i);
+                            if (st != null) {
+                                stacks++;
+                                dimStacks++;
+                                if (!own.contains(id(st))) {
+                                    bad++;
+                                    out.note(dim + "@" + SiloCeiling.name(ceiling) + " " + p.key() + " drew " + id(st));
+                                }
+                            }
+                        }
+                    }
+                }
+                out.check(dimStacks > 0, dim + " drew nothing");
+            }
+            out.checkEquals("stacks outside their ceiling", 0, bad);
+            out.check(rossSeen.size() >= 5, "Ross128 rolled several ceilings: " + rossSeen);
+            out.note("chests " + chests + ", stacks " + stacks + ", Ross ceilings " + rossSeen);
             return out.build();
         }
     }

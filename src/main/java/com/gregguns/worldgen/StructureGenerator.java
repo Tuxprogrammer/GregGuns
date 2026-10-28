@@ -48,6 +48,11 @@ public final class StructureGenerator implements IWorldGenerator {
     /** The procedural underground complex (ICBM silo complex), set by its module; null when absent. */
     private static volatile ComplexWriter complexWriter;
 
+    /** @return the complex writer, or null; scenarios that need the general gate alone take it out and put it back */
+    static ComplexWriter complexWriter() {
+        return complexWriter;
+    }
+
     /** @param writer the complex writer, or null for none */
     public static void setComplexWriter(ComplexWriter writer) {
         complexWriter = writer;

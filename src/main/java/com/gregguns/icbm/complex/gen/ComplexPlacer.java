@@ -148,6 +148,9 @@ public final class ComplexPlacer implements ComplexWriter {
 
     /** The ceiling of a complex: the dimension's table row, rolled per complex on Ross128b and Ross128ba. */
     public int ceilingOf(StructurePlan plan) {
+        if (forcedCeiling > 0) {
+            return forcedCeiling;
+        }
         String name = world == null ? "Overworld" : world.provider.getDimensionName();
         Integer tier = PlanetTable.tierOf(name);
         if (tier != null && tier == PlanetTable.ROLLED) {
@@ -157,8 +160,28 @@ public final class ComplexPlacer implements ComplexWriter {
         return Math.max(SiloCeiling.EV, PlanetTable.ceilingVoltage(name));
     }
 
+    private ActivityLevel forcedLevel;
+    private int forcedCeiling;
+
+    /** @param ceiling the ceiling every complex gets instead of its dimension's (scenarios), or 0 for the table */
+    public ComplexPlacer forceCeiling(int ceiling) {
+        this.forcedCeiling = ceiling;
+        contentsCache.clear();
+        return this;
+    }
+
+    /** @param level the level every complex gets instead of its rolled one (scenarios), or null to roll */
+    public ComplexPlacer forceLevel(ActivityLevel level) {
+        this.forcedLevel = level;
+        contentsCache.clear();
+        return this;
+    }
+
     /** The activity level of a complex, rolled from its seed. */
     public ActivityLevel levelOf(ComplexPlan cp) {
+        if (forcedLevel != null) {
+            return forcedLevel;
+        }
         return ActivityLevel.roll(cp.seed(), ActivityLevel.DEFAULT_WEIGHTS);
     }
 

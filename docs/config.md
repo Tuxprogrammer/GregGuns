@@ -170,6 +170,10 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.missileRangeFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's range (D60). |
 | `icbm.siloScatterFactor` | double | `0.5` | 0.1 to 2 | yes | Multiplier on the scatter of a missile launched from a Missile Silo, on top of the guidance rule; the 10% floor still applies (D70). |
 | `icbm.siloRangeFactor` | double | `1.25` | 0.5 to 5 | yes | Multiplier on the range of a missile launched from a Missile Silo, on top of `missileRangeFactor`; the open pad keeps the plain range (D70). |
+| `icbm.siloComplexEnabled` | boolean | `true` | n/a | yes | Whether silo complexes (D128) generate at all. They also need `modules.worldgen` on and `worldgen.spawnStructures`. |
+| `icbm.siloComplexDimensions` | string list | the Overworld and every D38 planet | n/a | yes | Dimensions that get silo complexes, by the world provider's dimension name (D38). Remove a name to keep complexes out of that planet. |
+| `icbm.siloComplexChancePercent` | int | `25` | 0 to 100 | yes | Chance that a grid cell (one per 64 x 64 chunks, D17) holds a complex. |
+| `icbm.siloComplexOverworldBiomes` | string list | dry and temperate land types | n/a | yes | Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all. |
 | `icbm.fuelBonusMax` | double | `0.25` | 0 to 1 | yes | The most unburned fuel adds to a blast radius, as a fraction: 0.25 is up to 25% at point-blank range, nothing at full range. 0 turns it off. |
 | `icbm.missileTimeoutTicks` | int | `600` | 20 to 6000 | yes | Ticks a missile may fly past its planned arrival before it detonates where it is. |
 | `icbm.doorOpenTicks` | int | `40` | 10 to 200 | yes | Ticks the Missile Silo doors take to swing open or shut (D89). |

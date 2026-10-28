@@ -21,7 +21,7 @@ One table per loot key (`LootKeys`) and ceiling, registered as `gregguns:silo_<k
 
 | Bonus | Where | Chance |
 |---|---|---|
-| Damaged T1 missile body (NBT `damaged`: cannot be placed, recycles as a body) | every `salvage` chest; operational: half | always (D17's main find) |
+| Damaged T1 missile body (item damage 1 and NBT `damaged`: cannot be placed, takes no recipe as a body, recycles for the plates only; D186) | every `salvage` chest; operational: half | always (D17's main find) |
 | Schematic chip (T1) | one `safe`, `comms` or `control` chest | 8%, 10%, 25% by level |
 | Silo controller or Energy Hatch (whichever the silo lacks, D128) | one `safe`, `stockpile`, `workshop` or `control` chest, per silo | 25%, 40%, 60% |
 | Data stick with another complex's block coordinates | one `comms` chest | half the chip chance, only when another complex exists |
@@ -40,8 +40,8 @@ The `ITEM_FRAME_WALL` (armory) holds one gun per frame drawn from the armory tab
 
 ## Tests
 
-Unit: `SiloCeilingTest`, `SiloLootTablesTest`, `ComplexContentsTest`. Scenarios: `icbm.complex.loot.*`.
+Unit: `SiloCeilingTest`, `SiloLootTablesTest`, `ComplexContentsTest`. `CeilingSweepTest` (every hosted dimension, many layouts, all levels). Scenarios: `icbm.complex.loot_ceiling`, `icbm.complex.loot_sweep` (about 6,000 chests across every dimension, Ross128's rolled ceilings included), `icbm.complex.bonus_items`, `icbm.complex.machines`, `icbm.complex.salvage`.
 
 ## Open questions
 
-Ladder materials for UEV and up need a check against the pack's GT material list in the first live run: a line whose material does not resolve is skipped and logged (never null).
+Checked on the box: every ladder line resolves at every ceiling (`icbm.complex.loot_ceiling`, 0 unresolved).
