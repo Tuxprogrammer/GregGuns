@@ -62,6 +62,22 @@ public final class WorldBlocks implements BlockResolver {
             }
             case Cell.LADDER:
                 return new ResolvedBlock(Blocks.ladder, 2, false);
+            case Cell.FLOOR:
+            case Cell.CEILING:
+            case Cell.DOOR_FRAME:
+            case Cell.FURN_TABLE:
+            case Cell.FURN_CONSOLE:
+            case Cell.FURN_BUNK:
+            case Cell.FURN_SHELF:
+                // Without a palette style every building role is the complex wall (D205).
+                return new ResolvedBlock(BlockComplexWall.instance(), 0, false);
+            case Cell.LAMP:
+                // A dark lamp; the contents pass lights it.
+                return new ResolvedBlock(Blocks.redstone_lamp, 0, false);
+            case Cell.WINDOW:
+                return glass();
+            case Cell.BASIN:
+                return new ResolvedBlock(Blocks.water, 0, false);
             default:
                 return null;
         }

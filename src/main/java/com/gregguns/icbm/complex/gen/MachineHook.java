@@ -13,6 +13,15 @@ public interface MachineHook {
     void place(net.minecraft.world.World world, byte cell, int x, int y, int z);
 
     /**
+     * As {@link #place}, turned: a silo's controller and hatches face its gallery.
+     *
+     * @param facing the way the machine's front faces: 0 north, 1 east, 2 south, 3 west
+     */
+    default void place(net.minecraft.world.World world, byte cell, int x, int y, int z, int facing) {
+        place(world, cell, x, y, z);
+    }
+
+    /**
      * Called before a window's whole write: GregTech blocks the complex still places (silo concrete, hatches) must not
      * each start a machine-update search, so the real hook switches the update off for this thread.
      *

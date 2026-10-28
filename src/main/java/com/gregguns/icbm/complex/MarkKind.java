@@ -14,7 +14,10 @@ public enum MarkKind {
      * hang along the wall ({@link ComplexLayout#FRAME_STRIDE} cells apart, in +X or +Z).
      */
     ITEM_FRAME_WALL,
-    /** A light fixture cell; the operational level lights it, the damage pass may leave it dark. */
+    /**
+     * A lamp flush in the ceiling layer, or a light tile flush in the floor layer (D230). The key is
+     * {@code lamp:<section>:<run>}: the activity level lights whole runs or whole sections (D36, D231).
+     */
     LIGHT,
     /**
      * A cell the damage pass may break, remove or bury; the key is the wall/floor/ceiling part ("wall", "floor",
@@ -28,5 +31,11 @@ public enum MarkKind {
     /** A wall sign next to its cell; the key is the lang key of its text (up to four lines divided by a bar). */
     SIGN,
     /** A blast door between a tunnel and a section. Writes nothing yet: the doors arrive with I7 (D213). */
-    BLAST_DOOR
+    BLAST_DOOR,
+    /**
+     * A furniture cell the raster writes from the room's style (D234). The key is a
+     * {@link com.gregguns.icbm.complex.palette.Furniture} name (at y 1 or higher), or {@code BASIN} for standing
+     * water sunk into the floor layer (y 0). The contents pass leaves it alone.
+     */
+    FURNITURE
 }

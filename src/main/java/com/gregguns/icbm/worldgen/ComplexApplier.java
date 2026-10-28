@@ -73,6 +73,23 @@ public final class ComplexApplier {
         this.ceiling = ceiling;
     }
 
+    /** The lit lamp of the section at a complex-local cell (the palette's), or null for glowstone. */
+    public interface Lamps {
+
+        com.gregguns.worldgen.layout.ResolvedBlock lit(int x, int y, int z);
+    }
+
+    private Lamps lamps;
+
+    /**
+     * @param lamps where lit lamps come from; null keeps glowstone
+     * @return this
+     */
+    public ComplexApplier withLamps(Lamps lamps) {
+        this.lamps = lamps;
+        return this;
+    }
+
     /** @param p a placement */
     public void apply(Placement p) {
         int x = ox + p.x();
@@ -90,9 +107,13 @@ public final class ComplexApplier {
                 // out into the room or the corridor.
                 sink.setBlock(x, y - 1, z, Blocks.water, 0);
                 break;
-            case LIGHT:
-                sink.setBlock(x, y, z, Blocks.glowstone, 0);
+            case LIGHT: {
+                // The lit lamp of the section's style (D230); glowstone without one.
+                com.gregguns.worldgen.layout.ResolvedBlock lamp = lamps == null ? null : lamps.lit(p.x(), p.y(), p.z());
+                if (lamp != null) sink.setBlock(x, y, z, lamp.block, lamp.meta);
+                else sink.setBlock(x, y, z, Blocks.glowstone, 0);
                 break;
+            }
             case CHEST:
                 if (sink.setBlock(x, y, z, Blocks.chest, 2)) {
                     sink.setTile(x, y, z, SiloChests.filledChest(p, worldSeed, cellX, cellZ));

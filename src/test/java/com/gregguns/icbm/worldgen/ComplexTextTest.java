@@ -22,6 +22,7 @@ class ComplexTextTest {
         Map<String, String> lang = lang();
         java.util.List<String> keys = new java.util.ArrayList<>();
         keys.add("icbm.complex.sign.hall");
+        keys.add("icbm.complex.sign.silo_gallery");
         for (RoomKind k : RoomKind.values()) {
             keys.add(
                 "icbm.complex.sign." + k.name()

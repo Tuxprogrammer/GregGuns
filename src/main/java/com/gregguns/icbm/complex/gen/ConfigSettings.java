@@ -23,7 +23,7 @@ public final class ConfigSettings implements ComplexPlacer.Settings {
             new WorldBlocks(),
             new GtMachineHook(),
             MarkFiller.NONE,
-            new ConfigSettings());
+            new ConfigSettings()).withStyles(PaletteStyles.FACTORY);
         // A world that unloads (a save closed in singleplayer) takes the placer's caches and world reference with it.
         MinecraftForge.EVENT_BUS.register(new Releaser(placer));
         return placer;

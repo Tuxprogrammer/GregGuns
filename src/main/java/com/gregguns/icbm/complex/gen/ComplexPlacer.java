@@ -78,6 +78,38 @@ public final class ComplexPlacer implements ComplexWriter {
         this.settings = settings;
     }
 
+    private Styles.Factory styles = Styles.Factory.NONE;
+
+    /**
+     * @param factory where each section's look comes from: {@link PaletteStyles#FACTORY} in the game, none in unit
+     *                tests (every role then falls to the block resolver)
+     * @return this
+     */
+    public ComplexPlacer withStyles(Styles.Factory factory) {
+        this.styles = factory;
+        stylesCache.clear();
+        return this;
+    }
+
+    private final Map<String, Styles> stylesCache = new LinkedHashMap<String, Styles>();
+
+    /** The styles of a plan's sections, cached like the raster; they depend on the dimension and the level too. */
+    public Styles stylesOf(StructurePlan plan) {
+        ComplexRaster raster = rasterOf(plan);
+        String key = cacheKey(plan) + ":" + (forcedLevel == null ? "" : forcedLevel.name());
+        Styles st = stylesCache.remove(key);
+        if (st == null) {
+            String dim = world == null ? "Overworld" : DimensionKey.of(world);
+            st = styles.of(raster, dim, levelOf(raster.plan()));
+            if (stylesCache.size() >= 2) stylesCache.remove(
+                stylesCache.keySet()
+                    .iterator()
+                    .next());
+        }
+        stylesCache.put(key, st);
+        return st;
+    }
+
     /** @param listener told the reason of each skipped plan (scenarios); the log line is written regardless */
     public ComplexPlacer withSkipListener(java.util.function.Consumer<String> listener) {
         this.skipListener = listener;
@@ -101,6 +133,8 @@ public final class ComplexPlacer implements ComplexWriter {
         world = null;
         cache.clear();
         contentsCache.clear();
+        stylesCache.clear();
+        summaries.clear();
     }
 
     @Override
@@ -225,6 +259,7 @@ public final class ComplexPlacer implements ComplexWriter {
     public ComplexPlacer forceLevel(ActivityLevel level) {
         this.forcedLevel = level;
         contentsCache.clear();
+        stylesCache.clear();
         return this;
     }
 
@@ -290,19 +325,26 @@ public final class ComplexPlacer implements ComplexWriter {
             }
         }
         WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
+        Styles st = stylesOf(plan);
+        int maskedColumns = 0;
+        for (boolean m : mask) if (m) maskedColumns++;
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 for (int y = 0; y < ComplexRaster.LEVELS; y++) {
-                    byte c = raster.at(x - ax, y, z - az);
+                    int lx = x - ax, lz = z - az;
+                    byte c = raster.at(lx, y, lz);
                     if (c == Cell.NONE) continue;
                     int wy = floorY + y;
                     if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
-                        if (under.setBlock(x, wy, z, air, 0) && world != null) machines.place(world, c, x, wy, z);
+                        if (under.setBlock(x, wy, z, air, 0) && world != null) {
+                            machines.place(world, c, x, wy, z, siloFacing(cp, lx, lz));
+                        }
                         n++;
                         continue;
                     }
-                    ResolvedBlock b = c == Cell.LADDER ? blocks.ladder(cp.escapeMeta(), x, wy, z)
-                        : blocks.resolve(c, x, wy, z);
+                    ResolvedBlock b = c == Cell.LADDER ? blocks.ladder(cp.escapeMeta(), x, wy, z) : null;
+                    if (b == null && styled(c)) b = st.block(c, lx, y, lz);
+                    if (b == null) b = blocks.resolve(c, x, wy, z);
                     if (b != null && under.setBlock(x, wy, z, b.block, b.meta)) n++;
                 }
             }
@@ -324,11 +366,87 @@ public final class ComplexPlacer implements ComplexWriter {
                 plan.chestSeedBase(),
                 plan.cellX(),
                 plan.cellZ(),
-                ceilingOf(plan));
+                ceilingOf(plan)).withLamps(st::litLamp);
             for (Placement p : contentsOf(plan, cp)) applier.apply(p);
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
         }
+        summarize(plan, floorY, window, n, maskedColumns, sink);
         return n;
+    }
+
+    /** @return whether the role is a building role the section's style decides */
+    private static boolean styled(byte c) {
+        switch (c) {
+            case Cell.WALL:
+            case Cell.FLOOR:
+            case Cell.CEILING:
+            case Cell.LAMP:
+            case Cell.DOOR_FRAME:
+            case Cell.FURN_TABLE:
+            case Cell.FURN_CONSOLE:
+            case Cell.FURN_BUNK:
+            case Cell.FURN_SHELF:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /** @return the facing of the silo whose footprint holds the column (its machines face the gallery) */
+    static int siloFacing(ComplexPlan cp, int lx, int lz) {
+        for (SiloSlot s : cp.silos()) {
+            if (s.bounds()
+                .contains(lx, 0, lz)) return s.facing();
+        }
+        return 0;
+    }
+
+    /** Per complex: windows written, blocks written, columns cut off, writes the sink refused. */
+    private final Map<String, int[]> summaries = new LinkedHashMap<String, int[]>();
+
+    /**
+     * Counts what each window wrote and, once every window over the complex has run, logs one line at debug level, so
+     * a complex that writes nothing in a pack shows up in the log with its numbers (D236).
+     */
+    private void summarize(StructurePlan plan, int floorY, PopulateWindow window, int blocksWritten, int maskedColumns,
+        WindowedSink sink) {
+        String key = cacheKey(plan);
+        int[] s = summaries.get(key);
+        if (s == null) {
+            if (summaries.size() >= 16) summaries.remove(
+                summaries.keySet()
+                    .iterator()
+                    .next());
+            s = new int[4];
+            summaries.put(key, s);
+        }
+        s[0]++;
+        s[1] += blocksWritten;
+        s[2] += maskedColumns;
+        s[3] = sink.rejectedWrites();
+        if (s[0] == windowsOver(plan.anchorX()) * windowsOver(plan.anchorZ())) {
+            GregGuns.LOG.debug(
+                "Silo complex at dimension {} cell {},{} anchor {},{} floor y {}: {} windows, {} blocks, {} columns cut"
+                    + " off, last window refused {} writes",
+                plan.dimension(),
+                plan.cellX(),
+                plan.cellZ(),
+                plan.anchorX(),
+                plan.anchorZ(),
+                floorY,
+                s[0],
+                s[1],
+                s[2],
+                s[3]);
+            summaries.remove(key);
+        }
+    }
+
+    /** @return how many populate windows along one axis overlap a complex anchored at {@code a} */
+    static int windowsOver(int a) {
+        int first = Math.floorDiv(a - PopulateWindow.OFFSET, 16);
+        int last = Math.floorDiv(a + ComplexLayout.SIZE - 1 - PopulateWindow.OFFSET, 16);
+        return last - first + 1;
     }
 
     /** The 5 x 5 shaft ring and 3 x 3 bore from the top of the silo to the surface, and the mouth variant. */
@@ -398,7 +516,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (window.contains(bx, bz)) {
             int bg = probe.landY(bx, bz);
             if (bg != HeightProbe.NONE) {
-                for (int y = floorY + ComplexLayout.HEIGHT; y < bg; y++) {
+                for (int y = floorY + cp.escapeTop(); y < bg; y++) {
                     ResolvedBlock b = blocks.named("backing", bx, y, bz);
                     if (b != null && sink.setBlock(bx, y, bz, b.block, b.meta)) n++;
                 }
@@ -407,7 +525,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (!window.contains(x, z)) return n;
         int g = probe.landY(x, z);
         if (g == HeightProbe.NONE) return n;
-        for (int y = floorY + ComplexLayout.HEIGHT; y < g; y++) {
+        for (int y = floorY + cp.escapeTop(); y < g; y++) {
             ResolvedBlock b = blocks.ladder(meta, x, y, z);
             if (b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
         }

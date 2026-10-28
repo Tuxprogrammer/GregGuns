@@ -17,6 +17,7 @@ import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.gen.ComplexPlacer;
 import com.gregguns.icbm.complex.gen.GtMachineHook;
 import com.gregguns.icbm.complex.gen.MarkFiller;
+import com.gregguns.icbm.complex.gen.PaletteStyles;
 import com.gregguns.icbm.complex.gen.WorldBlocks;
 import com.gregguns.worldgen.ClippingSink;
 import com.gregguns.worldgen.ComplexWriter;
@@ -106,6 +107,9 @@ public final class ComplexScenarios {
         return h;
     }
 
+    /** Our facing index (0 north, 1 east, 2 south, 3 west) as a ForgeDirection ordinal. */
+    private static final int[] FACING_TO_FORGE = { 2, 5, 3, 4 };
+
     private static final class Places implements Scenario {
 
         @Override
@@ -143,8 +147,9 @@ public final class ComplexScenarios {
                     public java.util.Set<Type> overworldBiomes() {
                         return Collections.emptySet();
                     }
-                }).withContents(false); // order identity is the shell's; the contents pass has falling rubble and
-                                        // flooding
+                }).withContents(false) // order identity is the shell's; the contents pass has falling rubble and
+                                       // flooding
+                    .withStyles(PaletteStyles.FACTORY);
             try {
                 load(world, plan);
                 long first = 0;
@@ -159,9 +164,14 @@ public final class ComplexScenarios {
                     java.util.List<int[]> windows = com.gregguns.worldgen.PlacementHarnessAccess
                         .windowsOf(plan, pass == 1);
                     int stamped = 0;
+                    // Generation cost (D236): wall time and blocks per populate window that holds part of the complex.
+                    long totalNanos = 0, maxNanos = 0;
+                    int busy = 0, maxBlocks = 0;
                     for (int[] w : windows) {
                         PopulateWindow window = new PopulateWindow(w[0], w[1]);
                         ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
+                        long t0 = System.nanoTime();
+                        int acceptedBefore = sink.acceptedWrites();
                         try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
                             stamped += populator.populateComplex(
                                 plan,
@@ -172,8 +182,32 @@ public final class ComplexScenarios {
                                 (x, z) -> Collections.singleton(Type.PLAINS),
                                 state);
                         }
+                        long dt = System.nanoTime() - t0;
+                        int wrote = sink.acceptedWrites() - acceptedBefore;
+                        if (wrote > 0) {
+                            busy++;
+                            totalNanos += dt;
+                            maxNanos = Math.max(maxNanos, dt);
+                            maxBlocks = Math.max(maxBlocks, wrote);
+                        }
                         rejected += sink.rejectedWrites();
                         accepted += sink.acceptedWrites();
+                    }
+                    if (busy > 0) {
+                        out.note(
+                            String.format(
+                                java.util.Locale.ROOT,
+                                "pass %d cost: %d windows wrote %d blocks (mean %d, most %d per window), %.1f ms mean,"
+                                    + " %.1f ms most per window, %.0f ms in all (shell only, first pass includes the"
+                                    + " plan and raster)",
+                                pass,
+                                busy,
+                                accepted,
+                                accepted / busy,
+                                maxBlocks,
+                                totalNanos / 1e6 / busy,
+                                maxNanos / 1e6,
+                                totalNanos / 1e6));
                     }
                     out.check(
                         state.get(com.gregguns.worldgen.PlanKey.of(plan)) != null
@@ -206,23 +240,28 @@ public final class ComplexScenarios {
             int floor = GROUND - ComplexPlacer.DEPTH;
             out.check(
                 cp.silos()
-                    .size() >= 1
+                    .size() >= 4
                     && cp.silos()
-                        .size() <= 4,
-                "1 to 4 silos: " + cp.silos()
+                        .size() <= 10,
+                "4 to 10 silos: " + cp.silos()
                     .size());
             for (SiloSlot s : cp.silos()) {
-                int ox = plan.anchorX() + s.bounds().minX, oz = plan.anchorZ() + s.bounds().minZ;
-                out.check(world.getBlock(ox + 2, floor + 5, oz + 2) == Blocks.air, "silo bore is open");
+                int sx = plan.anchorX() + s.shaftX(), sz = plan.anchorZ() + s.shaftZ();
+                // The controller faces the gallery: (cx, cz) is its column, whichever way the silo is turned.
+                int cx = plan.anchorX() + s.controllerX(), cz = plan.anchorZ() + s.controllerZ();
+                out.check(world.getBlock(sx, floor + 5, sz) == Blocks.air, "silo bore is open");
                 out.check(
-                    world.getBlock(ox + 2, GROUND - 1, oz + 2) == Blocks.air || s.variant() != SurfaceVariant.OPEN,
+                    world.getBlock(sx, GROUND - 1, sz) == Blocks.air || s.variant() != SurfaceVariant.OPEN,
                     "an open silo's bore reaches the surface");
-                TileEntity t = world.getTileEntity(ox + 2, floor + 2, oz);
+                out.check(
+                    world.isAirBlock(plan.anchorX() + s.frontX(), floor + 2, plan.anchorZ() + s.frontZ()),
+                    "the walkway in front of the controller is open");
+                TileEntity t = world.getTileEntity(cx, floor + 2, cz);
                 boolean hasController = t instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity;
                 out.check(
                     hasController == (s.missing() != MissingPart.CONTROLLER),
                     "controller present exactly when it is not the missing part (" + s.missing() + ")");
-                boolean complete = com.gregguns.machine.DevStructureBuilder.check(world, ox + 2, floor + 2, oz);
+                boolean complete = com.gregguns.machine.DevStructureBuilder.check(world, cx, floor + 2, cz);
                 out.check(!complete, "a silo missing a part must not be formed");
                 // Add the part the way a player would, with the item the chests hold: the silo then forms.
                 boolean noController = s.missing() == MissingPart.CONTROLLER;
@@ -232,16 +271,22 @@ public final class ComplexScenarios {
                     null);
                 out.check(part != null, "the chest item for " + s.missing() + " resolves");
                 if (part != null) {
-                    GtMachineHook.placeMte(world, part.getItemDamage(), ox + 2, floor + (noController ? 2 : 1), oz);
+                    GtMachineHook.placeMte(
+                        world,
+                        part.getItemDamage(),
+                        cx,
+                        floor + (noController ? 2 : 1),
+                        cz,
+                        net.minecraftforge.common.util.ForgeDirection.values()[FACING_TO_FORGE[s.facing()]]);
                     // A formed silo registers with GT's power-failure tracker, which needs an owner.
-                    TileEntity ctl = world.getTileEntity(ox + 2, floor + 2, oz);
+                    TileEntity ctl = world.getTileEntity(cx, floor + 2, cz);
                     if (ctl instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity) {
                         gregtech.api.interfaces.tileentity.IGregTechTileEntity g = (gregtech.api.interfaces.tileentity.IGregTechTileEntity) ctl;
                         g.setOwnerName("complex-test");
                         g.setOwnerUuid(java.util.UUID.nameUUIDFromBytes("complex-test".getBytes()));
                     }
                     out.check(
-                        com.gregguns.machine.DevStructureBuilder.check(world, ox + 2, floor + 2, oz),
+                        com.gregguns.machine.DevStructureBuilder.check(world, cx, floor + 2, cz),
                         "a silo forms once its missing " + s.missing() + " is added");
                 }
             }

@@ -19,7 +19,6 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.worldgen.ClippingSink;
@@ -285,7 +284,7 @@ class ComplexPlacerTest {
         int bx = x + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = z + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
         int floor = GROUND - ComplexPlacer.DEPTH;
         String backing = Integer.toString(System.identityHashCode(named.get("backing")));
-        for (int y = floor + ComplexLayout.HEIGHT; y < GROUND; y++) {
+        for (int y = floor + cp.escapeTop(); y < GROUND; y++) {
             String ladder = r.cells.get(x + "," + y + "," + z);
             String behind = r.cells.get(bx + "," + y + "," + bz);
             assertTrue(behind != null && behind.startsWith(backing + ":"), "backing at y " + y + ", windows or not");
@@ -304,9 +303,15 @@ class ComplexPlacerTest {
         Result valley = run(p, false);
         seaFloor = HeightProbe.NONE;
         int under = 0;
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        int ex = p.anchorX() + cp.escapeX(), ez = p.anchorZ() + cp.escapeZ();
         for (String key : valley.cells.keySet()) {
-            int y = Integer.parseInt(key.split(",")[1]);
-            if (y < floor + ComplexLayout.HEIGHT) under++;
+            String[] c = key.split(",");
+            int y = Integer.parseInt(c[1]), x = Integer.parseInt(c[0]), z = Integer.parseInt(c[2]);
+            // The escape shaft rises above its section by design; the level itself is what must not be written.
+            if (Math.abs(x - ex) <= 1 && Math.abs(z - ez) <= 1 && y >= floor + cp.escapeTop()) continue;
+            if (y < floor + com.gregguns.icbm.complex.ComplexRaster.LEVELS) under++;
         }
         assertEquals(0, under, "nothing of the level is written under such ground");
         assertEquals(0, valley.outside);

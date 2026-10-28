@@ -20,6 +20,7 @@ import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.Room;
 import com.gregguns.icbm.complex.SiloSlot;
+import com.gregguns.icbm.complex.Tunnel;
 
 /**
  * The silo-complex dump for the {@code icbm-silos} infographic and the layout previews
@@ -32,13 +33,14 @@ class ComplexExportTest {
     /** The layer the corridors are walked on (the floor is layer 0, the floor surface layer 1). */
     private static final int WALK_Y = 2;
 
-    /** The dump holds a plan for every silo count from one to four. */
+    /** The dump holds a plan for every silo count from four to ten. */
     @Test
     void dumpCarriesEverySiloCount(@TempDir Path dir) throws IOException {
         Path file = dir.resolve("complex.json");
         export(file);
         String json = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
-        for (int n = 1; n <= 4; n++) {
+        assertTrue(json.contains("\"halls\": ["), "the halls are in the dump");
+        for (int n = MIN_SILOS; n <= MAX_SILOS; n++) {
             assertTrue(json.contains("\"siloCount\": " + n), "a plan with " + n + " silos");
         }
     }
@@ -53,18 +55,23 @@ class ComplexExportTest {
         export(Paths.get(target));
     }
 
-    /** The first seed (cell 2, 2) that rolls each silo count; four silos are rare, so the search runs wide. */
+    private static final int MIN_SILOS = 4, MAX_SILOS = 10;
+
+    /** The first seed (cell 2, 2) that rolls each silo count; ten silos are rare, so the search runs wide. */
     private static List<ComplexPlan> samples() {
-        ComplexPlan[] bySilos = new ComplexPlan[5];
-        for (long seed = 0; seed < 20000; seed++) {
+        ComplexPlan[] bySilos = new ComplexPlan[MAX_SILOS + 1];
+        int found = 0;
+        for (long seed = 0; seed < 5000 && found < MAX_SILOS - MIN_SILOS + 1; seed++) {
             ComplexPlan p = ComplexLayout.generate(seed, 2, 2);
             int n = p.silos()
                 .size();
-            if (n >= 1 && n <= 4 && bySilos[n] == null) bySilos[n] = p;
-            if (bySilos[1] != null && bySilos[2] != null && bySilos[3] != null && bySilos[4] != null) break;
+            if (n >= MIN_SILOS && n <= MAX_SILOS && bySilos[n] == null) {
+                bySilos[n] = p;
+                found++;
+            }
         }
         List<ComplexPlan> out = new ArrayList<ComplexPlan>();
-        for (int n = 1; n <= 4; n++) if (bySilos[n] != null) out.add(bySilos[n]);
+        for (int n = MIN_SILOS; n <= MAX_SILOS; n++) if (bySilos[n] != null) out.add(bySilos[n]);
         return out;
     }
 
@@ -114,7 +121,25 @@ class ComplexExportTest {
                     .append("}")
                     .append(k + 1 < rooms.size() ? ",\n" : "\n");
             }
-            sb.append("      ],\n      \"silos\": [\n");
+            sb.append("      ],\n      \"halls\": [\n");
+            for (int k = 0; k < p.tunnels()
+                .size(); k++) {
+                Tunnel t = p.tunnels()
+                    .get(k);
+                sb.append("        {\"box\": ")
+                    .append(box(t.bounds()))
+                    .append(", \"major\": ")
+                    .append(t.major())
+                    .append(", \"gallery\": ")
+                    .append(t.gallery())
+                    .append("}")
+                    .append(
+                        k + 1 < p.tunnels()
+                            .size() ? ",\n" : "\n");
+            }
+            sb.append("      ],\n      \"coverage\": ")
+                .append(r.coveredColumns() * 100 / (ComplexLayout.SIZE * ComplexLayout.SIZE))
+                .append(",\n      \"silos\": [\n");
             for (int k = 0; k < p.silos()
                 .size(); k++) {
                 SiloSlot s = p.silos()
@@ -125,7 +150,9 @@ class ComplexExportTest {
                     .append(s.missing())
                     .append("\", \"variant\": \"")
                     .append(s.variant())
-                    .append("\"}")
+                    .append("\", \"facing\": ")
+                    .append(s.facing())
+                    .append("}")
                     .append(
                         k + 1 < p.silos()
                             .size() ? ",\n" : "\n");

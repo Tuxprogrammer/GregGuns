@@ -157,19 +157,26 @@ public final class ComplexLevelScenarios {
             public Set<Type> overworldBiomes() {
                 return Collections.emptySet();
             }
-        });
+        }).withStyles(com.gregguns.icbm.complex.gen.PaletteStyles.FACTORY);
     }
 
-    /** Generates the whole complex through the populator, one window at a time. @return {rejected, violations} */
+    /**
+     * Generates the whole complex through the populator, one window at a time.
+     *
+     * @return {rejected, violations, windows that wrote, blocks written, total microseconds, most microseconds in one
+     *         window}
+     */
     static int[] generate(World world, StructurePlan plan, ComplexPlacer placer, String stateName) {
         placer.enabledIn(world);
         StructureState state = new StructureState(stateName);
         StructurePopulator populator = PlacementHarnessAccess.populator();
-        int rejected = 0;
+        int rejected = 0, busy = 0, blocks = 0;
+        long total = 0, most = 0;
         int before = PopulateGuard.violationCount();
         for (int[] w : PlacementHarnessAccess.windowsOf(plan, false)) {
             PopulateWindow window = new PopulateWindow(w[0], w[1]);
             ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
+            long t0 = System.nanoTime();
             try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
                 populator.populateComplex(
                     plan,
@@ -180,9 +187,16 @@ public final class ComplexLevelScenarios {
                     (x, z) -> Collections.singleton(Type.PLAINS),
                     state);
             }
+            long dt = (System.nanoTime() - t0) / 1000;
+            if (sink.acceptedWrites() > 0) {
+                busy++;
+                blocks += sink.acceptedWrites();
+                total += dt;
+                most = Math.max(most, dt);
+            }
             rejected += sink.rejectedWrites();
         }
-        return new int[] { rejected, PopulateGuard.violationCount() - before };
+        return new int[] { rejected, PopulateGuard.violationCount() - before, busy, blocks, (int) total, (int) most };
     }
 
     // --- the level scenario -----------------------------------------------------------------------------------
@@ -197,8 +211,9 @@ public final class ComplexLevelScenarios {
         int lightsPlaced;
         int lightMarks;
         int lightsLit;
-        /** Lowest block light on an open floor cell of the hall (15 when nothing was read). */
-        int hallMinLight = 15;
+        /** Lowest block light on an open floor cell of any section (15 when nothing was read), and where. */
+        int floorMinLight = 15;
+        String darkest = "";
         int floodMarks;
         int floodWet;
         int collapses;
@@ -256,6 +271,19 @@ public final class ComplexLevelScenarios {
                     int[] r = generate(world, plan, placer, "gregguns_complex_levels");
                     out.checkEquals(tag + ": writes dropped outside a window", 0, r[0]);
                     out.checkEquals(tag + ": PopulateGuard violations", 0, r[1]);
+                    if (r[2] > 0) {
+                        out.note(
+                            String.format(
+                                java.util.Locale.ROOT,
+                                "%s cost with contents: %d windows, %d blocks, %.1f ms mean and %.1f ms most per"
+                                    + " window, %.0f ms in all",
+                                tag,
+                                r[2],
+                                r[3],
+                                r[4] / 1000.0 / r[2],
+                                r[5] / 1000.0,
+                                r[4] / 1000.0));
+                    }
                     Tally t = read(out, tag, world, plan, placer, level, ceiling);
                     tallies.put(tag, t);
                     out.note(
@@ -323,8 +351,11 @@ public final class ComplexLevelScenarios {
                 "an abandoned complex is dark: " + ab.lightsLit + "/" + ab.lightMarks);
             out.checkEquals("operational lights lit", op.lightMarks, op.lightsLit);
             out.check(
-                op.hallMinLight >= 8,
-                "an operational hall reads block light 8 or more on every open floor cell: " + op.hallMinLight);
+                op.floorMinLight >= 8,
+                "an operational complex reads block light 8 or more on every open floor cell of every hall and room: "
+                    + op.floorMinLight
+                    + " at "
+                    + op.darkest);
             out.check(ab.floodMarks > 0 ? ab.floodWet == ab.floodMarks : true, "abandoned pump room is flooded");
             out.checkEquals("operational flooding", 0, op.floodWet);
         }
@@ -348,6 +379,7 @@ public final class ComplexLevelScenarios {
                 }
             }
             BlockHoleSpawnerCheck spawners = new BlockHoleSpawnerCheck();
+            com.gregguns.icbm.complex.gen.Styles styles = placer.stylesOf(plan);
             for (Placement p : last.values()) {
                 int x = ax + p.x(), y = floor + p.y(), z = az + p.z();
                 Block b = world.getBlock(x, y, z);
@@ -365,7 +397,7 @@ public final class ComplexLevelScenarios {
                         break;
                     case LIGHT:
                         t.lightsPlaced++;
-                        if (b != Blocks.glowstone) t.physics++;
+                        if (b != litLamp(styles, p.x(), p.y(), p.z())) t.physics++;
                         break;
                     case AIR:
                         t.holes++;
@@ -403,7 +435,7 @@ public final class ComplexLevelScenarios {
                 t.collapses++;
                 if (rubbleIn(world, ax, az, floor, c.box())) t.collapseRubble++;
             }
-            marks(t, world, cp, ax, az, floor);
+            marks(t, world, cp, styles, ax, az, floor);
             t.liveWarheadBlocks += warheadBlocksIn(world, ax, az, floor);
             out.checkEquals(tag + ": spawner blocks with the wrong tile, kind or ceiling", 0, t.badTiles);
             out.checkEquals(tag + ": chests missing or empty", 0, t.chestsEmpty);
@@ -522,14 +554,21 @@ public final class ComplexLevelScenarios {
             return false;
         }
 
+        /** The block a lit lamp of the section at a complex-local cell is: the palette's, else glowstone. */
+        private static Block litLamp(com.gregguns.icbm.complex.gen.Styles styles, int x, int y, int z) {
+            com.gregguns.worldgen.layout.ResolvedBlock r = styles.litLamp(x, y, z);
+            return r == null ? Blocks.glowstone : r.block;
+        }
+
         /** Lights and flooding are read at the layout's own marks. */
-        private static void marks(Tally t, World world, ComplexPlan cp, int ax, int az, int floor) {
+        private static void marks(Tally t, World world, ComplexPlan cp, com.gregguns.icbm.complex.gen.Styles styles,
+            int ax, int az, int floor) {
             List<Mark> all = cp.allMarks();
             for (Mark m : all) {
                 int x = ax + m.x(), y = floor + m.y(), z = az + m.z();
                 if (m.kind() == MarkKind.LIGHT) {
                     t.lightMarks++;
-                    if (world.getBlock(x, y, z) == Blocks.glowstone) t.lightsLit++;
+                    if (world.getBlock(x, y, z) == litLamp(styles, m.x(), m.y(), m.z())) t.lightsLit++;
                 } else if (m.kind() == MarkKind.FLOOD_CELL) {
                     t.floodMarks++;
                     Block b = world.getBlock(x, y - 1, z); // the pool is sunk into the floor under the mark
@@ -539,12 +578,18 @@ public final class ComplexLevelScenarios {
                     }
                 }
             }
-            com.gregguns.icbm.complex.Box hall = cp.hall()
-                .bounds();
-            for (int x = hall.minX + 1; x <= hall.maxX - 2; x++) {
-                for (int z = hall.minZ + 1; z <= hall.maxZ - 2; z++) {
-                    if (world.isAirBlock(ax + x, floor + 1, az + z)) {
-                        t.hallMinLight = Math.min(t.hallMinLight, world.getBlockLightValue(ax + x, floor + 1, az + z));
+            // Every open floor cell of every section: the lamp grid keeps it at 8 or more when lit (D217, D230).
+            for (int id = 0; id < cp.sectionCount(); id++) {
+                com.gregguns.icbm.complex.Box b = cp.sectionBox(id);
+                for (int x = b.minX + 1; x <= b.maxX - 2; x++) {
+                    for (int z = b.minZ + 1; z <= b.maxZ - 2; z++) {
+                        if (!world.isAirBlock(ax + x, floor + 1, az + z)) continue;
+                        int l = world
+                            .getSavedLightValue(net.minecraft.world.EnumSkyBlock.Block, ax + x, floor + 1, az + z);
+                        if (l < t.floorMinLight) {
+                            t.floorMinLight = l;
+                            t.darkest = "section " + id + " local " + x + "," + z;
+                        }
                     }
                 }
             }

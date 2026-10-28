@@ -445,7 +445,7 @@ public final class ComplexDimScenarios {
                         floor,
                         plan.anchorZ() + b.minZ,
                         plan.anchorX() + b.maxX,
-                        floor + ComplexLayout.HEIGHT,
+                        floor + b.sizeY(),
                         plan.anchorZ() + b.maxZ));
                 for (Object o : es) {
                     EntityItemFrame f = (EntityItemFrame) o;

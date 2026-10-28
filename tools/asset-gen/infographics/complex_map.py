@@ -29,20 +29,28 @@ import kit as K  # noqa: E402
 DUMP = K.WORK / "complex.json"
 
 # Cell bytes (Cell.java): 0 rock, 1 wall, 2 air, 3/4 rail, 5 silo concrete, 6 silo glass, 7 gantry beam, 8 pad,
-# 9 controller, 10 to 13 hatches, 14 ladder, 15 radar controller.
+# 9 controller, 10 to 13 hatches, 14 ladder, 15 radar controller, 16 floor, 17 ceiling, 18 lamp, 19 door frame,
+# 20 window, 21 to 24 furniture (table, console, bunk, shelf), 25 basin.
 CELL = {
     0: (14, 18, 24), 1: (96, 112, 132), 2: (184, 194, 206), 3: (214, 168, 92), 4: (214, 168, 92),
     5: (138, 150, 164), 6: (126, 214, 240), 7: (236, 170, 44), 8: (230, 232, 236), 9: (56, 198, 217),
     10: (255, 138, 31), 11: (255, 138, 31), 12: (255, 138, 31), 13: (255, 138, 31), 14: (150, 110, 60),
-    15: (56, 198, 217),
+    15: (56, 198, 217), 16: (120, 126, 136), 17: (120, 126, 136), 18: (255, 240, 170), 19: (150, 160, 176),
+    20: (126, 214, 240), 21: (122, 92, 64), 22: (70, 84, 104), 23: (92, 110, 84), 24: (104, 88, 70),
+    25: (60, 120, 200),
 }
+
+# Hall tints: the floor color of the hub's halls, so the network reads at a glance.
+HALLS = {"major": (206, 212, 222), "minor": (160, 168, 180), "gallery": (255, 214, 170)}
 
 # Room roles: (name, floor tint, the room kinds). The tint replaces the air color inside a room's box.
 ROLES = [
-    ("Command", (122, 168, 255), ["LAUNCH_CONTROL", "RADAR_TRACKING", "COMMS", "COMMANDER_OFFICE"]),
-    ("Weapons and stores", (255, 128, 112), ["WARHEAD_MAGAZINE", "ARMORY", "STOCKPILE", "FUEL_DEPOT"]),
-    ("Power and works", (255, 184, 72), ["GENERATOR_HALL", "AIR_HANDLING", "PUMP_ROOM", "WORKSHOP"]),
-    ("Crew", (126, 218, 140), ["BUNKS", "MESS_GALLEY", "INFIRMARY"]),
+    ("Command", (122, 168, 255), ["LAUNCH_CONTROL", "RADAR_TRACKING", "COMMS", "COMMANDER_OFFICE", "SERVER_ROOM"]),
+    ("Weapons and stores", (255, 128, 112), ["WARHEAD_MAGAZINE", "ARMORY", "STOCKPILE", "FUEL_DEPOT",
+                                             "MISSILE_ASSEMBLY"]),
+    ("Power and works", (255, 184, 72), ["GENERATOR_HALL", "AIR_HANDLING", "PUMP_ROOM", "WORKSHOP", "VEHICLE_BAY",
+                                         "WATER_TREATMENT"]),
+    ("Crew", (126, 218, 140), ["BUNKS", "MESS_GALLEY", "INFIRMARY", "CAFETERIA"]),
     ("Guard posts and airlock", (196, 150, 240), ["GUARD_POST", "DECON_AIRLOCK"]),
     ("Assembly bay (hall)", (236, 240, 246), ["ASSEMBLY_BAY"]),
 ]
@@ -55,7 +63,8 @@ NAMES = {
     "FUEL_DEPOT": "Fuel Depot", "GENERATOR_HALL": "Generator Hall", "AIR_HANDLING": "Air Handling",
     "PUMP_ROOM": "Pump Room", "WORKSHOP": "Workshop", "BUNKS": "Bunks", "STOCKPILE": "Stockpile",
     "MESS_GALLEY": "Mess Galley", "INFIRMARY": "Infirmary", "ARMORY": "Armory", "DECON_AIRLOCK": "Airlock",
-    "GUARD_POST": "Guard",
+    "GUARD_POST": "Guard", "VEHICLE_BAY": "Vehicle Bay", "SERVER_ROOM": "Server Room",
+    "MISSILE_ASSEMBLY": "Missile Assembly", "CAFETERIA": "Cafeteria", "WATER_TREATMENT": "Water Treatment",
 }
 
 MARKS = {  # kind -> (css color, shape)
@@ -85,13 +94,16 @@ def raster(d: dict, p: dict, px: int) -> Path:
         a = np.zeros((n, n), np.uint8)
         for x, col in enumerate(p["walk"]):
             a[x] = np.frombuffer(col.encode("ascii"), np.uint8) - 97
-        pal = np.zeros((16, 3), np.uint8)
+        pal = np.zeros((32, 3), np.uint8)
         for k, v in CELL.items():
             pal[k] = v
         rgb = pal[a]                      # indexed [x, z]
-        for r in p["rooms"]:
-            x0, z0, x1, z1 = r["box"]
-            tint = np.array(ROLE_OF[r["kind"]][1], float)
+        tints = [(r["box"], ROLE_OF[r["kind"]][1]) for r in p["rooms"]]
+        for h in p.get("halls", []):
+            tints.append((h["box"], HALLS["gallery" if h["gallery"] else "major" if h["major"] else "minor"]))
+        for box, rgb_ in tints:
+            x0, z0, x1, z1 = box
+            tint = np.array(rgb_, float)
             sub = a[x0:x1, z0:z1]
             mask = sub == 2
             base = rgb[x0:x1, z0:z1].astype(float)
@@ -100,7 +112,7 @@ def raster(d: dict, p: dict, px: int) -> Path:
         im = Image.fromarray(np.transpose(rgb, (1, 0, 2)), "RGB")      # image rows are z
         return im.resize((n * px, n * px), Image.NEAREST)
 
-    return K._cached("complexmap", dict(seed=p["seed"], px=px, v=1, size=n), make)
+    return K._cached("complexmap", dict(seed=p["seed"], px=px, v=2, size=n, halls=len(p.get("halls", []))), make)
 
 
 def _label(name: str, w: float, fs: float) -> list[str]:
@@ -136,8 +148,11 @@ def overlay(d: dict, p: dict, px: int, labels: bool = True, markers: bool = True
         x0, z0, x1, z1 = s["box"]
         out.append(f'<rect x="{x0 * px - 4}" y="{z0 * px - 4}" width="{(x1 - x0) * px + 8}" height="{(z1 - z0) * px + 8}" fill="none" stroke="#ff8a1f" stroke-width="3"/>')
         if labels:
-            miss = "controller" if s["missing"] == "CONTROLLER" else "Energy Hatch"
-            out.append(f'<text x="{(x0 + x1) / 2 * px:.1f}" y="{z1 * px + 24}" text-anchor="middle" font-size="{fs}" font-weight="700" fill="#ffb066" {halo}>Silo, no {miss}</text>')
+            # A gallery packs silos two cells apart: past four, the label is the short form inside the outline.
+            many = len(p["silos"]) > 4
+            miss = ("ctrl" if many else "controller") if s["missing"] == "CONTROLLER" else ("EH" if many else "Energy Hatch")
+            ty = (z0 + z1) / 2 * px + fs * .3 if many else z1 * px + 24
+            out.append(f'<text x="{(x0 + x1) / 2 * px:.1f}" y="{ty:.1f}" text-anchor="middle" font-size="{fs * (.75 if many else 1):.1f}" font-weight="700" fill="#ffb066" {halo}>{"no " if many else "Silo, no "}{miss}</text>')
     if labels:
         for r in p["rooms"]:
             x0, z0, x1, z1 = r["box"]
@@ -165,6 +180,34 @@ def overlay(d: dict, p: dict, px: int, labels: bool = True, markers: bool = True
     return "".join(out)
 
 
+def labeled(data: dict, outdir: Path, px: int = 4) -> None:
+    """The raster with the overlay's names and markers, one PNG per plan, rendered through the browser."""
+    from playwright.sync_api import sync_playwright
+
+    n = data["size"] * px
+    with sync_playwright() as pw:
+        browser = K.launch_browser(pw)
+        pg = browser.new_page(viewport={"width": n, "height": n}, device_scale_factor=1)
+        for plan in data["plans"]:
+            src = raster(data, plan, px)
+            cover = plan.get("coverage", "?")
+            doc = (f'<!doctype html><html><body style="margin:0;background:#0e1217">'
+                   f'<div id="m" style="position:relative;width:{n}px;height:{n}px">'
+                   f'<img src="{K.url(src)}" style="position:absolute;left:0;top:0;width:{n}px;height:{n}px">'
+                   f'{overlay(data, plan, px, fs=11)}'
+                   f'<div style="position:absolute;left:8px;top:6px;font:700 15px sans-serif;color:#fff;'
+                   f'text-shadow:0 0 3px #000">{plan["siloCount"]} silos, {len(plan["rooms"]) - 1} rooms, '
+                   f'{cover}% built (seed {plan["seed"]})</div></div></body></html>')
+            html = K.WORK / f"complex-map-{plan['siloCount']}.html"
+            html.write_text(doc, encoding="utf-8")
+            pg.goto(html.as_uri())
+            pg.wait_for_load_state("networkidle")
+            out = outdir / f"complex-{plan['siloCount']}-silo-labeled.png"
+            pg.locator("#m").screenshot(path=str(out))
+            print("wrote", out)
+        browser.close()
+
+
 if __name__ == "__main__":
     data = load()
     outdir = K.WORK / "complex-maps"
@@ -173,3 +216,5 @@ if __name__ == "__main__":
         src = raster(data, plan, 4)
         Image.open(src).save(outdir / f"complex-{plan['siloCount']}-silo.png")
         print("wrote", outdir / f"complex-{plan['siloCount']}-silo.png")
+    if "--labeled" in sys.argv:
+        labeled(data, outdir)

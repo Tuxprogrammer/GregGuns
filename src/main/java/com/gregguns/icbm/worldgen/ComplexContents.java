@@ -174,7 +174,7 @@ public final class ComplexContents {
                             .build());
                     break;
                 case LIGHT:
-                    if (Mix.unit(Mix.of(seed, S_LIGHT, m.x() * 4096L + m.z(), m.y())) < p.litChance()) {
+                    if (Mix.unit(lightRoll(seed, m, level)) < p.litChance()) {
                         out.add(
                             Placement.at(Kind.LIGHT, m.x(), m.y(), m.z())
                                 .build());
@@ -207,6 +207,33 @@ public final class ComplexContents {
                     break; // signs and blast doors are the layout's own
             }
         }
+    }
+
+    /**
+     * The roll that decides whether a lamp burns (D231). A lamp's key names its section and its run (a grid line of
+     * lamps, with the floor light tiles under them): an abandoned complex lights or kills whole runs, a partly
+     * abandoned one whole sections, so the dark parts read as dead circuits rather than scattered bulbs. The share lit
+     * stays the D36 rate either way.
+     *
+     * @return a hash to compare with the level's lit chance
+     */
+    static long lightRoll(long seed, Mark m, ActivityLevel level) {
+        String[] k = m.key()
+            .split(":");
+        if (k.length == 3 && "lamp".equals(k[0])) {
+            try {
+                long section = Long.parseLong(k[1]), run = Long.parseLong(k[2]);
+                if (level == ActivityLevel.PARTLY_ABANDONED) {
+                    return Mix.of(seed, S_LIGHT, section, -1);
+                }
+                if (level == ActivityLevel.ABANDONED) {
+                    return Mix.of(seed, S_LIGHT, section * 4096L + run, -2);
+                }
+            } catch (NumberFormatException e) {
+                // fall through to a roll per lamp
+            }
+        }
+        return Mix.of(seed, S_LIGHT, m.x() * 4096L + m.z(), m.y());
     }
 
     private static double rubbleMarkChance(ActivityLevel level) {

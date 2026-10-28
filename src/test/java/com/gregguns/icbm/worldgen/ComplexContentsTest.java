@@ -308,4 +308,39 @@ class ComplexContentsTest {
         }
         assertTrue(fuel, "no fuel depot in 40 plans");
     }
+
+    /**
+     * D231: lamps die by whole runs when abandoned and by whole sections when partly abandoned, at the D36 rates, and
+     * all burn when operational.
+     */
+    @Test
+    void lampsBurnOrDieByRunOrSectionAtTheD36Rates() {
+        for (ActivityLevel level : ActivityLevel.values()) {
+            long lit = 0, all = 0;
+            for (long s = 0; s < 40; s++) {
+                ComplexPlan plan = ComplexLayout.generate(s, 1, 2);
+                java.util.Set<Long> on = new java.util.HashSet<>();
+                for (Placement p : ComplexContents.build(plan, level, 4, null)) {
+                    if (p.kind() == Kind.LIGHT) on.add(((long) p.x() << 40) ^ ((long) p.y() << 20) ^ p.z());
+                }
+                java.util.Map<String, Boolean> group = new java.util.HashMap<>();
+                for (com.gregguns.icbm.complex.Mark m : plan.allMarks()) {
+                    if (m.kind() != com.gregguns.icbm.complex.MarkKind.LIGHT) continue;
+                    all++;
+                    boolean burns = on.contains(((long) m.x() << 40) ^ ((long) m.y() << 20) ^ m.z());
+                    if (burns) lit++;
+                    String[] k = m.key()
+                        .split(":");
+                    String g = level == ActivityLevel.PARTLY_ABANDONED ? k[1] : k[1] + ":" + k[2];
+                    Boolean before = group.put(g, burns);
+                    if (level != ActivityLevel.OPERATIONAL && before != null) {
+                        assertEquals(before, burns, level + ": a whole " + g + " burns or dies together");
+                    }
+                }
+            }
+            double share = (double) lit / all, want = ActivityProfile.of(level)
+                .litChance();
+            assertEquals(want, share, level == ActivityLevel.OPERATIONAL ? 0 : 0.12, level + " lit share " + share);
+        }
+    }
 }

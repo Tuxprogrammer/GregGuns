@@ -36,7 +36,8 @@ class ComplexSignsTest {
                     assertEquals(Cell.AIR, raster.at(at[0], at[1], at[2]), "sign cell of " + m);
                     int bx = at[0] + (at[3] == 5 ? -1 : at[3] == 4 ? 1 : 0);
                     int bz = at[2] + (at[3] == 3 ? -1 : at[3] == 2 ? 1 : 0);
-                    assertEquals(Cell.WALL, raster.at(bx, at[1], bz), "wall behind the sign of " + m);
+                    byte behind = raster.at(bx, at[1], bz);
+                    assertTrue(behind == Cell.WALL || behind == Cell.DOOR_FRAME, "wall behind the sign of " + m);
                 }
             }
         }

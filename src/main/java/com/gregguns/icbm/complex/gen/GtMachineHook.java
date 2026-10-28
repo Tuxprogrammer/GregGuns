@@ -15,9 +15,8 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.threads.RunnableMachineUpdate;
 
 /**
- * Places the silo's GT machines: the Missile Silo controller and the hatches around it, facing north (the silo's
- * front),
- * the same way {@code DevStructureBuilder} builds a silo.
+ * Places the silo's GT machines: the Missile Silo controller and the hatches around it, facing the silo's front (toward
+ * its gallery), the same way {@code DevStructureBuilder} builds a silo.
  */
 // Source: DevStructureBuilder.place (this repo) for the GT calls; GT5-Unofficial 5.09.54.205 BaseMetaTileEntity API.
 public final class GtMachineHook implements MachineHook {
@@ -27,10 +26,19 @@ public final class GtMachineHook implements MachineHook {
 
     @Override
     public void place(World world, byte cell, int x, int y, int z) {
+        place(world, cell, x, y, z, 0);
+    }
+
+    @Override
+    public void place(World world, byte cell, int x, int y, int z, int facing) {
         int id = idOf(cell);
         if (id < 0) return;
-        placeMte(world, id, x, y, z);
+        placeMte(world, id, x, y, z, FACINGS[facing & 3]);
     }
+
+    /** Our facing index (0 north, 1 east, 2 south, 3 west) as a Forge direction. */
+    private static final ForgeDirection[] FACINGS = { ForgeDirection.NORTH, ForgeDirection.EAST, ForgeDirection.SOUTH,
+        ForgeDirection.WEST };
 
     /**
      * Sets a GT machine block with the meta tile entity {@code id} at the position, facing north (a silo's front).
@@ -42,6 +50,15 @@ public final class GtMachineHook implements MachineHook {
      * @param z     Z
      */
     public static void placeMte(World world, int id, int x, int y, int z) {
+        placeMte(world, id, x, y, z, ForgeDirection.NORTH);
+    }
+
+    /**
+     * As {@link #placeMte(World, int, int, int, int)}, facing {@code front}.
+     *
+     * @param front the way the machine's front faces
+     */
+    public static void placeMte(World world, int id, int x, int y, int z, ForgeDirection front) {
         String cell = x + "," + y + "," + z;
         IMetaTileEntity proto = GregTechAPI.METATILEENTITIES[id];
         if (proto == null) {
@@ -56,7 +73,7 @@ public final class GtMachineHook implements MachineHook {
         }
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
-        base.setFrontFacing(ForgeDirection.NORTH);
+        base.setFrontFacing(front);
     }
 
     @Override
