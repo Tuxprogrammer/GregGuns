@@ -44,9 +44,9 @@ Two facts from the pack shaped the decisions:
 ### How it is built
 12. **Autonomous build, with owner input only at the gates.** The owner's decision time is this planning pass. From I0 on, the orchestrator decides open questions itself and records each decision in DECISIONS.md, marked as an orchestrator decision. The owner reviews once at the alpha gate, then plays and gives feedback from the beta gate, as for GregGuns. The aim is maximum working functionality before a human plays it.
 13. **Agents:**
-    - one or two **Sonnet** coding agents at a time, in their own worktrees;
-    - one **Opus** reviewer agent, run **once per milestone**, which checks the milestone's changes against the plan and returns a single fix list;
-    - no per-feature review and no Opus coding agents.
+    - coding agents in their own worktrees, with the team size and each agent's model chosen to fit the work;
+    - a **review team** at each milestone's end, split by area, which checks the milestone's changes against the plan and returns fix lists;
+    - no per-feature review.
 14. **Per-branch gate, automated only:** spotless, build and unit tests, the full headless scenario suite in a fresh worktree, and the ported-code gate. The orchestrator merges on green. Client checks run once per milestone, batched.
 15. **Ported code passes a style gate before it merges.** It is adapted, not copied: GregGuns structure and naming, Javadoc and comments, unit tests, and every known `ICBM-xx-nn` bug in it fixed (D2). An automated test enforces the checkable part (see [CONTRIBUTING § Ported code](../../CONTRIBUTING.md#ported-code-mit)). The milestone reviewer checks the rest.
 
