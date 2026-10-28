@@ -259,10 +259,18 @@ public final class ComplexDimScenarios {
             for (SiloSlot s : cp.silos()) {
                 int ox = plan.anchorX() + s.bounds().minX, oz = plan.anchorZ() + s.bounds().minZ;
                 int ry = top(w, ox, oz);
-                int ny = top(w, ox - 3, oz + 2);
+                int near = 99;
+                for (int[] d : new int[][] { { -1, 2 }, { 5, 2 }, { 2, -1 }, { 2, 5 } }) {
+                    near = Math.min(near, Math.abs(top(w, ox + d[0], oz + d[1]) - ry));
+                }
                 out.check(
-                    ry >= 0 && Math.abs(ry - ny) <= 3,
-                    label + ": shaft ring meets the terrain (" + ry + " vs " + ny + ")");
+                    w.getBlock(ox, ry, oz) == gregtech.api.GregTechAPI.sBlockConcretes && !w.getBlock(ox, ry + 1, oz)
+                        .getMaterial()
+                        .blocksMovement(),
+                    label + ": the shaft ring's top is concrete with open air above it");
+                out.check(
+                    near <= 3,
+                    label + ": shaft ring meets the terrain (nearest outside column differs by " + near + ")");
                 if (s.variant() == SurfaceVariant.OPEN) {
                     out.check(
                         w.canBlockSeeTheSky(ox + 2, floor + 14, oz + 2),
@@ -366,6 +374,18 @@ public final class ComplexDimScenarios {
                     }
                 }
             }
+            int anyFrames = 0;
+            String first = "";
+            for (Object o : new ArrayList<Object>(w.loadedEntityList)) {
+                if (o instanceof EntityItemFrame) {
+                    anyFrames++;
+                    if (first.isEmpty()) first = ((EntityItemFrame) o).posX + ","
+                        + ((EntityItemFrame) o).posY
+                        + ","
+                        + ((EntityItemFrame) o).posZ;
+                }
+            }
+            out.note(label + ": item frames in the world " + anyFrames + ", first " + first + "; floor y " + floor);
             out.check(frames >= expected * 8 / 10, label + ": armory frames " + frames + " of " + expected);
             out.checkEquals(label + ": frames without a gun or a wall", 0, bad);
             GregGuns.LOG.info("{} {}: {} frames, {} deep posts", name, label, frames, deepFound);
