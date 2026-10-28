@@ -213,4 +213,127 @@ class ComplexLayoutTest {
             assertEquals(Cell.WALL, raster.at(p.escapeX() + dx, 3, p.escapeZ() + dz), "ladder meta " + meta);
         }
     }
+
+    /** The room-local frame agrees with the rasterized door, whichever wing and side the room is on. */
+    @Test
+    void roomsAreFurnishedRelativeToTheirDoor() {
+        int checked = 0, stock = 0;
+        for (long seed = 0; seed < 300; seed++) {
+            ComplexPlan p = ComplexLayout.generate(seed, (int) seed, 5);
+            ComplexRaster raster = new ComplexRaster(p);
+            for (Room r : p.rooms()) {
+                ComplexLayout.Frame f = new ComplexLayout.Frame(r);
+                int D = f.depth, L = f.lateral;
+                // The frame's doorway is open air in the raster, in the wall itself and just inside it.
+                int dx = f.alongZ ? (f.doorHigh ? f.b.maxX - 1 : f.b.minX) : f.x(f.doorLo, 0);
+                int dz = f.alongZ ? f.z(f.doorLo, 0) : (f.doorHigh ? f.b.maxZ - 1 : f.b.minZ);
+                assertEquals(Cell.AIR, raster.at(dx, 2, dz), r.kind() + " doorway, seed " + seed);
+                // Flood fill over floor-level cells, blocked by every furnishing, from just inside the door.
+                java.util.Set<Long> blocked = new java.util.HashSet<Long>();
+                for (Mark m : r.marks()) {
+                    if (m.y() != 1 || m.kind() == MarkKind.LIGHT
+                        || m.kind() == MarkKind.RUBBLE
+                        || m.kind() == MarkKind.FLOOD_CELL
+                        || m.kind() == MarkKind.ITEM_FRAME_WALL) continue;
+                    blocked.add(key(m.x(), m.z()));
+                    if (m.kind() == MarkKind.MACHINE && m.key()
+                        .equals(MachineRole.NASA_WORKBENCH.name())) {
+                        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+                            assertEquals(Cell.AIR, raster.at(m.x() + ox, 1, m.z() + oz), "NASA 3x3 clear");
+                            assertEquals(Cell.AIR, raster.at(m.x() + 2 * ox, 1, m.z() + 2 * oz), "free row around");
+                            blocked.add(key(m.x() + ox, m.z() + oz));
+                        }
+                    }
+                }
+                java.util.Set<Long> seen = new java.util.HashSet<Long>();
+                java.util.ArrayDeque<int[]> q = new java.util.ArrayDeque<int[]>();
+                for (int a = f.doorLo; a <= f.doorHi; a++) {
+                    q.add(new int[] { f.x(a, D - 1), f.z(a, D - 1) });
+                    seen.add(key(f.x(a, D - 1), f.z(a, D - 1)));
+                }
+                while (!q.isEmpty()) {
+                    int[] c = q.poll();
+                    int[][] nb = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+                    for (int[] n : nb) {
+                        int x = c[0] + n[0], z = c[1] + n[1];
+                        if (raster.at(x, 1, z) != Cell.AIR || !r.bounds()
+                            .contains(x, 1, z)) continue;
+                        if (blocked.contains(key(x, z)) || !seen.add(key(x, z))) continue;
+                        q.add(new int[] { x, z });
+                    }
+                }
+                for (Mark m : r.marks()) {
+                    if (m.kind() != MarkKind.LOOT_CHEST && m.kind() != MarkKind.MACHINE && m.kind() != MarkKind.SPAWNER)
+                        continue;
+                    checked++;
+                    int a = -1, d = -1;
+                    for (int ia = 0; ia < L; ia++) for (int id = 0; id < D; id++) {
+                        if (f.x(ia, id) == m.x() && f.z(ia, id) == m.z()) {
+                            a = ia;
+                            d = id;
+                        }
+                    }
+                    String what = "seed " + seed + " " + r.kind() + " " + m;
+                    assertTrue(d >= 0, "inside the room, not on a wall: " + what);
+                    assertEquals(Cell.AIR, raster.at(m.x(), 1, m.z()), what);
+                    assertFalse(f.blocksDoor(a, d), "doorway stays clear: " + what);
+                    if (m.kind() == MarkKind.LOOT_CHEST && r.kind() == RoomKind.STOCKPILE) {
+                        assertEquals(0, d, "stockpile chests stand on the far wall: " + what);
+                        stock++;
+                    }
+                    boolean reach = false;
+                    if (m.kind() == MarkKind.MACHINE && m.key()
+                        .equals(MachineRole.NASA_WORKBENCH.name())) {
+                        // Its own 3x3 is blocked; the ring of free cells around it must be walkable.
+                        for (int[] n : new int[][] { { 2, 0 }, { -2, 0 }, { 0, 2 }, { 0, -2 } })
+                            reach |= seen.contains(key(m.x() + n[0], m.z() + n[1]));
+                        assertTrue(reach, "reachable: " + what);
+                        continue;
+                    }
+                    int[][] nb = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+                    for (int[] n : nb) reach |= seen.contains(key(m.x() + n[0], m.z() + n[1]));
+                    assertTrue(reach, "reachable: " + what);
+                }
+                for (Mark m : r.marks()) {
+                    if (m.kind() == MarkKind.SIGN) {
+                        int onWall = f.alongZ ? m.x() : m.z();
+                        assertEquals(
+                            f.alongZ ? (f.doorHigh ? f.b.maxX - 1 : f.b.minX) : (f.doorHigh ? f.b.maxZ - 1 : f.b.minZ),
+                            onWall,
+                            "sign hangs on the door wall");
+                        assertEquals(f.doorWallFacing(), m.facing());
+                    }
+                    if (m.kind() == MarkKind.DAMAGE_CELL && m.key()
+                        .equals("wall")) {
+                        Box b = r.bounds();
+                        assertTrue(
+                            m.x() == b.minX || m.x() == b.maxX - 1 || m.z() == b.minZ || m.z() == b.maxZ - 1,
+                            "wall damage sits in a wall: " + m);
+                    }
+                }
+            }
+        }
+        assertTrue(checked > 2000 && stock > 30, checked + " / " + stock);
+    }
+
+    /** The hall keeps its doorways clear too. */
+    @Test
+    void hallFurnishingLeavesEveryDoorwayClear() {
+        for (long seed = 0; seed < 50; seed++) {
+            ComplexPlan p = ComplexLayout.generate(seed, 1, 1);
+            for (Mark m : p.hall()
+                .marks()) {
+                if (m.kind() != MarkKind.LOOT_CHEST && m.kind() != MarkKind.MACHINE && m.kind() != MarkKind.SPAWNER)
+                    continue;
+                boolean northSouth = m.x() >= 117 && m.x() <= 124 && (m.z() <= 108 || m.z() >= 131);
+                boolean eastWest = m.z() >= 117 && m.z() <= 124 && (m.x() <= 104 || m.x() >= 135);
+                boolean stub = m.x() >= 135 && m.z() <= 110;
+                assertFalse(northSouth || eastWest || stub, "blocks a hall doorway: " + m);
+            }
+        }
+    }
+
+    private static long key(int x, int z) {
+        return ((long) x << 32) ^ (z & 0xffffffffL);
+    }
 }

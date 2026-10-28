@@ -133,9 +133,25 @@ public final class ComplexLayout {
         List<int[]> radars = new ArrayList<int[]>();
         int radarCount = rnd.nextInt(3);
         for (int i = 0; i < radarCount; i++) {
-            radars.add(new int[] { 24 + rnd.nextInt(72), 150 + rnd.nextInt(66) });
+            // Stations stand at least RADAR_SPACING apart on one axis, so two huts never share cells.
+            int[] at;
+            int tries = 0;
+            do {
+                at = new int[] { 24 + rnd.nextInt(72), 150 + rnd.nextInt(66) };
+            } while (tries++ < 16 && tooClose(radars, at));
+            if (tooClose(radars, at)) continue;
+            radars.add(at);
         }
         return new ComplexPlan(seed, cellX, cellZ, hall, rooms, tunnels, silos, esc[0], esc[1], ladderMeta(ew), radars);
+    }
+
+    private static final int RADAR_SPACING = 12;
+
+    private static boolean tooClose(List<int[]> radars, int[] at) {
+        for (int[] o : radars) {
+            if (Math.abs(o[0] - at[0]) < RADAR_SPACING && Math.abs(o[1] - at[1]) < RADAR_SPACING) return true;
+        }
+        return false;
     }
 
     /** The room box of a slot: {@code side} 0 is the low-coordinate side of the corridor, 1 the high side. */
@@ -287,6 +303,122 @@ public final class ComplexLayout {
         }
     }
 
+    /**
+     * A room's own frame, so furnishing never depends on which wing or side the room sits on (item 0 of the I6 fix
+     * round). {@code a} runs along the door wall ("lateral", the wing's direction, the long side); {@code d} is the
+     * depth from the back wall: row 0 lies against the wall opposite the door, row {@code D - 1} is the row just
+     * inside the door wall. The door itself is the one {@link ComplexRaster} cuts.
+     */
+    static final class Frame {
+
+        final Box b;
+        final boolean alongZ;
+        /** True when the door is in the high-coordinate wall (+X for N and S wings, +Z for E and W). */
+        final boolean doorHigh;
+        /** Interior cell counts: along the door wall, and from the back wall to the door wall. */
+        final int lateral, depth;
+        /** First and last lateral index of the doorway. */
+        final int doorLo, doorHi;
+
+        Frame(Room r) {
+            b = r.bounds();
+            alongZ = r.wing() == N || r.wing() == S;
+            doorHigh = alongZ ? b.maxX <= CORRIDOR_LO : b.maxZ <= CORRIDOR_LO;
+            lateral = (alongZ ? b.sizeZ() : b.sizeX()) - 2;
+            depth = (alongZ ? b.sizeX() : b.sizeZ()) - 2;
+            int c = (alongZ ? b.centerZ() : b.centerX()) - (alongZ ? b.minZ : b.minX) - 1;
+            doorLo = c - 1;
+            doorHi = c;
+        }
+
+        int x(int a, int d) {
+            if (!alongZ) return b.minX + 1 + a;
+            return doorHigh ? b.minX + 1 + d : b.maxX - 2 - d;
+        }
+
+        int z(int a, int d) {
+            if (alongZ) return b.minZ + 1 + a;
+            return doorHigh ? b.minZ + 1 + d : b.maxZ - 2 - d;
+        }
+
+        /** True for the two interior cells straight inside the doorway, which stay clear. */
+        boolean blocksDoor(int a, int d) {
+            return d >= depth - 1 && a >= doorLo - 1 && a <= doorHi + 1;
+        }
+
+        /** Hanging direction (0 south, 1 west, 2 north, 3 east) of something on the door wall, facing into the room. */
+        int doorWallFacing() {
+            return alongZ ? (doorHigh ? 1 : 3) : (doorHigh ? 2 : 0);
+        }
+    }
+
+    private static void put(Room r, Frame f, MarkKind kind, int a, int d, String key) {
+        if (f.blocksDoor(a, d)) {
+            throw new IllegalStateException(
+                r.kind() + " mark would block the doorway at lateral " + a + ", depth " + d);
+        }
+        r.add(kind, f.x(a, d), 1, f.z(a, d), key);
+    }
+
+    /** The sign by the door: on the door wall beside the doorway, facing into the room. */
+    private static void doorSign(Room r, Frame f) {
+        int a = f.doorHi + 2 <= f.lateral - 1 ? f.doorHi + 2 : f.doorHi + 1;
+        // The door wall's own row: one step further than depth - 1.
+        int x = f.alongZ ? (f.doorHigh ? f.b.maxX - 1 : f.b.minX) : f.x(a, 0);
+        int z = f.alongZ ? f.z(a, 0) : (f.doorHigh ? f.b.maxZ - 1 : f.b.minZ);
+        r.add(
+            MarkKind.SIGN,
+            x,
+            3,
+            z,
+            "icbm.complex.sign." + r.kind()
+                .name()
+                .toLowerCase(java.util.Locale.ROOT),
+            f.doorWallFacing(),
+            1);
+    }
+
+    /** A "wall" damage cell on the room's perimeter shell, clear of every doorway. */
+    private static void wallDamage(Room r, Random rnd) {
+        Box b = r.bounds();
+        for (int tries = 0; tries < 8; tries++) {
+            int y = 1 + rnd.nextInt(HEIGHT - 2);
+            boolean onX = rnd.nextBoolean();
+            int x, z;
+            if (onX) {
+                x = rnd.nextBoolean() ? b.minX : b.maxX - 1;
+                z = b.minZ + 1 + rnd.nextInt(b.sizeZ() - 2);
+            } else {
+                z = rnd.nextBoolean() ? b.minZ : b.maxZ - 1;
+                x = b.minX + 1 + rnd.nextInt(b.sizeX() - 2);
+            }
+            if (y <= 3 && nearDoor(r, x, z)) continue;
+            r.add(MarkKind.DAMAGE_CELL, x, y, z, "wall");
+            return;
+        }
+        // Every try hit a doorway: a hole high in the wall is always clear.
+        r.add(MarkKind.DAMAGE_CELL, b.minX, HEIGHT - 2, b.minZ + 1, "wall");
+    }
+
+    /** True when a shell cell is within a cell of a doorway (the hall has several; rooms have one). */
+    private static boolean nearDoor(Room r, int x, int z) {
+        if (r.wing() >= 0) {
+            Frame f = new Frame(r);
+            boolean onDoorWall = f.alongZ ? x == (f.doorHigh ? f.b.maxX - 1 : f.b.minX)
+                : z == (f.doorHigh ? f.b.maxZ - 1 : f.b.minZ);
+            if (!onDoorWall) return false;
+            int a = f.alongZ ? z - f.b.minZ - 1 : x - f.b.minX - 1;
+            return a >= f.doorLo - 1 && a <= f.doorHi + 1;
+        }
+        // The hall: wing doors at the middle of each side, the silo stub on the east wall's north end.
+        Box b = r.bounds();
+        boolean northSouth = z == b.minZ || z == b.maxZ - 1;
+        boolean eastWest = x == b.minX || x == b.maxX - 1;
+        if (northSouth && x >= CORRIDOR_LO - 1 && x <= CORRIDOR_HI + 1) return true;
+        if (eastWest && z >= CORRIDOR_LO - 1 && z <= CORRIDOR_HI + 1) return true;
+        return x == b.maxX - 1 && z <= 111;
+    }
+
     /** Puts the marks of a room by kind. Interior cells only (one block in from the bounds). */
     private static void fillMarks(Room r, Random rnd) {
         Box b = r.bounds();
@@ -298,105 +430,117 @@ public final class ComplexLayout {
         r.add(MarkKind.LIGHT, ix0, HEIGHT - 2, iz1, "room");
         r.add(MarkKind.LIGHT, ix1, HEIGHT - 2, iz1, "room");
         r.add(MarkKind.LIGHT, cx, HEIGHT - 2, cz, "room");
-        r.add(
-            MarkKind.SIGN,
-            cx,
-            3,
-            b.minZ,
-            "icbm.complex.sign." + r.kind()
-                .name()
-                .toLowerCase(java.util.Locale.ROOT));
         // Damage cells scale with the area.
         int area = b.sizeX() * b.sizeZ();
         for (int i = 0, n = Math.max(3, area / 14); i < n; i++) {
-            int x = b.minX + rnd.nextInt(b.sizeX()), z = b.minZ + rnd.nextInt(b.sizeZ());
             int pick = rnd.nextInt(3);
-            r.add(
-                MarkKind.DAMAGE_CELL,
-                x,
-                pick == 0 ? 0 : pick == 1 ? HEIGHT - 1 : 1 + rnd.nextInt(HEIGHT - 2),
-                z,
-                pick == 0 ? "floor" : pick == 1 ? "roof" : "wall");
+            if (pick == 2) {
+                wallDamage(r, rnd);
+                continue;
+            }
+            int x = b.minX + rnd.nextInt(b.sizeX()), z = b.minZ + rnd.nextInt(b.sizeZ());
+            r.add(MarkKind.DAMAGE_CELL, x, pick == 0 ? 0 : HEIGHT - 1, z, pick == 0 ? "floor" : "roof");
         }
+        if (r.wing() < 0) {
+            fillHall(r);
+            return;
+        }
+        Frame f = new Frame(r);
+        doorSign(r, f);
+        int L = f.lateral, D = f.depth, ma = L / 2, md = D / 2, last = L - 1;
         switch (r.kind()) {
-            case ASSEMBLY_BAY:
-                for (int i = 0; i < 4; i++) r.add(MarkKind.LOOT_CHEST, ix0 + 2 + i * 8, 1, iz0, LootKeys.SALVAGE);
-                r.add(MarkKind.MACHINE, cx, 1, cz, MachineRole.WORKBENCH.name());
-                r.add(MarkKind.SPAWNER, ix0 + 2, 1, iz1 - 2, "room");
-                r.add(MarkKind.SPAWNER, ix1 - 2, 1, iz1 - 2, "room");
-                break;
             case LAUNCH_CONTROL:
-                r.add(MarkKind.MACHINE, cx, 1, cz, MachineRole.LAUNCH_CONTROL.name());
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.CONTROL);
-                r.add(MarkKind.SPAWNER, ix1, 1, iz1, "room");
+                put(r, f, MarkKind.MACHINE, ma, md, MachineRole.LAUNCH_CONTROL.name());
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.CONTROL);
+                put(r, f, MarkKind.SPAWNER, last, 0, "room");
                 break;
             case RADAR_TRACKING:
-                r.add(MarkKind.MACHINE, cx, 1, cz, MachineRole.RADAR.name());
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.CONTROL);
+                put(r, f, MarkKind.MACHINE, ma, md, MachineRole.RADAR.name());
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.CONTROL);
                 break;
             case COMMS:
-                r.add(MarkKind.MACHINE, cx, 1, cz, MachineRole.COMMS.name());
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.COMMS);
+                put(r, f, MarkKind.MACHINE, ma, md, MachineRole.COMMS.name());
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.COMMS);
                 break;
             case COMMANDER_OFFICE:
-                r.add(MarkKind.LOOT_CHEST, ix1, 1, iz1, LootKeys.SAFE);
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.STOCKPILE);
+                put(r, f, MarkKind.LOOT_CHEST, last, 0, LootKeys.SAFE);
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.STOCKPILE);
                 break;
             case WARHEAD_MAGAZINE:
                 for (int i = 0; i < 4; i++)
-                    r.add(MarkKind.MACHINE, ix0 + 1 + i * 3, 1, cz, MachineRole.MAGAZINE_CASING.name());
-                r.add(MarkKind.RUBBLE, cx, 1, iz0, "fallout");
-                r.add(MarkKind.RUBBLE, cx + 2, 1, iz1, "fallout");
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.MAGAZINE);
-                r.add(MarkKind.SPAWNER, ix1, 1, iz1, "room");
+                    put(r, f, MarkKind.MACHINE, 1 + i * 3, md, MachineRole.MAGAZINE_CASING.name());
+                put(r, f, MarkKind.RUBBLE, ma - 3, D - 2, "fallout");
+                put(r, f, MarkKind.RUBBLE, ma + 2, 0, "fallout");
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.MAGAZINE);
+                put(r, f, MarkKind.SPAWNER, last, 0, "room");
                 break;
             case FUEL_DEPOT:
-                r.add(MarkKind.MACHINE, ix0 + 1, 1, cz, MachineRole.FUEL_TANK.name());
-                r.add(MarkKind.MACHINE, ix1 - 1, 1, cz, MachineRole.FUEL_TANK.name());
-                r.add(MarkKind.LOOT_CHEST, cx, 1, iz1, LootKeys.FUEL);
+                put(r, f, MarkKind.MACHINE, 1, md, MachineRole.FUEL_TANK.name());
+                put(r, f, MarkKind.MACHINE, last - 1, md, MachineRole.FUEL_TANK.name());
+                put(r, f, MarkKind.LOOT_CHEST, ma, 0, LootKeys.FUEL);
                 break;
             case GENERATOR_HALL:
-                for (int i = 0; i < 3; i++)
-                    r.add(MarkKind.MACHINE, ix0 + 2 + i * 4, 1, cz, MachineRole.GENERATOR.name());
-                r.add(MarkKind.MACHINE, ix1, 1, iz0, MachineRole.BATTERY_BUFFER.name());
-                r.add(MarkKind.SPAWNER, ix0, 1, iz1, "room");
+                for (int i = 0; i < 3; i++) put(r, f, MarkKind.MACHINE, 2 + i * 4, md, MachineRole.GENERATOR.name());
+                put(r, f, MarkKind.MACHINE, last, 0, MachineRole.BATTERY_BUFFER.name());
+                put(r, f, MarkKind.SPAWNER, 0, 0, "room");
                 break;
             case AIR_HANDLING:
-                r.add(MarkKind.MACHINE, cx, 1, cz, MachineRole.AIR_HANDLER.name());
+                put(r, f, MarkKind.MACHINE, ma, md, MachineRole.AIR_HANDLER.name());
                 break;
             case PUMP_ROOM:
-                r.add(MarkKind.MACHINE, cx, 1, cz, MachineRole.PUMP.name());
-                for (int x = ix0; x <= ix1; x += 2) r.add(MarkKind.FLOOD_CELL, x, 1, cz + 1, "flood");
+                put(r, f, MarkKind.MACHINE, ma, md, MachineRole.PUMP.name());
+                for (int a = 0; a <= last; a += 2) put(r, f, MarkKind.FLOOD_CELL, a, md + 1, "flood");
                 break;
             case WORKSHOP:
-                r.add(MarkKind.MACHINE, cx, 1, cz, MachineRole.WORKBENCH.name());
-                r.add(MarkKind.MACHINE, ix0, 1, iz0, MachineRole.NASA_WORKBENCH.name());
-                r.add(MarkKind.LOOT_CHEST, ix1, 1, iz1, LootKeys.WORKSHOP);
+                put(r, f, MarkKind.MACHINE, ma, md, MachineRole.WORKBENCH.name());
+                // The NASA Workbench is 3x3: its mark is the center, with the cells around it free and a free row
+                // between it and the back and side walls.
+                put(r, f, MarkKind.MACHINE, 2, 2, MachineRole.NASA_WORKBENCH.name());
+                put(r, f, MarkKind.LOOT_CHEST, last, 0, LootKeys.WORKSHOP);
                 break;
             case BUNKS:
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.BUNKS);
-                r.add(MarkKind.LOOT_CHEST, ix1, 1, iz1, LootKeys.BUNKS);
-                r.add(MarkKind.SPAWNER, cx, 1, cz, "room");
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.BUNKS);
+                put(r, f, MarkKind.LOOT_CHEST, last, 0, LootKeys.BUNKS);
+                put(r, f, MarkKind.SPAWNER, ma, md, "room");
                 break;
             case STOCKPILE:
-                for (int i = 0; i < 3; i++) r.add(MarkKind.LOOT_CHEST, ix0 + 1 + i * 4, 1, iz1, LootKeys.STOCKPILE);
+                for (int i = 0; i < 3; i++) put(r, f, MarkKind.LOOT_CHEST, 1 + i * 4, 0, LootKeys.STOCKPILE);
                 break;
             case MESS_GALLEY:
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.GALLEY);
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.GALLEY);
                 break;
             case INFIRMARY:
-                r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.MEDICAL);
+                put(r, f, MarkKind.LOOT_CHEST, 0, 0, LootKeys.MEDICAL);
                 break;
             case ARMORY:
                 addFrameWall(r, ix0, ix1, iz0, iz1);
-                r.add(MarkKind.LOOT_CHEST, cx, 1, iz1, LootKeys.ARMORY);
-                r.add(MarkKind.SPAWNER, ix1, 1, iz1, "room");
+                put(r, f, MarkKind.LOOT_CHEST, ma, 0, LootKeys.ARMORY);
+                put(r, f, MarkKind.SPAWNER, last, 0, "room");
                 break;
             case GUARD_POST:
-                r.add(MarkKind.SPAWNER, cx, 1, cz, "post");
+                put(r, f, MarkKind.SPAWNER, ma, md, "post");
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * The assembly bay (the hall): four wing doors at the middle of its sides and the silo stub at the north end of
+     * its east wall. Chests line the north wall to either side of the north doorway; the cells inside every doorway
+     * stay clear.
+     */
+    private static void fillHall(Room r) {
+        Box b = r.bounds();
+        int ix0 = b.minX + 1, ix1 = b.maxX - 2, iz0 = b.minZ + 1, iz1 = b.maxZ - 2;
+        // The sign hangs on the north wall beside the north doorway, facing south into the hall.
+        r.add(MarkKind.SIGN, CORRIDOR_HI + 4, 3, b.minZ, "icbm.complex.sign.assembly_bay", 0, 1);
+        r.add(MarkKind.LOOT_CHEST, ix0 + 2, 1, iz0, LootKeys.SALVAGE);
+        r.add(MarkKind.LOOT_CHEST, ix0 + 6, 1, iz0, LootKeys.SALVAGE);
+        r.add(MarkKind.LOOT_CHEST, ix1 - 6, 1, iz0, LootKeys.SALVAGE);
+        r.add(MarkKind.LOOT_CHEST, ix1 - 2, 1, iz0, LootKeys.SALVAGE);
+        r.add(MarkKind.MACHINE, b.centerX(), 1, b.centerZ(), MachineRole.WORKBENCH.name());
+        r.add(MarkKind.SPAWNER, ix0 + 2, 1, iz1 - 2, "room");
+        r.add(MarkKind.SPAWNER, ix1 - 2, 1, iz1 - 2, "room");
     }
 }

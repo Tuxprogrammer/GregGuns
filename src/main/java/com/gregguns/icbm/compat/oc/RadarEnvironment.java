@@ -11,7 +11,7 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
 /**
- * The {@code gg_radar} component for the single-block radars and the tower. Callbacks are indirect (server thread,
+ * The {@code gg_radar} component for the small radars and the tower. Callbacks are indirect (server thread,
  * GGI-01-03). {@code radar_contact}, {@code radar_incoming} and {@code radar_lost} carry the contact id after the
  * component address (OpenComputers adds the address) and go out on changes only (GGI-01-05). Server side.
  */

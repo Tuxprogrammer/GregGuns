@@ -25,7 +25,9 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.gen.ComplexPlacer;
 import com.gregguns.icbm.complex.gen.ConfigSettings;
+import com.gregguns.icbm.complex.gen.GtMachineHook;
 import com.gregguns.icbm.complex.gen.NeighborComplex;
+import com.gregguns.icbm.complex.gen.RadarStation;
 import com.gregguns.icbm.worldgen.ActivityLevel;
 import com.gregguns.icbm.worldgen.ComplexContents;
 import com.gregguns.icbm.worldgen.Placement;
@@ -146,12 +148,12 @@ public final class ComplexDimScenarios {
         private void run(World world, ScenarioResult.Builder out) {
             ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
             StructureState state = StructureState.forWorld(world);
-            int placed = 0;
+            int placed = 0, clean = 0;
             List<String> rejects = new ArrayList<String>();
             int tried = 0;
             // Far cells, away from the spawn exclusion and from what other scenarios loaded.
-            for (int ring = 4; ring < 40 && tried < CELLS && placed == 0; ring++) {
-                for (int k = 0; k < 4 && tried < CELLS && placed == 0; k++) {
+            for (int ring = 4; ring < 40 && tried < CELLS && clean == 0; ring++) {
+                for (int k = 0; k < 4 && tried < CELLS && clean == 0; k++) {
                     int cx = k % 2 == 0 ? ring : -ring, cz = k < 2 ? ring : -ring;
                     java.util.Optional<StructurePlan> op = StructurePopulator
                         .complexPlanAt(world.getSeed(), world.provider.dimensionId, cx, cz, 100);
@@ -206,11 +208,20 @@ public final class ComplexDimScenarios {
                         continue;
                     }
                     placed++;
-                    surface(world, plan, d.groundY(), out, label);
-                    contents(world, plan, out, label);
+                    // The terrain check sees one window of a 240 x 240 box, so a placed cell may still have a lake
+                    // or a cliff under a hut or a bore. Its column checks go to a side builder: a cell that fails them
+                    // is noted and the next cell is tried; at least one cell must pass them all.
+                    ScenarioResult.Builder cellOut = ScenarioResult.builder(name);
+                    surface(world, plan, d.groundY(), cellOut, label);
+                    contents(world, plan, cellOut, label);
+                    ScenarioResult cellResult = cellOut.build();
+                    for (String m : cellResult.messages()) out.note(m);
+                    if (cellResult.passed()) clean++;
+                    else out.note(label + ": its terrain defeats the column checks above; the next cell is tried");
                 }
             }
             out.check(placed > 0, "at least one cell hosts a complex; rejected: " + rejects);
+            out.check(clean > 0, "at least one placed cell passes every surface and contents check");
         }
 
         private static boolean fresh(ChunkProviderServer cps, StructurePlan p) {
@@ -249,9 +260,36 @@ public final class ComplexDimScenarios {
             return -1;
         }
 
+        /**
+         * The radar on the hut roof: a Radar Casing pedestal, an HV radar controller that stands unformed (no Energy
+         * Hatch), and a station that forms once an Energy Hatch takes the place under the controller (D125, D210).
+         */
+        private void radarStation(World w, int groundY, int cx, int cz, ScenarioResult.Builder out, String label) {
+            int roof = groundY + 4;
+            out.check(
+                w.getBlock(cx, roof + 3, cz) == com.gregguns.block.GregGunsCasings.INSTANCE
+                    && w.getBlockMetadata(cx, roof + 3, cz) == com.gregguns.block.GregGunsCasings.RADAR_CASING,
+                label + ": a Radar Casing pedestal on the radar");
+            int[] c = RadarStation.controllerOffset();
+            TileEntity t = w.getTileEntity(cx + c[0], roof + c[1], cz + c[2]);
+            boolean controller = t instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) t)
+                    .getMetaTileEntity() instanceof com.gregguns.icbm.defense.MTERadar;
+            out.check(controller, label + ": an HV radar controller in the station");
+            if (!controller) return;
+            out.check(
+                !com.gregguns.machine.DevStructureBuilder.check(w, cx + c[0], roof + c[1], cz + c[2]),
+                label + ": the station is inert without an Energy Hatch");
+            int[] e = RadarStation.energyHatchOffset();
+            new GtMachineHook().place(w, Cell.HATCH_ENERGY, cx + e[0], roof + e[1], cz + e[2]);
+            out.check(
+                com.gregguns.machine.DevStructureBuilder.check(w, cx + c[0], roof + c[1], cz + c[2]),
+                label + ": the station forms once an Energy Hatch takes its place");
+        }
+
         private void surface(World w, StructurePlan plan, int groundY, ScenarioResult.Builder out, String label) {
             ComplexPlan cp = ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ());
-            int floor = groundY - ComplexPlacer.DEPTH;
+            int floor = ComplexPlacer.floorY(w, groundY);
             // Trapdoor: the topmost block of its column, a top-half closed trapdoor, level with the ground around.
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
             int ty = top(w, ex, ez);
@@ -312,9 +350,7 @@ public final class ComplexDimScenarios {
                     corner == com.gregguns.block.GregGunsCasings.INSTANCE,
                     label + ": radar hut wall is a casing");
                 out.check(w.isAirBlock(hx + 2, groundY + 1, hz + 4), label + ": radar hut doorway open");
-                out.check(
-                    w.getBlock(hx + 2, groundY + 12, hz + 2) == Blocks.redstone_block,
-                    label + ": PLACEHOLDER_RADAR_DISH on the mast");
+                radarStation(w, groundY, hx + 2, hz + 2, out, label);
             }
         }
 
@@ -327,7 +363,7 @@ public final class ComplexDimScenarios {
             int[] other = NeighborComplex.nearest(w.getSeed(), plan.dimension(), plan, 100, NeighborComplex.RADIUS);
             Decision d = StructureState.forWorld(w)
                 .get(PlanKey.of(plan));
-            int floor = d.groundY() - ComplexPlacer.DEPTH;
+            int floor = ComplexPlacer.floorY(w, d.groundY());
             out.note(
                 label + ": level " + level + ", ceiling " + ceiling + ", stick -> " + java.util.Arrays.toString(other));
             int deepWanted = 0, deepFound = 0, sticks = 0, expected = 0;

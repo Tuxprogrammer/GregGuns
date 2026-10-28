@@ -770,6 +770,15 @@ public final class SiloScenarios {
             // impact scatters, and a pulse never loads a chunk, so the buffers cover every chunk around the target.
             // The chunks are held for the whole run: an unheld far chunk unloads and takes the machines with it.
             com.gregguns.icbm.missile.MissileScenarios.holdFar(ctx, tx, tz, GRID * 8 + 8);
+            // A solid floor over everything the scenario holds, not only under each buffer: a missile whose scatter
+            // runs between the buffers' stone blocks would fall to the natural ground far below and burst out of the
+            // pulse's reach (the result depended on which scenario slot, and so which random scatter, the run had).
+            int held = GRID * 8 + 8;
+            for (int fx = tx - held; fx <= tx + held; fx++) {
+                for (int fz = tz - held; fz <= tz + held; fz++) {
+                    w.setBlock(fx, ty - 1, fz, Blocks.stone, 0, 2);
+                }
+            }
             final java.util.List<int[]> spots = new java.util.ArrayList<>();
             for (int a = -GRID; a <= GRID; a++) {
                 for (int b = -GRID; b <= GRID; b++) {

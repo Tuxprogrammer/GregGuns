@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A radar watches the missiles in flight and flags the ones that will land inside its protected radius, which you set on its screen (64 blocks to begin with). The HV radar sees 128 blocks and the EV radar 256, flat, at any height. A missile that only passes over is tracked but not a threat. The redstone it puts out on every side is the number of incoming missiles, up to 15. Right-click it with a Data Stick to save its link for a battery. Build a radar and power it.",
+      "desc:8": "A radar watches the missiles in flight and flags the ones that will land inside its protected radius, which you set on its screen (64 blocks to begin with). The radar is a small 3 by 3 build of Radar Casing, two high, with one casing on top for the dish, which turns while the radar scans. Make the casing four at a time in the Assembler at HV from 6 stainless steel plates. The HV controller sees 128 blocks and the EV controller 256, flat, at any height; put an Energy Hatch of its tier and a Maintenance Hatch in the base. A missile that only passes over is tracked but not a threat. The redstone it puts out on every side is the number of incoming missiles, up to 15. Right-click the controller with a Data Stick to save its link for a battery. Build a radar and power it.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

@@ -20,6 +20,8 @@ public final class Cell {
     public static final byte HATCH_POWER = 13;
     /** Air plus a ladder (the escape shaft inside the level). */
     public static final byte LADDER = 14;
+    /** The HV radar controller of a radar station on the surface (a GT machine, like {@link #CONTROLLER}). */
+    public static final byte RADAR_CONTROLLER = 15;
 
     private Cell() {}
 }

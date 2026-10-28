@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Radar Tower is a 3 by 3 tower of Radar Casing, 7 blocks tall, with a Gantry Beam mast up the middle. Make the casing four at a time in the Assembler at IV from 6 tungsten steel plates. Its range comes from its weakest Energy Hatch: 512 blocks at IV, 768 at LuV, 1,024 at ZPM, 1,280 at UV and 1,536 at UHV. Put an Energy Hatch and a Maintenance Hatch in the bottom ring, and set the protected radius from the R button on the controller screen. Build the controller.",
+      "desc:8": "The Radar Tower is a 3 by 3 tower of Radar Casing, 7 blocks tall, with a Gantry Beam mast up the middle. The casing is the same as the small radar\u0027s, and a dish turns on top of the mast. Its range comes from its weakest Energy Hatch: 512 blocks at IV, 768 at LuV, 1,024 at ZPM, 1,280 at UV and 1,536 at UHV. Put an Energy Hatch and a Maintenance Hatch in the bottom ring, and set the protected radius from the R button on the controller screen. Build the controller.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

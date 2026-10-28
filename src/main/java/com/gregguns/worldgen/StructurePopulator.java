@@ -182,6 +182,13 @@ public final class StructurePopulator {
      * {@link ComplexWriter#chancePercent}.
      */
     public static final int COMPLEX_SPACING_CHUNKS = 64;
+    /**
+     * The complex grid hashes cells the way the BIG ship grid does; this salt gives it its own seeds, so a complex
+     * and the ordinary ship of the same cell never share a seed.
+     */
+    private static final long COMPLEX_SALT = 0x51C0A11E5EEDL;
+    /** Blocks around a complex that ordinary surface structures keep clear. */
+    private static final int COMPLEX_MARGIN = 8;
     private static final StructureGrid COMPLEX_GRID = new StructureGrid(
         COMPLEX_SPACING_CHUNKS,
         COMPLEX_SPACING_CHUNKS,
@@ -199,7 +206,8 @@ public final class StructurePopulator {
      */
     public static java.util.Optional<StructurePlan> complexPlanAt(long worldSeed, int dimension, int cellX, int cellZ,
         int chancePercent) {
-        java.util.Optional<StructurePlan> p = COMPLEX_GRID.planAt(worldSeed, dimension, SizeClass.BIG, cellX, cellZ);
+        java.util.Optional<StructurePlan> p = COMPLEX_GRID
+            .planAt(worldSeed ^ COMPLEX_SALT, dimension, SizeClass.BIG, cellX, cellZ);
         if (p.isPresent() && Math.floorMod(
             StructureGrid.mix(
                 p.get()
@@ -212,11 +220,53 @@ public final class StructurePopulator {
 
     /** @return the complex plans that overlap the window and passed the chance roll */
     public static List<StructurePlan> complexPlans(long worldSeed, int dimension, int cx, int cz, int chancePercent) {
+        return complexPlans(worldSeed, dimension, cx, cz, chancePercent, null);
+    }
+
+    /**
+     * As above, and a plan the ledger already holds as placed is written whatever the current roll says, so changing
+     * the chance or the dimension list in a running world never cuts a complex off mid-way. A plan the ledger
+     * rejected is never written again.
+     *
+     * @param state the dimension's ledger, or null for the roll alone
+     */
+    public static List<StructurePlan> complexPlans(long worldSeed, int dimension, int cx, int cz, int chancePercent,
+        StructureState state) {
         List<StructurePlan> out = new java.util.ArrayList<StructurePlan>();
-        for (StructurePlan p : COMPLEX_GRID.plansForWindow(worldSeed, dimension, cx, cz)) {
-            if (Math.floorMod(StructureGrid.mix(p.chestSeedBase() + 0x51L), 100) < chancePercent) out.add(p);
+        for (StructurePlan p : COMPLEX_GRID.plansForWindow(worldSeed ^ COMPLEX_SALT, dimension, cx, cz)) {
+            if (complexWanted(p, chancePercent, state)) out.add(p);
         }
         return out;
+    }
+
+    private static boolean complexWanted(StructurePlan p, int chancePercent, StructureState state) {
+        Decision d = state == null ? null : state.get(PlanKey.of(p));
+        if (d != null) return d.isPlaced();
+        return Math.floorMod(StructureGrid.mix(p.chestSeedBase() + 0x51L), 100) < chancePercent;
+    }
+
+    /** True when an ordinary structure's box meets a complex that exists (or may be rolled) in its dimension. */
+    static boolean meetsComplex(StructurePlan plan, long worldSeed, int chancePercent, StructureState state) {
+        int cell = COMPLEX_SPACING_CHUNKS * 16;
+        int x0 = Math.floorDiv(plan.anchorX() - ComplexWriter.SIZE - COMPLEX_MARGIN, cell);
+        int x1 = Math.floorDiv(plan.maxX() + COMPLEX_MARGIN, cell);
+        int z0 = Math.floorDiv(plan.anchorZ() - ComplexWriter.SIZE - COMPLEX_MARGIN, cell);
+        int z1 = Math.floorDiv(plan.maxZ() + COMPLEX_MARGIN, cell);
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                java.util.Optional<StructurePlan> c = COMPLEX_GRID
+                    .planAt(worldSeed ^ COMPLEX_SALT, plan.dimension(), SizeClass.BIG, x, z);
+                if (!c.isPresent() || !complexWanted(c.get(), chancePercent, state)) continue;
+                StructurePlan k = c.get();
+                if (plan.anchorX() <= k.anchorX() + ComplexWriter.SIZE + COMPLEX_MARGIN
+                    && plan.maxX() >= k.anchorX() - COMPLEX_MARGIN
+                    && plan.anchorZ() <= k.anchorZ() + ComplexWriter.SIZE + COMPLEX_MARGIN
+                    && plan.maxZ() >= k.anchorZ() - COMPLEX_MARGIN) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -227,14 +277,16 @@ public final class StructurePopulator {
         BiomeSource biomes, StructureState state, Marks marks, ComplexWriter complex, boolean general) {
         int n = 0;
         if (general) {
-            n += populatePlans(
-                grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ()),
-                window,
-                sink,
-                reader,
-                biomes,
-                state,
-                marks);
+            List<StructurePlan> ordinary = grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ());
+            if (complex != null) {
+                // A complex's footprint keeps ordinary structures off its surface.
+                List<StructurePlan> kept = new java.util.ArrayList<StructurePlan>();
+                for (StructurePlan p : ordinary) {
+                    if (!meetsComplex(p, worldSeed, complex.chancePercent(), state)) kept.add(p);
+                }
+                ordinary = kept;
+            }
+            n += populatePlans(ordinary, window, sink, reader, biomes, state, marks);
         }
         if (complex != null) {
             for (StructurePlan plan : complexPlans(
@@ -242,7 +294,8 @@ public final class StructurePopulator {
                 dimension,
                 window.chunkX(),
                 window.chunkZ(),
-                complex.chancePercent())) {
+                complex.chancePercent(),
+                state)) {
                 n += populateComplex(plan, complex, window, sink, reader, biomes, state);
             }
         }

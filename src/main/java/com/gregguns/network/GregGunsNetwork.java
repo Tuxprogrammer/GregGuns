@@ -121,7 +121,8 @@ public final class GregGunsNetwork {
                 new com.gregguns.icbm.fx.PacketBlastCloud(),
                 new com.gregguns.icbm.missile.PacketMissileState(),
                 new com.gregguns.icbm.silo.PacketSiloDoors(),
-                new com.gregguns.icbm.fx.PacketBlastOrb()));
+                new com.gregguns.icbm.fx.PacketBlastOrb(),
+                new com.gregguns.icbm.defense.PacketRadarDish()));
     }
 
     /** Returns one instance of each client-to-server packet, in wire order. Append only. */

@@ -1,26 +1,20 @@
 package com.gregguns.icbm.worldgen;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * The loot and machine ceiling of a silo complex (D38, D129): the highest GT voltage tier anything in the complex may
  * be, as a GT voltage index (LV 1, MV 2, HV 3, EV 4, IV 5, LuV 6, ZPM 7, UV 8, UHV 9, UEV 10, UIV 11, UMV 12). Pure.
  *
  * <p>
  * The Overworld and the Moon cap at EV. Each rocket tier above 1 adds one voltage tier, so tier 2 is IV and tier 9
- * is UMV. Ross128b and Ross128ba roll a ceiling per complex from EV to UMV, weighted to the low end. A planet that is
- * not in the table has no ceiling ({@link #NONE}): no complex generates there.
+ * is UMV. Ross128b and Ross128ba roll a ceiling per complex from EV to UMV, weighted to the low end. The dimension to
+ * ceiling table is {@code PlanetTable}; {@code ComplexPlacer.ceilingFor} applies it.
  *
  * <p>
- * Usage: {@code SiloCeiling.forDimension("GalacticraftMars_Mars")} is 5; {@code SiloCeiling.roll(seed, weights)} for
- * Ross128.
+ * Usage: {@code SiloCeiling.roll(seed, weights)} for Ross128; the helpers below name and scale a ceiling.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/loot-and-ceilings.md (GGI-08-10..14); D38
 public final class SiloCeiling {
 
-    /** No ceiling: the dimension hosts no complex. */
-    public static final int NONE = 0;
     /** EV, the Overworld and Moon ceiling and the lowest a complex ever has. */
     public static final int EV = 4;
     /** UMV, the highest ceiling (rocket tier 9). */
@@ -36,60 +30,6 @@ public final class SiloCeiling {
     /** GT's voltage short names indexed by voltage index, LV first at 1. */
     private static final String[] NAMES = { "ULV", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV", "UEV",
         "UIV", "UMV" };
-
-    /** Dimension (GT {@code DimensionHelper} internal name) to ceiling. Overworld is keyed by "Overworld". */
-    private static final Map<String, Integer> TABLE = new HashMap<>();
-
-    static {
-        put(EV, "Overworld", "GalacticraftCore_Moon");
-        put(5, "GalacticraftMars_Mars", "GalaxySpace_Phobos", "GalaxySpace_Deimos");
-        put(6, "GalaxySpace_Ceres", "GalaxySpace_Callisto", "GalaxySpace_Europa", "GalaxySpace_Ganymede");
-        put(7, "GalaxySpace_Io", "GalaxySpace_Mercury", "GalaxySpace_Venus");
-        put(8, "GalaxySpace_Enceladus", "GalaxySpace_Titan", "GalaxySpace_Miranda", "GalaxySpace_Oberon");
-        put(9, "GalaxySpace_Proteus", "GalaxySpace_Triton");
-        put(10, "GalaxySpace_Pluto", "GalaxySpace_Haumea", "GalaxySpace_MakeMake");
-        put(
-            11,
-            "GalaxySpace_BarnardC",
-            "GalaxySpace_BarnardE",
-            "GalaxySpace_BarnardF",
-            "GalaxySpace_CentauriA",
-            "GalaxySpace_TcetiE",
-            "GalaxySpace_VegaB");
-        put(
-            UMV,
-            "GalacticraftAmunRa_Anubis",
-            "GalacticraftAmunRa_Horus",
-            "GalacticraftAmunRa_Maahes",
-            "GalacticraftAmunRa_Neper",
-            "GalacticraftAmunRa_Seth");
-    }
-
-    private SiloCeiling() {}
-
-    private static void put(int ceiling, String... dims) {
-        for (String d : dims) {
-            TABLE.put(d, ceiling);
-        }
-    }
-
-    /**
-     * @param dimension a GT {@code DimensionHelper} internal name, for example {@code GalaxySpace_Io}; null allowed
-     * @return the table ceiling, or {@link #NONE} for a dimension with no table row (Ross128b and Ross128ba roll
-     *         instead: see {@link #isRolled}; asteroid belts never host a complex)
-     */
-    public static int forDimension(String dimension) {
-        Integer c = dimension == null ? null : TABLE.get(dimension);
-        return c == null ? NONE : c;
-    }
-
-    /**
-     * @param dimension a GT internal name
-     * @return true for Ross128b and Ross128ba, whose ceiling is rolled per complex
-     */
-    public static boolean isRolled(String dimension) {
-        return "Ross128b".equals(dimension) || "Ross128ba".equals(dimension);
-    }
 
     /**
      * Rolls a Ross128 complex's ceiling, EV to UMV.

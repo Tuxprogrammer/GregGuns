@@ -29,6 +29,7 @@ public final class IcbmModule implements GregGunsModule {
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         WarheadRegistration.preInit(registrar);
+        com.gregguns.icbm.complex.wall.ComplexWallRegistration.preInit(registrar);
         com.gregguns.icbm.production.ProductionItems.register(registrar);
         com.gregguns.icbm.missile.MissileRegistration.preInit(registrar);
         com.gregguns.icbm.defense.DefenseMachines.registerItems(registrar);

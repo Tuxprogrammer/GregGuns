@@ -24,7 +24,7 @@ import gregtech.api.metatileentity.implementations.MTETieredMachineBlock;
 import gregtech.api.render.TextureFactory;
 
 /**
- * What the single-block defense machines (the HV and EV radars and the air-defense battery) share: GT's hull plus a
+ * What the single-block defense machines (the air-defense battery) share: GT's hull plus a
  * front overlay, the energy input of their tier, and the two-step D41 tooltip. Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md, air-defense-battery.md

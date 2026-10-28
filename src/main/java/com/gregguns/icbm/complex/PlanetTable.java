@@ -58,7 +58,7 @@ public final class PlanetTable {
     }
 
     /**
-     * @return the GT voltage index of the loot ceiling (EV 4, IV 5 ... UMV 14), or 0 for a rolled or unknown dimension
+     * @return the GT voltage index of the loot ceiling (EV 4, IV 5 ... UMV 12), or 0 for a rolled or unknown dimension
      */
     public static int ceilingVoltage(String dimensionName) {
         Integer t = TIERS.get(key(dimensionName));

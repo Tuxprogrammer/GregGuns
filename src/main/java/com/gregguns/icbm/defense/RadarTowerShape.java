@@ -22,6 +22,8 @@ public final class RadarTowerShape {
     public static final int CONTROLLER_ROW = 5;
     /** The fewest casing blocks (C and H) the tower needs; the rest may be hatches. */
     public static final int CASING_MINIMUM = 30;
+    /** Blocks from the controller block's floor to the top plane of the mast, where the dish stands. */
+    public static final int DISH_HEIGHT = 6;
 
     // spotless:off
     /** The tower, one fixed piece. */
