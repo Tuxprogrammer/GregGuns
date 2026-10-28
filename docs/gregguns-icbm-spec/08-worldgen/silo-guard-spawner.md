@@ -40,4 +40,4 @@ The two blocks borrow existing tiles (`concrete_hole`, `metalpanel_hazard`). A d
 
 ## Tests
 
-Unit: `HoleKindTest`, `HoleTooltipFormatTest`, `SiloCeilingTest`. Scenarios: `icbm.complex.guards.*`.
+Unit: `HoleKindTest`, `HoleTooltipFormatTest`, `SiloCeilingTest`. Scenarios: `icbm.complex.guards` (both posts place their own mobs at the stored ceiling's danger within the cap; a guard targets a nearby fake player; a broken post spawns nothing more, also after its chunk is saved, unloaded and reloaded, while the intact post reloads with kind and ceiling; the intact post keeps spawning, so the check can tell the two apart). NEI: the posts are `HiddenFromCreativeTab`, which the NEI config hides.

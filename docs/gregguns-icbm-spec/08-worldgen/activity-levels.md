@@ -53,7 +53,7 @@ Depth band: 0 is the central hall, then one band per 30 blocks of distance from 
 
 ## Tests
 
-Unit: `ActivityLevelTest`, `ComplexContentsTest`. Scenarios: `icbm.complex.activity.*` (per level, damage and spawner counts, flooding).
+Unit: `ActivityLevelTest`, `ComplexContentsTest`. Scenarios: `icbm.complex.levels` (each level, plus Operational at UMV, generated onto a slab one window at a time and read back: spawner count, kind, tile and ceiling; lamps lit at the layout's light marks; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
 
 ## Open questions
 

@@ -35,7 +35,9 @@ public final class SalvageScenarios {
 
     /** @return true for a recipe that outputs a missile body (some unrelated recipe may match a bare circuit) */
     private static boolean isFit(GTRecipe r) {
-        return r != null && r.mOutputs != null && r.mOutputs.length > 0 && r.mOutputs[0] != null
+        return r != null && r.mOutputs != null
+            && r.mOutputs.length > 0
+            && r.mOutputs[0] != null
             && MissileBodies.tierOf(r.mOutputs[0]) != null;
     }
 
