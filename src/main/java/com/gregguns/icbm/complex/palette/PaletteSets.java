@@ -270,7 +270,7 @@ final class PaletteSets {
                 .build());
 
         // Command and halls: dark Tyrian plate walls, dark Nucrete tile floors, Technical cinder-panel ceilings.
-        BlockRef t15 = tyrian(15), t3 = tyrian(3), t8 = tyrian(8), t12 = tyrian(12);
+        BlockRef t15 = tyrian(15), t6 = tyrian(6), t8 = tyrian(8), t12 = tyrian(12);
         BlockRef k2 = ch("technical4", 2, CEILING_QUARTZ), k9 = ch("technical4", 9, CEILING_QUARTZ);
         l.add(
             StyleSet
@@ -282,7 +282,7 @@ final class PaletteSets {
                     StyleGroup.HALL_MAJOR,
                     StyleGroup.GUARD,
                     StyleGroup.SERVER_ROOM)
-                .walls(t15, t3, t8, t12)
+                .walls(t15, t6, t8, t12)
                 .floors(
                     checker(nd7, nd3, 2),
                     borderField(nd4, nd7, 2),

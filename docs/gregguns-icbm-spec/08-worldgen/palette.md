@@ -70,7 +70,7 @@ Worth is the value of mining the block in bulk. **Low** means it drops itself or
 | `chisel:stonebricksmooth` | 4, 5, 12, 13 | Small and large bricks, hard and sunken panels | floor (factory_tile) | Low |
 | `chisel:technical4` | 2 sturdy, 9 polished cinderblock | Gray panels | ceiling | Low |
 | `chisel:factoryblock` | 0 dots, 3 platex, 6 hazard, 9 metal box, 13 plating | Industrial gray plates, hazard stripes | wall, floor (technical_works), dead lamp, accent | Low |
-| `chisel:tyrian` | 3 soft plate, 8 plate tiles, 11 blue plating, 12 black, 13 black 2, 15 plate | Dark sci-fi plate | wall, dead lamp, accent | Low |
+| `chisel:tyrian` | 6 gray plate, 8 plate tiles, 11 blue plating, 12 black, 13 black 2, 15 plate | Dark sci-fi plate | wall, dead lamp, accent | Low |
 | `chisel:concrete` | 1 block, 3 blocks, 4 weathered, 5 weathered block, 10 asphalt | Gray and worn concrete | wall, worn floor patch, dead lamp, accent | Low |
 | `chisel:technical` | 3 large pipes, 5 small pipes, 7 vent, 9 insulation, 12 rusty plates | Pipes, vents, insulation | wall (technical_works), ceiling, accent | Low |
 | `chisel:marble`, `chisel:limestone` | marble 0, 1, 4, 5, 7, 8, 12; limestone 0, 1, 5, 11, 15 | Pale stone, panels, brick | wall, ceiling | Low |
