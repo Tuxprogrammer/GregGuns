@@ -7,7 +7,7 @@
 | `headless-lib.sh` | Server setup and process helpers that both of the above source. |
 | `HotReload.java` | The class-redefinition client that `dev-server.sh reload` runs (a source file, no build step). |
 | `dev-server-init.gradle` | Gradle init script `dev-server.sh` passes with `-I`: it puts a directory of classes and resources, not the dev jar, on the server classpath. |
-| `mp_check.py` | Multiplayer checks. |
+| `mp_check.py` | Multiplayer checks and the one-client screenshot driver. `--angelica` turns on connected textures (below). |
 
 ## dev-server.sh: for iteration only
 
@@ -65,3 +65,18 @@ whose bytes changed. It keeps a hash manifest of the classes the server has, so 
 
 State lives in `run/server/dev/` (git-ignored): the console pipe, the log, the ready marker, the manifests.
 `stop` only ever signals processes whose working directory is your checkout.
+
+## Connected textures in the dev client
+
+The pack's CTM engine is MCPatcherForge, bundled in Angelica 2.2.28; the plain dev client has no Angelica, so casings show flat. Every multiblock screenshot should be taken with it on:
+
+```sh
+python -I tools/scenarios/mp_check.py <server-dir> <client-dir> --angelica ...   # or GG_DEV_ANGELICA=1
+./gradlew runClient -Pgg.devAngelica=true ...                                    # by hand
+```
+
+- The switch is a runtime-only dependency in `dependencies.gradle` (`com.github.GTNewHorizons:Angelica:2.2.28:dev`, the pack's version) that exists only with `-Pgg.devAngelica=true` or `GG_DEV_ANGELICA=1`. Builds, tests, `runServer` and the headless suite never see it. Give it to the client only: Angelica is a client mod.
+- `mp_check.py --angelica` passes the property to every client's Gradle call and writes `run/client/config/mcpatcherforge.cfg` with `connected_textures` enabled.
+- It runs on the box's Java 8 client JDK under Xvfb with llvmpipe (Angelica makes a GL 3.3 core context; the existing `MESA_GL_VERSION_OVERRIDE=3.3` is enough). UniMixins comes in with it and Hodgepodge is already on the classpath. No lwjgl3ify or Java 17 needed.
+- The first client run downloads Angelica's dependencies into the Gradle cache.
+- `testing.ctm_casings` (dev only, needs one connected client, not part of `all`) places a Works Casing wall with a controller, four Bastion Plating metas side by side, a casing ceiling and a built Ammunition Works, and signals screenshots. `tools/asset-gen/infographics/ctm_expect.py <dir>` renders what the same layouts should look like through `ctmsel`, with the tile numbers.

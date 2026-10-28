@@ -25,7 +25,9 @@ Ship MCPatcher-format CTM data in our jar for these metas of `gregguns:casings`:
 - No Java rendering code, no new dependency, no pack change. Without Angelica the block shows its plain icon.
 - Six more tile sets to keep in step: a painter change in `blockart.py` needs `ctm.py` re-run (and `CtmCasingsTest` guards tile 0).
 - The spec's casings section ([multiblocks.md](../gregguns-spec/08-machines-production/multiblocks.md)) records the rules. The three multiblock sheets show the connected look.
-- Not yet verified in a live client; the first playtest should check that walls join, that a hatch and the controller get a frame around them, that Iron next to Steel plating does not join, and that held and inventory icons are unchanged.
+- The dev client can show it: `mp_check.py --angelica` (or `-Pgg.devAngelica=true`) adds Angelica 2.2.28 to the client's runtime only, and `testing.ctm_casings` takes the shots ([tools/scenarios/README.md](../../tools/scenarios/README.md#connected-textures-in-the-dev-client)). Without the switch the dev client shows flat casings.
+- Live check (dev client with Angelica): see the results below.
+- Original note, before the live check; the first playtest should check that walls join, that a hatch and the controller get a frame around them, that Iron next to Steel plating does not join, and that held and inventory icons are unchanged.
 
 ## Alternatives considered
 
@@ -33,3 +35,12 @@ Ship MCPatcher-format CTM data in our jar for these metas of `gregguns:casings`:
 - **Chisel or CTMLib** (a Java `ICTMBlock`/renderer): a new dependency and our own rendering code for something the pack already does; Chisel's connection rules are not metadata-aware per casing.
 - **`connect=tile`**: compares icons, so every casing meta would need a distinct icon; `connect=block` states the rule directly.
 - **Leave the single-block look**: keeps the "sea of panels" look in the hall.
+
+## Live check (2026-10-27, dev client with Angelica 2.2.28)
+
+`mp_check.py --angelica` with `testing.ctm_casings`; each shot compared with `tools/asset-gen/infographics/ctm_expect.py` (the `ctmsel` tile choice for the same layout):
+
+- A Works Casing wall joins without seams; only the outer edge and the cut corners get a frame. Matches.
+- The Ammunition Works controller (in the wall) and the hatches, glass and controller of a built hall keep a frame around them. Matches.
+- Bastion Plating Iron, Steel, Aluminum and Carbon side by side: each column joins itself and gets a frame where it meets another meta. Matches.
+- A ceiling of casings seen from below (bottom face): the staircase notch, the hole and the frames fall where `ctmsel` puts them. Matches. (The first expectation had the camera's up vector wrong: looking straight up from yaw 0, screen up is -z, not +z; `ctm_expect.py` is fixed.)

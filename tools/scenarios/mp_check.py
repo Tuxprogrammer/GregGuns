@@ -7,8 +7,11 @@ Usage (from any directory; needs a display, e.g. Xvfb, for the clients):
 
     DISPLAY=:52 LIBGL_ALWAYS_SOFTWARE=1 MESA_GL_VERSION_OVERRIDE=3.3 GG_MODULES=all \\
       python -I tools/scenarios/mp_check.py <server-dir> <client-a-dir> [<client-b-dir> ...] \\
-        [--port 25613] [--out build/mp-check] [--step "<console command>"]... [--join-timeout 1500]
+        [--port 25613] [--out build/mp-check] [--step "<console command>"]... [--join-timeout 1500] [--angelica]
 
+* --angelica (or GG_DEV_ANGELICA=1) puts Angelica 2.2.28 on the clients' runtime classpath and enables its bundled
+  MCPatcherForge connected textures, so multiblock casings render as they do in the pack (design record 0023). Use it for
+  every multiblock screenshot. The server is unchanged.
 * Every directory is its own git worktree or clone of the same commit: two Gradle builds cannot share a project dir.
 * The Java and Gradle environment must already be set up (JAVA_HOME and so on); the script only calls ./gradlew.
 * GG_MODULES is a comma list of modules to switch on in the server and every client (default
@@ -39,11 +42,14 @@ SUMMARY = re.compile(r"Scenarios: (\d+) passed, (\d+) failed")
 
 
 def parse(argv):
-    dirs, steps, opts = [], [], {"port": "25613", "out": "build/mp-check", "join": 1500, "wait": 900}
+    dirs, steps, opts = [], [], {"port": "25613", "out": "build/mp-check", "join": 1500, "wait": 900,
+                                   "angelica": os.environ.get("GG_DEV_ANGELICA") == "1"}
     i = 0
     while i < len(argv):
         a = argv[i]
-        if a in ("--port", "--out", "--join-timeout", "--step-timeout", "--step"):
+        if a == "--angelica":
+            opts["angelica"] = True
+        elif a in ("--port", "--out", "--join-timeout", "--step-timeout", "--step"):
             i += 1
             v = argv[i]
             if a == "--step":
@@ -72,6 +78,17 @@ def enable_modules(run_dir, modules):
         else:
             text = re.sub(r"modules \{\n", "modules {\n    B:%s=true\n" % m, text, count=1)
     open(cfg, "w").write(text)
+
+
+# Angelica's bundled MCPatcherForge reads this; connected_textures is on by default, written out so a stale file cannot turn it off.
+CTM_CFG = """# Configuration file
+
+connected_textures {
+    B:enabled=true
+    B:nonStandard=true
+    B:standard=true
+}
+"""
 
 
 def set_lines(path, kv, sep):
@@ -146,6 +163,8 @@ def main():
             "pauseOnLostFocus": "false", "snooperEnabled": "false", "musicVolume": "0.0", "enableVsync": "false",
             "maxFps": "30", "guiScale": "2", "viewDistance": "6"}, ":")
         shutil.rmtree(os.path.join(cdir, "screenshots"), ignore_errors=True)
+        if opts["angelica"]:
+            open(os.path.join(cdir, "config", "mcpatcherforge.cfg"), "w").write(CTM_CFG)
 
     ok, results = False, []
     server, clients = None, []
@@ -158,6 +177,7 @@ def main():
             c = Proc(user, d, [
                 "runClient", "--username=" + user, "--mcJvmArgs=-Dgregguns.autotest=" + user.lower()[0],
                 "--mcJvmArgs=-Dgregguns.autotest.connect=127.0.0.1:" + opts["port"]]
+                + (["-Pgg.devAngelica=true"] if opts["angelica"] else [])
                 + ["--mcArgs=" + w for w in ("--width", "960", "--height", "540")], os.path.join(out, "client-%s.log" % user))
             clients.append(c)
             # One client at a time: each join must finish before the next client starts.
