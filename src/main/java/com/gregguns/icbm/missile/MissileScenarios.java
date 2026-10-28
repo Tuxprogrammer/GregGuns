@@ -59,8 +59,8 @@ public final class MissileScenarios {
     }
 
     /** Builds a body (with its fillers) and a warhead on its nose; returns the base position. */
-    static int[] buildStack(ScenarioContext ctx, MissileTier tier, WarheadCasing casing, String explosive, int fill,
-        int dx, int dy, int dz, boolean onPad, int guidance) {
+    public static int[] buildStack(ScenarioContext ctx, MissileTier tier, WarheadCasing casing, String explosive,
+        int fill, int dx, int dy, int dz, boolean onPad, int guidance) {
         ctx.setBlock(dx, dy, dz, MissileBlocks.body(tier), 0);
         World w = ctx.world();
         int x = ctx.originX() + dx;
@@ -99,7 +99,7 @@ public final class MissileScenarios {
     }
 
     /** Kills every missile entity near the origin: arming spawns entities the context does not track. */
-    static void sweep(ScenarioContext ctx) {
+    public static void sweep(ScenarioContext ctx) {
         World w = ctx.world();
         net.minecraft.util.AxisAlignedBB box = net.minecraft.util.AxisAlignedBB
             .getBoundingBox(ctx.originX() - 100, 0, ctx.originZ() - 100, ctx.originX() + 100, 255, ctx.originZ() + 300);

@@ -1,4 +1,4 @@
-package com.gregguns.icbm.missile;
+package com.gregguns.icbm.compat.oc;
 
 import java.util.List;
 
@@ -11,9 +11,15 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioResult;
-import com.gregguns.icbm.compat.oc.GoldenDomeFloppy;
 import com.gregguns.icbm.control.MTELaunchControl;
 import com.gregguns.icbm.defense.MTERadar;
+import com.gregguns.icbm.missile.DefenseScenarios;
+import com.gregguns.icbm.missile.EntityMissile;
+import com.gregguns.icbm.missile.I5ClientSetups;
+import com.gregguns.icbm.missile.MissileScenarios;
+import com.gregguns.icbm.missile.MissileStacks;
+import com.gregguns.icbm.missile.MissileTier;
+import com.gregguns.icbm.missile.PadMissiles;
 import com.gregguns.icbm.warhead.WarheadCasing;
 import com.gregguns.machine.GregGunsMTEIDs;
 
@@ -35,7 +41,7 @@ import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
  *   keyboard (0,2,1); disk drive (1,1,0)
  * </pre>
  */
-final class I5DomeSetup extends I5ClientSetups.Setup {
+public final class I5DomeSetup extends I5ClientSetups.Setup {
 
     @Override
     public String name() {
@@ -48,7 +54,7 @@ final class I5DomeSetup extends I5ClientSetups.Setup {
     }
 
     @Override
-    ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
+    protected ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
         ctx.clearArea(14, 8);
         MissileScenarios.sweep(ctx);
         I5ClientSetups.floor(ctx, -8, 12, -8, 8);
@@ -162,7 +168,7 @@ final class I5DomeSetup extends I5ClientSetups.Setup {
     }
 
     /** Runs one named command against the computer from the potions setup. */
-    static void command(ScenarioContext ctx, EntityPlayerMP p, String cmd) {
+    public static void command(ScenarioContext ctx, EntityPlayerMP p, String cmd) {
         if (cmd.equals("report")) {
             report(ctx);
             return;
@@ -182,7 +188,7 @@ final class I5DomeSetup extends I5ClientSetups.Setup {
     }
 
     /** Logs the computer's state; called by the potions setup so it can be asked without a restart. */
-    static void report(ScenarioContext ctx) {
+    public static void report(ScenarioContext ctx) {
         TileEntity t = I5ClientSetups.tile(ctx, 0, 1, 0);
         if (!(t instanceof li.cil.oc.api.internal.Case)) {
             I5ClientSetups.log(ctx, "dome report: no case, found " + t);

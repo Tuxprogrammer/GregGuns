@@ -21,6 +21,7 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.explosion.nuclear.FalloutBlocks;
 import com.gregguns.icbm.antidote.AntidoteRegistration;
+import com.gregguns.icbm.compat.oc.I5DomeSetup;
 import com.gregguns.icbm.control.MTELaunchControl;
 import com.gregguns.icbm.defense.DefenseMachines;
 import com.gregguns.icbm.launcher.LauncherWarhead;
@@ -54,13 +55,13 @@ public final class I5ClientSetups {
     }
 
     @SuppressWarnings("unchecked")
-    static List<EntityPlayerMP> players() {
+    public static List<EntityPlayerMP> players() {
         return new ArrayList<>(
             MinecraftServer.getServer()
                 .getConfigurationManager().playerEntityList);
     }
 
-    static void floor(ScenarioContext ctx, int x0, int x1, int z0, int z1) {
+    public static void floor(ScenarioContext ctx, int x0, int x1, int z0, int z1) {
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 ctx.setBlock(x, -1, z, Blocks.stone, 0);
@@ -68,17 +69,17 @@ public final class I5ClientSetups {
         }
     }
 
-    static net.minecraft.tileentity.TileEntity tile(ScenarioContext ctx, int dx, int dy, int dz) {
+    public static net.minecraft.tileentity.TileEntity tile(ScenarioContext ctx, int dx, int dy, int dz) {
         return ctx.world()
             .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
     }
 
-    static void log(ScenarioContext ctx, String what) {
+    public static void log(ScenarioContext ctx, String what) {
         GregGuns.LOG.info("I5C {} origin={},{},{}", what, ctx.originX(), ctx.originY(), ctx.originZ());
     }
 
     /** Base of the I5 setups: one shared arena, no cleanup bookkeeping, never part of {@code test all}. */
-    abstract static class Setup implements Scenario {
+    public abstract static class Setup implements Scenario {
 
         @Override
         public boolean includedInAll() {
@@ -100,7 +101,7 @@ public final class I5ClientSetups {
             return go(I4Anchor.of(ctx, 0, 0), ScenarioResult.builder(name()));
         }
 
-        abstract ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out);
+        protected abstract ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out);
     }
 
     /** Fills the first player's 36 slots with the I4 and I5 items, in a fixed order (see the log line). */
@@ -112,7 +113,7 @@ public final class I5ClientSetups {
         }
 
         @Override
-        ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
+        protected ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
             ctx.clearArea(14, 8);
             floor(ctx, -10, 14, -6, 14);
             List<EntityPlayerMP> ps = players();
@@ -184,7 +185,7 @@ public final class I5ClientSetups {
         }
 
         @Override
-        ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
+        protected ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
             ctx.clearArea(14, 8);
             floor(ctx, -10, 14, -6, 14);
             List<EntityPlayerMP> ps = players();
@@ -231,7 +232,7 @@ public final class I5ClientSetups {
         }
 
         @Override
-        ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
+        protected ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
             List<EntityPlayerMP> ps = players();
             if (ps.isEmpty()) {
                 return ScenarioResult.fail(name(), "needs a player");
@@ -313,7 +314,7 @@ public final class I5ClientSetups {
         }
 
         @Override
-        ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
+        protected ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
             ctx.clearArea(14, 8);
             floor(ctx, -10, 14, -6, 14);
             final List<EntityPlayerMP> ps = players();
