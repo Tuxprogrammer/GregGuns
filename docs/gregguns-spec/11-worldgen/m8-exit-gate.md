@@ -61,6 +61,8 @@ Each `worldgen.<id>_places` scenario (fixed seed and cell: footprint block count
 
 ## Spawner blocks (G11)
 
+**Superseded by [design record 0024](../../design/0024-vanilla-spawners.md):** structures now place vanilla mob spawners, and the current rules and scenarios (`worldgen.spawner_*`, `worldgen.big_bunker_spawners`) are in [structure-placement § Spawner marks](structure-placement.md#spawner-marks). The table below is the M8 record as it was signed off.
+
 Status: done. `BlockHoleSpawner` and `TileHoleSpawner` in `com.gregguns.worldgen.spawner`, registered as `zombie_hole` and `bug_hole` by the worldgen module and wired through `StructureHooks.setSpawnerHook` (installed by `StructureGenerator.configure`).
 
 | Rule | Evidence | Status |

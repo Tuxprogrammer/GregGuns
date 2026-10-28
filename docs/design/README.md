@@ -53,3 +53,4 @@ The other options, and why each was not chosen.
 | [0021](0021-tier-balance-pass.md) | Tier balance pass: recipe cost, armor, NPCs, energy and ammo along the GT tiers (M9 polish) | D1, D3 | Accepted |
 | [0022](0022-steam-armor-steam-age.md) | Steam armor moves to the Steam age: bronze, hand-crafted, coal-fired; Steam Armor Plating retired (amends 0001, 0021) | D1 | Accepted |
 | [0023](0023-connected-casing-textures.md) | Connected textures for the base casings: MCPatcher `method=ctm` through the pack's Angelica (M9 polish) | D6 | Accepted |
+| [0024](0024-vanilla-spawners.md) | Structure spawners are vanilla mob spawners with GregGuns NBT; the four GregGuns spawner blocks are retired (amends 0005) | D5 | Accepted |

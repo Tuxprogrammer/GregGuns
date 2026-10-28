@@ -44,7 +44,7 @@ For these, the behavior is the Techguns spec plus the design records.
 |---|---|
 | Village bunker ([village.md](../../techguns-spec/11-worldgen/village.md)) | Dropped by 0005. VillageNames only renames and signs vanilla villages, and RWG's villages are vanilla |
 | City generator, `SmallHouse`, legacy carriers | Dormant in Techguns and not selected by 0005 |
-| Monster spawners in structures (Zombie Hole, Bug Hole) | They are GregGuns tile entities, covered by [10-entities-npcs](../../techguns-spec/10-entities-npcs/spawning.md#3-monster-spawner-blocks-tgspawnertileent). `mobsinfo.cfg` has `addAllEnderIOSpawnersToNEI` = `false`, which concerns EnderIO's spawner only |
+| Monster spawners in structures | **Deviation:** Techguns has its own spawner blocks; GregGuns places the vanilla `minecraft:mob_spawner` with GregGuns NBT ([design record 0024](../../design/0024-vanilla-spawners.md), [structure-placement § Spawner marks](structure-placement.md#spawner-marks), [10-entities-npcs spawning](../10-entities-npcs/spawning.md#spawner-npcs)). `mobsinfo.cfg` has `addAllEnderIOSpawnersToNEI` = `false`, which concerns EnderIO's spawner only |
 | Camp flag NPC spawning | Area 10 |
 | Building Scan Tool, Structure Test Tool, structure file format ([structure-system.md § 6-7](../../techguns-spec/11-worldgen/structure-system.md#6-structure-data-file-format-assetstechgunsstructures)) | Authoring tools with no pack link. Structure files stay as in Techguns' format description, written fresh (originality rule) |
 | Textures ([assets.md](../../techguns-spec/11-worldgen/assets.md)) | Art direction, not integration ([0006](../../design/0006-art-direction.md)) |

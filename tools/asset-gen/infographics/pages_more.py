@@ -389,7 +389,7 @@ ENCOUNTERS = [
          ("Attack Helicopter", "Boss: break a camp flag", "Machine-gun bursts and rockets from the air.",
           "16 to 31 rifle bullets, 8 to 15 rockets, 2 or 3 Cybernetic Parts, 4 to 7 iron blocks.",
           dict(model="attack_helicopter", skin="attack_helicopter", yaw=-120, pitch=14)),
-         ("Alien Bug", "Bug nests", "Fast, climbs walls, bites. Pours out of the Bug Holes in desert and wasteland nests.",
+         ("Alien Bug", "Bug nests", "Fast, climbs walls, bites. Pours out of the monster spawners in desert and wasteland nests.",
           "String and spider eyes.", dict(model="alien_bug", skin="alien_bug")),
      ]),
     ("Heavy hitters", "#ff5555",
@@ -472,7 +472,7 @@ def enemies():
                       for n, t in (("Small Factory, Train Station, House, Gas Station", "LV"), ("Big Bunker", "MV"),
                                    ("Military Base and camps", "MV"), ("Aircraft Carrier, Submarine", "MV")))
     info = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:22px">
-<div class="card"><h2>Ruins and bases</h2>{muted("Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only Bug Holes.", 16, 4)}<div style="margin-top:8px">{structs}</div></div>
+<div class="card"><h2>Ruins and bases</h2>{muted("Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only monster spawners. The Big Bunker's two spawners call up zombies.", 16, 4)}<div style="margin-top:8px">{structs}</div></div>
 <div class="card"><h2>Elite, Ultra, Infernal</h2>{muted("Any of them can spawn with an Infernal Mobs rank and better loot: LV for Elite, MV for Ultra, and a rare HV drop from Infernal. The helicopter and camp turrets never do.")}</div>
 <div class="card"><h2>What they drop</h2>{muted("Up to two picks from their loot list, plus one more per level of Looting. A player kill has a small chance to drop the gun they hold, and sometimes the armor they wear.")}</div></div>"""
     body = f"""{battle_scene()}

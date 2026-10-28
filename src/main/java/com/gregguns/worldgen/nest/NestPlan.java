@@ -19,7 +19,7 @@ import java.util.Random;
  * air ball of radius r - 1. Tunnels join linked chambers (shell radius 2 or 3, never wider than either end); a vertical
  * shaft of air radius 2 reaches the surface and is lined with climbable slime; the main chamber has a slime pillar.
  * Each
- * satellite and child holds one Bug Hole and piles of eggs on its floor. Air always wins over shells (the "re-carve"
+ * satellite and child holds one bug spawner and piles of eggs on its floor. Air always wins over shells (the "re-carve"
  * step of the notes), so no tunnel wall sticks into a room.
  *
  * <p>
@@ -52,7 +52,7 @@ public final class NestPlan {
     public static final int PLAIN = 3;
     /** Egg block (wall fleck or a pile on a chamber floor). */
     public static final int EGG = 4;
-    /** Air carved here, and a Bug Hole mark belongs on it. */
+    /** Air carved here, and a bug spawner mark belongs on it. */
     public static final int SPAWNER = 5;
     /** Pillar block in the main chamber (resin). */
     public static final int PILLAR = 6;
@@ -72,10 +72,10 @@ public final class NestPlan {
         public final int y;
         public final int z;
         public final int r;
-        /** True for satellites and children: they hold a Bug Hole and eggs. */
+        /** True for satellites and children: they hold a bug spawner and eggs. */
         public final boolean hive;
         final int index;
-        /** Bug Hole column and floor height; unused for the main chamber. */
+        /** Bug spawner column and floor height; unused for the main chamber. */
         int holeX;
         int holeY;
         int holeZ;
@@ -262,7 +262,7 @@ public final class NestPlan {
         return tunnels.size();
     }
 
-    /** @return the Bug Hole positions as {x, y, z}, one per satellite or child chamber */
+    /** @return the bug spawner positions as {x, y, z}, one per satellite or child chamber */
     public List<int[]> spawners() {
         List<int[]> out = new ArrayList<>();
         for (Chamber c : chambers) {

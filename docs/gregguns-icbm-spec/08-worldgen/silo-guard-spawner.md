@@ -1,43 +1,58 @@
 # Silo guard spawner
 
-- **Baseline:** none. Follows M8: [structure-placement](../../gregguns-spec/11-worldgen/structure-placement.md) (spawner marks), `BlockHoleSpawner`.
-- **Decisions:** [D36](../DECISIONS.md#d36-in-detail), [D38](../DECISIONS.md#d38-in-detail), [D41](../DECISIONS.md), D180, D181
+- **Baseline:** none. Follows M8: [structure-placement](../../gregguns-spec/11-worldgen/structure-placement.md) (spawner marks), now vanilla mob spawners ([design record 0024](../../design/0024-vanilla-spawners.md)).
+- **Decisions:** [D36](../DECISIONS.md#d36-in-detail), [D38](../DECISIONS.md#d38-in-detail), D180, D181, D268 to D271
 - **Roadmap:** [I6](../../ROADMAP-ICBM.md#i6--world-missile-silos-on-every-planet)
 
-## What changes from M8
+## What a post is
 
-The two M8 holes (Zombie Hole, Bug Hole) are `HoleKind` constants. I6 adds two more, so the silo guards use the same block, tile, caps, range and light rules, with no new spawner code:
+A guard post is the vanilla `minecraft:mob_spawner`, placed by `ComplexApplier` through `VanillaSpawners.place`, with tile NBT that spawns the complex guards. GregGuns adds no block, item or tile for it. The two kinds are `SpawnerKind` constants beside the M8 ones (`ZOMBIE`, `BUG`):
 
-| Block | Name | NPCs | Where |
+| Kind | Layout tag | NPCs | Where |
 |---|---|---|---|
-| `silo_guard` | Silo Guard Post | Army Soldier, Commando | `post` and `room` marks, and `room` marks nearer the hall |
-| `silo_elite` | Silo Elite Post | Commando, Stormtrooper | `deep` marks, and 40% of `room` marks at depth band 2 or more |
+| `SILO_GUARD` | `spawner.silo_guard` | Army Soldier, Commando | `post` and `room` marks, and `room` marks nearer the hall |
+| `SILO_ELITE` | `spawner.silo_elite` | Commando, Stormtrooper | `deep` marks, and 40% of `room` marks at depth band 2 or more |
 
-Each attempt picks evenly among the registered kinds (`HoleKind.pick`). The block is Tiered EV (the Overworld ceiling). The layout tag is `spawner.silo_guard` or `spawner.silo_elite`.
+`SpawnPotentials` lists the registered NPCs of the kind with weight 1 each, so vanilla picks evenly, one type per cycle. A kind with no registered NPC this run places no spawner (a spawner must never name a missing entity: the vanilla client draws it).
 
-## Rules (M8's, unchanged)
+## Rules (vanilla's, set from `SpawnerSettings.STANDARD`)
 
-Acts only while a player is within 24 blocks and its own chunk is loaded; at most 5 of its kind near it (box 12 wide, 6 below, 8 above), at most 3 per try, every 5 seconds; never loads a chunk; marks each NPC before it joins the world (Infernal opt-out). **Breaking the block removes the tile, so a broken spawner stays broken.** Like a vanilla spawner it drops nothing and is hidden from the creative tab.
+| NBT field | Value | Meaning |
+|---|---|---|
+| `RequiredPlayerRange` | 24 | acts only while a player is closer than 24 blocks, in a loaded chunk |
+| `SpawnCount` | 3 | at most 3 tries a cycle |
+| `MaxNearbyEntities` | 5 | a cycle stops once 5 of the cycle's mob type stand within 8 blocks across and 4 up or down |
+| `SpawnRange` | 4 | spawns within 4 blocks across, one block below to one above |
+| `MinSpawnDelay`, `MaxSpawnDelay` | 100, 120 | a cycle every 5 to 6 seconds |
+| `Delay` | 40 | the first cycle 2 seconds after a player comes in range |
 
-## Scaling
+The cap is per mob type, as vanilla counts: a guard post can hold up to 5 Army Soldiers and 5 Commandos. **Breaking the spawner ends it, and it drops nothing,** as any vanilla spawner.
 
-The tile stores the complex's ceiling. `HoleSpawning.attempt` raises each NPC's danger to at least `RolledCeiling.danger(ceiling)`, so equipment follows the loot: EV and IV 3, LuV and ZPM 4, UV and above 5 (`SiloCeiling.guardDanger`, tested equal). The count per level is in [activity-levels](activity-levels.md).
+## Scaling and arms
 
-## Tooltip (D41)
+Every `SpawnPotentials` entry and the `SpawnData` carry `GGSpawner: {MinDanger: n}`, with `n = RolledCeiling.danger(ceiling)` of the complex: EV and IV 3, LuV and ZPM 4, UV and above 5 (`SiloCeiling.guardDanger`, tested equal). Vanilla merges `SpawnData` into the new NPC's NBT and calls `readFromNBT` before the NPC joins the world. The NPC sees the key there and:
 
-`ItemBlockHoleSpawner`: tier line (`TierText`), one summary line, "Press [SHIFT] for detailed tooltip"; behind Shift the range, caps and "Break it and it stays broken", then "Added by: GregGuns". Layout is `HoleTooltipFormat`, unit tested. Lang keys `gregguns.hole_spawner.*`.
+1. sets its danger to the larger of its spawn position's danger and `n`;
+2. takes the Infernal Mobs opt-out marker (unless `infernal.allowSpawnerNpcs`);
+3. runs its egg-style setup, which rolls its equipment at that danger.
 
-## Texture
+The key is never saved back, so a reloaded guard keeps the gear it spawned with. The count per level is in [activity-levels](activity-levels.md).
 
-The two blocks borrow existing tiles (`concrete_hole`, `metalpanel_hazard`). A dedicated texture needs the orchestrator's approval (D47: generation is a last resort).
+## Light
+
+Vanilla asks `getCanSpawnHere()` before it applies `SpawnData`, and a monster refuses bright spots, so a lit operational complex would never spawn guards. A GregGuns NPC skips the two light checks only when a GregGuns-marked spawner of its own type is placing it (a spawner within 4 blocks across and 1 up or down whose current entry is that NPC and carries `GGSpawner`), and only when the `CheckSpawn` event has not marked it as a natural-spawn candidate. Peaceful, collision and liquid checks stay. Natural spawning, eggs and plain vanilla spawners keep every vanilla rule ([10-entities-npcs spawning](../../gregguns-spec/10-entities-npcs/spawning.md)).
+
+## Tooltip and texture
+
+None of its own: the post is the vanilla spawner block, with vanilla's name, texture and the spinning NPC inside.
 
 ## Requirements
 
 1. GGI-08-40: `spawner.silo_guard` and `spawner.silo_elite` map to their kinds; the mobs are as the table says.
-2. GGI-08-41: a placed post spawns guards when a player is near, and respects the cap.
+2. GGI-08-41: a placed post spawns guards when a player is near, also in a lit room, and respects the cap.
 3. GGI-08-42: breaking a post stops it for good.
-4. GGI-08-43: guards start at the ceiling's danger.
+4. GGI-08-43: guards start at the ceiling's danger or above, with equipment rolled at it.
 
 ## Tests
 
-Unit: `HoleKindTest`, `HoleTooltipFormatTest`, `SiloCeilingTest`. Scenarios: `icbm.complex.guards` (both posts place their own mobs at the stored ceiling's danger within the cap; a guard targets a nearby fake player; a broken post spawns nothing more, also after its chunk is saved, unloaded and reloaded, while the intact post reloads with kind and ceiling; the intact post keeps spawning, so the check can tell the two apart). NEI: the posts are `HiddenFromCreativeTab`, which the NEI config hides.
+Unit: `SpawnerKindTest`, `SpawnerSettingsTest`, `SpawnerNbtTest`, `SpawnerDataTest`, `SiloCeilingTest`. Scenarios: `icbm.complex.guards` (both posts, on a pad lit by glowstone, spawn their own mobs through vanilla's own update at the ceiling's danger or above, at most 3 a cycle and 5 a type, at least one armed; a guard targets a nearby fake player; a broken post spawns nothing more, also after its chunk is saved, unloaded and reloaded, while the intact post reloads with its mobs and danger floor and keeps spawning, so the check can tell the two apart); `icbm.complex.levels` (every post placement is a marked spawner of its kind's mobs and floor, and no stray one exists). The base scenarios `worldgen.spawner_*` cover the light rule, the Infernal marker and the client preview.
