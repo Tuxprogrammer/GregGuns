@@ -23,6 +23,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageFilter
 
+import ctmsel
+
 REPO = Path(__file__).resolve().parents[3]
 ASSETS = REPO / "src/main/resources/assets/gregguns"
 
@@ -347,7 +349,10 @@ def voxel_scene(blocks: dict, textures: dict, tags: dict | None = None) -> Scene
     Faces get fixed Minecraft-style brightness (top 1.0, north/south 0.8, east/west 0.6, bottom 0.5)."""
     s = Scene()
     ids = {}
+    ctm_keys = {k for k, spec in textures.items() if isinstance(spec, ctmsel.CtmTexture)}
     for k, spec in textures.items():
+        if k in ctm_keys:
+            continue
         if isinstance(spec, (str, Path)):
             spec = (spec, spec, spec)
         if len(spec) == 2:
@@ -365,12 +370,18 @@ def voxel_scene(blocks: dict, textures: dict, tags: dict | None = None) -> Scene
         (1, 0, 0): ([(1, 0, 1), (1, 0, 0), (1, 1, 0), (1, 1, 1)], 0.6),
     }
     for (x, y, z), key in blocks.items():
-        top, side, front = ids[key if not isinstance(key, tuple) else key[0]]
+        if key in ctm_keys:   # connected casing: each face picks its tile from the neighbors (ctmsel)
+            top = side = front = None
+        else:
+            top, side, front = ids[key if not isinstance(key, tuple) else key[0]]
         facing = key[1] if isinstance(key, tuple) else None  # e.g. ("controller", (0, 0, -1))
         for n, (corners, bright) in faces.items():
             if (x + n[0], y + n[1], z + n[2]) in solid:
                 continue
-            tex = front if facing == n else (top if n[1] != 0 else side)
+            if key in ctm_keys:
+                tex = s.texture(textures[key].tiles[ctmsel.tile_for_face(blocks, (x, y, z), n, key)])
+            else:
+                tex = front if facing == n else (top if n[1] != 0 else side)
             v = np.array([(x + a, y + b, z + c) for a, b, c in corners], float)
             s.quads.append(Quad(v, UV, tex, bright, (tags or {}).get(key[0] if isinstance(key, tuple) else key, 0)))
     return s

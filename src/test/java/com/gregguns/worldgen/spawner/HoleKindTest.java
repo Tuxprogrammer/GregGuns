@@ -58,4 +58,16 @@ class HoleKindTest {
         assertEquals("zombie_hole", HoleKind.ZOMBIE.blockName());
         assertEquals("bug_hole", HoleKind.BUG.blockName());
     }
+
+    @Test
+    void siloPostsPlaceTheComplexGuards() {
+        assertEquals(Arrays.asList(NpcMob.ARMY_SOLDIER, NpcMob.COMMANDO), HoleKind.SILO_GUARD.mobs());
+        assertEquals(Arrays.asList(NpcMob.COMMANDO, NpcMob.STORMTROOPER), HoleKind.SILO_ELITE.mobs());
+        assertSame(HoleKind.SILO_GUARD, HoleKind.byLayoutTag("spawner.silo_guard"));
+        assertSame(HoleKind.SILO_ELITE, HoleKind.byLayoutTag("spawner.silo_elite"));
+        assertEquals(true, HoleKind.SILO_GUARD.isSiloPost());
+        assertEquals(false, HoleKind.ZOMBIE.isSiloPost());
+        assertEquals("zombie_hole", HoleKind.ZOMBIE.textureName());
+        assertEquals("concrete_hole", HoleKind.SILO_GUARD.textureName());
+    }
 }

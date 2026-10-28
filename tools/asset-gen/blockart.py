@@ -64,15 +64,66 @@ def noisy(c: Canvas, rng, d=0.06) -> None:
 
 
 # ================================================================ CASINGS (16x16 opaque)
-def works_casing(rng):
+class Edges:
+    """Which sides of a casing tile carry the outer frame, and which inner corners carry a notch.
+
+    The connected-texture tiles (ctm.py) are cut from these: a side that touches another block of the same casing
+    has no frame there, so a wall reads as one panel. Corners: 'tl', 'tr', 'bl', 'br'. A notch marks a corner whose
+    two sides connect but whose diagonal neighbor is missing (the corner of a hole or an L-bend)."""
+
+    __slots__ = ("t", "b", "l", "r", "notch")
+
+    def __init__(self, t=True, b=True, l=True, r=True, notch=()):
+        self.t, self.b, self.l, self.r, self.notch = int(t), int(b), int(l), int(r), tuple(notch)
+
+
+ALL_EDGES = Edges()
+
+
+def bevel_edges(c: Canvas, fr: Edges, hi, lo) -> None:
+    """Canvas.bevel on the framed sides only. A side that ends at a framed corner stops one pixel short, exactly as
+    Canvas.bevel does, so the all-framed case is the original bevel."""
+    if fr.t:
+        c.hline(0, 16 - fr.r, 0, hi)
+    if fr.l:
+        c.vline(0, 0, 16 - fr.b, hi)
+    if fr.b:
+        c.hline(fr.l, 16, 15, lo)
+    if fr.r:
+        c.vline(15, fr.t, 16, lo)
+
+
+def notch_marks(c: Canvas, fr: Edges, hi, lo, ring=None) -> None:
+    """The inner-corner pixel(s): the frame lines of the two neighbors meet here. A two-pixel frame adds its ring
+    color one pixel in."""
+    spots = {"tl": (0, 0, hi, 1, 1), "tr": (15, 0, lo, -1, 1), "bl": (0, 15, lo, 1, -1), "br": (15, 15, lo, -1, -1)}
+    for k in fr.notch:
+        x, y, col, dx, dy = spots[k]
+        c.px(x, y, col)
+        if ring is not None:
+            c.px(x + dx, y + dy, ring)
+
+
+def corner_rivets(c: Canvas, fr: Edges, base, spots, big: bool = False) -> None:
+    """Rivets that belong to a frame corner: drawn only where both sides of that corner are framed.
+    spots: ((x, y, 'tl'|'tr'|'bl'|'br'), ...)."""
+    has = {"tl": fr.t and fr.l, "tr": fr.t and fr.r, "bl": fr.b and fr.l, "br": fr.b and fr.r}
+    for (x, y, k) in spots:
+        if has[k]:
+            rivet(c, x, y, base, big)
+
+
+def works_casing(rng, fr: Edges = ALL_EDGES):
     base = hx("#8f93a0")
     c = Canvas(16, fill=base)
     tone_fill(c, base, rng, 0.06, 3)
     for y in (3, 7, 11):                       # horizontal ribs
         c.hline(0, 16, y, shade(base, 0.55))
         c.hline(0, 16, y + 1, shade(base, 1.3))
-    c.bevel(0, 0, 16, 16, shade(base, 1.45), shade(base, 0.4))
-    for (x, y) in ((1, 1), (13, 1), (1, 13), (13, 13), (7, 5), (7, 9)):
+    bevel_edges(c, fr, shade(base, 1.45), shade(base, 0.4))
+    notch_marks(c, fr, shade(base, 1.45), shade(base, 0.4))
+    corner_rivets(c, fr, base, ((1, 1, "tl"), (13, 1, "tr"), (1, 13, "bl"), (13, 13, "br")))
+    for (x, y) in ((7, 5), (7, 9)):
         rivet(c, x, y, base)
     return [c]
 
@@ -127,18 +178,20 @@ def reaction_casing(rng):
     return [c]
 
 
-def gantry_casing(rng):
+def gantry_casing(rng, fr: Edges = ALL_EDGES):
     base = hx("#5f7690")
     c = Canvas(16, fill=base)
     tone_fill(c, base, rng, 0.07, 3)
-    c.bevel(0, 0, 16, 16, hx("#8aa2bc"), hx("#2c3a4c"))
-    c.rect(0, 13, 16, 15, hx("#e0b020"))                       # yellow edge stripe
-    c.hline(0, 16, 13, hx("#f4d04a"))
-    c.hline(0, 16, 15, hx("#1c2430"))
-    c.vline(7, 1, 12, shade(base, 0.6))
-    c.vline(8, 1, 12, shade(base, 1.3))
-    for (x, y) in ((2, 2), (12, 2), (2, 10), (12, 10)):
-        rivet(c, x, y, base)
+    bevel_edges(c, fr, hx("#8aa2bc"), hx("#2c3a4c"))
+    notch_marks(c, fr, hx("#8aa2bc"), hx("#2c3a4c"))
+    if fr.b:                                                   # yellow edge stripe: the wall's foot only
+        c.rect(0, 13, 16, 15, hx("#e0b020"))
+        c.hline(0, 16, 13, hx("#f4d04a"))
+        c.hline(0, 16, 15, hx("#1c2430"))
+    top, bottom = (1 if fr.t else 0), (12 if fr.b else 16)     # the seam groove runs on through a connected side
+    c.vline(7, top, bottom, shade(base, 0.6))
+    c.vline(8, top, bottom, shade(base, 1.3))
+    corner_rivets(c, fr, base, ((2, 2, "tl"), (12, 2, "tr"), (2, 10, "bl"), (12, 10, "br")))
     return [c]
 
 
@@ -216,33 +269,47 @@ def _plate_base(base, rng, spread=0.05):
     return c
 
 
-def bastion_iron(rng):
+def _ring(c: Canvas, fr: Edges, col) -> None:
+    """Canvas.frame(1, 1, 15, 15) on the framed sides only: the inner ring behind the bevel."""
+    x0, x1 = (1 if fr.l else 0), (15 if fr.r else 16)
+    y0, y1 = (1 if fr.t else 0), (15 if fr.b else 16)
+    if fr.t:
+        c.hline(x0, x1, 1, col)
+    if fr.b:
+        c.hline(x0, x1, 14, col)
+    if fr.l:
+        c.vline(1, y0, y1, col)
+    if fr.r:
+        c.vline(14, y0, y1, col)
+
+
+def bastion_iron(rng, fr: Edges = ALL_EDGES):
     base = hx("#a7a9ab")
     c = _plate_base(base, rng, 0.07)
-    c.bevel(0, 0, 16, 16, shade(base, 1.4), shade(base, 0.45))
-    c.frame(1, 1, 15, 15, shade(base, 0.7))
-    for (x, y) in ((2, 2), (12, 2), (2, 12), (12, 12)):
-        rivet(c, x, y, base, big=False)
-    c.hline(2, 14, 8, shade(base, 0.75))
+    bevel_edges(c, fr, shade(base, 1.4), shade(base, 0.45))
+    _ring(c, fr, shade(base, 0.7))
+    notch_marks(c, fr, shade(base, 1.4), shade(base, 0.45), shade(base, 0.7))
+    corner_rivets(c, fr, base, ((2, 2, "tl"), (12, 2, "tr"), (2, 12, "bl"), (12, 12, "br")))
+    c.hline(2 if fr.l else 0, 14 if fr.r else 16, 8, shade(base, 0.75))
     return [c]
 
 
-def bastion_steel(rng):
+def bastion_steel(rng, fr: Edges = ALL_EDGES):
     base = hx("#6c7078")
     c = _plate_base(base, rng, 0.08)
-    c.bevel(0, 0, 16, 16, shade(base, 1.5), shade(base, 0.4))
-    c.frame(1, 1, 15, 15, shade(base, 0.62))
+    bevel_edges(c, fr, shade(base, 1.5), shade(base, 0.4))
+    _ring(c, fr, shade(base, 0.62))
+    notch_marks(c, fr, shade(base, 1.5), shade(base, 0.4), shade(base, 0.62))
     for i in range(2, 14):                                       # cross-brace seams
         c.px(i, i, shade(base, 0.6))
         c.px(15 - i, i, shade(base, 0.6))
         c.px(i + 1, i, shade(base, 1.25))
-    for (x, y) in ((2, 2), (12, 2), (2, 12), (12, 12)):
-        rivet(c, x, y, base, big=True)
+    corner_rivets(c, fr, base, ((2, 2, "tl"), (12, 2, "tr"), (2, 12, "bl"), (12, 12, "br")), big=True)
     rivet(c, 7, 7, base, big=True)
     return [c]
 
 
-def bastion_aluminum(rng):
+def bastion_aluminum(rng, fr: Edges = ALL_EDGES):
     base = hx("#8ab4d0")
     c = _plate_base(base, rng, 0.05)
     # diamond tread: raised lozenges alternating direction
@@ -253,11 +320,12 @@ def bastion_aluminum(rng):
                 x, y = (bx + k, by + k) if d == 0 else (bx + 2 - k, by + k)
                 c.px(x, y, shade(base, 1.45))
                 c.px(x + 1 if d == 0 else x - 1, y, shade(base, 0.75))
-    c.bevel(0, 0, 16, 16, shade(base, 1.5), shade(base, 0.5))
+    bevel_edges(c, fr, shade(base, 1.5), shade(base, 0.5))
+    notch_marks(c, fr, shade(base, 1.5), shade(base, 0.5))
     return [c]
 
 
-def bastion_carbon(rng):
+def bastion_carbon(rng, fr: Edges = ALL_EDGES):
     base = hx("#1c1d21")
     c = Canvas(16, fill=base)
     for y in range(16):                                          # twill weave
@@ -266,10 +334,13 @@ def bastion_carbon(rng):
             c.px(x, y, hx("#26282e") if k < 2 else hx("#111215"))
             if k == 0 and y % 2 == 0:
                 c.px(x, y, hx("#3a3d46"))
-    c.bevel(0, 0, 16, 16, hx("#4a4d57"), hx("#08080a"))
-    for (x, y) in ((1, 1), (13, 1), (1, 13), (13, 13)):          # bronze corner brackets
-        c.rect(x, y, x + 2, y + 2, hx("#a07010"))
-        c.px(x, y, hx("#d09a30"))
+    bevel_edges(c, fr, hx("#4a4d57"), hx("#08080a"))
+    notch_marks(c, fr, hx("#4a4d57"), hx("#08080a"))
+    has = {"tl": fr.t and fr.l, "tr": fr.t and fr.r, "bl": fr.b and fr.l, "br": fr.b and fr.r}
+    for (x, y, k) in ((1, 1, "tl"), (13, 1, "tr"), (1, 13, "bl"), (13, 13, "br")):   # bronze corner brackets
+        if has[k]:
+            c.rect(x, y, x + 2, y + 2, hx("#a07010"))
+            c.px(x, y, hx("#d09a30"))
     return [c]
 
 

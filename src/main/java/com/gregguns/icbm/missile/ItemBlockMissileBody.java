@@ -33,6 +33,16 @@ public final class ItemBlockMissileBody extends ItemBlock {
         setMaxStackSize(1);
     }
 
+    /**
+     * @param stack a body stack
+     * @return true when it carries the salvage flag of a generated complex's damaged body
+     */
+    public static boolean isSalvage(ItemStack stack) {
+        return stack != null && stack.hasTagCompound()
+            && stack.getTagCompound()
+                .getBoolean(com.gregguns.icbm.worldgen.SiloBonusItems.K_DAMAGED);
+    }
+
     /** @return the tier */
     public MissileTier tier() {
         return tier;
@@ -41,6 +51,9 @@ public final class ItemBlockMissileBody extends ItemBlock {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
         float hitX, float hitY, float hitZ) {
+        if (isSalvage(stack)) {
+            return false; // a damaged body is salvage only (D17)
+        }
         int[] pad = IcbmAvailability.galacticraftPresent() ? MissileGc.padCenter(world, x, y, z) : null;
         int bx;
         int by;
@@ -122,6 +135,9 @@ public final class ItemBlockMissileBody extends ItemBlock {
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
+        if (isSalvage(stack)) {
+            tooltip.add(StatCollector.translateToLocal("gregguns.icbm.missile_body.damaged"));
+        }
         MissileTooltipFormat.Facts f = new MissileTooltipFormat.Facts();
         f.tierText = tier == MissileTier.T1 ? TierText.colored(com.gregguns.api.Tier.HV)
             : tier == MissileTier.T2

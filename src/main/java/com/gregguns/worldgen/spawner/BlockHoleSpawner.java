@@ -45,7 +45,7 @@ public final class BlockHoleSpawner extends BlockContainer implements Tiered, Hi
 
     @Override
     public Tier getTier() {
-        return Tier.LV;
+        return kind.isSiloPost() ? Tier.EV : Tier.LV;
     }
 
     @Override
