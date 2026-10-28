@@ -454,7 +454,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "The silo does not mate a body without a warhead or with one too heavy for it, keeps the items in the bus, and does not pump a fluid the missile does not accept.";
+            return "The silo does not mate a body without a warhead, a damaged (salvage) body, or a body with a warhead too heavy for it, keeps the items in the bus, and does not pump a fluid the missile does not accept.";
         }
 
         @Override
@@ -506,6 +506,23 @@ public final class SiloScenarios {
                             tile(ctx, -1, 0, 0).getStackInSlot(0) != null
                                 && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
                             "both items stay in the bus");
+                        // A damaged body (a silo complex's salvage) with a fitting warhead: not a body.
+                        ItemStack damaged = MissileBodies.body(MissileTier.T1);
+                        damaged.setItemDamage(com.gregguns.icbm.missile.ItemBlockMissileBody.SALVAGE_DAMAGE);
+                        putBus(ctx, damaged, warhead(WarheadCasing.T1, "condensed"));
+                        mark[0] = ticks;
+                        stage[0] = 5;
+                        return null;
+                    case 5:
+                        power(ctx);
+                        if (ticks < mark[0] + 100) {
+                            return null;
+                        }
+                        out.check(silo(ctx).missile() == null, "a damaged body is salvage, never mated (D17)");
+                        out.check(
+                            tile(ctx, -1, 0, 0).getStackInSlot(0) != null
+                                && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
+                            "the damaged body and the warhead stay in the bus");
                         putBus(ctx, (ItemStack) null, (ItemStack) null);
                         // Wrong fuel into a T3 standing in the shaft.
                         m[0] = stand(ctx, MissileTier.T3);

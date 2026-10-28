@@ -25,8 +25,8 @@ public enum MarkKind {
     FLOOD_CELL,
     /** A rubble/fallout placeholder cell (warhead magazine when abandoned). */
     RUBBLE,
-    /** A sign cell; the key is a lang key for the text. */
+    /** A wall sign next to its cell; the key is the lang key of its text (up to four lines divided by a bar). */
     SIGN,
-    /** A blast door between a tunnel and a section. */
+    /** A blast door between a tunnel and a section. Writes nothing yet: the doors arrive with I7 (D213). */
     BLAST_DOOR
 }

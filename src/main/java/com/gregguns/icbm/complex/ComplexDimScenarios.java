@@ -262,7 +262,7 @@ public final class ComplexDimScenarios {
 
         /**
          * The radar on the hut roof: a Radar Casing pedestal, an HV radar controller that stands unformed (no Energy
-         * Hatch), and a station that forms once an Energy Hatch takes the place under the controller (D125, D210).
+         * Hatch), and a station that forms once an Energy Hatch takes the place under the controller (D125, D215).
          */
         private void radarStation(World w, int groundY, int cx, int cz, ScenarioResult.Builder out, String label) {
             int roof = groundY + 4;

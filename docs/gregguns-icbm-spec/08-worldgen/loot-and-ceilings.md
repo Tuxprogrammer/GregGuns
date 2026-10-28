@@ -15,18 +15,18 @@ One table per loot key (`LootKeys`) and ceiling, registered as `gregguns:silo_<k
 
 ## Machines (D129)
 
-`MACHINE` marks become real machines at the ceiling or one or two tiers below it (at least HV), never above it. Launch Control is GregGuns' MTE; the NASA Workbench is Galacticraft's block; generators and Battery Buffers are GT's at the highest tier GT has up to the pick; the rest (pump, air handler, fuel tank, comms, radar, workbench) use the GT machine of that tier where one exists and otherwise the GT hull of that tier. A dead machine is the hull. **No live warhead is ever placed (D17):** the magazine's casings are empty `T1` warhead blocks.
+`MACHINE` marks become real machines at the ceiling or one or two tiers below it (at least HV), never above it. Launch Control is GregGuns' MTE; the NASA Workbench is Galacticraft's block; generators and Battery Buffers are GT's at the highest tier GT has up to the pick; the rest (pump, air handler, fuel tank, comms, radar, workbench) use the GT machine of that tier where one exists and otherwise the GT hull of that tier. A dead machine is the hull. **No live warhead is ever placed (D17):** the magazine's casing stock is inert Stainless Steel frame boxes, and its chests hold Stainless Steel plates, the stock of a T1 casing. No warhead block and no warhead item appears anywhere in a complex (D210).
 
 ## Contents (`Placement.Bonus`)
 
 | Bonus | Where | Chance |
 |---|---|---|
-| Damaged T1 missile body (item damage 1 and NBT `damaged`: cannot be placed, takes no recipe as a body, recycles for the plates only; D186) | every `salvage` chest; operational: half | always (D17's main find) |
+| Damaged missile body of the planet's rocket tier, at most T3 (item damage 1: cannot be placed, is no body to the silo or any recipe, recycles for the plates only; D186, D211) | every `salvage` chest; operational: half | always (D17's main find) |
 | Schematic chip (T1) | one `safe`, `comms` or `control` chest | 8%, 10%, 25% by level |
 | Silo controller or Energy Hatch (whichever the silo lacks, D128) | one `safe`, `stockpile`, `workshop` or `control` chest, per silo | 25%, 40%, 60% |
 | Data stick with another complex's block coordinates | one `comms` chest | half the chip chance, only when another complex exists |
-| Intact T1 warhead item (never lit) | `magazine` chests | operational 15% only |
-| Empty casings | `magazine` chests | always |
+| Stainless Steel plates (four) | `magazine` chests | always |
+| Rocket fuel cells (8 to 16), the best rung the ceiling allows | `fuel` chests | always |
 
 The `ITEM_FRAME_WALL` (armory) holds one gun per frame drawn from the armory table at the ceiling.
 

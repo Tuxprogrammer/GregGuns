@@ -22,6 +22,24 @@ public enum ActivityLevel {
     public static final int[] DEFAULT_WEIGHTS = { 50, 35, 15 };
 
     /**
+     * @param configured the weights from the config file
+     * @return them when they are three weights, 0 or more, with at least one above 0; else {@link #DEFAULT_WEIGHTS}
+     */
+    public static int[] weightsFrom(int[] configured) {
+        if (configured == null || configured.length != 3) {
+            return DEFAULT_WEIGHTS;
+        }
+        long sum = 0;
+        for (int w : configured) {
+            if (w < 0) {
+                return DEFAULT_WEIGHTS;
+            }
+            sum += w;
+        }
+        return sum > 0 ? configured : DEFAULT_WEIGHTS;
+    }
+
+    /**
      * @param seed    the complex's seed
      * @param weights three weights in the enum's order; negatives count as 0; null or all zero gives abandoned
      * @return the rolled level

@@ -66,7 +66,7 @@ public final class ComplexContents {
         for (Tunnel t : plan.tunnels()) {
             marks(t.marks(), t.bounds(), "tunnel", false, p, seed, ceiling, hall, out, chests, chestCounter, level);
         }
-        bonuses(plan, p, seed, other, chests);
+        bonuses(plan, p, seed, other, ceiling, chests);
         List<Placement> all = new ArrayList<>(collapses);
         all.addAll(out);
         return keepFrameWalls(all);
@@ -197,7 +197,7 @@ public final class ComplexContents {
                     }
                     break;
                 case SPAWNER:
-                    spawner(m, band, controlRoom, p, seed, out);
+                    spawner(m, band, controlRoom, p, seed, ceiling, out);
                     break;
                 case MACHINE:
                     machine(m, p, seed, ceiling, out);
@@ -253,9 +253,18 @@ public final class ComplexContents {
         }
     }
 
-    private static void spawner(Mark m, int band, boolean controlRoom, ActivityProfile p, long seed,
+    /**
+     * @param ceiling the complex's ceiling
+     * @return the factor guard spawner chances grow by: 1 at EV, 1.5 at the top (UMV), in even steps
+     */
+    public static double guardScale(int ceiling) {
+        int c = Math.max(SiloCeiling.EV, Math.min(SiloCeiling.UMV, ceiling));
+        return 1.0 + 0.5 * (c - SiloCeiling.EV) / (SiloCeiling.UMV - SiloCeiling.EV);
+    }
+
+    private static void spawner(Mark m, int band, boolean controlRoom, ActivityProfile p, long seed, int ceiling,
         List<Placement> out) {
-        double chance = p.spawnerChance(band);
+        double chance = Math.min(1.0, p.spawnerChance(band) * guardScale(ceiling));
         if ("post".equals(m.key()) && p.level() != ActivityLevel.ABANDONED) {
             chance = Math.min(1.0, chance + 0.25);
         }
@@ -318,19 +327,29 @@ public final class ComplexContents {
         return 1 + Math.min(2, d / 30);
     }
 
+    /**
+     * @param ceiling the complex's ceiling (EV 4 up)
+     * @return the missile tier of the salvaged body: the planet's rocket tier, which the ceiling follows (EV is tier 1
+     *         and tier 2 is IV), capped at 3
+     */
+    public static int bodyTier(int ceiling) {
+        return Math.max(1, Math.min(3, ceiling - 3));
+    }
+
     /** Complex-wide bonus items, each carried by one hashed chest of a fitting key. */
-    private static void bonuses(ComplexPlan plan, ActivityProfile p, long seed, int[] other, List<Placement> chests) {
+    private static void bonuses(ComplexPlan plan, ActivityProfile p, long seed, int[] other, int ceiling,
+        List<Placement> chests) {
         for (Placement c : chests) {
             String key = c.key();
-            if ("salvage".equals(key)) {
+            c.setCeiling(ceiling);
+            if ("fuel".equals(key)) {
+                c.addBonus(Bonus.FUEL_CELLS);
+            } else if ("salvage".equals(key)) {
                 if (p.level() != ActivityLevel.OPERATIONAL || Mix.unit(Mix.of(seed, S_ROLL, c.chestIndex(), 1)) < 0.5) {
                     c.addBonus(Bonus.DAMAGED_BODY);
                 }
             } else if ("magazine".equals(key)) {
-                c.addBonus(Bonus.EMPTY_CASINGS);
-                if (Mix.unit(Mix.of(seed, S_ROLL, c.chestIndex(), 2)) < p.intactWarheadChance()) {
-                    c.addBonus(Bonus.INTACT_WARHEAD);
-                }
+                c.addBonus(Bonus.CASING_PLATES);
             }
         }
         // one-off carriers

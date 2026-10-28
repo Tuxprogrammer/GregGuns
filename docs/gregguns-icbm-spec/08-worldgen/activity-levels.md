@@ -57,4 +57,6 @@ Unit: `ActivityLevelTest`, `ComplexContentsTest`. Scenarios: `icbm.complex.level
 
 ## Open questions
 
+Guard chances scale with the ceiling: 1.0 at EV rising evenly to 1.5 at UMV, capped at certainty (D212). The level weights are the config `icbm.siloComplexActivityWeights`.
+
 Weights and rates are tuned in I7.

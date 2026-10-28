@@ -24,7 +24,6 @@ public final class ActivityProfile {
         new double[] { 0, 0, 0, 0 },
         0.0,
         0,
-        0.0,
         0.08,
         0.25);
     private static final ActivityProfile PARTLY = new ActivityProfile(
@@ -40,7 +39,6 @@ public final class ActivityProfile {
         new double[] { 0.10, 0.20, 0.45, 0.65 },
         0.0,
         1,
-        0.0,
         0.10,
         0.40);
     private static final ActivityProfile OPERATIONAL = new ActivityProfile(
@@ -56,7 +54,6 @@ public final class ActivityProfile {
         new double[] { 0.50, 0.75, 1.0, 1.0 },
         1.0,
         2,
-        0.15,
         0.25,
         0.60);
 
@@ -72,13 +69,12 @@ public final class ActivityProfile {
     private final double[] spawnerByDepth;
     private final double shaftSpawnerChance;
     private final int richness;
-    private final double intactWarheadChance;
     private final double chipChance;
     private final double siloPartChance;
 
     private ActivityProfile(ActivityLevel level, double collapse, double breach, double rubble, double hole, double lit,
         double brokenCasing, double deadMachine, boolean flooded, double[] spawnerByDepth, double shaftSpawner,
-        int richness, double intactWarhead, double chip, double siloPart) {
+        int richness, double chip, double siloPart) {
         this.level = level;
         this.collapseChance = collapse;
         this.breachChance = breach;
@@ -91,7 +87,6 @@ public final class ActivityProfile {
         this.spawnerByDepth = spawnerByDepth;
         this.shaftSpawnerChance = shaftSpawner;
         this.richness = richness;
-        this.intactWarheadChance = intactWarhead;
         this.chipChance = chip;
         this.siloPartChance = siloPart;
     }
@@ -174,11 +169,6 @@ public final class ActivityProfile {
     /** @return chest richness 0 to 2 ({@code LootDraw} semantics: more picks, heavier top-tier lines) */
     public int richness() {
         return richness;
-    }
-
-    /** @return chance the warhead magazine holds one intact T1 warhead */
-    public double intactWarheadChance() {
-        return intactWarheadChance;
     }
 
     /** @return chance a chest in the comms or office holds the schematic chip */

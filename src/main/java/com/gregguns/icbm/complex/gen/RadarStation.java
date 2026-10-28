@@ -9,7 +9,7 @@ import com.gregguns.icbm.defense.RadarShape;
  * with
  * the pedestal on the top layer of the middle aisle; the controller sits in the front aisle's upper layer and faces
  * north. The Energy Hatch position (under the controller) holds a Radar Casing: the station is inert until a player
- * puts an Energy Hatch there, the way a silo is missing one part (D210).
+ * puts an Energy Hatch there, the way a silo is missing one part (D215).
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Radar stations); radar.md (The small radar)
 public final class RadarStation {

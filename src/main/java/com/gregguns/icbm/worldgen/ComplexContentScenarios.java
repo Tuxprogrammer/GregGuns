@@ -106,7 +106,7 @@ public final class ComplexContentScenarios {
 
         @Override
         public String description() {
-            return "Every bonus item resolves; the damaged body carries its flag and the warhead is an item, never lit.";
+            return "Every bonus item resolves; the damaged body carries its flag and the magazine casing resolves to an inert frame box.";
         }
 
         @Override
@@ -171,6 +171,37 @@ public final class ComplexContentScenarios {
             out.note("hull fallbacks (roles GT has no single block for): " + hulls.size());
             return out.build();
         }
+    }
+
+    /**
+     * The lowest ceiling at which a chest may hold each metal, written down from the tier rule of the spec sheet
+     * (loot-and-ceilings.md: the plate ladder is Stainless Steel, Titanium, Tungstensteel, HSS-G, Naquadah Alloy,
+     * Neutronium and up) and not read from {@link SiloLootTables}, so the sweep can fail on its own: the table's tags
+     * and this list must agree.
+     */
+    private static final String[][] METAL_FROM = { { "StainlessSteel", "HV" }, { "Titanium", "EV" },
+        { "TungstenSteel", "IV" }, { "HSSG", "LuV" }, { "NaquadahAlloy", "ZPM" }, { "Neutronium", "UV" },
+        { "CosmicNeutronium", "UHV" }, { "Infinity", "UEV" }, { "TranscendentMetal", "UIV" }, { "SpaceTime", "UMV" } };
+    private static final String[] VOLT = { "ULV", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV", "UEV", "UIV",
+        "UMV" };
+
+    /**
+     * @return the metal name when the stack is made of one that needs a higher ceiling than {@code ceiling}, else null
+     */
+    private static String materialAbove(ItemStack st, int ceiling) {
+        gregtech.api.objects.ItemData d = gregtech.api.util.GTOreDictUnificator.getAssociation(st);
+        if (d == null || d.mMaterial == null || d.mMaterial.mMaterial == null) {
+            return null;
+        }
+        String name = d.mMaterial.mMaterial.mName;
+        for (String[] m : METAL_FROM) {
+            if (m[0].equals(name)) {
+                int need = java.util.Arrays.asList(VOLT)
+                    .indexOf(m[1]);
+                return need > ceiling ? name + " (needs " + m[1] + ")" : null;
+            }
+        }
+        return null;
     }
 
     private static final class Sweep implements Scenario {
@@ -250,6 +281,11 @@ public final class ComplexContentScenarios {
                             if (st != null) {
                                 stacks++;
                                 dimStacks++;
+                                String above = materialAbove(st, ceiling);
+                                if (above != null) {
+                                    bad++;
+                                    out.note(dim + "@" + SiloCeiling.name(ceiling) + " " + p.key() + " holds " + above);
+                                }
                                 if (!own.contains(id(st))) {
                                     bad++;
                                     out.note(dim + "@" + SiloCeiling.name(ceiling) + " " + p.key() + " drew " + id(st));

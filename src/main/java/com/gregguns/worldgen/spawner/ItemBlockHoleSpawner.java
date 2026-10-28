@@ -18,8 +18,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * The item of a hole spawner block, with the D41 tooltip: the tier, which NPCs it places, and behind Shift the range,
- * the cap and the "broken stays broken" rule. Worldgen places the block; the item exists for creative-mode picking and
- * NEI. Both sides.
+ * the cap and the "broken stays broken" rule. Worldgen places the block; the item exists for creative-mode picking (the
+ * posts are hidden from NEI). Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-guard-spawner.md (Tooltip)
 public final class ItemBlockHoleSpawner extends ItemBlock {
