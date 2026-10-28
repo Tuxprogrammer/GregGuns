@@ -38,7 +38,7 @@ The warhead changes what a shot **does**, not how hard it hits. The blast's own 
 | HE | condensed | 5.3 | 75 |
 | Heavy Slug | anvil | 4.7 | 75 |
 | Incendiary | incendiary | 7.0 | 0 |
-| Phosphorus | shrapnel | 5.9 | 75 |
+| Phosphorus | shrapnel | 5.8 | 75 |
 | Demolition | breaching | 4.4 | 0 |
 | EMP | emp | 12 | 0 |
 | Grenade HE | condensed | 5.3 | 45 |
