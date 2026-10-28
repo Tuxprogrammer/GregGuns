@@ -90,6 +90,7 @@ public final class ScenarioRun {
             ScenarioResult result;
             try {
                 currentContext = contexts.apply(current);
+                logFreeTickets(current.name());
                 result = current.run(currentContext);
                 if (result == null) {
                     result = ScenarioResult.fail(current.name(), "scenario returned no result");
@@ -103,6 +104,14 @@ public final class ScenarioRun {
             } else {
                 finishCurrent(result);
             }
+        }
+    }
+
+    /** Logs how many chunk tickets are left, so a leaking scenario shows up as a steady drop (see ScenarioChunks). */
+    private static void logFreeTickets(String scenario) {
+        net.minecraft.world.World w = net.minecraftforge.common.DimensionManager.getWorld(0);
+        if (w != null && !w.isRemote) {
+            GregGuns.LOG.info("tickets free before {}: {}", scenario, ScenarioChunks.freeTickets(w));
         }
     }
 

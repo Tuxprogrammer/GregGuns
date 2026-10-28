@@ -166,7 +166,8 @@ if [ "$boot_only" -eq 0 ]; then
   echo "$command_to_send" >&3
   wait_for 'Scenarios: [0-9]+ passed, [0-9]+ failed' "$test_timeout" "the scenario summary"
   summary="$(grep -E 'Scenarios: [0-9]+ passed, [0-9]+ failed' "$log" | tail -n 1)"
-  grep -E '\] FAIL ' "$log" | sed 's/^/  /'
+  # Each FAIL line with the messages under it (indented "[GregGuns]   " lines): a bare FAIL line says nothing about why.
+  sed -n 's/^.*\(\[GregGuns\] .*\)$/\1/p' "$log" | awk '/^\[GregGuns\] FAIL /{show=1} /^\[GregGuns\] (PASS|SKIP) /{show=0} show' | sed 's/^/  /'
   echo "$summary"
   failed="$(echo "$summary" | sed -E 's/.*passed, ([0-9]+) failed.*/\1/')"
   [ "$failed" -eq 0 ] || result=1

@@ -93,4 +93,28 @@ public final class ScenarioChunks {
         }
         return new Hold(tickets);
     }
+
+    /**
+     * Counts the chunk tickets the mod can still get by requesting until Forge refuses, then returns them all. A suite
+     * that leaks tickets runs the mod dry (default limit 200), after which a missile's launch or a hold silently
+     * pins nothing; this makes that visible. Dev environment only.
+     *
+     * @param world the world
+     * @return how many more tickets {@code requestTicket} would hand out now
+     */
+    public static int freeTickets(World world) {
+        List<ForgeChunkManager.Ticket> probe = new ArrayList<>();
+        try {
+            ForgeChunkManager.Ticket t;
+            while ((t = ForgeChunkManager.requestTicket(GregGuns.instance, world, ForgeChunkManager.Type.NORMAL))
+                != null) {
+                probe.add(t);
+            }
+        } finally {
+            for (ForgeChunkManager.Ticket t : probe) {
+                ForgeChunkManager.releaseTicket(t);
+            }
+        }
+        return probe.size();
+    }
 }
