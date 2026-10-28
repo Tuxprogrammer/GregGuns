@@ -9,10 +9,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
+import com.gregguns.icbm.warhead.effects.Effects;
+import com.gregguns.icbm.warhead.effects.EnderRules;
+import com.gregguns.icbm.warhead.effects.RedMatterModel;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -109,6 +113,36 @@ public final class ItemBlockWarhead extends ItemBlock {
         }
     }
 
+    /**
+     * The numbers an effect line prints, read from the config and the effect constants so the text cannot drift from
+     * the game (lang strings take them as {@code %s}).
+     *
+     * @param id a blast id
+     * @return the format arguments for {@code gregguns.icbm.effect.<id>}; empty when the line has none
+     */
+    static Object[] effectArgs(String id) {
+        switch (id) {
+            case "antimatter":
+                return new Object[] { (int) RedMatterModel.ANTIMATTER_REACH };
+            case "redmatter":
+                return new Object[] { IcbmConfig.redMatterLifetimeSeconds };
+            case "ender":
+                return new Object[] { EnderRules.DURATION_TICKS / 20, (int) EnderRules.TELEPORT_RANGE,
+                    EnderRules.TARGET_MIN, EnderRules.TARGET_SPREAD, IcbmConfig.enderMaxTeleports };
+            case "antigrav":
+                return new Object[] { IcbmConfig.antigravMaxBlocks };
+            case "breaching":
+                return new Object[] { Effects.BREACH_DEPTH, (int) Effects.BREACH_MAX_HARDNESS };
+            case "debilitation":
+            case "chemical":
+            case "smoke":
+            case "contagious":
+                return new Object[] { Effects.GAS_TICKS / 20 };
+            default:
+                return new Object[0];
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     private static WarheadTooltipFormat.Labels labels(String id, WarheadBlast blast) {
         WarheadTooltipFormat.Labels l = new WarheadTooltipFormat.Labels();
@@ -123,7 +157,8 @@ public final class ItemBlockWarhead extends ItemBlock {
         l.detailCurve = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.curve");
         l.detailFuse = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.fuse");
         l.detailCharge = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.charge");
-        l.detailEffect = blast == null ? null : StatCollector.translateToLocal("gregguns.icbm.effect." + id);
+        l.detailEffect = blast == null ? null
+            : StatCollector.translateToLocalFormatted("gregguns.icbm.effect." + id, effectArgs(id));
         return l;
     }
 }
