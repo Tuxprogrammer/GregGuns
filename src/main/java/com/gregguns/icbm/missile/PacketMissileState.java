@@ -9,16 +9,17 @@ import net.minecraft.world.World;
 
 import com.gregguns.network.ClientboundPacket;
 import com.gregguns.network.WorldTargets;
+import com.gregguns.icbm.warhead.WarheadBlast;
 import com.gregguns.network.validation.ClientRules;
 
 /**
- * Server to every client tracking a {@link EntityMissile}: its flight phase, warhead casing, nuclear flag and fuel,
+ * Server to every client tracking a {@link EntityMissile}: its flight phase, warhead casing, warhead blast and fuel,
  * which drive the
- * engine flames and the nose model. Sent on change and repeated about once a second, so a client that starts tracking
+ * engine flames and the nose model and skin. Sent on change and repeated about once a second, so a client that starts tracking
  * late catches up. It replaces DataWatcher slots, which GregGuns never claims (GGS-01-11).
  *
  * <p>
- * Wire: entity id (int), phase (byte), casing (byte), fuel (int), nuclear flag (byte, picks the nuclear model), warm-up
+ * Wire: entity id (int), phase (byte), casing (byte), fuel (int), blast (byte: 0 for none, else the {@link WarheadBlast} ordinal plus one; picks the nose skin), warm-up
  * tick, lead and total (ints, D88).
  * Append-only list position: see
  * {@code GregGunsNetwork}. A bad value or a target that is not a missile is dropped (CORE-40). Side: sent by the
@@ -32,7 +33,7 @@ public final class PacketMissileState extends ClientboundPacket {
     private int phase;
     private int casing;
     private int fuel;
-    private int nuclear;
+    private int blast;
     private int tick;
     private int lead;
     private int total;
@@ -49,7 +50,8 @@ public final class PacketMissileState extends ClientboundPacket {
             .ordinal();
         this.casing = missile.casingNumber();
         this.fuel = missile.fuelMb();
-        this.nuclear = "nuclear".equals(missile.explosiveId()) ? 1 : 0;
+        WarheadBlast b = WarheadBlast.byId(missile.explosiveId());
+        this.blast = b == null ? 0 : b.ordinal() + 1;
         this.tick = missile.warmupTick();
         this.lead = missile.warmupLead();
         this.total = missile.warmupTotal();
@@ -61,7 +63,7 @@ public final class PacketMissileState extends ClientboundPacket {
         buf.writeByte(phase);
         buf.writeByte(casing);
         buf.writeInt(fuel);
-        buf.writeByte(nuclear);
+        buf.writeByte(blast);
         buf.writeInt(tick);
         buf.writeInt(lead);
         buf.writeInt(total);
@@ -73,7 +75,7 @@ public final class PacketMissileState extends ClientboundPacket {
         phase = buf.readByte();
         casing = buf.readByte();
         fuel = buf.readInt();
-        nuclear = buf.readByte();
+        blast = buf.readByte();
         tick = buf.readInt();
         lead = buf.readInt();
         total = buf.readInt();
@@ -83,7 +85,7 @@ public final class PacketMissileState extends ClientboundPacket {
     protected void validate(ClientRules rules, World world) {
         rules.inRange("phase", phase, 0, FlightPhase.values().length - 1)
             .inRange("casing", casing, 1, 5)
-            .inRange("nuclear", nuclear, 0, 1)
+            .inRange("blast", blast, 0, WarheadBlast.values().length)
             .inRange("fuel", fuel, 0, 10_000_000)
             .inRange("tick", tick, 0, 100_000)
             .inRange("lead", lead, 0, 100_000)
@@ -97,7 +99,7 @@ public final class PacketMissileState extends ClientboundPacket {
     @Override
     protected void handle(World world, EntityPlayer localPlayer) {
         EntityMissile m = (EntityMissile) world.getEntityByID(entityId);
-        m.applyState(FlightPhase.values()[phase], casing, fuel, nuclear == 1);
+        m.applyState(FlightPhase.values()[phase], casing, fuel, blast == 0 ? null : WarheadBlast.values()[blast - 1].id());
         m.applyCountdown(tick, lead, total);
     }
 }

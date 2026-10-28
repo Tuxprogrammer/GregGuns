@@ -72,7 +72,7 @@ def main(src, repo):
     tail = next(i for i, ln in enumerate(lines) if ln.startswith("that repository; it supplements"))
     head = lines[:4]
     head[0] = head[0].replace("Item textures", "Block textures", 1)
-    head.append("version 3\"; it names no separate asset license). Modifications: renamed only. See docs/assets/CREDITS.md."
+    head.append("version 3\"; it names no separate asset license). Modifications: renamed only, except the irradiated_*.png tiles, which are recolored and reworked (tools/asset-gen/icbm/make_fallout_earth.py). See docs/assets/CREDITS.md."
                 " The full license text follows (LICENSE.LESSER from")
     (blocks / "LICENSE.txt").write_text("\n".join(head + lines[tail:]), encoding="utf-8")
     shutil.copyfile(items / "GPL-3.0.txt", blocks / "GPL-3.0.txt")

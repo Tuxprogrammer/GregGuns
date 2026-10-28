@@ -129,14 +129,10 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param newPhase  the flight phase
      * @param newCasing the warhead casing
      * @param newFuel   mB in the tank
-     * @param isNuclear true when the warhead is nuclear (picks the nose model; the client knows no other explosive)
+     * @param blastId   the warhead's blast id (picks the nose model and skin), or null when the server sent none
      */
-    void applyState(FlightPhase newPhase, int newCasing, int newFuel, boolean isNuclear) {
-        if (isNuclear) {
-            this.explosive = "nuclear";
-        } else if ("nuclear".equals(this.explosive)) {
-            this.explosive = WarheadData.DEFAULT_EXPLOSIVE;
-        }
+    void applyState(FlightPhase newPhase, int newCasing, int newFuel, String blastId) {
+        this.explosive = blastId == null ? WarheadData.DEFAULT_EXPLOSIVE : blastId;
         this.phase = newPhase;
         this.casing = newCasing;
         this.fuelMb = newFuel;
@@ -259,7 +255,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         }
     }
 
-    /** @return the warhead's explosive id (on a client only "nuclear" is known, for the nose model) */
+    /** @return the warhead's explosive id (on a client the blast id the state packet carried, for the nose skin) */
     public String explosiveId() {
         return explosive;
     }
