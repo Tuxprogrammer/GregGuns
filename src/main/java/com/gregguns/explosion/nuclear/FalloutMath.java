@@ -16,7 +16,46 @@ public final class FalloutMath {
     /** Blocks converted per converted column: the top block, then each of up to two below with chance one half. */
     public static final double AVERAGE_DEPTH = 1.75;
 
+    /** The inner fireball: trinitite, hot rubble and goo lie within this share of the fallout radius. */
+    public static final double INNER_SHARE = 0.4;
+    /** Goo can lie out to this share of the inner radius. */
+    public static final double GOO_REACH = 1.0;
+    /** The chance of goo on a converted top block at ground zero (about 1 percent on average, D21). */
+    public static final double GOO_PEAK = 0.03;
+
     private FalloutMath() {}
+
+    /**
+     * @param distance horizontal distance from ground zero
+     * @param inner    the inner fireball radius
+     * @return the chance a converted top block is goo: {@link #GOO_PEAK} at ground zero, falling to zero at the rim of
+     *         the inner fireball
+     */
+    public static double gooChance(double distance, double inner) {
+        if (!(inner > 0.0) || !(distance >= 0.0) || distance >= inner) {
+            return 0.0;
+        }
+        return GOO_PEAK * (1.0 - distance / inner);
+    }
+
+    /**
+     * The chance a converted block is hot earth (or trinitite, on sand): it falls smoothly with distance from ground
+     * zero (D21, D155), one at the center and zero at the rim of the inner fireball. The tier factor is 1 for a ZPM
+     * or better blast and 0 for a launcher-scale one. The expected hot share of the inner disc is one half, below
+     * {@code FalloutYield.HOT_SHARE}, so the fissile bound there still holds.
+     *
+     * @param distance horizontal distance from ground zero
+     * @param inner    the inner fireball radius
+     * @param grade    {@code Fallout.GRADE_LAUNCHER} or {@code Fallout.GRADE_ZPM}
+     * @return 0 to 1
+     */
+    public static double hotChance(double distance, double inner, int grade) {
+        if (grade < Fallout.GRADE_ZPM || !(inner > 0.0) || !(distance >= 0.0) || distance >= inner) {
+            return 0.0;
+        }
+        double u = distance / inner;
+        return 1.0 - u * u;
+    }
 
     /**
      * @param radius the fallout radius, blocks
@@ -53,7 +92,8 @@ public final class FalloutMath {
      * @param seed the job's seed
      * @param x    column X
      * @param z    column Z
-     * @param salt which question is asked (0 conversion, 1 and 2 the blocks below)
+     * @param salt which question is asked (0 conversion, 1 and 2 the blocks below, 3 goo, 4 to 6 hot earth, 7 to 9
+     *             trinitite)
      * @return a value in [0, 1)
      */
     public static double roll(long seed, int x, int z, int salt) {

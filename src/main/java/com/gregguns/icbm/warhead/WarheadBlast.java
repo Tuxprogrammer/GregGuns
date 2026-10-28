@@ -46,9 +46,29 @@ public enum WarheadBlast {
     /** The nuclear warhead (ZPM): the widest crater, annihilation in the kill zone, fallout. */
     NUCLEAR("nuclear", ExplosiveTier.T3, BlastShape.RAY_SPHERE, 64.0, 8000.0, Kind.NUCLEAR),
     /**
+     * The antimatter warhead (UV): the widest crater, annihilation in the kill zone with bosses, no fallout, and it
+     * ends any red matter body in reach (D130, D133).
+     */
+    ANTIMATTER("antimatter", ExplosiveTier.T4, BlastShape.RAY_SPHERE, Radii.ANTIMATTER, 16000.0, Kind.ANTIMATTER),
+    /**
+     * The red matter warhead (UHV): no crater of its own; a body of annihilation that grows, eats, pulls, idles and
+     * ends (D10, D132).
+     */
+    REDMATTER("redmatter", ExplosiveTier.T5, BlastShape.NONE, Radii.REDMATTER, 0.0, Kind.REDMATTER),
+    /**
      * The EMP warhead (LuV): no crater and no damage; one EMP pulse (D16) of the blast radius, centered on the blast.
      */
-    EMP("emp", ExplosiveTier.T3, BlastShape.NONE, Radii.EMP, 0.0, Kind.EMP);
+    EMP("emp", ExplosiveTier.T3, BlastShape.NONE, Radii.EMP, 0.0, Kind.EMP),
+    /**
+     * The ender warhead (LuV): no crater and no damage; pulls living things in and sends what reaches the center to
+     * one landing spot 40 to 128 blocks away, in the same dimension (D80).
+     */
+    ENDER("ender", ExplosiveTier.T3, BlastShape.NONE, 24.0, 0.0, Kind.ENDER),
+    /**
+     * The anti-gravitational warhead (LuV): no crater; lifts up to 512 plain blocks off the ground as flying blocks
+     * that hover and fall back, and floats living things nearby (D80).
+     */
+    ANTIGRAV("antigrav", ExplosiveTier.T3, BlastShape.NONE, 20.0, 0.0, Kind.ANTIGRAV);
 
     /** Which effect class runs after the engine's terrain and damage work. */
     public enum Kind {
@@ -78,8 +98,16 @@ public enum WarheadBlast {
         BREACH,
         /** Annihilation in the kill zone (set on the definition) and fallout when it ends. */
         NUCLEAR,
+        /** Annihilation in the kill zone (set on the definition); ends red matter in reach. */
+        ANTIMATTER,
+        /** A lingering body of annihilation that eats terrain, pulls and kills for a bounded time. */
+        REDMATTER,
         /** One EMP pulse: drains machines and rolls missiles in the radius (D16). */
-        EMP
+        EMP,
+        /** Pulls entities in and teleports them to one landing spot. */
+        ENDER,
+        /** Lifts blocks into flying blocks and floats entities. */
+        ANTIGRAV
     }
 
     private final String id;
@@ -157,6 +185,10 @@ public enum WarheadBlast {
 
         /** The T3 EMP warhead's radius at fill 64, blocks (D105). */
         public static final double EMP = 48.0;
+        /** The antimatter warhead's radius at fill 128, blocks (D130). */
+        public static final double ANTIMATTER = 80.0;
+        /** The red matter ball's largest radius at fill 128, blocks (D132). */
+        public static final double REDMATTER = 32.0;
 
         private Radii() {}
     }

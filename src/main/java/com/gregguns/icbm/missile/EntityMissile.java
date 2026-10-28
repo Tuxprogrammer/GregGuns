@@ -95,6 +95,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private double targetZ;
     private double plannedDistance;
     private boolean detonated;
+    private String impactReport = "";
     private boolean stateDirty = true;
     /** True once an EMP fried the guidance (D16): the missile falls where it is and detonates on landing. */
     private boolean fried;
@@ -128,14 +129,10 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param newPhase  the flight phase
      * @param newCasing the warhead casing
      * @param newFuel   mB in the tank
-     * @param isNuclear true when the warhead is nuclear (picks the nose model; the client knows no other explosive)
+     * @param blastId   the warhead's blast id (picks the nose model and skin), or null when the server sent none
      */
-    void applyState(FlightPhase newPhase, int newCasing, int newFuel, boolean isNuclear) {
-        if (isNuclear) {
-            this.explosive = "nuclear";
-        } else if ("nuclear".equals(this.explosive)) {
-            this.explosive = WarheadData.DEFAULT_EXPLOSIVE;
-        }
+    void applyState(FlightPhase newPhase, int newCasing, int newFuel, String blastId) {
+        this.explosive = blastId == null ? WarheadData.DEFAULT_EXPLOSIVE : blastId;
         this.phase = newPhase;
         this.casing = newCasing;
         this.fuelMb = newFuel;
@@ -207,7 +204,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param guidanceTiers guidance tiers above the body's own
      * @param explosiveId   the warhead's explosive
      * @param warheadFill   the warhead's fill
-     * @param casingNumber  the warhead casing (1 to 3)
+     * @param casingNumber  the warhead casing (1 to 5)
      * @param owner         who armed it, may be null
      */
     public void configure(int guidanceTiers, String explosiveId, int warheadFill, int casingNumber,
@@ -258,12 +255,12 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         }
     }
 
-    /** @return the warhead's explosive id (on a client only "nuclear" is known, for the nose model) */
+    /** @return the warhead's explosive id (on a client the blast id the state packet carried, for the nose skin) */
     public String explosiveId() {
         return explosive;
     }
 
-    /** @return the warhead casing number, 1 to 3; drawn on the nose */
+    /** @return the warhead casing number, 1 to 5; drawn on the nose */
     public int casingNumber() {
         return casing;
     }
@@ -813,7 +810,27 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             ownerId == null ? null : new GameProfile(ownerId, ownerName.isEmpty() ? "[GregGuns]" : ownerName));
         double radius = def.radius(fill);
         double bonus = FuelMath.bonusRadius(radius, plannedDistance, maxRange(), IcbmConfig.fuelBonusMax);
-        IcbmBlasts.detonate(world, x, y, z, def, fill, bonus, actor);
+        boolean accepted = IcbmBlasts.detonate(world, x, y, z, def, fill, bonus, actor);
+        impactReport = String.format(
+            "detonated at %.1f,%.1f,%.1f from phase %s tick %d of %s, aimed at %.1f,%.1f,%.1f, blast %s",
+            x,
+            y,
+            z,
+            phase,
+            phaseTick,
+            path == null ? "?" : Integer.toString(path.ticks()),
+            targetX,
+            targetY,
+            targetZ,
+            accepted ? "accepted" : "REFUSED");
+        if (!accepted) {
+            com.gregguns.GregGuns.LOG.warn("Missile {} refused: {}", explosive, impactReport);
+        }
+    }
+
+    /** @return where and how this missile detonated and whether the engine took the blast; empty before it did */
+    public String impactReport() {
+        return impactReport;
     }
 
     @Override

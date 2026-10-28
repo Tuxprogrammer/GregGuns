@@ -9,10 +9,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
+import com.gregguns.icbm.warhead.effects.Effects;
+import com.gregguns.icbm.warhead.effects.EnderRules;
+import com.gregguns.icbm.warhead.effects.RedMatterModel;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -86,13 +90,17 @@ public final class ItemBlockWarhead extends ItemBlock {
         f.tierText = casing == WarheadCasing.T1 ? TierText.colored(com.gregguns.api.Tier.HV)
             : casing == WarheadCasing.T2
                 ? TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV)
-                : TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM);
+                : casing == WarheadCasing.T3
+                    ? TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM)
+                    : TierText.coloredIndex(
+                        casing.tier()
+                            .minVoltageTier());
         f.fill = data.fill();
         f.cap = cap;
         f.radius = def == null ? 0 : Math.max(WarheadMath.MIN_RADIUS, def.radius(data.fill()));
         f.fuseTicks = WarheadFuse.litTicks(f.radius, com.gregguns.core.config.IcbmConfig.fuseMultiplier);
         f.centerDamage = def == null ? 0 : def.damage(data.fill());
-        f.annihilates = def != null && def.annihilates();
+        f.annihilates = def != null && def.showsAnnihilation();
         WarheadTooltipFormat.Labels l = labels(data.explosive(), blast);
         boolean shift = net.minecraft.client.gui.GuiScreen.isShiftKeyDown();
         // The Shift details are full sentences; wrap them so the tooltip stays inside the screen.
@@ -102,6 +110,36 @@ public final class ItemBlockWarhead extends ItemBlock {
         }
         if (shift) {
             tooltip.add(AddedBy.line());
+        }
+    }
+
+    /**
+     * The numbers an effect line prints, read from the config and the effect constants so the text cannot drift from
+     * the game (lang strings take them as {@code %s}).
+     *
+     * @param id a blast id
+     * @return the format arguments for {@code gregguns.icbm.effect.<id>}; empty when the line has none
+     */
+    static Object[] effectArgs(String id) {
+        switch (id) {
+            case "antimatter":
+                return new Object[] { (int) RedMatterModel.ANTIMATTER_REACH };
+            case "redmatter":
+                return new Object[] { IcbmConfig.redMatterLifetimeSeconds };
+            case "ender":
+                return new Object[] { EnderRules.DURATION_TICKS / 20, (int) EnderRules.TELEPORT_RANGE,
+                    EnderRules.TARGET_MIN, EnderRules.TARGET_SPREAD, IcbmConfig.enderMaxTeleports };
+            case "antigrav":
+                return new Object[] { IcbmConfig.antigravMaxBlocks };
+            case "breaching":
+                return new Object[] { Effects.BREACH_DEPTH, (int) Effects.BREACH_MAX_HARDNESS };
+            case "debilitation":
+            case "chemical":
+            case "smoke":
+            case "contagious":
+                return new Object[] { Effects.GAS_TICKS / 20 };
+            default:
+                return new Object[0];
         }
     }
 
@@ -119,7 +157,8 @@ public final class ItemBlockWarhead extends ItemBlock {
         l.detailCurve = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.curve");
         l.detailFuse = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.fuse");
         l.detailCharge = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.charge");
-        l.detailEffect = blast == null ? null : StatCollector.translateToLocal("gregguns.icbm.effect." + id);
+        l.detailEffect = blast == null ? null
+            : StatCollector.translateToLocalFormatted("gregguns.icbm.effect." + id, effectArgs(id));
         return l;
     }
 }

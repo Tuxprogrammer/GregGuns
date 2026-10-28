@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.relauncher.Side;
@@ -23,7 +22,8 @@ import gregtech.api.util.GTUtility;
  * {@code GTUtility.applyRadioactivity} on the same 120-tick cadence and with the same stack-size scaling as GT's own
  * carried-item check, and GT skips anyone in full radiological hazmat. It deliberately carries <b>no</b> GT item data:
  * data naming uranium-235 would make GT generate recycling recipes (macerator, arc furnace) that turn free rubble into
- * U-235 dust. The byproduct chain that processes it arrives with I5. Borrows the vanilla flint icon, tinted green.
+ * U-235 dust. The centrifuge recipes that process it are {@link FalloutRecipes}; damage 1 is hot rubble. Borrows the
+ * vanilla flint icon, tinted green.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/nuclear-and-fallout.md
 // Source: GTProxy.applyItemEffects, the carried-item check this mirrors
@@ -55,7 +55,9 @@ public final class ItemIrradiatedRubble extends Item implements com.gregguns.api
         if (holder instanceof EntityPlayer && ((EntityPlayer) holder).capabilities.isCreativeMode) {
             return false;
         }
-        return GTUtility.applyRadioactivity(holder, level(), stack.stackSize);
+        // Hot rubble (damage 1) is one level above plain rubble, as hot goo is above goo.
+        return GTUtility
+            .applyRadioactivity(holder, stack.getItemDamage() == 1 ? level() + 1 : level(), stack.stackSize);
     }
 
     @Override
@@ -69,6 +71,11 @@ public final class ItemIrradiatedRubble extends Item implements com.gregguns.api
     private IIcon icon;
 
     @Override
+    public boolean getHasSubtypes() {
+        return true;
+    }
+
+    @Override
     public com.gregguns.api.Tier getTier() {
         return com.gregguns.api.Tier.ZPM;
     }
@@ -76,7 +83,7 @@ public final class ItemIrradiatedRubble extends Item implements com.gregguns.api
     @Override
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister register) {
-        icon = register.registerIcon("flint");
+        icon = register.registerIcon("gregguns:thirdparty/ntm/irradiated_rubble");
     }
 
     @Override
@@ -88,14 +95,22 @@ public final class ItemIrradiatedRubble extends Item implements com.gregguns.api
     @Override
     @SideOnly(Side.CLIENT)
     public int getColorFromItemStack(ItemStack stack, int pass) {
-        return BlockIrradiatedEarth.TINT;
+        return stack.getItemDamage() == 1 ? HOT_TINT : BlockIrradiatedEarth.TINT;
+    }
+
+    /** The tint of hot rubble (damage 1), from the inner fallout of a ZPM or better blast. */
+    public static final int HOT_TINT = 0xE8F04A;
+
+    @Override
+    public String getUnlocalizedName(ItemStack stack) {
+        return stack.getItemDamage() == 1 ? getUnlocalizedName() + ".hot" : getUnlocalizedName();
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
-        tooltip.add(StatCollector.translateToLocal("gregguns.fallout.rubble.tooltip"));
+        FalloutTooltips.add(tooltip, stack.getItemDamage() == 1 ? "hot_rubble" : "rubble");
     }
 
     @Override
@@ -103,5 +118,6 @@ public final class ItemIrradiatedRubble extends Item implements com.gregguns.api
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void getSubItems(Item item, CreativeTabs tab, List list) {
         list.add(new ItemStack(item, 1, 0));
+        list.add(new ItemStack(item, 1, 1));
     }
 }

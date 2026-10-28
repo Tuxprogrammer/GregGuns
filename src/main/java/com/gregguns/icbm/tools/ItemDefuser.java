@@ -16,6 +16,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
 import com.gregguns.icbm.missile.EntityMissile;
 import com.gregguns.icbm.missile.FlightPhase;
 import com.gregguns.icbm.warhead.TileWarhead;
@@ -157,7 +158,8 @@ public final class ItemDefuser extends Item implements Tiered {
             String.format(
                 StatCollector.translateToLocal("gregguns.icbm.defuser.tooltip.uses"),
                 stack.getMaxDamage() + 1 - stack.getItemDamage()));
-        tooltip.addAll(
+        TooltipWrap.addAll(
+            tooltip,
             HandheldTooltipFormat.lines(
                 tierLine,
                 StatCollector.translateToLocal("gregguns.icbm.defuser.summary"),
@@ -165,7 +167,7 @@ public final class ItemDefuser extends Item implements Tiered {
                 StatCollector.translateToLocal("gregguns.icbm.part.tooltip.shift"),
                 shift));
         if (shift) {
-            tooltip.add(AddedBy.line());
+            TooltipWrap.add(tooltip, AddedBy.line());
         }
     }
 }

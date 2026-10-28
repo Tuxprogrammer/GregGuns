@@ -41,6 +41,7 @@ public final class OcCompat {
         // The radars and the battery implement these views at integration (A's MTERadar, MTERadarTower, MTEAirDefense).
         Driver.add(new ViewDriver<>(RadarView.class, RadarEnvironment::new));
         Driver.add(new ViewDriver<>(AirDefenseView.class, AirDefenseEnvironment::new));
+        GoldenDomeFloppy.register();
         GregGuns.LOG.info(
             "ICBM: registered OpenComputers drivers (gg_emp_tower, gg_launch_control, gg_silo, gg_radar, gg_air_defense)");
     }

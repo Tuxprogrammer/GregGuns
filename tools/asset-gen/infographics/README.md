@@ -44,6 +44,8 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 | `pages.py`, `pages_more.py` | One function per infographic; `pages_more.PAGES` lists them all |
 | `pages_recipes.py` | The recipes sheet: crafting grids for the hand recipes, machine rows from the exported recipe tables |
 | `pages_icbm.py` | The ICBM sheets. Numbers come from the warhead dump (step 2b) and are checked against `WarheadRecipes.java` and `Effects.java`, so a changed recipe stops the build |
+| `pages_icbm_heavy.py` | The Heavy Warheads sheet (`icbm-warheads-heavy`): Tier 3 blast types with their skins, antimatter, red matter and the launcher warheads. It is the second half of the warhead guide, split from `icbm-warheads` because one picture was too tall. Reads the same warhead dump (launcher caps included) and the Java constants |
+| `pages_icbm_fallout.py` | The fallout sheet (`icbm-fallout`): zones, hazard, antidote, the processing chain, the yield curves and the 25%-of-core bound. Every number is read from `FalloutMath`, `FalloutYield`, `FalloutRecipes`, `ExplosionsConfig` and `AntidoteRules`, so a changed constant changes the sheet |
 | `pages_icbm_defense.py` | The detection-and-defense sheet. Every number is read from the Java constants (`RadarRules`, `SamRules`, `EmpRules`, `HandheldRules`, `MissileTier`, `IcbmConfig`) and the tower from `RadarTowerShape`, so a changed constant changes the sheet on rebuild |
 | `vanilla.py` | Mojang's vanilla textures (recipe ingredient icons, the skeleton and pigman skins, glowstone for the interior lamp), read unmodified from the vanilla 1.7.10 client jar at build time |
 

@@ -173,7 +173,7 @@ class QuestbookResourcesTest {
     @Test
     void questCountMatchesTheSpec() {
         assertEquals(
-            140 + SKIP_TRIGGERS,
+            148 + SKIP_TRIGGERS,
             QUESTS.size(),
             "update docs/gregguns-spec/12-questbook when the count changes");
     }
@@ -359,6 +359,12 @@ class QuestbookResourcesTest {
             com.gregguns.api.Tier.IV }) {
             names.add(com.gregguns.icbm.tools.ItemRemoteDetonator.name(t));
         }
+        // The I5 items the endgame quests ask for: the antidote, the launcher warheads and the trinitite products.
+        names.add(com.gregguns.icbm.antidote.ItemAntidote.NAME);
+        for (com.gregguns.icbm.launcher.LauncherWarhead w : com.gregguns.icbm.launcher.LauncherWarhead.values()) {
+            names.add(w.itemName());
+        }
+        names.add("trinitite_shard");
         Set<Integer> machines = registeredMachineIds();
         Set<String> entities = new HashSet<>();
         for (NpcMob mob : NpcMob.values()) {

@@ -54,6 +54,8 @@ public final class WarheadScenarios {
         registry.register(new BlockDamageOff());
         registry.register(new WarheadShotsScenario());
         NuclearScenarios.registerAll(registry);
+        AnnihilationScenarios.registerAll(registry);
+        T3MachineryScenarios.registerAll(registry);
     }
 
     private static boolean moduleOff() {
@@ -160,8 +162,10 @@ public final class WarheadScenarios {
                     dx,
                     0,
                     0,
-                    c == WarheadCasing.T1 ? "condensed" : c == WarheadCasing.T2 ? "thermobaric" : "exothermic",
-                    99);
+                    c == WarheadCasing.T1 ? "condensed"
+                        : c == WarheadCasing.T2 ? "thermobaric"
+                            : c == WarheadCasing.T3 ? "exothermic" : c == WarheadCasing.T4 ? "antimatter" : "redmatter",
+                    999);
                 out.check(tile != null, c + " has a warhead tile");
                 if (tile == null) {
                     continue;

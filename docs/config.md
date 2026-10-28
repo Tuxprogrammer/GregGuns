@@ -144,6 +144,7 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 | `explosions.falloutDecayMinutes` | int | `60` | 1 to 10080 | yes | Minutes of game time before irradiated earth reverts to the block it was. |
 | `explosions.falloutRevertPerTick` | int | `32` | 1 to 1000 | yes | The most irradiated blocks that revert per tick in one world. |
 | `explosions.falloutRadiationLevel` | int | `2` | 0 to 10 | yes | GregTech radioactivity level applied about once a second to an unprotected player standing on or beside irradiated earth. 0 turns exposure off. |
+| `explosions.falloutMaxGoo` | int | `24` | 0 to 500 | yes | The most fallout goo blocks one blast makes (D21). Goo is rare and near ground zero; while it stands in a chunk, that chunk's irradiated earth does not decay. |
 
 ## ICBM blasts (`icbm`)
 
@@ -151,8 +152,9 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `icbm.maxBlastTier` | int | `4` | 1 to 4 | yes | The highest explosive tier that may detonate. |
-| `icbm.terrainDamageT1` to `icbm.terrainDamageT4` | boolean | `true` | n/a | yes | Whether blasts of that tier may remove terrain (on by default; `explosions.blockDamage` does not apply). |
+| `icbm.maxBlastTier` | int | `5` | 1 to 5 | yes | The highest explosive tier that may detonate. |
+| `icbm.terrainDamageT1` to `icbm.terrainDamageT4` | boolean | `true` | n/a | yes | Whether blasts of that tier may remove terrain (on by default; `explosions.blockDamage` does not apply). Tier 4 covers antimatter (UV) and red matter (UHV). |
+| `icbm.redMatterLifetimeSeconds` | int | `60` | 5 to 600 | yes | The longest a red matter body lives; it also ends sooner when it is idle for 10 s (D132). |
 | `icbm.blastBudgetMs` | int | `12` | 1 to 40 | yes | Milliseconds per server tick that all running blasts share for breaking blocks. |
 | `icbm.maxActiveBlasts` | int | `16` | 1 to 256 | yes | Most blasts running at once; more are refused. |
 | `icbm.maxBlastRadius` | int | `96` | 8 to 200 | yes | Largest blast radius; the ray cast copies a cube this wide. |
@@ -174,6 +176,8 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.empMissileKillChance` | double | `0.5` | 0 to 1 | yes | Chance an EMP pulse destroys a missile in flight outright. |
 | `icbm.empMissileGuidanceChance` | double | `0.8` | 0 to 1 | yes | Chance, among the survivors, that a pulse fries a missile's guidance so it falls where its drift carries it. |
 | `icbm.empMissileTriggerChance` | double | `0.1` | 0 to 1 | yes | Chance, among the rest, that a pulse sets a missile's warhead off where it is. |
+| `icbm.enderMaxTeleports` | int | `64` | 1 to 1024 | yes | Most entities one ender warhead teleports (D80); the rest are only pulled. |
+| `icbm.antigravMaxBlocks` | int | `512` | 0 to 4096 | yes | Most blocks one anti-gravitational warhead lifts into flying blocks (D80), top layer first. |
 
 ## Equipment (`equipment`)
 

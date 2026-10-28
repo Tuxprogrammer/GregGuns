@@ -95,6 +95,7 @@ final class BlastJob implements BlastTask {
             st.effectState,
             budget,
             st.breaksTerrain);
+        this.ctx.setBreakerSource(this::resolveBreaker);
     }
 
     World world() {
@@ -183,6 +184,10 @@ final class BlastJob implements BlastTask {
                 return castDone;
             case DECIDE:
                 return ensureDecideMemory();
+            case EFFECT:
+                return st.effectActive && !finished
+                    && def.effect()
+                        .wantsWork(ctx);
             default:
                 return false;
         }
@@ -203,6 +208,10 @@ final class BlastJob implements BlastTask {
                     break;
                 case APPLY:
                     applySlice();
+                    break;
+                case EFFECT:
+                    def.effect()
+                        .work(ctx);
                     break;
                 default:
                     break;
@@ -444,6 +453,9 @@ final class BlastJob implements BlastTask {
 
     private void hurt(List<Entity> victims, EntityLivingBase source) {
         double center = def.damage(st.fill);
+        if (st.damageCap > 0.0) {
+            center = Math.min(center, st.damageCap);
+        }
         for (Entity victim : victims) {
             if (victim.isDead) {
                 continue;

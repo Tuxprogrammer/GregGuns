@@ -330,6 +330,12 @@ public final class SelfCheckRunner {
                 if (!involvesGregGuns(recipe.mOutputs) && !involvesGregGuns(recipe.mInputs)) {
                     continue;
                 }
+                // The tier map ends at ZPM (D1), so it cannot judge the UV and UHV Assembler recipes of the I5
+                // antimatter and red matter warheads; they are checked by WarheadRecipeSpecTest and scenario
+                // icbm.recipes.assembler instead.
+                if (recipe.mEUt > com.gregguns.api.Tier.ZPM.voltage() && makesAnnihilationWarhead(recipe.mOutputs)) {
+                    continue;
+                }
                 List<StackDescriptor> inputs = new ArrayList<>();
                 addStacks(recipe.mInputs, inputs, true);
                 addFluids(recipe.mFluidInputs, inputs);
@@ -340,6 +346,24 @@ public final class SelfCheckRunner {
                 out.add(new RecipeDescriptor(id, recipe.mEUt, false, inputs, outputs));
             }
         }
+    }
+
+    private static boolean makesAnnihilationWarhead(ItemStack[] stacks) {
+        if (stacks == null) {
+            return false;
+        }
+        for (ItemStack stack : stacks) {
+            if (stack != null
+                && net.minecraft.block.Block
+                    .getBlockFromItem(stack.getItem()) instanceof com.gregguns.icbm.warhead.BlockWarhead
+                && ((com.gregguns.icbm.warhead.BlockWarhead) net.minecraft.block.Block
+                    .getBlockFromItem(stack.getItem())).casing()
+                        .number()
+                    >= 4) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean involvesGregGuns(ItemStack[] stacks) {

@@ -23,14 +23,58 @@ public final class FalloutBlocks {
     /** How many variants there are. */
     public static final int VARIANTS = 5;
 
+    /** The metadata bit that marks hot earth, from the inner fallout of a ZPM or better blast (hot rubble). */
+    public static final int HOT_BIT = 8;
+
     private static BlockIrradiatedEarth irradiated;
     private static ItemIrradiatedRubble rubble;
+    private static BlockTrinitite trinitite;
+    private static BlockFalloutGoo goo;
+    private static ItemFalloutProduct shard;
+    private static ItemFalloutProduct gooItem;
 
     private FalloutBlocks() {}
 
     static void set(BlockIrradiatedEarth block, ItemIrradiatedRubble item) {
         irradiated = block;
         rubble = item;
+    }
+
+    static void setProducts(BlockTrinitite t, BlockFalloutGoo g, ItemFalloutProduct s, ItemFalloutProduct gi) {
+        trinitite = t;
+        goo = g;
+        shard = s;
+        gooItem = gi;
+    }
+
+    /** @return the trinitite block; null before registration */
+    public static BlockTrinitite trinitite() {
+        return trinitite;
+    }
+
+    /** @return the fallout goo block; null before registration */
+    public static BlockFalloutGoo goo() {
+        return goo;
+    }
+
+    /** @return the trinitite shard item (damage 0 shard, 1 crushed); null before registration */
+    public static ItemFalloutProduct shard() {
+        return shard;
+    }
+
+    /** @return the goo item (damage 0 goo, 1 hot goo, 2 and 3 dissolved); null before registration */
+    public static ItemFalloutProduct gooItem() {
+        return gooItem;
+    }
+
+    /** @param meta an irradiated earth metadata @return the material variant, 0 to 4 */
+    public static int variantOf(int meta) {
+        return (meta & 7) % VARIANTS;
+    }
+
+    /** @param meta an irradiated earth metadata @return true for hot earth */
+    public static boolean isHot(int meta) {
+        return (meta & HOT_BIT) != 0;
     }
 
     /** @return the irradiated block; null before registration */

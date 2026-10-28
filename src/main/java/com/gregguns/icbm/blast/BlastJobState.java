@@ -59,6 +59,8 @@ public final class BlastJobState {
     public boolean effectActive = true;
     /** Whether terrain breaks at all (decided at detonation). */
     public boolean breaksTerrain;
+    /** Cap on the center damage (D154, launcher warheads), 0 for none. */
+    public double damageCap;
     /** Packed offsets still to break, nearest first. */
     public int[] edits = new int[0];
     /** Index of the next edit to apply. */
@@ -97,6 +99,7 @@ public final class BlastJobState {
         tag.setBoolean("effectStarted", effectStarted);
         tag.setBoolean("effectActive", effectActive);
         tag.setBoolean("breaksTerrain", breaksTerrain);
+        tag.setDouble("damageCap", damageCap);
         boolean keepEdits = saved == Stage.APPLY || saved == Stage.DECIDE;
         tag.setIntArray("edits", keepEdits ? edits : new int[0]);
         tag.setInteger("cursor", keepEdits ? cursor : 0);
@@ -126,6 +129,7 @@ public final class BlastJobState {
         s.effectStarted = tag.getBoolean("effectStarted");
         s.effectActive = tag.getBoolean("effectActive");
         s.breaksTerrain = tag.getBoolean("breaksTerrain");
+        s.damageCap = Math.max(0.0, tag.getDouble("damageCap"));
         s.edits = tag.getIntArray("edits");
         s.cursor = Math.max(0, Math.min(tag.getInteger("cursor"), s.edits.length));
         s.kept = Math.max(0, Math.min(tag.getInteger("kept"), s.cursor));

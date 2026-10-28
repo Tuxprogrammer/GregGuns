@@ -32,6 +32,16 @@ class TerrainRuleTest {
     }
 
     @Test
+    void aLauncherBlastNeedsBothSwitches() {
+        // D52, D154: a hand-held launcher warhead follows explosions.blockDamage as well as the tier switch.
+        assertFalse(TerrainRule.breaks(firstSolid(), 1, true, true, true, false));
+        assertTrue(TerrainRule.breaks(firstSolid(), 1, true, true, true, true));
+        assertTrue(TerrainRule.breaks(firstSolid(), 1, true, true, false, false));
+        IcbmConfig.terrainDamageT1 = false;
+        assertFalse(TerrainRule.breaks(firstSolid(), 1, true, true, true, true));
+    }
+
+    @Test
     void onByDefault() {
         assertTrue(BlastShape.values().length > 1);
         for (BlastShape s : BlastShape.values()) {

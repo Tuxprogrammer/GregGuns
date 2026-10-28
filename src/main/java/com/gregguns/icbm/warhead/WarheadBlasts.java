@@ -22,12 +22,20 @@ public final class WarheadBlasts {
     public static ExplosiveDef define(WarheadBlast blast) {
         int cap = blast.fillCap();
         ExplosiveDef.Builder b = ExplosiveDef.builder(blast.id(), blast.tier());
-        if (blast.kind() == WarheadBlast.Kind.REPEL || blast.kind() == WarheadBlast.Kind.ATTRACT) {
-            // Their effect owns the motion (Effects.Push); the engine's outward knockback would cancel the pull.
+        if (blast.kind() == WarheadBlast.Kind.REPEL || blast.kind() == WarheadBlast.Kind.ATTRACT
+            || blast.kind() == WarheadBlast.Kind.ENDER
+            || blast.kind() == WarheadBlast.Kind.ANTIGRAV) {
+            // Their effect owns the motion (Effects.Push, the ender pull, the anti-gravitational lift); the engine's
+            // outward knockback would cancel the pull.
             b.ownsMotion();
         }
-        if (blast.kind() == WarheadBlast.Kind.NUCLEAR) {
+        if (blast.kind() == WarheadBlast.Kind.NUCLEAR || blast.kind() == WarheadBlast.Kind.ANTIMATTER) {
             b.annihilating(true); // D30: bosses included
+        }
+        if (blast.kind() == WarheadBlast.Kind.REDMATTER) {
+            // The body's own effect pulls and kills; the engine must not push victims away or annihilate at ignition.
+            b.ownsMotion()
+                .annihilatingBody();
         }
         return b.shape(blast.shape())
             .maxFill(cap)

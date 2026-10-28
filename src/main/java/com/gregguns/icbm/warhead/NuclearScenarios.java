@@ -60,6 +60,7 @@ final class NuclearScenarios {
         registry.register(new FalloutCaps());
         registry.register(new RubbleInert());
         registry.register(new DecayUnloaded());
+        FalloutChainScenarios.registerAll(registry);
     }
 
     /**
@@ -88,6 +89,11 @@ final class NuclearScenarios {
 
     /** No tick may spend more than this on blasts, however loaded the box: a slice that ignores the clock would. */
     private static final long HARD_CAP_NANOS = 50_000_000L;
+
+    /** Breaks every fallout goo block in the square (see FalloutCaps) and returns how many there were. */
+    static int clearGooIn(World w, int ox, int oy, int oz, int span) {
+        return FalloutCaps.clearGoo(w, ox, oy, oz, span);
+    }
 
     private static boolean off() {
         return WarheadBlocks.of(WarheadCasing.T1) == null || Explosives.get("nuclear") == null;
@@ -150,6 +156,7 @@ final class NuclearScenarios {
             final ScenarioResult[] verdict = { null };
             final int[] before = { 0 };
             final int[] lastReload = { 0 };
+            final int[] chunksLost = { 0 };
             final int budgetMs = 6;
             return ScenarioResult.pending(name(), 20 * 60 * 20, ticks -> {
                 try {
@@ -175,6 +182,20 @@ final class NuclearScenarios {
                             return verdict[0];
                         }
                         return null;
+                    }
+                    // Keep the cube's chunks pinned every tick: an unloaded chunk reads as air to the blast's snapshot
+                    // and is
+                    // never broken ("never load a chunk"), which left a partial crater (350k of 447k blocks, the center
+                    // column still stone) when the server queued them for unload under load. loadChunk takes a chunk
+                    // off
+                    // the unload queue again; the count of ticks that found one gone goes into the failure message.
+                    for (int x = (cx - half) >> 4; x <= (cx + half) >> 4; x++) {
+                        for (int z = (cz - half) >> 4; z <= (cz + half) >> 4; z++) {
+                            if (!cps.chunkExists(x, z)) {
+                                chunksLost[0]++;
+                            }
+                            cps.loadChunk(x, z);
+                        }
                     }
                     if (stage[0] == 0) {
                         // Far from every slot the chunks are not loaded, and setBlock into an unloaded chunk does
@@ -281,11 +302,26 @@ final class NuclearScenarios {
                             + (long) (0.45 * hemisphere)
                             + "), broke "
                             + broken);
+                    // The crater floor, not the first non-air block: the air cells in the center column below the blast
+                    // (a stray block left on the column cannot hide the crater), with what is there if it is short.
                     int depth = 0;
-                    while (depth < half && w.getBlock(cx, cy - 1 - depth, cz) == Blocks.air) {
-                        depth++;
+                    for (int d = 0; d < half; d++) {
+                        if (w.getBlock(cx, cy - 1 - d, cz) == Blocks.air) {
+                            depth++;
+                        }
                     }
-                    out.check(depth >= r - 4, "the crater should be about " + r + " deep, was " + depth);
+                    out.check(
+                        depth >= r - 4,
+                        "the crater should be about " + r
+                            + " deep, was "
+                            + depth
+                            + " (just under the center: "
+                            + Block.blockRegistry.getNameForObject(w.getBlock(cx, cy - 1, cz))
+                            + ", loaded: "
+                            + cps.chunkExists(cx >> 4, cz >> 4)
+                            + ", chunk-ticks found unloaded: "
+                            + chunksLost[0]
+                            + ")");
                     out.note(
                         "nuclear r" + r
                             + ": broken "
@@ -673,6 +709,15 @@ final class NuclearScenarios {
                                 + ", worst fallout tick "
                                 + max / 1_000_000L
                                 + " ms");
+                        // Goo holds its chunk's irradiated earth back from decay (D21): clean it up, as a player would.
+                        int goo = clearGoo(w, ox, oy, oz, span);
+                        out.check(
+                            goo <= ExplosionsConfig.falloutMaxGoo,
+                            "goo blocks " + goo + " stay within the cap " + ExplosionsConfig.falloutMaxGoo);
+                        // Whatever the ledger still knows (goo that landed on the natural ground far below the plot)
+                        // goes
+                        // too, so the next scenario starts from a clean ledger; fallout_goo checks the ledger itself.
+                        fe.clearGoo(w);
                         FalloutEngine.expireAll(w);
                         pendingResult = out;
                         return null;
@@ -711,6 +756,25 @@ final class NuclearScenarios {
                     return ScenarioResult.fail(name(), "threw " + e);
                 }
             });
+        }
+
+        /** Breaks every fallout goo block in the square and returns how many there were. */
+        static int clearGoo(World w, int ox, int oy, int oz, int span) {
+            int n = 0;
+            for (int dx = -span; dx <= span; dx++) {
+                for (int dz = -span; dz <= span; dz++) {
+                    // The test plot floats high over the natural ground, and fallout lands on whatever surface the
+                    // column
+                    // has, so the scan reaches far below the origin.
+                    for (int dy = 6; dy >= -64; dy--) {
+                        if (w.getBlock(ox + dx, oy + dy, oz + dz) == FalloutBlocks.goo()) {
+                            w.setBlock(ox + dx, oy + dy, oz + dz, Blocks.air, 0, 2);
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
         }
 
         private ScenarioResult.Builder pendingResult;

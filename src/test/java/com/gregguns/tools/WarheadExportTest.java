@@ -15,6 +15,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.gregguns.icbm.blast.DamageRamp;
 import com.gregguns.icbm.explosive.ExplosiveDef;
+import com.gregguns.icbm.launcher.LauncherRules;
+import com.gregguns.icbm.launcher.LauncherWarhead;
+import com.gregguns.icbm.launcher.LauncherWarheads;
 import com.gregguns.icbm.warhead.WarheadBlast;
 import com.gregguns.icbm.warhead.WarheadBlasts;
 import com.gregguns.icbm.warhead.WarheadCasing;
@@ -124,6 +127,27 @@ class WarheadExportTest {
                     .append(']');
             }
             sb.append(i + 1 < blasts.length ? "}},\n" : "}}\n");
+        }
+        sb.append("  ],\n  \"launcherCharges\": {\"perItem\": ")
+            .append(LauncherRules.CHARGES_PER_ITEM)
+            .append(", \"max\": ")
+            .append(LauncherRules.MAX_CHARGES)
+            .append(", \"capFactor\": ")
+            .append(num(LauncherRules.DAMAGE_CAP_FACTOR))
+            .append("},\n  \"launchers\": [\n");
+        LauncherWarhead[] lw = LauncherWarhead.values();
+        for (int i = 0; i < lw.length; i++) {
+            sb.append("    {\"key\": \"")
+                .append(lw[i].key())
+                .append("\", \"blast\": \"")
+                .append(lw[i].blastId())
+                .append("\", \"kind\": \"")
+                .append(lw[i].kind())
+                .append("\", \"tier\": \"")
+                .append(lw[i].tier())
+                .append("\", \"cap\": ")
+                .append(num(LauncherWarheads.damageCap(lw[i].kind())))
+                .append(i + 1 < lw.length ? "},\n" : "}\n");
         }
         sb.append("  ]\n}\n");
         Path parent = file.toAbsolutePath()

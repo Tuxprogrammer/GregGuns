@@ -36,6 +36,9 @@ public class GrenadeLauncherProjectile extends GrenadeProjectile {
     /** Mod-local entity ID; the same number Techguns uses for its launcher grenade. */
     public static final int ENTITY_ID = 19;
 
+    /** The ICBM warhead the launcher spent a charge on for this grenade (D150), or null. */
+    private String icbmWarhead;
+
     /**
      * @param world the world
      */
@@ -50,6 +53,29 @@ public class GrenadeLauncherProjectile extends GrenadeProjectile {
         gravity = (float) stats.projectileGravity();
         arm((float) stats.blastRadius(), LauncherMath.GRENADE_BOUNCES, stats.id());
         setFuse(stats.lifetimeTicks());
+        icbmWarhead = com.gregguns.icbm.launcher.LauncherWarheads.consume(firedBy, stats.id());
+    }
+
+    @Override
+    protected void explode() {
+        // D150: an ICBM warhead replaces the grenade's own blast.
+        if (!com.gregguns.icbm.launcher.LauncherWarheads.detonate(worldObj, posX, posY, posZ, icbmWarhead, thrower())) {
+            super.explode();
+        }
+    }
+
+    @Override
+    public void writeEntityToNBT(net.minecraft.nbt.NBTTagCompound tag) {
+        super.writeEntityToNBT(tag);
+        if (icbmWarhead != null) {
+            tag.setString("icbmWarhead", icbmWarhead);
+        }
+    }
+
+    @Override
+    public void readEntityFromNBT(net.minecraft.nbt.NBTTagCompound tag) {
+        super.readEntityFromNBT(tag);
+        icbmWarhead = tag.hasKey("icbmWarhead") ? tag.getString("icbmWarhead") : null;
     }
 
     @Override

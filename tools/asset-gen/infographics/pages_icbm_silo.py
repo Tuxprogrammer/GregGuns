@@ -239,7 +239,7 @@ def silo() -> str:
 <div class="step"><span class="num">3</span><div class="t"><b>Link it.</b> Put a Launch Control within 6 blocks sideways and 4 up or down of the silo controller. It finds the silo the way it finds a pad.</div></div>
 <div class="step"><span class="num">4</span><div class="t"><b>Launch.</b> Pick the target on the Launch Control and fire. You never touch the missile.</div></div></div></div></div>
 <div class="card" style="margin-top:18px"><h2 style="margin-bottom:6px">Building a Tier 3 body</h2>
-<div class="muted" style="font-size:18px;margin-bottom:12px">A Tier 3 body is built like the smaller ones, by hand on the NASA Workbench or on a LuV Assembly Line. It needs the silo: a pad refuses it.</div>
+<div class="muted" style="font-size:18px;margin-bottom:12px">A Tier 3 body is built like the smaller ones, by hand on the NASA Workbench or on a LuV Assembly Line. It needs the silo: a pad refuses it. It carries every warhead casing, from Tier 1 up to antimatter and red matter.</div>
 <div class="parts">{parts}</div></div>
 <div class="card" style="margin-top:18px"><h2 style="margin-bottom:8px">Why launch from a silo</h2>
 <div class="muted" style="font-size:18px;margin-bottom:10px">A missile fired from the silo flies farther and lands closer to where you aimed than one on an open pad. Tiers 1 and 2 can launch from it too, if the Energy Hatch is high enough.</div>
