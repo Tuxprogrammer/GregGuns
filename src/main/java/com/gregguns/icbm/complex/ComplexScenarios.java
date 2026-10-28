@@ -257,7 +257,12 @@ public final class ComplexScenarios {
                     if (c.equals("biome") && world.provider.dimensionId != 0) continue; // the whitelist is Overworld
                                                                                         // only
                     java.util.function.IntBinaryOperator ground = (x, z) -> c.equals("low") ? 20
-                        : c.equals("steep") && x < plan.anchorX() + 120 ? GROUND + 24 : GROUND;
+                        : c.equals("steep") && ((x >> 3) + (z >> 3) & 1) == 0 ? GROUND + 24 : GROUND; // the check sees
+                                                                                                      // only the first
+                                                                                                      // window's slice,
+                                                                                                      // so the relief
+                                                                                                      // repeats within
+                                                                                                      // every window
                     slab(world, plan, true);
                     slab(world, plan, false, ground, c.equals("water") ? 4 : 0);
                     long before = snapshot(world, plan);
