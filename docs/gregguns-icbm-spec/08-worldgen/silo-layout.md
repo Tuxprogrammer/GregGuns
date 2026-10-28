@@ -121,7 +121,7 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 | Bunks | Bunks along the side walls with a locker in each gap; a table with chairs in the middle; chests; guards |
 | Infirmary | Beds along the side walls, a clipboard chart over each; two-high medicine cabinets on the back wall; a desk and chair in the middle; medical chests |
 | Stockpile | Chests along the back wall; rows of two-high shelves |
-| Mess galley, cafeteria | A serving counter, rows of tables with a chair on each side and an aisle between rows, galley chests |
+| Mess galley, cafeteria | A serving counter; rows of tables with a chair on each side, runs of 3 tables with 2-cell gaps, a 3-cell aisle between rows and 3 clear cells along each side wall; galley chests |
 | Armory | Two staggered rows of item frames on the back wall, split around a doorway; chests; tool racks along one side wall, armor stands along the other; guards |
 | Vehicle bay | Battery buffers and a workbench on the back wall; a workshop chest |
 | Server room | Rows of two-high server racks (the style's console block); the operator's desk with a typewriter on the back wall and its chair; a comms machine; a comms chest |
