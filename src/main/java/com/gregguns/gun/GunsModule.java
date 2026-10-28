@@ -82,6 +82,7 @@ public final class GunsModule implements GregGunsModule {
         GrenadeRecipes.register();
         if (DevEnvironment.testHooksEnabled()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ScenarioRegistry.SCENARIOS.register(new com.gregguns.core.module.IcbmContentGateScenario());
             for (GunDefinition gun : GunDefinitions.ALL) {
                 gun.registerScenarios(ScenarioRegistry.SCENARIOS);
             }

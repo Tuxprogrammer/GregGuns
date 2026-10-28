@@ -285,7 +285,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** antimatter and red matter previews and effects, the `icbm-fallout` sheet, the complete `icbm-warheads`, and the endgame quests.
 
 **Exit gate:**
-- [x] The ender and anti-gravitational T3 warheads detonate within the tick budget. Scenario.
+- [x] The ender and anti-gravitational T3 warheads detonate within their per-tick bounds (D221): the shared scheduler stays within the blast budget plus 5 ms, no tick spends more than 25 ms running a blast's effects, and the anti-gravitational warhead keeps its own caps (8 flying blocks and 3 layers a tick). Scenarios `icbm.blast.ender_teleport` and `icbm.blast.antigrav_flight`.
 - [x] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
 - [x] Fallout blocks process into their yields in GT machines. Scenario.
 - [x] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
@@ -346,6 +346,8 @@ The one owner review before the beta.
 - NEI, lang keys and config documentation. The ICBM quests in the GregGuns tab are checked end to end on a real server install.
 - A recipe-clash review of the ICBM recipes against the full GTNH pack, and the PACK-CHANGES pass.
 - **Visuals:** `icbm-recipes` from the recipe export, `icbm-hero`, an ICBM section in the README, and every ICBM sheet rebuilt after the balance pass.
+- **Deferred by D213 (I6):** the BLAST_DOOR marks in the complexes (still no-op marks), GT cable trays and pipes in the tunnels, and the Ross128 tier shown by casings (the hall sign names the tier today).
+- **An NEI page for the launcher-warhead crafting load** (D227); today only the Assembler recipes are listed.
 - **Modeled radar (D125, owner, pre-beta):** the single-block HV and EV radars give way to a small radar multiblock whose formed controller spawns a spinning dish (an entity or a TESR, like the silo doors). The Radar Tower gets the same dish. Look for an NTM dish model first (D47). The old blocks 20142 and 20143 convert in place (D190).
 
 **Exit gate:**

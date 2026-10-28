@@ -2,6 +2,7 @@ package com.gregguns.core.module;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.function.IntFunction;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -25,6 +26,8 @@ import gregtech.api.GregTechAPI;
 public final class ModuleContent {
 
     private static final Map<Item, ModuleId> ITEMS = new IdentityHashMap<>();
+    /** Items whose owner depends on the damage value (a stack that only another module can make). */
+    private static final Map<Item, IntFunction<ModuleId>> BY_DAMAGE = new IdentityHashMap<>();
 
     private ModuleContent() {}
 
@@ -34,6 +37,18 @@ public final class ModuleContent {
      */
     public static void assign(Item item, ModuleId module) {
         ITEMS.put(item, module);
+    }
+
+    /**
+     * Gives an item a per-damage owner: the function's answer wins over the item's own module, and {@code null} from it
+     * falls back to that module. Used for a stack only another module can make (hot rubble comes only from ICBM
+     * blasts).
+     *
+     * @param item     an item already assigned to a module
+     * @param byDamage the owner of a damage value, or {@code null} for the item's own module
+     */
+    public static void assignByDamage(Item item, IntFunction<ModuleId> byDamage) {
+        BY_DAMAGE.put(item, byDamage);
     }
 
     /**
@@ -61,6 +76,13 @@ public final class ModuleContent {
         }
         if (GregGunsCasings.INSTANCE != null && item == Item.getItemFromBlock(GregGunsCasings.INSTANCE)) {
             return MteModules.casingModule(stack.getItemDamage());
+        }
+        IntFunction<ModuleId> byDamage = BY_DAMAGE.get(item);
+        if (byDamage != null) {
+            ModuleId special = byDamage.apply(stack.getItemDamage());
+            if (special != null) {
+                return special;
+            }
         }
         ModuleId id = ITEMS.get(item);
         if (id != null) {

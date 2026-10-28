@@ -36,6 +36,14 @@ final class T3MachineryScenarios {
         registry.register(new AntiGravFlight());
     }
 
+    /**
+     * The most one server tick may spend running a blast's effects, milliseconds (half a tick). The shared scheduler
+     * keeps to {@code icbm.blastBudgetMs}; the effects run before it opens its budget (I5 exit box 1, D221).
+     */
+    static final long EFFECT_BOUND_MS = 25L;
+    /** Slack on the scheduler's budget for one slice that overshoots, milliseconds (as the red matter scenario). */
+    private static final long SLACK_MS = 5L;
+
     private static boolean off() {
         return WarheadBlocks.of(WarheadCasing.T1) == null;
     }
@@ -84,6 +92,9 @@ final class T3MachineryScenarios {
             ExplosiveDef def = Explosives.get("ender");
             Effects.forceEnderTarget(tx, oy, tz);
             near.fallDistance = 10.0F;
+            BlastEngine engine = BlastEngine.instance();
+            engine.clear();
+            engine.resetStats();
             if (!IcbmBlasts.detonate(w, ox + 0.5, oy + 0.5, oz + 0.5, def, def.maxFill(), null)) {
                 Effects.clearEnderTarget();
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
@@ -116,6 +127,26 @@ final class T3MachineryScenarios {
                     BlastEngine.instance()
                         .activeBlasts() == 0,
                     "the blast finished");
+                long budgetNanos = IcbmConfig.blastBudgetMs * 1_000_000L;
+                out.check(
+                    engine.maxTickNanos() <= budgetNanos + SLACK_MS * 1_000_000L,
+                    "no tick spent more than the " + IcbmConfig.blastBudgetMs
+                        + " ms budget plus "
+                        + SLACK_MS
+                        + " ms on the scheduler: "
+                        + engine.maxTickNanos() / 1_000_000.0
+                        + " ms");
+                out.check(
+                    engine.maxEffectNanos() <= EFFECT_BOUND_MS * 1_000_000L,
+                    "no tick spent more than " + EFFECT_BOUND_MS
+                        + " ms running the effect: "
+                        + engine.maxEffectNanos() / 1_000_000.0
+                        + " ms");
+                out.note(
+                    "worst tick: scheduler " + engine.maxTickNanos() / 1_000_000.0
+                        + " ms, effect "
+                        + engine.maxEffectNanos() / 1_000_000.0
+                        + " ms");
                 return out.build();
             });
         }
@@ -237,6 +268,10 @@ final class T3MachineryScenarios {
             IcbmConfig.terrainDamageT3 = true;
             IcbmConfig.antigravMaxBlocks = 512;
             ExplosiveDef def = Explosives.get("antigrav");
+            final BlastEngine engine = BlastEngine.instance();
+            engine.clear();
+            engine.resetStats();
+            Effects.resetAntigravStats();
             if (!IcbmBlasts.detonate(w, ox + 0.5, oy + 0.5, oz + 0.5, def, def.maxFill(), null)) {
                 IcbmConfig.terrainDamageT3 = oldT3;
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
@@ -298,6 +333,32 @@ final class T3MachineryScenarios {
                         }
                     }
                 }
+                // The anti-gravitational effect runs outside the shared budget by design (D221): its own caps bound it.
+                int[] caps = Effects.antigravStats();
+                early.check(
+                    caps[0] <= Effects.antigravPerTickCap(),
+                    "never more than " + Effects.antigravPerTickCap()
+                        + " flying blocks turned out in one tick, saw "
+                        + caps[0]);
+                early.check(
+                    caps[1] <= Effects.antigravLayerCap(),
+                    "never more than " + Effects.antigravLayerCap() + " layers gathered in one tick, saw " + caps[1]);
+                early.check(caps[0] > 0, "the per-tick cap was exercised (blocks were turned out)");
+                early.check(
+                    engine.maxEffectNanos() <= EFFECT_BOUND_MS * 1_000_000L,
+                    "no tick spent more than " + EFFECT_BOUND_MS
+                        + " ms running the effect: "
+                        + engine.maxEffectNanos() / 1_000_000.0
+                        + " ms");
+                early.note(
+                    "worst tick: effect " + engine.maxEffectNanos() / 1_000_000.0
+                        + " ms, scheduler "
+                        + engine.maxTickNanos() / 1_000_000.0
+                        + " ms, per tick "
+                        + caps[0]
+                        + " blocks and "
+                        + caps[1]
+                        + " layers");
                 early.note("peak flying blocks " + peak[0] + " origin " + ox + "," + oy + "," + oz);
                 return early.build();
             });

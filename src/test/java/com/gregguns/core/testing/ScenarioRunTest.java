@@ -128,6 +128,25 @@ class ScenarioRunTest {
     }
 
     @Test
+    void aScenarioThatLeaksConfigDoesNotAffectTheNextOne() {
+        List<String> log = new ArrayList<>();
+        int before = com.gregguns.core.config.IcbmConfig.siloComplexChancePercent;
+        int[] seen = new int[1];
+        Scenario leaker = new Fake("leak", ctx -> {
+            com.gregguns.core.config.IcbmConfig.siloComplexChancePercent = before + 17; // never undone
+            return ScenarioResult.pass("leak");
+        });
+        Scenario probe = new Fake("probe", ctx -> {
+            seen[0] = com.gregguns.core.config.IcbmConfig.siloComplexChancePercent;
+            return ScenarioResult.pass("probe");
+        });
+        ScenarioRun run = runner(log).begin(Arrays.asList(leaker, probe));
+        assertTrue(run.isDone());
+        assertEquals(before, seen[0], "the next scenario sees the original value");
+        assertEquals(before, com.gregguns.core.config.IcbmConfig.siloComplexChancePercent);
+    }
+
+    @Test
     void synchronousScenariosFinishWithoutAnyTicks() {
         List<String> log = new ArrayList<>();
         ScenarioRun run = runner(log).begin(Arrays.asList(instant("a", log), instant("b", log)));

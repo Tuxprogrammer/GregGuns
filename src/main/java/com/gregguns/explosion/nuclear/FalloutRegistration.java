@@ -1,5 +1,9 @@
 package com.gregguns.explosion.nuclear;
 
+import net.minecraft.item.Item;
+
+import com.gregguns.core.module.ModuleContent;
+import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 
 /**
@@ -34,7 +38,30 @@ public final class FalloutRegistration {
         shard.setTextureName("gregguns:thirdparty/ntm/trinitite_shard");
         gooItem.setTextureName("gregguns:thirdparty/ntm/fallout_goo");
         FalloutBlocks.setProducts(trinitite, goo, shard, gooItem);
+        claimHotFallout(trinitite, goo, shard, gooItem, rubble);
         FalloutEngine.register();
+    }
+
+    /**
+     * The hot-fallout content belongs to the ICBM module, although the guns module registers it (D140: only blasts of
+     * ZPM or better make it). With ICBM off it is hidden from NEI and the creative tab and cannot be used; plain
+     * irradiated earth and rubble stay with the guns module because the Nuke Launcher makes them.
+     */
+    private static void claimHotFallout(BlockTrinitite trinitite, BlockFalloutGoo goo, ItemFalloutProduct shard,
+        ItemFalloutProduct gooItem, ItemIrradiatedRubble rubble) {
+        ModuleContent.assign(trinitite, ModuleId.ICBM);
+        ModuleContent.assign(goo, ModuleId.ICBM);
+        ModuleContent.assign((Item) shard, ModuleId.ICBM);
+        ModuleContent.assign((Item) gooItem, ModuleId.ICBM);
+        ModuleContent.assignByDamage((Item) rubble, FalloutRegistration::rubbleOwner);
+    }
+
+    /**
+     * @param rubbleDamage the damage value of an irradiated rubble stack
+     * @return {@link ModuleId#ICBM} for hot rubble (damage 1), else {@code null}: the item's own module (guns)
+     */
+    public static ModuleId rubbleOwner(int rubbleDamage) {
+        return rubbleDamage == 1 ? ModuleId.ICBM : null;
     }
 
     /** Queues the GT recipes of the byproduct chain for GT's before-postload hook. */

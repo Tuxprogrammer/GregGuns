@@ -12,7 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
@@ -25,6 +24,7 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.gen.ComplexPlacer;
 import com.gregguns.icbm.complex.gen.ConfigSettings;
+import com.gregguns.icbm.complex.gen.DimensionKey;
 import com.gregguns.icbm.complex.gen.GtMachineHook;
 import com.gregguns.icbm.complex.gen.NeighborComplex;
 import com.gregguns.icbm.complex.gen.RadarStation;
@@ -57,23 +57,53 @@ public final class ComplexDimScenarios {
 
     private ComplexDimScenarios() {}
 
+    /** Mod that adds the Amun-Ra planets. */
+    private static final String AMUN_RA = "Amun-Ra (GalacticraftAmunRa)";
+
     public static void registerAll(ScenarioRegistry registry) {
-        registry.register(new OnDim("icbm.complex.dim.overworld", "Overworld", -1));
-        registry.register(new OnDim("icbm.complex.dim.moon", "moon", -1));
-        registry.register(new OnDim("icbm.complex.dim.mars", "mars", -1));
-        registry.register(new OnDim("icbm.complex.dim.ross128b", "ross128b", 0));
-        registry.register(new OnDim("icbm.complex.dim.ross128ba", "ross128ba", 1));
+        registry.register(new OnDim("icbm.complex.dim.overworld", "Overworld", "vanilla", -1));
+        registry.register(new OnDim("icbm.complex.dim.moon", "moon", "Galacticraft", -1));
+        registry.register(new OnDim("icbm.complex.dim.mars", "mars", "Galacticraft Planets", -1));
+        registry.register(new OnDim("icbm.complex.dim.ross128b", "ross128b", "Ross128", 0));
+        registry.register(new OnDim("icbm.complex.dim.ross128ba", "ross128ba", "Ross128", 1));
+        // One or two planets per rocket tier from T3 up. They need the planet mods, which the dev environment lacks:
+        // the scenario then skips with the planet and its mod named. They exist for the real-pack alpha run (D207).
+        for (String key : PACK_PLANETS) {
+            registry.register(new OnDim("icbm.complex.dim." + key, key, modOf(key), -1));
+        }
+    }
+
+    /**
+     * The planets of the real-pack run: T3 ceres, ganymed; T4 io; T5 enceladus, titan; T6 proteus, triton; T7 pluto;
+     * T8 barnarda2; T9 anubis.
+     */
+    static final String[] PACK_PLANETS = { "ceres", "ganymed", "iojupiter", "enceladus", "titan", "proteus", "triton",
+        "pluto", "barnarda2", "anubis" };
+
+    private static String modOf(String key) {
+        switch (key) {
+            case "anubis":
+            case "horus":
+            case "maahes":
+            case "neper":
+            case "seth":
+                return AMUN_RA;
+            default:
+                return "GalaxySpace";
+        }
     }
 
     private static final class OnDim implements Scenario {
 
         private final String name;
         private final String dimName;
+        private final String mod;
         private final int rossIndex;
 
-        OnDim(String name, String dimName, int rossIndex) {
+        OnDim(String name, String dimName, String mod, int rossIndex) {
             this.name = name;
             this.dimName = dimName;
+            this.mod = mod;
             this.rossIndex = rossIndex;
         }
 
@@ -85,13 +115,18 @@ public final class ComplexDimScenarios {
         @Override
         public String description() {
             return "Generates a real silo complex in '" + dimName
-                + "' through the chunk provider (chance forced to 100 percent): no cascade, no dropped write, no"
-                + " PopulateGuard violation; shaft mouths meet the terrain, the trapdoor lies flush, radar huts and"
-                + " armory frames stand, deep guard posts exist; cells the terrain rejects are skipped and logged"
-                + " (D128, D38, GGS-11-08, GGS-11-09).";
+                + "' (found by its DimensionKey, never its translated name) through the chunk provider (chance forced"
+                + " to 100 percent): no cascade, no dropped write, no PopulateGuard violation; shaft mouths meet the"
+                + " terrain, the trapdoor lies flush, radar huts and armory frames stand, deep guard posts exist; cells"
+                + " the terrain rejects are skipped and logged. Skips, naming the planet, when its mod is not loaded"
+                + " (D128, D38, D207, GGS-11-08, GGS-11-09).";
         }
 
+        /** The ids and keys seen while looking, for the skip reason. */
+        private final List<String> seen = new ArrayList<String>();
+
         private World world() {
+            seen.clear();
             MinecraftServer srv = MinecraftServer.getServer();
             if (rossIndex >= 0) {
                 int[] ids = Ross128Dimensions.ids();
@@ -100,25 +135,14 @@ public final class ComplexDimScenarios {
             if (dimName.equalsIgnoreCase("Overworld")) return srv.worldServerForDimension(0);
             for (int id : DimensionManager.getStaticDimensionIDs()) {
                 try {
-                    WorldProvider p = DimensionManager.createProviderFor(id);
-                    if (p != null && dimName.equalsIgnoreCase(p.getDimensionName()))
-                        return srv.worldServerForDimension(id);
+                    String key = DimensionKey.of(DimensionManager.createProviderFor(id));
+                    seen.add(id + "=" + key);
+                    if (dimName.equalsIgnoreCase(key)) return srv.worldServerForDimension(id);
                 } catch (Throwable t) {
                     // a provider that cannot name itself without a world is not the one we want
-                }
-            }
-            List<String> seen = new ArrayList<String>();
-            for (int id : DimensionManager.getStaticDimensionIDs()) {
-                try {
-                    seen.add(
-                        id + "="
-                            + DimensionManager.createProviderFor(id)
-                                .getDimensionName());
-                } catch (Throwable t) {
                     seen.add(id + "=?");
                 }
             }
-            GregGuns.LOG.info("{}: no provider named '{}' among {}", name, dimName, seen);
             return null;
         }
 
@@ -126,14 +150,29 @@ public final class ComplexDimScenarios {
         public ScenarioResult run(ScenarioContext ctx) {
             World world = world();
             if (world == null) {
-                return ScenarioResult.skip(name, "dimension '" + dimName + "' is not present in this environment");
+                String reason = "planet '" + dimName
+                    + "' ("
+                    + mod
+                    + ") is not present in this environment: no dimension"
+                    + " has that DimensionKey among "
+                    + seen;
+                GregGuns.LOG.info("{}: skipped, {}", name, reason);
+                return ScenarioResult.skip(name, reason);
             }
             ScenarioResult.Builder out = ScenarioResult.builder(name);
-            String actual = world.provider.getDimensionName();
-            out.note("dimension id " + world.provider.dimensionId + " name '" + actual + "'");
-            out.check(
-                dimName.equalsIgnoreCase("Overworld") || PlanetTable.tierOf(actual) != null,
-                "the provider's name '" + actual + "' is in the planet table");
+            String actual = DimensionKey.of(world);
+            out.note(
+                "dimension id " + world.provider.dimensionId
+                    + " key '"
+                    + actual
+                    + "' name '"
+                    + world.provider.getDimensionName()
+                    + "'");
+            out.check(PlanetTable.tierOf(actual) != null, "the dimension key '" + actual + "' is in the planet table");
+            out.checkEquals(
+                "the dimension key '" + actual + "' has the table's tier for '" + dimName + "'",
+                PlanetTable.tierOf(dimName),
+                PlanetTable.tierOf(actual));
             int chance = IcbmConfig.siloComplexChancePercent;
             IcbmConfig.siloComplexChancePercent = 100;
             try {

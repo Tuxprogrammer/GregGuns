@@ -21,6 +21,7 @@ public final class ScenarioRun {
     private int next;
     private Scenario current;
     private ScenarioContext currentContext;
+    private ConfigSnapshot configBefore;
     private ScenarioResult pending;
     private int elapsed;
 
@@ -87,6 +88,7 @@ public final class ScenarioRun {
             current = queue.get(next++);
             elapsed = 0;
             currentContext = null;
+            configBefore = ConfigSnapshot.ofAll();
             ScenarioResult result;
             try {
                 currentContext = contexts.apply(current);
@@ -127,6 +129,14 @@ public final class ScenarioRun {
         }
         currentContext = null;
         pending = null;
+        if (configBefore != null) {
+            // A scenario must not leak a config change into the next one (CONTRIBUTING: restore every global switch).
+            java.util.List<String> leaked = configBefore.restore();
+            if (!leaked.isEmpty()) {
+                GregGuns.LOG.warn("Scenario {} left config changed, restored: {}", current.name(), leaked);
+            }
+            configBefore = null;
+        }
         results.add(finished);
     }
 }
