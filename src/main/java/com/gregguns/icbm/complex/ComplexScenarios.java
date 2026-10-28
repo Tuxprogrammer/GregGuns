@@ -233,6 +233,13 @@ public final class ComplexScenarios {
                 out.check(part != null, "the chest item for " + s.missing() + " resolves");
                 if (part != null) {
                     GtMachineHook.placeMte(world, part.getItemDamage(), ox + 2, floor + (noController ? 2 : 1), oz);
+                    // A formed silo registers with GT's power-failure tracker, which needs an owner.
+                    TileEntity ctl = world.getTileEntity(ox + 2, floor + 2, oz);
+                    if (ctl instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity) {
+                        gregtech.api.interfaces.tileentity.IGregTechTileEntity g = (gregtech.api.interfaces.tileentity.IGregTechTileEntity) ctl;
+                        g.setOwnerName("complex-test");
+                        g.setOwnerUuid(java.util.UUID.nameUUIDFromBytes("complex-test".getBytes()));
+                    }
                     out.check(
                         com.gregguns.machine.DevStructureBuilder.check(world, ox + 2, floor + 2, oz),
                         "a silo forms once its missing " + s.missing() + " is added");
