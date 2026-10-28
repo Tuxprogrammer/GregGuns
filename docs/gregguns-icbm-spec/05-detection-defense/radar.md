@@ -50,7 +50,7 @@ Nothing below HV (D69). The tower needs an IV or better hatch, and a small radar
 
 - Sweep (clean-room; D14 replaces ICBM-Classic's chunk query and distance-trend test, so nothing is ported): `Contacts.within(world, x, z, range)`, then `Sweep.of(...)` splits "detected" from "incoming" (impact inside the protected radius), nearest first.
 - Outputs: redstone strength = incoming count (max 15) on all six sides of the controller, set only when it changes. The small radar's and the tower's active flag is the multiblock's own running state, so both drive redstone only (D191).
-- Link: right-click a radar or the tower controller with a data stick, or press Save link in a single block's GUI. The stick keeps `{dim, x, y, z}` (`RadarLink`).
+- Link: right-click a radar or the tower controller with a data stick. The stick keeps `{dim, x, y, z}` (`RadarLink`).
 - There is no single-block radar (D190): a controller with no structure does nothing. The small radar is described in "The small radar" below; the tower is a 3x3x7 Radar Casing tower (`RadarTowerShape`, casing meta 11 of `gregguns:casings`) with a Gantry Beam mast, hatches (Energy, Maintenance) in the bottom ring.
 
 ## Requirements (continued)
@@ -67,7 +67,7 @@ Nothing below HV (D69). The tower needs an IV or better hatch, and a small radar
 
 ## Open
 
-- Nothing blocking. The data stick only carries a radar's address (`RadarLink`), so it does not also carry a radius (D99): the radius is set in the tower's screen, as for the single blocks.
+- Nothing blocking. The data stick only carries a radar's address (`RadarLink`), so it does not also carry a radius (D99): the radius is set in the controller's screen (the "R" panel), small radar and tower alike.
 
 ## Tower screen and casing (D99)
 

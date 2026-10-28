@@ -211,7 +211,18 @@ final class RadarDishScenarios {
                         || r.dish()
                             .spin()
                             .spinning()) {
-                        return ticks < mark[0] + 300 ? null : ScenarioResult.fail(name(), "never stopped without EU");
+                        IGregTechTileEntity hb = DefenseScenarios.live(ctx, 0, CY - 1, 0);
+                        return ticks < mark[0] + 300 ? null
+                            : ScenarioResult.fail(
+                                name(),
+                                "never stopped without EU: online " + r.online()
+                                    + " dish "
+                                    + r.dish()
+                                    + " eu "
+                                    + (hb == null ? -1 : hb.getStoredEU())
+                                    + " active "
+                                    + DefenseScenarios.live(ctx, 0, CY, 0)
+                                        .isActive());
                     }
                     out.check(true, "the dish stops when the power goes");
                     // Break a corner of the base, then recheck the structure.

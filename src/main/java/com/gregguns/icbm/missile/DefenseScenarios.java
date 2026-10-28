@@ -1229,26 +1229,48 @@ public final class DefenseScenarios {
 
         @Override
         public String description() {
-            return "A radar's protected radius survives a save and reload of the machine, and a new battery starts without a link.";
+            return "A radar controller's protected radius survives a save and reload of its tile, and a new battery starts without a link.";
         }
 
         @Override
         ScenarioResult go(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             ctx.clearArea(8, 24);
-            IGregTechTileEntity rb = place(ctx, GregGunsMTEIDs.RADAR_EV, 0, 0, 0);
-            MTERadar r = radar(rb);
-            r.setRadius(77);
-            net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
-            r.saveNBTData(tag);
-            MTERadar copy = (MTERadar) r.newMetaEntity(rb);
-            copy.loadNBTData(tag);
-            out.checkEquals("radius after reload", 77, copy.protectedRadius());
-            out.checkEquals(
-                "the battery starts without a link",
-                null,
-                battery(place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 3, 0, 0)).link());
-            return out.build();
+            place(ctx, GregGunsMTEIDs.RADAR_EV, 0, 0, 0);
+            final int[] stage = { 0 };
+            return ScenarioResult.pending(name(), 200, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                MTERadar r = radar(live(ctx, 0, 0, 0));
+                if (r == null) {
+                    return ScenarioResult.fail(name(), "the controller is gone");
+                }
+                if (stage[0] == 0) {
+                    r.setRadius(77);
+                    int x = ctx.originX();
+                    int z = ctx.originZ();
+                    TileEntity old = ctx.world()
+                        .getTileEntity(x, ctx.originY(), z);
+                    net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+                    old.writeToNBT(tag);
+                    old.invalidate();
+                    ctx.world()
+                        .getChunkFromBlockCoords(x, z)
+                        .addTileEntity(TileEntity.createAndLoadEntity(tag));
+                    stage[0] = 1;
+                    return null;
+                }
+                if (ticks < WARMUP_TICKS + 20) {
+                    return null;
+                }
+                out.checkEquals("radius after reload", 77, r.protectedRadius());
+                out.checkEquals(
+                    "the battery starts without a link",
+                    null,
+                    battery(place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 6, 0, 0)).link());
+                return out.build();
+            });
         }
     }
 }
