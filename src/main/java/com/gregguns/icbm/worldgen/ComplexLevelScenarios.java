@@ -539,7 +539,7 @@ public final class ComplexLevelScenarios {
                 tier = pick.tier();
             }
             if (te instanceof IGregTechTileEntity && ((IGregTechTileEntity) te).getMetaTileID() == expectId
-                && (tier == 0 || tier <= p.tier())) {
+                && (tier == 0 || tier <= Math.max(1, p.tier()))) {
                 t.machinesRight++;
             }
         }
