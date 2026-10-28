@@ -222,6 +222,7 @@ public final class RoleAuditScenarios {
                             state);
                     }
                 }
+                // The last window completes the complex and reads it back; flush anything a window count missed.
                 RoleAudit.flush();
             } finally {
                 RoleAudit.capture(null);
@@ -230,8 +231,15 @@ public final class RoleAuditScenarios {
             int sections = placer.rasterOf(plan)
                 .plan()
                 .sectionCount();
+            // Only the probe's own complex counts; a line about another complex (a chunk load that populated one
+            // nearby) is real, so it goes to the log and the count.
+            String mine = "anchor " + plan.anchorX() + "," + plan.anchorZ() + " ";
+            List<String> other = new ArrayList<>();
+            for (String l : lines) if (!l.contains(mine)) other.add(l);
+            lines.removeAll(other);
+            for (String l : other) RoleAudit.report(l);
             out.check(RoleAudit.enabled(), "the audit is on in scenarios");
-            out.checkEquals("captured lines did not reach the log count", before, RoleAudit.total());
+            out.checkEquals("captured lines did not reach the log count", before + other.size(), RoleAudit.total());
             // Every section shows the one block as floor, wall and ceiling: one line each.
             out.checkEquals("a violation line per section", sections, lines.size());
             boolean named = !lines.isEmpty() && lines.get(0)

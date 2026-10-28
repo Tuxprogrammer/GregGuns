@@ -41,23 +41,27 @@ public final class RoomStyle {
         }
     }
 
-    /** Plain vanilla floors the guard falls to, in order: muted, and different from each other. */
+    /**
+     * Plain vanilla floors the guard falls to, in order: muted, different from each other, and the ones GregTech's
+     * stone
+     * layers do not overwrite first.
+     */
     static final List<BlockRef> FLOOR_STAND_INS = Collections.unmodifiableList(
         java.util.Arrays.asList(
             BlockRef.of(BlockRef.v("double_stone_slab", 0)),
-            BlockRef.of(BlockRef.v("stone", 0)),
-            BlockRef.of(BlockRef.v("stained_hardened_clay", 7))));
+            BlockRef.of(BlockRef.v("sandstone", 2)),
+            BlockRef.of(BlockRef.v("stone", 0))));
     /**
      * Plain vanilla ceilings the guard falls to, in order. Six different blocks: a wall is one block and a set's floor
-     * design uses at most four, so one of them is always free.
+     * design uses at most four, so one of them is always free. The ones GregTech's stone layers overwrite come last.
      */
     static final List<BlockRef> CEILING_STAND_INS = Collections.unmodifiableList(
         java.util.Arrays.asList(
-            BlockRef.of(BlockRef.v("stone", 0)),
             BlockRef.of(BlockRef.v("quartz_block", 0)),
+            BlockRef.of(BlockRef.v("sandstone", 2)),
             BlockRef.of(BlockRef.v("stonebrick", 0)),
             BlockRef.of(BlockRef.v("double_stone_slab", 0)),
-            BlockRef.of(BlockRef.v("sandstone", 2)),
+            BlockRef.of(BlockRef.v("stone", 0)),
             BlockRef.of(BlockRef.v("stained_hardened_clay", 7))));
 
     private final String setId;

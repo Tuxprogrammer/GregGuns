@@ -70,6 +70,13 @@ class RoleBlocksTest {
             assertTrue(Collections.disjoint(w, f), set.id + " walls " + w + " and floors " + f);
             assertTrue(Collections.disjoint(w, c), set.id + " walls " + w + " and ceilings " + c);
             assertTrue(Collections.disjoint(f, c), set.id + " floors " + f + " and ceilings " + c);
+            // GregTech's stone layers overwrite some blocks after the complex is written: at most one role may name
+            // them, or a blob through two roles would leave both showing its block.
+            int replaceable = 0;
+            for (Set<String> role : Arrays.asList(w, f, c)) {
+                if (!Collections.disjoint(role, PaletteSets.GT_REPLACEABLE)) replaceable++;
+            }
+            assertTrue(replaceable <= 1, set.id + ": " + replaceable + " roles name a block GT's stone layers replace");
             // The planet stone (D244) goes on walls or floors only, and those sets name no Galacticraft block.
             for (String id : c) assertFalse(id.startsWith("Galacticraft"), set.id + " ceiling " + id);
         }

@@ -43,8 +43,12 @@ final class PaletteSets {
     // A room's floor, wall and ceiling are three different blocks, whatever the pack holds. So each role of a set
     // takes its own block at every level of the chain: its own Chisel block, its own GregTech block and its own
     // vanilla stand-in. Walls fall back to GT concrete and stone bricks (or quartz, smooth sandstone), floors to GT
-    // marble or basalt and smooth double slabs (or clay), ceilings to plain stone (or quartz) with no GT step, except
-    // where a set says otherwise. RoleBlocksTest checks every set's three roles share no block at any level.
+    // marble or basalt and smooth double slabs (or clay), ceilings to quartz (or smooth sandstone) with no GT step,
+    // except where a set says otherwise. RoleBlocksTest checks every set's three roles share no block at any level.
+    //
+    // GregTech's stone layers overwrite plain stone, stained clay, cobblestone and its own granite and marble/basalt
+    // blocks wherever a blob passes, after the complex is written. So at most one role of a set may name any of
+    // those blocks (GT_REPLACEABLE), or a blob through two roles would leave them sharing its block.
 
     private static BlockRef.Entry gtConcrete(int meta) {
         return e(GT, "gt.blockconcretes", meta);
@@ -63,8 +67,26 @@ final class PaletteSets {
     private static final BlockRef.Entry WALL_QUARTZ = v("quartz_block", 0);
     private static final BlockRef.Entry WALL_SANDSTONE = v("sandstone", 2);
     private static final BlockRef.Entry FLOOR_SLAB = v("double_stone_slab", 0);
-    private static final BlockRef.Entry CEILING_STONE = v("stone", 0);
     private static final BlockRef.Entry CEILING_QUARTZ = v("quartz_block", 0);
+    private static final BlockRef.Entry CEILING_SANDSTONE = v("sandstone", 2);
+
+    /**
+     * The blocks GregTech's stone layer generator replaces with its granite or marble/basalt blobs (and its ore veins
+     * with ores), by registry name. At most one role of a set names any of them.
+     */
+    // Source: WorldgenStone replaces stone, stained clay, cobblestone, end stone, netherrack and GT granites and
+    // stones, at 5.09.54.205:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/WorldgenStone.java#L223-L230
+    static final java.util.Set<String> GT_REPLACEABLE = java.util.Collections.unmodifiableSet(
+        new java.util.HashSet<>(
+            java.util.Arrays.asList(
+                "minecraft:stone",
+                "minecraft:stained_hardened_clay",
+                "minecraft:cobblestone",
+                "minecraft:end_stone",
+                "minecraft:netherrack",
+                "gregtech:gt.blockgranites",
+                "gregtech:gt.blockstones")));
 
     private static BlockRef ch(String name, int meta, BlockRef.Entry... tail) {
         BlockRef.Entry[] l = new BlockRef.Entry[tail.length + 1];
@@ -149,12 +171,11 @@ final class PaletteSets {
         BlockRef nd3 = ch("nucrete", 3, gtStone(15), FLOOR_SLAB), nd4 = ch("nucrete", 4, gtStone(15), FLOOR_SLAB);
         BlockRef nd5 = ch("nucrete", 5, gtStone(15), FLOOR_SLAB), nd7 = ch("nucrete", 7, gtStone(15), FLOOR_SLAB);
         // Marble panels as ceilings over the pale rooms.
-        BlockRef mc0 = ch("marble", 0, CEILING_STONE), mc4 = ch("marble", 4, CEILING_STONE);
-        BlockRef mc7 = ch("marble", 7, CEILING_STONE);
+        BlockRef mc0 = ch("marble", 0, CEILING_SANDSTONE), mc4 = ch("marble", 4, CEILING_SANDSTONE);
+        BlockRef mc7 = ch("marble", 7, CEILING_SANDSTONE);
         // Technical insulation, vents and cables as ceilings over the works.
-        BlockRef tc9 = ch("technical", 9, gtGranite(7), CEILING_STONE),
-            tc7 = ch("technical", 7, gtGranite(7), CEILING_STONE);
-        BlockRef tc3 = ch("technical", 3, gtGranite(7), CEILING_STONE);
+        BlockRef tc9 = ch("technical", 9, CEILING_QUARTZ), tc7 = ch("technical", 7, CEILING_QUARTZ);
+        BlockRef tc3 = ch("technical", 3, CEILING_QUARTZ);
 
         // Pale lab rooms: Laboratory wall panels and its dark gray steel (11, 12) as walls, light Nucrete floors,
         // Marble panel ceilings.
@@ -250,7 +271,7 @@ final class PaletteSets {
 
         // Command and halls: dark Tyrian plate walls, dark Nucrete tile floors, Technical cinder-panel ceilings.
         BlockRef t15 = tyrian(15), t3 = tyrian(3), t8 = tyrian(8), t12 = tyrian(12);
-        BlockRef k2 = ch("technical4", 2, CEILING_STONE), k9 = ch("technical4", 9, CEILING_STONE);
+        BlockRef k2 = ch("technical4", 2, CEILING_QUARTZ), k9 = ch("technical4", 9, CEILING_QUARTZ);
         l.add(
             StyleSet
                 .named(
@@ -282,8 +303,8 @@ final class PaletteSets {
         BlockRef c5 = ch("concrete", 5, gtConcrete(13), WALL_BRICK);
         BlockRef a10 = ch("andesite", 10, gtStone(11), FLOOR_SLAB), a6 = ch("andesite", 6, gtStone(11), FLOOR_SLAB);
         BlockRef a1 = ch("andesite", 1, gtStone(11), FLOOR_SLAB), a3 = ch("andesite", 3, gtStone(11), FLOOR_SLAB);
-        BlockRef ncl8 = ch("nucrete", 8, CEILING_STONE), ncl9 = ch("nucrete", 9, CEILING_STONE);
-        BlockRef ncl11 = ch("nucrete", 11, CEILING_STONE);
+        BlockRef ncl8 = ch("nucrete", 8, CEILING_QUARTZ), ncl9 = ch("nucrete", 9, CEILING_QUARTZ);
+        BlockRef ncl11 = ch("nucrete", 11, CEILING_QUARTZ);
         l.add(
             StyleSet
                 .named(
@@ -316,8 +337,8 @@ final class PaletteSets {
         BlockRef ff13 = ch("factoryblock", 13, gtConcrete(3), FLOOR_SLAB);
         BlockRef ff9 = ch("factoryblock", 9, gtConcrete(3), FLOOR_SLAB);
         BlockRef ff3 = ch("factoryblock", 3, gtConcrete(3), FLOOR_SLAB);
-        BlockRef ncd3 = ch("nucrete", 3, CEILING_STONE), ncd1 = ch("nucrete", 1, CEILING_STONE);
-        BlockRef ncd7 = ch("nucrete", 7, CEILING_STONE);
+        BlockRef ncd3 = ch("nucrete", 3, CEILING_QUARTZ), ncd1 = ch("nucrete", 1, CEILING_QUARTZ);
+        BlockRef ncd7 = ch("nucrete", 7, CEILING_QUARTZ);
         l.add(
             StyleSet
                 .named(
@@ -350,7 +371,7 @@ final class PaletteSets {
         BlockRef ap6 = ch("andesite", 6, gtConcrete(15), FLOOR_SLAB);
         BlockRef ap1 = ch("andesite", 1, gtConcrete(15), FLOOR_SLAB);
         BlockRef ap4 = ch("andesite", 4, gtConcrete(15), FLOOR_SLAB);
-        BlockRef li0 = ch("limestone", 0, CEILING_STONE), li15 = ch("limestone", 15, CEILING_STONE);
+        BlockRef li0 = ch("limestone", 0, CEILING_SANDSTONE), li15 = ch("limestone", 15, CEILING_SANDSTONE);
         l.add(
             StyleSet.named("marble_admin", StyleGroup.COMMAND, StyleGroup.CAFETERIA, StyleGroup.MEDICAL, StyleGroup.HUB)
                 .walls(m4, m5, m1, m12)
@@ -368,23 +389,24 @@ final class PaletteSets {
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
 
-        // Great halls, all GregTech: black and red granite walls, basalt floors, dark concrete ceilings.
+        // Great halls: GregTech black and red granite walls, GT concrete floors, Technical cinder-panel ceilings. The
+        // floor is not GT basalt: a GT granite blob through wall and floor would leave both granite.
         BlockRef g3 = of(gtGranite(3), v("stonebrick", 3)), g7 = of(gtGranite(7), v("stonebrick", 3));
         BlockRef g11 = of(gtGranite(11), v("stonebrick", 3)), g6 = of(gtGranite(6), v("stonebrick", 3));
-        BlockRef b11 = of(gtStone(11), FLOOR_SLAB), b15 = of(gtStone(15), FLOOR_SLAB),
-            b14 = of(gtStone(14), FLOOR_SLAB);
-        BlockRef cc3 = of(gtConcrete(3), CEILING_STONE), cc7 = of(gtConcrete(7), CEILING_STONE);
+        BlockRef b3 = of(gtConcrete(3), FLOOR_SLAB), b7 = of(gtConcrete(7), FLOOR_SLAB),
+            b6 = of(gtConcrete(6), FLOOR_SLAB);
+        BlockRef cc2 = ch("technical4", 2, CEILING_QUARTZ), cc9 = ch("technical4", 9, CEILING_QUARTZ);
         l.add(
             StyleSet
                 .named("granite_hall", StyleGroup.HALL_MAJOR, StyleGroup.HUB, StyleGroup.GALLERY, StyleGroup.COMMAND)
                 .walls(g3, g7, g11, g6)
                 .floors(
-                    checker(b15, b11, 2),
-                    borderField(b14, b15, 2),
-                    plain(b15),
-                    centerStrip(b15, b11, 3),
-                    doubleRing(b14, b11, b15, 2))
-                .ceilings(plain(cc7), grid(cc7, cc3, 5))
+                    checker(b7, b3, 2),
+                    borderField(b6, b7, 2),
+                    plain(b7),
+                    centerStrip(b7, b3, 3),
+                    doubleRing(b6, b3, b7, 2))
+                .ceilings(plain(cc2), grid(cc9, cc2, 5))
                 .lamp(litLamp(13), g6)
                 .accent(of(gtGranite(15), v("stonebrick", 3)))
                 .furniture(Furniture.TABLE, STONE_TABLE)
@@ -460,6 +482,8 @@ final class PaletteSets {
 
         // Halls and bays: the Laboratory's large and small dark gray steel and Tyrian plate as walls, dark Nucrete
         // floors, Technical insulation and vent ceilings.
+        BlockRef sw11 = ch("laboratoryblock", 11, gtConcrete(7), WALL_BRICK);
+        BlockRef sw12 = ch("laboratoryblock", 12, gtConcrete(7), WALL_BRICK);
         l.add(
             StyleSet
                 .named(
@@ -469,7 +493,7 @@ final class PaletteSets {
                     StyleGroup.GALLERY,
                     StyleGroup.MISSILE_ASSEMBLY,
                     StyleGroup.HALL_MINOR)
-                .walls(lw11, lw12, t15)
+                .walls(sw11, sw12, t15)
                 .floors(
                     checker(nd3, nd7, 3),
                     borderField(nd5, nd7, 2),

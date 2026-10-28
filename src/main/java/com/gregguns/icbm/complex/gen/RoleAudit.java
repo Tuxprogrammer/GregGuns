@@ -371,7 +371,7 @@ public final class RoleAudit {
                 t.level,
                 GameData.getBlockRegistry()
                     .getNameForObject(v.block),
-                (s, role, x, y, z) -> t.styles.path(role, x, y, z));
+                (s, role, x, y, z) -> written(t, role, x, y, z));
             report(line);
         }
         if (Boolean.getBoolean(PROPERTY)) {
@@ -391,6 +391,25 @@ public final class RoleAudit {
                 ex);
         }
         return found.size();
+    }
+
+    /**
+     * @return the path that wrote a cell, and, when the world no longer holds the block that path places there, what
+     *         it holds now: a later writer that is not the complex's (another mod's worldgen) changed it
+     */
+    private static String written(Tracker t, byte role, int x, int y, int z) {
+        String path = t.styles.path(role, x, y, z);
+        com.gregguns.worldgen.layout.ResolvedBlock placed = t.styles.block(role, x, y, z);
+        Block now = t.world.getBlock(t.ax + x, t.floorY + y, t.az + z);
+        if (placed != null && placed.block != now) {
+            path += " (it placed " + GameData.getBlockRegistry()
+                .getNameForObject(placed.block)
+                + "; the world now holds "
+                + GameData.getBlockRegistry()
+                    .getNameForObject(now)
+                + ": changed after the complex was written, by another mod's worldgen)";
+        }
+        return path;
     }
 
     /** Logs one violation line and counts it. */
