@@ -36,6 +36,7 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 | `check_obj.py`, `testdata/` | Self-check for the OBJ path: renders a hand-made ogive, asserts the output is plausible, and asserts that files Forge 1.7.10's `WavefrontObject` would reject (n-gons, negative indices, mixed tri/quad groups, integer vertices) are rejected too. Run `python tools/asset-gen/infographics/check_obj.py [preview.png]` |
 | `obj_preview.py` | Preview sheet for OBJ models (three views, face count, size, texture): the test ogive plus any shipped OBJ with a texture. Writes `build/previews/obj.png`, or `$GREGGUNS_ASSETS_OUT/previews/obj.png`; never committed. `--obj`/`--tex` pairs add models |
 | `blocks.py` | Reads multiblock layouts from the mod's `*Shape.java` strings; composites casing and overlay textures |
+| `ctmsel.py`, `check_ctm.py`, `ctm_preview.py` | The connected casings: `ctmsel.py` picks each face's tile from the shipped CTM files the way the pack's engine does (same neighbor rule, per-face orientation); `check_ctm.py` is its self-check (`python tools/asset-gen/infographics/check_ctm.py`); `ctm_preview.py` writes `build/previews/ctm.png`, never committed |
 | `gt.py` | GregTech textures from the GT jar: tinted material icons, hulls, hatches, frames, glass |
 | `scenes.py` | Machine blocks, the turret, and the four multiblocks with their hatches and block counts |
 | `kit.py` | Render cache, page shell and CSS, and rasterizing through Playwright |
