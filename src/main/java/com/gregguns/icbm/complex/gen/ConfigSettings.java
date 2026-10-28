@@ -6,7 +6,9 @@ import java.util.Set;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
 import com.gregguns.core.config.IcbmConfig;
+import com.gregguns.core.config.WorldgenConfig;
 import com.gregguns.worldgen.StructureBiomes;
+import com.gregguns.worldgen.WorldgenGate;
 
 /** {@link ComplexPlacer.Settings} from {@link IcbmConfig}, read at each call so a config edit takes effect. */
 public final class ConfigSettings implements ComplexPlacer.Settings {
@@ -33,6 +35,16 @@ public final class ConfigSettings implements ComplexPlacer.Settings {
     @Override
     public int chancePercent() {
         return IcbmConfig.siloComplexChancePercent;
+    }
+
+    @Override
+    public boolean worldTypeAllowed(String worldType) {
+        return WorldgenGate.worldTypeAllowed(WorldgenConfig.structureWorldTypes, worldType);
+    }
+
+    @Override
+    public int[] ross128Weights() {
+        return IcbmConfig.siloComplexRoss128Weights;
     }
 
     @Override

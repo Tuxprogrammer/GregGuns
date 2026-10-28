@@ -205,8 +205,8 @@ public final class ComplexContentScenarios {
                     long seed = 0x7000L * (n + 1) + dim.hashCode();
                     com.gregguns.icbm.complex.ComplexPlan plan = com.gregguns.icbm.complex.ComplexLayout
                         .generate(seed, n, 9);
-                    int ceiling = rolled ? SiloCeiling.roll(plan.seed(), SiloCeiling.DEFAULT_ROSS_WEIGHTS)
-                        : Math.max(SiloCeiling.EV, com.gregguns.icbm.complex.PlanetTable.ceilingVoltage(dim));
+                    int ceiling = com.gregguns.icbm.complex.gen.ComplexPlacer
+                        .ceilingFor(dim, plan.seed(), SiloCeiling.DEFAULT_ROSS_WEIGHTS);
                     if (rolled) {
                         rossSeen.add(ceiling);
                     }

@@ -6,13 +6,13 @@ GregGuns-only area (the ICBM baseline has no worldgen): Abandoned Missile Silos 
 
 ## Contents
 
-All sheets are planned.
+All sheets are written and match what is built; the tuning that remains is I7.
 
-- silo-layout.md (planned): the D128 complex: about 240 x 240 blocks on one flat level, a central hall with wings, one to four real silos with their shafts and the O, D and Closed variants, the room set, the escape shaft, never cascading (D17, D128).
+- silo-layout.md: the D128 complex: about 240 x 240 blocks on one flat level, a central hall with wings, one to four real silos with their shafts and the O, D and Closed variants, the room set, the escape shaft, never cascading (D17, D128).
 - activity-levels.md: abandoned, partly abandoned, operational; the per-level damage pass in the layout (D36).
 - silo-guard-spawner.md: the spawner block on the M8 spawner system, mob lists (D36).
 - loot-and-ceilings.md: loot by tier, salvage, the planet table (D38).
-- planets-and-placement.md (planned): sparse grid per dimension, flags, Ross128 rolled ceilings (D17, D38, 0019).
+- planets-and-placement.md: sparse grid per dimension, flags, Ross128 rolled ceilings (D17, D38, 0019).
 
 ## Integration map
 

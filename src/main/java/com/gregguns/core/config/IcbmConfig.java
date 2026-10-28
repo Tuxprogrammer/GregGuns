@@ -4,7 +4,8 @@ import com.gtnewhorizon.gtnhlib.config.Config;
 
 /**
  * ICBM blast switches, the {@code icbm} category of {@code config/gregguns.cfg}. Fields only; no Minecraft types.
- * Synced: the server's values decide what a blast does. Terrain breaks by the per-tier key here only;
+ * Synced, except the silo complex keys (server-only, each marked): the server's values decide what a blast does.
+ * Terrain breaks by the per-tier key here only;
  * {@code explosions.blockDamage}
  * governs hand-held weapons, not ICBM blasts (D11, D52). Claims and protection always apply.
  */
@@ -175,13 +176,20 @@ public class IcbmConfig {
     @Config.Sync(false)
     public static boolean siloComplexEnabled = true;
 
-    @Config.Comment({ "Dimensions that get silo complexes, by the world provider's dimension name (D38). Remove a",
-        "name to keep complexes out of that planet. Default: the Overworld and every planet of the D38 table." })
+    @Config.Comment({ "Dimensions that get silo complexes (D38), by key: \"Overworld\", or a Galacticraft planet's own",
+        "unlocalized name such as moon, iojupiter, ganymed or barnarda2. Remove a name to keep new complexes out of",
+        "that planet. Default: the Overworld and every planet of the D38 table." })
     @Config.Sync(false)
     public static String[] siloComplexDimensions = { "Overworld", "moon", "mars", "phobos", "deimos", "ceres",
         "callisto", "europa", "ganymed", "iojupiter", "mercury", "venus", "enceladus", "titan", "miranda", "oberon",
         "proteus", "triton", "pluto", "haumea", "makemake", "barnarda2", "barnarda4", "barnarda5", "centauribb",
         "tcetie", "vega1", "anubis", "horus", "maahes", "neper", "seth", "ross128b", "ross128ba" };
+
+    @Config.Comment({ "Nine weights, EV first to UMV last, for the loot ceiling a complex on Ross128b or Ross128ba",
+        "rolls (D38). A complex rolls once from its own seed; negative weights count as 0. Default: 30, 22, 16, 11,",
+        "8, 6, 4, 2, 1, so about half roll EV to IV." })
+    @Config.Sync(false)
+    public static int[] siloComplexRoss128Weights = { 30, 22, 16, 11, 8, 6, 4, 2, 1 };
 
     @Config.Comment({ "Share of the sparse grid's cells (one per 64 x 64 chunks) that attempt a complex, 0 to 100.",
         "Default: 25." })
@@ -192,6 +200,6 @@ public class IcbmConfig {
     @Config.Comment({ "Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all.",
         "Default: dry and temperate land types." })
     @Config.Sync(false)
-    public static String[] siloComplexOverworldBiomes = { "PLAINS", "FOREST", "HILLS", "MOUNTAIN", "SANDY", "SAVANNA",
-        "CONIFEROUS", "SNOWY", "MESA", "DRY" };
+    public static String[] siloComplexOverworldBiomes = { "PLAINS", "FOREST", "SANDY", "SAVANNA", "CONIFEROUS", "SNOWY",
+        "MESA", "DRY" };
 }

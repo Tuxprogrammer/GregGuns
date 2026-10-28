@@ -18,6 +18,8 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.icbm.complex.ComplexLayout;
+import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.worldgen.ClippingSink;
 import com.gregguns.worldgen.ComplexWriter;
@@ -168,7 +170,7 @@ class ComplexPlacerTest {
 
                 @Override
                 public int seaFloorY(int x, int z) {
-                    return NONE;
+                    return seaFloor != NONE && w.contains(x, z) ? seaFloor : NONE;
                 }
             };
             if (placer.write(plan, GROUND, w, sink, probe) > 0) r.windowsWithWrites++;
@@ -183,6 +185,8 @@ class ComplexPlacerTest {
     }
 
     private int dishes;
+    /** The sea floor the probe reports inside a window (a valley or a lake bed), or NONE for no answer. */
+    private int seaFloor = HeightProbe.NONE;
 
     private Block dishBlock() {
         return named.computeIfAbsent("dish", k -> new Block(Material.iron) {});
@@ -259,5 +263,43 @@ class ComplexPlacerTest {
             return;
         }
         throw new AssertionError("no complex with a radar station in the cells tried");
+    }
+
+    @Test
+    void theEscapeLadderHasStoneBehindItFromTheLevelToTheSurface() {
+        StructurePlan p = plan();
+        Result r = run(p, false);
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        int x = p.anchorX() + cp.escapeX(), z = p.anchorZ() + cp.escapeZ(), meta = cp.escapeMeta();
+        int bx = x + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = z + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
+        int floor = GROUND - ComplexPlacer.DEPTH;
+        String backing = Integer.toString(System.identityHashCode(named.get("backing")));
+        for (int y = floor + ComplexLayout.HEIGHT; y <= GROUND; y++) {
+            String ladder = r.cells.get(x + "," + y + "," + z);
+            String behind = r.cells.get(bx + "," + y + "," + bz);
+            assertTrue(behind != null && behind.startsWith(backing + ":"), "backing at y " + y + ", windows or not");
+            if (y < GROUND) {
+                assertTrue(ladder != null, "ladder at y " + y);
+            }
+        }
+        assertEquals(0, r.duplicates);
+    }
+
+    @Test
+    void aColumnWhoseGroundLiesTooCloseAboveTheLevelIsCutOff() {
+        StructurePlan p = plan();
+        int floor = GROUND - ComplexPlacer.DEPTH;
+        seaFloor = floor + 5; // a valley or lake bed: the level's roof would break through
+        Result valley = run(p, false);
+        seaFloor = HeightProbe.NONE;
+        int under = 0;
+        for (String key : valley.cells.keySet()) {
+            int y = Integer.parseInt(key.split(",")[1]);
+            if (y < floor + ComplexLayout.HEIGHT) under++;
+        }
+        assertEquals(0, under, "nothing of the level is written under such ground");
+        assertEquals(0, valley.outside);
+        assertTrue(run(p, false).cells.size() > 20_000, "and the same plan writes normally on ordinary ground");
     }
 }

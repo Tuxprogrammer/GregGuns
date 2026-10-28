@@ -11,30 +11,6 @@ import com.gregguns.worldgen.RolledCeiling;
 class SiloCeilingTest {
 
     @Test
-    void theTableFollowsD38() {
-        assertEquals(4, SiloCeiling.forDimension("Overworld"));
-        assertEquals(4, SiloCeiling.forDimension("GalacticraftCore_Moon"));
-        assertEquals(5, SiloCeiling.forDimension("GalacticraftMars_Mars"));
-        assertEquals(6, SiloCeiling.forDimension("GalaxySpace_Europa"));
-        assertEquals(7, SiloCeiling.forDimension("GalaxySpace_Venus"));
-        assertEquals(8, SiloCeiling.forDimension("GalaxySpace_Titan"));
-        assertEquals(9, SiloCeiling.forDimension("GalaxySpace_Triton"));
-        assertEquals(10, SiloCeiling.forDimension("GalaxySpace_Pluto"));
-        assertEquals(11, SiloCeiling.forDimension("GalaxySpace_VegaB"));
-        assertEquals(12, SiloCeiling.forDimension("GalacticraftAmunRa_Seth"));
-    }
-
-    @Test
-    void beltsRossAndUnknownDimensionsHaveNoTableCeiling() {
-        for (String d : new String[] { "GalacticraftMars_Asteroids", "GalaxySpace_Kuiperbelt", "EndAsteroid",
-            "Ross128b", "Nether", null }) {
-            assertEquals(SiloCeiling.NONE, SiloCeiling.forDimension(d), String.valueOf(d));
-        }
-        assertTrue(SiloCeiling.isRolled("Ross128b") && SiloCeiling.isRolled("Ross128ba"));
-        assertTrue(!SiloCeiling.isRolled("Overworld"));
-    }
-
-    @Test
     void rossRollsStayInRangeAndAreSeeded() {
         int[] seen = new int[SiloCeiling.UMV + 1];
         for (long s = 0; s < 20000; s++) {

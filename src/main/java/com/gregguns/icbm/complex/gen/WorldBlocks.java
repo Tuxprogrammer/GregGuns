@@ -6,6 +6,7 @@ import net.minecraft.init.Blocks;
 import com.gregguns.block.GregGunsCasings;
 import com.gregguns.icbm.compat.GalacticraftParts;
 import com.gregguns.icbm.complex.Cell;
+import com.gregguns.icbm.complex.wall.BlockComplexWall;
 import com.gregguns.worldgen.layout.ResolvedBlock;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -39,10 +40,10 @@ public final class WorldBlocks implements BlockResolver {
     public ResolvedBlock resolve(byte cell, int x, int y, int z) {
         switch (cell) {
             case Cell.WALL:
-                // GregGuns Bastion Plating (steel): connected textures (design record 0023) join the shells of the
-                // rooms and tunnels into one plated mass. The silo and its shaft stay GT concrete, the silo's own
-                // accepted finish (SiloConcrete.acceptsMeta).
-                return new ResolvedBlock(GregGunsCasings.INSTANCE, GregGunsCasings.BASTION_STEEL, false);
+                // The complex wall block (D205): Bastion Plating's look, joined by the same connected textures, but
+                // not a GT casing, so placing tens of thousands of it starts no machine-update search. The silo and
+                // its shaft stay GT concrete, the silo's own accepted finish (SiloConcrete.acceptsMeta).
+                return new ResolvedBlock(BlockComplexWall.instance(), 0, false);
             case Cell.AIR:
                 return new ResolvedBlock(Blocks.air, 0, false);
             case Cell.RAIL_NS:
@@ -79,6 +80,10 @@ public final class WorldBlocks implements BlockResolver {
                 return concrete(SILO_METAS, x, y, z);
             case "ladder":
                 return new ResolvedBlock(Blocks.ladder, 2, false);
+            case "backing":
+                // Plain stone behind the escape ladder, so it still has something to cling to where the shaft
+                // crosses a cave.
+                return new ResolvedBlock(Blocks.stone, 0, false);
             case "trapdoor":
                 // Bit 3 is the top half: a closed trapdoor in the top half of the surface block lies flush with the
                 // terrain around it.

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.PlanetTable;
+import com.gregguns.icbm.complex.gen.ComplexPlacer;
 import com.gregguns.icbm.worldgen.Placement.Kind;
 
 /**
@@ -22,11 +23,7 @@ import com.gregguns.icbm.worldgen.Placement.Kind;
 class CeilingSweepTest {
 
     private static int ceilingFor(String dimension, long seed) {
-        Integer tier = PlanetTable.tierOf(dimension);
-        if (tier != null && tier == PlanetTable.ROLLED) {
-            return SiloCeiling.roll(seed, SiloCeiling.DEFAULT_ROSS_WEIGHTS);
-        }
-        return Math.max(SiloCeiling.EV, PlanetTable.ceilingVoltage(dimension));
+        return ComplexPlacer.ceilingFor(dimension, seed, SiloCeiling.DEFAULT_ROSS_WEIGHTS);
     }
 
     @Test

@@ -1437,3 +1437,8 @@ gregguns.fallout.tip.dissolved=Fallout goo in acid. Still radioactive.
 gregguns.fallout.tip.dissolved.1=Centrifuge (EV): technetium, promethium, neptunium, plutonium-241, americium and curium, with krypton and xenon.
 gregguns.fallout.tip.dissolved_hot=Hot fallout goo in acid. Still radioactive.
 gregguns.fallout.tip.dissolved_hot.1=Centrifuge (EV): neptunium, plutonium-241, americium, curium, and traces of californium and fermium, with krypton and xenon.
+
+# Silo complex wall (I6 fix X, D205)
+tile.gregguns.complex_wall.name=Silo Complex Wall
+gregguns.icbm.complex_wall.tip=Salvaged silo-complex wall.
+gregguns.icbm.complex_wall.tip.1=Plain plating from the walls of an old silo complex. It joins its neighbors the way Steel Bastion Plating does, but it is not a casing: no machine takes it and no recipe uses it.

@@ -50,6 +50,16 @@ public final class ComplexPlacer implements ComplexWriter {
         int chancePercent();
 
         Set<Type> overworldBiomes();
+
+        /** @return whether the world type (for example "default" or "flat") may host a complex (GGS-11-12) */
+        default boolean worldTypeAllowed(String worldType) {
+            return true;
+        }
+
+        /** @return the nine weights, EV first, of the Ross128 ceiling roll */
+        default int[] ross128Weights() {
+            return SiloCeiling.DEFAULT_ROSS_WEIGHTS;
+        }
     }
 
     private final BlockResolver blocks;
@@ -84,7 +94,20 @@ public final class ComplexPlacer implements ComplexWriter {
     @Override
     public boolean enabledIn(World world) {
         this.world = world;
-        return settings.dimensionEnabled(world.provider.getDimensionName());
+        return settings.dimensionEnabled(DimensionKey.of(world)) && settings.worldTypeAllowed(
+            world.getWorldInfo()
+                .getTerrainType()
+                .getWorldTypeName());
+    }
+
+    /**
+     * Drops what the placer holds per world: the cached rasters and contents and the world itself. Called when the
+     * server stops, so a second save in the same JVM never sees the first one's layout or world.
+     */
+    public void releaseWorld() {
+        world = null;
+        cache.clear();
+        contentsCache.clear();
     }
 
     @Override
@@ -117,9 +140,27 @@ public final class ComplexPlacer implements ComplexWriter {
             reason);
     }
 
+    /** Lowest level floor: clear of bedrock. */
+    private static final int MIN_FLOOR = 6;
+
+    /**
+     * The level floor: {@link #DEPTH} under the recorded ground, and no higher than {@link #DEPTH} under the
+     * dimension's average ground level, so a plan recorded on a hilltop still lies under the lower land around it.
+     * A pure function of the recorded height and the provider, so every window agrees.
+     */
+    int floorYOf(int groundY) {
+        int avg = world == null ? Integer.MAX_VALUE : world.provider.getAverageGroundLevel();
+        return Math.max(MIN_FLOOR, Math.min(groundY, avg) - DEPTH);
+    }
+
+    /** The seed base folds in the world seed, the dimension and the cell, so no two worlds share a key. */
+    private static String cacheKey(StructurePlan plan) {
+        return plan.dimension() + ":" + plan.chestSeedBase();
+    }
+
     /** The raster of a plan, cached for the dozens of windows one complex spans (two entries are enough). */
     public ComplexRaster rasterOf(StructurePlan plan) {
-        String key = plan.dimension() + ":" + plan.cellX() + ":" + plan.cellZ();
+        String key = cacheKey(plan);
         ComplexRaster r = cache.remove(key);
         if (r == null) {
             r = new ComplexRaster(ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ()));
@@ -151,13 +192,25 @@ public final class ComplexPlacer implements ComplexWriter {
         if (forcedCeiling > 0) {
             return forcedCeiling;
         }
-        String name = world == null ? "Overworld" : world.provider.getDimensionName();
-        Integer tier = PlanetTable.tierOf(name);
+        String name = world == null ? "Overworld" : DimensionKey.of(world);
+        return ceilingFor(name, plan.chestSeedBase(), settings.ross128Weights());
+    }
+
+    /**
+     * The ceiling the table gives a dimension: its row, or EV for a dimension the owner added to the config that the
+     * table does not list. Ross128b and ba roll one per complex from their own nine weights.
+     *
+     * @param dimensionKey a {@link DimensionKey}
+     * @param seedBase     the plan's seed base
+     * @param rossWeights  nine weights, EV first
+     * @return a GT voltage index, EV to UMV
+     */
+    public static int ceilingFor(String dimensionKey, long seedBase, int[] rossWeights) {
+        Integer tier = PlanetTable.tierOf(dimensionKey);
         if (tier != null && tier == PlanetTable.ROLLED) {
-            return SiloCeiling
-                .roll(plan.chestSeedBase(), com.gregguns.core.config.WorldgenConfig.ross128CeilingWeights);
+            return SiloCeiling.roll(seedBase, rossWeights);
         }
-        return Math.max(SiloCeiling.EV, PlanetTable.ceilingVoltage(name));
+        return Math.max(SiloCeiling.EV, PlanetTable.ceilingVoltage(dimensionKey));
     }
 
     private ActivityLevel forcedLevel;
@@ -186,7 +239,7 @@ public final class ComplexPlacer implements ComplexWriter {
     }
 
     private java.util.List<Placement> contentsOf(StructurePlan plan, ComplexPlan cp) {
-        String key = plan.dimension() + ":" + plan.cellX() + ":" + plan.cellZ();
+        String key = cacheKey(plan);
         java.util.List<Placement> l = contentsCache.remove(key);
         if (l == null) {
             // The comms data stick points at the nearest other complex the seed rolls (block x, z of its hall).
@@ -205,14 +258,39 @@ public final class ComplexPlacer implements ComplexWriter {
 
     @Override
     public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
+        // The GT blocks the window places (silo concrete, hatches) start no machine-update search (D205).
+        boolean before = machines.suspendUpdates();
+        try {
+            return writeWindow(plan, groundY, window, sink, probe);
+        } finally {
+            machines.resumeUpdates(before);
+        }
+    }
+
+    private int writeWindow(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink,
+        HeightProbe probe) {
         ComplexRaster raster = rasterOf(plan);
         ComplexPlan cp = raster.plan();
-        int floorY = groundY - DEPTH;
+        int floorY = floorYOf(groundY);
         int ax = plan.anchorX(), az = plan.anchorZ();
         int x0 = Math.max(ax, window.minX()), x1 = Math.min(ax + ComplexLayout.SIZE - 1, window.maxX());
         int z0 = Math.max(az, window.minZ()), z1 = Math.min(az + ComplexLayout.SIZE - 1, window.maxZ());
         int n = 0;
         Block air = blocks.air();
+        // The recorded ground comes from one window; this window's own columns may lie lower (a valley, a lake bed).
+        // A column whose ground is within a few blocks of the level's top is cut off, so nothing breaks the surface.
+        boolean[] mask = new boolean[PopulateWindow.SIZE * PopulateWindow.SIZE];
+        boolean masked = false;
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                int g = probe.seaFloorY(x, z);
+                if (g != HeightProbe.NONE && g < floorY + ComplexLayout.SILO_HEIGHT + 2) {
+                    mask[ColumnMaskSink.index(window, x, z)] = true;
+                    masked = true;
+                }
+            }
+        }
+        WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 for (int y = 0; y < ComplexRaster.LEVELS; y++) {
@@ -220,13 +298,13 @@ public final class ComplexPlacer implements ComplexWriter {
                     if (c == Cell.NONE) continue;
                     int wy = floorY + y;
                     if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
-                        if (sink.setBlock(x, wy, z, air, 0) && world != null) machines.place(world, c, x, wy, z);
+                        if (under.setBlock(x, wy, z, air, 0) && world != null) machines.place(world, c, x, wy, z);
                         n++;
                         continue;
                     }
                     ResolvedBlock b = c == Cell.LADDER ? blocks.ladder(cp.escapeMeta(), x, wy, z)
                         : blocks.resolve(c, x, wy, z);
-                    if (b != null && sink.setBlock(x, wy, z, b.block, b.meta)) n++;
+                    if (b != null && under.setBlock(x, wy, z, b.block, b.meta)) n++;
                 }
             }
         }
@@ -235,11 +313,11 @@ public final class ComplexPlacer implements ComplexWriter {
         n += radars(cp, plan, groundY, window, sink, probe);
         for (Mark m : cp.allMarks()) {
             int wx = ax + m.x(), wz = az + m.z();
-            if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, sink);
+            if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, under);
         }
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
-                new QuietSink(sink),
+                new QuietSink(under),
                 world,
                 ax,
                 floorY,
@@ -310,12 +388,26 @@ public final class ComplexPlacer implements ComplexWriter {
     private int ladder(ComplexPlan cp, StructurePlan plan, int floorY, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
         int x = plan.anchorX() + cp.escapeX(), z = plan.anchorZ() + cp.escapeZ();
-        if (!window.contains(x, z)) return 0;
-        int g = probe.landY(x, z);
-        if (g == HeightProbe.NONE) return 0;
         int n = 0;
+        // A ladder clings to the block behind it, and a natural cave the shaft crosses has none: the cell behind the
+        // whole climb is written solid, from the level up to that column's own ground. Its window writes it, whether
+        // or not the window holds the ladder.
+        int meta = cp.escapeMeta();
+        int bx = x + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = z + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
+        if (window.contains(bx, bz)) {
+            int bg = probe.landY(bx, bz);
+            if (bg != HeightProbe.NONE) {
+                for (int y = floorY + ComplexLayout.HEIGHT; y <= bg; y++) {
+                    ResolvedBlock b = blocks.named("backing", bx, y, bz);
+                    if (b != null && sink.setBlock(bx, y, bz, b.block, b.meta)) n++;
+                }
+            }
+        }
+        if (!window.contains(x, z)) return n;
+        int g = probe.landY(x, z);
+        if (g == HeightProbe.NONE) return n;
         for (int y = floorY + ComplexLayout.HEIGHT; y < g; y++) {
-            ResolvedBlock b = blocks.ladder(cp.escapeMeta(), x, y, z);
+            ResolvedBlock b = blocks.ladder(meta, x, y, z);
             if (b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
         }
         // landY is the top solid block, so the trapdoor replaces it; a top-half trapdoor then lies flush with the

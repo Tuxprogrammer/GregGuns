@@ -12,6 +12,7 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.threads.RunnableMachineUpdate;
 
 /**
  * Places the silo's GT machines: the Missile Silo controller and the hatches around it, facing north (the silo's
@@ -39,6 +40,18 @@ public final class GtMachineHook implements MachineHook {
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
         base.setFrontFacing(ForgeDirection.NORTH);
+    }
+
+    @Override
+    public boolean suspendUpdates() {
+        boolean before = RunnableMachineUpdate.isCurrentThreadEnabled();
+        RunnableMachineUpdate.setCurrentThreadEnabled(false);
+        return before;
+    }
+
+    @Override
+    public void resumeUpdates(boolean before) {
+        RunnableMachineUpdate.setCurrentThreadEnabled(before);
     }
 
     private static int idOf(byte cell) {

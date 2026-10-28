@@ -1,12 +1,14 @@
 package com.gregguns.worldgen;
 
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.BiomeDictionary.Type;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.config.UtilityConfig;
@@ -47,11 +49,6 @@ public final class StructureGenerator implements IWorldGenerator {
     private static volatile StructurePopulator real;
     /** The procedural underground complex (ICBM silo complex), set by its module; null when absent. */
     private static volatile ComplexWriter complexWriter;
-
-    /** @return the complex writer, or null; scenarios that need the general gate alone take it out and put it back */
-    static ComplexWriter complexWriter() {
-        return complexWriter;
-    }
 
     /** @param writer the complex writer, or null for none */
     public static void setComplexWriter(ComplexWriter writer) {
@@ -169,8 +166,10 @@ public final class StructureGenerator implements IWorldGenerator {
         if (populator == null) return;
         ComplexWriter complex = complexWriter;
         boolean general = allowed(world);
-        boolean withComplex = complex != null && complex.enabledIn(world);
-        if (!general && !withComplex) return;
+        // A complex the ledger already placed keeps generating when the config now keeps new ones out (a dimension
+        // removed from the list, the chance lowered, a world type excluded): only new decisions stop.
+        if (complex != null && !complex.enabledIn(world)) complex = new LedgerOnly(complex);
+        if (!general && complex == null) return;
         try (PopulateGuard.Scope ignored = PopulateGuard.enter(chunkX, chunkZ)) {
             PopulateWindow window = new PopulateWindow(chunkX, chunkZ);
             ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
@@ -185,7 +184,7 @@ public final class StructureGenerator implements IWorldGenerator {
                     : (x, z) -> StructureBiomes.typesAt(world.getWorldChunkManager(), x, z),
                 StructureState.forWorld(world),
                 new WorldMarks(world, sink),
-                withComplex ? complex : null,
+                complex,
                 general);
             STAMPED.addAndGet(n);
             ACCEPTED.addAndGet(sink.acceptedWrites());
@@ -193,6 +192,46 @@ public final class StructureGenerator implements IWorldGenerator {
         } catch (RuntimeException e) {
             // A broken structure must not kill chunk generation; the log names the chunk.
             GregGuns.LOG.error("Structure generation failed at chunk " + chunkX + "," + chunkZ, e);
+        }
+    }
+
+    /** A complex writer that decides nothing new: its chance is 0, so only plans the ledger placed are written. */
+    private static final class LedgerOnly implements ComplexWriter {
+
+        private final ComplexWriter inner;
+
+        LedgerOnly(ComplexWriter inner) {
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean enabledIn(World world) {
+            return false;
+        }
+
+        @Override
+        public int chancePercent() {
+            return 0;
+        }
+
+        @Override
+        public boolean biomeOk(int dimension, Set<Type> types) {
+            return false;
+        }
+
+        @Override
+        public int minGroundY() {
+            return inner.minGroundY();
+        }
+
+        @Override
+        public void skipped(StructurePlan plan, String reason) {
+            inner.skipped(plan, reason);
+        }
+
+        @Override
+        public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
+            return inner.write(plan, groundY, window, sink, probe);
         }
     }
 
