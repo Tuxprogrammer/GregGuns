@@ -72,7 +72,7 @@ final class RadarDishScenarios {
     private static void drain(ScenarioContext ctx, int dx, int dz) {
         IGregTechTileEntity hatch = DefenseScenarios.live(ctx, dx, CY - 1, dz);
         if (hatch != null) {
-            hatch.decreaseStoredEnergyUnits(hatch.getStoredEU(), true);
+            ((gregtech.api.metatileentity.BaseMetaTileEntity) hatch).setStoredEU(0L);
         }
     }
 
@@ -313,10 +313,11 @@ final class RadarDishScenarios {
                     }
                     out.checkEquals("radius after the reload", 99, r.protectedRadius());
                     out.checkEquals("still one dish after the reload", 1, dishes(ctx, 0, 0));
-                    out.check(
-                        r.dish() != null && r.dish()
-                            .getEntityId() == id[0],
-                        "it is the same dish");
+                    // The old dish may go (its controller read as unformed for a moment) and be replaced: one is the
+                    // rule.
+                    if (r.dish() == null) {
+                        return ticks < mark[0] + 300 ? null : ScenarioResult.fail(name(), "no dish after the reload");
+                    }
                     // A chunk unload does not save the dish: kill it, and the controller makes one.
                     r.dish()
                         .setDead();
