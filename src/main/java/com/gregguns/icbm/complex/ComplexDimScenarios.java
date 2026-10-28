@@ -330,9 +330,12 @@ public final class ComplexDimScenarios {
             int floor = d.groundY() - ComplexPlacer.DEPTH;
             out.note(
                 label + ": level " + level + ", ceiling " + ceiling + ", stick -> " + java.util.Arrays.toString(other));
-            int deepWanted = 0, deepFound = 0, sticks = 0;
+            int deepWanted = 0, deepFound = 0, sticks = 0, expected = 0;
             for (Placement p : ComplexContents.build(cp, level, ceiling, other)) {
                 int x = plan.anchorX() + p.x(), y = floor + p.y(), z = plan.anchorZ() + p.z();
+                if (p.kind() == Placement.Kind.FRAME_WALL) {
+                    expected += p.extent(); // a collapsed armory hangs none
+                }
                 if (p.kind() == Placement.Kind.SPAWNER) {
                     TileEntity t = w.getTileEntity(x, y, z);
                     boolean deep = p.spawner() == com.gregguns.worldgen.spawner.HoleKind.SILO_ELITE;
@@ -352,12 +355,9 @@ public final class ComplexDimScenarios {
             }
             out.checkEquals(label + ": every planned elite/deep guard post stands", deepWanted, deepFound);
             if (other == null) out.check(sticks == 0, label + ": no stick without another complex");
-            int frames = 0, bad = 0, expected = 0;
+            int frames = 0, bad = 0;
             for (Room r : cp.rooms()) {
                 if (r.kind() != RoomKind.ARMORY) continue;
-                for (Mark m : r.marks()) {
-                    if (m.kind() == MarkKind.ITEM_FRAME_WALL) expected += m.extent();
-                }
                 Box b = r.bounds();
                 @SuppressWarnings("unchecked")
                 List<?> es = w.getEntitiesWithinAABB(
@@ -414,7 +414,7 @@ public final class ComplexDimScenarios {
                 }
             }
             out.note(label + ": item frames in the world " + anyFrames + ", first " + first + "; floor y " + floor);
-            out.check(frames >= expected * 8 / 10, label + ": armory frames " + frames + " of " + expected);
+            out.check(frames == expected, label + ": armory frames " + frames + " of " + expected);
             out.checkEquals(label + ": frames without a gun or a wall", 0, bad);
             GregGuns.LOG.info("{} {}: {} frames, {} deep posts", name, label, frames, deepFound);
         }

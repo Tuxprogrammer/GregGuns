@@ -76,33 +76,49 @@ public final class ComplexContents {
     private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
 
     /**
-     * An item frame needs the wall behind it, so the damage pass leaves those wall cells alone: a breach or rubble
-     * there is dropped from the list (the frames are the armory's only contents that depend on a wall).
+     * An item frame needs the wall behind it and open air in front, so the damage pass leaves both cells alone (a
+     * breach or rubble there is dropped from the list), and a collapsed armory hangs no frames at all.
      */
     static List<Placement> keepFrameWalls(List<Placement> all) {
-        java.util.Set<Long> walls = new java.util.HashSet<>();
+        List<Placement> walls = new ArrayList<>();
         for (Placement p : all) {
-            if (p.kind() != Kind.FRAME_WALL) {
-                continue;
-            }
-            boolean alongZ = p.facing() == 1 || p.facing() == 3;
-            for (int i = 0; i < p.extent(); i++) {
-                int x = p.x() + (alongZ ? 0 : 2 * i) - FRAME_DX[p.facing()];
-                int z = p.z() + (alongZ ? 2 * i : 0) - FRAME_DZ[p.facing()];
-                walls.add(wallKey(x, p.y(), z));
+            if (p.kind() == Kind.FRAME_WALL) {
+                walls.add(p);
             }
         }
         if (walls.isEmpty()) {
             return all;
         }
+        java.util.Set<Long> cells = new java.util.HashSet<>();
+        java.util.Set<Placement> fallen = new java.util.HashSet<>();
+        for (Placement f : walls) {
+            for (Placement c : all) {
+                if (c.kind() == Kind.COLLAPSE && inside(c.box(), f)) {
+                    fallen.add(f);
+                }
+            }
+            boolean alongZ = f.facing() == 1 || f.facing() == 3;
+            for (int i = 0; i < f.extent(); i++) {
+                int x = f.x() + (alongZ ? 0 : 2 * i);
+                int z = f.z() + (alongZ ? 2 * i : 0);
+                cells.add(wallKey(x, f.y(), z));
+                cells.add(wallKey(x - FRAME_DX[f.facing()], f.y(), z - FRAME_DZ[f.facing()]));
+            }
+        }
         List<Placement> kept = new ArrayList<>(all.size());
         for (Placement p : all) {
             boolean damage = p.kind() == Kind.AIR || p.kind() == Kind.RUBBLE;
-            if (!(damage && walls.contains(wallKey(p.x(), p.y(), p.z())))) {
-                kept.add(p);
+            if (fallen.contains(p) || damage && cells.contains(wallKey(p.x(), p.y(), p.z()))) {
+                continue;
             }
+            kept.add(p);
         }
         return kept;
+    }
+
+    /** Whether a frame wall's first cell lies in the interior a cave-in fills. */
+    private static boolean inside(Box b, Placement f) {
+        return f.x() > b.minX && f.x() < b.maxX - 1 && f.z() > b.minZ && f.z() < b.maxZ - 1;
     }
 
     private static long wallKey(int x, int y, int z) {
