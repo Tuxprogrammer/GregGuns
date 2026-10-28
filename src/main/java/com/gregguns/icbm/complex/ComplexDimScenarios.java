@@ -321,6 +321,13 @@ public final class ComplexDimScenarios {
                                 + f.posZ
                                 + " dir "
                                 + f.hangingDirection
+                                + " wallBlock "
+                                + w.getBlock(
+                                    (int) Math.floor(f.posX),
+                                    (int) Math.floor(f.posY),
+                                    (int) Math.floor(
+                                        f.posZ + (f.hangingDirection == 2 ? 1 : f.hangingDirection == 0 ? -1 : 0)))
+                                    .getUnlocalizedName()
                                 + " item "
                                 + f.getDisplayedItem()
                                 + " noGun="
