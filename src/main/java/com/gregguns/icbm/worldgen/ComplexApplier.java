@@ -132,9 +132,9 @@ public final class ComplexApplier {
             int y = oy + p.y();
             net.minecraft.entity.item.EntityItemFrame frame = new net.minecraft.entity.item.EntityItemFrame(
                 world,
-                x,
+                x - FRAME_DX[p.facing()],
                 y,
-                z,
+                z - FRAME_DZ[p.facing()],
                 p.facing());
             String ref = SiloFrames.gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, GUN);
             ItemStack gun = ref == null ? null : com.gregguns.worldgen.loot.LootCategories.stack(ref, 1);
@@ -144,6 +144,13 @@ public final class ComplexApplier {
             sink.spawn(frame, frame.posX, frame.posY, frame.posZ);
         }
     }
+
+    /**
+     * Net.minecraft Direction offsets: the way a frame of each hanging direction faces. The entity is created with the
+     * position of the wall block it hangs on, which lies one step behind the frame's own cell.
+     */
+    private static final int[] FRAME_DX = { 0, -1, 0, 1 };
+    private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
 
     private static final java.util.function.Predicate<String> GUN = ref -> {
         net.minecraft.item.Item it = com.gregguns.entity.npc.NpcItems.item(ref);
