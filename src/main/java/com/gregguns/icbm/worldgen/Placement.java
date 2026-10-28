@@ -9,7 +9,8 @@ import com.gregguns.icbm.complex.MachineRole;
 
 /**
  * One decision of the filler for one cell (or one box) of a complex, in complex-local coordinates. The activity pass
- * turns the layout's marks into these; the world side turns each into blocks inside the populate window. Its position, kind and machine data are fixed at
+ * turns the layout's marks into these; the world side turns each into blocks inside the populate window. Its position,
+ * kind and machine data are fixed at
  * build time; only a chest's bonuses, its data stick payload and its complex's ceiling are set afterwards, by the
  * contents pass, before the list is handed out.
  *

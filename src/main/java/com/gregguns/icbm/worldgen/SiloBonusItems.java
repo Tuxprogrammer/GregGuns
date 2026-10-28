@@ -40,7 +40,8 @@ public final class SiloBonusItems {
         try {
             switch (bonus) {
                 case DAMAGED_BODY: {
-                    ItemStack s = MissileBodies.body(MissileTier.byNumber(p == null ? 1 : ComplexContents.bodyTier(p.ceiling())));
+                    ItemStack s = MissileBodies
+                        .body(MissileTier.byNumber(p == null ? 1 : ComplexContents.bodyTier(p.ceiling())));
                     s.setItemDamage(com.gregguns.icbm.missile.ItemBlockMissileBody.SALVAGE_DAMAGE);
                     return s;
                 }

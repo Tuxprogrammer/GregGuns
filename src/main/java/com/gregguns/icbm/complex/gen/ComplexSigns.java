@@ -14,7 +14,8 @@ import com.gregguns.worldgen.WindowedSink;
 
 /**
  * Writes the complex's SIGN marks as real wall signs (D128). A sign hangs on the wall next to its mark: the mark's own
- * air cell when a wall touches it, the air cell in front of the wall when the mark lies in the wall, or the nearest wall
+ * air cell when a wall touches it, the air cell in front of the wall when the mark lies in the wall, or the nearest
+ * wall
  * within three cells of an open mark. A mark with no wall near it writes nothing. The text comes from the mark's lang
  * key ({@link ComplexText}); the central hall's sign also names the complex's rolled tier. Server side.
  */
@@ -111,7 +112,8 @@ public final class ComplexSigns {
             }
             boolean hall = plan.hall()
                 .bounds()
-                .contains(m.x(), m.y(), m.z()) && m.key()
+                .contains(m.x(), m.y(), m.z())
+                && m.key()
                     .endsWith(".assembly_bay");
             String[] text = hall ? ComplexText.lines(HALL_KEY, SiloCeiling.name(ceiling)) : ComplexText.lines(m.key());
             if (sink.setBlock(x, y, z, Blocks.wall_sign, at[3])) {

@@ -23,7 +23,9 @@ class ComplexTextTest {
         java.util.List<String> keys = new java.util.ArrayList<>();
         keys.add("icbm.complex.sign.hall");
         for (RoomKind k : RoomKind.values()) {
-            keys.add("icbm.complex.sign." + k.name().toLowerCase(java.util.Locale.ROOT));
+            keys.add(
+                "icbm.complex.sign." + k.name()
+                    .toLowerCase(java.util.Locale.ROOT));
         }
         for (int w = 0; w < 4; w++) {
             keys.add("icbm.complex.sign.wing." + w);
@@ -31,7 +33,8 @@ class ComplexTextTest {
         for (String key : keys) {
             String text = lang.get(key);
             assertNotNull(text, key + " is missing from the lang file");
-            String[] lines = text.replace("%s", "UMV").split("\\|", -1);
+            String[] lines = text.replace("%s", "UMV")
+                .split("\\|", -1);
             assertTrue(lines.length <= 4, key + " has more than four lines");
             for (String l : lines) {
                 assertTrue(l.length() <= 15, key + " line too long: " + l);
@@ -43,13 +46,16 @@ class ComplexTextTest {
     void dataStickTextIsInTheLangFile() {
         Map<String, String> lang = lang();
         assertNotNull(lang.get("icbm.complex.datastick.name"));
-        assertTrue(lang.get("icbm.complex.datastick.lore").contains("%s"));
+        assertTrue(
+            lang.get("icbm.complex.datastick.lore")
+                .contains("%s"));
     }
 
     @Test
     void parseSkipsCommentsAndBlankLines() {
         Map<String, String> m = ComplexText.parse(
-            new java.io.ByteArrayInputStream("# c\n\na.b=one|two\nc=\n".getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            new java.io.ByteArrayInputStream(
+                "# c\n\na.b=one|two\nc=\n".getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         assertEquals("one|two", m.get("a.b"));
         assertEquals("", m.get("c"));
         assertEquals(2, m.size());

@@ -407,7 +407,10 @@ public final class ComplexLevelScenarios {
             out.checkEquals(tag + ": live warhead blocks", 0, t.liveWarheadBlocks);
             out.checkEquals(tag + ": warhead items in chests (D17)", 0, t.warheadItems);
             out.checkEquals(tag + ": flood water standing above the floor pools", 0, t.floodSpill);
-            out.checkEquals(tag + ": NASA Workbench footprint cells that are not Galacticraft dummy blocks", 0, t.nasaBad);
+            out.checkEquals(
+                tag + ": NASA Workbench footprint cells that are not Galacticraft dummy blocks",
+                0,
+                t.nasaBad);
             out.check(t.casings > 0, tag + ": the magazine is built of casing frames");
             out.checkEquals(tag + ": collapsed rooms with no rubble", t.collapses, t.collapseRubble);
             out.check(
@@ -543,10 +546,11 @@ public final class ComplexLevelScenarios {
                 if (frame == null) {
                     t.machinesSkipped++; // GT lacks the frame box: the applier skips it
                 } else if (b == Block.getBlockFromItem(frame.getItem())
-                    && world.getBlockMetadata(x, y, z) == frame.getItemDamage() && !(b instanceof BlockWarhead)) {
-                    t.machinesRight++;
-                    t.casings++;
-                }
+                    && world.getBlockMetadata(x, y, z) == frame.getItemDamage()
+                    && !(b instanceof BlockWarhead)) {
+                        t.machinesRight++;
+                        t.casings++;
+                    }
                 return;
             }
             if (role == MachineRole.NASA_WORKBENCH && !p.dead()) {

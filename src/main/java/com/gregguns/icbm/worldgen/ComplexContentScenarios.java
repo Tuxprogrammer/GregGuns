@@ -181,12 +181,13 @@ public final class ComplexContentScenarios {
      */
     private static final String[][] METAL_FROM = { { "StainlessSteel", "HV" }, { "Titanium", "EV" },
         { "TungstenSteel", "IV" }, { "HSSG", "LuV" }, { "NaquadahAlloy", "ZPM" }, { "Neutronium", "UV" },
-        { "CosmicNeutronium", "UHV" }, { "Infinity", "UEV" }, { "TranscendentMetal", "UIV" },
-        { "SpaceTime", "UMV" } };
+        { "CosmicNeutronium", "UHV" }, { "Infinity", "UEV" }, { "TranscendentMetal", "UIV" }, { "SpaceTime", "UMV" } };
     private static final String[] VOLT = { "ULV", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV", "UEV", "UIV",
         "UMV" };
 
-    /** @return the metal name when the stack is made of one that needs a higher ceiling than {@code ceiling}, else null */
+    /**
+     * @return the metal name when the stack is made of one that needs a higher ceiling than {@code ceiling}, else null
+     */
     private static String materialAbove(ItemStack st, int ceiling) {
         gregtech.api.objects.ItemData d = gregtech.api.util.GTOreDictUnificator.getAssociation(st);
         if (d == null || d.mMaterial == null || d.mMaterial.mMaterial == null) {

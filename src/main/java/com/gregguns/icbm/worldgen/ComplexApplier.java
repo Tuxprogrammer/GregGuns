@@ -188,7 +188,8 @@ public final class ComplexApplier {
     private void machine(Placement p, int x, int y, int z) {
         MachineRole role = p.role();
         if (role == MachineRole.NASA_WORKBENCH && !p.dead()) {
-            SiloGc.placeNasaWorkbench(sink, x, y, z); // its footprint spans neighboring columns: each window writes its own
+            SiloGc.placeNasaWorkbench(sink, x, y, z); // its footprint spans neighboring columns: each window writes its
+                                                      // own
             return;
         }
         if (!sink.window()

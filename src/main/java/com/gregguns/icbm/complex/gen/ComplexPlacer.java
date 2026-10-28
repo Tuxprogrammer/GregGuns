@@ -182,9 +182,8 @@ public final class ComplexPlacer implements ComplexWriter {
         if (forcedLevel != null) {
             return forcedLevel;
         }
-        return ActivityLevel.roll(
-            cp.seed(),
-            ActivityLevel.weightsFrom(com.gregguns.core.config.IcbmConfig.siloComplexActivityWeights));
+        return ActivityLevel
+            .roll(cp.seed(), ActivityLevel.weightsFrom(com.gregguns.core.config.IcbmConfig.siloComplexActivityWeights));
     }
 
     private java.util.List<Placement> contentsOf(StructurePlan plan, ComplexPlan cp) {

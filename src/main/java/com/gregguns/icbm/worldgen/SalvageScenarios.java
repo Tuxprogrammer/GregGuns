@@ -60,8 +60,12 @@ public final class SalvageScenarios {
             ItemStack damaged = SiloBonusItems.stack(Placement.Bonus.DAMAGED_BODY, null);
             ItemStack intact = MissileBodies.body(MissileTier.T1);
             out.check(damaged != null && ItemBlockMissileBody.isSalvage(damaged), "the damaged body carries its flag");
-            out.check(damaged != null && MissileBodies.tierOf(damaged) == null, "a damaged body is no body of any tier");
-            out.check(MissileBodies.tierOf(MissileBodies.body(MissileTier.T1)) == MissileTier.T1, "an intact body keeps its tier");
+            out.check(
+                damaged != null && MissileBodies.tierOf(damaged) == null,
+                "a damaged body is no body of any tier");
+            out.check(
+                MissileBodies.tierOf(MissileBodies.body(MissileTier.T1)) == MissileTier.T1,
+                "an intact body keeps its tier");
             for (int n = 1; n <= 3; n++) {
                 Placement chest = Placement.at(Placement.Kind.CHEST, 0, 0, 0)
                     .build();
