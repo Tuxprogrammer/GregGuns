@@ -1,9 +1,13 @@
 package com.gregguns.worldgen.spawner;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.core.registry.Naming;
 
 /**
- * Registers the two hole spawner blocks and their tile (worldgen module). Common side.
+ * Registers the hole spawner blocks, one per {@link HoleKind} and their tile (worldgen module). Common side.
  *
  * <p>
  * Usage: {@code HoleSpawnerRegistration.block(HoleKind.ZOMBIE)} is the Zombie Hole block (null before preInit).
@@ -14,8 +18,7 @@ public final class HoleSpawnerRegistration {
     /** Tile entity name, {@code gregguns:hole_spawner}. */
     public static final String TILE = "hole_spawner";
 
-    private static BlockHoleSpawner zombie;
-    private static BlockHoleSpawner bug;
+    private static final Map<HoleKind, BlockHoleSpawner> BLOCKS = new EnumMap<>(HoleKind.class);
 
     private HoleSpawnerRegistration() {}
 
@@ -27,13 +30,16 @@ public final class HoleSpawnerRegistration {
         if (kind == null) {
             return null;
         }
-        return kind == HoleKind.ZOMBIE ? zombie : bug;
+        return BLOCKS.get(kind);
     }
 
     /** @param registrar the worldgen module's registrar */
     public static void preInit(ModuleRegistrar registrar) {
-        zombie = registrar.registerBlock(HoleKind.ZOMBIE.blockName(), new BlockHoleSpawner(HoleKind.ZOMBIE));
-        bug = registrar.registerBlock(HoleKind.BUG.blockName(), new BlockHoleSpawner(HoleKind.BUG));
+        for (HoleKind kind : HoleKind.values()) {
+            BlockHoleSpawner block = registrar.registerBlock(kind.blockName(), new BlockHoleSpawner(kind), ItemBlockHoleSpawner.class);
+            block.setBlockTextureName(Naming.textureName(kind.textureName()));
+            BLOCKS.put(kind, block);
+        }
         registrar.registerTileEntity(TILE, TileHoleSpawner.class);
     }
 }
