@@ -1,7 +1,9 @@
 package com.gregguns.machine;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -44,6 +46,7 @@ public final class CtmCasingsScenario implements Scenario {
     private static final int RADIUS = 24;
     private static final int HEIGHT = 12;
     private static final int CY = 3;
+    private static final String OWNER = "gregguns-test";
 
     private CtmCasingsScenario() {}
 
@@ -193,7 +196,12 @@ public final class CtmCasingsScenario implements Scenario {
         TileEntity tile = ctx.world()
             .getTileEntity(x, y, z);
         if (tile instanceof IGregTechTileEntity) {
-            ((IGregTechTileEntity) tile).setInitialValuesAsNBT(null, (short) id);
+            IGregTechTileEntity base = (IGregTechTileEntity) tile;
+            base.setInitialValuesAsNBT(null, (short) id);
+            // GT's break path looks the owner up (an unowned controller NPEs on removal), as DevStructureBuilder sets
+            // it.
+            base.setOwnerName(OWNER);
+            base.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
         }
     }
 
