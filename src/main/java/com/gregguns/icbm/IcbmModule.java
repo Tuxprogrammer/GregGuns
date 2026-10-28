@@ -87,4 +87,10 @@ public final class IcbmModule implements GregGunsModule {
         com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
         com.gregguns.icbm.tools.ToolRegistration.init();
     }
+
+    /** After every mod's items exist: the silo complex loot tables (GT parts resolve through the unificator). */
+    @Override
+    public void postInit(cpw.mods.fml.common.event.FMLPostInitializationEvent event) {
+        com.gregguns.icbm.worldgen.SiloChests.register();
+    }
 }

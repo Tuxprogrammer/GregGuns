@@ -638,6 +638,7 @@ gregguns.hole_spawner.zombie_hole.summary=Places zombie soldiers, farmers and mi
 gregguns.hole_spawner.bug_hole.summary=Places Alien Bugs
 gregguns.hole_spawner.silo_guard.summary=Places Army Soldiers and Commandos to guard a missile silo complex
 gregguns.hole_spawner.silo_elite.summary=Places Commandos and Stormtroopers deep inside a missile silo complex
+gregguns.icbm.missile_body.damaged=Damaged: too broken to stand, good for recycling
 gregguns.hole_spawner.details=Acts only while a player is within %1$d blocks; keeps at most %2$d of its guards near it and places up to %3$d per try. Break it and it stays broken
 tile.gregguns.bug_nest.name=Bug Nest Resin
 tile.gregguns.bug_nest_eggs.name=Bug Nest Eggs
