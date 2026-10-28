@@ -38,8 +38,9 @@ public final class ItemBlockHoleSpawner extends ItemBlock {
         String tierLine = String.format(
             StatCollector.translateToLocal("gregguns.icbm.part.tooltip.tier"),
             TierText.colored(((Tiered) b).getTier()));
-        String summary = StatCollector
-            .translateToLocal("gregguns.hole_spawner." + b.kind().blockName() + ".summary");
+        String summary = StatCollector.translateToLocal(
+            "gregguns.hole_spawner." + b.kind()
+                .blockName() + ".summary");
         List<String> details = Arrays.asList(
             StatCollector.translateToLocalFormatted(
                 "gregguns.hole_spawner.details",

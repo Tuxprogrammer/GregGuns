@@ -11,7 +11,8 @@ import com.gregguns.entity.npc.NpcMob;
 
 /**
  * The kinds of hole spawner and the NPCs each one may place. Pure: no Minecraft types, so the tables are
- * unit-tested. The Zombie Hole places the zombie NPCs and the Bug Hole places the Alien Bug (PLAN-M8 G11). The two silo posts place the
+ * unit-tested. The Zombie Hole places the zombie NPCs and the Bug Hole places the Alien Bug (PLAN-M8 G11). The two silo
+ * posts place the
  * ICBM complex guards (D36).
  *
  * <p>

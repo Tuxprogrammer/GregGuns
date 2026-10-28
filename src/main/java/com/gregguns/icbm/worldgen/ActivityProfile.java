@@ -40,7 +40,7 @@ public final class ActivityProfile {
         new double[] { 0.10, 0.20, 0.45, 0.65 },
         0.0,
         1,
-        0.05,
+        0.0,
         0.10,
         0.40);
     private static final ActivityProfile OPERATIONAL = new ActivityProfile(
@@ -76,9 +76,9 @@ public final class ActivityProfile {
     private final double chipChance;
     private final double siloPartChance;
 
-    private ActivityProfile(ActivityLevel level, double collapse, double breach, double rubble, double hole,
-        double lit, double brokenCasing, double deadMachine, boolean flooded, double[] spawnerByDepth,
-        double shaftSpawner, int richness, double intactWarhead, double chip, double siloPart) {
+    private ActivityProfile(ActivityLevel level, double collapse, double breach, double rubble, double hole, double lit,
+        double brokenCasing, double deadMachine, boolean flooded, double[] spawnerByDepth, double shaftSpawner,
+        int richness, double intactWarhead, double chip, double siloPart) {
         this.level = level;
         this.collapseChance = collapse;
         this.breachChance = breach;
@@ -116,7 +116,9 @@ public final class ActivityProfile {
         return level;
     }
 
-    /** @return chance that a whole room or tunnel stretch is collapsed (filled with rubble, passable only by digging) */
+    /**
+     * @return chance that a whole room or tunnel stretch is collapsed (filled with rubble, passable only by digging)
+     */
     public double collapseChance() {
         return collapseChance;
     }

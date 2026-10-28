@@ -36,7 +36,8 @@ public final class HoleSpawnerRegistration {
     /** @param registrar the worldgen module's registrar */
     public static void preInit(ModuleRegistrar registrar) {
         for (HoleKind kind : HoleKind.values()) {
-            BlockHoleSpawner block = registrar.registerBlock(kind.blockName(), new BlockHoleSpawner(kind), ItemBlockHoleSpawner.class);
+            BlockHoleSpawner block = registrar
+                .registerBlock(kind.blockName(), new BlockHoleSpawner(kind), ItemBlockHoleSpawner.class);
             block.setBlockTextureName(Naming.textureName(kind.textureName()));
             BLOCKS.put(kind, block);
         }

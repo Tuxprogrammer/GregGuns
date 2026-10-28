@@ -34,8 +34,8 @@ public final class SiloCeiling {
     public static final int[] DEFAULT_ROSS_WEIGHTS = { 30, 22, 16, 11, 8, 6, 4, 2, 1 };
 
     /** GT's voltage short names indexed by voltage index, LV first at 1. */
-    private static final String[] NAMES = { "ULV", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV", "UEV", "UIV",
-        "UMV" };
+    private static final String[] NAMES = { "ULV", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV", "UEV",
+        "UIV", "UMV" };
 
     /** Dimension (GT {@code DimensionHelper} internal name) to ceiling. Overworld is keyed by "Overworld". */
     private static final Map<String, Integer> TABLE = new HashMap<>();
