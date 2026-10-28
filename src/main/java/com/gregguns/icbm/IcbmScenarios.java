@@ -27,9 +27,12 @@ final class IcbmScenarios {
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new ModuleGate());
         IcbmBlastScenarios.registerAll(registry);
-        com.gregguns.icbm.worldgen.ComplexContentScenarios.registerAll(registry);
+        // The complex scenarios fail on a role audit violation (D267).
+        ScenarioRegistry complex = new ScenarioRegistry();
+        com.gregguns.icbm.worldgen.ComplexContentScenarios.registerAll(complex);
+        com.gregguns.icbm.worldgen.ComplexLevelScenarios.registerAll(complex);
+        com.gregguns.icbm.complex.gen.RoleAuditScenarios.registerAudited(complex, registry);
         com.gregguns.icbm.complex.palette.PaletteScenarios.registerAll(registry);
-        com.gregguns.icbm.worldgen.ComplexLevelScenarios.registerAll(registry);
         com.gregguns.icbm.worldgen.I6VisualSetups.registerAll(registry);
     }
 

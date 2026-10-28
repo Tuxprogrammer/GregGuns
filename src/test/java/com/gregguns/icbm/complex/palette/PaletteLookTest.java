@@ -32,8 +32,8 @@ class PaletteLookTest {
             for (CellPattern p : s.ceilings)
                 for (int x = 0; x < 12; x++) for (int z = 0; z < 12; z++) l.add(p.at(x, z, 12, 12));
         }
-        l.add(RoomStyle.CONTRAST_A);
-        l.add(RoomStyle.CONTRAST_B);
+        l.addAll(RoomStyle.FLOOR_STAND_INS);
+        l.addAll(RoomStyle.CEILING_STAND_INS);
         return l;
     }
 
@@ -61,6 +61,7 @@ class PaletteLookTest {
     private static final Set<String> MUTED = new HashSet<>(
         Arrays.asList(
             "stone@0",
+            "double_stone_slab@0",
             "stonebrick@0",
             "stonebrick@2",
             "stonebrick@3",

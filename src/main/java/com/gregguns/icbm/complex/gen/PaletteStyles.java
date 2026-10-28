@@ -123,6 +123,17 @@ public final class PaletteStyles implements Styles {
         return Math.max(1, size - 2);
     }
 
+    @Override
+    public String path(byte role, int x, int y, int z) {
+        int id = raster.ownerAt(x, z);
+        if (id < 0) return Styles.super.path(role, x, y, z);
+        RoomStyle s = style(id);
+        Box b = plan.sectionBox(id);
+        int ix = inner(x, b.minX, b.sizeX()), iz = inner(z, b.minZ, b.sizeZ());
+        String r = role == Cell.FLOOR ? "floor" : role == Cell.CEILING ? "ceiling" : "wall";
+        return s.describe(r, ix, iz, span(b.sizeX()), span(b.sizeZ()));
+    }
+
     /** A style without that piece of furniture uses its accent, then its wall: the layout still reads. */
     private static ResolvedBlock furniture(RoomStyle s, Furniture f) {
         ResolvedBlock b = s.furniture(f);

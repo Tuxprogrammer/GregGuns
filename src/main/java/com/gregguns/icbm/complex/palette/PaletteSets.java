@@ -38,11 +38,13 @@ final class PaletteSets {
     private static final String GT = "gregtech";
     private static final String ZT = "Ztones";
 
-    // ---- chain helpers: pack block, GT block, vanilla block ----
-
-    private static BlockRef chisel(String name, int meta, BlockRef.Entry gt, BlockRef.Entry vanilla) {
-        return of(e(CH, name, meta), gt, vanilla);
-    }
+    // ---- chain helpers (D265) ----
+    //
+    // A room's floor, wall and ceiling are three different blocks, whatever the pack holds. So each role of a set
+    // takes its own block at every level of the chain: its own Chisel block, its own GregTech block and its own
+    // vanilla stand-in. Walls fall back to GT concrete and stone bricks (or quartz, smooth sandstone), floors to GT
+    // marble or basalt and smooth double slabs (or clay), ceilings to plain stone (or quartz) with no GT step, except
+    // where a set says otherwise. RoleBlocksTest checks every set's three roles share no block at any level.
 
     private static BlockRef.Entry gtConcrete(int meta) {
         return e(GT, "gt.blockconcretes", meta);
@@ -56,49 +58,50 @@ final class PaletteSets {
         return e(GT, "gt.blockgranites", meta);
     }
 
+    /** Vanilla stand-ins, by role. */
+    private static final BlockRef.Entry WALL_BRICK = v("stonebrick", 0);
+    private static final BlockRef.Entry WALL_QUARTZ = v("quartz_block", 0);
+    private static final BlockRef.Entry WALL_SANDSTONE = v("sandstone", 2);
+    private static final BlockRef.Entry FLOOR_SLAB = v("double_stone_slab", 0);
+    private static final BlockRef.Entry CEILING_STONE = v("stone", 0);
+    private static final BlockRef.Entry CEILING_QUARTZ = v("quartz_block", 0);
+
+    private static BlockRef ch(String name, int meta, BlockRef.Entry... tail) {
+        BlockRef.Entry[] l = new BlockRef.Entry[tail.length + 1];
+        l[0] = e(CH, name, meta);
+        System.arraycopy(tail, 0, l, 1, tail.length);
+        return of(l);
+    }
+
+    /** A dead lamp or console screen of the Laboratory family (not a building role). */
     private static BlockRef lab(int meta, int gtConcreteMeta) {
-        return chisel("laboratoryblock", meta, gtConcrete(gtConcreteMeta), v("quartz_block", 0));
+        return ch("laboratoryblock", meta, gtConcrete(gtConcreteMeta), v("quartz_block", 0));
     }
 
+    /** A dead lamp or accent of the Factory family. */
     private static BlockRef factory(int meta) {
-        return chisel("factoryblock", meta, gtConcrete(3), v("stonebrick", 0));
-    }
-
-    private static BlockRef tyrian(int meta) {
-        return chisel("tyrian", meta, gtConcrete(7), v("stonebrick", 0));
-    }
-
-    private static BlockRef concrete(int meta, int gtMeta) {
-        return chisel("concrete", meta, gtConcrete(gtMeta), v("stonebrick", 0));
+        return ch("factoryblock", meta, gtConcrete(3), v("stonebrick", 0));
     }
 
     private static BlockRef technical(int meta) {
-        return chisel("technical", meta, gtStone(11), v("stonebrick", 2));
+        return ch("technical", meta, gtStone(11), v("stonebrick", 2));
     }
 
-    private static BlockRef marble(int meta) {
-        return chisel("marble", meta, gtStone(3), v("quartz_block", 0));
+    private static BlockRef tyrian(int meta) {
+        return ch("tyrian", meta, gtConcrete(7), v("stonebrick", 0));
     }
 
-    private static BlockRef limestone(int meta) {
-        return chisel("limestone", meta, gtConcrete(11), v("sandstone", 2));
-    }
-
-    private static BlockRef granite(int meta) {
-        return of(gtGranite(meta), v("stonebrick", 3));
-    }
-
-    /** @return the registry name of a Ztones metal set block: {@code tile.<set>Block} */
-    static String ztonesName(String set) {
-        return "tile." + set + "Block";
-    }
-
-    /** A Ztones block, then a Chisel block, then GT, then vanilla. */
+    /** A Ztones block, then a fallback chain. */
     private static BlockRef ztones(String set, int meta, BlockRef fallback) {
         List<BlockRef.Entry> l = new ArrayList<>();
         l.add(e(ZT, ztonesName(set), meta));
         l.addAll(fallback.chain());
         return of(l.toArray(new BlockRef.Entry[0]));
+    }
+
+    /** @return the registry name of a Ztones metal set block: {@code tile.<set>Block} */
+    static String ztonesName(String set) {
+        return "tile." + set + "Block";
     }
 
     /** A lit full-cube lamp: Chisel's light stone (light 15), else vanilla glowstone (D242). */
@@ -137,10 +140,26 @@ final class PaletteSets {
     static List<StyleSet> build() {
         List<StyleSet> l = new ArrayList<>();
 
-        BlockRef lab0 = lab(0, 15), lab1 = lab(1, 15), lab2 = lab(2, 14), lab5 = lab(5, 15), lab6 = lab(6, 14);
-        BlockRef lab7 = lab(7, 15), lab11 = lab(11, 7), lab12 = lab(12, 7);
-        // The two-tone Laboratory checker tile (meta 8, "checkertile"): dark and light gray quarters.
-        BlockRef lab8 = lab(8, 7);
+        // Shared floor and ceiling families. Each set below takes each family in one role only (D265).
+        // Nucrete (light 8..15, dark 0..7) and Andesite as floors with GT marble or basalt and smooth slabs behind
+        // them.
+        BlockRef nl9 = ch("nucrete", 9, gtStone(7), FLOOR_SLAB), nl11 = ch("nucrete", 11, gtStone(7), FLOOR_SLAB);
+        BlockRef nl12 = ch("nucrete", 12, gtStone(7), FLOOR_SLAB), nl13 = ch("nucrete", 13, gtStone(7), FLOOR_SLAB);
+        BlockRef nl15 = ch("nucrete", 15, gtStone(7), FLOOR_SLAB);
+        BlockRef nd3 = ch("nucrete", 3, gtStone(15), FLOOR_SLAB), nd4 = ch("nucrete", 4, gtStone(15), FLOOR_SLAB);
+        BlockRef nd5 = ch("nucrete", 5, gtStone(15), FLOOR_SLAB), nd7 = ch("nucrete", 7, gtStone(15), FLOOR_SLAB);
+        // Marble panels as ceilings over the pale rooms.
+        BlockRef mc0 = ch("marble", 0, CEILING_STONE), mc4 = ch("marble", 4, CEILING_STONE);
+        BlockRef mc7 = ch("marble", 7, CEILING_STONE);
+        // Technical insulation, vents and cables as ceilings over the works.
+        BlockRef tc9 = ch("technical", 9, gtGranite(7), CEILING_STONE),
+            tc7 = ch("technical", 7, gtGranite(7), CEILING_STONE);
+        BlockRef tc3 = ch("technical", 3, gtGranite(7), CEILING_STONE);
+
+        // Pale lab rooms: Laboratory wall panels and its dark gray steel (11, 12) as walls, light Nucrete floors,
+        // Marble panel ceilings.
+        BlockRef lw0 = lab(0, 15), lw2 = lab(2, 15), lw3 = lab(3, 15), lw5 = lab(5, 15), lw11 = lab(11, 7);
+        BlockRef lw12 = lab(12, 7);
         l.add(
             StyleSet
                 .named(
@@ -149,15 +168,15 @@ final class PaletteSets {
                     StyleGroup.SERVER_ROOM,
                     StyleGroup.COMMAND,
                     StyleGroup.CAFETERIA)
-                .walls(lab0, lab2, lab5, lab(3, 14), lab11, lab12)
+                .walls(lw0, lw2, lw5, lw3, lw11, lw12)
                 .floors(
-                    plain(lab7),
-                    plain(lab8),
-                    checker(lab7, lab6, 2),
-                    borderField(lab12, lab7, 2),
-                    stripes(lab7, lab11, 6, true),
-                    doubleRing(lab11, lab12, lab7, 1))
-                .ceilings(plain(lab1), grid(lab0, lab1, 5), plain(lab0))
+                    plain(nl15),
+                    checker(nl15, nl11, 2),
+                    borderField(nl9, nl15, 1),
+                    stripes(nl15, nl13, 6, true),
+                    doubleRing(nl11, nl9, nl15, 1),
+                    plain(nl12))
+                .ceilings(plain(mc7), grid(mc0, mc4, 5), plain(mc4))
                 .lamp(litLamp(15), lab(9, 15))
                 .accent(lab(15, 14))
                 .furniture(Furniture.TABLE, STONE_TABLE)
@@ -166,18 +185,24 @@ final class PaletteSets {
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
 
-        // D260: the Laboratory finish with its dark gray steel walls (large and small steel, metas 11 and 12), the
-        // two-tone checker tile floor and white panel ceilings, for the rooms a lab suits: medical, server, command.
+        // D260, D265: the Laboratory two-tone checker tile floor (meta 8) with its floor tiles, under dark Nucrete
+        // panel walls and Marble ceilings, for the rooms a lab suits. The Laboratory's steel walls are one block with
+        // its floor tiles, so they dress lab_white and steel_panel rooms instead.
+        BlockRef lf6 = ch("laboratoryblock", 6, gtStone(15), FLOOR_SLAB);
+        BlockRef lf7 = ch("laboratoryblock", 7, gtStone(15), FLOOR_SLAB);
+        BlockRef lf8 = ch("laboratoryblock", 8, gtStone(15), FLOOR_SLAB);
+        BlockRef ndw1 = ch("nucrete", 1, gtConcrete(7), WALL_BRICK), ndw2 = ch("nucrete", 2, gtConcrete(7), WALL_BRICK);
+        BlockRef ndw3 = ch("nucrete", 3, gtConcrete(7), WALL_BRICK), ndw5 = ch("nucrete", 5, gtConcrete(7), WALL_BRICK);
         l.add(
             StyleSet.named("lab_dark", StyleGroup.MEDICAL, StyleGroup.SERVER_ROOM, StyleGroup.COMMAND)
-                .walls(lab11, lab12)
+                .walls(ndw1, ndw2, ndw3, ndw5)
                 .floors(
-                    plain(lab8),
-                    borderField(lab7, lab8, 1),
-                    checker(lab8, lab7, 3),
-                    centerStrip(lab8, lab6, 3),
-                    stripes(lab8, lab12, 5, true))
-                .ceilings(plain(lab1), grid(lab0, lab1, 5), plain(lab2), plain(lab5))
+                    plain(lf8),
+                    borderField(lf7, lf8, 1),
+                    checker(lf8, lf7, 3),
+                    centerStrip(lf8, lf6, 3),
+                    stripes(lf8, lf7, 5, true))
+                .ceilings(plain(mc0), grid(mc0, mc7, 5), plain(mc7), plain(mc4))
                 .lamp(litLamp(15), lab(9, 15))
                 .accent(lab(15, 14))
                 .furniture(Furniture.TABLE, STONE_TABLE)
@@ -186,8 +211,14 @@ final class PaletteSets {
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
 
-        BlockRef f13 = factory(13), f3 = factory(3), f9 = factory(9), f0 = factory(0), f15 = factory(15);
-        BlockRef f6 = factory(6), f7 = factory(7);
+        // Plant rooms: Factory plating walls, Chisel stone-panel floors, Technical insulation and vent ceilings.
+        BlockRef f13 = factory(13), f3 = factory(3), f9 = factory(9), f0 = factory(0);
+        BlockRef s12 = ch("stonebricksmooth", 12, gtStone(11), FLOOR_SLAB);
+        BlockRef s13 = ch("stonebricksmooth", 13, gtStone(11), FLOOR_SLAB);
+        BlockRef s5 = ch("stonebricksmooth", 5, gtStone(11), FLOOR_SLAB);
+        BlockRef s4 = ch("stonebricksmooth", 4, gtStone(11), FLOOR_SLAB);
+        // A worn patch: weathered Chisel concrete, a floor-only block in every set that wears.
+        BlockRef wornConcrete = ch("concrete", 4, FLOOR_SLAB);
         l.add(
             StyleSet
                 .named(
@@ -202,23 +233,24 @@ final class PaletteSets {
                     StyleGroup.GALLERY)
                 .walls(f13, f9, f3, f0)
                 .floors(
-                    plain(f13),
-                    stripes(f13, f6, 8, true),
-                    borderField(f7, f3, 1),
-                    checker(f0, f13, 2),
-                    centerStrip(f13, f9, 3),
-                    bands(f13, f3, 4, false))
-                .ceilings(plain(f13), grid(f3, technical(7), 5), plain(technical(9)))
+                    plain(s12),
+                    stripes(s12, s13, 8, true),
+                    borderField(s13, s12, 1),
+                    checker(s12, s5, 2),
+                    centerStrip(s12, s4, 3),
+                    bands(s12, s5, 4, false))
+                .ceilings(plain(tc9), grid(tc9, tc7, 5), grid(tc9, tc3, 6))
                 .lamp(litLamp(8), f0)
-                .accent(f6)
-                .worn(technical(12))
+                .accent(factory(6))
+                .worn(wornConcrete)
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
 
-        BlockRef t15 = tyrian(15), t3 = tyrian(3), t8 = tyrian(8), t12 = tyrian(12), t13 = tyrian(13);
-        BlockRef t11 = tyrian(11);
+        // Command and halls: dark Tyrian plate walls, dark Nucrete tile floors, Technical cinder-panel ceilings.
+        BlockRef t15 = tyrian(15), t3 = tyrian(3), t8 = tyrian(8), t12 = tyrian(12);
+        BlockRef k2 = ch("technical4", 2, CEILING_STONE), k9 = ch("technical4", 9, CEILING_STONE);
         l.add(
             StyleSet
                 .named(
@@ -231,21 +263,27 @@ final class PaletteSets {
                     StyleGroup.SERVER_ROOM)
                 .walls(t15, t3, t8, t12)
                 .floors(
-                    checker(t12, t13, 2),
-                    borderField(t8, t12, 2),
-                    centerStrip(t12, t11, 3),
-                    plain(t8),
-                    doubleRing(t11, t3, t12, 2))
-                .ceilings(plain(t12), grid(t13, t3, 4), plain(t13))
-                .lamp(litLamp(4), t13)
-                .accent(t11)
+                    checker(nd7, nd3, 2),
+                    borderField(nd4, nd7, 2),
+                    centerStrip(nd7, nd5, 3),
+                    plain(nd3),
+                    doubleRing(nd5, nd4, nd7, 2))
+                .ceilings(plain(k2), grid(k9, k2, 4), plain(k9))
+                .lamp(litLamp(4), tyrian(13))
+                .accent(tyrian(11))
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .build());
 
-        BlockRef complexWall = of(e("gregguns", "complex_wall", 0), gtConcrete(8), v("stonebrick", 0));
-        BlockRef c0 = concrete(0, 8), c1 = concrete(1, 8), c3 = concrete(3, 11), c4 = concrete(4, 12);
-        BlockRef c5 = concrete(5, 13), c10 = concrete(10, 7);
+        // Bunker rooms: the Silo Complex Wall (D205) or Chisel concrete walls, Andesite floors, light Nucrete
+        // ceilings.
+        BlockRef complexWall = of(e("gregguns", "complex_wall", 0), gtConcrete(8), WALL_BRICK);
+        BlockRef c1 = ch("concrete", 1, gtConcrete(8), WALL_BRICK), c3 = ch("concrete", 3, gtConcrete(11), WALL_BRICK);
+        BlockRef c5 = ch("concrete", 5, gtConcrete(13), WALL_BRICK);
+        BlockRef a10 = ch("andesite", 10, gtStone(11), FLOOR_SLAB), a6 = ch("andesite", 6, gtStone(11), FLOOR_SLAB);
+        BlockRef a1 = ch("andesite", 1, gtStone(11), FLOOR_SLAB), a3 = ch("andesite", 3, gtStone(11), FLOOR_SLAB);
+        BlockRef ncl8 = ch("nucrete", 8, CEILING_STONE), ncl9 = ch("nucrete", 9, CEILING_STONE);
+        BlockRef ncl11 = ch("nucrete", 11, CEILING_STONE);
         l.add(
             StyleSet
                 .named(
@@ -258,23 +296,28 @@ final class PaletteSets {
                     StyleGroup.VEHICLE_BAY)
                 .walls(complexWall, c1, c3, c5)
                 .floors(
-                    plain(c0),
-                    borderField(c1, c0, 1),
-                    checker(c0, c4, 4),
-                    stripes(c0, c10, 6, false),
-                    bands(c0, c1, 3, true))
-                .ceilings(plain(c3), plain(c1), grid(c0, c3, 6))
-                .lamp(litLamp(14), c4)
-                .accent(c10)
-                .worn(c4)
+                    plain(a10),
+                    borderField(a6, a10, 1),
+                    checker(a10, a1, 4),
+                    stripes(a10, a3, 6, false),
+                    bands(a10, a6, 3, true))
+                .ceilings(plain(ncl11), plain(ncl9), grid(ncl11, ncl8, 6))
+                .lamp(litLamp(14), ch("concrete", 4, gtConcrete(12), WALL_BRICK))
+                .accent(ch("concrete", 10, gtConcrete(7), WALL_BRICK))
+                .worn(ch("andesite", 11, FLOOR_SLAB))
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .furniture(Furniture.BUNK, BUNK_GREY)
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
 
+        // Works rooms: Technical insulation, rusty plate and pipe walls, Factory plating floors, dark Nucrete ceilings.
         BlockRef te9 = technical(9), te12 = technical(12), te5 = technical(5), te7 = technical(7);
-        BlockRef te11 = technical(11), te13 = technical(13), te3 = technical(3), te15 = technical(15);
+        BlockRef ff13 = ch("factoryblock", 13, gtConcrete(3), FLOOR_SLAB);
+        BlockRef ff9 = ch("factoryblock", 9, gtConcrete(3), FLOOR_SLAB);
+        BlockRef ff3 = ch("factoryblock", 3, gtConcrete(3), FLOOR_SLAB);
+        BlockRef ncd3 = ch("nucrete", 3, CEILING_STONE), ncd1 = ch("nucrete", 1, CEILING_STONE);
+        BlockRef ncd7 = ch("nucrete", 7, CEILING_STONE);
         l.add(
             StyleSet
                 .named(
@@ -287,73 +330,88 @@ final class PaletteSets {
                     StyleGroup.HALL_MINOR)
                 .walls(te9, te12, te5, te7)
                 .floors(
-                    plain(f13),
-                    stripes(f13, te13, 4, true),
-                    borderField(f6, f13, 1),
-                    checker(f13, te15, 3),
-                    centerStrip(f13, te13, 4))
-                .ceilings(plain(te9), grid(te9, te11, 6), plain(te12))
-                .lamp(litLamp(5), te7)
-                .accent(te3)
-                .worn(te12)
+                    plain(ff13),
+                    stripes(ff13, ff9, 4, true),
+                    borderField(ff3, ff13, 1),
+                    checker(ff13, ff9, 3),
+                    centerStrip(ff13, ff3, 4))
+                .ceilings(plain(ncd3), grid(ncd3, ncd1, 6), plain(ncd7))
+                .lamp(litLamp(5), technical(7))
+                .accent(technical(3))
+                .worn(wornConcrete)
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .build());
 
-        BlockRef m4 = marble(4), m5 = marble(5), m1 = marble(1), m12 = marble(12), m0 = marble(0), m8 = marble(8);
-        BlockRef m9 = marble(9);
-        BlockRef li0 = limestone(0), li1 = limestone(1), li15 = limestone(15);
+        // Offices: Marble panel walls, polished Andesite floors, Limestone ceilings.
+        BlockRef m4 = ch("marble", 4, gtStone(3), WALL_QUARTZ), m5 = ch("marble", 5, gtStone(3), WALL_QUARTZ);
+        BlockRef m1 = ch("marble", 1, gtStone(3), WALL_QUARTZ), m12 = ch("marble", 12, gtStone(3), WALL_QUARTZ);
+        BlockRef ap10 = ch("andesite", 10, gtConcrete(15), FLOOR_SLAB);
+        BlockRef ap6 = ch("andesite", 6, gtConcrete(15), FLOOR_SLAB);
+        BlockRef ap1 = ch("andesite", 1, gtConcrete(15), FLOOR_SLAB);
+        BlockRef ap4 = ch("andesite", 4, gtConcrete(15), FLOOR_SLAB);
+        BlockRef li0 = ch("limestone", 0, CEILING_STONE), li15 = ch("limestone", 15, CEILING_STONE);
         l.add(
             StyleSet.named("marble_admin", StyleGroup.COMMAND, StyleGroup.CAFETERIA, StyleGroup.MEDICAL, StyleGroup.HUB)
-                .walls(m4, m5, m1, m12, li0)
+                .walls(m4, m5, m1, m12)
                 .floors(
-                    checker(m0, m5, 1),
-                    borderField(m8, m5, 2),
-                    doubleRing(m9, m12, m0, 1),
-                    plain(li1),
-                    checker(li1, m0, 2))
-                .ceilings(plain(li0), grid(li0, m4, 5), plain(li15))
+                    checker(ap10, ap6, 2),
+                    borderField(ap1, ap10, 2),
+                    doubleRing(ap4, ap6, ap10, 1),
+                    plain(ap10),
+                    plain(ap6))
+                .ceilings(plain(li0), grid(li0, li15, 5), plain(li15))
                 .lamp(litLamp(15), li15)
-                .accent(m8)
+                .accent(ch("marble", 8, gtStone(3), WALL_QUARTZ))
                 .furniture(Furniture.TABLE, WOOD_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
 
-        BlockRef g3 = granite(3), g7 = granite(7), g11 = granite(11), g15 = granite(15), g6 = granite(6);
+        // Great halls, all GregTech: black and red granite walls, basalt floors, dark concrete ceilings.
+        BlockRef g3 = of(gtGranite(3), v("stonebrick", 3)), g7 = of(gtGranite(7), v("stonebrick", 3));
+        BlockRef g11 = of(gtGranite(11), v("stonebrick", 3)), g6 = of(gtGranite(6), v("stonebrick", 3));
+        BlockRef b11 = of(gtStone(11), FLOOR_SLAB), b15 = of(gtStone(15), FLOOR_SLAB),
+            b14 = of(gtStone(14), FLOOR_SLAB);
+        BlockRef cc3 = of(gtConcrete(3), CEILING_STONE), cc7 = of(gtConcrete(7), CEILING_STONE);
         l.add(
             StyleSet
                 .named("granite_hall", StyleGroup.HALL_MAJOR, StyleGroup.HUB, StyleGroup.GALLERY, StyleGroup.COMMAND)
                 .walls(g3, g7, g11, g6)
                 .floors(
-                    checker(g7, g3, 2),
-                    borderField(g11, g7, 2),
-                    plain(g7),
-                    centerStrip(g7, g15, 3),
-                    doubleRing(g15, g11, g7, 2))
-                .ceilings(plain(g3), grid(g3, g7, 5))
+                    checker(b15, b11, 2),
+                    borderField(b14, b15, 2),
+                    plain(b15),
+                    centerStrip(b15, b11, 3),
+                    doubleRing(b14, b11, b15, 2))
+                .ceilings(plain(cc7), grid(cc7, cc3, 5))
                 .lamp(litLamp(13), g6)
-                .accent(g15)
+                .accent(of(gtGranite(15), v("stonebrick", 3)))
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .build());
 
+        // Server rooms: Ztones Vect dark panel walls, Tank plating floors, Korp dark ceilings.
         BlockRef zv1 = ztones("vect", 1, tyrian(13)), zv2 = ztones("vect", 2, tyrian(12));
-        BlockRef zv3 = ztones("vect", 3, tyrian(13)), zv0 = ztones("vect", 0, tyrian(12));
-        BlockRef zk4 = ztones("korp", 4, tyrian(12)), zk12 = ztones("korp", 12, lab(10, 7));
+        BlockRef zv3 = ztones("vect", 3, tyrian(13));
+        BlockRef ztf0 = ztones("tank", 0, nd7), ztf1 = ztones("tank", 1, nd3);
+        BlockRef zk4 = ztones("korp", 4, k2);
+        BlockRef zk12 = ztones("korp", 12, lab(10, 7));
         l.add(
             StyleSet.named("ztones_server", StyleGroup.SERVER_ROOM, StyleGroup.COMMAND, StyleGroup.GUARD)
-                .walls(zv1, zv2, zv3, zk4)
-                .floors(checker(zv0, zv2, 2), borderField(zv1, zv0, 2), stripes(zv0, zk4, 4, true), plain(zv0))
-                .ceilings(plain(zv0), grid(zv0, zv3, 4))
-                .lamp(litLamp(4), zv0)
+                .walls(zv1, zv2, zv3)
+                .floors(checker(ztf0, ztf1, 2), borderField(ztf1, ztf0, 2), stripes(ztf0, ztf1, 4, true), plain(ztf0))
+                .ceilings(plain(zk4), grid(zk4, k9, 4))
+                .lamp(litLamp(4), ztones("vect", 0, tyrian(12)))
                 .accent(zk12)
                 .furniture(Furniture.CONSOLE, zk12)
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .build());
 
-        BlockRef tk0 = ztones("tank", 0, f13), tk1 = ztones("tank", 1, f13), tk3 = ztones("tank", 3, f3);
-        BlockRef tk5 = ztones("tank", 5, f9), lv0 = ztones("lave", 0, lab(0, 15)), lv1 = ztones("lave", 1, lab(2, 14));
+        // Plant rooms: Ztones Tank plating walls, Lave pale tile floors, Vect dark ceilings.
+        BlockRef tk1 = ztones("tank", 1, f13), tk3 = ztones("tank", 3, f3), tk5 = ztones("tank", 5, f9);
+        BlockRef lv0 = ztones("lave", 0, nl15), lv1 = ztones("lave", 1, nl11);
+        BlockRef zvc0 = ztones("vect", 0, tc9);
         l.add(
             StyleSet
                 .named(
@@ -362,26 +420,36 @@ final class PaletteSets {
                     StyleGroup.POWER,
                     StyleGroup.MISSILE_ASSEMBLY,
                     StyleGroup.WORKSHOP)
-                .walls(tk1, tk3, tk5, lv1)
-                .floors(plain(tk0), checker(tk0, lv0, 4), borderField(tk3, tk0, 2), centerStrip(tk0, lv1, 4))
-                .ceilings(plain(tk3), grid(tk0, tk1, 5))
+                .walls(tk1, tk3, tk5)
+                .floors(plain(lv0), checker(lv0, lv1, 4), borderField(lv1, lv0, 2), centerStrip(lv0, lv1, 4))
+                .ceilings(plain(zvc0), grid(zvc0, tc7, 5))
                 .lamp(litLamp(8), tk5)
                 .accent(lv1)
-                .worn(te12)
+                .worn(wornConcrete)
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .build());
 
+        // Crew rooms: Limestone walls, light Nucrete floors with Ztones Agon tan and gray rows, Marble ceilings.
         // Agon 12 is a muted tan (11 is a loud orange); 13 is dark gray. Their vanilla stand-ins are brown and gray
         // clay.
         BlockRef agonTan = ztones("agon", 12, of(v("stained_hardened_clay", 12)));
         BlockRef agonGrey = ztones("agon", 13, of(v("stained_hardened_clay", 7)));
-        BlockRef li5 = limestone(5), li11 = limestone(11);
+        BlockRef li5 = ch("limestone", 5, gtConcrete(11), WALL_SANDSTONE);
+        BlockRef lw15 = ch("limestone", 15, gtConcrete(11), WALL_SANDSTONE);
+        BlockRef li11 = ch("limestone", 11, gtConcrete(11), WALL_SANDSTONE);
+        BlockRef li1 = ch("limestone", 1, gtConcrete(11), WALL_SANDSTONE);
+        BlockRef mq0 = ch("marble", 0, CEILING_QUARTZ), mq7 = ch("marble", 7, CEILING_QUARTZ);
+        BlockRef mq4 = ch("marble", 4, CEILING_QUARTZ);
         l.add(
             StyleSet.named("crew_warm", StyleGroup.CREW, StyleGroup.CAFETERIA, StyleGroup.MEDICAL)
-                .walls(li5, li15, li11, li1)
-                .floors(plain(li1), checker(li1, li5, 2), borderField(agonGrey, li1, 1), stripes(li1, agonTan, 7, true))
-                .ceilings(plain(li0), grid(li0, li5, 6), plain(li15))
+                .walls(li5, lw15, li11, li1)
+                .floors(
+                    plain(nl15),
+                    checker(nl15, nl11, 2),
+                    borderField(agonGrey, nl15, 1),
+                    stripes(nl15, agonTan, 7, true))
+                .ceilings(plain(mq0), grid(mq0, mq7, 6), plain(mq4))
                 .lamp(litLamp(10), li5)
                 .accent(agonTan)
                 .furniture(Furniture.TABLE, WOOD_TABLE)
@@ -390,6 +458,8 @@ final class PaletteSets {
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
 
+        // Halls and bays: the Laboratory's large and small dark gray steel and Tyrian plate as walls, dark Nucrete
+        // floors, Technical insulation and vent ceilings.
         l.add(
             StyleSet
                 .named(
@@ -399,15 +469,15 @@ final class PaletteSets {
                     StyleGroup.GALLERY,
                     StyleGroup.MISSILE_ASSEMBLY,
                     StyleGroup.HALL_MINOR)
-                .walls(lab11, lab12, t15)
+                .walls(lw11, lw12, t15)
                 .floors(
-                    checker(lab12, lab11, 3),
-                    borderField(f3, lab12, 2),
-                    centerStrip(lab11, f6, 3),
-                    bands(lab11, lab12, 5, true))
-                .ceilings(plain(lab12), grid(lab11, lab12, 5), plain(lab11))
+                    checker(nd3, nd7, 3),
+                    borderField(nd5, nd7, 2),
+                    centerStrip(nd7, nd5, 3),
+                    bands(nd7, nd3, 5, true))
+                .ceilings(plain(tc9), grid(tc9, tc7, 5), plain(tc7))
                 .lamp(litLamp(15), lab(9, 15))
-                .accent(f6)
+                .accent(factory(6))
                 .furniture(Furniture.TABLE, STONE_TABLE)
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .build());
