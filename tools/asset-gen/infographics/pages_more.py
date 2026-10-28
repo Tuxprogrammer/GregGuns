@@ -205,10 +205,7 @@ MB = {
         title="Ammunition <b>Works</b>",
         sub="The Ammo Press, built as a production hall. It runs every Ammo Press recipe, many at once.",
         build=lambda: S.ammo_works(4, bench=True), view=dict(yaw=-38, pitch=28, ppu=28), back=dict(yaw=150, pitch=30, ppu=30),
-        cut=dict(build=lambda: S.ammo_works(2), cut=lambda x, y, z: x <= 1, view=dict(yaw=-52, pitch=24, ppu=24)),
-        lamp_text="Every feeder, press bay and the packing station needs <b>one lamp</b> under its roof (6 in the 4-bay hall). "
-                  "Use glowstone, a redstone lamp or any block with light level 12 or more. Without them the hall will not form, "
-                  "so add lamps to halls you built earlier.",
+        mojang=True,
         pieces=[("FEEDER", "Feeder", "once, at the front"), ("BAY", "Press bay", "2 to 8 in a row"),
                 ("STATION", "Packing station", "once, at the back")],
         piece=lambda f: S.ammo_works(only=f), piece_view=dict(yaw=-38, pitch=28, ppu=18),
@@ -227,10 +224,7 @@ MB = {
         title="Armory <b>Gantry</b>",
         sub="The Repair Bench, built as a row of repair arches. It mends armor and guns from buses, ready for automation.",
         build=lambda: S.gantry(4), view=dict(yaw=-38, pitch=26, ppu=34), back=None,
-        cut=dict(build=lambda: S.gantry(2), cut=lambda x, y, z: x <= 2, view=dict(yaw=-52, pitch=24, ppu=34)),
-        lamp_text="The booth and every repair bay need <b>one lamp</b> under the beam (5 in the 4-bay gantry). "
-                  "Use glowstone, a redstone lamp or any block with light level 12 or more. Without them the gantry will not form, "
-                  "so add lamps to gantries you built earlier.",
+        mojang=True,
         pieces=[("HEAD", "Booth", "once, at the front"), ("BAY", "Repair bay", "2 to 8 in a row"),
                 ("TAIL", "Back wall", "once, at the back")],
         piece=lambda f: S.gantry(only=f), piece_view=dict(yaw=-38, pitch=26, ppu=22),
@@ -304,16 +298,8 @@ def multiblock(key):
         back = (f'<div style="position:absolute;right:16px;bottom:12px;text-align:center">'
                 f'{img(b.render(**m["back"], tag="back", marks=True), h=260)}<div class="muted" style="font-size:15px">rear: the packing station and the filling bench</div></div>')
     extra = ""
-    if m.get("cut"):
-        c = m["cut"]
-        cimg = c["build"]().render(**c["view"], tag="cut", marks=True, cut=c["cut"])
-        solo = not m.get("bench_card")
-        lamp = f"""<div class="card"><h2 style="margin-bottom:8px">Interior lamp <span class="label" style="color:var(--orange)">required</span></h2>
-<div style="display:flex;gap:{24 if solo else 0}px;align-items:center;flex-direction:{'row' if solo else 'column'}">
-<div class="spot" style="display:flex;align-items:center;justify-content:center;padding:10px {30 if solo else 0}px;flex:0 0 auto">{img(cimg, h=280, style="max-width:100%")}</div>
-<div>{muted(m["lamp_text"], 17, 8)}
-<div class="muted" style="font-size:15px;margin-top:6px"><b style="color:#ffeb3c">&#9632;</b> lamp positions (side wall cut away so you can see in)</div></div></div></div>"""
-        extra += f"""<div class="grid" style="grid-template-columns:{'1fr' if solo else '1fr 1fr'};margin-top:18px">{lamp}{m.get("bench_card", "")}</div>"""
+    if m.get("bench_card"):
+        extra = f'<div class="grid" style="grid-template-columns:1fr;margin-top:18px">{m["bench_card"]}</div>'
     body = f"""<div style="display:grid;grid-template-columns:1fr 470px;gap:20px">
 <div class="card" style="position:relative;display:flex;flex-direction:column;min-height:620px">
 <div style="display:flex;gap:28px;align-items:baseline;flex-wrap:wrap"><span class="label">Default size shown</span><span style="font-size:18px">{m["size"]}</span><span>Controller {chip(m["ctier"])}</span>
@@ -328,7 +314,7 @@ def multiblock(key):
 <div class="card"><h2 style="margin-bottom:6px">Hatches</h2>{hatches}</div>
 <div class="card"><h2 style="margin-bottom:10px">Make it bigger</h2>{grow}</div></div>
 {guide_row(m["tip"], pose=POINT, flip=True, yaw=-20)}"""
-    return page_doc(m["title"], m["sub"], body, credit=MOJANG_CREDIT if m.get("lamp_text") else "")
+    return page_doc(m["title"], m["sub"], body, credit=MOJANG_CREDIT if m.get("mojang") else "")
 
 
 # ---------------------------------------------------------------- enemies
