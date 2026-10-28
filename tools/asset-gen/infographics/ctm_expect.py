@@ -22,8 +22,9 @@ SCALE = 16
 
 
 def tile_img(tex, n, rot=0):
+    """rot: 0, or "mirror" (the tile flipped left to right)."""
     im = Image.open(tex.tiles[n]).convert("RGBA")
-    return im.rotate(rot) if rot else im
+    return im.transpose(Image.FLIP_LEFT_RIGHT) if rot == "mirror" else im
 
 
 def render(cells, face, project, rot, size, textures):
@@ -59,13 +60,14 @@ def main(out):
     print("plating tiles (left to right on screen: Carbon, Aluminum, Steel, Iron)")
     for r in range(3):
         print(" ".join("%2s" % rows.get(r, {}).get(c, ".") for c in range(12)))
-    # ceiling: y = 6 seen from below with yaw 0, pitch -90: screen right is -x, screen up is +z;
-    # the bottom face is laid out like the top face (texture up = north), so a tile appears turned 180 degrees.
+    # ceiling: y = 6 seen from below with yaw 0, pitch -90: screen right is -x, screen up is -z (looking up from
+    # facing +z tips the camera's up vector to -z). The bottom face uses the top face's axes (left = west, up = north),
+    # so the texture's left sits at screen right: the tile appears mirrored left to right.
     ce = {(x, 6, z): "w" for x in range(-3, 4) for z in range(-2, 3)
           if (x, z) not in ((3, -2), (2, -2), (3, -1), (-1, 0))}
-    img, rows = render(ce, DOWN, lambda p: (3 - p[0], 2 - p[2]), 180, (7, 5), {"w": works})
+    img, rows = render(ce, DOWN, lambda p: (3 - p[0], p[2] + 2), "mirror", (7, 5), {"w": works})
     img.save(out / "expect-ceiling.png")
-    print("ceiling tiles (as seen looking up; top of picture = +z)")
+    print("ceiling tiles (as seen looking up; top of picture = -z)")
     for r in range(5):
         print(" ".join("%2s" % rows.get(r, {}).get(c, ".") for c in range(7)))
 

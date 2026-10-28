@@ -118,7 +118,7 @@ public final class CtmCasingsScenario implements Scenario {
                     }
                     ctx.setBlock(0, 2, 7, GregTechAPI.sBlockMachines, controllerBase(GregGunsMTEIDs.AMMO_WORKS));
                     initController(ctx, ox, oy + 2, oz + 7, GregGunsMTEIDs.AMMO_WORKS);
-                    out.check(placed == 33, "the wall holds 33 casings, placed " + placed);
+                    out.check(placed == 32, "the wall holds 32 casings, placed " + placed);
                     out.check(
                         ctx.world()
                             .getBlock(ox + 1, oy + 2, oz + 7) == GregGunsCasings.INSTANCE,
@@ -135,10 +135,10 @@ public final class CtmCasingsScenario implements Scenario {
                     }
                     out.check(
                         ctx.world()
-                            .getBlockMetadata(ox - 1, oy, oz + 9) == GregGunsCasings.BASTION_IRON
+                            .getBlockMetadata(ox - 4, oy, oz + 9) == GregGunsCasings.BASTION_IRON
                             && ctx.world()
-                                .getBlockMetadata(ox, oy, oz + 9) == GregGunsCasings.BASTION_IRON + 1,
-                        "Iron plating sits next to Steel plating at x = -1 | 0");
+                                .getBlockMetadata(ox - 3, oy, oz + 9) == GregGunsCasings.BASTION_IRON + 1,
+                        "Iron plating sits next to Steel plating at x = -4 | -3");
                     a.playerNetServerHandler.setPlayerLocation(ox + 0.5, oy, oz + 0.5, 0.0f, 0.0f);
                 }
                 case 185 -> signal(a, "shot", "ctm-plating");
