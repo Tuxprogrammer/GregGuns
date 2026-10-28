@@ -282,9 +282,10 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 84,
                 70,
                 () -> tr("gregguns.icbm.control.gui.load"),
-                this::hasStick,
+                () -> hasStick() && !launchUnderway(),
                 () -> "gregguns.icbm.control.gui.load.tip",
-                () -> hasStick() ? null : "gregguns.icbm.control.gui.stick_missing"));
+                () -> !hasStick() ? "gregguns.icbm.control.gui.stick_missing"
+                    : launchUnderway() ? "gregguns.icbm.control.gui.load.locked" : null));
         content.child(
             control(
                 F_SAVE,
@@ -321,6 +322,12 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 () -> "gregguns.icbm.control.gui.fire.tip",
                 () -> canFire() ? null : ControlStatus.values()[state.status].langKey()));
         return content;
+    }
+
+    /** @return whether a countdown runs or the missile has left: the target is frozen until the pad is ready again */
+    private boolean launchUnderway() {
+        ControlStatus s = ControlStatus.values()[state.status];
+        return s == ControlStatus.COUNTDOWN || s == ControlStatus.IGNITED;
     }
 
     private boolean canAbort() {

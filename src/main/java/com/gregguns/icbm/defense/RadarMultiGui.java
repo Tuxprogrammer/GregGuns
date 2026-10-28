@@ -33,7 +33,7 @@ import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEMultiBlockBaseGui<T> {
 
     private static final Pattern DIGITS = Pattern.compile("[0-9]{0,5}");
-    private static final int PANEL_W = 170;
+    private static final int PANEL_W = 200;
     private static final int PANEL_H = 82;
 
     private static final class Shown {

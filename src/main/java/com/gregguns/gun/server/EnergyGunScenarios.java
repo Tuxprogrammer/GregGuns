@@ -90,8 +90,10 @@ public final class EnergyGunScenarios {
             out.checkEquals("capacity", (double) gun.capacityEu(), gun.getMaxCharge(stack));
             out.checkEquals("a fresh gun is empty", 0L, gun.chargeOf(stack));
             out.checkEquals("empty bar", 1.0, gun.getDurabilityForDisplay(stack));
+            ItemStack bare = new ItemStack(gun);
+            gun.getDurabilityForDisplay(bare);
             out.check(
-                !stack.hasTagCompound(),
+                !bare.hasTagCompound(),
                 "drawing the bar on a fresh gun adds no NBT tag (NEI forced-update WARN)");
 
             double taken = ElectricGear.charge(stack, 3500, Tier.LV);

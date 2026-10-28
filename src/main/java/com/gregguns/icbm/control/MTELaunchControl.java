@@ -357,6 +357,10 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         if (!mayUse(player)) {
             return;
         }
+        ControlStatus now = snapshot().status;
+        if (now == ControlStatus.COUNTDOWN || now == ControlStatus.IGNITED) {
+            return; // the target is frozen while a launch is under way
+        }
         loadStick();
     }
 
