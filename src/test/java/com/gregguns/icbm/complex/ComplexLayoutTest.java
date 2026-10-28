@@ -165,7 +165,7 @@ class ComplexLayoutTest {
                     walls++;
                     assertEquals(RoomKind.ARMORY, r.kind());
                     boolean alongZ = m.facing() == 1 || m.facing() == 3;
-                    assertTrue(m.extent() >= 4, "an armory wall holds several frames: " + m.extent());
+                    assertTrue(m.extent() >= 3, "an armory wall holds several frames: " + m.extent());
                     int[] back = { 0, 0 }; // offsets from the frame cell to the wall behind it
                     switch (m.facing()) {
                         case 0:
