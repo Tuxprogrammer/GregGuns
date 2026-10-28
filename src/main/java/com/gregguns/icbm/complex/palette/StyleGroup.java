@@ -8,7 +8,7 @@ import com.gregguns.icbm.complex.RoomKind;
  * What a room is dressed as. Several room kinds share a group, and the halls have their own. Kinds are mapped by name
  * so the I6b room kinds (vehicle bay, server room and the rest) need no change here.
  */
-// Spec: docs/gregguns-icbm-spec/08-worldgen/palette.md (Groups); D240
+// Spec: docs/gregguns-icbm-spec/08-worldgen/palette.md (Style sets); D240
 public enum StyleGroup {
 
     HUB(true),

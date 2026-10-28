@@ -38,7 +38,7 @@ public final class Cell {
     public static final byte LAMP = 18;
     /** The DOOR role: a jamb or lintel cell around a doorway, the style's accent (its wall when it has none). */
     public static final byte DOOR_FRAME = 19;
-    /** A window pane in a wall (Launch Control over the silo gallery). */
+    /** A clear glass block in a wall (Launch Control over the silo gallery). */
     public static final byte WINDOW = 20;
     /** Furniture: a table, a console, a bunk or a shelf, from the style. */
     public static final byte FURN_TABLE = 21;

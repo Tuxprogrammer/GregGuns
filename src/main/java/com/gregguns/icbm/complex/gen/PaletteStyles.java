@@ -21,7 +21,7 @@ import com.gregguns.worldgen.layout.ResolvedBlock;
  * coordinates: 0 is the first cell inside the section's wall, and the size is the interior's, so a border of width 1
  * lies along the wall. A wall is one block for the whole section. Server side.
  */
-// Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Palette)
+// Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Raster)
 public final class PaletteStyles implements Styles {
 
     /** The production factory. */

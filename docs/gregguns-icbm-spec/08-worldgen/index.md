@@ -8,7 +8,7 @@ GregGuns-only area (the ICBM baseline has no worldgen): Abandoned Missile Silos 
 
 All sheets are written and match what is built; the tuning that remains is I7.
 
-- silo-layout.md: the D128 complex: about 240 x 240 blocks on one flat level, a central hall with wings, one to four real silos with their shafts and the O, D and Closed variants, the room set, the escape shaft, never cascading (D17, D128).
+- silo-layout.md: the D128 complex: about 240 x 240 blocks on one flat level, a hub, major and minor halls, 35 to 40 rooms and a gallery of 4 to 10 real silos with their shafts (D128, D229) and the O, D and Closed variants, the room set, the escape shaft, never cascading (D17, D128).
 - activity-levels.md: abandoned, partly abandoned, operational; the per-level damage pass in the layout (D36).
 - silo-guard-spawner.md: the spawner block on the M8 spawner system, mob lists (D36).
 - loot-and-ceilings.md: loot by tier, salvage, the planet table (D38).
@@ -25,7 +25,7 @@ All sheets are written and match what is built; the tuning that remains is I7.
 | Ross128b, Ross128ba | Ceiling rolled per silo, EV to UMV | Amun-Ra / pack planets | [D38](../DECISIONS.md#d38-in-detail), [0019](../../design/0019-structures-on-ross128.md) |
 | Planet tiers | GT's own dimension table | GT5-Unofficial `DimensionHelper` | [D38](../DECISIONS.md#d38-in-detail) |
 | Salvage | Damaged T1 missile body (GT recycling), rare schematic chip | GT recycling | [D17](../DECISIONS.md#d17-in-detail) |
-| Layout | A flat complex: central hall, wings, rooms, one to four real silos | GregGuns Missile Silo (20141) | [D128](../DECISIONS.md) |
+| Layout | A flat complex: hub, halls, 35 to 40 rooms, a gallery of 4 to 10 real silos | GregGuns Missile Silo (20141) | [D128](../DECISIONS.md) |
 | Contents | Real machines (NASA Workbench, GT generators) within the D38 ceiling, no live warheads | Galacticraft, GT | [D129](../DECISIONS.md) |
 
 ## Decisions carried

@@ -22,7 +22,7 @@ A plan the ledger holds as placed is written whatever the current roll or flags 
 
 The plan and its raster are pure functions of the plan seed, so every window writes only its own columns through the clipped sink. A complex covers about 225 windows; none of them reads or writes another chunk. The section styles are pure too (the plan seed and the section id, the dimension key and the activity level), and so is the regrowth of a plan that misses its targets (D230). The whole window write runs with GT's machine-update search off for the thread (D205). Unit tests prove it with the cascade harness pattern (writes outside the window, rejected writes, foreign chunk requests, duplicates, order independence) and the `icbm.complex.places` scenario proves it in a live world.
 
-**Cost (D236).** The I6b complex writes about three times the I6 blocks. `icbm.complex.places` and `icbm.complex.levels` note the blocks and the wall time per window that writes. When every window over a complex has run, the placer logs one debug line for it: windows, blocks written, columns cut off, refused writes. A complex that writes nothing in a pack therefore shows its numbers in the log.
+**Cost (D236).** The I6b complex writes about three times the I6 blocks. `icbm.complex.places` and `icbm.complex.levels` note the blocks and the wall time per window that writes. When every window over a complex has run, the placer logs one debug line for it: windows, blocks written, columns cut off, and the last window's refused writes. A complex that writes nothing in a pack therefore shows its numbers in the log.
 
 ## Dimensions (D38)
 

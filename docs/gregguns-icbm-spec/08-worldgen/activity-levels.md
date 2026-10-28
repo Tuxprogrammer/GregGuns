@@ -39,7 +39,7 @@ Depth band: 0 is the hub, then one band per 30 blocks of distance from it, up to
 | `DAMAGE_CELL` wall | air (breach), rubble, or intact |
 | `DAMAGE_CELL` floor | air (hole), rubble, or intact |
 | `DAMAGE_CELL` roof | air, or intact (rubble is never placed overhead: it would fall) |
-| `LIGHT` | the style's lit lamp, or the dark lamp the shell wrote. The lamps of a section form a grid flush in the ceiling, with light tiles in the floor of every section over 7 high, so a fully lit section reads block light 8 or more on every open floor cell (D217, D230) |
+| `LIGHT` | the style's lit lamp, or the dark lamp the shell wrote. The lamps of a section form a grid flush in the ceiling, with light tiles in the floor of every section over 7 high, so a fully lit section reads block light 8 or more on every open floor cell (D217, D231) |
 | `FLOOD_CELL` | water when not operational |
 | `RUBBLE` | fallout rubble (placeholder until I5's fallout blocks are on master) |
 | `MACHINE` | the machine, or a husk |

@@ -119,7 +119,7 @@ final class ComplexFurnisher {
     /**
      * The lamp grid of one section: lamps flush in the ceiling layer on grid lines aligned to the section, in runs
      * along {@code runsAlongX}. A section over seven high also gets a light tile in the floor under every lamp, since a
-     * ceiling lamp eight or more cells up cannot light the floor to 8 (D230).
+     * ceiling lamp eight or more cells up cannot light the floor to 8 (D231).
      */
     private void lampSection(int id, Box b, boolean runsAlongX, int tallGap) {
         int nx = b.sizeX() - 2, nz = b.sizeZ() - 2, h = b.sizeY();

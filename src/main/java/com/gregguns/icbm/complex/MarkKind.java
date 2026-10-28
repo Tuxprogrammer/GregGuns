@@ -15,7 +15,7 @@ public enum MarkKind {
      */
     ITEM_FRAME_WALL,
     /**
-     * A lamp flush in the ceiling layer, or a light tile flush in the floor layer (D230). The key is
+     * A lamp flush in the ceiling layer, or a light tile flush in the floor layer (D231). The key is
      * {@code lamp:<section>:<run>}: the activity level lights whole runs or whole sections (D36, D231).
      */
     LIGHT,

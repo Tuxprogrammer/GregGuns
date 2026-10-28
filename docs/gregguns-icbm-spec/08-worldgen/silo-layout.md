@@ -36,13 +36,13 @@ The layout is grown, not stamped (`ComplexGrower`, D230). Every choice comes fro
 
 ## Silo gallery (D232)
 
-- **Count:** 4 to 10 silos: 4 (26%), 5 (24%), 6 (18%), 7 (12%), 8 (10%), 9 (6%), 10 (4%). Each misses exactly one part (D128).
+- **Count:** 4 to 10 silos, rolled at 4 (26%), 5 (24%), 6 (18%), 7 (12%), 8 (10%), 9 (6%) and 10 (4%); over 1000 seeds 4 to 6 come out in 77% of plans (D232). Each misses exactly one part (D128).
 - **Where:** the silos line the gallery hall on both sides.
   - They stand in facing pairs, 7 blocks apart (5 of silo, 2 of rock), from the far end toward the hub. The last 14 blocks at the hub end stay clear.
   - Seven or more silos split across a second straight hall when one exists (a hall no other major hall leaves), never more than two halls. The first hall takes the larger half, and whatever the second cannot hold goes back to the first, which has room for ten. Every rolled silo is placed (D245).
   - A hall takes single silos only after it has a facing pair, so a gallery always has silos on both sides. Only a hall that holds silos is a gallery (12 high, its sign and palette).
 - **Turned to face the hall:** each silo's structure is stamped turned so its controller face is toward the gallery (`SiloSlot.facing`, `x(column, aisle)`, `z(column, aisle)`). The controller and hatches are placed facing that way. A 3-wide walkway niche opens in the gallery wall in front of the controller.
-- **Launch Control** caps the gallery's far end. Its doorway opens onto the gallery, and both wall layers on either side of the doorway are glass panes from layer 3 to 6, so the room overlooks the silos. If the far end is taken, Launch Control opens off the gallery's side.
+- **Launch Control** caps the gallery's far end. Its doorway opens onto the gallery, and both wall layers on either side of the doorway are clear glass blocks from layer 3 to 6, so the room overlooks the silos. If the far end is taken, Launch Control opens off the gallery's side.
 - **Missile assembly floor** is the first room placed on the gallery's sides, in the span the silos leave free.
 
 ## Doors
@@ -51,10 +51,10 @@ The layout is grown, not stamped (`ComplexGrower`, D230). Every choice comes fro
 
 | Kind | Size | Where |
 |---|---|---|
-| Portal | The whole shared interior span; up to layer 8 between tall halls (a lintel above), the full height into a minor hallway | Hub to hall, hall to hall, hall to minor hallway |
+| Portal | The whole shared interior span; three under the lower ceiling (layer 8 or 9) between tall halls (a lintel above), the full height into a minor hallway | Hub to hall, hall to hall, hall to minor hallway |
 | Door | 3 wide, up to layer 4 (vehicle bay off a hall: 5 wide, up to layer 5; small rooms: 2 wide, up to layer 3) | Room to its parent; extra room-to-room doors |
 | Walkway | 3 wide, up to layer 3, the gallery wall only | In front of each silo's controller |
-| Window | Panes, layers 3 to 6 | Launch Control over the gallery |
+| Window | Clear glass blocks, layers 3 to 6 | Launch Control over the gallery |
 
 Doors and portals get **door frames** (the DOOR role): jambs either side and a lintel over the opening, in both wall layers, drawn in the room's accent block.
 
