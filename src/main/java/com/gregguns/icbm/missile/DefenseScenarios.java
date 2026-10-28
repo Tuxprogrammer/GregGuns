@@ -950,6 +950,9 @@ public final class DefenseScenarios {
      */
     private static final class MpDefense extends Base {
 
+        /** The tower's offset from the origin, blocks west of the radar. */
+        private static final int TOWER_DX = -8;
+
         @Override
         public String name() {
             return "testing.icbm_mp_defense";
@@ -988,6 +991,8 @@ public final class DefenseScenarios {
             final int[] rig = { 0, 0 };
             final float[] angleA = { -1 };
             place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 40, 0, rz);
+            // A Radar Tower west of the radar, so the clients see its larger dish on the mast.
+            place(ctx, GregGunsMTEIDs.RADAR_TOWER, TOWER_DX, 0, rz);
             for (net.minecraft.entity.player.EntityPlayerMP p : players) {
                 p.setGameType(net.minecraft.world.WorldSettings.GameType.CREATIVE);
             }
@@ -1019,7 +1024,14 @@ public final class DefenseScenarios {
                 if (ready == 0) {
                     return null;
                 }
+                powerHatch(ctx, TOWER_DX, 0, rz);
                 if (stage[0] == 0) {
+                    DevStructureBuilder.buildRadarTower(
+                        w,
+                        (int) ox + TOWER_DX,
+                        (int) oy,
+                        (int) oz + rz,
+                        ItemList.Hatch_Energy_IV);
                     r.setRadius(100);
                     bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, linkStick(rb, w));
                     // The battery stays empty until the radar has been photographed, so the SAM flies afterwards.
@@ -1078,8 +1090,40 @@ public final class DefenseScenarios {
                     return null;
                 }
                 if (stage[0] == 25) {
-                    // Hold the cameras until the clients have taken the second shot, then fly the missile.
+                    // Hold the cameras until the clients have taken the second shot, then turn them to the tower.
                     if (ticks < mark[0] + 160) {
+                        return null;
+                    }
+                    for (int i = 0; i < players.size(); i++) {
+                        double side = i % 2 == 0 ? 6.0 : -6.0;
+                        MissileShotsScenario.cam(
+                            players.get(i),
+                            ox + TOWER_DX + 0.5 + side,
+                            oy + 8.5,
+                            oz + rz - 7.0,
+                            ox + TOWER_DX + 0.5,
+                            oy + 6.8,
+                            oz + rz + 1.5);
+                    }
+                    mark[0] = ticks;
+                    stage[0] = 26;
+                    return null;
+                }
+                if (stage[0] == 26) {
+                    int dt = ticks - mark[0];
+                    MTERadarTower tower = tower(live(ctx, TOWER_DX, 0, rz));
+                    if (dt == 40 || dt == 120) {
+                        out.check(
+                            tower != null && tower.dish() != null
+                                && tower.dish()
+                                    .spin()
+                                    .spinning(),
+                            "the tower's dish stands and spins");
+                        for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                            MissileShotsScenario.signal(p, "shot", dt == 40 ? "icbm-tower-dish-a" : "icbm-tower-dish-b");
+                        }
+                    }
+                    if (dt < 220) {
                         return null;
                     }
                     out.checkEquals(
