@@ -26,12 +26,14 @@ public final class MachinePicker {
         switch (role) {
             case GENERATOR:
                 return new String[] { "Generator_Gas_Turbine_{T}", "Generator_Steam_Turbine_{T}",
-                    "Generator_Diesel_{T}", "Hull_{T}" };
+                    "Generator_Diesel_{T}", "Generator_Plasma_{P}", "Hull_{T}" };
             case BATTERY_BUFFER:
                 return new String[] { "Battery_Buffer_4by4_{T}", "Battery_Buffer_3by3_{T}", "Battery_Buffer_2by2_{T}",
                     "Hull_{T}" };
             case WORKBENCH:
                 return new String[] { "Machine_{T}_Assembler", "Hull_{T}" };
+            case PUMP:
+                return new String[] { "Pump_{T}", "Hull_{T}" };
             default:
                 return new String[] { "Hull_{T}" };
         }
@@ -45,13 +47,23 @@ public final class MachinePicker {
      */
     public static Pick pick(MachineRole role, int tier, boolean dead) {
         String[] patterns = dead ? new String[] { "Hull_{T}" } : patterns(role);
-        for (int t = Math.min(tier, VN.length - 1); t >= 1; t--) {
-            for (String pattern : patterns) {
-                ItemList item = lookup(pattern.replace("{T}", VN[t]));
-                if (item != null && item.hasBeenSet()) {
-                    ItemStack s = item.get(1);
-                    if (s != null) {
-                        return new Pick(s, t, pattern.startsWith("Hull_"));
+        // Real machines first, at the highest tier that has one (never above the ask); the hull only when no
+        // machine of the role exists at or below the tier.
+        for (int pass = 0; pass < 2; pass++) {
+            boolean hullPass = pass == 1;
+            for (int t = Math.min(tier, VN.length - 1); t >= 1; t--) {
+                for (String pattern : patterns) {
+                    if (pattern.startsWith("Hull_") != hullPass) {
+                        continue;
+                    }
+                    ItemList item = lookup(
+                        pattern.replace("{T}", VN[t])
+                            .replace("{P}", t == 7 ? "ZPMV" : VN[t]));
+                    if (item != null && item.hasBeenSet()) {
+                        ItemStack s = item.get(1);
+                        if (s != null) {
+                            return new Pick(s, t, hullPass);
+                        }
                     }
                 }
             }
@@ -61,7 +73,8 @@ public final class MachinePicker {
 
     private static ItemList lookup(String name) {
         try {
-            return ItemList.valueOf(name);
+            // GT names the UHV hull Hull_MAX (the old top tier).
+            return ItemList.valueOf("Hull_UHV".equals(name) ? "Hull_MAX" : name);
         } catch (IllegalArgumentException e) {
             return null;
         }

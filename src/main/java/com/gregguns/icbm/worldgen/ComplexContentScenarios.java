@@ -156,11 +156,16 @@ public final class ComplexContentScenarios {
                         out.check(p.tier() <= c, role + "@" + c + " picked tier " + p.tier());
                         if (p.hull()) {
                             hulls.add(role + "@" + SiloCeiling.name(c));
+                            out.check(
+                                !(role == MachineRole.GENERATOR || role == MachineRole.BATTERY_BUFFER
+                                    || role == MachineRole.WORKBENCH
+                                    || role == MachineRole.PUMP),
+                                role + "@" + SiloCeiling.name(c) + " fell back to a hull though GT has the machine");
                         }
                     }
                 }
             }
-            out.note("hull fallbacks: " + hulls.size());
+            out.note("hull fallbacks (roles GT has no single block for): " + hulls.size());
             return out.build();
         }
     }
