@@ -82,6 +82,10 @@ public final class SalvageScenarios {
                     .items(damaged, comp, GTUtility.getIntegratedCircuit(spec.fitCircuit()))
                     .voltage(TierEU.RECIPE_UV)
                     .find();
+                if (fit != null) {
+                    out.note("damage " + damaged.getItemDamage() + " matched input " + fit.mInputs[0] + " damage "
+                        + fit.mInputs[0].getItemDamage() + " out " + fit.mOutputs[0]);
+                }
                 out.check(fit == null, "a damaged body must not take the guidance fit with " + computer);
                 fits++;
             }
