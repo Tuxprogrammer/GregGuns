@@ -76,7 +76,7 @@ class MissileTierTest {
         assertTrue(MissileTier.T3.siloOnly());
         assertFalse(MissileTier.T2.siloOnly());
         assertTrue(MissileTier.T3.carries(ExplosiveTier.T3));
-        assertFalse(MissileTier.T3.carries(ExplosiveTier.T4));
+        assertTrue(MissileTier.T3.carries(ExplosiveTier.T4), "D131: no T4 body, the T3 body carries T4 and T5");
         assertTrue(MissileTier.T3.baseMaxRange() > MissileTier.T2.baseMaxRange());
         assertTrue(MissileTier.T3.speed() > MissileTier.T2.speed());
         assertTrue(MissileTier.T3.baseScatter() < MissileTier.T2.baseScatter());
@@ -90,5 +90,18 @@ class MissileTierTest {
         assertFalse(MissileTier.T3.acceptsFuel("fluid.rocketfuelmixd"));
         assertFalse(MissileTier.T3.acceptsFuel("water"));
         assertTrue(MissileTier.T2.acceptsFuel("fluid.rocketfuelmixd"));
+    }
+
+    /** D131: there is no T4 body, so the T3 body also carries the T4 and T5 casings. */
+    @Test
+    void onlyTheT3BodyCarriesTheAnnihilationCasings() {
+        org.junit.jupiter.api.Assertions
+            .assertTrue(MissileTier.T3.carries(com.gregguns.icbm.explosive.ExplosiveTier.T4));
+        org.junit.jupiter.api.Assertions
+            .assertTrue(MissileTier.T3.carries(com.gregguns.icbm.explosive.ExplosiveTier.T5));
+        org.junit.jupiter.api.Assertions
+            .assertFalse(MissileTier.T2.carries(com.gregguns.icbm.explosive.ExplosiveTier.T4));
+        org.junit.jupiter.api.Assertions
+            .assertFalse(MissileTier.T1.carries(com.gregguns.icbm.explosive.ExplosiveTier.T5));
     }
 }

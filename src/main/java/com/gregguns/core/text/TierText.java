@@ -28,7 +28,17 @@ public final class TierText {
         // Source:
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTUtility.java#L502-L504
         // Colors: GTValues.TIER_COLORS, same tag, GTValues.java#L173-L191.
-        int i = tier.voltageIndex();
+        return coloredIndex(tier.voltageIndex());
+    }
+
+    /**
+     * For tiers above ZPM, which {@link Tier} does not list (the UV antimatter and UHV red matter warheads).
+     *
+     * @param voltageIndex GT's voltage index, 0 to 14
+     * @return the GT short name in GT's tier color and a trailing reset code
+     */
+    public static String coloredIndex(int voltageIndex) {
+        int i = Math.max(0, Math.min(voltageIndex, GTValues.VN.length - 1));
         return GTValues.TIER_COLORS[i] + GTValues.VN[i] + EnumChatFormatting.RESET;
     }
 }

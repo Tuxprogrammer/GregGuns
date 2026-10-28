@@ -59,8 +59,8 @@ public final class MissileScenarios {
     }
 
     /** Builds a body (with its fillers) and a warhead on its nose; returns the base position. */
-    static int[] buildStack(ScenarioContext ctx, MissileTier tier, WarheadCasing casing, String explosive, int fill,
-        int dx, int dy, int dz, boolean onPad, int guidance) {
+    public static int[] buildStack(ScenarioContext ctx, MissileTier tier, WarheadCasing casing, String explosive,
+        int fill, int dx, int dy, int dz, boolean onPad, int guidance) {
         ctx.setBlock(dx, dy, dz, MissileBlocks.body(tier), 0);
         World w = ctx.world();
         int x = ctx.originX() + dx;
@@ -99,7 +99,7 @@ public final class MissileScenarios {
     }
 
     /** Kills every missile entity near the origin: arming spawns entities the context does not track. */
-    static void sweep(ScenarioContext ctx) {
+    public static void sweep(ScenarioContext ctx) {
         World w = ctx.world();
         net.minecraft.util.AxisAlignedBB box = net.minecraft.util.AxisAlignedBB
             .getBoundingBox(ctx.originX() - 100, 0, ctx.originZ() - 100, ctx.originX() + 100, 255, ctx.originZ() + 300);
@@ -507,6 +507,25 @@ public final class MissileScenarios {
             return n;
         }
 
+        /**
+         * @return for a failure message: how much of the platform stands, whether its chunk is loaded, the surface
+         *         there
+         */
+        public String report(World w) {
+            int[] c = stones.get(stones.size() / 2);
+            return "platform " + standing(w)
+                + "/"
+                + stones.size()
+                + " standing, center chunk "
+                + (w.getChunkProvider()
+                    .chunkExists(c[0] >> 4, c[2] >> 4) ? "loaded" : "UNLOADED")
+                + ", surface y "
+                + w.getHeightValue(c[0], c[2])
+                + " (platform y "
+                + c[1]
+                + ")";
+        }
+
         /** @return how many platform blocks a blast took out; blocks in a chunk that is not loaded do not count */
         public int removed(World w) {
             int n = 0;
@@ -555,7 +574,7 @@ public final class MissileScenarios {
             }
             m.fill(m.capacityMb(), true);
             World w = ctx.world();
-            Target target = new Target(ctx, 0, 70, 9);
+            Target target = new Target(ctx, 0, 70, 13); // radius 13 covers unguided T1 scatter (D98)
             int px = ctx.originX();
             int py = ctx.originY();
             int pz = ctx.originZ();

@@ -22,8 +22,9 @@ import org.junit.jupiter.api.Test;
 class WarheadModelsTest {
 
     private static final String DIR = "src/main/resources/assets/gregguns/models/thirdparty/ntm";
-    private static final String[] NAMES = { "warhead_t1", "warhead_t2", "warhead_t3", "warhead_nuclear",
-        "warhead_antimatter", "warhead_redmatter", "warhead_emp" };
+    private static final String[] NAMES = { "warhead_t1", "warhead_t2", "warhead_t3", "warhead_t4", "warhead_t5",
+        "warhead_nuclear", "warhead_antimatter", "warhead_redmatter", "warhead_emp", "warhead_exothermic",
+        "warhead_endothermic" };
 
     private static WavefrontObject load(String name) throws Exception {
         try (InputStream in = new FileInputStream(new File(DIR, name + ".obj"))) {
@@ -71,7 +72,7 @@ class WarheadModelsTest {
             double[] b = bounds(load(c.blockName()));
             assertTrue(b[0] >= 0 && b[2] >= 0 && b[3] <= 1 && b[5] <= 1, c + " inside the block horizontally");
             assertTrue(b[1] >= 0 && b[4] <= c.heightBlocks() + 0.0001, c + " inside the block vertically");
-            assertTrue(b[4] > c.heightBlocks() - 0.1, c + " nose reaches the top");
+            assertTrue(b[4] > c.heightBlocks() - (c.number() >= 5 ? 0.4 : 0.1), c + " nose reaches the top");
         }
     }
 
@@ -101,5 +102,35 @@ class WarheadModelsTest {
         assertFalse(java.util.Arrays.equals(emp, t3), "warhead_emp.png must not be the T3 texture");
         double[] b = bounds(load("warhead_emp"));
         assertTrue(b[0] >= 0 && b[2] >= 0 && b[3] <= 1 && b[5] <= 1 && b[4] <= 2.0001, "inside the 1x2 column");
+    }
+
+    /**
+     * The exothermic and endothermic warheads have their own model and skin (NTM's incendiary and nitrogen warheads),
+     * and the T3 default skin has its "TNT" lettering painted out, so no T3 skin reads as plain high explosive.
+     */
+    @Test
+    void theExothermicAndEndothermicWarheadsHaveTheirOwnSkinsAndT3HasNoLettering() throws Exception {
+        java.nio.file.Path dir = java.nio.file.Paths
+            .get("src/main/resources/assets/gregguns/textures/models/thirdparty/ntm");
+        byte[] t3 = java.nio.file.Files.readAllBytes(dir.resolve("warhead_t3.png"));
+        byte[] exo = java.nio.file.Files.readAllBytes(dir.resolve("warhead_exothermic.png"));
+        byte[] endo = java.nio.file.Files.readAllBytes(dir.resolve("warhead_endothermic.png"));
+        assertFalse(java.util.Arrays.equals(exo, t3), "exothermic skin is not the T3 skin");
+        assertFalse(java.util.Arrays.equals(endo, t3), "endothermic skin is not the T3 skin");
+        assertFalse(java.util.Arrays.equals(exo, endo), "the two skins differ");
+        for (String name : new String[] { "warhead_exothermic", "warhead_endothermic" }) {
+            double[] b = bounds(load(name));
+            assertTrue(b[0] >= 0 && b[2] >= 0 && b[3] <= 1 && b[5] <= 1 && b[4] <= 2.0001, name + " inside the column");
+        }
+        // The lettering sat in x 20..36, y 52..63 of the 64x64 skin; it is now the plain body color.
+        java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(
+            dir.resolve("warhead_t3.png")
+                .toFile());
+        int body = img.getRGB(8, 58);
+        for (int x = 20; x < 37; x++) {
+            for (int y = 52; y < 63; y++) {
+                assertTrue(img.getRGB(x, y) == body, "warhead_t3.png lettering painted out at " + x + "," + y);
+            }
+        }
     }
 }

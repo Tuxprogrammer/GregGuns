@@ -32,6 +32,14 @@ final class WarheadModels {
     static final String NUCLEAR_MODEL = "warhead_nuclear";
     /** The EMP warhead has its own model and texture too, so it never reads as the TNT-lettered conventional one. */
     static final String EMP_MODEL = "warhead_emp";
+    /** The ender warhead: the T3 model with its own texture (violet and teal). */
+    static final String ENDER_MODEL = "warhead_ender";
+    /** The anti-gravitational warhead: the T3 model with its own texture (cyan and white). */
+    static final String ANTIGRAV_MODEL = "warhead_antigrav";
+    /** The exothermic warhead: NTM's incendiary warhead model and skin (orange and black bands). */
+    static final String EXOTHERMIC_MODEL = "warhead_exothermic";
+    /** The endothermic warhead: NTM's nitrogen warhead model and skin (the "N2" tank). */
+    static final String ENDOTHERMIC_MODEL = "warhead_endothermic";
     private static final Map<MissileTier, WavefrontObject> BODIES = new EnumMap<>(MissileTier.class);
 
     private WarheadModels() {}
@@ -44,6 +52,10 @@ final class WarheadModels {
         }
         out.add(NUCLEAR_MODEL);
         out.add(EMP_MODEL);
+        out.add(ENDER_MODEL);
+        out.add(ANTIGRAV_MODEL);
+        out.add(EXOTHERMIC_MODEL);
+        out.add(ENDOTHERMIC_MODEL);
         return out;
     }
 
@@ -59,6 +71,18 @@ final class WarheadModels {
         if (casing == WarheadCasing.T3 && "emp".equals(explosive)) {
             return EMP_MODEL;
         }
+        if (casing == WarheadCasing.T3 && "ender".equals(explosive)) {
+            return ENDER_MODEL;
+        }
+        if (casing == WarheadCasing.T3 && "antigrav".equals(explosive)) {
+            return ANTIGRAV_MODEL;
+        }
+        if (casing == WarheadCasing.T3 && "exothermic".equals(explosive)) {
+            return EXOTHERMIC_MODEL;
+        }
+        if (casing == WarheadCasing.T3 && "endothermic".equals(explosive)) {
+            return ENDOTHERMIC_MODEL;
+        }
         return casing.blockName();
     }
 
@@ -73,7 +97,9 @@ final class WarheadModels {
     }
 
     static ResourceLocation modelLocation(String name) {
-        return new ResourceLocation("gregguns", MODEL_DIR + name + ".obj");
+        // The ender and anti-gravitational warheads reuse the T3 mesh; only the texture differs.
+        String file = ENDER_MODEL.equals(name) || ANTIGRAV_MODEL.equals(name) ? WarheadCasing.T3.blockName() : name;
+        return new ResourceLocation("gregguns", MODEL_DIR + file + ".obj");
     }
 
     static ResourceLocation textureFile(String name) {

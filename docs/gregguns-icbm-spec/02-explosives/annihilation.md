@@ -18,7 +18,7 @@ Inside the kill zone of a nuclear (ZPM), antimatter (UV) or red matter (UHV) war
 
 `DamageSources.annihilateLiving(target, attacker, bosses)` applies it through `annihilate`, so the server's damage settings still gate players. The old two-argument overload and `NukeAnnihilation` (the Nuke Launcher and the Golden Gun) call the shared rule with `bosses = false`; behavior and tests are unchanged.
 
-An `ExplosiveDef` opts in with `annihilating(bosses)`; the blast engine then annihilates living victims inside the kill zone and applies the damage ramp outside it. I1 shipped the rule and its tests; I3 sets it on the nuclear warhead (`bosses = true`, kill zone 60% of the radius). Antimatter and red matter set it in I5. Scenario `icbm.nuclear.kill_zone`: a Wither, a 100,000-health mob with Resistance V and hurt-resistance frames, and a cow all die inside the zone.
+An `ExplosiveDef` opts in with `annihilating(bosses)`; the blast engine then annihilates living victims inside the kill zone and applies the damage ramp outside it. I1 shipped the rule and its tests; I3 sets it on the nuclear warhead (`bosses = true`, kill zone 60% of the radius). Antimatter sets it in I5 (D130, bosses included, kill zone 60%). Red matter does not use the engine's one-shot zone: its body annihilates what is inside the ball every tick ([red-matter](red-matter.md), D132). Scenario `icbm.nuclear.kill_zone`: a Wither, a 100,000-health mob with Resistance V and hurt-resistance frames, and a cow all die inside the zone.
 
 ## Requirements
 
@@ -27,6 +27,8 @@ An `ExplosiveDef` opts in with `annihilating(bosses)`; the blast engine then ann
 3. **GGI-02-22.** The Nuke Launcher's results are unchanged (`NukeAnnihilationTest`).
 
 ## Tests
+
+Scenarios `icbm.antimatter.annihilate` (a Wither, a 100,000-health mob and a cow die in the kill zone of an antimatter blast) and `icbm.redmatter.lifecycle` (a cow inside the ball dies).
 
 `AnnihilationTest` (new), `NukeAnnihilationTest` (existing, untouched); scenarios `projectile.nuke.*` keep covering the launcher.
 

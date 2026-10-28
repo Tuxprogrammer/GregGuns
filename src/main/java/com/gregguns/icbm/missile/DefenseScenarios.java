@@ -63,6 +63,8 @@ public final class DefenseScenarios {
         registry.register(new TowerSaveReload());
         registry.register(new MpDefense());
         I4ClientSetups.registerAll(registry);
+        I5ClientSetups.registerAll(registry);
+        I5VisualSetups.registerAll(registry);
         registry.register(new Gun());
         registry.register(new SaveReload());
     }
@@ -82,7 +84,7 @@ public final class DefenseScenarios {
         abstract ScenarioResult go(ScenarioContext ctx);
     }
 
-    static IGregTechTileEntity place(ScenarioContext ctx, int id, int dx, int dy, int dz) {
+    public static IGregTechTileEntity place(ScenarioContext ctx, int id, int dx, int dy, int dz) {
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
         // The machine may stand beyond the chunks the origin keeps loaded: load its chunk first, or the block and
         // its tile are silently not placed.
@@ -129,7 +131,7 @@ public final class DefenseScenarios {
     }
 
     /** The tile as the world holds it now; GT may replace the tile entity in its first ticks. */
-    static IGregTechTileEntity live(ScenarioContext ctx, int dx, int dy, int dz) {
+    public static IGregTechTileEntity live(ScenarioContext ctx, int dx, int dy, int dz) {
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;

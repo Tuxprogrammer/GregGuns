@@ -485,8 +485,51 @@ public final class EmpScenarios {
                     0.0,
                     ic2.api.item.ElectricItem.manager.getCharge(battery));
                 out.check(r.euDrained >= (long) before, "the pulse counted the battery's EU (" + r.euDrained + ")");
+                // A claim veto (ExplosionEvent.Detonate listener removing the position) spares the device (I5 item 15).
+                setEu(buf, 5000L);
+                final int bx = buf.getXCoord();
+                final int by = buf.getYCoord();
+                final int bz = buf.getZCoord();
+                Object claim = new Claim(bx, by, bz);
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(claim);
+                try {
+                    r = EmpPulse.fire(
+                        ctx.world(),
+                        cx,
+                        cy,
+                        cz,
+                        10,
+                        EmpMode.MACHINES,
+                        64,
+                        MissileTable.DEFAULT,
+                        (TileEntity) base);
+                } finally {
+                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(claim);
+                }
+                out.checkEquals("a claimed device is not hit", 0, r.devices);
+                out.checkEquals("a claimed device keeps its EU", 5000L, buf.getStoredEU());
                 return out.build();
             });
+        }
+    }
+
+    /** A stand-in for a claim mod: removes one position from every {@code ExplosionEvent.Detonate}. Public for FML. */
+    public static final class Claim {
+
+        private final int x;
+        private final int y;
+        private final int z;
+
+        Claim(int x, int y, int z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        /** Vetoes the position. */
+        @cpw.mods.fml.common.eventhandler.SubscribeEvent
+        public void onDetonate(net.minecraftforge.event.world.ExplosionEvent.Detonate event) {
+            event.explosion.affectedBlockPositions.remove(new net.minecraft.world.ChunkPosition(x, y, z));
         }
     }
 }

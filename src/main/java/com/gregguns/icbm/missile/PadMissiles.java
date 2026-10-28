@@ -176,7 +176,7 @@ public final class PadMissiles {
     /**
      * @return the unlaunched missile entity standing on that pad, or null
      */
-    static EntityMissile find(World world, int padX, int padY, int padZ) {
+    public static EntityMissile find(World world, int padX, int padY, int padZ) {
         if (world == null) {
             return null;
         }

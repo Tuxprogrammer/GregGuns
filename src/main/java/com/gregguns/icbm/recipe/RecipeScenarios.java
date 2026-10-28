@@ -65,11 +65,7 @@ public final class RecipeScenarios {
                 GTRecipe r = find(null, blast.id(), spec.isStarter() ? 1 : blast.fillCap());
                 out.check(r != null, "Assembler recipe of the " + blast.id() + (spec.isStarter() ? " starter" : ""));
                 if (r != null) {
-                    out.checkEquals(
-                        spec + " voltage",
-                        GTValues.VP[spec.machineTier()
-                            .voltageIndex()],
-                        (long) r.mEUt);
+                    out.checkEquals(spec + " voltage", GTValues.VP[spec.machineVoltageIndex()], (long) r.mEUt);
                 }
             }
             return out.build();

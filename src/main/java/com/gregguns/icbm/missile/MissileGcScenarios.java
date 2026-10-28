@@ -101,7 +101,8 @@ public final class MissileGcScenarios {
             int cx = ctx.originX();
             int cy = ctx.originY();
             int cz = ctx.originZ();
-            MissileScenarios.Target target = new MissileScenarios.Target(ctx, 0, 70, 9);
+            MissileScenarios.Target target = new MissileScenarios.Target(ctx, 0, 70, 13); // radius 13 covers unguided
+                                                                                          // T1 scatter (D98)
             final EntityMissile[] missile = { null };
             final int[] phase = { 0 };
             final int[] launchedAt = { 0 };

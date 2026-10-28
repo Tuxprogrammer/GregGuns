@@ -11,6 +11,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -53,9 +54,9 @@ public class ItemIcbmPart extends Item implements Tiered {
             StatCollector.translateToLocal("gregguns.icbm.part.tooltip.used"),
             StatCollector.translateToLocal(part.usedInKey()));
         String hint = StatCollector.translateToLocal("gregguns.icbm.part.tooltip.shift");
-        tooltip.addAll(PartTooltipFormat.lines(tierLine, summary, usedIn, hint, shift));
+        TooltipWrap.addAll(tooltip, PartTooltipFormat.lines(tierLine, summary, usedIn, hint, shift));
         if (shift) {
-            tooltip.add(AddedBy.line());
+            TooltipWrap.add(tooltip, AddedBy.line());
         }
     }
 }

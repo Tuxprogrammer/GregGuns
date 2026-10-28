@@ -56,7 +56,10 @@ public enum MissileTier {
         return blockName;
     }
 
-    /** @return the heaviest warhead tier this body carries; lighter warheads fit too */
+    /**
+     * @return the heaviest conventional or nuclear warhead tier this body is built for; lighter warheads fit too, and
+     *         the T3 body also carries the T4 and T5 casings (see {@link #carries})
+     */
     public ExplosiveTier warheadTier() {
         return warheadTier;
     }
@@ -127,7 +130,9 @@ public enum MissileTier {
      * @return true when the warhead fits this body
      */
     public boolean carries(ExplosiveTier warhead) {
-        return warhead.number() <= warheadTier.number();
+        // D131: there is no T4 body, so the T3 body (the silo's heaviest) also carries the T4 antimatter and T5 red
+        // matter casings.
+        return this == T3 || warhead.number() <= warheadTier.number();
     }
 
     /**

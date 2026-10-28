@@ -81,11 +81,35 @@ public final class Effects {
                 return new Breach();
             case NUCLEAR:
                 return new Nuclear();
+            case ANTIMATTER:
+                return new AntimatterEffect();
+            case REDMATTER:
+                return new RedMatterEffect();
             case EMP:
                 return new Emp();
+            case ENDER:
+                return new EnderEffect();
+            case ANTIGRAV:
+                return new AntiGravEffect();
             default:
                 return BlastEffect.NONE;
         }
+    }
+
+    /**
+     * Test hook: ender warheads land at this spot (the cell the entity stands in) until {@link #clearEnderTarget}.
+     *
+     * @param x X
+     * @param y Y
+     * @param z Z
+     */
+    public static void forceEnderTarget(int x, int y, int z) {
+        EnderEffect.forced = new int[] { x, y, z };
+    }
+
+    /** Test hook: ender warheads pick their own landing spot again. */
+    public static void clearEnderTarget() {
+        EnderEffect.forced = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -110,10 +134,10 @@ public final class Effects {
                 .number())) {
             return false;
         }
-        EntityPlayer p0 = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+        EntityPlayer p = ctx.breaker();
         if (!ExplosionRules.mayBreakBlocks(
             true,
-            p0 != null,
+            p != null,
             ctx.world()
                 .getGameRules()
                 .getGameRuleBooleanValue("mobGriefing"))) {
@@ -121,7 +145,6 @@ public final class Effects {
         }
         Block block = ctx.world()
             .getBlock(x, y, z);
-        EntityPlayer p = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
         return p == null || BlockBreakGuard.mayBreak(
             ctx.world(),
             x,
@@ -177,7 +200,7 @@ public final class Effects {
             ctx.y(),
             ctx.z(),
             (float) Math.max(ctx.radius(), 3.0));
-        EntityPlayer breaker = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+        EntityPlayer breaker = ctx.breaker();
         for (int[] p : cells) {
             ProjectileExplosion.breakBlock(
                 ctx.world(),
@@ -439,7 +462,13 @@ public final class Effects {
         @Override
         public void onFinish(BlastContext ctx) {
             if (ctx.completed() && ctx.breaksTerrain() && !ctx.world().isRemote) {
-                com.gregguns.explosion.nuclear.Fallout.start(ctx.world(), ctx.x(), ctx.y(), ctx.z(), ctx.radius());
+                com.gregguns.explosion.nuclear.Fallout.start(
+                    ctx.world(),
+                    ctx.x(),
+                    ctx.y(),
+                    ctx.z(),
+                    ctx.radius(),
+                    com.gregguns.explosion.nuclear.Fallout.GRADE_ZPM);
             }
         }
     }

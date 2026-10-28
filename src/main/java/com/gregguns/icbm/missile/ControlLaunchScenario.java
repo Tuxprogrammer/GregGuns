@@ -44,6 +44,22 @@ public final class ControlLaunchScenario implements Scenario {
 
     private static final int WARMUP_TICKS = 45;
     private static final int DISTANCE = 70;
+    /**
+     * Half-size of each target platform. An unguided T1 aims at a random point within its scatter of the typed target
+     * (about 12 blocks per axis at this range), and the missile lands on whatever ground is there: a platform of
+     * radius 9 was missed in about one run in eight, and the blast then went off 25 blocks below it. The platform has
+     * to cover the whole scatter square ({@code ControlLaunchScenarioTest}).
+     */
+    static final int PLATFORM_RADIUS = 13;
+    /**
+     * Every wait below runs on its own clock, not on the scenario's. A blast left running by an earlier scenario shares
+     * the engine's tick budget and starves this scenario's blasts, so a wait measured from the scenario's start ran
+     * out under load (the old flake); the total only has to cover the sum of the waits.
+     */
+    private static final int QUIET_LIMIT = 2400;
+    private static final int FLIGHT_LIMIT = 1200;
+    private static final int BLAST_LIMIT = 2400;
+    private static final int TOTAL_TICKS = 10_000;
 
     @Override
     public String name() {
@@ -89,14 +105,27 @@ public final class ControlLaunchScenario implements Scenario {
             (WorldServer) w,
             new GameProfile(UUID.nameUUIDFromBytes("gg-launch".getBytes(StandardCharsets.UTF_8)), "[GGLaunch]"));
         player.setPosition(ctx.originX() + 3.5, ctx.originY() + 1, ctx.originZ() + 2.5);
-        final MissileScenarios.Target first = new MissileScenarios.Target(ctx, 0, DISTANCE, 9);
-        final MissileScenarios.Target second = new MissileScenarios.Target(ctx, 0, -DISTANCE, 9);
+        final MissileScenarios.Target first = new MissileScenarios.Target(ctx, 0, DISTANCE, PLATFORM_RADIUS);
+        final MissileScenarios.Target second = new MissileScenarios.Target(ctx, 0, -DISTANCE, PLATFORM_RADIUS);
         final ScenarioResult.Builder out = ScenarioResult.builder(name());
         final EntityMissile[] missile = new EntityMissile[1];
         final int[] stage = { 0 };
         final int[] mark = { 0 };
+        final int[] since = { 0 };
+        final int[] diedAt = { -1 };
         final long[] euBefore = { 0 };
-        return ScenarioResult.pending(name(), 3000, ticks -> {
+        final int[] logged = { -1 };
+        return ScenarioResult.pending(name(), TOTAL_TICKS, ticks -> {
+            if (logged[0] != stage[0]) {
+                logged[0] = stage[0];
+                com.gregguns.GregGuns.LOG.info(
+                    "launch_to_impact stage {} at tick {} (blasts {}, missile {})",
+                    stage[0],
+                    ticks,
+                    BlastEngine.instance()
+                        .activeBlasts(),
+                    missile[0] == null ? "none" : missile[0].phase() + " " + missile[0].impactReport());
+            }
             IGregTechTileEntity base = control(ctx);
             MTELaunchControl c = base != null && base.getMetaTileEntity() instanceof MTELaunchControl
                 ? (MTELaunchControl) base.getMetaTileEntity()
@@ -112,6 +141,21 @@ public final class ControlLaunchScenario implements Scenario {
             int cz = ctx.originZ();
             switch (stage[0]) {
                 case 0: {
+                    if (ticks == WARMUP_TICKS) {
+                        java.util.List<String> names = new java.util.ArrayList<>();
+                        for (Scenario sc : com.gregguns.core.testing.ScenarioRegistry.SCENARIOS.all()) {
+                            names.add(sc.name());
+                        }
+                        int slot = names.indexOf(name());
+                        com.gregguns.GregGuns.LOG.info(
+                            "launch_to_impact slot {} of {}; z neighbors {} / {}; {}; {}",
+                            slot,
+                            names.size(),
+                            slot >= 6 ? names.get(slot - 6) : "-",
+                            slot + 6 < names.size() ? names.get(slot + 6) : "-",
+                            approach(ctx, DISTANCE),
+                            approach(ctx, -DISTANCE));
+                    }
                     if (w.getBlock(cx, cy, cz) != GCBlocks.landingPadFull) {
                         return ticks > 140 ? fail(terrain, "the 3x3 pad never formed") : null;
                     }
@@ -119,8 +163,9 @@ public final class ControlLaunchScenario implements Scenario {
                     // while they are full is refused (BlastEngine.start): that dropped the second blast of this
                     // scenario once on a fresh boot. Wait for a quiet engine before launching anything.
                     if (BlastEngine.instance()
-                        .activeBlasts() > 0 && ticks < 400) {
-                        return null;
+                        .activeBlasts() > 0) {
+                        return ticks > QUIET_LIMIT ? fail(terrain, "the blast engine never went quiet" + engineState())
+                            : null;
                     }
                     int[] b = MissileScenarios
                         .buildStack(ctx, MissileTier.T1, WarheadCasing.T1, "condensed", 3, 0, 1, 0, true, 0);
@@ -156,19 +201,31 @@ public final class ControlLaunchScenario implements Scenario {
                     // before ignition.
                     out.checkEquals("no second shot during the countdown", ControlStatus.COUNTDOWN, c.fire(null));
                     stage[0] = 1;
+                    since[0] = ticks;
                     return null;
                 }
                 case 1: {
                     EntityMissile m = missile[0];
-                    if (!m.isDead || (first.removed(w) == 0 && ticks < 1800)) {
-                        return ticks > 1800 ? fail(terrain, "the first missile never hit") : null;
+                    if (!m.isDead) {
+                        return ticks - since[0] > FLIGHT_LIMIT
+                            ? fail(terrain, "the first missile never hit, phase " + m.phase() + engineState())
+                            : null;
                     }
-                    // The second launch also needs a free job slot, so the first blast must be done.
-                    if (BlastEngine.instance()
-                        .activeBlasts() > 0 && ticks < 2000) {
+                    if (diedAt[0] < 0) {
+                        diedAt[0] = ticks;
+                    }
+                    // The blast breaks blocks over the following ticks, and the second launch needs a free job slot.
+                    if ((first.removed(w) == 0 || BlastEngine.instance()
+                        .activeBlasts() > 0) && ticks - diedAt[0] < BLAST_LIMIT) {
                         return null;
                     }
-                    out.check(first.removed(w) > 0, "the first blast broke blocks on its platform" + engineState());
+                    out.check(
+                        first.removed(w) > 0,
+                        "the first blast broke blocks on its platform" + engineState()
+                            + " ["
+                            + m.impactReport()
+                            + "] "
+                            + first.report(w));
                     out.checkEquals(
                         "no tickets after the first impact",
                         0,
@@ -203,6 +260,7 @@ public final class ControlLaunchScenario implements Scenario {
                     return null;
                 }
                 case 2: {
+                    com.gregguns.GregGuns.LOG.info("launch_to_impact before the second shot: {}", second.report(w));
                     // The raised signal is the only trigger: nothing has fired yet.
                     out.check(!missile[0].isDead && missile[0].onPad(), "the second missile waits on the pad");
                     ctx.setBlock(4, 0, 0, Blocks.redstone_block, 0);
@@ -221,16 +279,30 @@ public final class ControlLaunchScenario implements Scenario {
                         euBefore[0] - MTELaunchControl.EU_PER_SHOT,
                         base.getStoredEU());
                     stage[0] = 4;
+                    since[0] = ticks;
+                    diedAt[0] = -1;
                     return null;
                 }
                 case 4: {
                     EntityMissile m = missile[0];
-                    if (!m.isDead || (second.removed(w) == 0 && ticks < 2900)) {
-                        return ticks > 2900 ? fail(terrain, "the second missile never hit") : null;
+                    if (!m.isDead) {
+                        return ticks - since[0] > FLIGHT_LIMIT
+                            ? fail(terrain, "the second missile never hit, phase " + m.phase() + engineState())
+                            : null;
+                    }
+                    if (diedAt[0] < 0) {
+                        diedAt[0] = ticks;
+                    }
+                    if (second.removed(w) == 0 && ticks - diedAt[0] < BLAST_LIMIT) {
+                        return null;
                     }
                     out.check(
                         second.removed(w) > 0,
-                        "the second blast broke blocks on the data-stick target" + engineState());
+                        "the second blast broke blocks on the data-stick target" + engineState()
+                            + " ["
+                            + m.impactReport()
+                            + "] "
+                            + second.report(w));
                     out.checkEquals(
                         "no tickets after the second impact",
                         0,
@@ -256,6 +328,36 @@ public final class ControlLaunchScenario implements Scenario {
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + 3, ctx.originY(), ctx.originZ());
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
+    }
+
+    /**
+     * Counts the solid blocks over the approach to a target, outside the column the target cleared, and names the
+     * first. The scenario grid is 80 blocks apart and the targets are 70 out, so they sit inside the neighbors'
+     * arenas: whatever an earlier neighbor left standing there can stop the descending missile short.
+     */
+    private static String approach(ScenarioContext ctx, int dz) {
+        World w = ctx.world();
+        int n = 0;
+        String first = "";
+        int lo = dz > 0 ? 20 : dz - 40;
+        int hi = dz > 0 ? dz + 40 : -20;
+        for (int z = lo; z <= hi; z++) {
+            for (int x = -30; x <= 30; x++) {
+                boolean cleared = Math.abs(x) <= PLATFORM_RADIUS + 6 && Math.abs(z - dz) <= PLATFORM_RADIUS + 6;
+                if (cleared) {
+                    continue;
+                }
+                for (int y = 0; y < 60; y++) {
+                    net.minecraft.block.Block b = w.getBlock(ctx.originX() + x, ctx.originY() + y, ctx.originZ() + z);
+                    if (b != Blocks.air) {
+                        if (n++ == 0) {
+                            first = b.getUnlocalizedName() + " at " + x + "," + y + "," + z;
+                        }
+                    }
+                }
+            }
+        }
+        return n + " solid blocks over the approach to z" + dz + (n > 0 ? ", first " + first : "");
     }
 
     /** What the blast engine was doing, for a failure message: a refused blast leaves no other trace. */

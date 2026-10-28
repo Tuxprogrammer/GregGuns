@@ -28,6 +28,7 @@ public final class IcbmClientModule implements ClientModule {
     public void preInit() {
         WarheadBlockRenderer.register();
         CloudFxClient.install();
+        OrbFxClient.install();
         MissileBodyRenderer.register();
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT1.class, new RenderMissile());
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT2.class, new RenderMissile());
@@ -35,6 +36,8 @@ public final class IcbmClientModule implements ClientModule {
         RenderingRegistry
             .registerEntityRenderingHandler(com.gregguns.icbm.silo.EntitySiloDoors.class, new RenderSiloDoors());
         RenderingRegistry.registerEntityRenderingHandler(com.gregguns.icbm.defense.EntitySam.class, new RenderSam());
+        RenderingRegistry
+            .registerEntityRenderingHandler(com.gregguns.icbm.warhead.EntityFlyingBlock.class, new RenderFlyingBlock());
     }
 
     @Override

@@ -42,6 +42,8 @@ final class WarheadItemRenderer implements IItemRenderer {
         return !WarheadModels.modelName(c, "nuclear")
             .equals(c.blockName())
             || !WarheadModels.modelName(c, "emp")
+                .equals(c.blockName())
+            || !WarheadModels.modelName(c, "ender")
                 .equals(c.blockName());
     }
 

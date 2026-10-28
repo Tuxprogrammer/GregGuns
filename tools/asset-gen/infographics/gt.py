@@ -28,6 +28,8 @@ MATERIALS = {
     "Tungstensteel": ((100, 100, 160), "METALLIC"), "Iron": ((200, 200, 200), "METALLIC"),
     "Rubber": ((0, 0, 0), "SHINY"), "Glass": ((250, 250, 250), "GLASS"), "Wood": ((100, 50, 0), "WOOD"),
     "Tin": ((220, 220, 220), "METALLIC"),
+    # Naquadria and Neutronium plates, the T4 and T5 warhead casings: GT's own colors (naquadria is near black, so it needs a light slot).
+    "Naquadria": ((30, 30, 30), "SHINY"), "Neutronium": ((250, 250, 250), "DULL"),
 }
 
 # GregTech items by their gt.metaitem.01 texture number (the item id less 32000).

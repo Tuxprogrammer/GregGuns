@@ -18,8 +18,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * Irradiated earth: one block with five variants (dirt, stone, sand, gravel, cobblestone), made by fallout (D21). It
- * borrows the vanilla textures, tinted sickly green on the client, so it needs no art of its own. It does nothing by
+ * Irradiated earth: one block with five variants (dirt, stone, sand, gravel, cobblestone), made by fallout (D21). Each
+ * variant has its own cool and hot texture (HBM's Nuclear Tech Mod art, reworked; see CREDITS.md). Hot earth glows
+ * (light level 6), has lime veins in its texture and drips green sparks on the client. It does nothing by
  * itself: no random ticks, no spreading. Players standing on or beside it take GT's radioactivity effect unless they
  * wear hazmat ({@link RadiationExposure}), and decay puts the original block back ({@link FalloutEngine}). Mined, it
  * drops irradiated rubble.
@@ -27,8 +28,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 // Spec: docs/gregguns-icbm-spec/02-explosives/nuclear-and-fallout.md
 public final class BlockIrradiatedEarth extends Block implements com.gregguns.api.Tiered {
 
-    /** The tint applied on the client. */
+    /** The lime the rubble item is tinted with (the blocks carry their colors in their textures). */
     public static final int TINT = 0x9CE070;
+
+    private static final String[] VARIANT_NAMES = { "dirt", "stone", "sand", "gravel", "cobble" };
+
+    @SideOnly(Side.CLIENT)
+    private net.minecraft.util.IIcon[] cool;
+    @SideOnly(Side.CLIENT)
+    private net.minecraft.util.IIcon[] hot;
 
     /** Builds the block (no tick randomly: the default is already false). */
     public BlockIrradiatedEarth() {
@@ -47,26 +55,35 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
-        return FalloutBlocks.original(meta % FalloutBlocks.VARIANTS)
-            .getIcon(side, 0);
+        int variant = FalloutBlocks.variantOf(meta);
+        return FalloutBlocks.isHot(meta) ? hot[variant] : cool[variant];
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(net.minecraft.client.renderer.texture.IIconRegister register) {
-        // The vanilla textures are used as they are.
+        cool = new IIcon[FalloutBlocks.VARIANTS];
+        hot = new IIcon[FalloutBlocks.VARIANTS];
+        for (int i = 0; i < FalloutBlocks.VARIANTS; i++) {
+            cool[i] = register.registerIcon("gregguns:thirdparty/ntm/irradiated_" + VARIANT_NAMES[i]);
+            hot[i] = register.registerIcon("gregguns:thirdparty/ntm/irradiated_" + VARIANT_NAMES[i] + "_hot");
+        }
+    }
+
+    @Override
+    public int getLightValue(IBlockAccess world, int x, int y, int z) {
+        return FalloutBlocks.isHot(world.getBlockMetadata(x, y, z)) ? 6 : 0;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public int getRenderColor(int meta) {
-        return TINT;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
-        return TINT;
+    public void randomDisplayTick(World world, int x, int y, int z, Random random) {
+        if (FalloutBlocks.isHot(world.getBlockMetadata(x, y, z)) && random.nextInt(4) == 0
+            && !world.getBlock(x, y + 1, z)
+                .isOpaqueCube()) {
+            // "reddust" takes its color (r, g, b) in the motion arguments: a lime spark rising off the earth.
+            world.spawnParticle("reddust", x + random.nextDouble(), y + 1.05, z + random.nextDouble(), 0.55, 1.0, 0.1);
+        }
     }
 
     /**
@@ -80,7 +97,7 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
 
     @Override
     public int damageDropped(int meta) {
-        return meta;
+        return FalloutBlocks.isHot(meta) ? 1 : 0;
     }
 
     @Override
@@ -91,7 +108,7 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
         ArrayList<ItemStack> drops = new ArrayList<>();
-        drops.add(new ItemStack(FalloutBlocks.rubble(), 1, 0));
+        drops.add(new ItemStack(FalloutBlocks.rubble(), 1, FalloutBlocks.isHot(meta) ? 1 : 0));
         return drops;
     }
 

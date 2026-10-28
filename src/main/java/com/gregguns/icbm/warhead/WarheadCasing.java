@@ -4,9 +4,8 @@ import com.gregguns.icbm.explosive.ExplosiveTier;
 
 /**
  * The warhead casings, one per casing tier. A casing fixes the tier, the fill cap (D23), the size of the placed
- * warhead in blocks and the width of its model, which the collision box follows (D31). I1 ships T1 and T2, I3 adds T3;
- * the heavier
- * casings arrive with their milestones. No Minecraft types, both sides.
+ * warhead in blocks and the width of its model, which the collision box follows (D31). I1 ships T1 and T2, I3 adds T3
+ * and I5 adds T4 and T5. No Minecraft types, both sides.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (The warhead item)
 public enum WarheadCasing {
@@ -16,7 +15,11 @@ public enum WarheadCasing {
     /** EV to IV casing, 1x1x1, up to 20 charges. */
     T2("warhead_t2", ExplosiveTier.T2, 20, 1, 0.4),
     /** LuV to ZPM casing, 1x1x2 with a filler block, up to 64 charges; nuclear sits here (I3). */
-    T3("warhead_t3", ExplosiveTier.T3, 64, 2, 0.9);
+    T3("warhead_t3", ExplosiveTier.T3, 64, 2, 0.9),
+    /** UV casing, 1x1x2 with a filler block, up to 128 charges; antimatter sits here (I5, D130). */
+    T4("warhead_t4", ExplosiveTier.T4, 128, 2, 0.825),
+    /** UHV casing, 1x1x2 with a filler block, up to 128 charges; red matter sits here (I5, D130). */
+    T5("warhead_t5", ExplosiveTier.T5, 128, 2, 0.9);
 
     private final String blockName;
     private final ExplosiveTier tier;

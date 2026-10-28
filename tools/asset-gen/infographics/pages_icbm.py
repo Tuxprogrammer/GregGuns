@@ -29,9 +29,10 @@ NTM_TEX = K.ASSETS / "textures/models/thirdparty/ntm"
 WARHEAD_PPU = 300
 
 
-def warhead(name: str, yaw=35, pitch=14, ppu=WARHEAD_PPU) -> K.Path:
-    """A shipped warhead model at ppu pixels per block, so warheads drawn side by side keep their true scale."""
-    obj, tex = NTM / f"{name}.obj", NTM_TEX / f"{name}.png"
+def warhead(name: str, yaw=35, pitch=14, ppu=WARHEAD_PPU, mesh: str | None = None) -> K.Path:
+    """A shipped warhead model at ppu pixels per block, so warheads drawn side by side keep their true scale.
+    `mesh` names the OBJ when it differs from the texture (the ender and anti-gravitational skins use the T3 mesh)."""
+    obj, tex = NTM / f"{mesh or name}.obj", NTM_TEX / f"{name}.png"
     sig = hashlib.sha1(obj.read_bytes() + tex.read_bytes()).hexdigest()[:10]
 
     def make():
@@ -205,7 +206,7 @@ def _fill_table(label, blast_id, color) -> str:
 def _tier_card(tier, chip_tier, chip_text, plate, plate_name, model, cap, blurb, extra) -> str:
     stats = "".join(f'<div class="stat"><span>{esc(k)}</span><b>{v}</b></div>' for k, v in extra)
     return f"""<div class="card tier-card">
-<div class="spot">{img(warhead(model), h=300)}</div>
+<div class="spot" style="display:flex;gap:2px;align-items:flex-end">{"".join(img(warhead(m), h=(300 if isinstance(model, str) else 190)) for m in ([model] if isinstance(model, str) else model))}</div>
 <div><div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><h2>Tier {tier}</h2>{chip(chip_tier, chip_text)}</div>
 <div class="muted" style="font-size:18px;margin-bottom:8px">{blurb}</div>
 <div class="stat"><span>Casing</span><b>{gti("plate", plate, 28)} {esc(plate_name)} plates</b></div>
@@ -224,6 +225,12 @@ def _blast_card(name, blast_id, kind, what) -> str:
     fuse = f"<span>Fuse <b>{fuse_seconds(rad)} s</b></span>"
     return f"""<div class="bt" style="--kc:{KIND_COLOR[kind]}"><div class="top"><h3>{esc(name)} T{BLAST[blast_id]["tier"][1:]} Warhead</h3><span class="kind">{esc(kind)}</span></div>
 <div class="nums">{size}{dmg_html}{fuse}</div><div class="what">{esc(what)}</div><div class="pay"><span>Payload</span> {esc(PAYLOAD[blast_id])}</div></div>"""
+
+
+def _hi_chip(t: str) -> str:
+    """UV and UHV chips, past the base chip colors."""
+    bg = {"UV": "#2ec4b6", "UHV": "#ff9a3d"}[t]
+    return f'<span class="chip" style="background:{bg}">{t}</span>'
 
 
 def warheads() -> str:
@@ -292,36 +299,10 @@ def warheads() -> str:
 <div class="mrow"><div class="spot" style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;max-width:240px">{parts_icons}</div><div><h3>The parts, each an Assembler recipe too</h3><div class="muted" style="font-size:17px"><b>Plastic Explosive</b>: PTFE plates and Industrial TNT, in every warhead. <b>Fuze Assembly</b> Mk I (HV, Advanced circuit) and Mk II (EV, Data circuit). <b>Dispersal Canister</b> holds a fluid fill; the <b>Napalm Canister</b> is one filled with gasoline. <b>Fragmentation Sleeve</b> (steel or titanium) and <b>Shaped-Charge Liner Cone</b> (copper).</div></div></div></div></div>"""
 
     ladder = "".join(
-        f'<span class="{"" if on else "off"}">{chip(t) if t in K.TIERS else f"<span class=chip style=background:#8a8f98>{t}</span>"}</span>'
-        for t, on in [("HV", True), ("EV", True), ("IV", True), ("LuV", True), ("ZPM", True), ("UV", False), ("UHV", False)])
-    # T3 and nuclear numbers are final (D80 to D84): WarheadBlast EXOTHERMIC/ENDOTHERMIC r28 and 8,000, NUCLEAR r64 with the
-    # 60% kill zone, WarheadRecipeSpec and Fuze Assembly Mk III. The dump on this branch predates them, so they are written here.
-    t3 = _tier_card(3, "LuV", "LuV to ZPM", "Tungstensteel", "Tungsten steel", "warhead_t3", 64,
-                    "A two-block-tall casing for the silo. Fill and radius work as on the smaller casings.",
-                    [("Full-fill center damage", "8,000"), ("Blast radius, full", "28 blocks"), ("Size", "1 &times; 1 &times; 2 blocks")])
-    nuke = _tier_card("", "ZPM", "ZPM", "Tungstensteel", "Tungsten steel", "warhead_nuclear", 64,
-                      "The nuclear warhead: a Tier 3 casing with the nuclear fill. Nothing living in the kill zone survives, bosses included, and the ground stays poisoned.",
-                      [("Blast radius, full", "64 blocks (32 at 8 charges, 16 at 1)"), ("Kill zone, full", "60% of the radius: 38 blocks"),
-                       ("Outside the zone", "8,000 damage, fading to the edge"), ("Size", "1 &times; 1 &times; 2 blocks")])
-    nuke = nuke.replace("<h2>Tier </h2>", "<h2>Nuclear</h2>")
-
-    def t3_card(name, kind, what, pay):
-        return (f'<div class="bt" style="--kc:{KIND_COLOR[kind]}"><div class="top"><h3>{esc(name)} T3 Warhead</h3><span class="kind">{esc(kind)}</span></div>'
-                f'<div class="nums"><span>Radius <b>28</b></span><span>Center <b>8,000</b></span></div><div class="what">{esc(what)}</div>'
-                f'<div class="pay"><span>Payload</span> {esc(pay)}</div></div>')
-    t3_cards = (t3_card("Exothermic", "Crater", "A huge crater where everything in the radius burns for 5 seconds.",
-                        "16 Industrial TNT, 6 Plastic Explosive, 4 Napalm Canisters, a Fuze Assembly Mk III, 8,000 L kerosene")
-                + t3_card("Endothermic", "Crater", "A huge crater that leaves everything in it slowed for 10 seconds.",
-                          "16 Industrial TNT, 6 Plastic Explosive, 4 Dispersal Canisters, a Fuze Assembly Mk III, 8,000 L helium"))
-    fallout = """<div class="card" style="margin-top:18px"><h2>What a nuclear strike leaves behind</h2>
-<div class="muted" style="font-size:18px;margin:6px 0 4px">The top layer of ground around the blast turns into <b>Irradiated Earth</b>: dirt, stone, sand, gravel and cobblestone in a sickly green. It covers a disc up to 1.5 times the blast radius, but never more than 6,000 blocks per strike, and it does not spread. It fades back to normal after an hour. Mining it gives Irradiated Rubble, which hurts to carry. Standing on or next to it irradiates you about once a second; <b>full hazmat armor</b> (GregTech hazmat, GregGuns armor with the radiation flag, or the Hazmat enchantment) protects you.</div></div>"""
-    nuke_cost = """<div class="muted" style="font-size:17px;margin-top:8px"><b>Made in the Assembler:</b> Exothermic and Endothermic at LuV, Nuclear at ZPM from 8 tungstensteel plates, 12 Industrial TNT, 4 Plastic Explosive, 8 uranium-235 ingots, 4 plutonium ingots and a Fuze Assembly Mk III (LuV: Master circuit, a tungstensteel plate and 4 fine platinum wire).</div>"""
-    heavy = f"""<div class="label" style="margin:26px 0 10px">Tier 3 and nuclear &middot; silo only</div>
-<div class="grid" style="grid-template-columns:1fr 1fr">{t3}{nuke}</div>
-<div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px">{t3_cards}</div>
-<div class="muted" style="font-size:17px;margin-top:10px">Tier 3 and nuclear warheads fly only on a Tier 3 missile launched from the missile silo. Inside a nuclear kill zone (60% of the blast radius) every living thing dies, through armor, bosses included; players follow the server's damage settings. Outside it the 8,000 center damage fades to the edge.</div>{nuke_cost}{fallout}"""
+        f'<span>{chip(t) if t in K.TIERS else _hi_chip(t)}</span>'
+        for t in ["HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV"])
     later = f"""<div class="card"><div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap"><h2>Where each tier sits on the ladder</h2><div class="ladder">{ladder}</div></div>
-<div class="muted" style="font-size:18px;margin-top:8px">Tiers 1 and 2 are the conventional starter casings. Tier 3 (LuV to ZPM) and the nuclear warhead are the heavy two-block casings. Antimatter and red matter warheads sit at the very top, and everything in their blast zone dies.</div></div>"""
+<div class="muted" style="font-size:18px;margin-top:8px">Tiers 1 and 2 are the conventional starter casings, and they are on this sheet. Tier 3 (LuV to ZPM) and the nuclear warhead are the heavy two-block casings; antimatter and red matter sit at the very top, where everything in the blast zone dies. They have their own sheet, <b>Heavy Warheads</b>, along with the launcher warheads.</div></div>"""
 
     body = f"""<div class="grid" style="grid-template-columns:1fr 1fr">{t1}{t2}</div>
 <div class="label" style="margin:26px 0 10px">Tier 1 blast types &middot; HV casing</div>
@@ -329,13 +310,13 @@ def warheads() -> str:
 <div class="label" style="margin:22px 0 10px">Tier 2 blast types &middot; EV to IV casing</div>
 <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">{t2_cards}</div>
 <div class="muted" style="font-size:16px;margin-top:10px">Radius is in blocks at a full casing. Center damage is before armor.</div>
-{heavy}
 <div class="grid" style="grid-template-columns:1.2fr 1fr;margin-top:26px">{fill}{falloff}</div>
 <div class="grid" style="grid-template-columns:1fr 1.15fr;margin-top:18px">{demo}{make}</div>
 <div style="margin-top:18px">{later}</div>"""
-    return page_doc("Warheads", "Tiers 1 to 3 and nuclear: what each does, how big the bang is, and how to make one.", body,
+    return page_doc("Warheads", "Tiers 1 and 2: what each blast type does, how big the bang is, and how to make one.", body,
                     extra=CSS,
-                    credit=["Warhead models and textures \u00a9 HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.", MOJANG_CREDIT])
+                    credit=["Warhead models and textures \u00a9 HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.",
+                            "Plate and machine icons: GregTech 5 Unofficial textures, LGPL-3.0.", MOJANG_CREDIT])
 
 
 PAGES = {"icbm-warheads": warheads}

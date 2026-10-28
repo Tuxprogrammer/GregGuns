@@ -252,7 +252,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
   - EU cost grows continuously with radius.
 - **The T3 EMP warhead** (D80, moved from I3): it reuses the EMP machinery built for the tower above (the kill-chance table, the device cap and the nearest-first order), as a T3 blast type at LuV to ZPM.
 - **Carried over from I3:**
-  - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios. **Status (I4): mitigated, not root-caused.** The scenario now waits for a quiet engine (D98), which removes the flake; D98 lists candidate causes and none was shown to be the real one.
+  - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios. **Status (I5): root-caused (D98).** Guidance scatter put the aim point off the 9-block target platform in about one run in eight; the platform now covers the scatter (radius 13) and the waits run on their own clocks. The failure message also names where the missile aimed and detonated and whether the platform stood.
   - The silo's shaft-chunk guard (mating, pumping and spawning wait for loaded shaft chunks) has no scenario; add one.
   - Take the Galacticraft rocket NEI shot in the real pack. In the dev client the NASA Workbench recipe tables are empty and GalaxySpace's rocket handlers aren't registered.
     **Status (I4 fix E): moves to the alpha real-pack check.**
@@ -285,12 +285,12 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** antimatter and red matter previews and effects, the `icbm-fallout` sheet, the complete `icbm-warheads`, and the endgame quests.
 
 **Exit gate:**
-- [ ] The ender and anti-gravitational T3 warheads detonate within the tick budget. Scenario.
-- [ ] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
-- [ ] Fallout blocks process into their yields in GT machines. Scenario.
-- [ ] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
-- [ ] `icbm-fallout`, the complete `icbm-warheads` and the endgame quests have landed, and the owner has been told.
-- [ ] The milestone review fix list is closed.
+- [x] The ender and anti-gravitational T3 warheads detonate within the tick budget. Scenario.
+- [x] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
+- [x] Fallout blocks process into their yields in GT machines. Scenario.
+- [x] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
+- [x] `icbm-fallout`, the complete `icbm-warheads` and the endgame quests have landed, and the owner has been told.
+- [x] The milestone review fix list is closed.
 
 ## I6 · World: missile silos on every planet
 

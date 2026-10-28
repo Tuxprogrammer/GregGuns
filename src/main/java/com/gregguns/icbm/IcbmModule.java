@@ -33,6 +33,8 @@ public final class IcbmModule implements GregGunsModule {
         com.gregguns.icbm.missile.MissileRegistration.preInit(registrar);
         com.gregguns.icbm.defense.DefenseMachines.registerItems(registrar);
         com.gregguns.icbm.tools.ToolRegistration.preInit(registrar);
+        com.gregguns.icbm.launcher.LauncherWarheadRegistration.preInit(registrar);
+        com.gregguns.icbm.antidote.AntidoteRegistration.preInit(registrar);
     }
 
     /**
@@ -62,6 +64,8 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.production.ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.emp.EmpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.tools.ToolRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.launcher.LauncherWarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.antidote.AntidoteRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             // The OpenComputers scenario exists only with the mod; its class names OC types.
             if (cpw.mods.fml.common.Loader.isModLoaded("OpenComputers")) {
                 com.gregguns.icbm.compat.oc.OcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
@@ -86,5 +90,7 @@ public final class IcbmModule implements GregGunsModule {
         }
         com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
         com.gregguns.icbm.tools.ToolRegistration.init();
+        com.gregguns.icbm.launcher.LauncherWarheadRegistration.init();
+        com.gregguns.icbm.antidote.AntidoteRegistration.init();
     }
 }
