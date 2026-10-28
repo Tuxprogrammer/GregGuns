@@ -54,8 +54,12 @@ public final class Ross128ProviderHook {
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
         World world = event.world;
-        if (world.isRemote || !WorldgenSettings.generatorWanted()
-            || !WorldgenSettings.isRoss128(world.provider.dimensionId)) {
+        if (world.isRemote || !WorldgenSettings.generatorWanted()) {
+            return;
+        }
+        // Ross128 for the ordinary structures; any Galacticraft planet that hosts silo complexes (I6) for the complex,
+        // since Galacticraft drops Forge's generators on all of them, not only on Ross128.
+        if (!WorldgenSettings.isRoss128(world.provider.dimensionId) && !StructureGenerator.complexWanted(world)) {
             return;
         }
         if (wrap(world)) {

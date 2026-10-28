@@ -53,6 +53,12 @@ public final class StructureGenerator implements IWorldGenerator {
         complexWriter = writer;
     }
 
+    /** @return whether the silo complex is on in this non-Overworld world (its chunk provider then needs the hook) */
+    static boolean complexWanted(World world) {
+        ComplexWriter c = complexWriter;
+        return c != null && world.provider.dimensionId != 0 && c.enabledIn(world);
+    }
+
     /** Replaces {@link #real} while a scenario runs (forced spacing, a test layout). Tests only. */
     private static volatile StructurePopulator override;
     /** Replaces the world biome lookup while a scenario runs (a desert square for the nest). Tests only. */
