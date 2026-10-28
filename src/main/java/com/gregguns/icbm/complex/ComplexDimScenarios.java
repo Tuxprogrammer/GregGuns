@@ -167,11 +167,23 @@ public final class ComplexDimScenarios {
                     tried++;
                     StructurePlan plan = op.get();
                     long[] before = counters();
+                    long popBefore = StructureGenerator.populateCount(),
+                        hookBefore = com.gregguns.worldgen.Ross128ProviderHook.populateCount();
                     Set<Long> loadedBefore = loaded(cps);
                     int x0 = Math.floorDiv(plan.anchorX(), 16) - 1, x1 = Math.floorDiv(plan.anchorX() + 239, 16) + 1;
                     int z0 = Math.floorDiv(plan.anchorZ(), 16) - 1, z1 = Math.floorDiv(plan.anchorZ() + 239, 16) + 1;
                     for (int x = x0; x <= x1; x++) for (int z = z0; z <= z1; z++) cps.loadChunk(x, z);
                     long[] after = counters();
+                    out.note(
+                        label + ": populates generator "
+                            + (StructureGenerator.populateCount() - popBefore)
+                            + ", hook "
+                            + (com.gregguns.worldgen.Ross128ProviderHook.populateCount() - hookBefore)
+                            + ", chunks now loaded "
+                            + cps.getLoadedChunkCount()
+                            + ", provider "
+                            + cps.currentChunkProvider.getClass()
+                                .getSimpleName());
                     Decision d = state.get(PlanKey.of(plan));
                     String label = "cell " + cx + "," + cz;
                     out.check(d != null, label + ": the populate path decided the plan");
