@@ -443,10 +443,6 @@ public final class GeneratorScenarios {
             World world = ctx.world();
             PaletteKeys keys = PaletteKeys.resolveForPack(s -> {});
             StructureGenerator.setOverride(testPopulator(keys));
-            // The silo complex has its own dimension gate and populates where the general one is closed; this
-            // scenario is about the general gate, so the complex sits out.
-            ComplexWriter complex = StructureGenerator.complexWriter();
-            StructureGenerator.setComplexWriter(null);
             int[] dims = WorldgenConfig.structureDimensions;
             String[] types = WorldgenConfig.structureWorldTypes;
             // The ICBM silo complex has its own dimension list and runs the generator where ordinary structures are
@@ -472,7 +468,6 @@ public final class GeneratorScenarios {
                 WorldgenConfig.structureDimensions = dims;
                 WorldgenConfig.structureWorldTypes = types;
                 StructureGenerator.setOverride(null);
-                StructureGenerator.setComplexWriter(complex);
             }
             return out.build();
         }
