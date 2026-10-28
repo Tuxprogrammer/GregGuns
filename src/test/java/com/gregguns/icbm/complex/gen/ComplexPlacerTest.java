@@ -322,9 +322,11 @@ class ComplexPlacerTest {
             .plan();
         com.gregguns.icbm.complex.Box hub = cp.hall()
             .bounds();
-        int lx0 = p.anchorX() + hub.minX + 12, lz0 = p.anchorZ() + hub.minZ + 12;
-        // 20 x 14 spans window edges both ways (windows are 16 wide).
-        lake = new int[] { lx0, lz0, lx0 + 20, lz0 + 14, floor + 8 };
+        // The lake's west and north edges lie on window edges, so those faces are sealed from a column the window
+        // beside it reads one past its own (HeightProbe.seaFloorYBeside); the east and south edges fall inside windows.
+        int lx0 = windowEdge(p.anchorX() + hub.minX + 8), lz0 = windowEdge(p.anchorZ() + hub.minZ + 8);
+        final int lw = 16, ld = 12;
+        lake = new int[] { lx0, lz0, lx0 + lw, lz0 + ld, floor + 8 };
         Result r;
         try {
             r = run(p, false);
@@ -334,9 +336,9 @@ class ComplexPlacerTest {
         String[] open = { "c" + Cell.AIR, "c" + Cell.RAIL_NS, "c" + Cell.RAIL_EW, "c" + Cell.LADDER };
         String wall = Integer.toString(System.identityHashCode(named.get("c" + Cell.WALL)));
         int faces = 0, walled = 0;
-        for (int x = lx0 - 1; x <= lx0 + 20; x++) {
-            for (int z = lz0 - 1; z <= lz0 + 14; z++) {
-                boolean in = x >= lx0 && z >= lz0 && x < lx0 + 20 && z < lz0 + 14;
+        for (int x = lx0 - 1; x <= lx0 + lw; x++) {
+            for (int z = lz0 - 1; z <= lz0 + ld; z++) {
+                boolean in = x >= lx0 && z >= lz0 && x < lx0 + lw && z < lz0 + ld;
                 if (in) {
                     for (int y = floor; y < floor + ComplexRaster.LEVELS; y++) {
                         assertNull(r.cells.get(x + "," + y + "," + z), "the cut-off column keeps its terrain");
@@ -344,7 +346,7 @@ class ComplexPlacerTest {
                     continue;
                 }
                 // A corner column only touches the lake diagonally, where water never flows.
-                boolean corner = (x == lx0 - 1 || x == lx0 + 20) && (z == lz0 - 1 || z == lz0 + 14);
+                boolean corner = (x == lx0 - 1 || x == lx0 + lw) && (z == lz0 - 1 || z == lz0 + ld);
                 if (corner) continue;
                 for (int y = floor + 1; y < floor + hub.sizeY() - 1; y++) {
                     String v = r.cells.get(x + "," + y + "," + z);
@@ -361,11 +363,17 @@ class ComplexPlacerTest {
             }
         }
         assertTrue(
-            faces > 100 && walled == faces,
+            faces > 80 && walled == faces,
             "every cell around the lake above its bed is wall: " + walled + "/" + faces);
         // The plain hub away from the lake is still open.
         String far = r.cells.get((p.anchorX() + hub.minX + 3) + "," + (floor + 2) + "," + (p.anchorZ() + hub.minZ + 3));
         assertTrue(far != null && !far.startsWith(wall + ":"), "the rest of the hub is open");
+    }
+
+    /** @return the first window's west (or north) edge at or after {@code v} */
+    private static int windowEdge(int v) {
+        int e = PopulateWindow.chunkOf(v - PopulateWindow.OFFSET) * 16 + PopulateWindow.OFFSET;
+        return e < v ? e + PopulateWindow.SIZE : e;
     }
 
     @Test
