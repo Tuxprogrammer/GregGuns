@@ -96,8 +96,10 @@ public final class I6VisualSetups {
         registry.register(new Gen("pa", ActivityLevel.PARTLY_ABANDONED, SiloCeiling.EV));
         registry.register(new Gen("op", ActivityLevel.OPERATIONAL, SiloCeiling.EV));
         registry.register(new Gen("op_umv", ActivityLevel.OPERATIONAL, SiloCeiling.UMV));
-        registry.register(new Planet("moon"));
-        registry.register(new Planet("mars"));
+        registry.register(new Planet("moon", 4));
+        registry.register(new Planet("mars", 4));
+        registry.register(new Planet("moon_fast", 100000));
+        registry.register(new Planet("mars_fast", 100000));
         registry.register(new Do());
         registry.register(new Info());
         registry.register(new Scan());
@@ -822,14 +824,19 @@ public final class I6VisualSetups {
     private static final class Planet extends Setup {
 
         private final String dimName;
+        private final String tag;
+        private final int perTick;
 
-        Planet(String dimName) {
-            this.dimName = dimName;
+        /** @param tag the dimension name, with "_fast" to load every chunk in one tick like the headless scenario */
+        Planet(String tag, int perTick) {
+            this.tag = tag;
+            this.dimName = tag.replace("_fast", "");
+            this.perTick = perTick;
         }
 
         @Override
         public String name() {
-            return "testing.icbm_i6_planet_" + dimName;
+            return "testing.icbm_i6_planet_" + tag;
         }
 
         @Override
@@ -871,13 +878,26 @@ public final class I6VisualSetups {
             final int[] at = { 0 };
             return ScenarioResult.pending(name(), 40000, ticks -> {
                 long end = System.nanoTime() + 250_000_000L;
-                while (System.nanoTime() < end && at[0] < chunks.size()) {
+                for (int i = 0; i < perTick && (perTick > 1000 || System.nanoTime() < end)
+                    && at[0] < chunks.size(); i++) {
                     int[] c = chunks.get(at[0]++);
                     cps.loadChunk(c[0], c[1]);
                 }
                 if (at[0] < chunks.size()) return null;
                 IcbmConfig.siloComplexChancePercent = chance;
                 Decision d = state.get(PlanKey.of(plan));
+                net.minecraft.world.chunk.Chunk mid = cps
+                    .loadChunk(Math.floorDiv(plan.anchorX() + 120, 16), Math.floorDiv(plan.anchorZ() + 120, 16));
+                GregGuns.LOG.info(
+                    "I6C planet probe: populates generator {}, stamped {}, midChunkPopulated {}, loadedChunks {}, provider {}, anchor {},{}",
+                    com.gregguns.worldgen.StructureGenerator.populateCount(),
+                    com.gregguns.worldgen.StructureGenerator.stampedCount(),
+                    mid.isTerrainPopulated,
+                    cps.getLoadedChunkCount(),
+                    cps.currentChunkProvider.getClass()
+                        .getName(),
+                    plan.anchorX(),
+                    plan.anchorZ());
                 GregGuns.LOG.info(
                     "I6C planet {} dim={} provider={} cell={},{} decision={}",
                     dimName,
