@@ -841,10 +841,13 @@ public final class I5VisualSetups {
 
         @Override
         ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
+            int i = 0;
             for (EntityPlayerMP p : players()) {
+                // Two clients stand 3 blocks apart, so neither shot has the other player's head in it.
+                double side = i++ == 0 ? -1.5 : 1.5;
                 cam(
                     p,
-                    ctx.originX() + x + 0.5,
+                    ctx.originX() + x + 0.5 + side,
                     y + 3.5,
                     ctx.originZ() + z - dist,
                     ctx.originX() + x + 0.5,
