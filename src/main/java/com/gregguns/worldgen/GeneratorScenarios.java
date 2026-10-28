@@ -445,6 +445,10 @@ public final class GeneratorScenarios {
             StructureGenerator.setOverride(testPopulator(keys));
             int[] dims = WorldgenConfig.structureDimensions;
             String[] types = WorldgenConfig.structureWorldTypes;
+            // The ICBM silo complex has its own dimension list and runs the generator where ordinary structures are
+            // off; this scenario is about the ordinary gate, so the complex is off while it runs.
+            boolean complex = com.gregguns.core.config.IcbmConfig.siloComplexEnabled;
+            com.gregguns.core.config.IcbmConfig.siloComplexEnabled = false;
             try {
                 // Dimension 0 is not on the list: the Nether, Twilight Forest and the rest are out the same way.
                 WorldgenConfig.structureDimensions = new int[] { -1, 7, 180, 27, 28 };
@@ -460,6 +464,7 @@ public final class GeneratorScenarios {
                 out.check(StructureGenerator.allowed(world), "allowed again with the defaults");
                 runSquare(world, 13, out, "control", true);
             } finally {
+                com.gregguns.core.config.IcbmConfig.siloComplexEnabled = complex;
                 WorldgenConfig.structureDimensions = dims;
                 WorldgenConfig.structureWorldTypes = types;
                 StructureGenerator.setOverride(null);

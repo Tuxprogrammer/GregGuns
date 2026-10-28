@@ -45,6 +45,20 @@ public final class StructureGenerator implements IWorldGenerator {
 
     /** What a generator needs to run: the populator and its source of truth for the grid. */
     private static volatile StructurePopulator real;
+    /** The procedural underground complex (ICBM silo complex), set by its module; null when absent. */
+    private static volatile ComplexWriter complexWriter;
+
+    /** @param writer the complex writer, or null for none */
+    public static void setComplexWriter(ComplexWriter writer) {
+        complexWriter = writer;
+    }
+
+    /** @return whether the silo complex is on in this non-Overworld world (its chunk provider then needs the hook) */
+    static boolean complexWanted(World world) {
+        ComplexWriter c = complexWriter;
+        return c != null && world.provider.dimensionId != 0 && c.enabledIn(world);
+    }
+
     /** Replaces {@link #real} while a scenario runs (forced spacing, a test layout). Tests only. */
     private static volatile StructurePopulator override;
     /** Replaces the world biome lookup while a scenario runs (a desert square for the nest). Tests only. */
@@ -148,7 +162,10 @@ public final class StructureGenerator implements IWorldGenerator {
         }
         StructurePopulator populator = override != null ? override : real;
         if (populator == null) return;
-        if (!allowed(world)) return;
+        ComplexWriter complex = complexWriter;
+        boolean general = allowed(world);
+        boolean withComplex = complex != null && complex.enabledIn(world);
+        if (!general && !withComplex) return;
         try (PopulateGuard.Scope ignored = PopulateGuard.enter(chunkX, chunkZ)) {
             PopulateWindow window = new PopulateWindow(chunkX, chunkZ);
             ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
@@ -162,7 +179,9 @@ public final class StructureGenerator implements IWorldGenerator {
                 biomeOverride != null ? biomeOverride
                     : (x, z) -> StructureBiomes.typesAt(world.getWorldChunkManager(), x, z),
                 StructureState.forWorld(world),
-                new WorldMarks(world, sink));
+                new WorldMarks(world, sink),
+                withComplex ? complex : null,
+                general);
             STAMPED.addAndGet(n);
             ACCEPTED.addAndGet(sink.acceptedWrites());
             REJECTED.addAndGet(sink.rejectedWrites());

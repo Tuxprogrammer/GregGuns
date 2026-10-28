@@ -10,8 +10,10 @@ import java.util.function.Predicate;
 import com.gregguns.entity.npc.NpcMob;
 
 /**
- * The two kinds of hole spawner and the NPCs each one may place. Pure: no Minecraft types, so the tables are
- * unit-tested. The Zombie Hole places the zombie NPCs and the Bug Hole places the Alien Bug (PLAN-M8 G11).
+ * The kinds of hole spawner and the NPCs each one may place. Pure: no Minecraft types, so the tables are
+ * unit-tested. The Zombie Hole places the zombie NPCs and the Bug Hole places the Alien Bug (PLAN-M8 G11). The two silo
+ * posts place the
+ * ICBM complex guards (D36).
  *
  * <p>
  * Usage: {@code HoleKind.byLayoutTag("spawner.zombie_hole")}, then {@code kind.pick(NpcRegistry::isRegistered, rng)}.
@@ -22,7 +24,11 @@ public enum HoleKind {
     /** Zombie Hole: the three zombie NPCs, picked evenly among the registered ones. */
     ZOMBIE("zombie_hole", NpcMob.ZOMBIE_SOLDIER, NpcMob.ZOMBIE_FARMER, NpcMob.ZOMBIE_MINER),
     /** Bug Hole: the Alien Bug only. It spawns only when the Alien Bug is registered (config {@code alienBug}). */
-    BUG("bug_hole", NpcMob.ALIEN_BUG);
+    BUG("bug_hole", NpcMob.ALIEN_BUG),
+    /** Silo Guard Post (ICBM complexes, D36): the Army Soldier and the Commando. */
+    SILO_GUARD("silo_guard", NpcMob.ARMY_SOLDIER, NpcMob.COMMANDO),
+    /** Silo Elite Post (ICBM complexes, D36): the Commando and, deeper in, the Stormtrooper. */
+    SILO_ELITE("silo_elite", NpcMob.COMMANDO, NpcMob.STORMTROOPER);
 
     /** Prefix of every spawner layout mark. */
     public static final String TAG_PREFIX = "spawner.";
@@ -38,6 +44,26 @@ public enum HoleKind {
     /** @return the bare block name, also the lang and texture name, for example {@code zombie_hole} */
     public String blockName() {
         return blockName;
+    }
+
+    /**
+     * @return the bare name of the block texture. The holes have their own; the two silo posts borrow existing
+     *         concrete and hazard-panel tiles until a dedicated texture is approved (D47: generation is a last resort).
+     */
+    public String textureName() {
+        switch (this) {
+            case SILO_GUARD:
+                return "concrete_hole";
+            case SILO_ELITE:
+                return "metalpanel_hazard";
+            default:
+                return blockName;
+        }
+    }
+
+    /** @return true for the silo guard posts of ICBM complexes (D36) */
+    public boolean isSiloPost() {
+        return this == SILO_GUARD || this == SILO_ELITE;
     }
 
     /** @return the layout mark tag, for example {@code spawner.zombie_hole} */
