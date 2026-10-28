@@ -95,18 +95,19 @@ public final class RoleAuditScenarios {
             final int before = RoleAudit.total();
             final int audits = RoleAudit.audits();
             final long cells = RoleAudit.cellsChecked();
+            final long changed = RoleAudit.cellsChangedLater();
             ScenarioResult r = inner.run(ctx);
             if (r.isPending()) {
                 return ScenarioResult.pending(r.scenario(), r.timeoutTicks(), t -> {
                     ScenarioResult x = r.poller()
                         .poll(t);
-                    return x == null ? null : finish(x, before, audits, cells);
+                    return x == null ? null : finish(x, before, audits, cells, changed);
                 });
             }
-            return finish(r, before, audits, cells);
+            return finish(r, before, audits, cells, changed);
         }
 
-        private ScenarioResult finish(ScenarioResult r, int before, int audits, long cells) {
+        private ScenarioResult finish(ScenarioResult r, int before, int audits, long cells, long changed) {
             // A complex whose last window never ran in this scenario is still read back, as far as it was written.
             RoleAudit.flush();
             if (r.skipped()) return r;
@@ -124,7 +125,9 @@ public final class RoleAuditScenarios {
                     + (RoleAudit.cellsChecked() - cells)
                     + " floor, wall and ceiling cells, "
                     + found
-                    + " violations");
+                    + " violations; "
+                    + (RoleAudit.cellsChangedLater() - changed)
+                    + " cells changed later by other worldgen, left out");
             if (found > 0) {
                 List<String> recent = RoleAudit.recent();
                 List<String> mine = recent.subList(Math.max(0, recent.size() - Math.min(found, 5)), recent.size());

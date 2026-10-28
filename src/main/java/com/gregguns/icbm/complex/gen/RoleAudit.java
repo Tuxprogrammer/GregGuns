@@ -37,7 +37,10 @@ import cpw.mods.fml.common.registry.GameData;
  * Only cells whose last write was the shell's styled write count: the writer tags every write it makes (shell, marks,
  * contents, signs, shafts), so lamps and light tiles, door frames, furniture, loot, machines, spawners and every
  * damage write (holes, rubble, collapses, flooding) are left out by the path that wrote them, never by block name.
- * Air is left out as well. On a violation the audit logs one WARN line per section with the room, its style set, the
+ * Air is left out as well, and so is a cell whose block another writer changed after the complex was written (a vanilla
+ * dungeon, lava meeting water, GregTech's stone layers): the audit compares the world with what the last tagged write
+ * placed, leaves such cells out and counts them by block. On a violation the audit logs one WARN line per section with
+ * the room, its style set, the
  * activity level, the shared block, its roles, and the palette path that wrote one cell of each role.
  *
  * <p>
@@ -59,6 +62,7 @@ public final class RoleAudit {
 
     private static final AtomicInteger TOTAL = new AtomicInteger();
     private static final AtomicInteger AUDITS = new AtomicInteger();
+    private static final java.util.concurrent.atomic.AtomicLong CHANGED = new java.util.concurrent.atomic.AtomicLong();
     private static final java.util.concurrent.atomic.AtomicLong CELLS = new java.util.concurrent.atomic.AtomicLong();
     /** When set, violation lines go here instead of the log and the count (the probe scenario's deliberate ones). */
     private static final ThreadLocal<List<String>> CAPTURE = new ThreadLocal<>();
@@ -83,6 +87,11 @@ public final class RoleAudit {
     /** @return how many complexes the audit has read back since the server started */
     public static int audits() {
         return AUDITS.get();
+    }
+
+    /** @return how many role cells other worldgen changed after the complex was written (left out, counted) */
+    public static long cellsChangedLater() {
+        return CHANGED.get();
     }
 
     /** @return how many floor, wall and ceiling cells the audit has read back since the server started */
@@ -270,6 +279,8 @@ public final class RoleAudit {
         final String level;
         final int ax, floorY, az;
         final byte[] writer = new byte[ComplexLayout.SIZE * ComplexRaster.LEVELS * ComplexLayout.SIZE];
+        /** The block id each cell's last write placed, so a later change by someone else shows. */
+        final short[] placed = new short[ComplexLayout.SIZE * ComplexRaster.LEVELS * ComplexLayout.SIZE];
 
         Tracker(World world, ComplexRaster raster, Styles styles, String where, String level, int ax, int floorY,
             int az) {
@@ -283,14 +294,20 @@ public final class RoleAudit {
             this.az = az;
         }
 
-        void record(int wx, int wy, int wz, byte who) {
+        void record(int wx, int wy, int wz, byte who, Block block) {
             int x = wx - ax, y = wy - floorY, z = wz - az;
             if (x < 0 || x >= ComplexLayout.SIZE
                 || z < 0
                 || z >= ComplexLayout.SIZE
                 || y < 0
                 || y >= ComplexRaster.LEVELS) return;
-            writer[(x * ComplexRaster.LEVELS + y) * ComplexLayout.SIZE + z] = who;
+            int i = (x * ComplexRaster.LEVELS + y) * ComplexLayout.SIZE + z;
+            writer[i] = who;
+            placed[i] = (short) Block.getIdFromBlock(block);
+        }
+
+        int placed(int x, int y, int z) {
+            return placed[(x * ComplexRaster.LEVELS + y) * ComplexLayout.SIZE + z];
         }
 
         byte writer(int x, int y, int z) {
@@ -344,6 +361,7 @@ public final class RoleAudit {
         if (t.world == null) return 0;
         final int[] counts = new int[WRITER_NAMES.length];
         final long[] checked = new long[1];
+        final Map<String, Integer> changed = new java.util.TreeMap<>();
         Reader reader = (x, y, z) -> {
             byte who = t.writer(x, y, z);
             counts[who]++;
@@ -352,6 +370,17 @@ public final class RoleAudit {
             if (!t.world.getChunkProvider()
                 .chunkExists(wx >> 4, wz >> 4)) return null;
             Block b = t.world.getBlock(wx, wy, wz);
+            if (Block.getIdFromBlock(b) != t.placed(x, y, z)) {
+                // Another writer changed the cell after the complex was written (a vanilla dungeon, a lava and water
+                // meeting, GT's stone layers): it is not the palette's block, so it is left out, and counted.
+                changed.merge(
+                    String.valueOf(
+                        GameData.getBlockRegistry()
+                            .getNameForObject(b)),
+                    1,
+                    Integer::sum);
+                return null;
+            }
             if (b == Blocks.air) return null;
             checked[0]++;
             return b;
@@ -359,6 +388,9 @@ public final class RoleAudit {
         List<Violation> found = audit(t.raster, reader);
         AUDITS.incrementAndGet();
         CELLS.addAndGet(checked[0]);
+        int changedCells = 0;
+        for (int n : changed.values()) changedCells += n;
+        CHANGED.addAndGet(changedCells);
         ComplexPlan plan = t.raster.plan();
         for (Violation v : found) {
             String setId = t.styles instanceof PaletteStyles ? ((PaletteStyles) t.styles).style(v.section)
@@ -371,7 +403,7 @@ public final class RoleAudit {
                 t.level,
                 GameData.getBlockRegistry()
                     .getNameForObject(v.block),
-                (s, role, x, y, z) -> written(t, role, x, y, z));
+                (s, role, x, y, z) -> t.styles.path(role, x, y, z));
             report(line);
         }
         if (Boolean.getBoolean(PROPERTY)) {
@@ -384,32 +416,15 @@ public final class RoleAudit {
                     .append(counts[i]);
             }
             GregGuns.LOG.info(
-                "Silo complex role audit: {}, {} sections, {} violations; role cells by last writer: {}",
+                "Silo complex role audit: {}, {} sections, {} violations; role cells by last writer: {}; changed"
+                    + " later by other worldgen (left out): {}",
                 t.where,
                 plan.sectionCount(),
                 found.size(),
-                ex);
+                ex,
+                changed);
         }
         return found.size();
-    }
-
-    /**
-     * @return the path that wrote a cell, and, when the world no longer holds the block that path places there, what
-     *         it holds now: a later writer that is not the complex's (another mod's worldgen) changed it
-     */
-    private static String written(Tracker t, byte role, int x, int y, int z) {
-        String path = t.styles.path(role, x, y, z);
-        com.gregguns.worldgen.layout.ResolvedBlock placed = t.styles.block(role, x, y, z);
-        Block now = t.world.getBlock(t.ax + x, t.floorY + y, t.az + z);
-        if (placed != null && placed.block != now) {
-            path += " (it placed " + GameData.getBlockRegistry()
-                .getNameForObject(placed.block)
-                + "; the world now holds "
-                + GameData.getBlockRegistry()
-                    .getNameForObject(now)
-                + ": changed after the complex was written, by another mod's worldgen)";
-        }
-        return path;
     }
 
     /** Logs one violation line and counts it. */
@@ -453,7 +468,7 @@ public final class RoleAudit {
         @Override
         public boolean setBlock(int x, int y, int z, Block block, int meta) {
             boolean ok = inner.setBlock(x, y, z, block, meta);
-            if (ok) tracker.record(x, y, z, who);
+            if (ok) tracker.record(x, y, z, who, block);
             return ok;
         }
 
