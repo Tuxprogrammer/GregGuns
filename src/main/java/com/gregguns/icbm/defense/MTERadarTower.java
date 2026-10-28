@@ -48,6 +48,8 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.api.util.shutdown.ShutDownReason;
+import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
@@ -78,6 +80,8 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     private boolean online;
     private int unformedSteps;
     private int steps;
+    /** Set when the machine stopped itself (power loss, a broken structure, repairs); cleared once it restarts. */
+    private boolean resumeWhenPowered;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -320,11 +324,48 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     /** One scan now: it runs while the structure is formed and a cycle is paid for. */
     void scanNow() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
+        resumeIfPowered(base);
         online = mMachine && base.isActive() && rangeIfOn() > 0;
         unit.scan(base.getWorld(), base.getXCoord() + 0.5, base.getZCoord() + 0.5, rangeIfOn(), online);
         // The active flag is the machine's own "running" state here, so only the redstone strength is driven.
         unit.publishRedstone(base);
         tendDish(base);
+    }
+
+    /** The machine's own stops are not final here, as on the small radar (D195). */
+    @Override
+    public void stopMachine(@Nonnull ShutDownReason reason) {
+        super.stopMachine(reason);
+        if (reason == ShutDownReasonRegistry.POWER_LOSS || reason == ShutDownReasonRegistry.STRUCTURE_INCOMPLETE
+            || reason == ShutDownReasonRegistry.NO_REPAIR) {
+            resumeWhenPowered = true;
+        }
+    }
+
+    /**
+     * Gets a tower that is formed, allowed to work and paid for but not running going again: GT's controller only
+     * looks for a recipe when pushed, and after a stop of its own (D195) it is switched back on first.
+     */
+    private void resumeIfPowered(IGregTechTileEntity base) {
+        if (!mMachine) {
+            return;
+        }
+        long stored = 0;
+        for (MTEHatch hatch : validMTEList(mEnergyHatches)) {
+            stored += hatch.getBaseMetaTileEntity()
+                .getStoredEU();
+        }
+        int t = hatchTier();
+        if (t < RadarRules.TOWER_MIN_TIER || stored < 2 * RadarRules.euPerTick(GTValues.V[t])) {
+            return;
+        }
+        if (resumeWhenPowered && !base.isAllowedToWork()) {
+            base.enableWorking();
+        }
+        resumeWhenPowered = false;
+        if (base.isAllowedToWork() && !base.isActive()) {
+            scheduleRecipeCheckImmediate();
+        }
     }
 
     /** Spawns the dish when formed, spins it while the tower runs, and takes it down once the structure is gone. */
@@ -374,12 +415,14 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     public void saveNBTData(NBTTagCompound tag) {
         super.saveNBTData(tag);
         unit.save(tag);
+        tag.setBoolean("resumeWhenPowered", resumeWhenPowered);
     }
 
     @Override
     public void loadNBTData(NBTTagCompound tag) {
         super.loadNBTData(tag);
         unit.load(tag);
+        resumeWhenPowered = tag.getBoolean("resumeWhenPowered");
     }
 
     @Override
