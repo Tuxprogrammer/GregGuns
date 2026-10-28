@@ -52,6 +52,7 @@ public final class MissileScenarios {
         registry.register(new MissileShotsScenario(true));
         registry.register(new MissileMpScenario());
         registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_nuclear", MissileTier.T3, 3, "nuclear", 4, 400));
+        registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_nuclear_far", MissileTier.T3, 3, "nuclear", 4, 1800));
         registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_gas", MissileTier.T1, 1, "chemical", 3, 70));
         registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_antimatter", MissileTier.T3, 4, "antimatter", 1, 400));
         registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_redmatter", MissileTier.T3, 5, "redmatter", 1, 400));

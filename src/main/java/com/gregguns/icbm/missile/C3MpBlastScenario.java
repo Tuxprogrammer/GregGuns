@@ -198,7 +198,17 @@ public final class C3MpBlastScenario implements Scenario {
                         MissileShotsScenario.cam(players.get(i), tx + v[0] * 2.5, gy + 14, tz + v[2] * 2, tx, gy, tz);
                     }
                 });
-                plan.after(150, () -> {
+                plan.after(3, () -> {
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(p, "shot", "icbm-mp-flash");
+                    }
+                });
+                plan.after(40, () -> {
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(p, "shot", "icbm-mp-flash2");
+                    }
+                });
+                plan.after(107, () -> {
                     for (EntityPlayerMP p : players) {
                         MissileShotsScenario.signal(p, "shot", "icbm-mp-impact");
                     }
