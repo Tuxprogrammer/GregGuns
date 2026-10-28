@@ -88,6 +88,12 @@ public final class RoomFurniture {
         }
     }
 
+    /**
+     * Dining rooms (D259): the first table row's chair row, the pitch from row to row, the clear cells along a side
+     * wall, and tables per run and the gap between runs.
+     */
+    static final int DINING_FIRST_ROW = 4, DINING_ROW_PITCH = 6, DINING_WALL_AISLE = 3, DINING_RUN = 3, DINING_GAP = 2;
+
     /** The cube furniture keys the style resolves (D234). */
     static final String TABLE = "TABLE", CONSOLE = "CONSOLE", BUNK = "BUNK", SHELF = "SHELF";
 
@@ -157,11 +163,13 @@ public final class RoomFurniture {
                 break;
             case MESS_GALLEY:
             case CAFETERIA:
-                // The serving counter, then rows of tables with a chair on each side, an aisle between rows.
+                // The serving counter, then rows of tables with a chair on each side (owner, 2026-10-28: about half
+                // the first layout). A row of chairs, tables and chairs takes 3 cells and a 3-cell aisle follows it;
+                // tables run 3 long with a 2-cell gap, and 3 cells stay clear along each side wall.
                 row(fl, 1, 2, last - 2, 6, dir.toDoor, CONSOLE);
-                for (int d = 3; d + 2 <= D - 3; d += 4) {
-                    for (int a = 2, k = 0; a <= last - 2; a++, k++) {
-                        if (k % 5 == 4) continue;
+                for (int d = DINING_FIRST_ROW; d + 2 <= D - 4; d += DINING_ROW_PITCH) {
+                    for (int a = DINING_WALL_AISLE, k = 0; a <= last - DINING_WALL_AISLE; a++, k++) {
+                        if (k % (DINING_RUN + DINING_GAP) >= DINING_RUN) continue;
                         if (!fl.free(a, d) || !fl.free(a, d + 2) || !fl.put(a, d + 1, dir.toDoor, table)) continue;
                         fl.put(a, d, dir.toDoor, chair);
                         fl.put(a, d + 2, dir.toBack, chair);

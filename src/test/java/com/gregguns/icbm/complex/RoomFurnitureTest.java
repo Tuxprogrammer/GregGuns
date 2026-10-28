@@ -203,6 +203,35 @@ class RoomFurnitureTest {
     }
 
     @Test
+    void diningRoomsKeepWideAislesAndHalfTheTables() {
+        int rooms = 0;
+        long tables = 0, cells = 0;
+        for (long i = 0; i < PLANS; i++) {
+            for (Room r : plan(i).rooms()) {
+                if (r.kind() != RoomKind.CAFETERIA && r.kind() != RoomKind.MESS_GALLEY) continue;
+                if (!RoomFurniture.furnished(r.kind(), area(r))) continue;
+                ComplexLayout.Frame f = new ComplexLayout.Frame(r);
+                Box b = r.bounds();
+                int n = 0;
+                for (Mark m : r.marks()) {
+                    if (!furnitureMark(m) || FurniturePiece.of(m.key()) != FurniturePiece.WOOD_TABLE) continue;
+                    n++;
+                    // Three cells stay clear along each side wall (a 0..2 and last-2..last in the frame).
+                    int a = f.side == 0 || f.side == 2 ? m.x() - b.minX - 1 : m.z() - b.minZ - 1;
+                    assertTrue(a >= 3 && a <= f.lateral - 4, r.kind() + ": a table against a side wall at a=" + a);
+                }
+                rooms++;
+                tables += n;
+                cells += area(r);
+            }
+        }
+        assertTrue(rooms > 20, "dining rooms " + rooms);
+        // The first layout put about one table per 6 floor cells; half of it is under one per 11.
+        assertTrue(tables * 11 < cells, tables + " tables over " + cells + " cells");
+        assertTrue(tables * 30 > cells, "dining rooms still have tables: " + tables + " over " + cells);
+    }
+
+    @Test
     void toppersAndUpperLayersSitOnSomething() {
         for (long i = 0; i < PLANS; i++) {
             for (Room r : plan(i).rooms()) {
