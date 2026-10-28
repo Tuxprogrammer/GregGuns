@@ -63,7 +63,15 @@ public final class ComplexArena {
                     Block b = clear ? Blocks.air
                         : y > g + water ? Blocks.air : y > g ? Blocks.water : y == g ? Blocks.grass : Blocks.stone;
                     if (world.getBlock(x, y, z) != b || world.getBlockMetadata(x, y, z) != 0) {
-                        if (clear && world.getTileEntity(x, y, z) != null) world.removeTileEntity(x, y, z);
+                        TileEntity old = world.getTileEntity(x, y, z);
+                        // A GT machine from an older run may have no owner; GT's power-fail tracker throws when one
+                        // is removed (D239), so it gets the complex's owner first.
+                        if (old instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                            && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) old).getOwnerUuid() == null) {
+                            com.gregguns.icbm.complex.gen.GtMachineHook
+                                .claim((gregtech.api.interfaces.tileentity.IGregTechTileEntity) old);
+                        }
+                        if (clear && old != null) world.removeTileEntity(x, y, z);
                         world.setBlock(x, y, z, b, 0, 2);
                     }
                     if (!clear) continue;
