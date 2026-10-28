@@ -168,7 +168,7 @@ final class NpcEntityScenarios {
 
     // --- scenarios --------------------------------------------------------------------------------------------
 
-    /** Crossfire between two hostile NPCs starts no fight; a pig's hit does. */
+    /** A bullet passes through an NPC of its shooter's own faction and starts no fight; a pig's hit does. */
     private static final class FactionNoInfightScenario implements Scenario {
 
         private static final int TICKS = 60;
@@ -181,7 +181,7 @@ final class NpcEntityScenarios {
 
         @Override
         public String description() {
-            return "An NPC shot by another hostile NPC does not retaliate; one hurt by a pig does (ai.md section 4).";
+            return "A hostile NPC's bullet passes through a same-faction NPC, which does not retaliate; one hurt by a pig does (ai.md section 4, D218).";
         }
 
         @Override
@@ -233,9 +233,10 @@ final class NpcEntityScenarios {
                 log.stop();
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(log.count(shooter) >= 1, "the shooter should have fired a bullet");
+                // Same-faction shots pass through (D218), so the victim in the line of fire is untouched.
                 out.check(
-                    revenged[0] || victim.getHealth() < victim.getMaxHealth(),
-                    "the bullet should have reached the victim (control)");
+                    !revenged[0] && victim.getHealth() == victim.getMaxHealth(),
+                    "a same-faction bullet should pass through the victim (health " + victim.getHealth() + ")");
                 out.check(!infight[0], "same-faction NPCs must not target each other");
                 out.check(
                     bittenRetaliated[0],
