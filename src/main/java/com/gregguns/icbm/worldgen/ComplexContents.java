@@ -69,7 +69,44 @@ public final class ComplexContents {
         bonuses(plan, p, seed, other, chests);
         List<Placement> all = new ArrayList<>(collapses);
         all.addAll(out);
-        return all;
+        return keepFrameWalls(all);
+    }
+
+    private static final int[] FRAME_DX = { 0, -1, 0, 1 };
+    private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
+
+    /**
+     * An item frame needs the wall behind it, so the damage pass leaves those wall cells alone: a breach or rubble
+     * there is dropped from the list (the frames are the armory's only contents that depend on a wall).
+     */
+    static List<Placement> keepFrameWalls(List<Placement> all) {
+        java.util.Set<Long> walls = new java.util.HashSet<>();
+        for (Placement p : all) {
+            if (p.kind() != Kind.FRAME_WALL) {
+                continue;
+            }
+            boolean alongZ = p.facing() == 1 || p.facing() == 3;
+            for (int i = 0; i < p.extent(); i++) {
+                int x = p.x() + (alongZ ? 0 : 2 * i) - FRAME_DX[p.facing()];
+                int z = p.z() + (alongZ ? 2 * i : 0) - FRAME_DZ[p.facing()];
+                walls.add(wallKey(x, p.y(), z));
+            }
+        }
+        if (walls.isEmpty()) {
+            return all;
+        }
+        List<Placement> kept = new ArrayList<>(all.size());
+        for (Placement p : all) {
+            boolean damage = p.kind() == Kind.AIR || p.kind() == Kind.RUBBLE;
+            if (!(damage && walls.contains(wallKey(p.x(), p.y(), p.z())))) {
+                kept.add(p);
+            }
+        }
+        return kept;
+    }
+
+    private static long wallKey(int x, int y, int z) {
+        return ((long) x << 40) ^ ((long) y << 20) ^ z;
     }
 
     private static void mark(Room r, Box bounds, boolean collapsed, ActivityProfile p, long seed, int ceiling, Box hall,

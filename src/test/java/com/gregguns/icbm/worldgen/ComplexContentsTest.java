@@ -210,4 +210,30 @@ class ComplexContentsTest {
                 plan.hall()
                     .bounds()));
     }
+
+    @Test
+    void theDamagePassNeverBreaksTheWallBehindAnArmoryFrame() {
+        int frames = 0;
+        for (long s = 0; s < 60; s++) {
+            ComplexPlan plan = ComplexLayout.generate(s, 5, 6);
+            List<Placement> ps = ComplexContents.build(plan, ActivityLevel.ABANDONED, 4, null);
+            for (Placement f : ps) {
+                if (f.kind() != Kind.FRAME_WALL) continue;
+                frames++;
+                boolean alongZ = f.facing() == 1 || f.facing() == 3;
+                int[] dx = { 0, -1, 0, 1 }, dz = { 1, 0, -1, 0 };
+                for (int i = 0; i < f.extent(); i++) {
+                    int wx = f.x() + (alongZ ? 0 : 2 * i) - dx[f.facing()];
+                    int wz = f.z() + (alongZ ? 2 * i : 0) - dz[f.facing()];
+                    for (Placement d : ps) {
+                        boolean damage = d.kind() == Kind.AIR || d.kind() == Kind.RUBBLE;
+                        assertFalse(
+                            damage && d.x() == wx && d.y() == f.y() && d.z() == wz,
+                            "wall behind a frame broken");
+                    }
+                }
+            }
+        }
+        assertTrue(frames > 50, "armories exist: " + frames);
+    }
 }
