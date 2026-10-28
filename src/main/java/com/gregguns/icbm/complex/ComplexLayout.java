@@ -21,7 +21,9 @@ public final class ComplexLayout {
     /** Floor (y 0), five air cells, ceiling (y 6). */
     public static final int HEIGHT = 7;
     /** The footprint reserved for a real Missile Silo structure. */
-    public static final int SILO_SIZE = 16;
+    public static final int SILO_SIZE = 5;
+    /** The Missile Silo structure is 12 layers tall (the shaft continues above it to the sky). */
+    public static final int SILO_HEIGHT = 12;
     public static final int HALL_MIN_X = 102, HALL_MAX_X = 138, HALL_MIN_Z = 106, HALL_MAX_Z = 134;
     public static final int WING_WIDTH = 5;
     public static final int SLOT_PITCH = 16;
@@ -31,7 +33,7 @@ public final class ComplexLayout {
 
     private static final int CORRIDOR_LO = 118, CORRIDOR_HI = 123;
     private static final int MOUTH_GAP = 8;
-    private static final int[][] SILO_ORIGINS = { { 152, 84 }, { 184, 84 }, { 152, 54 }, { 184, 54 } };
+    private static final int[][] SILO_ORIGINS = { { 152, 92 }, { 184, 92 }, { 152, 62 }, { 184, 62 } };
 
     private ComplexLayout() {}
 
@@ -45,7 +47,11 @@ public final class ComplexLayout {
     }
 
     public static ComplexPlan generate(long worldSeed, int cellX, int cellZ) {
-        long seed = cellSeed(worldSeed, cellX, cellZ);
+        return fromSeed(cellSeed(worldSeed, cellX, cellZ), cellX, cellZ);
+    }
+
+    /** As {@link #generate} from an already mixed seed (the placement plan's, which includes the dimension). */
+    public static ComplexPlan fromSeed(long seed, int cellX, int cellZ) {
         Random rnd = new Random(seed);
         int id = 0;
         List<Room> rooms = new ArrayList<Room>();
@@ -116,7 +122,7 @@ public final class ComplexLayout {
             int ox = SILO_ORIGINS[i][0], oz = SILO_ORIGINS[i][1];
             SurfaceVariant v = SurfaceVariant.values()[rnd.nextInt(3)];
             MissingPart m = MissingPart.values()[rnd.nextInt(2)];
-            silos.add(new SiloSlot(new Box(ox, 0, oz, ox + SILO_SIZE, HEIGHT, oz + SILO_SIZE), v, m));
+            silos.add(new SiloSlot(new Box(ox, 0, oz, ox + SILO_SIZE, SILO_HEIGHT, oz + SILO_SIZE), v, m));
         }
         addSiloLinks(tunnels, silos);
 
@@ -196,17 +202,24 @@ public final class ComplexLayout {
         }
     }
 
+    /**
+     * Links the silo cluster to the hall: a stub off the hall's east wall, a trunk running north, and one row corridor
+     * per silo row along the silos' front (north) faces, where the controller is.
+     */
     private static void addSiloLinks(List<Tunnel> tunnels, List<SiloSlot> silos) {
-        // Hall east wall to the cluster: a stub off the hall, a run east, and a trunk past the silo columns.
-        tunnels.add(new Tunnel(new Box(138, 0, 102, 141, HEIGHT, 112), -1));
-        tunnels.add(new Tunnel(new Box(138, 0, 102, 172, HEIGHT, 105), -1));
-        tunnels.add(new Tunnel(new Box(168, 0, 54, 172, HEIGHT, 105), -1));
+        int minZ = 106;
+        boolean[] row = new boolean[2];
         for (SiloSlot s : silos) {
-            Box b = s.bounds();
-            if (b.minX > 168) { // the second column reaches the trunk by a short branch
-                int c = b.centerZ();
-                tunnels.add(new Tunnel(new Box(172, 0, c - 1, b.minX, HEIGHT, c + 2), -1));
-            }
+            int r = s.bounds().minZ == SILO_ORIGINS[0][1] ? 0 : 1;
+            row[r] = true;
+            minZ = Math.min(minZ, s.bounds().minZ - 6);
+        }
+        tunnels.add(new Tunnel(new Box(138, 0, 106, 142, HEIGHT, 111), -1));
+        tunnels.add(new Tunnel(new Box(140, 0, minZ, 145, HEIGHT, 111), -1));
+        for (int r = 0; r < 2; r++) {
+            if (!row[r]) continue;
+            int oz = SILO_ORIGINS[r * 2][1];
+            tunnels.add(new Tunnel(new Box(145, 0, oz - 6, 196, HEIGHT, oz), -1));
         }
     }
 

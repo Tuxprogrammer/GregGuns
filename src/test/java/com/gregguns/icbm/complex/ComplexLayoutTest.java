@@ -90,7 +90,21 @@ class ComplexLayoutTest {
                             .kind());
                 }
             }
-            for (SiloSlot silo : p.silos()) assertTrue(inside(silo.bounds()));
+            for (SiloSlot silo : p.silos()) {
+                assertTrue(silo.bounds().maxX <= ComplexLayout.SIZE && silo.bounds().maxZ <= ComplexLayout.SIZE);
+                for (Tunnel t : p.tunnels()) {
+                    if (t.wing() < 0) continue;
+                    assertFalse(
+                        t.bounds()
+                            .overlapsXZ(silo.bounds()));
+                }
+            }
+            for (Tunnel t : p.tunnels()) {
+                for (Room r : rs) assertFalse(
+                    t.bounds()
+                        .overlapsXZ(r.bounds()),
+                    "tunnel overlaps " + r.kind());
+            }
             for (Tunnel t : p.tunnels()) assertTrue(
                 inside(t.bounds()),
                 t.bounds()

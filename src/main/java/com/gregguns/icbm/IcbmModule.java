@@ -73,6 +73,8 @@ public final class IcbmModule implements GregGunsModule {
     public void init(FMLInitializationEvent event) {
         // Only reached when the module is enabled, which already implies Galacticraft is present.
         GregGuns.LOG.info("ICBM module active (Galacticraft present)");
+        com.gregguns.worldgen.StructureGenerator
+            .setComplexWriter(com.gregguns.icbm.complex.gen.ConfigSettings.writer());
         WarheadRegistration.init();
         com.gregguns.icbm.missile.MissileRegistration.init();
         com.gregguns.icbm.production.MissileRecipes.init();

@@ -1,9 +1,8 @@
 package com.gregguns.icbm.complex;
 
 /**
- * A real Missile Silo structure placed at {@code origin} (its footprint box in complex-local coordinates), with a shaft
- * to the sky at its center. The generator stamps the silo's own structure definition into the box, so the footprint
- * here is a reservation, sized {@link ComplexLayout#SILO_SIZE} until the structure's real size is wired in.
+ * A real Missile Silo structure (5 x 5 x 12, the controller in the north face) at {@code bounds}, with a 3 x 3 shaft
+ * to the sky above its center. The generator stamps the silo's own structure shape into the box.
  */
 public final class SiloSlot {
 

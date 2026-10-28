@@ -174,14 +174,86 @@ public final class StructurePopulator {
      */
     public int populate(long worldSeed, int dimension, PopulateWindow window, WindowedSink sink, ColumnReader reader,
         BiomeSource biomes, StructureState state, Marks marks) {
-        return populatePlans(
-            grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ()),
-            window,
-            sink,
-            reader,
-            biomes,
-            state,
-            marks);
+        return populate(worldSeed, dimension, window, sink, reader, biomes, state, marks, null, true);
+    }
+
+    /**
+     * One grid cell per this many chunks for the complex (D17: 1 per 64 x 64 chunks), then
+     * {@link ComplexWriter#chancePercent}.
+     */
+    public static final int COMPLEX_SPACING_CHUNKS = 64;
+    private static final StructureGrid COMPLEX_GRID = new StructureGrid(
+        COMPLEX_SPACING_CHUNKS,
+        COMPLEX_SPACING_CHUNKS,
+        COMPLEX_SPACING_CHUNKS,
+        java.util.Collections.singletonMap(
+            SizeClass.BIG,
+            java.util.Collections.singletonList(
+                new PoolEntry(ComplexWriter.ID, 1, 1, new Footprint(ComplexWriter.SIZE, 12, ComplexWriter.SIZE)))));
+
+    /** @return the complex plans that overlap the window and passed the chance roll */
+    public static List<StructurePlan> complexPlans(long worldSeed, int dimension, int cx, int cz, int chancePercent) {
+        List<StructurePlan> out = new java.util.ArrayList<StructurePlan>();
+        for (StructurePlan p : COMPLEX_GRID.plansForWindow(worldSeed, dimension, cx, cz)) {
+            if (Math.floorMod(StructureGrid.mix(p.chestSeedBase() + 0x51L), 100) < chancePercent) out.add(p);
+        }
+        return out;
+    }
+
+    /**
+     * As {@link #populate} with the silo complex: {@code general} turns the ordinary structures on or off for this
+     * world (a planet may host only the complex), {@code complex} adds the complex plans when non-null.
+     */
+    public int populate(long worldSeed, int dimension, PopulateWindow window, WindowedSink sink, ColumnReader reader,
+        BiomeSource biomes, StructureState state, Marks marks, ComplexWriter complex, boolean general) {
+        int n = 0;
+        if (general) {
+            n += populatePlans(
+                grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ()),
+                window,
+                sink,
+                reader,
+                biomes,
+                state,
+                marks);
+        }
+        if (complex != null) {
+            for (StructurePlan plan : complexPlans(
+                worldSeed,
+                dimension,
+                window.chunkX(),
+                window.chunkZ(),
+                complex.chancePercent())) {
+                n += populateComplex(plan, complex, window, sink, reader, biomes, state);
+            }
+        }
+        return n;
+    }
+
+    private int populateComplex(StructurePlan plan, ComplexWriter writer, PopulateWindow window, WindowedSink sink,
+        ColumnReader reader, BiomeSource biomes, StructureState state) {
+        String key = PlanKey.of(plan);
+        PlacedFootprint fp = new PlacedFootprint(
+            plan.anchorX(),
+            plan.anchorZ(),
+            ComplexWriter.SIZE,
+            ComplexWriter.SIZE,
+            0);
+        HeightProbe probe = new WindowedHeightProbe(window, reader);
+        Decision d = state.decideOnce(key, () -> {
+            Set<Type> types = biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2);
+            Decision r;
+            if (!writer.biomeOk(plan.dimension(), types)) {
+                r = Decision.rejected("biome");
+            } else {
+                r = decide(ComplexWriter.ABOVE, null, false, fp, window, reader, probe, biomes);
+                if (r.isPlaced() && r.groundY() < writer.minGroundY()) r = Decision.rejected("low");
+            }
+            if (!r.isPlaced()) writer.skipped(plan, r.reason());
+            return r;
+        });
+        if (!d.isPlaced()) return 0;
+        return writer.write(plan, d.groundY(), window, sink, probe) > 0 ? 1 : 0;
     }
 
     /**

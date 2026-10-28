@@ -153,4 +153,25 @@ public class IcbmConfig {
                 return terrainDamageT4;
         }
     }
+
+    @Config.Comment({ "Whether silo complexes (D128) generate at all. They also need modules.worldgen on and",
+        "worldgen.spawnStructures. Default: true." })
+    public static boolean siloComplexEnabled = true;
+
+    @Config.Comment({ "Dimensions that get silo complexes, by the world provider's dimension name (D38). Remove a",
+        "name to keep complexes out of that planet. Default: the Overworld and every planet of the D38 table." })
+    public static String[] siloComplexDimensions = { "Overworld", "moon", "mars", "phobos", "deimos", "ceres",
+        "callisto", "europa", "ganymed", "iojupiter", "mercury", "venus", "enceladus", "titan", "miranda", "oberon",
+        "proteus", "triton", "pluto", "haumea", "makemake", "barnarda2", "barnarda4", "barnarda5", "centauribb",
+        "tcetie", "vega1", "anubis", "horus", "maahes", "neper", "seth", "ross128b", "ross128ba" };
+
+    @Config.Comment({ "Share of the sparse grid's cells (one per 64 x 64 chunks) that attempt a complex, 0 to 100.",
+        "Default: 25." })
+    @Config.RangeInt(min = 0, max = 100)
+    public static int siloComplexChancePercent = 25;
+
+    @Config.Comment({ "Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all.",
+        "Default: dry and temperate land types." })
+    public static String[] siloComplexOverworldBiomes = { "PLAINS", "FOREST", "HILLS", "MOUNTAIN", "SANDY", "SAVANNA",
+        "CONIFEROUS", "SNOWY", "MESA", "DRY" };
 }

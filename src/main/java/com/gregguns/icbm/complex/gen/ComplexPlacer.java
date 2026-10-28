@@ -1,0 +1,216 @@
+package com.gregguns.icbm.complex.gen;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
+import net.minecraftforge.common.BiomeDictionary.Type;
+
+import com.gregguns.GregGuns;
+import com.gregguns.icbm.complex.Cell;
+import com.gregguns.icbm.complex.ComplexLayout;
+import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.ComplexRaster;
+import com.gregguns.icbm.complex.Mark;
+import com.gregguns.icbm.complex.SiloSlot;
+import com.gregguns.icbm.complex.SurfaceVariant;
+import com.gregguns.worldgen.ComplexWriter;
+import com.gregguns.worldgen.HeightProbe;
+import com.gregguns.worldgen.PopulateWindow;
+import com.gregguns.worldgen.StructurePlan;
+import com.gregguns.worldgen.WindowedSink;
+import com.gregguns.worldgen.layout.ResolvedBlock;
+
+/**
+ * Writes the part of a silo complex that lies in one populate window (D128). The plan and its raster are pure
+ * functions of the placement plan, so any window can run first or last; each cell is written by the one window that
+ * contains its column, through the clipped sink. The level lies {@link #DEPTH} blocks under the recorded ground; the
+ * silo shafts and the escape ladder rise from it to the ground height read in the shaft's own window.
+ */
+// Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md
+public final class ComplexPlacer implements ComplexWriter {
+
+    /** Level floor is this far under the recorded ground height. */
+    public static final int DEPTH = 24;
+    private static final int BUILD_HEIGHT = 255;
+
+    /** Per-dimension and tuning inputs, so tests need no config. */
+    public interface Settings {
+
+        boolean dimensionEnabled(String dimensionName);
+
+        int chancePercent();
+
+        Set<Type> overworldBiomes();
+    }
+
+    private final BlockResolver blocks;
+    private final MachineHook machines;
+    private final MarkFiller filler;
+    private final Settings settings;
+    /** The world of the populate call in progress (set by the gate check that precedes every call). */
+    private World world;
+    private final Map<String, ComplexRaster> cache = new LinkedHashMap<String, ComplexRaster>();
+
+    public ComplexPlacer(BlockResolver blocks, MachineHook machines, MarkFiller filler, Settings settings) {
+        this.blocks = blocks;
+        this.machines = machines;
+        this.filler = filler;
+        this.settings = settings;
+    }
+
+    @Override
+    public boolean enabledIn(World world) {
+        this.world = world;
+        return settings.dimensionEnabled(world.provider.getDimensionName());
+    }
+
+    @Override
+    public int chancePercent() {
+        return settings.chancePercent();
+    }
+
+    @Override
+    public boolean biomeOk(int dimension, Set<Type> types) {
+        Set<Type> white = settings.overworldBiomes();
+        if (dimension != 0 || white.isEmpty()) return true;
+        for (Type t : types) if (white.contains(t)) return true;
+        return false;
+    }
+
+    @Override
+    public int minGroundY() {
+        return DEPTH + 6;
+    }
+
+    @Override
+    public void skipped(StructurePlan plan, String reason) {
+        GregGuns.LOG.info(
+            "Silo complex skipped at dimension {} cell {},{} ({}): {}",
+            plan.dimension(),
+            plan.cellX(),
+            plan.cellZ(),
+            plan.anchorX() + "," + plan.anchorZ(),
+            reason);
+    }
+
+    /** The raster of a plan, cached for the dozens of windows one complex spans (two entries are enough). */
+    public ComplexRaster rasterOf(StructurePlan plan) {
+        String key = plan.dimension() + ":" + plan.cellX() + ":" + plan.cellZ();
+        ComplexRaster r = cache.remove(key);
+        if (r == null) {
+            r = new ComplexRaster(ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ()));
+            if (cache.size() >= 2) {
+                cache.remove(
+                    cache.keySet()
+                        .iterator()
+                        .next());
+            }
+        }
+        cache.put(key, r);
+        return r;
+    }
+
+    @Override
+    public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
+        ComplexRaster raster = rasterOf(plan);
+        ComplexPlan cp = raster.plan();
+        int floorY = groundY - DEPTH;
+        int ax = plan.anchorX(), az = plan.anchorZ();
+        int x0 = Math.max(ax, window.minX()), x1 = Math.min(ax + ComplexLayout.SIZE - 1, window.maxX());
+        int z0 = Math.max(az, window.minZ()), z1 = Math.min(az + ComplexLayout.SIZE - 1, window.maxZ());
+        int n = 0;
+        Block air = blocks.air();
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                for (int y = 0; y < ComplexRaster.LEVELS; y++) {
+                    byte c = raster.at(x - ax, y, z - az);
+                    if (c == Cell.NONE) continue;
+                    int wy = floorY + y;
+                    if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
+                        if (sink.setBlock(x, wy, z, air, 0) && world != null) machines.place(world, c, x, wy, z);
+                        n++;
+                        continue;
+                    }
+                    ResolvedBlock b = blocks.resolve(c, x, wy, z);
+                    if (b != null && sink.setBlock(x, wy, z, b.block, b.meta)) n++;
+                }
+            }
+        }
+        n += shafts(cp, plan, floorY, window, sink, probe);
+        n += ladder(cp, plan, floorY, window, sink, probe);
+        for (Mark m : cp.allMarks()) {
+            int wx = ax + m.x(), wz = az + m.z();
+            if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, sink);
+        }
+        return n;
+    }
+
+    /** The 5 x 5 shaft ring and 3 x 3 bore from the top of the silo to the surface, and the mouth variant. */
+    private int shafts(ComplexPlan cp, StructurePlan plan, int floorY, PopulateWindow window, WindowedSink sink,
+        HeightProbe probe) {
+        int n = 0;
+        Block air = blocks.air();
+        for (SiloSlot s : cp.silos()) {
+            int sx = plan.anchorX() + s.bounds().minX, sz = plan.anchorZ() + s.bounds().minZ;
+            for (int x = Math.max(sx, window.minX()); x <= Math.min(sx + 4, window.maxX()); x++) {
+                for (int z = Math.max(sz, window.minZ()); z <= Math.min(sz + 4, window.maxZ()); z++) {
+                    int g = probe.landY(x, z);
+                    if (g == HeightProbe.NONE) continue;
+                    boolean bore = x > sx && x < sx + 4 && z > sz && z < sz + 4;
+                    int top = Math.min(g, BUILD_HEIGHT - 8);
+                    for (int y = floorY + ComplexLayout.SILO_HEIGHT; y <= top; y++) {
+                        ResolvedBlock b = bore ? null : blocks.named("ring", x, y, z);
+                        if (bore ? sink.setBlock(x, y, z, air, 0)
+                            : b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
+                    }
+                    n += mouth(s.variant(), bore, x, z, sx, sz, top, sink);
+                }
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Open: bare bore. Half open: the west half of the bore capped. Closed: capped, with air columns to build height.
+     */
+    private int mouth(SurfaceVariant v, boolean bore, int x, int z, int sx, int sz, int top, WindowedSink sink) {
+        if (!bore || v == SurfaceVariant.OPEN) return 0;
+        ResolvedBlock cap = blocks.named("cap", x, top, z);
+        if (v == SurfaceVariant.HALF_OPEN) {
+            return x <= sx + 2 && cap != null && sink.setBlock(x, top, z, cap.block, cap.meta) ? 1 : 0;
+        }
+        // Closed: nine cells capped, two of the eight non-center cells stay air all the way up (D17).
+        int n = 0;
+        int cell = (x - sx - 1) * 3 + (z - sz - 1);
+        long h = StructureHash.mix(sx * 31L + sz);
+        int hole1 = (int) Math.floorMod(h, 8), hole2 = (int) Math.floorMod(h >>> 8, 8);
+        int idx = cell > 4 ? cell - 1 : cell; // index among the eight non-center cells
+        boolean center = cell == 4;
+        if (!center && (idx == hole1 || idx == hole2)) {
+            for (int y = top; y <= BUILD_HEIGHT; y++) if (sink.setBlock(x, y, z, blocks.air(), 0)) n++;
+        } else if (cap != null && sink.setBlock(x, top, z, cap.block, cap.meta)) {
+            n++;
+        }
+        return n;
+    }
+
+    /** The 1 x 1 escape ladder from the level up to a trapdoor at the surface. */
+    private int ladder(ComplexPlan cp, StructurePlan plan, int floorY, PopulateWindow window, WindowedSink sink,
+        HeightProbe probe) {
+        int x = plan.anchorX() + cp.escapeX(), z = plan.anchorZ() + cp.escapeZ();
+        if (!window.contains(x, z)) return 0;
+        int g = probe.landY(x, z);
+        if (g == HeightProbe.NONE) return 0;
+        int n = 0;
+        for (int y = floorY + ComplexLayout.HEIGHT; y < g; y++) {
+            ResolvedBlock b = blocks.named("ladder", x, y, z);
+            if (b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
+        }
+        ResolvedBlock t = blocks.named("trapdoor", x, g, z);
+        if (t != null && sink.setBlock(x, g, z, t.block, t.meta)) n++;
+        return n;
+    }
+}
