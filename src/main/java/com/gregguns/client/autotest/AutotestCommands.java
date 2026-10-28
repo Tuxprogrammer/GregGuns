@@ -129,6 +129,42 @@ final class AutotestCommands {
     }
 
     /**
+     * {@code cblock <x> <y> <z>}: logs the block, its metadata and its tile entity as this client's world holds them,
+     * for the session's checks that a server-written block really arrived.
+     *
+     * @param args the three coordinates
+     */
+    static void logBlock(String[] args) {
+        Minecraft mc = Minecraft.getMinecraft();
+        int x = Integer.parseInt(args[0]), y = Integer.parseInt(args[1]), z = Integer.parseInt(args[2]);
+        net.minecraft.block.Block b = mc.theWorld.getBlock(x, y, z);
+        net.minecraft.tileentity.TileEntity t = mc.theWorld.getTileEntity(x, y, z);
+        ClientAutotest.logLine(
+            "cblock " + x
+                + ","
+                + y
+                + ","
+                + z
+                + " "
+                + net.minecraft.block.Block.blockRegistry.getNameForObject(b)
+                + " meta="
+                + mc.theWorld.getBlockMetadata(x, y, z)
+                + " renderType="
+                + b.getRenderType()
+                + " tile="
+                + (t == null ? "-"
+                    : t.getClass()
+                        .getSimpleName())
+                + " (client "
+                + localNameOf(mc)
+                + ")");
+    }
+
+    private static String localNameOf(Minecraft mc) {
+        return mc.thePlayer == null ? "?" : mc.thePlayer.getCommandSenderName();
+    }
+
+    /**
      * {@code look <yaw> <pitch>}: sets the local player's rotation, including the previous-tick values so the camera
      * does not interpolate from the old angle.
      *
