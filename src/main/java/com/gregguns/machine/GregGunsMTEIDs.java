@@ -88,10 +88,10 @@ public final class GregGunsMTEIDs {
      */
     public static final int MISSILE_SILO = 20141;
 
-    /** Radar (HV hull), a short-range single-block radar. Built in ICBM I4. */
+    /** Radar (HV hull), the controller of the short-range small radar (D125, D190). */
     public static final int RADAR_HV = 20142;
 
-    /** Radar (EV hull), a single-block radar with twice the range. Built in ICBM I4. */
+    /** Radar (EV hull), the controller of the small radar with twice the range (D125, D190). */
     public static final int RADAR_EV = 20143;
 
     /** Radar Tower controller (IV hull; the Energy Hatch tier sets the range). Built in ICBM I4. */

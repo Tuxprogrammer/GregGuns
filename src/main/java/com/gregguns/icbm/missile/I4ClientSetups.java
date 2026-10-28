@@ -56,8 +56,8 @@ public final class I4ClientSetups {
         registry.register(new Aim("lit", -2.5, 0.25, 6.5, 2.2));
         registry.register(new Aim("missile", 9.5, 1.5, 6.5, 3.0));
         registry.register(new Aim("air", 3.5, 25.0, 12.5, 1.0));
-        registry.register(new Aim("radarhv", 6.5, 0.8, 30.5, 4.0));
-        registry.register(new Aim("radarev", 12.5, 0.8, 30.5, 4.0));
+        registry.register(new Aim("radarhv", 6.5, 1.6, 31.5, 9.0));
+        registry.register(new Aim("radarev", 14.5, 1.6, 31.5, 9.0));
         registry.register(new Aim("emp", 0.5, 0.8, -9.5, 4.0));
         registry.register(new Aim("tower", -7.5, 6.0, 14.5, 12.0));
         registry.register(new Aim("silo", 80.5, -1.0, 2.5, 9.0));
@@ -165,7 +165,7 @@ public final class I4ClientSetups {
         }
     }
 
-    /** HV and EV radars with lamps beside them, and a battery. Pending so the machines tick. */
+    /** HV and EV radars (built, powered, dish turning) with a lamp in front of each. Pending so the machines tick. */
     private static final class Radars extends Setup {
 
         @Override
@@ -179,20 +179,29 @@ public final class I4ClientSetups {
             final int rz = 30;
             floor(ctx, 2, 16, rz - 6, rz + 4);
             DefenseScenarios.place(ctx, GregGunsMTEIDs.RADAR_HV, 6, 0, rz);
-            DefenseScenarios.place(ctx, GregGunsMTEIDs.RADAR_EV, 12, 0, rz);
-            ctx.setBlock(7, 0, rz, Blocks.redstone_lamp, 0);
-            ctx.setBlock(13, 0, rz, Blocks.redstone_lamp, 0);
-            return ScenarioResult.pending(name(), 120, t -> {
+            DefenseScenarios.place(ctx, GregGunsMTEIDs.RADAR_EV, 14, 0, rz);
+            ctx.setBlock(6, 0, rz - 1, Blocks.redstone_lamp, 0);
+            ctx.setBlock(14, 0, rz - 1, Blocks.redstone_lamp, 0);
+            final int[] hv = { 0, 0 };
+            final int[] ev = { 0, 0 };
+            return ScenarioResult.pending(name(), 600, t -> {
                 if (t < 60) {
                     return null;
                 }
-                for (int dx : new int[] { 6, 12 }) {
-                    IGregTechTileEntity b = DefenseScenarios.live(ctx, dx, 0, rz);
-                    power(b);
-                    MTERadar r = (MTERadar) b.getMetaTileEntity();
-                    r.setRadius(100);
-                    log(ctx, "radar at dx=" + dx + " dz=" + rz + " range=" + r.rangeIfOn());
+                MTERadar rh = DefenseScenarios.radar(DefenseScenarios.live(ctx, 6, 0, rz));
+                MTERadar re = DefenseScenarios.radar(DefenseScenarios.live(ctx, 14, 0, rz));
+                int a = DefenseScenarios.radarReady(ctx, rh, 6, 0, rz, ItemList.Hatch_Energy_HV, t, hv);
+                int b = DefenseScenarios.radarReady(ctx, re, 14, 0, rz, ItemList.Hatch_Energy_EV, t, ev);
+                if (a < 0 || b < 0) {
+                    return ScenarioResult.fail(name(), "a radar never formed and ran");
                 }
+                if (a == 0 || b == 0) {
+                    return null;
+                }
+                rh.setRadius(100);
+                re.setRadius(100);
+                log(ctx, "radar at dx=6 dz=" + rz + " range=" + rh.rangeIfOn());
+                log(ctx, "radar at dx=14 dz=" + rz + " range=" + re.rangeIfOn());
                 return out.build();
             });
         }
@@ -228,7 +237,7 @@ public final class I4ClientSetups {
                             + (int) m.posY
                             + ","
                             + (int) m.posZ);
-                    for (int dx : new int[] { 6, 12 }) {
+                    for (int dx : new int[] { 6, 14 }) {
                         IGregTechTileEntity b = DefenseScenarios.live(ctx, dx, 0, 30);
                         if (b != null && b.getMetaTileEntity() instanceof MTERadar) {
                             MTERadar r = (MTERadar) b.getMetaTileEntity();
@@ -240,7 +249,7 @@ public final class I4ClientSetups {
                                 .append(r.signal())
                                 .append(" lamp=")
                                 .append(
-                                    w.getBlock(ctx.originX() + dx + 1, ctx.originY(), ctx.originZ() + 30)
+                                    w.getBlock(ctx.originX() + dx, ctx.originY(), ctx.originZ() + 29)
                                         == Blocks.lit_redstone_lamp)
                                 .append("]");
                         }
@@ -395,7 +404,7 @@ public final class I4ClientSetups {
         @Override
         ScenarioResult go(ScenarioContext ctx, ScenarioResult.Builder out) {
             World w = ctx.world();
-            for (int dx : new int[] { 6, 12 }) {
+            for (int dx : new int[] { 6, 14 }) {
                 IGregTechTileEntity b = DefenseScenarios.live(ctx, dx, 0, 30);
                 if (b != null && b.getMetaTileEntity() instanceof MTERadar) {
                     MTERadar r = (MTERadar) b.getMetaTileEntity();

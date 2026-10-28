@@ -31,6 +31,8 @@ public final class DefenseMachines {
 
     /** Entity id 124: the SAM (after the silo doors at 123). */
     private static final int ENTITY_ID_SAM = 124;
+    /** Entity id 126: the radar dish (D125, D190). */
+    private static final int ENTITY_ID_RADAR_DISH = 126;
     /** Overlay folders (NTM-derived, LGPL, D47) under {@code textures/blocks/}. */
     private static final String ICONS = "machines/thirdparty/ntm/";
 
@@ -50,6 +52,7 @@ public final class DefenseMachines {
         radarGun = registrar.registerItem(ItemRadarGun.NAME, new ItemRadarGun());
         radarGun.setTextureName("gregguns:thirdparty/ntm/radar_gun");
         registrar.registerEntity("sam", EntitySam.class, ENTITY_ID_SAM, 160, 1, true);
+        registrar.registerEntity("radar_dish", EntityRadarDish.class, ENTITY_ID_RADAR_DISH, 160, 3, false);
     }
 
     /** Constructs the machines. Call once, from the ICBM module's init. */
@@ -57,20 +60,9 @@ public final class DefenseMachines {
         // Source:
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/CommonMetaTileEntity.java#L85-L100
         // (construction is legal between GT's preload and postload)
-        new MTERadar(
-            GregGunsMTEIDs.RADAR_HV,
-            "gregguns.icbm.radar.hv",
-            "Radar (HV)",
-            3,
-            tooltip("radar", "radar"),
-            ICONS + "radar_hv/");
-        new MTERadar(
-            GregGunsMTEIDs.RADAR_EV,
-            "gregguns.icbm.radar.ev",
-            "Radar (EV)",
-            4,
-            tooltip("radar", "radar"),
-            ICONS + "radar_ev/");
+        // The two small-radar controllers (D125, D190).
+        new MTERadar(GregGunsMTEIDs.RADAR_HV, "gregguns.icbm.radar.hv", "Radar (HV)", 3, ICONS + "radar_hv/");
+        new MTERadar(GregGunsMTEIDs.RADAR_EV, "gregguns.icbm.radar.ev", "Radar (EV)", 4, ICONS + "radar_ev/");
         new MTERadarTower(GregGunsMTEIDs.RADAR_TOWER, "gregguns.icbm.radartower", "Radar Tower");
         new MTEAirDefense(
             GregGunsMTEIDs.AIR_DEFENSE,
@@ -126,7 +118,7 @@ public final class DefenseMachines {
             machine(
                 Materials.StainlessSteel,
                 GregGunsMTEIDs.RADAR_HV,
-                25,
+                21,
                 600,
                 TierEU.RECIPE_HV,
                 ItemList.Hull_HV.get(1),
@@ -136,7 +128,7 @@ public final class DefenseMachines {
             machine(
                 Materials.Titanium,
                 GregGunsMTEIDs.RADAR_EV,
-                26,
+                22,
                 600,
                 TierEU.RECIPE_EV,
                 ItemList.Hull_EV.get(1),
@@ -146,7 +138,7 @@ public final class DefenseMachines {
             machine(
                 Materials.TungstenSteel,
                 GregGunsMTEIDs.RADAR_TOWER,
-                27,
+                23,
                 1200,
                 TierEU.RECIPE_IV,
                 ItemList.Hull_IV.get(1),
@@ -156,7 +148,7 @@ public final class DefenseMachines {
             machine(
                 Materials.StainlessSteel,
                 GregGunsMTEIDs.AIR_DEFENSE,
-                28,
+                19,
                 900,
                 TierEU.RECIPE_HV,
                 ItemList.Hull_HV.get(1),
@@ -175,7 +167,7 @@ public final class DefenseMachines {
                 GregGuns.LOG.error("Skipping the radar gun recipe: a GT input did not resolve");
             } else {
                 GTValues.RA.stdBuilder()
-                    .circuit(29)
+                    .circuit(18)
                     .itemInputs(gun, emitter, circ, plate)
                     .itemOutputs(gunStack)
                     .duration(300)
@@ -196,26 +188,27 @@ public final class DefenseMachines {
     static final int CASING_YIELD = 4;
 
     /**
-     * The tower's wall: Tungsten Steel plate in the Assembler at IV, four blocks a run; it recycles to its plate share.
+     * The radars' wall: Stainless Steel plate in the Assembler at HV, four blocks a run; it recycles to its plate
+     * share.
      */
     private static void radarCasing() {
-        ItemStack plate = IcbmIngredients.stack(Ing.gt("plate", "TungstenSteel", CASING_PLATES, Tier.IV, 1.0));
+        ItemStack plate = IcbmIngredients.stack(Ing.gt("plate", "StainlessSteel", CASING_PLATES, Tier.HV, 1.0));
         if (plate == null) {
-            GregGuns.LOG.error("Skipping the Radar Casing recipe: Tungsten Steel plate did not resolve");
+            GregGuns.LOG.error("Skipping the Radar Casing recipe: Stainless Steel plate did not resolve");
             return;
         }
         ItemStack out = new ItemStack(GregGunsCasings.INSTANCE, CASING_YIELD, GregGunsCasings.RADAR_CASING);
         GTValues.RA.stdBuilder()
-            .circuit(31)
+            .circuit(16)
             .itemInputs(plate)
             .itemOutputs(out)
             .duration(200)
-            .eut(TierEU.RECIPE_IV)
+            .eut(TierEU.RECIPE_HV)
             .addTo(RecipeMaps.assemblerRecipes);
         GTOreDictUnificator.addItemData(
             new ItemStack(GregGunsCasings.INSTANCE, 1, GregGunsCasings.RADAR_CASING),
             new ItemData(
-                Materials.TungstenSteel,
+                Materials.StainlessSteel,
                 OrePrefixes.plate.getMaterialAmount() * CASING_PLATES / CASING_YIELD));
     }
 
@@ -229,7 +222,7 @@ public final class DefenseMachines {
             return;
         }
         GTValues.RA.stdBuilder()
-            .circuit(30)
+            .circuit(17)
             .itemInputs(plate, motor, sensor, circ)
             .itemOutputs(out)
             .duration(300)

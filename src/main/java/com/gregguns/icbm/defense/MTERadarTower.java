@@ -48,28 +48,40 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.api.util.shutdown.ShutDownReason;
+import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
  * The radar tower (D14): an IV-or-better multiblock whose weakest Energy Hatch sets the range ({@link RadarRules#range}
  * from IV 512 up to UHV 1536), the way the Missile Silo's hatch sets the missile tier it handles. There is no recipe
  * map: while it is formed and paid for, each one-second cycle repeats and the controller sweeps every
- * {@link RadarRules#SCAN_TICKS} ticks. It reports through the same outputs as the single blocks. Construct only inside
+ * {@link RadarRules#SCAN_TICKS} ticks. It reports through the same outputs as the small radar. Construct only inside
  * GT's MTE window, after {@link GregGunsCasings#create} has run. Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md (Tower)
 // Source (the pattern: a non-recipe multiblock whose checkProcessing sets power and time):
 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEMultiBlockBase.java#L877
 public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadarTower>
-    implements ISurvivalConstructable, ICasingTextureProvider, RadarSource, RadarView {
+    implements ISurvivalConstructable, ICasingTextureProvider, RadarSource, RadarView, RadarPanel, RadarDishHost {
 
     private static final String PIECE = "tower";
     private static final String OVERLAY_DIR = "machines/thirdparty/ntm/radar_tower/";
     private static final int CYCLE_TICKS = 20;
 
     private final RadarUnit unit = new RadarUnit();
+    /** Ticks (in scan steps) a fresh load may stay unformed before the dish is taken down. */
+    private static final int UNFORMED_GRACE_STEPS = 20;
+    /** The tower's dish is half again the small radar's. */
+    private static final float DISH_SCALE = 1.5F;
+
+    private final RadarDishKeeper dish = new RadarDishKeeper(RadarTowerShape.DISH_HEIGHT, DISH_SCALE);
     private int casingCount;
     private boolean online;
+    private int unformedSteps;
+    private int steps;
+    /** Set when the machine stopped itself (power loss, a broken structure, repairs); cleared once it restarts. */
+    private boolean resumeWhenPowered;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -157,6 +169,7 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     }
 
     /** @return whether the last structure check found a complete tower */
+    @Override
     public boolean isFormed() {
         return mMachine;
     }
@@ -182,6 +195,7 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     }
 
     /** @return the range the hatches give, whether or not it runs now; 0 below IV */
+    @Override
     public int rangeIfOn() {
         int t = hatchTier();
         return t < RadarRules.TOWER_MIN_TIER ? 0 : RadarRules.range(t);
@@ -203,13 +217,13 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
         return range > 0 ? range : RadarRules.range(RadarRules.TOWER_MIN_TIER);
     }
 
-    /** @return the protected radius text for the GUI field */
-    String radiusText() {
+    @Override
+    public String radiusText() {
         return Integer.toString(unit.radius());
     }
 
-    /** @param text what the player typed; anything that is not a number is ignored, the rest is clamped */
-    void setRadiusText(String text) {
+    @Override
+    public void setRadiusText(String text) {
         try {
             setRadius(Integer.parseInt(text.trim()));
         } catch (NumberFormatException e) {
@@ -240,23 +254,28 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
         return sweep().detected();
     }
 
-    /** @return how many missiles the last scan detected */
-    int detectedCount() {
+    @Override
+    public int detectedCount() {
         return unit.sweep()
             .detected()
             .size();
     }
 
-    /** @return how many of them are aimed inside the protected radius */
-    int incomingCount() {
+    @Override
+    public int incomingCount() {
         return unit.sweep()
             .incoming()
             .size();
     }
 
     @Override
+    public String panelTitleKey() {
+        return "gregguns.icbm.radar_tower.gui.title";
+    }
+
+    @Override
     protected MTEMultiBlockBaseGui<?> getGui() {
-        return new RadarTowerGui(this);
+        return new RadarMultiGui<>(this);
     }
 
     /** @return what the tower reports now */
@@ -266,7 +285,7 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
 
     /** @return the redstone strength last published */
     public int signal() {
-        return Math.max(lastSignal, 0);
+        return unit.signal();
     }
 
     // --- running ----------------------------------------------------------------------------------------------
@@ -305,26 +324,70 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     /** One scan now: it runs while the structure is formed and a cycle is paid for. */
     void scanNow() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
+        resumeIfPowered(base);
         online = mMachine && base.isActive() && rangeIfOn() > 0;
         unit.scan(base.getWorld(), base.getXCoord() + 0.5, base.getZCoord() + 0.5, rangeIfOn(), online);
-        publishOutputs(base);
+        // The active flag is the machine's own "running" state here, so only the redstone strength is driven.
+        unit.publishRedstone(base);
+        tendDish(base);
     }
 
-    private void publishOutputs(IGregTechTileEntity base) {
-        // The active flag is the machine's own "running" state here, so only the redstone strength is driven.
-        int want = RadarRules.redstone(
-            unit.sweep()
-                .incoming()
-                .size());
-        if (want != lastSignal) {
-            lastSignal = want;
-            for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
-                base.setInternalOutputRedstoneSignal(d, (byte) want);
-            }
+    /** The machine's own stops are not final here, as on the small radar (D195). */
+    @Override
+    public void stopMachine(@Nonnull ShutDownReason reason) {
+        super.stopMachine(reason);
+        if (reason == ShutDownReasonRegistry.POWER_LOSS || reason == ShutDownReasonRegistry.STRUCTURE_INCOMPLETE
+            || reason == ShutDownReasonRegistry.NO_REPAIR) {
+            resumeWhenPowered = true;
         }
     }
 
-    private int lastSignal = -1;
+    /**
+     * Gets a tower that is formed, allowed to work and paid for but not running going again: GT's controller only
+     * looks for a recipe when pushed, and after a stop of its own (D195) it is switched back on first.
+     */
+    private void resumeIfPowered(IGregTechTileEntity base) {
+        if (!mMachine) {
+            return;
+        }
+        long stored = 0;
+        for (MTEHatch hatch : validMTEList(mEnergyHatches)) {
+            stored += hatch.getBaseMetaTileEntity()
+                .getStoredEU();
+        }
+        int t = hatchTier();
+        if (t < RadarRules.TOWER_MIN_TIER || stored < 2 * RadarRules.euPerTick(GTValues.V[t])) {
+            return;
+        }
+        if (resumeWhenPowered && !base.isAllowedToWork()) {
+            base.enableWorking();
+        }
+        resumeWhenPowered = false;
+        if (base.isAllowedToWork() && !base.isActive()) {
+            scheduleRecipeCheckImmediate();
+        }
+    }
+
+    /** Spawns the dish when formed, spins it while the tower runs, and takes it down once the structure is gone. */
+    private void tendDish(IGregTechTileEntity base) {
+        if (mMachine) {
+            unformedSteps = 0;
+            dish.update(base, online(), ++steps % RadarDishKeeper.CHECK_STEPS == 0);
+        } else if (++unformedSteps >= UNFORMED_GRACE_STEPS) {
+            dish.remove();
+        }
+    }
+
+    /** @return the dish entity now standing on the tower, or null (scenarios read it) */
+    public EntityRadarDish dish() {
+        return dish.dish();
+    }
+
+    @Override
+    public void onRemoval() {
+        dish.remove();
+        super.onRemoval();
+    }
 
     /**
      * GT only exposes a machine's per-side redstone strength to the world when the machine says so (default false), so
@@ -352,12 +415,14 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     public void saveNBTData(NBTTagCompound tag) {
         super.saveNBTData(tag);
         unit.save(tag);
+        tag.setBoolean("resumeWhenPowered", resumeWhenPowered);
     }
 
     @Override
     public void loadNBTData(NBTTagCompound tag) {
         super.loadNBTData(tag);
         unit.load(tag);
+        resumeWhenPowered = tag.getBoolean("resumeWhenPowered");
     }
 
     @Override

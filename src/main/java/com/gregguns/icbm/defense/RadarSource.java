@@ -1,7 +1,7 @@
 package com.gregguns.icbm.defense;
 
 /**
- * Anything that sweeps for missiles and can be linked to a battery by a data stick: the single-block radars and the
+ * Anything that sweeps for missiles and can be linked to a battery by a data stick: the small radars and the
  * tower. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md (Outputs)
