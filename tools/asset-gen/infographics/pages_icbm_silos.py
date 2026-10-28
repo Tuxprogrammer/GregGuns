@@ -325,12 +325,12 @@ def room_card(kind: str) -> str:
 
 # ---------------------------------------------------------------- blocks and renders
 
-PLAIN = lambda name: K.ASSETS / "textures/blocks" / f"{name}.png"  # noqa: E731
 
 
 def hero_room() -> Path:
     """A lit generator hall cutaway: one Silo Complex Wall (connected) all round, a checkered floor with light tiles under the
-    ceiling lamps, a framed doorway, EV machine hulls, a Silo Guard Post, and a breach in the wall and a hole in the floor."""
+    ceiling lamps, a framed doorway, EV machine hulls, a guard post (a vanilla monster spawner), and a breach in the wall and a
+    hole in the floor."""
     b = S.Build("silos-hall")
     cw = S._wall("complex_wall")
     side, top = gt.hull_tinted("EV"), gt.hull_tinted("EV", "TOP")
@@ -340,7 +340,7 @@ def hero_room() -> Path:
     b.define("fl", "Light Concrete Bricks", light)
     b.define("hull", "EV Machine Hull", (top, side, side))
     b.define("lamp", "Lamp", S.lamp_tex())
-    b.define("post", "Silo Guard Post", PLAIN("concrete_hole"))
+    b.define("post", "Monster Spawner (guard post)", vanilla.texture("blocks/mob_spawner"))
     X, Z = 13, 10
     cells = {}
     for x in range(X):
@@ -468,9 +468,10 @@ def hull_block(tier: str) -> Path:
     return K.voxels(f"silos-hull-{tier}", {(0, 0, 0): "h"}, {"h": (top, side, side)}, yaw=-34, pitch=28, ppu=96)
 
 
-def post_block(name: str) -> Path:
-    t = PLAIN(name)
-    return K.voxels(f"silos-post-{name}", {(0, 0, 0): "h"}, {"h": (t, t, t)}, yaw=-34, pitch=28, ppu=96)
+def spawner_block() -> Path:
+    """The vanilla monster spawner every guard post is (its Mojang texture, read from the Minecraft jar)."""
+    t = vanilla.texture("blocks/mob_spawner")
+    return K.voxels("silos-post-mob_spawner", {(0, 0, 0): "h"}, {"h": (t, t, t)}, yaw=-34, pitch=28, ppu=96)
 
 
 def wall_block() -> Path:
@@ -680,7 +681,7 @@ def build_page() -> str:
     soldier = M._enemy_pic("Army Soldier", dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4", armor=None))
     commando = M._enemy_pic("Commando", dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4", armor=None))
     storm = M._enemy_pic("Stormtrooper", dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="blaster_rifle", armor=None))
-    guard_post, elite_post = post_block("concrete_hole"), post_block("metalpanel_hazard")
+    guard_post = elite_post = spawner_block()
 
     # ---- machines
     hulls = "".join(f'<div style="text-align:center">{img(hull_block(t), h=64)}<div class="cap" style="margin-top:0">{t}</div></div>' for t in ("HV", "EV", "IV"))
@@ -702,7 +703,7 @@ a quarter of the grid squares ({CHANCE_PCT}%), one square per 1,024 &times; 1,02
 and on every planet with solid ground.</div></div>
 <div class="card" style="display:flex;flex-direction:column"><div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:6px">{img(hero, h=440, style="max-width:100%")}</div>
 <div class="cap">A generator hall. One block makes the walls, here the <b style="color:var(--txt)">Silo Complex Wall</b>, which joins into one plated mass; the floor is a pattern; lamps sit flush in the ceiling with a light tile in the floor under each; the machines are GregTech
-hulls; a Silo Guard Post waits in the corner. A breach in the wall and a hole in the floor are the marks of a complex that lost its crew long ago.</div></div></div>
+hulls; a guard post, a monster spawner, waits in the corner. A breach in the wall and a hole in the floor are the marks of a complex that lost its crew long ago.</div></div></div>
 
 <div class="sec"><h2>On the surface</h2>
 <div class="card" style="display:grid;grid-template-columns:1.55fr 1fr;gap:26px">
@@ -761,16 +762,16 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="sec"><h2>Guards</h2>
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
 <div class="card"><div class="post"><div style="text-align:center">{img(guard_post, h=100)}</div><div><h3>Silo Guard Post</h3>
-<div class="pt">A spawner block for <b>Army Soldiers</b> and <b>Commandos</b>. It stands at hall branches and in the rooms.</div></div></div>
+<div class="pt">A monster spawner of <b>Army Soldiers</b> and <b>Commandos</b>. It stands at hall branches and in the rooms.</div></div></div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{soldier}</div><b>Army Soldier</b></div><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div></div></div>
 <div class="card"><div class="post"><div style="text-align:center">{img(elite_post, h=100)}</div><div><h3>Silo Elite Post</h3>
-<div class="pt">A spawner block for <b>Commandos</b> and <b>Stormtroopers</b>. It holds the silo walkways, the far end of the gallery, and the deep rooms.</div></div></div>
+<div class="pt">A monster spawner of <b>Commandos</b> and <b>Stormtroopers</b>. It holds the silo walkways, the far end of the gallery, and the deep rooms.</div></div></div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div><div class="mob"><div class="guide" style="padding:0 6px">{storm}</div><b>Stormtrooper</b></div></div></div>
 <div class="card"><h3>How the posts behave</h3>
 <ul class="pt" style="margin:8px 0 0 18px;line-height:1.45">
-<li>They wake only when a player is within <b>24 blocks</b>, and never load a chunk to do it.</li>
-<li>At most <b>5</b> guards of a post's kind near it, <b>3</b> per try, one try every <b>5 seconds</b>.</li>
-<li><b>Break a post and it stays broken</b>, for good, even after a restart. It drops nothing.</li>
+<li>Each post is a Minecraft monster spawner with the guards inside. It wakes only when a player is within <b>24 blocks</b>, in lit rooms too.</li>
+<li>At most <b>5</b> of each guard type near it, up to <b>3</b> at a time, every <b>5 to 6 seconds</b>.</li>
+<li><b>Break the spawner and it is gone</b> for good. It drops nothing.</li>
 <li>Guards are armed to match the planet: danger <b>3</b> up to IV, <b>4</b> at LuV and ZPM, <b>5</b> from UV up.</li>
 <li>An abandoned complex has no posts at all.</li></ul></div></div></div>
 
@@ -798,7 +799,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A clear glass block stands under where the controller is.</div></div>
 <div style="text-align:center"><div class="spot">{img(front[2], h=250)}</div><div class="cap"><b style="color:var(--txt)">Repaired.</b> The controller (blue ring) and the hatches (orange rings) in their places.</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:16px">
-<div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> An operational complex always has an elite post at each silo walkway, and a partly abandoned one often does. Break the posts, or fight what they spawn.</div></div>
+<div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> An operational complex always has an elite post at each silo walkway, and a partly abandoned one often does. Break their spawners, or fight what they spawn.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Find the part.</b> Check the Safe, Stockpile, Workshop and Control chests: about {pct(PROFILES[0]["part"])} of abandoned, {pct(PROFILES[1]["part"])} of partly abandoned and {pct(PROFILES[2]["part"])} of operational silos have theirs lying in one. A missing part is not lost: the controller and a GregTech Energy Hatch are both craftable.</div></div>
 <div class="step"><span class="num">3</span><div class="t"><b>Put it in.</b> Mine the concrete and set the controller facing out, or mine the glass and set the Energy Hatch in its place. The silo forms and switches itself on.</div></div>
 <div class="step"><span class="num">4</span><div class="t"><b>Power and launch.</b> Run EU to the Energy Hatch. A found hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Then add a Launch Control, fuel and a missile as for any silo.</div></div></div></div></div>
@@ -819,7 +820,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 """
     credit = [
         "Silo Complex Wall: Steel Bastion Plating art, with connected textures. Radar Casing, dish and radar controller overlay: derived from HBM's Nuclear Tech Mod, GNU LGPL v3; modified.",
-        "Machine hulls, hatch overlays and Light and Dark Concrete Bricks: GregTech 5 Unofficial textures, LGPL-3.0. Hut casings, Silo Guard Posts and the Silo Complex Wall: GregGuns art, MIT.",
+        "Machine hulls, hatch overlays and Light and Dark Concrete Bricks: GregTech 5 Unofficial textures, LGPL-3.0. Hut casings and the Silo Complex Wall: GregGuns art, MIT. Guard posts: the Minecraft monster spawner (Mojang).",
         TP.GC_CREDIT, TP.TC_CREDIT, MOJANG_CREDIT, TP.TINT_CREDIT,
     ]
     return page_doc("Abandoned <b>silos</b>", "Underground missile bases to find, clear and take over: what is in them, what guards them, and what you can carry out.",

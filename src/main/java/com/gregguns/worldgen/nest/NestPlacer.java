@@ -12,12 +12,13 @@ import com.gregguns.worldgen.layout.ResolvedBlock;
  * Writes the slice of a {@link NestPlan} that lies in one populate window, through the clipped sink. Blocks come from
  * the {@code bugnest_*} palette keys, each with a vanilla fallback, so the nest builds with or without the nest blocks.
  * Each cell's content is a function of its position (see {@link NestPlan#cell}), so windows can run in any order.
- * Bug Hole positions are reported as {@code spawner.bug_hole} marks; the spawner hook places the block (G11).
+ * Bug spawner positions are reported as {@code spawner.bug_hole} marks; the spawner hook places a vanilla mob spawner
+ * there (G11).
  */
 // Spec: docs/techguns-spec/11-worldgen/structure-notes/alien_bug_nest.md; GGS-11-08 (clipped writes)
 public final class NestPlacer {
 
-    /** Tag of the Bug Hole mark, as {@code HoleKind.BUG.layoutTag()}. */
+    /** Tag of the bug spawner mark, as {@code SpawnerKind.BUG.layoutTag()}. */
     public static final String BUG_HOLE_TAG = "spawner.bug_hole";
 
     private final ResolvedBlock wall;

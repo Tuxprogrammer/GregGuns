@@ -14,7 +14,7 @@ import com.gregguns.icbm.complex.SiloSlot;
 import com.gregguns.icbm.complex.Tunnel;
 import com.gregguns.icbm.worldgen.Placement.Bonus;
 import com.gregguns.icbm.worldgen.Placement.Kind;
-import com.gregguns.worldgen.spawner.HoleKind;
+import com.gregguns.worldgen.spawner.SpawnerKind;
 
 /**
  * The activity pass (D36) and the contents pass (D129): turns a layout's marks into {@link Placement}s for one activity
@@ -323,7 +323,7 @@ public final class ComplexContents {
             && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
         out.add(
             Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
-                .spawner(elite ? HoleKind.SILO_ELITE : HoleKind.SILO_GUARD)
+                .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
                 .build());
     }
 

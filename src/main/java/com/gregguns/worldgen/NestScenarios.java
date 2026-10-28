@@ -27,13 +27,12 @@ import com.gregguns.worldgen.layout.Stamper;
 import com.gregguns.worldgen.nest.NestBlockRegistration;
 import com.gregguns.worldgen.nest.NestPlacer;
 import com.gregguns.worldgen.nest.NestPlan;
-import com.gregguns.worldgen.spawner.HoleKind;
-import com.gregguns.worldgen.spawner.HoleSpawnerHook;
-import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
-import com.gregguns.worldgen.spawner.TileHoleSpawner;
+import com.gregguns.worldgen.spawner.SpawnerKind;
+import com.gregguns.worldgen.spawner.SpawnerNbt;
+import com.gregguns.worldgen.spawner.VanillaSpawners;
 
 /**
- * The Alien Bug Nest scenarios (M8 S5): a forced, enabled nest on a prepared stone slab (block counts, Bug Holes,
+ * The Alien Bug Nest scenarios (M8 S5): a forced, enabled nest on a prepared stone slab (block counts, bug spawners,
  * writes in window, determinism, no chest, no cascade), and the default-off check. Dev environment only; needs
  * {@code worldgen} (and so {@code npcs}) in {@code GG_MODULES}. Server side.
  */
@@ -148,7 +147,7 @@ public final class NestScenarios {
             StructurePopulator.BiomeSource biomes = (x, z) -> desert;
             List<int[]> windows = PlacementHarness.windowsOf(plan, reverse);
             r.windows = windows.size();
-            HoleSpawnerHook real = new HoleSpawnerHook();
+            VanillaSpawners real = new VanillaSpawners();
             StructureHooks.setSpawnerHook((w, s, pl, tag, x, y, z) -> {
                 r.spawnerPos.add(new int[] { x, y, z });
                 real.spawnerMarked(w, s, pl, tag, x, y, z);
@@ -173,7 +172,7 @@ public final class NestScenarios {
                 }
             } finally {
                 // The production hook is what the generator installs at postInit; put it back.
-                StructureHooks.setSpawnerHook(new HoleSpawnerHook());
+                StructureHooks.setSpawnerHook(new VanillaSpawners());
             }
             r.violations = PopulateGuard.violationCount() - before;
             Decision d = state.get(PlanKey.of(plan));
@@ -208,8 +207,8 @@ public final class NestScenarios {
         public String description() {
             return "Forces an enabled Alien Bug Nest (fixed seed) through the populator, one window at a time: placed with"
                 + " no write outside a window and no PopulateGuard violation; the resin, egg, sandstone and slime block"
-                + " counts equal the pure plan's; 5 to 10 Bug Hole blocks with Bug tiles sit on the plan's holes; the"
-                + " shaft is open at the surface; no chest and no tile but the holes; a second run in the opposite"
+                + " counts equal the pure plan's; 5 to 10 vanilla mob spawners of Alien Bugs sit on the plan's spawner cells; the"
+                + " shaft is open at the surface; no chest and no tile but the spawners; a second run in the opposite"
                 + " window order is byte-identical (GGS-11-08, GGS-11-09, GGS-11-24, WGEN-04).";
         }
 
@@ -219,11 +218,9 @@ public final class NestScenarios {
             World world = ctx.world();
             Block nest = NestBlockRegistration.nest();
             Block slime = NestBlockRegistration.slime();
-            Block bug = HoleSpawnerRegistration.block(HoleKind.BUG);
-            out.check(
-                nest != null && slime != null && bug != null,
-                "the nest and Bug Hole blocks should be registered");
-            if (nest == null || slime == null || bug == null) return out.build();
+            Block bug = Blocks.mob_spawner;
+            out.check(nest != null && slime != null, "the nest blocks should be registered");
+            if (nest == null || slime == null) return out.build();
             StructurePlan plan = plan(world);
             try {
                 Run a = runPlan(world, plan, false);
@@ -250,7 +247,7 @@ public final class NestScenarios {
                 int eggs = 0;
                 int trails = 0;
                 int plain = 0;
-                int holes = 0;
+                int spawners = 0;
                 int badTiles = 0;
                 for (int x = plan.anchorX(); x <= plan.maxX(); x++) {
                     for (int z = plan.anchorZ(); z <= plan.maxZ(); z++) {
@@ -264,9 +261,11 @@ public final class NestScenarios {
                             } else if (b == Blocks.sandstone) {
                                 plain++;
                             } else if (b == bug) {
-                                holes++;
-                                TileEntity t = world.getTileEntity(x, y, z);
-                                if (!(t instanceof TileHoleSpawner) || ((TileHoleSpawner) t).kind() != HoleKind.BUG) {
+                                spawners++;
+                                net.minecraft.nbt.NBTTagCompound t = VanillaSpawners.read(world.getTileEntity(x, y, z));
+                                if (t == null || !SpawnerNbt.isMarked(t)
+                                    || !SpawnerNbt.entities(t)
+                                        .equals(SpawnerKind.BUG.mobNames())) {
                                     badTiles++;
                                 }
                             }
@@ -279,12 +278,12 @@ public final class NestScenarios {
                 out.checkEquals("slime trail blocks", expect[NestPlan.TRAIL], trails);
                 out.checkEquals("sandstone flecks", expect[NestPlan.PLAIN], plain);
                 out.checkEquals(
-                    "Bug Hole blocks",
+                    "bug spawners",
                     model.spawners()
                         .size(),
-                    holes);
-                out.check(holes >= 5 && holes <= 10, "5 to 10 Bug Holes, got " + holes);
-                out.checkEquals("hole blocks without a Bug tile", 0, badTiles);
+                    spawners);
+                out.check(spawners >= 5 && spawners <= 10, "5 to 10 bug spawners, got " + spawners);
+                out.checkEquals("spawners without marked Alien Bug NBT", 0, badTiles);
                 out.checkEquals(
                     "spawner marks reported",
                     model.spawners()
@@ -293,7 +292,7 @@ public final class NestScenarios {
                 for (int[] h : model.spawners()) {
                     out.check(
                         world.getBlock(h[0], h[1], h[2]) == bug,
-                        "no Bug Hole at the plan's hole " + h[0] + "," + h[1] + "," + h[2]);
+                        "no bug spawner at the plan's spawner cell " + h[0] + "," + h[1] + "," + h[2]);
                 }
                 out.check(
                     world.getBlock(model.shaftX(), GROUND, model.shaftZ()) == Blocks.air
@@ -314,12 +313,12 @@ public final class NestScenarios {
                                 continue;
                             }
                             if (t instanceof net.minecraft.tileentity.TileEntityChest) chests++;
-                            else if (!(t instanceof TileHoleSpawner)) otherTiles++;
+                            else if (!(t instanceof net.minecraft.tileentity.TileEntityMobSpawner)) otherTiles++;
                         }
                     }
                 }
                 out.checkEquals("chests in the nest (GGS-11-24)", 0, chests);
-                out.checkEquals("tiles other than the holes", 0, otherTiles);
+                out.checkEquals("tiles other than the spawners", 0, otherTiles);
 
                 long first = snapshot(world, plan, model);
                 Run b = runPlan(world, plan, true);

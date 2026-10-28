@@ -379,7 +379,7 @@ class CascadeHarnessTest {
             }
         }
         assertTrue(stamped > 0, "the pipeline stamped nest slices");
-        assertTrue(counts[0] >= 5, "Bug Hole marks reached the spawner step: " + counts[0]);
+        assertTrue(counts[0] >= 5, "bug spawner marks reached the spawner step: " + counts[0]);
         assertEquals(0, counts[1], "the nest places zero chests (GGS-11-24)");
         assertEquals(0, outside, "GGS-11-08");
         assertEquals(0, rejected, "nothing for the sink to drop");

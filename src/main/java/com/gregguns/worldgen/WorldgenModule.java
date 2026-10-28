@@ -18,7 +18,6 @@ import com.gregguns.worldgen.loot.ChestScenarios;
 import com.gregguns.worldgen.loot.LootCategories;
 import com.gregguns.worldgen.loot.LootScenarios;
 import com.gregguns.worldgen.nest.NestBlockRegistration;
-import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -40,7 +39,6 @@ public final class WorldgenModule implements GregGunsModule {
 
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
-        HoleSpawnerRegistration.preInit(registrar);
         NestBlockRegistration.preInit(registrar);
     }
 

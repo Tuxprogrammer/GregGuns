@@ -7,8 +7,6 @@ navigation:
 item_ids:
   - gregguns:npc_egg
   - gregguns:camp_flag
-  - gregguns:bug_hole
-  - gregguns:zombie_hole
 ---
 
 # Enemies and loot
@@ -38,7 +36,7 @@ Military Camps and Aircraft Carriers fly a <ItemLink id="gregguns:camp_flag" /> 
 | Commando | Aircraft Carriers | An M4 and full Commando armor. | Steel, rubber, rifle bullets, Explosive Charges. |
 | Camp Turret | Camps | An AK47 behind iron plating. Shoots you and your turrets. | Nothing; just break it. |
 | Attack Helicopter | Boss: break a camp flag | Machine-gun bursts and rockets from the air. | 16 to 31 rifle bullets, 8 to 15 rockets, 2 or 3 Cybernetic Parts, 4 to 7 iron blocks. |
-| Alien Bug | Bug nests | Fast, climbs walls, bites. Pours out of the Bug Holes in desert and wasteland nests. | String and spider eyes. |
+| Alien Bug | Bug nests | Fast, climbs walls, bites. Pours out of the monster spawners in desert and wasteland nests. | String and spider eyes. |
 
 ## Heavy hitters
 
@@ -55,7 +53,7 @@ These never spawn on their own. Your pack or server brings them in with the <Ite
 
 ## Ruins and bases
 
-Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only Bug Holes.
+Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only monster spawners. The Big Bunker's two spawners call up zombies.
 
 - Small Factory, Train Station, House, Gas Station: LV
 - Big Bunker: MV

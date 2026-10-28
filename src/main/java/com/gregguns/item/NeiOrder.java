@@ -12,7 +12,6 @@ import com.gregguns.entity.npc.NpcRegistry;
 import com.gregguns.gun.def.ToolProbeDef;
 import com.gregguns.utility.UtilityItemOrder;
 import com.gregguns.worldgen.nest.NestBlockRegistration;
-import com.gregguns.worldgen.spawner.HoleKind;
 
 /**
  * The one list of every GregGuns item and block, in the order a player should meet them in NEI and the creative tab.
@@ -47,7 +46,7 @@ public final class NeiOrder {
         UTILITY,
         /** The NPC spawn egg. */
         NPC_EGG,
-        /** Zombie and Bug Hole spawners, the bug nest and its slime. */
+        /** The bug nest block and its slime. */
         WORLD_BLOCKS,
         /** Dev-only items, last. */
         DEV
@@ -83,10 +82,6 @@ public final class NeiOrder {
         }
         out.get(Category.NPC_EGG)
             .add(NpcRegistry.EGG_NAME);
-        for (HoleKind kind : HoleKind.values()) {
-            out.get(Category.WORLD_BLOCKS)
-                .add(kind.blockName());
-        }
         out.get(Category.WORLD_BLOCKS)
             .add(NestBlockRegistration.NEST_NAME);
         out.get(Category.WORLD_BLOCKS)

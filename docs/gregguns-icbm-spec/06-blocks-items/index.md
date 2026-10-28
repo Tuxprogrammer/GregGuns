@@ -12,7 +12,7 @@ All sheets are planned.
 - registry-catalog.md (planned): GregGuns items, blocks, tile entities and entities for the module, with the area that documents each.
 - recipe-remap.md (planned): each ICBM recipe mapped to a GT machine recipe or dropped; the ICBM crafting items replaced by GT parts.
 - [antidote.md](antidote.md): the antidote mapped to GT hazards (D151).
-- silo-guard-spawner.md (planned): the spawner block, defined with the world sheets in [08-worldgen](../08-worldgen/index.md).
+- Guard posts are vanilla mob spawners, defined with the world sheets in [08-worldgen](../08-worldgen/silo-guard-spawner.md); no GregGuns block.
 
 ## Integration map
 

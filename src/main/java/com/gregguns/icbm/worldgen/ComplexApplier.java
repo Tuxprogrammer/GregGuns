@@ -10,9 +10,8 @@ import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.control.ControlMachines;
 import com.gregguns.worldgen.WindowedSink;
-import com.gregguns.worldgen.spawner.HoleKind;
-import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
-import com.gregguns.worldgen.spawner.TileHoleSpawner;
+import com.gregguns.worldgen.spawner.SpawnerKind;
+import com.gregguns.worldgen.spawner.VanillaSpawners;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
@@ -188,11 +187,9 @@ public final class ComplexApplier {
         return ((x * 31 + y * 17 + z * 13) & 3) == 0 ? Blocks.gravel : Blocks.cobblestone;
     }
 
-    private void spawner(HoleKind kind, int x, int y, int z) {
-        Block b = HoleSpawnerRegistration.block(kind);
-        if (b != null && sink.setBlock(x, y, z, b, 0)) {
-            sink.setTile(x, y, z, new TileHoleSpawner(kind, ceiling));
-        }
+    /** A silo post: a vanilla mob spawner whose guards start at the complex ceiling's danger (D36). */
+    private void spawner(SpawnerKind kind, int x, int y, int z) {
+        VanillaSpawners.place(sink, kind, x, y, z, ceiling);
     }
 
     private void collapse(Box box) {
