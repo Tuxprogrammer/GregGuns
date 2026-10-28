@@ -621,17 +621,42 @@ public final class I6VisualSetups {
                         }
                         if (!(e instanceof net.minecraft.entity.item.EntityItem)) {
                             GregGuns.LOG.info(
-                                "I6C ent {} at {},{},{} hp={}",
+                                "I6C ent {} at {},{},{} hp={} max={} age={}",
                                 k,
                                 (int) e.posX,
                                 (int) e.posY,
                                 (int) e.posZ,
                                 e instanceof net.minecraft.entity.EntityLivingBase
                                     ? ((net.minecraft.entity.EntityLivingBase) e).getHealth()
-                                    : -1);
+                                    : -1,
+                                e instanceof net.minecraft.entity.EntityLivingBase
+                                    ? ((net.minecraft.entity.EntityLivingBase) e).getMaxHealth()
+                                    : -1,
+                                e.ticksExisted);
                         }
                     }
                     GregGuns.LOG.info("I6C ents within {} of {}: {}", r, t[1], n);
+                    break;
+                }
+                case "where": {
+                    EntityPlayerMP p = player(t[1]);
+                    int cx = Math.floorDiv((int) Math.floor(p.posX), 16),
+                        cz = Math.floorDiv((int) Math.floor(p.posZ), 16);
+                    net.minecraft.world.WorldServer ws = (net.minecraft.world.WorldServer) p.worldObj;
+                    GregGuns.LOG.info(
+                        "I6C where {} at {},{},{} dim={} chunk={},{} loaded={} watching={} gm={}",
+                        t[1],
+                        (int) p.posX,
+                        (int) p.posY,
+                        (int) p.posZ,
+                        p.dimension,
+                        cx,
+                        cz,
+                        ws.getChunkProvider()
+                            .chunkExists(cx, cz),
+                        ws.getPlayerManager()
+                            .isPlayerWatchingChunk(p, cx, cz),
+                        p.theItemInWorldManager.getGameType());
                     break;
                 }
                 case "kill":
