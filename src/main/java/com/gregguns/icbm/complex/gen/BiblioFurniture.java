@@ -29,7 +29,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 // Spec: docs/gregguns-icbm-spec/08-worldgen/palette.md (Furniture); D259; D262
 // Decompiled: BiblioCraft[v1.11.7][MC1.7.10].jar (GTNH 2.9.0-RC-2; no 1.7.10 source exists, and its copyright.txt
 // allows decompiling). Inferred from decompiled bytecode, unverified, and may change when the pack updates BiblioCraft.
-// Facts only, no code: the registry names in jds.bibliocraft.blocks.BlockLoader, the metas in the BlockItem*.subName arrays (0 oak, 1 spruce, 2 birch, 3 jungle, 4 acacia, 5 dark oak;
+// Facts only, no code: the registry names in jds.bibliocraft.blocks.BlockLoader, the metas in the BlockItem*.subName
+// arrays (0 oak, 1 spruce, 2 birch, 3 jungle, 4 acacia, 5 dark oak;
 // typewriter metas are dye colors, 3 black), the angle rule in each block's onBlockPlacedBy, the armor stand's meta
 // (angle below, angle + 4 above), and these tile-entity NBT keys: seat "Angle", "hasBack", "backWoodType"; table
 // "leg1".."leg4", "top1".."top4", "monoleg" (a lone table: no corner legs, one center leg, all four tops); desk
@@ -84,17 +85,6 @@ public final class BiblioFurniture {
         return (facing + 3) & 3;
     }
 
-    /**
-     * The typewriter's model is drawn a quarter turn from the other pieces: its keys face the way its stored angle
-     * names (0 south ... 3 east). Seen in the real-pack renders (a typewriter set with {@link #angle} showed its keys a
-     * quarter turn off), not in the jar.
-     *
-     * @return the typewriter's stored angle for keys facing {@code facing}
-     */
-    static int typewriterAngle(int facing) {
-        return facing & 3;
-    }
-
     /** The typewriter's color: black. */
     static final int TYPEWRITER_BLACK = 3;
 
@@ -138,8 +128,6 @@ public final class BiblioFurniture {
                 t.setInteger("deskAngle", angle);
                 break;
             case TYPEWRITER:
-                t.setInteger("angle", typewriterAngle(facing));
-                break;
             case CLIPBOARD:
                 t.setInteger("angle", angle);
                 break;

@@ -98,9 +98,9 @@ class RoomFurnitureTest {
                         blocked.add(key(m.x(), m.z()));
                     } else if (m.kind() == MarkKind.LOOT_CHEST || m.kind() == MarkKind.MACHINE
                         || m.kind() == MarkKind.SPAWNER) {
-                        blocked.add(key(m.x(), m.z()));
-                        solid.add(key(m.x(), m.z()));
-                    }
+                            blocked.add(key(m.x(), m.z()));
+                            solid.add(key(m.x(), m.z()));
+                        }
                 }
                 // Walk from the room's own doorway over every interior cell nothing stands on.
                 Door d = r.door();
@@ -131,7 +131,9 @@ class RoomFurnitureTest {
                     int x = (int) (s >> 32), z = (int) s;
                     boolean reached = false;
                     for (int[] n : nb) reached |= seen.contains(key(x + n[0], z + n[1]));
-                    assertTrue(reached, "plan " + i + " " + r.kind() + ": furniture walls off the mark at " + x + "," + z);
+                    assertTrue(
+                        reached,
+                        "plan " + i + " " + r.kind() + ": furniture walls off the mark at " + x + "," + z);
                 }
             }
         }
@@ -171,8 +173,12 @@ class RoomFurnitureTest {
                 }
             }
         }
-        assertTrue(seen.get(RoomKind.CAFETERIA).containsAll(set(FurniturePiece.WOOD_TABLE, FurniturePiece.CHAIR)));
-        assertTrue(seen.get(RoomKind.GUARD_POST).containsAll(set(FurniturePiece.LOCKER, FurniturePiece.DESK)));
+        assertTrue(
+            seen.get(RoomKind.CAFETERIA)
+                .containsAll(set(FurniturePiece.WOOD_TABLE, FurniturePiece.CHAIR)));
+        assertTrue(
+            seen.get(RoomKind.GUARD_POST)
+                .containsAll(set(FurniturePiece.LOCKER, FurniturePiece.DESK)));
         assertTrue(
             seen.get(RoomKind.COMMANDER_OFFICE)
                 .containsAll(set(FurniturePiece.DESK, FurniturePiece.TYPEWRITER, FurniturePiece.BOOKCASE)));
@@ -182,8 +188,12 @@ class RoomFurnitureTest {
         assertTrue(
             seen.get(RoomKind.ARMORY)
                 .containsAll(set(FurniturePiece.TOOL_RACK, FurniturePiece.ARMOR_STAND)));
-        assertTrue(seen.get(RoomKind.BUNKS).contains(FurniturePiece.LOCKER));
-        assertTrue(seen.get(RoomKind.SERVER_ROOM).contains(FurniturePiece.SERVER_RACK));
+        assertTrue(
+            seen.get(RoomKind.BUNKS)
+                .contains(FurniturePiece.LOCKER));
+        assertTrue(
+            seen.get(RoomKind.SERVER_ROOM)
+                .contains(FurniturePiece.SERVER_RACK));
     }
 
     private static Set<FurniturePiece> set(FurniturePiece... p) {
@@ -235,7 +245,8 @@ class RoomFurnitureTest {
     @Test
     void wearFollowsTheActivityLevel() {
         assertEquals(0, FurnitureWear.lostShare(ActivityLevel.OPERATIONAL));
-        assertTrue(FurnitureWear.lostShare(ActivityLevel.ABANDONED) > FurnitureWear.lostShare(ActivityLevel.PARTLY_ABANDONED));
+        assertTrue(
+            FurnitureWear.lostShare(ActivityLevel.ABANDONED) > FurnitureWear.lostShare(ActivityLevel.PARTLY_ABANDONED));
         ComplexPlan p = plan(3);
         for (ActivityLevel lv : ActivityLevel.values()) {
             int total = 0, lost = 0;
@@ -252,7 +263,10 @@ class RoomFurnitureTest {
                     if (gone) lost++;
                     List<Placement> crushed = new ArrayList<>();
                     FurnitureWear.wear(m, true, lv, p.seed(), crushed);
-                    assertEquals(Placement.Kind.RUBBLE, crushed.get(0).kind());
+                    assertEquals(
+                        Placement.Kind.RUBBLE,
+                        crushed.get(0)
+                            .kind());
                 }
             }
             if (lv == ActivityLevel.OPERATIONAL) assertEquals(0, lost);

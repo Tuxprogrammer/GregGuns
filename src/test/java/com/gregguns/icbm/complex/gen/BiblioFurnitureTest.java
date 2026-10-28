@@ -54,7 +54,7 @@ class BiblioFurnitureTest {
         t = new NBTTagCompound();
         BiblioFurniture.applyNbt(FurniturePiece.WOOD_TABLE, 1, 0, t);
         assertTrue(t.getBoolean("monoleg") && t.getBoolean("top3") && !t.getBoolean("leg2"));
-        String[][] keys = { { "DESK", "deskAngle" }, { "CLIPBOARD", "angle" },
+        String[][] keys = { { "DESK", "deskAngle" }, { "TYPEWRITER", "angle" }, { "CLIPBOARD", "angle" },
             { "BOOKCASE", "bookcaseAngle" }, { "WALL_SHELF", "genericShelfAngle" },
             { "MEDICINE_SHELF", "potionshelfAngle" }, { "TOOL_RACK", "rackAngle" } };
         for (String[] k : keys) {
@@ -62,15 +62,6 @@ class BiblioFurnitureTest {
             BiblioFurniture.applyNbt(FurniturePiece.valueOf(k[0]), 1, 3, t);
             assertTrue(t.hasKey(k[1]), k[0]);
             assertEquals(BiblioFurniture.angle(3), t.getInteger(k[1]), k[0]);
-        }
-    }
-
-    @Test
-    void theTypewritersKeysFaceItsFacing() {
-        for (int f = 0; f < 4; f++) {
-            NBTTagCompound t = new NBTTagCompound();
-            BiblioFurniture.applyNbt(FurniturePiece.TYPEWRITER, 1, f, t);
-            assertEquals(f, t.getInteger("angle"));
         }
     }
 

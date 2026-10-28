@@ -488,7 +488,6 @@ final class ComplexFurnisher {
             return mark(k, a, 0, key);
         }
 
-
         /**
          * Keeps a 5 x 5 block free around (a, d) for the NASA Workbench and its free ring; false if it does not fit.
          * The 3 x 3 core (GC's fake blocks) must be strictly free, so a lit floor tile is never buried under it. A
@@ -635,7 +634,8 @@ final class ComplexFurnisher {
                     String[] l = furn[i];
                     if (FurniturePiece.of(l[0]) == FurniturePiece.CHAIR) {
                         int fc = furnFacing[i];
-                        String front = bottom.get(cell(f.x(a, d) + RoomFurniture.DX[fc], f.z(a, d) + RoomFurniture.DZ[fc]));
+                        String front = bottom
+                            .get(cell(f.x(a, d) + RoomFurniture.DX[fc], f.z(a, d) + RoomFurniture.DZ[fc]));
                         if (!RoomFurniture.seatsAt(front)) continue;
                     }
                     for (int y = 1; y <= l.length; y++) {

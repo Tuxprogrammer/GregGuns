@@ -87,7 +87,7 @@ The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) ge
 | Chair, stool | `BiblioSeats` | wood | `Angle`; `hasBack` 1 for a chair, 0 for a stool; `backWoodType` | a wooden stair, its back away from the table |
 | Table | `BiblioTable` | wood | none; a lone table's `leg1`..`leg4` off, `top1`..`top4` and `monoleg` on (neighbors join when a player builds next to it) | the style's table |
 | Desk | `BiblioDesk` | wood | `deskAngle` | the style's table |
-| Typewriter | `BiblioTypewriter` | 3 (black) | `angle`, which for the typewriter is the keys' facing itself (seen in the real-pack renders) | none |
+| Typewriter | `BiblioTypewriter` | 3 (black) | `angle` | none |
 | Clipboard | `BiblioClipboard` | 0 | `angle` | none |
 | Bookcase | `Bibliotheca` | wood | `bookcaseAngle` | the style's shelf |
 | Medicine cabinet | `BiblioPotionShelf` | wood | `potionshelfAngle` | the style's shelf |
@@ -97,7 +97,7 @@ The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) ge
 | Server rack | the style's console block, two high | | | the same |
 
 - **Wood:** one per room, spruce, dark oak, birch or oak, from the plan seed and the room id.
-- **Facing:** BiblioCraft turns a piece to face the player who places it, storing `(playerFacing + 1) % 4` (player facing 0 south, 1 west, 2 north, 3 east). A piece whose front faces `f` gets `(f + 3) % 4`; the typewriter's model is a quarter turn off, so it gets `f`. The real-pack renders confirm chairs face their tables, desks face their chairs, and shelves, bookcases, cabinets, clipboards and lockers face into the room.
+- **Facing:** BiblioCraft turns a piece to face the player who places it, storing `(playerFacing + 1) % 4` (player facing 0 south, 1 west, 2 north, 3 east). A piece whose front faces `f` gets `(f + 3) % 4`. The real-pack renders confirm it (a typewriter set at each of the four angles shows its keys west, north, east and south), and that chairs face their tables, desks and typewriters face their chairs, and shelves, bookcases, cabinets, clipboards and lockers face into the room.
 - **How it is placed:** `FurnitureFiller` (the complex's mark filler) sets the block through the window's sink by registry name (`GameRegistry.findBlock`, guarded by `Loader.isModLoaded("BiblioCraft")`), then writes the facing into the tile's own NBT (`writeToNBT`, set the keys, `readFromNBT`). No BiblioCraft class is linked and none of its assets ship (D262).
 - **Worth:** BiblioCraft furniture is wood and drops itself; a GT ULV Locker is a cheap machine. Nothing here is a material sink worth farming.
 

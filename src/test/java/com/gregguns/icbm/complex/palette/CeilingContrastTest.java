@@ -57,7 +57,10 @@ class CeilingContrastTest {
                                 for (int x = 0; x < size[0]; x++) {
                                     for (int z = 0; z < size[1]; z++) {
                                         BlockRef.Entry c = s.ceilingEntry(x, z, size[0], size[1], lookup);
-                                        assertNotEquals(wall, c, g + " " + dim + " " + s.setId() + " at " + x + "," + z);
+                                        assertNotEquals(
+                                            wall,
+                                            c,
+                                            g + " " + dim + " " + s.setId() + " at " + x + "," + z);
                                         checked++;
                                     }
                                 }
@@ -113,7 +116,9 @@ class CeilingContrastTest {
             w.chain()
                 .get(0)
                 .key());
-        assertTrue(walls.contains("chisel:laboratoryblock@11") && walls.contains("chisel:laboratoryblock@12"), "" + walls);
+        assertTrue(
+            walls.contains("chisel:laboratoryblock@11") && walls.contains("chisel:laboratoryblock@12"),
+            "" + walls);
         assertEquals(
             "chisel:laboratoryblock@8",
             lab.floors.get(0)
