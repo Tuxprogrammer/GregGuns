@@ -54,8 +54,7 @@ public final class ComplexContents {
 
         mark(plan.hall(), hall, false, p, seed, ceiling, hall, out, chests, chestCounter, level);
         for (Room r : plan.rooms()) {
-            boolean collapsed = r.kind() != RoomKind.GUARD_POST && r.kind() != RoomKind.DECON_AIRLOCK
-                && Mix.unit(Mix.of(seed, S_COLLAPSE, r.id(), 0)) < p.collapseChance();
+            boolean collapsed = mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p);
             if (collapsed) {
                 collapses.add(
                     Placement.at(Kind.COLLAPSE, r.bounds().minX, r.bounds().minY, r.bounds().minZ)
@@ -71,6 +70,21 @@ public final class ComplexContents {
         List<Placement> all = new ArrayList<>(collapses);
         all.addAll(out);
         return keepFrameWalls(all);
+    }
+
+    /**
+     * Whether a room of this kind may cave in. Guard posts and the airlock never do, and neither does Launch Control:
+     * it overlooks the silo gallery and is the complex's goal, so it stays walkable at every level (D252); its lamps,
+     * rubble and breaches still follow the level. The halls, the gallery among them, never collapse either: they are
+     * marked with {@code collapsed = false}.
+     */
+    static boolean mayCollapse(RoomKind kind) {
+        return kind != RoomKind.GUARD_POST && kind != RoomKind.DECON_AIRLOCK && kind != RoomKind.LAUNCH_CONTROL;
+    }
+
+    /** @return whether a room's collapse roll comes up, before {@link #mayCollapse} is asked */
+    static boolean collapseRoll(long seed, int roomId, ActivityProfile p) {
+        return Mix.unit(Mix.of(seed, S_COLLAPSE, roomId, 0)) < p.collapseChance();
     }
 
     private static final int[] FRAME_DX = { 0, -1, 0, 1 };
