@@ -816,12 +816,16 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         double bonus = FuelMath.bonusRadius(radius, plannedDistance, maxRange(), IcbmConfig.fuelBonusMax);
         boolean accepted = IcbmBlasts.detonate(world, x, y, z, def, fill, bonus, actor);
         impactReport = String.format(
-            "detonated at %.1f,%.1f,%.1f from phase %s tick %d, blast %s",
+            "detonated at %.1f,%.1f,%.1f from phase %s tick %d of %s, aimed at %.1f,%.1f,%.1f, blast %s",
             x,
             y,
             z,
             phase,
             phaseTick,
+            path == null ? "?" : Integer.toString(path.ticks()),
+            targetX,
+            targetY,
+            targetZ,
             accepted ? "accepted" : "REFUSED");
         if (!accepted) {
             com.gregguns.GregGuns.LOG.warn("Missile {} refused: {}", explosive, impactReport);
