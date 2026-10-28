@@ -721,6 +721,7 @@ gregguns.icbm.missile_body.tooltip.fuel=Fuel: %s mB
 gregguns.icbm.missile_body.tooltip.range=Range: %s to %s blocks
 gregguns.icbm.missile_body.tooltip.guidance=Guidance: +%s tiers
 gregguns.icbm.missile_body.tooltip.warhead=Carries a warhead up to tier T%s
+gregguns.icbm.missile_body.tooltip.fuels=Burns: %s
 gregguns.icbm.missile_body.tooltip.stack=Place it on a Galacticraft launch pad (T3: in a Missile Silo shaft), seat a warhead on its nose, then sneak and right-click it with an empty hand to arm it
 gregguns.icbm.missile_body.tooltip.bonus=Fuel left over at impact adds to the blast radius
 gregguns.icbm.body.hint=Seat a T1 to T%s warhead on the nose, then sneak and right-click with an empty hand to arm the missile.

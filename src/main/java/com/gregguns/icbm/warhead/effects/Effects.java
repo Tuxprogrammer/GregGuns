@@ -112,6 +112,29 @@ public final class Effects {
         EnderEffect.forced = null;
     }
 
+    /** Test hook: zeroes the anti-gravitational warhead's per-tick maxima. */
+    public static void resetAntigravStats() {
+        AntiGravEffect.resetStats();
+    }
+
+    /**
+     * @return the anti-gravitational warhead's per-tick maxima since {@link #resetAntigravStats}: {flying blocks turned
+     *         out in one tick, layers gathered in one tick}
+     */
+    public static int[] antigravStats() {
+        return new int[] { AntiGravEffect.maxSpawnedPerTick(), AntiGravEffect.maxLayersPerTick() };
+    }
+
+    /** @return the per-tick cap on flying blocks the anti-gravitational warhead turns out */
+    public static int antigravPerTickCap() {
+        return AntiGravEffect.PER_TICK;
+    }
+
+    /** @return the per-tick cap on layers the anti-gravitational warhead gathers */
+    public static int antigravLayerCap() {
+        return AntiGravEffect.MAX_LAYERS_PER_TICK;
+    }
+
     @SuppressWarnings("unchecked")
     static List<EntityLivingBase> living(World world, double x, double y, double z, double r) {
         return world.getEntitiesWithinAABB(

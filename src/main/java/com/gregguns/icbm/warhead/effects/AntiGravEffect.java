@@ -49,6 +49,25 @@ final class AntiGravEffect implements BlastEffect {
     /** Entities are lifted only below this many blocks above the center. */
     static final int ENTITY_CEILING = 20;
 
+    private static int maxSpawnedPerTick;
+    private static int maxLayersPerTick;
+
+    /** Test hook: zeroes the per-tick maxima of {@link #maxSpawnedPerTick()} and {@link #maxLayersPerTick()}. */
+    static void resetStats() {
+        maxSpawnedPerTick = 0;
+        maxLayersPerTick = 0;
+    }
+
+    /** @return the most flying blocks one blast turned out in a single tick since {@link #resetStats()} */
+    static int maxSpawnedPerTick() {
+        return maxSpawnedPerTick;
+    }
+
+    /** @return the most layers one blast gathered in a single tick since {@link #resetStats()} */
+    static int maxLayersPerTick() {
+        return maxLayersPerTick;
+    }
+
     @Override
     public void onDetonate(BlastContext ctx) {
         ctx.state()
@@ -137,6 +156,8 @@ final class AntiGravEffect implements BlastEffect {
             lifted++;
             spawned++;
         }
+        maxSpawnedPerTick = Math.max(maxSpawnedPerTick, spawned);
+        maxLayersPerTick = Math.max(maxLayersPerTick, gathered);
         state.setInteger("lifted", lifted);
         state.setInteger("layer", layer);
         state.setInteger("next", next);

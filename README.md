@@ -110,10 +110,14 @@ What Techguns does is captured in a behavioral spec at [docs/techguns-spec/](doc
 
 ## License
 
-Everything in this repository is released under the [MIT License](LICENSE). That covers code, textures, models, sounds, animations, logos, infographics, documentation, specs and tools. Anyone may download, use, copy, modify, merge, publish, distribute, sublicense and sell it under the terms of that license.
+The GregGuns code, original art, sounds, models, documentation, specs and tools are released under the [MIT License](LICENSE). Anyone may download, use, copy, modify, merge, publish, distribute, sublicense and sell them under the terms of that license.
 
-Exceptions: a few files come from upstream projects and keep their own licenses. These are the Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`, Apache-2.0) and the GTNH buildscript files (`build.gradle.kts`, `settings.gradle.kts`, `gtnhShared/`, from [GTNewHorizons/ExampleMod1.7.10](https://github.com/GTNewHorizons/ExampleMod1.7.10)).
+**Code.** Everything is MIT. A few ICBM algorithms derive from [ICBM-Classic](https://github.com/BuiltBrokenModding/ICBM-Classic) (MIT, `prod/1.12`); each ported file names its source, and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) keeps the required MIT notice.
 
-The infographics in `docs/assets/infographics/` show GregTech 5 Unofficial textures (hulls, hatches, frames, glass and material icons). Those textures stay under GregTech's LGPL-3.0; the rest of each image is MIT.
+**Third-party assets in the mod jar.** The ICBM module ships art from HBM's Nuclear Tech Mod (warhead, missile and silo models, textures and item icons, the Radar Casing tiles and the fallout block art), licensed under the LGPL-3.0, with the modifications named. Each `thirdparty/ntm/` folder under `src/main/resources/assets/gregguns/` holds the license text beside the files (`LICENSE.txt` and `GPL-3.0.txt`), and [docs/assets/CREDITS.md](docs/assets/CREDITS.md) lists every file with its source commit. Those files stay under their own license; the rest of the jar is MIT.
+
+**Third-party art in the guide sheets.** The infographics in `docs/assets/infographics/` (not part of the jar) paint in some upstream art: GregTech 5 Unofficial textures (hulls, hatches, frames, glass and material icons, LGPL-3.0), Galacticraft Legacy art (MIT), Tinkers' Construct glass (LGPL-3.0), HBM's Nuclear Tech Mod renders (LGPL-3.0) and the Minecraft textures (Mojang's usage guidelines). The Missile Silo sheet also paints in two NewHorizonsCoreMod icons under the GPL-3.0, so that sheet is GPL-3.0. Each sheet's credits row in [docs/assets/CREDITS.md](docs/assets/CREDITS.md) says which parts it uses; the license texts sit beside the source files in `tools/asset-gen/infographics/inputs/thirdparty/`. The rest of each image is MIT.
+
+**Build files.** The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`, Apache-2.0) and the GTNH buildscript files (`build.gradle.kts`, `settings.gradle.kts`, `gtnhShared/`, from [GTNewHorizons/ExampleMod1.7.10](https://github.com/GTNewHorizons/ExampleMod1.7.10)) keep their own licenses.
 
 The MIT License covers only what is in this repository. It grants no rights to Techguns, which is not included here (see [Relationship to Techguns](#relationship-to-techguns)).

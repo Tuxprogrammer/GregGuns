@@ -151,6 +151,12 @@ public final class ItemBlockMissileBody extends ItemBlock {
         f.guidance = MissileBodies.guidanceOf(stack);
         f.warheadTier = tier.warheadTier()
             .number();
+        // The tier's own fuel rules (the pad, the loader and the fuel hatch accept exactly these), by display name.
+        for (String fluidName : tier.fuels()) {
+            net.minecraftforge.fluids.Fluid fluid = net.minecraftforge.fluids.FluidRegistry.getFluid(fluidName);
+            f.fuels.add(
+                fluid != null ? fluid.getLocalizedName(new net.minecraftforge.fluids.FluidStack(fluid, 1)) : fluidName);
+        }
         MissileTooltipFormat.Labels l = new MissileTooltipFormat.Labels();
         l.tier = StatCollector.translateToLocal("gregguns.icbm.missile_body.tooltip.tier");
         l.fuel = StatCollector.translateToLocal("gregguns.icbm.missile_body.tooltip.fuel");
@@ -158,13 +164,11 @@ public final class ItemBlockMissileBody extends ItemBlock {
         l.guidance = StatCollector.translateToLocal("gregguns.icbm.missile_body.tooltip.guidance");
         l.shiftHint = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.shift");
         l.detailWarhead = StatCollector.translateToLocal("gregguns.icbm.missile_body.tooltip.warhead");
+        l.detailFuels = StatCollector.translateToLocal("gregguns.icbm.missile_body.tooltip.fuels");
         l.detailStack = StatCollector.translateToLocal("gregguns.icbm.missile_body.tooltip.stack");
         l.detailBonus = StatCollector.translateToLocal("gregguns.icbm.missile_body.tooltip.bonus");
         boolean shift = net.minecraft.client.gui.GuiScreen.isShiftKeyDown();
-        net.minecraft.client.gui.FontRenderer font = net.minecraft.client.Minecraft.getMinecraft().fontRenderer;
-        for (String line : MissileTooltipFormat.lines(l, f, shift)) {
-            tooltip.addAll(font.listFormattedStringToWidth(line, 200));
-        }
+        com.gregguns.icbm.TooltipWrap.addAll(tooltip, MissileTooltipFormat.lines(l, f, shift));
         if (shift) {
             tooltip.add(AddedBy.line());
         }

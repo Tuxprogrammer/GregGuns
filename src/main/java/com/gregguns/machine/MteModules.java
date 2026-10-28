@@ -36,6 +36,9 @@ public final class MteModules {
      * @return the module whose machines use that casing
      */
     public static ModuleId casingModule(int casingMeta) {
+        if (casingMeta == com.gregguns.block.GregGunsCasings.RADAR_CASING) {
+            return ModuleId.ICBM;
+        }
         if (casingMeta >= com.gregguns.block.GregGunsCasings.BASTION_IRON) {
             return ModuleId.UTILITY;
         }

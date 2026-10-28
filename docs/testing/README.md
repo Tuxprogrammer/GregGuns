@@ -141,6 +141,7 @@ Blocks and entities that a scenario leaves behind (a StructureLib multiblock, GT
 - **Fixed Y = 100.** Clear of the terrain in a normal dev world, below the nether ceiling, inside a superflat world's build limit. Ground is made, not found: `Y - 1` is stone, so a scenario that expects ground has it.
 - **Cleared before it runs.** For the scenario's `areaRadius()` (default 32, clamped to 48) the harness kills every non-player entity, sets 16 layers from the origin Y up to air (which removes tile entities) and lays the stone floor. This writes straight to the world, not through `ctx.setBlock`, so cleanup does not "restore" the residue of an earlier run.
 - **Loaded across ticks.** The same area is held with Forge chunk tickets (`ForgeChunkManager.requestTicket` / `forceChunk`, several tickets when the area is over a ticket's 25 chunk limit), so a projectile never meets an unloaded chunk (WGEN-27) and a multi-tick scenario's area stays loaded. The tickets are released in `ctx.cleanup()`, which the runner calls on finish, failure and timeout. The `LoadingCallback` registered for the mod releases any ticket saved in a world file by a killed server. Dev environment only: the callback is registered under `DevEnvironment.isActive()` and nothing in gameplay code requests tickets.
+- **Config is restored.** `ScenarioRun` snapshots every `GregGunsConfig` class's static fields (`ConfigSnapshot`) before a scenario and puts them back after its cleanup, so a scenario that changes a config switch and misses an exit path cannot leak into the next one. A WARN line names any field that was left changed. Unit test: `ConfigSnapshotTest`.
 - **Overriding.** A scenario that needs a bigger area overrides `Scenario.areaRadius()`. The maximum, 48, touches a default-sized neighbour but does not overlap it.
 - **Proof.** `gregguns test all` run twice in a row in one world passes 33 of 33 both times (`build/run_scenarios_twice.py`, a local variant of the orchestrator's runner that sends the command twice).
 
@@ -537,6 +538,25 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `testing.build_multiblocks` | dev tooling | Places a bare Ammunition Works, Armory Gantry and Rampart controller in turn, runs `DevStructureBuilder.build` (the command `/gregguns build`), and checks each reports a formed structure (`mMachine`) after GT's warm-up; a floor block must not build. Needs `GG_MODULES` with guns, machines and utility. |
 | `testing.interior_shots` | dev tooling | By name only (needs a client, `client_shot.py`): builds an Ammunition Works and an Armory Gantry, moves the first player outside a window and signals screenshots of the lit interiors through the glass. |
 | `icbm.module_gate` | ICBM module (I0) | Registered whatever the module flag says, and passes on both the Galacticraft and the `--no-galacticraft` branch: the module's reported state (`ModuleState`) agrees with the resolver's verdict for `modules.icbm` and the required mods (`ModPresence`, `ModuleId.requiredMods()`, `SkipReason.MISSING_MOD`). Needs `GG_MODULES=all` to see the active branch (icbm needs `guns` and `machines`). Unit twin: `ModuleResolverTest`. |
+
+## ICBM scenarios
+
+The ICBM module has about 110 scenarios, all named `icbm.<area>.<name>`. They register only with the module active and test hooks on (`icbm.module_gate` registers whatever the flag says, and `icbm.content_gate` registers with the guns module). The live list, with each description, is `/gregguns test list` (console: `gregguns test list`) on a server started with `GG_MODULES=all`. Run an area with its prefix, for example `gregguns test icbm.silo.`; the trailing dot is required. Each area's spec sheet names its scenarios in a Tests section.
+
+| Prefix | Area | Spec |
+|---|---|---|
+| `icbm.blast.`, `icbm.warhead.`, `icbm.antimatter.`, `icbm.redmatter.`, `icbm.launcher.` | Blast engine, warheads, annihilation, launcher warheads | [02-explosives](../gregguns-icbm-spec/02-explosives/index.md) |
+| `icbm.nuclear.` | Nuclear blast, fallout and its byproduct chain | [nuclear-and-fallout.md](../gregguns-icbm-spec/02-explosives/nuclear-and-fallout.md) |
+| `icbm.missile.`, `icbm.pad.`, `icbm.production.`, `icbm.recipes.` | Missiles, the pad, the Missile Workbench and the recipe checks | [03-missiles](../gregguns-icbm-spec/03-missiles/index.md) |
+| `icbm.silo.` | Missile Silo | [missile-silo.md](../gregguns-icbm-spec/03-missiles/missile-silo.md) |
+| `icbm.control.`, `icbm.launch.` | Launch Control and the launch sequence | [04-launch-control](../gregguns-icbm-spec/04-launch-control/index.md) |
+| `icbm.defense.`, `icbm.emp.` | Radar, Air-Defense Battery, EMP Tower, handheld tools | [05-detection-defense](../gregguns-icbm-spec/05-detection-defense/index.md) |
+| `icbm.oc.` | OpenComputers components and the Golden Dome | [golden-dome.md](../gregguns-icbm-spec/01-core/golden-dome.md) |
+| `icbm.antidote.`, `icbm.tools.` | Antidote, Remote Detonator, Defuse Kit | [06-blocks-items](../gregguns-icbm-spec/06-blocks-items/index.md) |
+| `icbm.complex.` | Silo complexes: places, levels, guards, loot, one scenario per dimension (`icbm.complex.dim.<key>`; the planet scenarios skip with a logged reason when the planet's mod is not loaded, D220) | [08-worldgen](../gregguns-icbm-spec/08-worldgen/index.md) |
+| `icbm.module_gate`, `icbm.content_gate` | The module switch; ICBM-only content hidden with the module off | D223 |
+
+Gate runs (D68): `gregguns test icbm.` with Galacticraft, and a `--no-galacticraft --boot-only` boot. The full suite (`gregguns test all`) runs at the alpha and beta checkpoints.
 
 ## M1 coverage
 

@@ -50,6 +50,7 @@ public final class BlastEngine {
     private final Map<World, BlastSavedData> data = new WeakHashMap<>();
     private int lastSlices;
     private long maxTickNanos;
+    private long maxEffectNanos;
     private BlastJob lastStarted;
     private long accepted;
     private String maxTickStage = "none";
@@ -280,6 +281,14 @@ public final class BlastEngine {
         return maxTickNanos;
     }
 
+    /**
+     * @return the longest time one tick spent running every blast's effect (before the scheduler opens its budget, so
+     *         outside {@link #maxTickNanos()}) since {@link #resetStats()}, nanoseconds
+     */
+    public long maxEffectNanos() {
+        return maxEffectNanos;
+    }
+
     /** @return the stage the first running blast was in after the tick behind {@link #maxTickNanos()} (diagnostics) */
     public String maxTickStage() {
         return maxTickStage;
@@ -316,9 +325,10 @@ public final class BlastEngine {
         return slowestSliceLabel + " " + slowestSliceNanos / 1_000_000.0 + " ms";
     }
 
-    /** Test hook: zeroes {@link #maxTickNanos()}. */
+    /** Test hook: zeroes {@link #maxTickNanos()} and {@link #maxEffectNanos()}. */
     public void resetStats() {
         maxTickNanos = 0L;
+        maxEffectNanos = 0L;
         maxTickStage = "none";
     }
 
@@ -336,6 +346,7 @@ public final class BlastEngine {
         if (event.phase != TickEvent.Phase.END || jobs.isEmpty()) {
             return;
         }
+        long effectsBegan = System.nanoTime();
         Iterator<BlastJob> it = jobs.iterator();
         while (it.hasNext()) {
             BlastJob job = it.next();
@@ -356,6 +367,7 @@ public final class BlastEngine {
             }
         }
         long began = System.nanoTime();
+        maxEffectNanos = Math.max(maxEffectNanos, began - effectsBegan);
         budget.open(IcbmConfig.blastBudgetMs * 1_000_000L);
         lastSlices = scheduler.runTick(jobs, budget);
         long spent = System.nanoTime() - began;

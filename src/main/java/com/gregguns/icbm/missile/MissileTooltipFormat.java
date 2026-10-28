@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Pure layout of a missile body tooltip (D41): tier, fuel, range and guidance, then the details behind Shift. It takes
+ * Pure layout of a missile body tooltip (D41): tier, fuel, range and guidance, then the details behind Shift (the
+ * warhead it carries, the fuels it burns, how to arm it). It takes
  * already localized templates, so it has no Minecraft types and is unit tested. Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/missile-bodies.md (Tooltip)
@@ -27,6 +28,8 @@ public final class MissileTooltipFormat {
         public String shiftHint;
         /** Detail: the warhead it carries, one slot: the heaviest warhead tier. */
         public String detailWarhead;
+        /** Detail: the fuels the tank burns, one slot: the localized fluid names, comma separated. */
+        public String detailFuels;
         /** Detail: how to stack and arm it. */
         public String detailStack;
         /** Detail: the unburned fuel bonus. */
@@ -48,6 +51,8 @@ public final class MissileTooltipFormat {
         public int guidance;
         /** The heaviest warhead tier it carries. */
         public int warheadTier;
+        /** The localized names of the fuels the tier burns, worst-accepted first; may be empty. */
+        public List<String> fuels = new ArrayList<>();
     }
 
     /**
@@ -69,6 +74,9 @@ public final class MissileTooltipFormat {
             return out;
         }
         out.add(String.format(l.detailWarhead, f.warheadTier));
+        if (f.fuels != null && !f.fuels.isEmpty()) {
+            out.add(String.format(l.detailFuels, String.join(", ", f.fuels)));
+        }
         out.add(l.detailStack);
         out.add(l.detailBonus);
         return out;
