@@ -1026,12 +1026,8 @@ public final class DefenseScenarios {
                 }
                 powerHatch(ctx, TOWER_DX, 0, rz);
                 if (stage[0] == 0) {
-                    DevStructureBuilder.buildRadarTower(
-                        w,
-                        (int) ox + TOWER_DX,
-                        (int) oy,
-                        (int) oz + rz,
-                        ItemList.Hatch_Energy_IV);
+                    DevStructureBuilder
+                        .buildRadarTower(w, (int) ox + TOWER_DX, (int) oy, (int) oz + rz, ItemList.Hatch_Energy_IV);
                     r.setRadius(100);
                     bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, linkStick(rb, w));
                     // The battery stays empty until the radar has been photographed, so the SAM flies afterwards.
@@ -1120,7 +1116,8 @@ public final class DefenseScenarios {
                                     .spinning(),
                             "the tower's dish stands and spins");
                         for (net.minecraft.entity.player.EntityPlayerMP p : players) {
-                            MissileShotsScenario.signal(p, "shot", dt == 40 ? "icbm-tower-dish-a" : "icbm-tower-dish-b");
+                            MissileShotsScenario
+                                .signal(p, "shot", dt == 40 ? "icbm-tower-dish-a" : "icbm-tower-dish-b");
                         }
                     }
                     if (dt < 220) {

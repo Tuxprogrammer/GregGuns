@@ -83,7 +83,8 @@ final class RadarDishKeeper {
         AxisAlignedBB near = AxisAlignedBB.getBoundingBox(x - 1.0, y - 1.0, z - 1.0, x + 1.0, y + 1.0, z + 1.0);
         for (Object o : w.getEntitiesWithinAABB(EntityRadarDish.class, near)) {
             EntityRadarDish e = (EntityRadarDish) o;
-            if (!e.isDead && w.getEntityByID(e.getEntityId()) == e && e.servesController(base.getXCoord(), base.getYCoord(), base.getZCoord())) {
+            if (!e.isDead && w.getEntityByID(e.getEntityId()) == e
+                && e.servesController(base.getXCoord(), base.getYCoord(), base.getZCoord())) {
                 return e;
             }
         }

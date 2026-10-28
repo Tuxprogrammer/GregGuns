@@ -83,7 +83,8 @@ final class RadarDishScenarios {
         AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x - 3, y - 3, z - 3, x + 4, y + 4, z + 4);
         for (Object o : w.getEntitiesWithinAABB(EntityItem.class, box)) {
             EntityItem item = (EntityItem) o;
-            if (item.getEntityItem() != null && ItemList.Tool_DataStick.isStackEqual(item.getEntityItem(), false, true)) {
+            if (item.getEntityItem() != null
+                && ItemList.Tool_DataStick.isStackEqual(item.getEntityItem(), false, true)) {
                 n++;
             }
             if (remove) {
