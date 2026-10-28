@@ -185,6 +185,34 @@ def render_obj(obj: str, tex: str, name: str, yaw=35, pitch=14, ppu=110) -> K.Pa
     return K._cached(f"d4-{name}", dict(sig=sig, y=yaw, p=pitch, u=ppu, v=1), make)
 
 
+def render_with_dish(build: S.Build, tag: str, dish_at: tuple, scale: float, turn: float, yaw: float, pitch: float,
+                     ppu: int) -> K.Path:
+    """The build's voxels with the shipped dish OBJ standing in place (the way the game draws it): dish_at is the
+    dish origin in block coordinates, scale the model scale, turn its rotation about the vertical axis in degrees."""
+    o, t = NTM / "radar_dish.obj", NTM_TEX / "radar_dish.png"
+    tags = {k: (2 if k == "ctrl" else 3 if k == "lamp" else 1) for k in build.tex if k.startswith("h_") or k in ("ctrl", "mount", "lamp")}
+
+    def make():
+        scene = R.voxel_scene(build.blocks, build.tex, tags)
+        M = R.tr(*dish_at) @ R.ry(math.radians(turn)) @ R.sc(scale)
+        scene.extend(R.obj_scene(o, t), M)
+        marks = {1: K.MARK_HATCH, 2: K.MARK_CONTROLLER, 3: K.MARK_LAMP}
+        return R.trim(R.render(scene, yaw=yaw, pitch=pitch, ppu=ppu, ss=2, outline=K.RIM, marks=marks), 3)
+
+    sig = hashlib.sha1(o.read_bytes() + t.read_bytes()).hexdigest()[:10]
+    params = dict(k=sorted(map(str, build.blocks.items())), t=sorted(map(str, build.tex.items())), d=dish_at, s=scale, a=turn,
+                  y=yaw, p=pitch, u=ppu, sig=sig, v=1)
+    return K._cached(f"d4-{tag}", params, make)
+
+
+def dish_spot(build: S.Build, shape: str) -> tuple:
+    """Where the dish stands in the build's own coordinates: the middle of the top plane, one block behind the
+    controller (RadarDishKeeper.find), `DISH_HEIGHT` blocks above the controller block's floor."""
+    cx, cy, cz = next(p for p, v in build.blocks.items() if isinstance(v, tuple) and v[0] == "ctrl")
+    up = int(_const(f"icbm/defense/{shape}.java", "DISH_HEIGHT"))
+    return (cx + 0.5, cy + up, cz + 1.5)
+
+
 def item_icon(name: str, px=64, title="") -> str:
     return slot(K.icon(NTM_ITEMS / f"{name}.png", 64), px, title or name)
 
@@ -248,10 +276,10 @@ def threat_diagram() -> str:
 </svg>"""
 
 
-def radar_card(title: str, tier: str, pic: K.Path, dish: K.Path, rng: int, extra: str) -> str:
+def radar_card(title: str, tier: str, pic: K.Path, rng: int, extra: str) -> str:
     amp = TIER_V[tier] // 4
     return (f'<div class="card"><div style="display:flex;align-items:center;gap:12px"><h2>{esc(title)}</h2>{chip(tier)}</div>'
-            f'<div class="spot" style="display:flex;justify-content:center;align-items:center;gap:10px;padding:6px 0;margin:6px 0">{img(pic, h=170)}{img(dish, h=70)}</div>'
+            f'<div class="spot" style="display:flex;justify-content:center;align-items:center;padding:6px 0;margin:6px 0">{img(pic, h=210)}</div>'
             f'<div class="kv"><span class="k">Range</span><span class="v">{n(rng)} blocks</span>'
             f'<span class="k">Power</span><span class="v">{n(amp)} EU/t while it scans</span>'
             f'<span class="k">Scan</span><span class="v">every {n(SCAN_TICKS)} ticks</span>{extra}</div></div>')
@@ -281,15 +309,16 @@ def aisle_grid(rows: list[str], label: str) -> str:
 
 
 def sheet() -> str:
-    hv = radar_build("radar_hv", "Radar (HV)").render(yaw=-32, pitch=24, ppu=58, tag="", marks=True)
-    ev = radar_build("radar_ev", "Radar (EV)").render(yaw=-32, pitch=24, ppu=58, tag="", marks=True)
-    dish_img = render_obj("radar_dish", "radar_dish", "radar-dish", yaw=35, pitch=20, ppu=70)
+    hv_b, ev_b = radar_build("radar_hv", "Radar (HV)"), radar_build("radar_ev", "Radar (EV)")
+    hv = render_with_dish(hv_b, "radar-hv-dish", dish_spot(hv_b, "RadarShape"), 1.0, -60, yaw=-32, pitch=24, ppu=58)
+    ev = render_with_dish(ev_b, "radar-ev-dish", dish_spot(ev_b, "RadarShape"), 1.0, -60, yaw=-32, pitch=24, ppu=58)
     n_rc = sum(r.count("C") + r.count("H") for a in radar_cells()[1] for r in a)
     min_rc = int(_const("icbm/defense/RadarShape.java", "CASING_MINIMUM"))
     bat = machine_block("air_defense_battery", "HV", ppu=170)
     emp = machine_block("emp_tower", "EV", ppu=170)
     tb = tower_build()
-    tower_img = tb.render(yaw=-32, pitch=22, ppu=52, tag="", marks=True)
+    tower_scale = float(_const("icbm/defense/MTERadarTower.java", "DISH_SCALE"))
+    tower_img = render_with_dish(tb, "tower-dish", dish_spot(tb, "RadarTowerShape"), tower_scale, -60, yaw=-32, pitch=22, ppu=52)
     cells, aisles = tower_cells()
     n_c, n_h = sum(r.count("C") for a in aisles for r in a), sum(r.count("H") for a in aisles for r in a)
     n_b = sum(r.count("B") for a in aisles for r in a)
@@ -299,11 +328,11 @@ def sheet() -> str:
 
     # ---- the three radars
     tower_extra = ""
-    radars = (radar_card("Radar", "HV", hv, dish_img, RANGES[0], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
-              + radar_card("Radar", "EV", ev, dish_img, RANGES[1], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
+    radars = (radar_card("Radar", "HV", hv, RANGES[0], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
+              + radar_card("Radar", "EV", ev, RANGES[1], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
               + f"""<div class="card"><h2>What it tells you</h2><div class="pt" style="margin-top:6px">A missile is a <b>contact</b> from the moment it climbs until it lands. The radar sorts every contact in range, nearest first, and flags as <b>incoming</b> only those whose <b>predicted impact point</b> is inside your protected radius, edge included. A missile that passes right over the radar but lands elsewhere is no threat; one that flies past and lands inside is.</div>
 <div class="label" style="margin:14px 0 4px">Build it</div><div class="pt"><b>{n_rc} Radar Casing</b> (at least {min_rc}): a 3 &times; 3 base two high with one on top for the dish to stand on, the controller in the middle of the front wall. An Energy Hatch of the controller&#39;s tier and a Maintenance Hatch go in any casing of the base. No structure, no radar: the controller does nothing alone. The dish turns while it scans.</div>
-<div class="label" style="margin:14px 0 4px">Its screen shows</div><div class="pt">Offline, scanning, tracking or <b>threat</b>; contacts in range and incoming; the nearest contact; and, on the controller's R button, the protected radius field.</div></div>""")
+<div class="label" style="margin:14px 0 4px">Its screen shows</div><div class="pt">Offline, scanning, tracking or <b>threat</b>; contacts in range and incoming; and, on the controller's R button, the protected radius field.</div></div>""")
 
     link_steps = f"""<div class="step"><span class="num">1</span><div class="t"><b>Power the radar and set its protected radius.</b> Open the controller's screen, press R and type the radius: {n(MIN_RADIUS)} blocks up to its range, {n(DEFAULT_RADIUS)} to begin with.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Save its link on a Data Stick.</b> Right-click the radar&#39;s controller (or the tower&#39;s) with the stick. The stick keeps the radar&#39;s dimension and position.</div></div>

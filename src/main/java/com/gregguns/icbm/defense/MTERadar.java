@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,6 +47,8 @@ import gregtech.api.recipe.check.SimpleCheckRecipeResult;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.api.util.shutdown.ShutDownReason;
+import gregtech.api.util.shutdown.ShutDownReasonRegistry;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
@@ -76,6 +79,8 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
     private boolean online;
     private int unformedSteps;
     private int steps;
+    /** Set when the machine stopped itself (power loss, a broken structure, repairs); cleared once it restarts. */
+    private boolean resumeWhenPowered;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -315,11 +320,48 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
     /** One scan now: it runs while the structure is formed and a cycle is paid for. */
     void scanNow() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
+        resumeIfPowered(base);
         online = mMachine && base.isActive() && hatchTier() >= tier;
         unit.scan(base.getWorld(), base.getXCoord() + 0.5, base.getZCoord() + 0.5, rangeIfOn(), online);
         // The active flag is the machine's own "running" state here, so only the redstone strength is driven.
         unit.publishRedstone(base);
         tendDish(base);
+    }
+
+    /**
+     * The machine's own stops (not a player's soft mallet) are not final here: the I4 radar resumed by itself when
+     * power returned, and a radar that stays off without saying why is a trap, so a restart follows (D195).
+     */
+    @Override
+    public void stopMachine(@Nonnull ShutDownReason reason) {
+        super.stopMachine(reason);
+        if (reason == ShutDownReasonRegistry.POWER_LOSS || reason == ShutDownReasonRegistry.STRUCTURE_INCOMPLETE
+            || reason == ShutDownReasonRegistry.NO_REPAIR) {
+            resumeWhenPowered = true;
+        }
+    }
+
+    /** Turns the machine back on once it is formed and its hatches hold the power for a cycle. */
+    private void resumeIfPowered(IGregTechTileEntity base) {
+        if (!resumeWhenPowered) {
+            return;
+        }
+        if (base.isAllowedToWork()) {
+            resumeWhenPowered = false; // someone turned it back on
+            return;
+        }
+        if (!mMachine) {
+            return;
+        }
+        long stored = 0;
+        for (MTEHatch hatch : validMTEList(mEnergyHatches)) {
+            stored += hatch.getBaseMetaTileEntity()
+                .getStoredEU();
+        }
+        if (hatchTier() >= tier && stored >= 2 * RadarRules.euPerTick(GTValues.V[tier])) {
+            base.enableWorking();
+            resumeWhenPowered = false;
+        }
     }
 
     /** Spawns the dish when formed, spins it while the radar runs, and takes it down once the structure is gone. */
@@ -335,6 +377,29 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
     /** @return the dish entity now standing on the radar, or null (scenarios read it) */
     public EntityRadarDish dish() {
         return dish.dish();
+    }
+
+    /**
+     * A tile read from a world saved with the I4 single-block radar may hold a data stick in slot 0, where that block
+     * kept it; this multiblock has no use for that slot, so the stick is handed back instead of being lost.
+     */
+    @Override
+    public void onFirstTick(IGregTechTileEntity base) {
+        super.onFirstTick(base);
+        if (base.isClientSide() || mInventory == null || mInventory.length == 0 || mInventory[0] == null) {
+            return;
+        }
+        ItemStack stick = mInventory[0];
+        mInventory[0] = null;
+        EntityItem drop = new EntityItem(
+            base.getWorld(),
+            base.getXCoord() + 0.5,
+            base.getYCoord() + 1.0,
+            base.getZCoord() + 0.5,
+            stick);
+        base.getWorld()
+            .spawnEntityInWorld(drop);
+        base.markDirty();
     }
 
     @Override
@@ -369,12 +434,14 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
     public void saveNBTData(NBTTagCompound tag) {
         super.saveNBTData(tag);
         unit.save(tag);
+        tag.setBoolean("resumeWhenPowered", resumeWhenPowered);
     }
 
     @Override
     public void loadNBTData(NBTTagCompound tag) {
         super.loadNBTData(tag);
         unit.load(tag);
+        resumeWhenPowered = tag.getBoolean("resumeWhenPowered");
     }
 
     @Override

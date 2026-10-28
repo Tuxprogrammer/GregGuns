@@ -5,7 +5,7 @@ import java.util.List;
 import com.gregguns.icbm.detect.ContactSource;
 
 /**
- * What the {@code gg_radar} component needs from a radar: the single-block radars and the radar tower implement it at
+ * What the {@code gg_radar} component needs from a radar: the small radars and the radar tower implement it at
  * integration, and unit tests use a fake. The contacts come from the missile tracker (the radar's latest sweep), and
  * {@code incoming} is decided by the predicted impact point against the protected circle (D14). Server thread only
  * (GGI-01-03). No OpenComputers types.

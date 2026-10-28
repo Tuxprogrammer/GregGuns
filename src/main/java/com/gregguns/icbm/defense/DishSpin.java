@@ -13,6 +13,9 @@ public final class DishSpin {
     /** Degrees a spinning dish turns each tick: one turn in three seconds. */
     public static final float DEGREES_PER_TICK = 6.0F;
 
+    /** Ticks in one full turn at {@link #DEGREES_PER_TICK}; the elapsed time is reduced by it so floats stay exact. */
+    private static final long TICKS_PER_TURN = 60L;
+
     private boolean spinning;
     private float baseAngle;
     private long since;
@@ -22,7 +25,7 @@ public final class DishSpin {
      * @return the angle in degrees, 0 up to 360, at that tick
      */
     public float angle(long now) {
-        float a = spinning ? baseAngle + (now - since) * DEGREES_PER_TICK : baseAngle;
+        float a = spinning ? baseAngle + ((now - since) % TICKS_PER_TURN) * DEGREES_PER_TICK : baseAngle;
         a %= 360.0F;
         return a < 0.0F ? a + 360.0F : a;
     }

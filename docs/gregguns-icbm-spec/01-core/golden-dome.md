@@ -51,7 +51,7 @@
 |---|---|---|---|
 | `gg_silo` | Missile silo (T3 and up, D8) | `getInfo()`, `getMissile()` → record or nil, `getFuel()` → `{fluid, amount, required}`, `getTarget()` / `setTarget(x, y, z)`, `setTargetFromStick()`, `canLaunch()` → bool, reason, `launch()` → bool, reason | `launcher_ready`, `launcher_fired` |
 | `gg_launch_control` | Launch-control block beside a GC pad (T1–T2) | Same as `gg_silo` | Same |
-| `gg_radar` | Single-block radar and the radar tower (D14) | `getInfo()`, `getContacts()` → list of `{id, x, y, z, tier, incoming, impactX, impactZ, eta}`, `getIncoming()` → incoming contacts only, `setProtectedRadius(r)` | `radar_contact`, `radar_incoming`, `radar_lost` |
+| `gg_radar` | Small radar (D125) and the radar tower (D14) | `getInfo()`, `getContacts()` → list of `{id, x, y, z, tier, incoming, impactX, impactZ, eta}`, `getIncoming()` → incoming contacts only, `setProtectedRadius(r)` | `radar_contact`, `radar_incoming`, `radar_lost` |
 | `gg_air_defense` | Air-defense battery (D15) | `getInfo()`, `getSamCount()`, `fireAt(contactId)` → bool, reason, `setAuto(bool)` | `sam_fired`, `sam_hit` |
 | `gg_emp_tower` | EMP tower (D16) | `getInfo()`, `isReady()`, `getCooldown()`, `getMode()` / `setMode(m)` (`all`, `missiles`, `machines`), `getRadius()` / `setRadius(r)`, `fire()` → bool, reason | `emp_ready`, `emp_fired` |
 

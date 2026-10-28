@@ -22,6 +22,9 @@ interface RadarPanel {
     /** @return how many of them are aimed inside the protected radius */
     int incomingCount();
 
+    /** @return what the radar reports now: offline, scanning, tracking or a threat */
+    RadarRules.State state();
+
     /** @return the lang key of the panel's title */
     String panelTitleKey();
 }

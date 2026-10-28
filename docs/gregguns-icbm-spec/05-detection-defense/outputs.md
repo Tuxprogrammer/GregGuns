@@ -12,7 +12,7 @@ How each ICBM machine talks to the rest of the base: redstone, GT covers, data s
 |---|---|---|
 | Launch Control (20140) | A rising edge fires once ([launch-control-block](../04-launch-control/launch-control-block.md#triggers)) | None |
 | Missile Silo (20141) | None (the Launch Control fires it) | None |
-| Radar HV / EV controllers, Radar Tower (20142 to 20144) | None | Strength 1 to 15 on every side of the controller: the number of incoming contacts (predicted impact inside the protected radius), capped at 15; 0 when none. Updated each scan (every second) and only on change |
+| Radar HV / EV controllers, Radar Tower (20142 to 20144) | None | Strength 1 to 15 on every side of the controller: the number of incoming contacts (predicted impact inside the protected radius), capped at 15; 0 when none. Updated each scan (every 5 ticks, `SCAN_TICKS`) and only on change |
 | Air-Defense Battery (20145) | None | 15 on every side while a linked-radar threat is within 256 blocks, else 0 (also while auto-engage is off); the active flag follows it |
 | EMP Tower (20146) | A rising edge fires one pulse through the same gate as the Fire button; a rising edge of GT's work-allowed flag (a machine controller cover) does the same | None; the active flag is on while the tower holds the pulse cost and is not cooling down, so a machine-state cover can read "ready" |
 

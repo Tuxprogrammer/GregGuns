@@ -22,7 +22,8 @@ import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
  * A multiblock radar's controller screen (the small radar and the tower): GT's multiblock screen plus one button that
- * opens a small radar panel with the protected radius field, the range and the contact counts. The numbers reach the
+ * opens a small radar panel with the state line (offline, scanning, tracking or threat), the protected radius field,
+ * the range and the contact counts. The numbers reach the
  * client as read-only sync values; the radius field re-checks on the server ({@link RadarPanel#setRadiusText}). Built
  * on both sides.
  *
@@ -33,13 +34,14 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
 
     private static final Pattern DIGITS = Pattern.compile("[0-9]{0,5}");
     private static final int PANEL_W = 150;
-    private static final int PANEL_H = 70;
+    private static final int PANEL_H = 82;
 
     private static final class Shown {
 
         int range;
         int detected;
         int incoming;
+        int state;
     }
 
     RadarMultiGui(T radar) {
@@ -70,6 +72,13 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
         psm.syncValue("st_range", 0, new IntSyncValue(multiblock::rangeIfOn, v -> shown.range = v));
         psm.syncValue("st_det", 0, new IntSyncValue(multiblock::detectedCount, v -> shown.detected = v));
         psm.syncValue("st_inc", 0, new IntSyncValue(multiblock::incomingCount, v -> shown.incoming = v));
+        psm.syncValue(
+            "st_state",
+            0,
+            new IntSyncValue(
+                () -> multiblock.state()
+                    .ordinal(),
+                v -> shown.state = v));
         return new ModularPanel("radarPanel").relative(parent)
             .leftRel(1)
             .topRel(0)
@@ -79,6 +88,7 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
                     .full()
                     .padding(4)
                     .child(label(() -> tr(multiblock.panelTitleKey())))
+                    .child(label(() -> tr(RadarRules.State.values()[shown.state].langKey())))
                     .child(label(() -> trf("gregguns.icbm.radar.gui.range", shown.range)))
                     .child(label(() -> trf("gregguns.icbm.radar.gui.contacts", shown.detected, shown.incoming)))
                     .child(label(() -> tr("gregguns.icbm.radar.gui.radius")))

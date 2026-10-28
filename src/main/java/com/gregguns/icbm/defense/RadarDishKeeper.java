@@ -46,10 +46,13 @@ final class RadarDishKeeper {
         if (w == null) {
             return;
         }
-        if ((dish == null || dish.isDead || dish.worldObj != w) && check) {
+        // A chunk unload removes an entity from the world without killing it, so a cached dish also counts as lost
+        // when the world no longer holds it by id.
+        if ((dish == null || dish.isDead || dish.worldObj != w || w.getEntityByID(dish.getEntityId()) != dish)
+            && check) {
             dish = find(base, w);
         }
-        if (dish != null && !dish.isDead) {
+        if (dish != null && !dish.isDead && dish.worldObj == w) {
             dish.setSpinning(spin);
         }
     }
@@ -64,7 +67,9 @@ final class RadarDishKeeper {
 
     /** @return the live dish, or null */
     EntityRadarDish dish() {
-        return dish != null && !dish.isDead ? dish : null;
+        return dish != null && !dish.isDead
+            && dish.worldObj != null
+            && dish.worldObj.getEntityByID(dish.getEntityId()) == dish ? dish : null;
     }
 
     private EntityRadarDish find(IGregTechTileEntity base, World w) {

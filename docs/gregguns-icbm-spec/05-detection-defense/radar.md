@@ -72,7 +72,7 @@ Nothing below HV (D69). The tower needs an IV or better hatch, and a small radar
 ## Tower screen and casing (D99)
 
 - GT's multiblock screen gains one "R" button (left of the power panel button) that opens a small radar panel: the protected radius field (digits only, clamped on the server to 8 up to the hatch range, or the IV range while no hatch is fitted), the range, and the detected and incoming counts. It is saved in the controller's NBT with the rest of the radar state.
-- Radar Casing (meta 11, NTM-derived art) replaces Gantry Casing in the tower; the Gantry Beam mast stays. Recipe (D193): 6 Stainless Steel plate, programmed circuit 31, Assembler at HV (`TierEU.RECIPE_HV`), 10 s, makes 4. It recycles to 1.5 plates of Stainless Steel each.
+- Radar Casing (meta 11, NTM-derived art) replaces Gantry Casing in the tower; the Gantry Beam mast stays. Recipe (D193): 6 Stainless Steel plate, programmed circuit 16, Assembler at HV (`TierEU.RECIPE_HV`), 10 s, makes 4. It recycles to 1.5 plates of Stainless Steel each.
 - Recycling for the rest: the SAM returns 2 Stainless Steel plates, the radar gun 2, each machine its hull's 8 (D44).
 
 ## The small radar (D125, D190, D191)
@@ -83,7 +83,8 @@ The HV and EV radars (MTE ids 20142 and 20143) are the controllers of a small mu
 - **Hatches:** one Energy Hatch and one Maintenance Hatch, like the tower. The Energy Hatch must be the controller's tier or better.
 - **Range and power:** fixed by the controller's tier (table above), a quarter amp of that tier's voltage while it runs. The GT cycle is one second and repeats while it is paid for.
 - **Everything else is the tower's:** contacts, the protected radius, links by data stick, redstone, covers and the OpenComputers component `gg_radar` all go through `RadarUnit` and `RadarView`. The GUI is GT's multiblock screen with the tower's "R" panel.
-- **Recipes:** the controllers take a hull, 2 sensors, an emitter and 2 circuits, in the Assembler at HV and EV (D69). The casing is in "Tower screen and casing" above.
+- **Power loss (D195):** when the machine stops itself (power loss, a broken structure, missing repairs) it turns back on by itself once it is formed and its hatches hold power again; a soft-mallet stop stays. A tile an I4 save holds with a data stick in slot 0 drops the stick as an item on its first tick.
+- **Recipes:** the controllers take a hull, 2 sensors, an emitter and 2 circuits, in the Assembler at HV and EV (D69), on programmed circuits 21 (HV) and 22 (EV); the tower is 23, the Air-Defense Battery 19, the radar gun 18 and the SAM 17 (D196: GT's programmed circuit stops at 24). The casing is in "Tower screen and casing" above.
 
 | Requirement | |
 |---|---|
@@ -103,8 +104,8 @@ The HV and EV radars (MTE ids 20142 and 20143) are the controllers of a small mu
 |---|---|
 | **GGI-05-23** | A formed radar has exactly one dish; an unformed one has none. |
 | **GGI-05-24** | The dish turns while the radar runs and is still without power or when unformed. |
-| **GGI-05-25** | A tile reload leaves one dish; a dish lost with its chunk is replaced by exactly one. |
+| **GGI-05-25** | A tile reload leaves one dish; a dish removed from the world as a chunk unload does it (not killed, not saved), including one standing across a chunk edge from its controller, is replaced by exactly one. After a tile reload there is no dish for about five seconds, until GT's next structure check forms the controller again. |
 | **GGI-05-26** | Breaking a casing or the controller removes the dish. |
 | **GGI-05-27** | Two clients draw the same dish angle at the same game time. |
 
-GGI-05-23 to 05-26 are the scenarios `icbm.defense.radar_unformed`, `.radar_dish` and `.radar_dish_reload`; GGI-05-27 is `DishSpinTest` (the server's numbers restored on a client give the same angle) and the two-client check.
+GGI-05-23 to 05-26 are the scenarios `icbm.defense.radar_unformed`, `.radar_dish`, `.radar_dish_reload` and `.radar_dish_reload_edge`; GGI-05-27 is `DishSpinTest` (the server's numbers restored on a client give the same angle) and the two-client check.

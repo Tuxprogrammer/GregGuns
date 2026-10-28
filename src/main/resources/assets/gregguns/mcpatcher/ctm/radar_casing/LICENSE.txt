@@ -2,7 +2,7 @@ The casing texture in this folder: copied from HBM's Nuclear Tech Mod
 (https://github.com/HbmMods/Hbm-s-Nuclear-Tech-GIT, tag 1.0.27_X5846, also on Modrinth as "ntm"),
 (c) the HBM's Nuclear Tech Mod contributors, licensed under the GNU Lesser General Public License v3.0
 (the repository README states: "This software is licensed under the GNU Lesser General Public License
-version 3"; it names no separate asset license). Modifications: the Radar Casing: NTM's steel block and steel sheet faces combined into a steel frame with the sheet inside and a white and red band drawn on, by tools/asset-gen/icbm/convert_ntm_defense.py. See docs/assets/CREDITS.md. The full license text follows (LICENSE.LESSER from
+version 3"; it names no separate asset license). Modifications: the Radar Casing: NTM's steel block and steel sheet faces combined into a steel frame with the sheet inside and a white and red band drawn on, by tools/asset-gen/icbm/convert_ntm_defense.py. The 47 connected-texture tiles in this folder (0.png to 46.png) are cut from that casing texture by tools/asset-gen/ctm.py (ntm_radar_casing), which masks its two-pixel frame per edge so joined faces show no seam; tile 0 is the casing texture unchanged. See docs/assets/CREDITS.md. The full license text follows (LICENSE.LESSER from
 that repository; it supplements the GPL v3, which sits beside this file as GPL-3.0.txt, from LICENSE there).
 
 --------------------------------------------------------------------------------

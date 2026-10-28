@@ -118,7 +118,7 @@ public final class DefenseMachines {
             machine(
                 Materials.StainlessSteel,
                 GregGunsMTEIDs.RADAR_HV,
-                25,
+                21,
                 600,
                 TierEU.RECIPE_HV,
                 ItemList.Hull_HV.get(1),
@@ -128,7 +128,7 @@ public final class DefenseMachines {
             machine(
                 Materials.Titanium,
                 GregGunsMTEIDs.RADAR_EV,
-                26,
+                22,
                 600,
                 TierEU.RECIPE_EV,
                 ItemList.Hull_EV.get(1),
@@ -138,7 +138,7 @@ public final class DefenseMachines {
             machine(
                 Materials.TungstenSteel,
                 GregGunsMTEIDs.RADAR_TOWER,
-                27,
+                23,
                 1200,
                 TierEU.RECIPE_IV,
                 ItemList.Hull_IV.get(1),
@@ -148,7 +148,7 @@ public final class DefenseMachines {
             machine(
                 Materials.StainlessSteel,
                 GregGunsMTEIDs.AIR_DEFENSE,
-                28,
+                19,
                 900,
                 TierEU.RECIPE_HV,
                 ItemList.Hull_HV.get(1),
@@ -167,7 +167,7 @@ public final class DefenseMachines {
                 GregGuns.LOG.error("Skipping the radar gun recipe: a GT input did not resolve");
             } else {
                 GTValues.RA.stdBuilder()
-                    .circuit(29)
+                    .circuit(18)
                     .itemInputs(gun, emitter, circ, plate)
                     .itemOutputs(gunStack)
                     .duration(300)
@@ -194,12 +194,12 @@ public final class DefenseMachines {
     private static void radarCasing() {
         ItemStack plate = IcbmIngredients.stack(Ing.gt("plate", "StainlessSteel", CASING_PLATES, Tier.HV, 1.0));
         if (plate == null) {
-            GregGuns.LOG.error("Skipping the Radar Casing recipe: Tungsten Steel plate did not resolve");
+            GregGuns.LOG.error("Skipping the Radar Casing recipe: Stainless Steel plate did not resolve");
             return;
         }
         ItemStack out = new ItemStack(GregGunsCasings.INSTANCE, CASING_YIELD, GregGunsCasings.RADAR_CASING);
         GTValues.RA.stdBuilder()
-            .circuit(31)
+            .circuit(16)
             .itemInputs(plate)
             .itemOutputs(out)
             .duration(200)
@@ -222,7 +222,7 @@ public final class DefenseMachines {
             return;
         }
         GTValues.RA.stdBuilder()
-            .circuit(30)
+            .circuit(17)
             .itemInputs(plate, motor, sensor, circ)
             .itemOutputs(out)
             .duration(300)
