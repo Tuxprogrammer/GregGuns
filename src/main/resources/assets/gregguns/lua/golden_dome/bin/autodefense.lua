@@ -5,9 +5,8 @@
 -- that mode. Every action is logged to /tmp/autodefense.log.
 local gd = require("goldendome")
 local event = require("event")
-local shell = require("shell")
 
-local args, options = shell.parse(...)
+local args, options = gd.parse(...)
 local state = _G.goldendome_autodefense
 
 local function log(line)

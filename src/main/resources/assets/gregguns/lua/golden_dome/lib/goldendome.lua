@@ -77,6 +77,35 @@ function gd.waitSignal(name, timeout)
   return table.unpack(result, 2, result.n)
 end
 
+-- Like shell.parse (OpenOS' lib/shell.lua), but a negative number ("-48", "-3.5") is an argument, not a bunch of
+-- one-letter options, so "launch -48 8512" works. "--" still ends the options. Returns args, options.
+function gd.parse(...)
+  local params = table.pack(...)
+  local args, options = {}, {}
+  local done = false
+  for i = 1, params.n do
+    local p = params[i]
+    if done or type(p) ~= "string" or p == "-" or tonumber(p) then
+      args[#args + 1] = p
+    elseif p == "--" then
+      done = true
+    elseif p:sub(1, 2) == "--" then
+      local key, value = p:match("%-%-(.-)=(.*)")
+      if not key then
+        key, value = p:sub(3), true
+      end
+      options[key] = value
+    elseif p:sub(1, 1) == "-" then
+      for j = 2, #p do
+        options[p:sub(j, j)] = true
+      end
+    else
+      args[#args + 1] = p
+    end
+  end
+  return args, options
+end
+
 -- Splits "x z" arguments into numbers; returns nil if they are not numbers.
 function gd.coords(a, b)
   local x, z = tonumber(a), tonumber(b)

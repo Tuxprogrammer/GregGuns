@@ -12,6 +12,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -71,7 +72,8 @@ public final class ItemLauncherWarhead extends Item implements Tiered {
                 LauncherRules.MAX_CHARGES));
         details.add(StatCollector.translateToLocal("gregguns.icbm.launcher.tooltip.how"));
         details.add(StatCollector.translateToLocal("gregguns.icbm.launcher.tooltip.replaces"));
-        tooltip.addAll(
+        TooltipWrap.addAll(
+            tooltip,
             LauncherTooltipFormat.lines(
                 tierLine,
                 StatCollector.translateToLocal("gregguns.icbm.launcher.summary." + warhead.key()),
@@ -79,7 +81,7 @@ public final class ItemLauncherWarhead extends Item implements Tiered {
                 StatCollector.translateToLocal("gregguns.icbm.part.tooltip.shift"),
                 shift));
         if (shift) {
-            tooltip.add(AddedBy.line());
+            TooltipWrap.add(tooltip, AddedBy.line());
         }
     }
 }

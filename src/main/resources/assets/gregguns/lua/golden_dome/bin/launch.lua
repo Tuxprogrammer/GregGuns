@@ -1,8 +1,7 @@
 -- launch <x> <z> | launch --stick : set a target, show the missile, ask, then fire.
 local gd = require("goldendome")
-local shell = require("shell")
 
-local args, options = shell.parse(...)
+local args, options = gd.parse(...)
 
 local function usage()
   print("Usage: launch <x> <z>   aim at a column")

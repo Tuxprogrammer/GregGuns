@@ -17,6 +17,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
 import com.gregguns.icbm.control.LaunchTarget;
 import com.gregguns.icbm.control.TargetStick;
 import com.gregguns.icbm.recipe.PartTooltipFormat;
@@ -133,9 +134,9 @@ public final class ItemRadarGun extends Item implements Tiered {
             : StatCollector.translateToLocal("gregguns.icbm.radargun.tooltip.empty");
         String details = StatCollector.translateToLocalFormatted("gregguns.icbm.radargun.tooltip.details", (int) RANGE);
         String hint = StatCollector.translateToLocal("gregguns.icbm.part.tooltip.shift");
-        tooltip.addAll(PartTooltipFormat.lines(tierLine, summary, details, hint, shift));
+        TooltipWrap.addAll(tooltip, PartTooltipFormat.lines(tierLine, summary, details, hint, shift));
         if (shift) {
-            tooltip.add(AddedBy.line());
+            TooltipWrap.add(tooltip, AddedBy.line());
         }
     }
 }
