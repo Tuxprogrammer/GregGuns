@@ -25,8 +25,11 @@ import java.util.List;
 // https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java
 // Source: GT concrete, stone and granite metas, from the lang file at 5.09.54.205
 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/resources/assets/gregtech/lang/en_US.lang
-// Decompiled: Ztones 2.2.2 has no public source; the ids come from ModBlocks.registerBlocks, the metas from its
-// textures. Both Ztones id spellings are chained, since the 3-argument registerBlock takes the unlocalized name.
+// Decompiled: Ztones-1.7.10-2.2.2.jar (GTNH 2.9.0-RC-2) has no public source. Each metal set block takes
+// setBlockName("<set>Block") and registers under its unlocalized name, so the registry id is
+// "Ztones:tile.<set>Block" (javap of ModBlocks and BlockAgon; the live pack's FML registry in level.dat lists
+// Ztones:tile.agonBlock and the rest). Every set has 16 metas, textures sets/<set>/<set>_ (0..15).png; the metas
+// used here were checked against those textures. Unverified beyond that; re-check when the pack updates Ztones.
 final class PaletteSets {
 
     private PaletteSets() {}
@@ -85,11 +88,15 @@ final class PaletteSets {
         return of(gtGranite(meta), v("stonebrick", 3));
     }
 
-    /** A Ztones block: both id spellings, then a Chisel block, then GT, then vanilla. */
+    /** @return the registry name of a Ztones metal set block: {@code tile.<set>Block} */
+    static String ztonesName(String set) {
+        return "tile." + set + "Block";
+    }
+
+    /** A Ztones block, then a Chisel block, then GT, then vanilla. */
     private static BlockRef ztones(String set, int meta, BlockRef fallback) {
-        BlockRef.Entry[] head = { e(ZT, "tile.ztones:" + set + "Block", meta), e(ZT, set + "Block", meta) };
         List<BlockRef.Entry> l = new ArrayList<>();
-        Collections.addAll(l, head);
+        l.add(e(ZT, ztonesName(set), meta));
         l.addAll(fallback.chain());
         return of(l.toArray(new BlockRef.Entry[0]));
     }
@@ -106,19 +113,24 @@ final class PaletteSets {
      * group is the vanilla bookshelf), so meta 0 of {@code chisel:bookshelf} would draw the missing texture.
      */
     private static final BlockRef SHELF = of(e(CH, "bookshelf", 5), v("bookshelf", 0));
-    private static final BlockRef BUNK = of(v("wool", 11));
+    /** Bunk blankets: light gray wool (a muted, military palette; no saturated wool). */
+    private static final BlockRef BUNK = of(v("wool", 8));
     private static final BlockRef BUNK_GREY = of(v("wool", 7));
     private static final BlockRef SCREEN_DARK = of(e(CH, "laboratoryblock", 10), v("stained_hardened_clay", 15));
 
     // ---- planet stone (D244) ----
 
-    /** Moon Rock (meta 4) and Moon Dungeon Brick (meta 14). */
+    /** Moon Rock (meta 4) and Moon Dungeon Brick (meta 14, dark gray). */
     static final BlockRef.Entry MOON_STONE = e("GalacticraftCore", "tile.moonBlock", 4);
     static final BlockRef.Entry MOON_BRICK = e("GalacticraftCore", "tile.moonBlock", 14);
     /** Mars Stone (meta 9), Mars Cobblestone (meta 4) and Mars Dungeon Brick (meta 7). */
     static final BlockRef.Entry MARS_STONE = e("GalacticraftMars", "tile.mars", 9);
     static final BlockRef.Entry MARS_COBBLE = e("GalacticraftMars", "tile.mars", 4);
-    static final BlockRef.Entry MARS_BRICK = e("GalacticraftMars", "tile.mars", 7);
+    /**
+     * The Mars "brick": Mars Cobblestone (meta 4). Galacticraft's Mars Dungeon Brick (meta 7) is green and mossy, too
+     * loud beside the red Mars stone, so the planet's walls and checkers stay in its own dark reds.
+     */
+    static final BlockRef.Entry MARS_BRICK = MARS_COBBLE;
 
     // ---- the sets ----
 
@@ -256,6 +268,7 @@ final class PaletteSets {
                 .accent(c10)
                 .worn(c4)
                 .furniture(Furniture.TABLE, STONE_TABLE)
+                .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .furniture(Furniture.BUNK, BUNK_GREY)
                 .furniture(Furniture.SHELF, SHELF)
                 .build());
@@ -322,6 +335,7 @@ final class PaletteSets {
                 .lamp(litLamp(13), g6)
                 .accent(g15)
                 .furniture(Furniture.TABLE, STONE_TABLE)
+                .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .build());
 
         BlockRef zv1 = ztones("vect", 1, tyrian(13)), zv2 = ztones("vect", 2, tyrian(12));
@@ -358,17 +372,20 @@ final class PaletteSets {
                 .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .build());
 
-        BlockRef agonRed = ztones("agon", 11, of(v("stained_hardened_clay", 14)));
+        // Agon 12 is a muted tan (11 is a loud orange); 13 is dark gray. Their vanilla stand-ins are brown and gray
+        // clay.
+        BlockRef agonTan = ztones("agon", 12, of(v("stained_hardened_clay", 12)));
         BlockRef agonGrey = ztones("agon", 13, of(v("stained_hardened_clay", 7)));
         BlockRef li5 = limestone(5), li11 = limestone(11);
         l.add(
             StyleSet.named("crew_warm", StyleGroup.CREW, StyleGroup.CAFETERIA, StyleGroup.MEDICAL)
                 .walls(li5, li15, li11, li1)
-                .floors(plain(li1), checker(li1, li5, 2), borderField(agonGrey, li1, 1), stripes(li1, agonRed, 7, true))
+                .floors(plain(li1), checker(li1, li5, 2), borderField(agonGrey, li1, 1), stripes(li1, agonTan, 7, true))
                 .ceilings(plain(li0), grid(li0, li5, 6), plain(li15))
                 .lamp(litLamp(10), li5)
-                .accent(agonRed)
+                .accent(agonTan)
                 .furniture(Furniture.TABLE, WOOD_TABLE)
+                .furniture(Furniture.CONSOLE, SCREEN_DARK)
                 .furniture(Furniture.BUNK, BUNK)
                 .furniture(Furniture.SHELF, SHELF)
                 .build());

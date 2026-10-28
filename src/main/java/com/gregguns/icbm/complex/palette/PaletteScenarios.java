@@ -13,6 +13,8 @@ import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.worldgen.ActivityLevel;
 import com.gregguns.worldgen.layout.ResolvedBlock;
 
+import cpw.mods.fml.common.Loader;
+
 /** Scenarios of the complex palette (I6b). Dev environment only. Server side. */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/palette.md (Tests)
 // Source: Chisel blocks implement ICarvable, whose getManager(int meta) returns CarvableHelper.getVariation(meta),
@@ -38,7 +40,7 @@ public final class PaletteScenarios {
         @Override
         public String description() {
             return "Every block of every style set (walls, floors, ceilings, lamps, accent, worn block, furniture)"
-                + " resolves in the live registry, building blocks are full cubes, a Chisel block has a variation at"
+                + " resolves in the live registry, every chain entry of a loaded mod exists, building blocks are full cubes, a Chisel block has a variation at"
                 + " its meta, lit lamps emit 15 and dead lamps do not; the note lists which mod supplied what.";
         }
 
@@ -97,6 +99,11 @@ public final class PaletteScenarios {
             BlockRef.Lookup reg, Map<String, Integer> byMod, Map<String, Integer> missing) {
             BlockRef.Entry e = ref.resolve(reg);
             byMod.merge(e.modId, 1, Integer::sum);
+            // A chain entry of a loaded mod that the registry lacks is a wrong id: fail, never fall back silently.
+            for (BlockRef.Entry c : ref.chain()) {
+                if (BlockRef.VANILLA.equals(c.modId) || !Loader.isModLoaded(c.modId)) continue;
+                out.check(reg.has(c.modId, c.name), what + ": " + c + " is missing although " + c.modId + " is loaded");
+            }
             if (!ref.chain()
                 .get(0)
                 .equals(e)) {

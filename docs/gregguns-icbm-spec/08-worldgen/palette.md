@@ -1,7 +1,7 @@
 # Complex palette: blocks, style sets and lamps
 
 - **Baseline:** none (the ICBM baseline has no worldgen).
-- **Decisions:** D229 (the redesign), D205 (the complex wall), D217 (floor light), D240 to D244, D248, D251, D259 to D262
+- **Decisions:** D229 (the redesign), D205 (the complex wall), D217 (floor light), D240 to D244, D248, D251, D259 to D262, D264
 - **Pack mods:** Chisel, GregTech, Ztones, Galacticraft (Core and Mars), BiblioCraft (furniture); every one optional (D241, D262)
 - **Code:** `com.gregguns.icbm.complex.palette` (`ComplexPalette`, `RoomStyle`, `BlockRef`, `PaletteSets`)
 
@@ -32,7 +32,7 @@ Each block is a `BlockRef`: a chain of registry ids, pack block first, GregTech 
 | `granite_hall` | GT black and red granite bricks and smooth stone | major hall, hub, gallery, command |
 | `ztones_server` | Ztones Vect and Korp dark panels with cyan screens | server room, command, guard |
 | `ztones_tank` | Ztones Tank grey plating, Lave pale tile | water treatment, power, missile assembly, workshop |
-| `crew_warm` | Chisel limestone tile, Ztones Agon color rows | crew, cafeteria, medical |
+| `crew_warm` | Chisel limestone tile, Ztones Agon tan and gray rows | crew, cafeteria, medical |
 | `steel_panel` | Chisel Laboratory large and small steel | hub, major hall, gallery, missile assembly, minor hall |
 
 A group with several sets gets variety from the set draw, then from the wall, floor and ceiling draws inside it. Every group has at least two sets; the wall pool of a group has at least four blocks (a test checks it).
@@ -47,7 +47,7 @@ Rejected as lamps: Project Red lamps (a tile entity per lamp, and the light come
 
 ## Planet stone (D244)
 
-On Moon and Mars, a rugged group (storage, power, workshop, guard, halls, gallery, vehicle bay, missile assembly, water treatment) draws, per room, a one-in-three chance each of: local brick as the wall, a local-stone field inside a border (the room's wall block), a local stone and brick checker for the floor. Moon: `GalacticraftCore:tile.moonBlock` meta 4 (Moon Rock) and 14 (Moon Dungeon Brick). Mars: `GalacticraftMars:tile.mars` meta 9 (Mars Stone), 4 (Cobblestone) and 7 (Dungeon Brick). Each falls back to vanilla stone and stone brick. Command, crew, medical, server and cafeteria rooms keep their finish.
+On Moon and Mars, a rugged group (storage, power, workshop, guard, halls, gallery, vehicle bay, missile assembly, water treatment) draws, per room, a one-in-three chance each of: local brick as the wall, a local-stone field inside a border (the room's wall block), a local stone and brick checker for the floor. Moon: `GalacticraftCore:tile.moonBlock` meta 4 (Moon Rock) and 14 (Moon Dungeon Brick). Mars: `GalacticraftMars:tile.mars` meta 9 (Mars Stone) and 4 (Cobblestone, which stands in as the Mars brick: Galacticraft's Mars Dungeon Brick, meta 7, is green and mossy, too loud beside the red stone). Each falls back to vanilla stone and stone brick. Command, crew, medical, server and cafeteria rooms keep their finish.
 
 ## Block table
 
@@ -66,15 +66,15 @@ Worth is the value of mining the block in bulk. **Low** means it drops itself or
 | `gregtech:gt.blockconcretes` | 3, 6, 7, 8, 11, 12, 13, 14, 15 | Dark and light concrete, bricks, smooth | GT fallback for walls and floors | Low (breaks into its cobble) |
 | `gregtech:gt.blockstones` | 3 marble bricks, 11 basalt bricks | Marble and basalt | GT fallback | Low |
 | `gregtech:gt.blockgranites` | 3, 6, 7 black; 11, 15 red | Granite brick, chiseled, smooth | `granite_hall` | Low, but slow to dig: harvest level 3 (a diamond-level pick; steel is not enough) and blast resistance 60 |
-| `Ztones:tile.ztones:vectBlock` (also `vectBlock`) | 0 to 3 | Dark panels | `ztones_server` | Low (decompiled ids) |
-| `Ztones:tile.ztones:korpBlock` | 4, 12 | Dark, cyan screen | server accent and console | Low |
-| `Ztones:tile.ztones:tankBlock` | 0, 1, 3, 5 | Grey plating | `ztones_tank` | Low |
-| `Ztones:tile.ztones:laveBlock` | 0, 1 | Pale blue tile | `ztones_tank` | Low |
-| `Ztones:tile.ztones:agonBlock` | 11 red, 13 grey | Solid color | crew accent rows | Low |
+| `Ztones:tile.vectBlock` | 0 to 3 | Dark panels | `ztones_server` | Low (decompiled ids) |
+| `Ztones:tile.korpBlock` | 4, 12 | Dark, cyan screen | server accent and console | Low |
+| `Ztones:tile.tankBlock` | 0, 1, 3, 5 | Grey plating | `ztones_tank` | Low |
+| `Ztones:tile.laveBlock` | 0, 1 | Pale blue-gray tile | `ztones_tank` | Low |
+| `Ztones:tile.agonBlock` | 12 tan, 13 dark gray | Solid color | crew accent rows | Low |
 | `GalacticraftCore:tile.moonBlock` | 4, 14 | Moon Rock, Moon Dungeon Brick | local stone | Low |
-| `GalacticraftMars:tile.mars` | 4, 7, 9 | Mars Cobblestone, Dungeon Brick, Stone | local stone | Low (never meta 8, Block of Desh) |
+| `GalacticraftMars:tile.mars` | 4, 9 | Mars Cobblestone, Stone | local stone | Low (never meta 8, Block of Desh) |
 | `gregguns:complex_wall` | 0 | Steel Bastion Plating look | one wall choice (D205) | None (breaks into itself, no recipe) |
-| vanilla: `stone`, `stonebrick` 0 2 3, `quartz_block` 0, `glowstone`, `sandstone` 2, `stained_hardened_clay` 7 14 15, `wool` 0 7 11, `wooden_slab` 1, `stone_slab` 7, `bookshelf` | as listed | Fallbacks and furniture | fallbacks, furniture | Low (glowstone gives 2 to 4 dust per block) |
+| vanilla: `stone`, `stonebrick` 0 2 3, `quartz_block` 0, `glowstone`, `sandstone` 2, `stained_hardened_clay` 7 12 15, `wool` 0 7 8, `wooden_slab` 1, `stone_slab` 7, `bookshelf` | as listed | Fallbacks and furniture | fallbacks, furniture | Low (glowstone gives 2 to 4 dust per block) |
 
 Not used, on purpose: GT machine casings, GT frame boxes, GT metal and storage blocks, GT sheet-metal blocks (they cost plates), Chisel steel and metal blocks (they carve from metal blocks), Galacticraft tin and aluminum decoration blocks (they pay in tin and aluminum), Desh blocks. Carpenter's Blocks are tile entities per block and are not used.
 
@@ -101,11 +101,14 @@ The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) ge
 - **How it is placed:** `FurnitureFiller` (the complex's mark filler) sets the block through the window's sink by registry name (`GameRegistry.findBlock`, guarded by `Loader.isModLoaded("BiblioCraft")`), then writes the facing into the tile's own NBT (`writeToNBT`, set the keys, `readFromNBT`). No BiblioCraft class is linked and none of its assets ship (D262).
 - **Worth:** BiblioCraft furniture is wood and drops itself; a GT ULV Locker is a cheap machine. Nothing here is a material sink worth farming.
 
-The Ztones ids come from decompiling `ModBlocks.registerBlocks` (Ztones 2.2.2 has no public source): lamps and tiles register under their plain name, the metal sets under the block's unlocalized name `tile.ztones:<set>Block`. Both spellings are chained, and a wrong guess only means the fallback (a Chisel or GT block) is drawn. `icbm.palette.resolve` logs which chain entries the live pack fails to find.
+The Ztones ids come from the jar (Ztones 2.2.2 has no public source): each metal set block is named `<set>Block` and registers under its unlocalized name, so its id is `Ztones:tile.<set>Block`, as the live pack's FML registry lists it. Each set has 16 metas; the ones used were checked against the jar's textures (`sets/<set>/<set>_ (n).png`). `icbm.palette.resolve` fails when any chain entry of a loaded mod is missing, so a wrong id cannot fall back silently (D264).
+
+**A quiet palette (D264).** Every vanilla stand-in at the end of a chain is a muted block: stone, stone bricks, quartz, smooth sandstone, gray, brown or black clay, white or gray wool (`PaletteLookTest` pins the list). Saturated color is kept to deliberate small accents from the pack blocks (hazard stripes, the Tyrian blue strip, red granite, a cyan screen). Every set has a dark console screen, so a console never borrows the accent.
 
 ## Tests
 
 - `CeilingContrastTest` (unit, D261): over every style group, dimension, activity level and 48 seeds, rooms of three sizes and all 64 mixes of the six mods a chain names, no ceiling cell resolves to the wall's block; the drawn design stands wherever it differs; the `lab_dark` set has the steel walls and the checker floor.
+- `PaletteLookTest` (unit, D264): Ztones ids have the `tile.<set>Block` form, every vanilla stand-in is on the muted list, the Mars brick is its cobblestone.
 - `BiblioFurnitureTest` (unit): every BiblioCraft piece has a registry name, the facing turns all four ways, each piece writes its facing key, and a stair chair's back is opposite its facing.
 - `ComplexPaletteTest` (unit): with no pack mods every style resolves to a vanilla block; every registry name and meta is well formed; walls are uniform and styles are deterministic per seed; every group has at least two sets with at least four walls and four floor designs; the Silo Complex Wall is a wall choice; planets use local stone and other dimensions do not; lamps have a lit and a dead twin.
-- `icbm.palette.resolve` (scenario): resolves every block of every style set in the live registry (walls, floors, ceilings, lamps, the accent, the worn block and the furniture), checks lit lamps emit 15, dead lamps do not, building blocks are cubes (furniture may be a slab), and that a Chisel block has a variation at its meta (`ICarvable.getManager(meta)` is not null), and notes which mod supplied each block.
+- `icbm.palette.resolve` (scenario): resolves every block of every style set in the live registry (walls, floors, ceilings, lamps, the accent, the worn block and the furniture), fails when a chain entry of a loaded mod is missing, checks lit lamps emit 15, dead lamps do not, building blocks are cubes (furniture may be a slab), and that a Chisel block has a variation at its meta (`ICarvable.getManager(meta)` is not null), and notes which mod supplied each block.
