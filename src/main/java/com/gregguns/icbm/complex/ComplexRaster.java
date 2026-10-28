@@ -99,6 +99,9 @@ public final class ComplexRaster {
     }
 
     private static byte furniture(String key) {
+        // A small room's furniture piece (D259): its style cube, or open where it has none.
+        FurniturePiece piece = FurniturePiece.of(key);
+        if (piece != null) return piece.fallbackRole();
         switch (key) {
             case "TABLE":
                 return Cell.FURN_TABLE;

@@ -60,6 +60,27 @@ public final class GtMachineHook implements MachineHook {
      *
      * @param front the way the machine's front faces
      */
+    /** The locker of the small rooms (D263): GregTech's ULV Locker, which holds a suit of armor. */
+    public static final ItemList LOCKER = ItemList.Locker_ULV;
+
+    /**
+     * Places a GT Locker whose front faces {@code facing} (0 south, 1 west, 2 north, 3 east: a hanging direction).
+     *
+     * @param world the world; the cell is already air and inside the window
+     */
+    public static void placeLocker(World world, int x, int y, int z, int facing) {
+        ForgeDirection[] byHanging = { ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.NORTH,
+            ForgeDirection.EAST };
+        placeMte(
+            world,
+            LOCKER.get(1)
+                .getItemDamage(),
+            x,
+            y,
+            z,
+            byHanging[facing & 3]);
+    }
+
     public static void placeMte(World world, int id, int x, int y, int z, ForgeDirection front) {
         String cell = x + "," + y + "," + z;
         IMetaTileEntity proto = GregTechAPI.METATILEENTITIES[id];

@@ -127,6 +127,8 @@ final class PaletteSets {
 
         BlockRef lab0 = lab(0, 15), lab1 = lab(1, 15), lab2 = lab(2, 14), lab5 = lab(5, 15), lab6 = lab(6, 14);
         BlockRef lab7 = lab(7, 15), lab11 = lab(11, 7), lab12 = lab(12, 7);
+        // The two-tone Laboratory checker tile (meta 8, "checkertile"): dark and light gray quarters.
+        BlockRef lab8 = lab(8, 7);
         l.add(
             StyleSet
                 .named(
@@ -135,14 +137,35 @@ final class PaletteSets {
                     StyleGroup.SERVER_ROOM,
                     StyleGroup.COMMAND,
                     StyleGroup.CAFETERIA)
-                .walls(lab0, lab2, lab5, lab(3, 14))
+                .walls(lab0, lab2, lab5, lab(3, 14), lab11, lab12)
                 .floors(
                     plain(lab7),
+                    plain(lab8),
                     checker(lab7, lab6, 2),
                     borderField(lab12, lab7, 2),
                     stripes(lab7, lab11, 6, true),
                     doubleRing(lab11, lab12, lab7, 1))
                 .ceilings(plain(lab1), grid(lab0, lab1, 5), plain(lab0))
+                .lamp(litLamp(15), lab(9, 15))
+                .accent(lab(15, 14))
+                .furniture(Furniture.TABLE, STONE_TABLE)
+                .furniture(Furniture.CONSOLE, SCREEN_DARK)
+                .furniture(Furniture.BUNK, of(v("wool", 0)))
+                .furniture(Furniture.SHELF, SHELF)
+                .build());
+
+        // D260: the Laboratory finish with its dark gray steel walls (large and small steel, metas 11 and 12), the
+        // two-tone checker tile floor and white panel ceilings, for the rooms a lab suits: medical, server, command.
+        l.add(
+            StyleSet.named("lab_dark", StyleGroup.MEDICAL, StyleGroup.SERVER_ROOM, StyleGroup.COMMAND)
+                .walls(lab11, lab12)
+                .floors(
+                    plain(lab8),
+                    borderField(lab7, lab8, 1),
+                    checker(lab8, lab7, 3),
+                    centerStrip(lab8, lab6, 3),
+                    stripes(lab8, lab12, 5, true))
+                .ceilings(plain(lab1), grid(lab0, lab1, 5), plain(lab2), plain(lab5))
                 .lamp(litLamp(15), lab(9, 15))
                 .accent(lab(15, 14))
                 .furniture(Furniture.TABLE, STONE_TABLE)

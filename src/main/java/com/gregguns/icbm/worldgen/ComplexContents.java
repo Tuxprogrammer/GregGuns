@@ -203,6 +203,9 @@ public final class ComplexContents {
                 case MACHINE:
                     machine(m, p, seed, ceiling, out);
                     break;
+                case FURNITURE:
+                    FurnitureWear.wear(m, collapsed, level, seed, out);
+                    break;
                 default:
                     break; // signs and blast doors are the layout's own
             }

@@ -398,15 +398,15 @@ final class ComplexFurnisher {
     // --- rooms ---------------------------------------------------------------------------------------------------
 
     /** One room's furnishing, in its frame: cells as (lateral a, depth d), d 0 against the back wall. */
-    private final class Fit {
+    private final class Fit implements RoomFurniture.Floor {
 
         final Room r;
         final ComplexLayout.Frame f;
         final int L, D;
         final byte[] occ;
-        /** Furniture height per cell (0 none). */
-        final byte[] furnH;
-        final byte[] furnKind;
+        /** The furniture stack per cell, a mark key per layer from y 1 up (null for none), and its facing. */
+        final String[][] furn;
+        final byte[] furnFacing;
 
         Fit(Room r) {
             this.r = r;
@@ -414,8 +414,8 @@ final class ComplexFurnisher {
             this.L = f.lateral;
             this.D = f.depth;
             occ = new byte[L * D];
-            furnH = new byte[L * D];
-            furnKind = new byte[L * D];
+            furn = new String[L * D][];
+            furnFacing = new byte[L * D];
             for (int a = 0; a < L; a++) {
                 for (int d = 0; d < D; d++) {
                     int x = f.x(a, d), z = f.z(a, d);
@@ -424,8 +424,38 @@ final class ComplexFurnisher {
             }
         }
 
-        boolean free(int a, int d) {
+        @Override
+        public boolean free(int a, int d) {
             return a >= 0 && d >= 0 && a < L && d < D && occ[a * D + d] == FREE;
+        }
+
+        @Override
+        public ComplexLayout.Frame frame() {
+            return f;
+        }
+
+        @Override
+        public String pieceAt(int a, int d) {
+            if (a < 0 || d < 0 || a >= L || d >= D || occ[a * D + d] != FURN) return null;
+            return furn[a * D + d][0];
+        }
+
+        @Override
+        public boolean put(int a, int d, int facing, String... layers) {
+            if (!free(a, d) || layers.length == 0) return false;
+            occ[a * D + d] = FURN;
+            furn[a * D + d] = layers.clone();
+            furnFacing[a * D + d] = (byte) facing;
+            return true;
+        }
+
+        @Override
+        public void top(int a, int d, String layer) {
+            if (pieceAt(a, d) == null) return;
+            String[] l = furn[a * D + d];
+            String[] more = java.util.Arrays.copyOf(l, l.length + 1);
+            more[l.length] = layer;
+            furn[a * D + d] = more;
         }
 
         /** A solid mark (chest, machine, spawner) at (a, d) or the nearest free cell, same row first. */
@@ -458,28 +488,6 @@ final class ComplexFurnisher {
             return mark(k, a, 0, key);
         }
 
-        void furn(byte cell, int a, int d, int height) {
-            if (!free(a, d)) return;
-            occ[a * D + d] = FURN;
-            furnH[a * D + d] = (byte) height;
-            furnKind[a * D + d] = cell;
-        }
-
-        /** A run of furniture across the room at depth {@code d}, with a gap after every {@code run} cells. */
-        void row(byte cell, int d, int a0, int a1, int run, int height) {
-            for (int a = a0, k = 0; a <= a1; a++, k++) {
-                if (k % (run + 1) == run) continue;
-                furn(cell, a, d, height);
-            }
-        }
-
-        /** A run along the depth at lateral {@code a}. */
-        void column(byte cell, int a, int d0, int d1, int run, int height) {
-            for (int d = d0, k = 0; d <= d1; d++, k++) {
-                if (k % (run + 1) == run) continue;
-                furn(cell, a, d, height);
-            }
-        }
 
         /**
          * Keeps a 5 x 5 block free around (a, d) for the NASA Workbench and its free ring; false if it does not fit.
@@ -598,7 +606,7 @@ final class ComplexFurnisher {
                         while (at >= 0 && at != a0 * D + d0) {
                             if (occ[at] == FURN) {
                                 occ[at] = FREE;
-                                furnH[at] = 0;
+                                furn[at] = null;
                             }
                             at = prev[at];
                         }
@@ -615,23 +623,12 @@ final class ComplexFurnisher {
                 for (int d = 0; d < D; d++) {
                     int i = a * D + d;
                     if (occ[i] != FURN) continue;
-                    String key = furnName(furnKind[i]);
-                    for (int y = 1; y <= furnH[i]; y++) r.add(MarkKind.FURNITURE, f.x(a, d), y, f.z(a, d), key);
+                    String[] l = furn[i];
+                    for (int y = 1; y <= l.length; y++) {
+                        r.add(MarkKind.FURNITURE, f.x(a, d), y, f.z(a, d), l[y - 1], furnFacing[i], 1);
+                    }
                 }
             }
-        }
-    }
-
-    private static String furnName(byte cell) {
-        switch (cell) {
-            case Cell.FURN_TABLE:
-                return "TABLE";
-            case Cell.FURN_CONSOLE:
-                return "CONSOLE";
-            case Cell.FURN_BUNK:
-                return "BUNK";
-            default:
-                return "SHELF";
         }
     }
 
@@ -664,31 +661,24 @@ final class ComplexFurnisher {
         int q = Math.max(1, L * D / AREA_STEP);
         // D234: room guards, back-row chests and repeated machines all grow one step per AREA_STEP interior cells.
         int guards = q;
-        byte T = Cell.FURN_TABLE, C = Cell.FURN_CONSOLE, B = Cell.FURN_BUNK, SH = Cell.FURN_SHELF;
         switch (r.kind()) {
             case LAUNCH_CONTROL:
                 fit.mark(MarkKind.MACHINE, ma, md, MachineRole.LAUNCH_CONTROL.name());
-                if (D >= 9) fit.row(C, D - 4, 2, last - 2, 4, 1);
                 fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.CONTROL);
                 if (q > 2) fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.CONTROL);
                 spawners(fit, guards, "room");
                 break;
             case RADAR_TRACKING:
                 fit.mark(MarkKind.MACHINE, ma, md, MachineRole.RADAR.name());
-                fit.column(C, 0, 2, D - 4, 4, 1);
-                fit.column(C, last, 2, D - 4, 4, 1);
                 fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.CONTROL);
                 break;
             case COMMS:
                 fit.mark(MarkKind.MACHINE, ma, md, MachineRole.COMMS.name());
-                fit.column(C, 0, 2, D - 4, 4, 1);
                 fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.COMMS);
                 break;
             case COMMANDER_OFFICE:
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.SAFE);
                 fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.STOCKPILE);
-                fit.row(T, 3, ma - 2, ma + 2, 5, 1);
-                fit.column(SH, 0, 2, D - 4, 3, 2);
                 break;
             case WARHEAD_MAGAZINE: {
                 int n = 0;
@@ -723,7 +713,6 @@ final class ComplexFurnisher {
                 for (int i = 0, n = q; i < n; i++) {
                     fit.mark(MarkKind.MACHINE, (int) ((i + 0.5) * L / n), md, MachineRole.AIR_HANDLER.name());
                 }
-                fit.row(SH, 0, 2, last - 2, 3, 2);
                 break;
             case PUMP_ROOM:
                 for (int i = 0, n = q; i < n; i++) {
@@ -740,11 +729,8 @@ final class ComplexFurnisher {
                 fit.mark(MarkKind.MACHINE, ma + 2, md, MachineRole.WORKBENCH.name());
                 if (q > 2) fit.mark(MarkKind.MACHINE, ma + 6, md, MachineRole.WORKBENCH.name());
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.WORKSHOP);
-                fit.column(T, last, 2, D - 4, 4, 1);
                 break;
             case BUNKS:
-                fit.column(B, 0, 2, D - 4, 2, 1);
-                fit.column(B, last, 2, D - 4, 2, 1);
                 fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.BUNKS);
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.BUNKS);
                 for (int i = 2; i < 1 + q; i++) fit.mark(MarkKind.LOOT_CHEST, i * L / (2 + q), 0, LootKeys.BUNKS);
@@ -752,25 +738,18 @@ final class ComplexFurnisher {
                 break;
             case STOCKPILE:
                 for (int a = 1; a <= last; a += 4) fit.wallMark(MarkKind.LOOT_CHEST, a, LootKeys.STOCKPILE);
-                for (int d = 3; d <= D - 4; d += 3) fit.row(SH, d, 2, last - 2, 5, 2);
                 break;
             case MESS_GALLEY:
             case CAFETERIA:
-                fit.row(C, 1, 2, last - 2, 6, 1);
-                for (int d = 4; d <= D - 4; d += 3) fit.row(T, d, 2, last - 2, 5, 1);
                 fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.GALLEY);
                 if (q > 2) fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.GALLEY);
                 break;
             case INFIRMARY:
-                fit.column(B, 0, 2, D - 4, 2, 1);
-                fit.column(B, last, 2, D - 4, 2, 1);
-                fit.row(SH, 0, 3, last - 3, 3, 2);
                 fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.MEDICAL);
                 break;
             case ARMORY:
                 frames(fit);
                 fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.ARMORY);
-                fit.column(T, 0, 3, D - 4, 4, 1);
                 spawners(fit, guards, "room");
                 break;
             case GUARD_POST:
@@ -781,13 +760,8 @@ final class ComplexFurnisher {
                 fit.mark(MarkKind.MACHINE, last, 0, MachineRole.BATTERY_BUFFER.name());
                 fit.mark(MarkKind.MACHINE, ma, 0, MachineRole.WORKBENCH.name());
                 fit.mark(MarkKind.LOOT_CHEST, 1, 0, LootKeys.WORKSHOP);
-                fit.column(T, 0, 3, D - 4, 4, 1);
                 break;
             case SERVER_ROOM:
-                for (int a = 2; a <= last - 2; a += 3) {
-                    fit.column(SH, a, 2, md - 1, 6, 2);
-                    fit.column(SH, a, md + 1, D - 4, 6, 2);
-                }
                 fit.mark(MarkKind.MACHINE, 0, 0, MachineRole.COMMS.name());
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.COMMS);
                 break;
@@ -800,7 +774,6 @@ final class ComplexFurnisher {
                 }
                 fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.SALVAGE);
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.SALVAGE);
-                fit.column(T, last, 3, D - 4, 4, 1);
                 spawners(fit, guards, "room");
                 break;
             case WATER_TREATMENT:
@@ -820,6 +793,10 @@ final class ComplexFurnisher {
                 break;
             default:
                 break;
+        }
+        // D259: furniture only in the small rooms; the bays keep their machines, chests and guards only.
+        if (RoomFurniture.furnished(r.kind(), L * D)) {
+            RoomFurniture.furnish(r.kind(), fit, RoomFurniture.woodOf(plan.seed(), r.id()));
         }
         fit.keepReachable();
         fit.commit();

@@ -60,7 +60,14 @@ public final class ComplexPalette {
         StyleSet set = candidates.get(rng.nextInt(candidates.size()));
         BlockRef wall = set.walls.get(rng.nextInt(set.walls.size()));
         CellPattern floor = set.floors.get(rng.nextInt(set.floors.size()));
-        CellPattern ceiling = set.ceilings.get(rng.nextInt(set.ceilings.size()));
+        int ceilingIndex = rng.nextInt(set.ceilings.size());
+        CellPattern ceiling = set.ceilings.get(ceilingIndex);
+        // The other designs in the set's order, starting after the drawn one: a cell whose drawn ceiling shows the
+        // wall's block takes the next design's block there (D261).
+        List<CellPattern> ceilingAlternates = new ArrayList<>();
+        for (int i = 1; i < set.ceilings.size(); i++) {
+            ceilingAlternates.add(set.ceilings.get((ceilingIndex + i) % set.ceilings.size()));
+        }
         boolean wallLocal = false;
         boolean floorLocal = false;
 
@@ -95,6 +102,7 @@ public final class ComplexPalette {
             wall,
             floor,
             ceiling,
+            ceilingAlternates,
             set.lampLit,
             set.lampUnlit,
             set.accent,

@@ -355,7 +355,7 @@ public final class ComplexPlacer implements ComplexWriter {
         n += radars(cp, plan, groundY, window, sink, probe);
         for (Mark m : cp.allMarks()) {
             int wx = ax + m.x(), wz = az + m.z();
-            if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, under);
+            if (window.contains(wx, wz)) filler.fill(world, plan, m, wx, floorY + m.y(), wz, under);
         }
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
