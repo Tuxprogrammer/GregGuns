@@ -678,6 +678,11 @@ public final class DefenseScenarios {
                         return null;
                     }
                     out.check(t.online(), "the tower runs on EU");
+                    out.check(
+                        t.dish() != null && t.dish()
+                            .spin()
+                            .spinning(),
+                        "the tower's dish stands on the mast and spins");
                     out.checkEquals("state when clear", RadarRules.State.CLEAR, t.state());
                     out.check(
                         DevStructureBuilder.buildRadarTower(w, x, y, z, ItemList.Hatch_Energy_LuV).formed,
