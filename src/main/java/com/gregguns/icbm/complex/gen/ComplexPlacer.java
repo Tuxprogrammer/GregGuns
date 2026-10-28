@@ -350,6 +350,17 @@ public final class ComplexPlacer implements ComplexWriter {
         int[] seal = sealFloors(probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
         WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
         Styles st = stylesOf(plan);
+        // The role audit (D267): tag every write with the pass that made it, then read the complex back once its
+        // last window is written. Off in normal play.
+        RoleAudit.TaggingSink tagUnder = null, tagSink = null;
+        String auditKey = null;
+        if (RoleAudit.enabled()) {
+            auditKey = System.identityHashCode(this) + ":" + cacheKey(plan);
+            RoleAudit.Tracker t = RoleAudit
+                .tracker(auditKey, world, raster, st, auditWhere(plan, floorY), levelOf(cp).name(), ax, floorY, az);
+            under = tagUnder = new RoleAudit.TaggingSink(under, t);
+            sink = tagSink = new RoleAudit.TaggingSink(sink, t);
+        }
         int maskedColumns = 0;
         for (boolean m : mask) if (m) maskedColumns++;
         for (int x = x0; x <= x1; x++) {
@@ -375,13 +386,17 @@ public final class ComplexPlacer implements ComplexWriter {
                 }
             }
         }
+        if (tagSink != null) tagSink.as(RoleAudit.SHAFT);
         n += shafts(cp, plan, floorY, window, sink, probe);
         n += ladder(cp, plan, floorY, window, sink, probe);
         n += radars(cp, plan, groundY, window, sink, probe);
+        if (tagUnder != null) tagUnder.as(RoleAudit.MARK);
         for (Mark m : cp.allMarks()) {
             int wx = ax + m.x(), wz = az + m.z();
-            if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, under);
+            if (window.contains(wx, wz)) filler.fill(world, plan, m, wx, floorY + m.y(), wz, under);
         }
+        if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
+        if (tagSink != null) tagSink.as(RoleAudit.SIGNS);
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(under),
@@ -396,7 +411,7 @@ public final class ComplexPlacer implements ComplexWriter {
             for (Placement p : contentsOf(plan, cp)) applier.apply(p);
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
         }
-        summarize(plan, floorY, window, n, maskedColumns, sink);
+        if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;
     }
 
@@ -524,9 +539,11 @@ public final class ComplexPlacer implements ComplexWriter {
     /**
      * Counts what each window wrote and, once every window over the complex has run, logs one line at debug level, so
      * a complex that writes nothing in a pack shows up in the log with its numbers (D236).
+     *
+     * @return whether this was the complex's last window
      */
-    private void summarize(StructurePlan plan, int floorY, PopulateWindow window, int blocksWritten, int maskedColumns,
-        WindowedSink sink) {
+    private boolean summarize(StructurePlan plan, int floorY, PopulateWindow window, int blocksWritten,
+        int maskedColumns, WindowedSink sink) {
         String key = cacheKey(plan);
         int[] s = summaries.get(key);
         if (s == null) {
@@ -556,7 +573,25 @@ public final class ComplexPlacer implements ComplexWriter {
                 s[2],
                 s[3]);
             summaries.remove(key);
+            return true;
         }
+        return false;
+    }
+
+    /** @return where a complex lies, for the role audit's log line */
+    private String auditWhere(StructurePlan plan, int floorY) {
+        String dim = world == null ? "Overworld" : DimensionKey.of(world);
+        return "dimension " + dim
+            + " cell "
+            + plan.cellX()
+            + ","
+            + plan.cellZ()
+            + " anchor "
+            + plan.anchorX()
+            + ","
+            + plan.anchorZ()
+            + " floor y "
+            + floorY;
     }
 
     /** @return how many populate windows along one axis overlap a complex anchored at {@code a} */

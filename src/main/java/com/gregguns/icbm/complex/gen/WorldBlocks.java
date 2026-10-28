@@ -63,13 +63,17 @@ public final class WorldBlocks implements BlockResolver {
             case Cell.LADDER:
                 return new ResolvedBlock(Blocks.ladder, 2, false);
             case Cell.FLOOR:
+                // Without a palette style the floor, wall and ceiling are still three different blocks (D265), none
+                // of them one GregTech's stone layers overwrite.
+                return new ResolvedBlock(Blocks.double_stone_slab, 0, false);
             case Cell.CEILING:
+                return new ResolvedBlock(Blocks.quartz_block, 0, false);
             case Cell.DOOR_FRAME:
             case Cell.FURN_TABLE:
             case Cell.FURN_CONSOLE:
             case Cell.FURN_BUNK:
             case Cell.FURN_SHELF:
-                // Without a palette style every building role is the complex wall (D205).
+                // Without a palette style the door frame and the furniture are the complex wall (D205).
                 return new ResolvedBlock(BlockComplexWall.instance(), 0, false);
             case Cell.LAMP:
                 // A dark lamp; the contents pass lights it.

@@ -35,6 +35,16 @@ public interface Styles {
     /** @return the lit lamp of the section that owns the column, or null for the resolver's */
     ResolvedBlock litLamp(int x, int y, int z);
 
+    /**
+     * Names the code path that decides a building role's block at a cell, for the role audit's log line (D267).
+     *
+     * @param role a {@link com.gregguns.icbm.complex.Cell} building role
+     * @return a one-line description; the block resolver's when no style decides the cell
+     */
+    default String path(byte role, int x, int y, int z) {
+        return "the block resolver (no palette style)";
+    }
+
     /** Makes the styles of one complex. */
     interface Factory {
 

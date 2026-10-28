@@ -19,12 +19,12 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 /** {@link ComplexPlacer.Settings} from {@link IcbmConfig}, read at each call so a config edit takes effect. */
 public final class ConfigSettings implements ComplexPlacer.Settings {
 
-    /** @return the writer the ICBM module installs: real blocks, real GT machines, marks left to the filler */
+    /** @return the writer the ICBM module installs: real blocks, real GT machines, the small rooms' furniture */
     public static ComplexPlacer writer() {
         ComplexPlacer placer = new ComplexPlacer(
             new WorldBlocks(),
             new GtMachineHook(),
-            MarkFiller.NONE,
+            new FurnitureFiller(),
             new ConfigSettings()).withStyles(PaletteStyles.FACTORY);
         // A world that unloads (a save closed in singleplayer) takes the placer's caches and world reference with it.
         MinecraftForge.EVENT_BUS.register(new Releaser(placer));

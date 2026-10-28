@@ -49,8 +49,8 @@ import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.complex.gen.ComplexPlacer;
+import com.gregguns.icbm.complex.gen.FurnitureFiller;
 import com.gregguns.icbm.complex.gen.GtMachineHook;
-import com.gregguns.icbm.complex.gen.MarkFiller;
 import com.gregguns.icbm.complex.gen.WorldBlocks;
 import com.gregguns.icbm.control.ControlMachines;
 import com.gregguns.icbm.warhead.BlockWarhead;
@@ -131,20 +131,24 @@ public final class ComplexLevelScenarios {
     }
 
     static ComplexPlacer placer() {
-        return new ComplexPlacer(new WorldBlocks(), new GtMachineHook(), MarkFiller.NONE, new ComplexPlacer.Settings() {
+        return new ComplexPlacer(
+            new WorldBlocks(),
+            new GtMachineHook(),
+            new FurnitureFiller(),
+            new ComplexPlacer.Settings() {
 
-            public boolean dimensionEnabled(String n) {
-                return true;
-            }
+                public boolean dimensionEnabled(String n) {
+                    return true;
+                }
 
-            public int chancePercent() {
-                return 100;
-            }
+                public int chancePercent() {
+                    return 100;
+                }
 
-            public Set<Type> overworldBiomes() {
-                return Collections.emptySet();
-            }
-        }).withStyles(com.gregguns.icbm.complex.gen.PaletteStyles.FACTORY);
+                public Set<Type> overworldBiomes() {
+                    return Collections.emptySet();
+                }
+            }).withStyles(com.gregguns.icbm.complex.gen.PaletteStyles.FACTORY);
     }
 
     /**

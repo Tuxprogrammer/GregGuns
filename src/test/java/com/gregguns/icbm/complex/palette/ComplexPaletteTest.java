@@ -19,6 +19,7 @@ class ComplexPaletteTest {
     private static final Set<String> VANILLA_NAMES = new HashSet<>(
         Arrays.asList(
             "stone",
+            "double_stone_slab",
             "stonebrick",
             "quartz_block",
             "glowstone",

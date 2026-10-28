@@ -67,7 +67,11 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.tools.ToolRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.launcher.LauncherWarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.antidote.AntidoteRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
-            com.gregguns.icbm.complex.ComplexScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            // The complex scenarios fail on a role audit violation (D267).
+            ScenarioRegistry complex = new ScenarioRegistry();
+            com.gregguns.icbm.complex.ComplexScenarios.registerAll(complex);
+            com.gregguns.icbm.complex.gen.RoleAuditScenarios.registerAll(complex);
+            com.gregguns.icbm.complex.gen.RoleAuditScenarios.registerAudited(complex, ScenarioRegistry.SCENARIOS);
             // The OpenComputers scenario exists only with the mod; its class names OC types.
             if (cpw.mods.fml.common.Loader.isModLoaded("OpenComputers")) {
                 com.gregguns.icbm.compat.oc.OcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
