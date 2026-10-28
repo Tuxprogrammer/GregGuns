@@ -507,6 +507,25 @@ public final class MissileScenarios {
             return n;
         }
 
+        /**
+         * @return for a failure message: how much of the platform stands, whether its chunk is loaded, the surface
+         *         there
+         */
+        public String report(World w) {
+            int[] c = stones.get(stones.size() / 2);
+            return "platform " + standing(w)
+                + "/"
+                + stones.size()
+                + " standing, center chunk "
+                + (w.getChunkProvider()
+                    .chunkExists(c[0] >> 4, c[2] >> 4) ? "loaded" : "UNLOADED")
+                + ", surface y "
+                + w.getHeightValue(c[0], c[2])
+                + " (platform y "
+                + c[1]
+                + ")";
+        }
+
         /** @return how many platform blocks a blast took out; blocks in a chunk that is not loaded do not count */
         public int removed(World w) {
             int n = 0;

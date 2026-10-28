@@ -214,7 +214,11 @@ public final class ControlLaunchScenario implements Scenario {
                     }
                     out.check(
                         first.removed(w) > 0,
-                        "the first blast broke blocks on its platform" + engineState() + " [" + m.impactReport() + "]");
+                        "the first blast broke blocks on its platform" + engineState()
+                            + " ["
+                            + m.impactReport()
+                            + "] "
+                            + first.report(w));
                     out.checkEquals(
                         "no tickets after the first impact",
                         0,
@@ -249,6 +253,7 @@ public final class ControlLaunchScenario implements Scenario {
                     return null;
                 }
                 case 2: {
+                    com.gregguns.GregGuns.LOG.info("launch_to_impact before the second shot: {}", second.report(w));
                     // The raised signal is the only trigger: nothing has fired yet.
                     out.check(!missile[0].isDead && missile[0].onPad(), "the second missile waits on the pad");
                     ctx.setBlock(4, 0, 0, Blocks.redstone_block, 0);
