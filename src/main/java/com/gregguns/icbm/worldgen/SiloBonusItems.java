@@ -44,6 +44,7 @@ public final class SiloBonusItems {
                     NBTTagCompound tag = s.hasTagCompound() ? s.getTagCompound() : new NBTTagCompound();
                     tag.setBoolean(K_DAMAGED, true);
                     s.setTagCompound(tag);
+                    s.setItemDamage(com.gregguns.icbm.missile.ItemBlockMissileBody.SALVAGE_DAMAGE);
                     return s;
                 }
                 case SCHEMATIC_CHIP:

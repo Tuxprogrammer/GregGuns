@@ -35,13 +35,17 @@ public final class ItemBlockMissileBody extends ItemBlock {
 
     /**
      * @param stack a body stack
-     * @return true when it carries the salvage flag of a generated complex's damaged body
+     * @return true when it is a generated complex's damaged body: item damage {@link #SALVAGE_DAMAGE}, so GT recipes
+     *         (which match item and damage, not NBT) never take it for an intact body, or the legacy NBT flag
      */
     public static boolean isSalvage(ItemStack stack) {
-        return stack != null && stack.hasTagCompound()
-            && stack.getTagCompound()
-                .getBoolean(com.gregguns.icbm.worldgen.SiloBonusItems.K_DAMAGED);
+        return stack != null
+            && (stack.getItemDamage() == SALVAGE_DAMAGE || stack.hasTagCompound() && stack.getTagCompound()
+                .getBoolean(com.gregguns.icbm.worldgen.SiloBonusItems.K_DAMAGED));
     }
+
+    /** The item damage of a damaged body: a different item for every GT recipe, with its own recycling data. */
+    public static final int SALVAGE_DAMAGE = 1;
 
     /** @return the tier */
     public MissileTier tier() {
