@@ -33,6 +33,12 @@ public final class SalvageScenarios {
         registry.register(new Salvage());
     }
 
+    /** @return true for a recipe that outputs a missile body (some unrelated recipe may match a bare circuit) */
+    private static boolean isFit(GTRecipe r) {
+        return r != null && r.mOutputs != null && r.mOutputs.length > 0 && r.mOutputs[0] != null
+            && MissileBodies.tierOf(r.mOutputs[0]) != null;
+    }
+
     private static final class Salvage implements Scenario {
 
         @Override
@@ -77,16 +83,12 @@ public final class SalvageScenarios {
                     .items(intact, comp, GTUtility.getIntegratedCircuit(spec.fitCircuit()))
                     .voltage(TierEU.RECIPE_UV)
                     .find();
-                out.check(realFit != null, "the intact body has a guidance fit with " + computer);
+                out.check(isFit(realFit), "the intact body has a guidance fit with " + computer + ": " + realFit);
                 GTRecipe fit = RecipeMaps.assemblerRecipes.findRecipeQuery()
                     .items(damaged, comp, GTUtility.getIntegratedCircuit(spec.fitCircuit()))
                     .voltage(TierEU.RECIPE_UV)
                     .find();
-                if (fit != null) {
-                    out.note("matched " + java.util.Arrays.toString(fit.mInputs) + " -> "
-                        + java.util.Arrays.toString(fit.mOutputs) + " special " + fit.mSpecialItems);
-                }
-                out.check(fit == null, "a damaged body must not take the guidance fit with " + computer);
+                out.check(!isFit(fit), "a damaged body must not take the guidance fit with " + computer);
                 fits++;
             }
             out.check(fits > 0, "a T1 guidance computer exists to test with");
