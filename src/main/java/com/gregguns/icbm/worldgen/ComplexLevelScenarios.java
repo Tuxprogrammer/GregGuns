@@ -381,7 +381,11 @@ public final class ComplexLevelScenarios {
                         if (empty((IInventory) ct)) t.chestsEmpty++;
                         break;
                     case MACHINE:
+                        int rightBefore = t.machinesRight;
                         machine(t, world, p, x, y, z);
+                        if (t.machinesRight == rightBefore && t.machinesSkipped == 0) {
+                            out.note(tag + ": machine " + p + " reads " + b + " " + world.getTileEntity(x, y, z));
+                        }
                         break;
                     default:
                         break;
