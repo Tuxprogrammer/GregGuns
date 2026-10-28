@@ -117,30 +117,17 @@ public final class ComplexLevelScenarios {
     }
 
     static void load(World world, StructurePlan p) {
-        ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
-        for (int cx = Math.floorDiv(p.anchorX(), 16) - 2; cx <= Math.floorDiv(p.anchorX() + 240, 16) + 2; cx++) {
-            for (int cz = Math.floorDiv(p.anchorZ(), 16) - 2; cz <= Math.floorDiv(p.anchorZ() + 240, 16) + 2; cz++) {
-                cps.loadChunk(cx, cz);
-            }
-        }
+        com.gregguns.icbm.complex.ComplexArena.load(world, p);
     }
 
-    /** Stone to the ground with a grass top and air above, or all air when {@code clear}. */
+    /** Stone to the ground with a grass top and air above to the chunk's top, or all air when {@code clear}. */
     static void slab(World world, StructurePlan p, boolean clear) {
-        for (int x = p.anchorX() - 4; x < p.anchorX() + 244; x++) {
-            for (int z = p.anchorZ() - 4; z < p.anchorZ() + 244; z++) {
-                for (int y = GROUND + 12; y >= GROUND - ComplexPlacer.DEPTH - 2; y--) {
-                    Block b = clear ? Blocks.air : y > GROUND ? Blocks.air : y == GROUND ? Blocks.grass : Blocks.stone;
-                    if (world.getBlock(x, y, z) != b || world.getBlockMetadata(x, y, z) != 0) {
-                        world.setBlock(x, y, z, b, 0, 2);
-                    }
-                    TileEntity t = clear ? world.getTileEntity(x, y, z) : null;
-                    if (t != null) {
-                        world.removeTileEntity(x, y, z);
-                    }
-                }
-            }
-        }
+        com.gregguns.icbm.complex.ComplexArena.slab(world, p, clear, (x, z) -> GROUND, 0, GROUND);
+    }
+
+    /** @return the level floor the placer writes at over this scenario's ground in the world */
+    static int floor(World world) {
+        return com.gregguns.icbm.complex.ComplexArena.floor(world, GROUND);
     }
 
     static ComplexPlacer placer() {
@@ -365,7 +352,7 @@ public final class ComplexLevelScenarios {
             Tally t = new Tally();
             ComplexPlan cp = placer.rasterOf(plan)
                 .plan();
-            int ax = plan.anchorX(), az = plan.anchorZ(), floor = GROUND - ComplexPlacer.DEPTH;
+            int ax = plan.anchorX(), az = plan.anchorZ(), floor = floor(world);
             int[] other = { plan.anchorX() + 64 * 16, plan.anchorZ() };
             List<Placement> placements = ComplexContents.build(cp, level, ceiling, other);
             // Last writer wins per cell; collapses are boxes, tallied on their own.

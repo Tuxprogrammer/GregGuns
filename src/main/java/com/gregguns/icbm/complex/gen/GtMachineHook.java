@@ -73,7 +73,25 @@ public final class GtMachineHook implements MachineHook {
         }
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
+        claim(base);
         base.setFrontFacing(front);
+    }
+
+    /** The owner every generated machine carries (D239). */
+    public static final String OWNER_NAME = "[Silo Complex]";
+    public static final java.util.UUID OWNER_UUID = java.util.UUID
+        .nameUUIDFromBytes("gregguns:silo_complex".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+    /**
+     * Gives a generated GT machine an owner. A multiblock that stops (it is broken, or it loses its structure or power)
+     * files a power-fail event under its owner, and GT's tracker throws on a machine with none: a generated radar or
+     * silo controller then errors every tick or when it is removed (D239).
+     *
+     * @param base the machine's tile
+     */
+    public static void claim(IGregTechTileEntity base) {
+        base.setOwnerName(OWNER_NAME);
+        base.setOwnerUuid(OWNER_UUID);
     }
 
     @Override

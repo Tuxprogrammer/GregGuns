@@ -442,7 +442,20 @@ final class ComplexFurnisher {
 
         /** A mark spread {@code n} times along the back wall. */
         void backRow(MarkKind k, int n, String key) {
-            for (int i = 0; i < n; i++) mark(k, (int) ((i + 0.5) * L / n), 0, key);
+            for (int i = 0; i < n; i++) wallMark(k, (int) ((i + 0.5) * L / n), key);
+        }
+
+        /** A mark against the back wall: the nearest free cell along it, else the nearest free cell anywhere. */
+        boolean wallMark(MarkKind k, int a, String key) {
+            for (int off = 0; off < L; off++) {
+                for (int ca : new int[] { a + off, a - off }) {
+                    if (!free(ca, 0)) continue;
+                    occ[ca * D] = SOLID;
+                    r.add(k, f.x(ca, 0), 1, f.z(ca, 0), key);
+                    return true;
+                }
+            }
+            return mark(k, a, 0, key);
         }
 
         void furn(byte cell, int a, int d, int height) {
@@ -703,7 +716,7 @@ final class ComplexFurnisher {
                 spawners(fit, guards, "room");
                 break;
             case STOCKPILE:
-                for (int a = 1; a <= last; a += 4) fit.mark(MarkKind.LOOT_CHEST, a, 0, LootKeys.STOCKPILE);
+                for (int a = 1; a <= last; a += 4) fit.wallMark(MarkKind.LOOT_CHEST, a, LootKeys.STOCKPILE);
                 for (int d = 3; d <= D - 4; d += 3) fit.row(SH, d, 2, last - 2, 5, 2);
                 break;
             case MESS_GALLEY:

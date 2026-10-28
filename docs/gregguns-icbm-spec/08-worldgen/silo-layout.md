@@ -1,34 +1,160 @@
-# Silo complex layout (D128)
+# Silo complex layout (D128, D229)
 
-Status: layout, stamp, surface features, armory frames, deep guard posts and radar stations built (I6 coder A and finisher). Placement and planets: [planets-and-placement](planets-and-placement.md).
+Status: grown layout, gallery, lamp grid, furnishing, palette integration, surface features built (I6b layout). Placement and planets: [planets-and-placement](planets-and-placement.md). Blocks and styles: [palette](palette.md).
 
 ## Shape
 
-All coordinates are complex-local: x and z in [0, 240), y 0 at the level floor (floor y 0, air 1 to 5, ceiling 6). One flat underground level.
+All coordinates are complex-local: x and z in [0, 240), y 0 at the level floor. It is one flat underground level: every section's floor is layer 0, and sections differ only in how high their ceiling is.
 
-- **Assembly bay (hall):** 36 x 28, x 102 to 138, z 106 to 134.
-- **Wings:** four (N, E, S, W), each a 5-wide corridor 90 blocks long off the hall. A guard post annex (6 x 6, low side) sits at every wing mouth; one randomly picked wing also has a decontamination airlock (8 x 8, high side).
-- **Room slots:** 5 per side per wing (40 total), pitch 16, first slot 10 blocks from the hall. 60 to 85% are used. Every mandatory kind is always present (launch control, comms, commander's office, warhead magazine, generator hall, armory); the rest are drawn from the optional kinds.
-- **Silos:** 1 (78%), 2 (15%), 3 (5%), 4 (2%), in a cluster in the north-east quadrant, real Missile Silo structures (5 x 5 x 12, the controller in the north face) on a 2 x 2 grid, joined to the hall by a stub, a trunk and one row corridor per silo row along the controllers' faces. Each has a seeded surface variant (open, half open, closed) and a missing part (controller or Energy Hatch).
-- **Surface:** silo shafts, 0 to 2 radar stations (south-west quadrant), one 1 x 1 escape ladder at the end of a random wing.
+The layout is grown, not stamped (`ComplexGrower`, D230). Every choice comes from one `Random` seeded by the plan seed. Lists are used throughout, with no hash order, so a plan is a pure function of (seed, cell).
+
+| Section | Footprint (walls included) | Height (floor to ceiling layer) |
+|---|---|---|
+| Hub (the assembly bay) | 51 x 40, either way round, near the center | 12 |
+| Major hall | 20 wide | 11; 12 for the silo gallery |
+| Minor hallway | 5 wide | 7 |
+| Room | about 22 x 20 to 36 x 30 nominal, then grown (below) | 9 |
+| Guard post, decontamination airlock | 10 x 10, 12 x 12 | 7 |
+
+- **Major halls:** three (25%) or four (75%) leave the hub's sides at a seeded offset.
+  - The first hall is straight and 50 to 62 long; it carries the silo gallery.
+  - The others bend at their far end (85%), and some bend again (40%), never back toward the hub.
+  - Up to three side branches leave the middle of a long segment.
+  - A hall stops 20 blocks short of the edge, so rooms can cap it. A free far end grows toward the edge.
+- **Minor hallways:** 8 to 15 hallways, 30 to 70 long, leave a hall's side. Some leave another minor hallway's side as sub-hallways between branches. Their sides and far end take rooms.
+- **Rooms:** 35 to 40 rooms in all, the hub not counted.
+  - Every mandatory kind is always present: launch control, comms, commander's office, warhead magazine, generator hall, armory and missile assembly. The rest come from the optional kinds, repeated as needed.
+  - Rooms hang off halls side by side, each touching the last.
+  - Rooms also hang off rooms, up to three deep, so not every room has a direct line to the hub.
+  - About one in seven pairs of rooms that end up side by side gets an extra door, so the plan is a graph, not just a tree.
+- **Growth to coverage:** every room then grows a cell at a time into the rock around it.
+  - The limit is 150% of its kind's nominal size per axis. A side never grows past twice the other.
+  - While the built footprint is under 78%, the limit rises 20 points, up to six times.
+  - A plan that still misses 76%, 35 rooms or 4 silos is grown again from a seed mixed from the plan seed and the attempt number (up to eight attempts), and the best attempt is kept.
+  - Over 1000 seeds: coverage is at least 76% (mean 78.5%). The mean room footprint is about 1000 cells, six times the I6 room's 168: 75% coverage with 35 to 40 rooms needs that.
+- **Walls:** neighboring sections touch but never share a wall. A wall between two rooms is two blocks thick, so each side shows its own room's one wall block (D229 point 5).
+
+## Silo gallery (D232)
+
+- **Count:** 4 to 10 silos: 4 (26%), 5 (24%), 6 (18%), 7 (12%), 8 (10%), 9 (6%), 10 (4%). Each misses exactly one part (D128).
+- **Where:** the silos line the gallery hall on both sides.
+  - They stand in facing pairs, 7 blocks apart (5 of silo, 2 of rock), from the far end toward the hub. The last 14 blocks at the hub end stay clear.
+  - Seven or more silos split across a second straight hall when one exists, never more than two halls.
+  - A hall takes single silos only after it has a facing pair, so a gallery always has silos on both sides.
+- **Turned to face the hall:** each silo's structure is stamped turned so its controller face is toward the gallery (`SiloSlot.facing`, `x(column, aisle)`, `z(column, aisle)`). The controller and hatches are placed facing that way. A 3-wide walkway niche opens in the gallery wall in front of the controller.
+- **Launch Control** caps the gallery's far end. Its doorway opens onto the gallery, and both wall layers on either side of the doorway are glass panes from layer 3 to 6, so the room overlooks the silos. If the far end is taken, Launch Control opens off the gallery's side.
+- **Missile assembly floor** is the first room placed on the gallery's sides, in the span the silos leave free.
+
+## Doors
+
+`ComplexPlan.doors()`: each `Door` cuts both wall layers between two touching sections.
+
+| Kind | Size | Where |
+|---|---|---|
+| Portal | The whole shared interior span; up to layer 8 between tall halls (a lintel above), the full height into a minor hallway | Hub to hall, hall to hall, hall to minor hallway |
+| Door | 3 wide, up to layer 4 (vehicle bay off a hall: 5 wide, up to layer 5; small rooms: 2 wide, up to layer 3) | Room to its parent; extra room-to-room doors |
+| Walkway | 3 wide, up to layer 3, the gallery wall only | In front of each silo's controller |
+| Window | Panes, layers 3 to 6 | Launch Control over the gallery |
+
+Doors and portals get **door frames** (the DOOR role): jambs either side and a lintel over the opening, in both wall layers, drawn in the room's accent block.
+
+## Raster (cell roles)
+
+`ComplexRaster` holds one role per cell (`Cell`) and, per column, the section that owns it.
+
+- Each section writes its shell: WALL on its perimeter at every layer, FLOOR in layer 0 and CEILING in its top layer inside, air between.
+- Then doors (air), door frames, window panes, rails, lamps and furniture.
+- The silo roles stay as they were (concrete, glass, beam, pad, controller, hatches).
+
+The writer resolves the building roles through the owning section's palette style: WALL, FLOOR, CEILING, LAMP, DOOR_FRAME and furniture. Glass and water resolve by themselves. See [palette](palette.md) and D235.
+
+## Lighting (D230, D231)
+
+- **Lamps are flush in the ceiling layer**, on a grid aligned to their section.
+  - Lines run at most 6 apart, spread evenly so the grid is centered (`ComplexFurnisher.grid`).
+  - In halls the rows run along the hall's axis. In rooms they run along the door wall.
+  - Rooms furnished with rows of tables, shelves or racks (cafeteria, mess galley, server room, stockpile) use lines at most 4 apart.
+- **Light tiles in the floor:** a section taller than 7 also gets a lamp flush in the floor layer under every ceiling lamp. Minecraft's block light falls one level per block, so a ceiling lamp 8 or more blocks up cannot light the floor to 8. A floor light tile lights every floor cell within 6 to 8 or more. A minor hallway (7 high) has ceiling lamps only, every 3 cells along its centerline, which keeps D217's floor light of 8.
+- **Light marks:** a `LIGHT` mark sits at each lamp (ceiling layer or floor layer), with the key `lamp:<section>:<run>`. A run is one grid line. The shell writes the style's dark lamp; the contents pass lights it with the style's lit lamp.
+- **Activity level:** an abandoned complex lights or kills whole runs, a partly abandoned one whole sections, an operational one everything. The D36 shares stay: 5%, 45% and 100%.
+- **Proof:**
+  - `ComplexLayoutTest` simulates block light over 12 plans, with machines, guards and furniture counted solid. Every open floor cell reads 8 or more.
+  - `icbm.complex.levels` reads the saved block light of every open floor cell of every section in an operational complex.
 
 ## Marks (the seam with activity, guards and loot)
 
-`com.gregguns.icbm.complex`: `ComplexLayout.generate(worldSeed, cellX, cellZ)` returns a `ComplexPlan` of `Room`s, `Tunnel`s and `SiloSlot`s. Each room and tunnel carries `Mark`s (`MarkKind`, x, y, z, key): loot chest (loot-table key from `LootKeys`), spawner (key `post`, `room` or `deep`), machine (`MachineRole`), item-frame wall, light, damage cell (`wall`, `floor`, `roof`), flood cell, rubble, sign, blast door. The plan is pure geometry and deterministic; it never changes by activity level.
+`ComplexLayout.generate(worldSeed, cellX, cellZ)` returns a `ComplexPlan` of `Room`s (the hub is `hall()`), `Tunnel`s (major and minor halls), `SiloSlot`s and `Door`s. Each room and hall carries `Mark`s (`MarkKind`, x, y, z, key):
+
+- loot chest, with a loot-table key from `LootKeys`;
+- spawner, keyed `post`, `room` or `deep`;
+- machine, keyed by `MachineRole`;
+- item-frame wall, light, damage cell (`wall`, `floor`, `roof`), flood cell, rubble, sign and blast door;
+- furniture (D234).
+
+The plan is pure geometry and deterministic. It never changes by activity level.
+
+## Furnishing (D208, D234)
+
+- **The frame:** every room is furnished in its own frame (`ComplexLayout.Frame`), not in world axes.
+  - The back wall is the wall opposite the doorway to the room's parent, whichever of the four sides that is.
+  - Chests and wall machines stand against the back wall; machines stand in the middle row.
+  - The sign hangs on the doorway's jamb, facing in.
+- **Kept clear:** the cells inside every doorway, two deep and one wider each side, any door of the room. Light tiles are kept clear too. If furniture walls a chest, machine or guard off from the doorway, the shortest way through the furniture is cleared.
+- **Scaling:** chest, machine and guard counts grow by one step per 450 interior cells.
+- **Furniture:** `FURNITURE` marks with the key TABLE, CONSOLE, BUNK or SHELF (shelves and racks two high). The raster writes them as furniture roles drawn from the style. `BASIN` is standing water sunk into the floor layer.
+
+| Kind | Furnishing |
+|---|---|
+| Launch control | Launch Control machine in the middle; a console row facing the windows; control chests; guards |
+| Radar and tracking, comms | The radar or comms machine in the middle; consoles along the side walls; chests on the back wall |
+| Commander's office | A safe and a stockpile chest in the back corners; a desk; shelves |
+| Warhead magazine | A grid of inert Stainless Steel frame boxes 3 apart; fallout rubble marks; magazine chests; guards |
+| Fuel depot | Fuel tanks along both side walls; fuel chests |
+| Generator hall | A row of generators; a battery buffer in a back corner; guards |
+| Air handling, pump room | Their machines in the middle row; shelves (air); flood cells (pump) |
+| Workshop | The NASA Workbench with its free ring; workbenches; a workshop chest; tables |
+| Bunks, infirmary | Bunks or beds along the side walls; chests; shelves (infirmary) |
+| Stockpile | Chests along the back wall; rows of shelves |
+| Mess galley, cafeteria | A counter, rows of tables, galley chests |
+| Armory | Two staggered rows of item frames on the back wall, split around a doorway; chests; tables; guards |
+| Vehicle bay | Battery buffers and a workbench on the back wall; a workshop chest; a bench of tables |
+| Server room | Rows of two-high racks; a comms machine; a comms chest |
+| Missile assembly | The NASA Workbench in the middle; two workbenches; casing frame boxes on the back wall; salvage chests; guards |
+| Water treatment | Basins of standing water in rows; pumps on the back wall |
+| Guard post | A `post` spawner |
+
+- **The hub:** salvage chests spread along its walls, clear of every portal, plus a workbench in the middle, guards toward the corners and the hub's sign beside a portal.
+- **Halls:**
+  - A blast-door mark and a sign naming the hall (`wing.<0..3>` by compass direction, or `silo_gallery`) at each mouth off the hub.
+  - Roof, floor and wall damage cells, scaled by area, kept off lamps and openings.
+  - A minecart rail along each major hall's centerline.
+
+## Guards (D233)
+
+- **Branch points:** every opening from the hub or a hall into another hall (a mouth, a bend, a side branch, a minor hallway) has a `post` spawner beside it, two cells in from the wall and two clear of the opening.
+- **Guard posts:** 3 to 5 guard-post rooms stand beside major hall mouths at the hub and beside minor hallway mouths.
+- **Decontamination airlock:** sits in the corner between the hub and a major hall, with a door onto each.
+- **Deep posts:** each silo has a `deep` post three cells into the gallery from its walkway, and the gallery's far end has one more. The contents pass makes them elite posts.
 
 ## Depth, stamp and surface
 
-- **Level:** the floor is 24 blocks under the recorded ground; rooms are floor + 5 air cells + ceiling (7 layers). Walls, rooms and tunnels are the complex wall block (`gregguns:complex_wall`, D205): a plain cube, not a GT casing, that shows the Steel Bastion Plating texture and joins into one plated mass through its own connected-texture rule over the same tiles (design record 0023). It breaks into itself and no recipe uses it, so mining a complex yields no Rampart casing; placing it starts no GT machine-update search, and the whole window write also switches that search off for the GT blocks that remain. The silo and its shaft stay GT Light and Dark Concrete, the silo's own accepted finish; no connected-texture rule is ever shipped for a `gregtech:*` block.
-- **Doors:** every room opens onto its wing corridor (2 wide, 3 high); each wing opens into the hall; the stub opens into the hall's east wall.
-- **Furnishing:** every room is furnished in its own frame (`ComplexLayout.Frame`), not in world axes: the back wall is the wall opposite the door, chests and wall machines stand against it (against the side walls when it is full), machines stand in the middle row, the sign hangs on the door wall beside the doorway facing in, and the doorway and the two cells inside it stay clear. A wing's direction and a room's side of the corridor do not matter. The workshop's NASA Workbench mark is the center of a 3 x 3 with a free ring around it. "Wall" damage cells sit on a room's perimeter, never in a doorway. The hall's chests line its north wall either side of the north doorway.
-- **Tunnels:** a vanilla rail along each wing's center line. Lamps and signs are real; blast doors are marks that write nothing yet, and so are cable trays and pipes (I7, D213).
-- **Signs:** a SIGN mark becomes a wall sign on the wall beside its cell, its lines from the `icbm.complex.sign.<room kind>` lang key (up to four lines divided by `|`); the central hall's sign reads `icbm.complex.sign.hall` with the rolled tier name (D212).
-- **NASA Workbench:** written with Galacticraft's dummy blocks in its full footprint, each tied to the main block (D214).
-- **Flooded pump room:** the water of a flood mark sits one cell down, in the floor, so it cannot flow out (D214).
-- **Silo:** the `SiloShape` piece cell by cell: concrete `C`/`F`, clear glass `G`, Gantry Beam `B`, Galacticraft pad `P` in the bore floor, the 3 x 3 bore open. The controller and hatches (input bus and maintenance beside it, energy and input HV below) are real GT machines. Exactly one part is missing: the controller (a concrete block in its place) or the Energy Hatch (a clear glass block). A walkway cell in front of the controller opens onto the row corridor.
-- **Shaft:** above the silo, a 5 x 5 concrete ring around the bore up to the ground height read in the shaft's window. Mouth variants: open, half open (west half of the bore capped), closed (all capped, two of the eight outer cells stay air to build height).
-- **Escape:** a 1 x 1 ladder from the end of a wing to a closed trapdoor at ground level. The ladder's metadata (`ComplexPlan.escapeMeta`) makes it cling to the wing's end wall behind it (N 3, S 2, E 4, W 5).
-- **`landY`:** `HeightProbe.landY` is the **top solid block** (foliage, wood and ice skipped), not the air above it. So the trapdoor replaces that block and is a closed top-half trapdoor (metadata 8): its top face is at landY + 1, level with the terrain around it. A shaft ring is written up to and including landY, so its top face meets the terrain, and an open bore is air from the silo up through landY. `icbm.complex.dim.*` check both on real terrain.
-- **Radar stations:** 0 to 2, in the south-west quadrant, at least 12 blocks apart, each a 5 x 5 hut of Works Casing walls three high (a two-high doorway on the south side, a Gantry Casing roof) with the small radar (D125) standing on the roof's middle. The radar is `RadarShape`'s own piece, read cell by cell (`RadarStation`): a 3 x 3 base two layers high of Radar Casing, the pedestal casing on top, an HV radar controller (MTE 20142, facing north) in the front aisle's upper layer and a Maintenance Hatch beside the place under it. The Energy Hatch's place holds a Radar Casing, so the station is inert until a player swaps an Energy Hatch in, and it forms then (D215); the dish spawns when GT's structure check forms it. The hut is built off the recorded ground height, so it stays level when it spans windows (the foundation fills below, a bump above is cleared; a water column is left alone).
-- **Armory frames:** the `ITEM_FRAME_WALL` mark is the first frame cell (the room cell in front of the wall) and carries `facing` (Minecraft's hanging direction: 0 south, 1 west, 2 north, 3 east) and `extent` (frame count, one every third cell along +X or +Z: a long rifle draws about three blocks wide). The armory marks two rows (y 2 and 3) on the wall opposite the doorway, the upper row starting one cell further along so the guns stagger. The world side creates each frame at its wall block (that is what `EntityItemFrame`'s constructor takes), puts a gun from the weapon tables up to the ceiling in it (`SiloFrames`), and the damage pass never breaks the wall behind a frame.
-- **Deep guard posts:** each silo's walkway in the row corridor and the trunk's far end carry a `deep` spawner mark (D36); the contents pass makes them elite posts.
+- **Level:** the floor is 24 blocks under the recorded ground (D207). The tallest section (12) still leaves 12 blocks of rock over it.
+- **Silo:** the `SiloShape` piece cell by cell, turned to face its gallery:
+  - concrete `C`/`F`, clear glass `G`, Gantry Beam `B`, Galacticraft pad `P`, with the 3 x 3 bore open;
+  - the controller and hatches (input bus and maintenance beside it, energy and input HV below) are real GT machines facing the gallery;
+  - exactly one part is missing: the controller (concrete in its place) or the Energy Hatch.
+- **Shaft:** above the silo, a 5 x 5 concrete ring around the bore up to the ground height read in the shaft's window, with the open, half open or closed mouth variants.
+- **Escape:** a 1 x 1 ladder at the dead end of a minor hallway (else of a major hall, else the hub's corner), clinging to the end wall (`ComplexPlan.escapeMeta`). It runs up through its section's ceiling (`escapeTop`) to a closed top-half trapdoor flush with the ground. The cell behind it is stone up to just under the surface block.
+- **`landY`:** `HeightProbe.landY` is the top solid block, so the trapdoor replaces it and lies flush (D201).
+- **Radar stations (D215):** 0 to 2 huts anywhere on the surface, at least 12 blocks apart, 3 blocks clear of every silo shaft and clear of the escape column. Each is the same 5 x 5 hut with the small radar on its roof as before, inert without its Energy Hatch.
+- **Armory frames:**
+  - The `ITEM_FRAME_WALL` mark is the first frame cell. It carries the frames' facing and how many frames hang every third cell along +X or +Z.
+  - The world side hangs a gun from the weapon tables up to the ceiling in each frame.
+  - The damage pass never breaks the wall behind a frame.
+
+## Tests
+
+- **Unit:**
+  - `ComplexLayoutTest`: coverage over 200 seeds, rooms and kinds, sizes and heights, no overlaps, silo distribution over 1000 seeds, both sides and at most two halls, Launch Control and the assembly floor, posts at branch points, the escape ladder, armory frames, door-relative furnishing over 150 seeds with every mark reachable, reachability of every section and walkway, the lamp grid, the light simulation, and determinism.
+  - `ComplexRasterTest`, `ComplexPlacerTest` (never cascading, order independence), `ComplexSignsTest`, `ComplexContentsTest` (lamps by run and section), `PaletteStylesTest` and `ComplexExportTest`.
+- **Scenarios:** `icbm.complex.*` (places, skips, levels, guards, dim.*, loot and machines).

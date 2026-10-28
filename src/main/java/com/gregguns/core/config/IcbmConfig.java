@@ -183,7 +183,7 @@ public class IcbmConfig {
     public static String[] siloComplexDimensions = { "Overworld", "moon", "mars", "phobos", "deimos", "ceres",
         "callisto", "europa", "ganymed", "iojupiter", "mercury", "venus", "enceladus", "titan", "miranda", "oberon",
         "proteus", "triton", "pluto", "haumea", "makemake", "barnarda2", "barnarda4", "barnarda5", "centauribb",
-        "tcetie", "vega1", "anubis", "horus", "maahes", "neper", "seth", "ross128b", "ross128ba" };
+        "vega1", "anubis", "horus", "maahes", "neper", "seth", "ross128b", "ross128ba" };
 
     @Config.Comment({ "Nine weights, EV first to UMV last, for the loot ceiling a complex on Ross128b or Ross128ba",
         "rolls (D38). A complex rolls once from its own seed; negative weights count as 0. Default: 30, 22, 16, 11,",

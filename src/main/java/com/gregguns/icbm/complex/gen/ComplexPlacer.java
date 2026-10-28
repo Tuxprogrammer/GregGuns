@@ -317,8 +317,7 @@ public final class ComplexPlacer implements ComplexWriter {
         boolean masked = false;
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
-                int g = probe.seaFloorY(x, z);
-                if (g != HeightProbe.NONE && g < floorY + ComplexLayout.SILO_HEIGHT + 2) {
+                if (cutOff(probe, floorY, x, z)) {
                     mask[ColumnMaskSink.index(window, x, z)] = true;
                     masked = true;
                 }
@@ -371,6 +370,33 @@ public final class ComplexPlacer implements ComplexWriter {
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
         }
         summarize(plan, floorY, window, n, maskedColumns, sink);
+        return n;
+    }
+
+    /**
+     * A column whose own ground (the sea floor under water) lies less than 14 blocks above the level floor is cut off:
+     * nothing of the level, its marks or its contents is written there (D207). Scenarios use the same rule to know
+     * which marks to expect.
+     *
+     * @return whether the column is cut off
+     */
+    public static boolean cutOff(HeightProbe probe, int floorY, int x, int z) {
+        int g = probe.seaFloorY(x, z);
+        return g != HeightProbe.NONE && g < floorY + ComplexLayout.SILO_HEIGHT + 2;
+    }
+
+    /** How far above the ground a surface opening is cleared of leaves, logs and snow. */
+    static final int CLEAR_ABOVE = 32;
+
+    /**
+     * Clears the cells over a column's ground: above {@code landY} there is only air, foliage, wood or ice (that is how
+     * {@code landY} is found), so a shaft mouth or the escape trapdoor is never left under leaves or a trunk.
+     */
+    private int clearAbove(WindowedSink sink, int x, int z, int groundY) {
+        int n = 0;
+        for (int y = groundY + 1; y <= Math.min(BUILD_HEIGHT, groundY + CLEAR_ABOVE); y++) {
+            if (sink.setBlock(x, y, z, blocks.air(), 0)) n++;
+        }
         return n;
     }
 
@@ -472,6 +498,7 @@ public final class ComplexPlacer implements ComplexWriter {
                             : b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
                     }
                     n += mouth(s.variant(), bore, x, z, sx, sz, top, sink);
+                    if (!(bore && s.variant() == SurfaceVariant.CLOSED)) n += clearAbove(sink, x, z, top);
                 }
             }
         }
@@ -533,6 +560,7 @@ public final class ComplexPlacer implements ComplexWriter {
         // surface (its top face at g + 1, level with the terrain around it).
         ResolvedBlock t = blocks.named("trapdoor", x, g, z);
         if (t != null && sink.setBlock(x, g, z, t.block, t.meta)) n++;
+        n += clearAbove(sink, x, z, g);
         return n;
     }
 

@@ -248,6 +248,7 @@ public final class ComplexApplier {
         if (sink.setBlock(x, y, z, GregTechAPI.sBlockMachines, proto.getTileEntityBaseType())) {
             gregtech.api.metatileentity.BaseMetaTileEntity tile = new gregtech.api.metatileentity.BaseMetaTileEntity();
             tile.setInitialValuesAsNBT(null, (short) mteId);
+            com.gregguns.icbm.complex.gen.GtMachineHook.claim(tile);
             sink.setTile(x, y, z, tile);
         }
     }

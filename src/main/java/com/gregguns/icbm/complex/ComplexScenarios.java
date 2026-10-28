@@ -7,7 +7,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
 import com.gregguns.core.testing.Scenario;
@@ -64,42 +63,25 @@ public final class ComplexScenarios {
     }
 
     private static void load(World world, StructurePlan p) {
-        ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
-        for (int cx = Math.floorDiv(p.anchorX(), 16) - 2; cx <= Math.floorDiv(p.anchorX() + 240, 16) + 2; cx++) {
-            for (int cz = Math.floorDiv(p.anchorZ(), 16) - 2; cz <= Math.floorDiv(p.anchorZ() + 240, 16) + 2; cz++) {
-                cps.loadChunk(cx, cz);
-            }
-        }
+        ComplexArena.load(world, p);
     }
 
-    /** Stone up to the ground with a grass top, air above (only the part the complex can touch). */
+    /** Stone up to the ground with a grass top, air above to the chunk's top (ComplexArena). */
     private static void slab(World world, StructurePlan p, boolean clear) {
-        slab(world, p, clear, (x, z) -> GROUND, 0);
+        ComplexArena.slab(world, p, clear, (x, z) -> GROUND, 0, GROUND);
     }
 
     /** As above with a ground height per column and an optional water depth over it. */
     private static void slab(World world, StructurePlan p, boolean clear, java.util.function.IntBinaryOperator ground,
         int water) {
-        for (int x = p.anchorX() - 4; x < p.anchorX() + 244; x++) {
-            for (int z = p.anchorZ() - 4; z < p.anchorZ() + 244; z++) {
-                int g = ground.applyAsInt(x, z);
-                for (int y = clear ? GROUND + 40 : Math.max(g, GROUND) + 12; y
-                    >= Math.max(1, Math.min(g, GROUND) - ComplexPlacer.DEPTH - 2); y--) {
-                    Block b = clear ? Blocks.air
-                        : y > g + water ? Blocks.air : y > g ? Blocks.water : y == g ? Blocks.grass : Blocks.stone;
-                    if (world.getBlock(x, y, z) != b || world.getBlockMetadata(x, y, z) != 0) {
-                        world.setBlock(x, y, z, b, 0, 2);
-                    }
-                }
-            }
-        }
+        ComplexArena.slab(world, p, clear, ground, water, GROUND);
     }
 
     private static long snapshot(World world, StructurePlan p) {
         long h = 1125899906842597L;
         for (int x = p.anchorX(); x < p.anchorX() + 240; x++) {
             for (int z = p.anchorZ(); z < p.anchorZ() + 240; z++) {
-                for (int y = GROUND - ComplexPlacer.DEPTH; y <= GROUND + 2; y++) {
+                for (int y = ComplexArena.floor(world, GROUND); y <= GROUND + 2; y++) {
                     h = 31 * h + (Block.getIdFromBlock(world.getBlock(x, y, z)) << 4 | world.getBlockMetadata(x, y, z));
                 }
             }
@@ -237,7 +219,8 @@ public final class ComplexScenarios {
         private void checkContent(ScenarioResult.Builder out, World world, StructurePlan plan, ComplexPlacer placer) {
             ComplexPlan cp = placer.rasterOf(plan)
                 .plan();
-            int floor = GROUND - ComplexPlacer.DEPTH;
+            int floor = ComplexArena.floor(world, GROUND);
+            out.note("level floor y " + floor + " under ground " + GROUND);
             out.check(
                 cp.silos()
                     .size() >= 4
