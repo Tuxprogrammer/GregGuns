@@ -73,4 +73,10 @@ class RadarTowerShapeTest {
             }
         }
     }
+
+    @Test
+    void theDishStandsOnTheTopOfTheMast() {
+        // The controller's floor is CONTROLLER_ROW rows below the top row's floor; the plane is one more up.
+        assertEquals(RadarTowerShape.CONTROLLER_ROW + 1, RadarTowerShape.DISH_HEIGHT);
+    }
 }

@@ -46,7 +46,8 @@ class IcbmSyncTest {
                 assertEquals("IcbmSync.editableText", m.group(2), gui.getFileName() + " field " + m.group(1));
             }
         }
-        // Launch Control X and Z, radar and tower radius, EMP radius: a refactor that loses them must not pass.
-        assertTrue(fields >= 5, "found the editable fields (" + fields + ")");
+        // Launch Control X and Z, the radar and tower radius (one shared panel since D125), EMP radius: a refactor that
+        // loses them must not pass.
+        assertTrue(fields >= 4, "found the editable fields (" + fields + ")");
     }
 }

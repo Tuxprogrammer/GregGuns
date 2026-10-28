@@ -38,6 +38,8 @@ public final class IcbmClientModule implements ClientModule {
         RenderingRegistry.registerEntityRenderingHandler(com.gregguns.icbm.defense.EntitySam.class, new RenderSam());
         RenderingRegistry
             .registerEntityRenderingHandler(com.gregguns.icbm.warhead.EntityFlyingBlock.class, new RenderFlyingBlock());
+        RenderingRegistry
+            .registerEntityRenderingHandler(com.gregguns.icbm.defense.EntityRadarDish.class, new RenderRadarDish());
     }
 
     @Override

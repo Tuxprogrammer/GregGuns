@@ -13,7 +13,7 @@ import gregtech.api.enums.ItemList;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 
 /**
- * The part of a radar the single block and the tower share: the protected radius, the latest sweep and state, the
+ * The part of a radar the small radar and the tower share: the protected radius, the latest sweep and state, the
  * redstone and active outputs, and the data stick link. The machine owns the power and the structure; it calls
  * {@link #scan} every {@link RadarRules#SCAN_TICKS} ticks and {@link #publish} after. Signals change only on a
  * transition, so a quiet radar does not spam neighbor updates. Server side, except the NBT.
@@ -101,6 +101,24 @@ public final class RadarUnit {
         if (threat != lastActive) {
             lastActive = threat;
             base.setActive(threat);
+        }
+    }
+
+    /**
+     * Sets the redstone strength on every side, only when it changed. A multiblock's active flag is its own running
+     * state, so it is left alone.
+     *
+     * @param base the tile
+     */
+    public void publishRedstone(IGregTechTileEntity base) {
+        int want = RadarRules.redstone(
+            sweep.incoming()
+                .size());
+        if (want != signal) {
+            signal = want;
+            for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                base.setInternalOutputRedstoneSignal(d, (byte) want);
+            }
         }
     }
 
