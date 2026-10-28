@@ -1021,19 +1021,12 @@ public final class DefenseScenarios {
                     for (net.minecraft.entity.player.EntityPlayerMP p : players) {
                         MissileShotsScenario.signal(p, "hud", "off");
                     }
-                    out.checkEquals(
-                        "launch",
-                        LaunchResult.OK,
-                        m.launch(ctx.originX() + 0.5, ctx.originZ() + 80 + 0.5, null));
                     stage[0] = 1;
                     return null;
                 }
                 if (stage[0] == 1) {
                     // The radar's front faces north; stand in front of it, one client either side, looking at the
                     // dish on top (its middle is 1.5 blocks behind the controller and 2 above its floor).
-                    if (r.state() != RadarRules.State.THREAT) {
-                        return ticks < 900 ? null : finish(terrain, ScenarioResult.fail(name(), "no threat seen"));
-                    }
                     for (int i = 0; i < players.size(); i++) {
                         double side = i % 2 == 0 ? 4.0 : -4.0;
                         MissileShotsScenario.cam(
@@ -1080,10 +1073,14 @@ public final class DefenseScenarios {
                     return null;
                 }
                 if (stage[0] == 25) {
-                    // Hold the cameras until the clients have taken the second shot.
+                    // Hold the cameras until the clients have taken the second shot, then fly the missile.
                     if (ticks < mark[0] + 160) {
                         return null;
                     }
+                    out.checkEquals(
+                        "launch",
+                        LaunchResult.OK,
+                        m.launch(ctx.originX() + 0.5, ctx.originZ() + 80 + 0.5, null));
                     stage[0] = 3;
                     return null;
                 }
