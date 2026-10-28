@@ -241,7 +241,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 **Entry gate:** I3 done.
 
 **Scope:**
-- **Radar:** single-block radars at HV and EV, and a multiblock radar tower from IV, with range by tier (D14). *(The single blocks became a small multiblock with a spinning dish on the radar-dish branch, D125 and D190 to D194.)*
+- **Radar:** single-block radars at HV and EV, and a multiblock radar tower from IV, with range by tier (D14); D125 and D190 to D194 later made the HV and EV radars a small multiblock with a spinning dish.
   - They read the missile tracker, and a missile counts as "incoming" by its predicted impact point.
   - The sweep is `MIT-portable`.
 - **The air-defense battery** (D15): it holds SAMs and fires at threats a linked radar reports. The intercept is `MIT-portable`.

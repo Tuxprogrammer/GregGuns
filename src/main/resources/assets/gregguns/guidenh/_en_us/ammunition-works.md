@@ -26,7 +26,7 @@ Use a hologram projector with a stack of 2 to 8 to preview the hall at that many
 
 ## Interior lamps
 
-Every feeder, press bay and the packing station needs one lamp under its roof (6 in the 4-bay hall). Use glowstone, a redstone lamp or any block with light level 12 or more. Without them the hall will not form, so add lamps to halls you built earlier.
+Every feeder, press bay and the packing station needs one lamp under its roof (6 in the 4-bay hall). Use glowstone, a redstone lamp or any block with light level 12 or more.
 
 ## Hatches
 

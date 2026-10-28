@@ -49,7 +49,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
- * The small radar (D125, converting the I4 single blocks in place): a 3x3 Radar Casing base, two high, with a pedestal
+ * The small radar (D125, D190): a 3x3 Radar Casing base, two high, with a pedestal
  * and a spinning dish on top ({@link EntityRadarDish}). The controller's voltage tier sets the range
  * ({@link RadarRules#range}: HV 128, EV 256) and the power (a quarter amp of that tier while it runs); an Energy Hatch
  * of that tier or better pays for it. Contacts, the protected radius, the redstone outputs and the data stick link are

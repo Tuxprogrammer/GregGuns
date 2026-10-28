@@ -60,7 +60,7 @@ public final class DefenseMachines {
         // Source:
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/CommonMetaTileEntity.java#L85-L100
         // (construction is legal between GT's preload and postload)
-        // The two small-radar controllers: the single blocks of I4 converted in place (D125), same MTE ids.
+        // The two small-radar controllers (D125, D190).
         new MTERadar(GregGunsMTEIDs.RADAR_HV, "gregguns.icbm.radar.hv", "Radar (HV)", 3, ICONS + "radar_hv/");
         new MTERadar(GregGunsMTEIDs.RADAR_EV, "gregguns.icbm.radar.ev", "Radar (EV)", 4, ICONS + "radar_ev/");
         new MTERadarTower(GregGunsMTEIDs.RADAR_TOWER, "gregguns.icbm.radartower", "Radar Tower");
@@ -190,8 +190,6 @@ public final class DefenseMachines {
     /**
      * The radars' wall: Stainless Steel plate in the Assembler at HV, four blocks a run; it recycles to its plate
      * share.
-     * (I4 made it Tungsten Steel at IV for the tower alone; the small radar is HV, so the casing came down with it,
-     * D190.)
      */
     private static void radarCasing() {
         ItemStack plate = IcbmIngredients.stack(Ing.gt("plate", "StainlessSteel", CASING_PLATES, Tier.HV, 1.0));

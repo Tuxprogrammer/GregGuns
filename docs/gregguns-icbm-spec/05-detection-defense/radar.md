@@ -51,7 +51,7 @@ Nothing below HV (D69). The tower needs an IV or better hatch, and a small radar
 - Sweep (clean-room; D14 replaces ICBM-Classic's chunk query and distance-trend test, so nothing is ported): `Contacts.within(world, x, z, range)`, then `Sweep.of(...)` splits "detected" from "incoming" (impact inside the protected radius), nearest first.
 - Outputs: redstone strength = incoming count (max 15) on all six sides of the controller, set only when it changes. The small radar's and the tower's active flag is the multiblock's own running state, so both drive redstone only (D191).
 - Link: right-click a radar or the tower controller with a data stick. The stick keeps `{dim, x, y, z}` (`RadarLink`).
-- There is no single-block radar (D190): a controller with no structure does nothing. The small radar is described in "The small radar" below; the tower is a 3x3x7 Radar Casing tower (`RadarTowerShape`, casing meta 11 of `gregguns:casings`) with a Gantry Beam mast, hatches (Energy, Maintenance) in the bottom ring.
+- A radar controller with no structure does nothing (D190). The small radar is described in "The small radar" below; the tower is a 3x3x7 Radar Casing tower (`RadarTowerShape`, casing meta 11 of `gregguns:casings`) with a Gantry Beam mast, hatches (Energy, Maintenance) in the bottom ring.
 
 ## Requirements (continued)
 
@@ -72,19 +72,18 @@ Nothing below HV (D69). The tower needs an IV or better hatch, and a small radar
 ## Tower screen and casing (D99)
 
 - GT's multiblock screen gains one "R" button (left of the power panel button) that opens a small radar panel: the protected radius field (digits only, clamped on the server to 8 up to the hatch range, or the IV range while no hatch is fitted), the range, and the detected and incoming counts. It is saved in the controller's NBT with the rest of the radar state.
-- Radar Casing (meta 11, NTM-derived art) replaces Gantry Casing in the tower; the Gantry Beam mast stays. Recipe (D193, lowered from I4's Tungsten Steel at IV so the HV radar can use it): 6 Stainless Steel plate, programmed circuit 31, Assembler at HV (`TierEU.RECIPE_HV`), 10 s, makes 4. It recycles to 1.5 plates of Stainless Steel each.
+- Radar Casing (meta 11, NTM-derived art) replaces Gantry Casing in the tower; the Gantry Beam mast stays. Recipe (D193): 6 Stainless Steel plate, programmed circuit 31, Assembler at HV (`TierEU.RECIPE_HV`), 10 s, makes 4. It recycles to 1.5 plates of Stainless Steel each.
 - Recycling for the rest: the SAM returns 2 Stainless Steel plates, the radar gun 2, each machine its hull's 8 (D44).
-- The casing was made lower in D193: see "The small radar".
 
 ## The small radar (D125, D190, D191)
 
-The HV and EV radars (MTE ids 20142 and 20143, unchanged) are the controllers of a small multiblock. The I4 single blocks are gone: a world that holds one keeps the tile entity, which is simply an unformed controller until its structure is built, and an unformed controller does nothing (no scan, no outputs, no dish).
+The HV and EV radars (MTE ids 20142 and 20143) are the controllers of a small multiblock. A controller with no structure does nothing (no scan, no outputs, no dish). *(Design note, D190: these ids were I4's single blocks, so a world that holds one keeps its tile entity, which is simply an unformed controller until its structure is built.)*
 
 - **Shape** (`RadarShape`, one StructureLib piece): a 3x3 base two layers high, with one Radar Casing as a pedestal in the middle of the top. The controller is in the middle of the front wall's upper layer, so its front faces out. 19 blocks with the controller; at least 14 of the 18 casing positions must be Radar Casing (meta 11 of `gregguns:casings`), and any casing position of the base may be a hatch instead.
 - **Hatches:** one Energy Hatch and one Maintenance Hatch, like the tower. The Energy Hatch must be the controller's tier or better.
 - **Range and power:** fixed by the controller's tier (table above), a quarter amp of that tier's voltage while it runs. The GT cycle is one second and repeats while it is paid for.
 - **Everything else is the tower's:** contacts, the protected radius, links by data stick, redstone, covers and the OpenComputers component `gg_radar` all go through `RadarUnit` and `RadarView`. The GUI is GT's multiblock screen with the tower's "R" panel.
-- **Recipes:** the controllers keep their I4 inputs (hull, 2 sensors, emitter, 2 circuits) in the Assembler at HV and EV (D69). The casing is in "Tower screen and casing" above.
+- **Recipes:** the controllers take a hull, 2 sensors, an emitter and 2 circuits, in the Assembler at HV and EV (D69). The casing is in "Tower screen and casing" above.
 
 | Requirement | |
 |---|---|

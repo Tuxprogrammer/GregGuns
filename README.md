@@ -18,7 +18,6 @@ GregGuns adds guns, ammo, armor, turrets, enemy soldiers and ruins to GTNH. It a
 1. Download `gregguns-0.3.3-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta).
 2. Put it in the `mods` folder of your **GTNH 2.9.0-RC-2** instance. For multiplayer, the server **and** every player need the same jar.
 3. Start the game. Every module is on by default. You can switch modules off in `config/gregguns.cfg`, and that never stops anyone joining: the server's settings apply to everyone connected.
-4. **Coming from 0.2.0-alpha?** Read "Upgrading" in the release notes first. Your old config may still have modules switched off.
 
 The keys are **R** to reload, **;** for the back device (glider, anti-gravity), **M** for night vision and **]** for the ammo pouch. All of them can be rebound in Controls.
 

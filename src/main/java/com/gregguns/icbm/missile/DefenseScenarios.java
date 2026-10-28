@@ -952,7 +952,7 @@ public final class DefenseScenarios {
 
         @Override
         public String description() {
-            return "Two clients see an HV radar's dish turning (two shots, 25 ticks apart) and a SAM in flight at a missile, and take matching shots. Needs 2 clients and Galacticraft; not part of test all.";
+            return "Two clients see an HV radar's dish turning (two shots, 80 ticks apart) and a SAM in flight at a missile, and take matching shots. Needs 2 clients and Galacticraft; not part of test all.";
         }
 
         @Override
@@ -1039,8 +1039,8 @@ public final class DefenseScenarios {
                         MissileShotsScenario.cam(
                             players.get(i),
                             ox + 6.5 + side,
-                            oy + 4.5,
-                            oz + rz - 7.0,
+                            oy + 3.5,
+                            oz + rz - 5.0,
                             ox + 6.5,
                             oy + 2.6,
                             oz + rz + 1.5);
@@ -1050,7 +1050,7 @@ public final class DefenseScenarios {
                     return null;
                 }
                 if (stage[0] == 2) {
-                    // Two shots 25 ticks apart: a spinning dish is at a different angle in each, on both clients.
+                    // Two shots 80 ticks apart (the clients are slow to shoot): a spinning dish is at a different angle in each, on both clients.
                     int dt = ticks - mark[0];
                     EntityRadarDish dish = r.dish();
                     if (dt == 12) {
@@ -1065,7 +1065,7 @@ public final class DefenseScenarios {
                             MissileShotsScenario.signal(p, "shot", "icbm-radar-dish-a");
                         }
                     }
-                    if (dt < 37) {
+                    if (dt < 92) {
                         return null;
                     }
                     float b2 = dish == null ? -1
@@ -1074,6 +1074,14 @@ public final class DefenseScenarios {
                     out.check(Math.abs(b2 - angleA[0]) > 30.0F, "the dish turned between the shots");
                     for (net.minecraft.entity.player.EntityPlayerMP p : players) {
                         MissileShotsScenario.signal(p, "shot", "icbm-radar-dish-b");
+                    }
+                    stage[0] = 25;
+                    return null;
+                }
+                if (stage[0] == 25) {
+                    // Hold the cameras until the clients have taken the second shot.
+                    if (ticks < mark[0] + 160) {
+                        return null;
                     }
                     stage[0] = 3;
                     return null;

@@ -33,7 +33,7 @@ GT hands a machine's per-side strength to the world only when the machine overri
 | Launch Control | Load and Save of a target (coordinates and dimension) to a GT data stick, in its one slot. A stick from another dimension is refused. |
 | Missile Silo | None. It is fired by a Launch Control. |
 | Air-Defense Battery | Listens to one radar: the stick in its slot carries the radar's position and dimension, written at the radar (see Radar below). A lost, unloaded or offline radar shows `link lost`. |
-| Radar, Radar Tower | Right-click the radar or the tower controller with a data stick; the stick keeps dimension and position, and the battery reads it. (The I4 single block's Save link button went with the single block, D190.) The EMP tower has no stick. |
+| Radar, Radar Tower | Right-click the radar or the tower controller with a data stick; the stick keeps dimension and position, and the battery reads it. The EMP tower has no stick. |
 
 The handheld tools do **not** use sticks. The remote detonator links by sneak-clicking a warhead ([handheld-tools](handheld-tools.md)).
 
