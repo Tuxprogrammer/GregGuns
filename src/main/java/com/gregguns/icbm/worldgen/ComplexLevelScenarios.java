@@ -688,7 +688,7 @@ public final class ComplexLevelScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             if (!com.gregguns.core.module.ModuleState.isActive(com.gregguns.core.module.ModuleId.ICBM)) {
-                return ScenarioResult.skip(name(), "the ICBM module is off (Galacticraft missing or modules.icbm off)");
+                return ScenarioResult.skip(name(), com.gregguns.icbm.IcbmAvailability.offReason());
             }
             final World world = ctx.world();
             StructurePlan plan = plan(world);
