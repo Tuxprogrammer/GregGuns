@@ -17,8 +17,9 @@ import com.gregguns.worldgen.layout.ResolvedBlock;
  * The palette's styles for one complex (D240, D235): one {@link RoomStyle} per section, drawn from the plan seed and
  * the
  * section id, so every window agrees. The hub draws from the hub group, the gallery from the gallery group, the other
- * halls from the major or minor hall group, and a room from its kind. Floor and ceiling patterns take room-local
- * coordinates from the section's own corner. A wall is one block for the whole section. Server side.
+ * halls from the major or minor hall group, and a room from its kind. Floor and ceiling patterns take interior
+ * coordinates: 0 is the first cell inside the section's wall, and the size is the interior's, so a border of width 1
+ * lies along the wall. A wall is one block for the whole section. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Palette)
 public final class PaletteStyles implements Styles {
@@ -81,9 +82,14 @@ public final class PaletteStyles implements Styles {
             case Cell.WALL:
                 return s.wall();
             case Cell.FLOOR:
-                return s.floor(x - b.minX, z - b.minZ, b.sizeX(), b.sizeZ());
+                return s
+                    .floor(inner(x, b.minX, b.sizeX()), inner(z, b.minZ, b.sizeZ()), span(b.sizeX()), span(b.sizeZ()));
             case Cell.CEILING:
-                return s.ceiling(x - b.minX, z - b.minZ, b.sizeX(), b.sizeZ());
+                return s.ceiling(
+                    inner(x, b.minX, b.sizeX()),
+                    inner(z, b.minZ, b.sizeZ()),
+                    span(b.sizeX()),
+                    span(b.sizeZ()));
             case Cell.LAMP:
                 return s.lamp(false);
             case Cell.DOOR_FRAME: {
@@ -101,6 +107,20 @@ public final class PaletteStyles implements Styles {
             default:
                 return null;
         }
+    }
+
+    /**
+     * @return the interior coordinate of world-plan coordinate {@code v} in a section starting at {@code min} with
+     *         {@code size} cells including both walls: 0 next to the low wall, {@code size - 3} next to the high one.
+     *         A floor cell in a wall column (a doorway) clamps to the nearest interior cell.
+     */
+    static int inner(int v, int min, int size) {
+        return Math.max(0, Math.min(span(size) - 1, v - min - 1));
+    }
+
+    /** @return the interior size of a section {@code size} cells across, walls included */
+    static int span(int size) {
+        return Math.max(1, size - 2);
     }
 
     /** A style without that piece of furniture uses its accent, then its wall: the layout still reads. */

@@ -26,11 +26,16 @@ public final class BlockRef {
         public final String modId;
         public final String name;
         public final int meta;
+        /** Precomputed: the resolver's cache hashes every styled cell's chain (about 150,000 per complex). */
+        private final String key;
+        private final int hash;
 
         Entry(String modId, String name, int meta) {
             this.modId = modId;
             this.name = name;
             this.meta = meta;
+            this.key = modId + ":" + name + "@" + meta;
+            this.hash = key.hashCode();
         }
 
         /** @return true when the ids look like registry ids and the meta fits 4 bits */
@@ -45,18 +50,24 @@ public final class BlockRef {
 
         /** @return {@code mod:name@meta} */
         public String key() {
-            return modId + ":" + name + "@" + meta;
+            return key;
         }
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof Entry && ((Entry) o).key()
-                .equals(key());
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Entry)) {
+                return false;
+            }
+            Entry other = (Entry) o;
+            return other.hash == hash && other.key.equals(key);
         }
 
         @Override
         public int hashCode() {
-            return key().hashCode();
+            return hash;
         }
 
         @Override
@@ -72,9 +83,12 @@ public final class BlockRef {
     }
 
     private final List<Entry> chain;
+    /** Precomputed, like {@link Entry}'s: a chain is immutable. */
+    private final int hash;
 
     private BlockRef(List<Entry> chain) {
         this.chain = Collections.unmodifiableList(chain);
+        this.hash = chain.hashCode();
     }
 
     /** @return the entry for a block of mod {@code modId} */
@@ -129,12 +143,15 @@ public final class BlockRef {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof BlockRef && ((BlockRef) o).chain.equals(chain);
+        if (o == this) {
+            return true;
+        }
+        return o instanceof BlockRef && ((BlockRef) o).hash == hash && ((BlockRef) o).chain.equals(chain);
     }
 
     @Override
     public int hashCode() {
-        return chain.hashCode();
+        return hash;
     }
 
     @Override

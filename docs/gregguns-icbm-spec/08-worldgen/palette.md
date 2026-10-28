@@ -1,7 +1,7 @@
 # Complex palette: blocks, style sets and lamps
 
 - **Baseline:** none (the ICBM baseline has no worldgen).
-- **Decisions:** D229 (the redesign), D205 (the complex wall), D217 (floor light), D240 to D244
+- **Decisions:** D229 (the redesign), D205 (the complex wall), D217 (floor light), D240 to D244, D248, D251
 - **Pack mods:** Chisel, GregTech, Ztones, Galacticraft (Core and Mars); every one optional (D241)
 - **Code:** `com.gregguns.icbm.complex.palette` (`ComplexPalette`, `RoomStyle`, `BlockRef`, `PaletteSets`)
 
@@ -10,7 +10,7 @@
 Every room, hall and the hub gets a `RoomStyle` from `ComplexPalette.styleFor(kind, roomSeed, dimensionKey, level)`. The call is pure and deterministic. A style is:
 
 - **one wall block**, the same everywhere in the room, drawn once from the style set's wall choices;
-- a **floor pattern** and a **ceiling pattern**, each a function of the room-local cell `(x, z)` and the room size (checker, border plus field, double ring, stripes, bands, grid lines, center strip);
+- a **floor pattern** and a **ceiling pattern**, each a function of the interior cell `(x, z)` and the interior size (checker, border plus field, double ring, stripes, bands, grid lines, center strip). Interior cell 0 is the first cell inside the section's wall, so a border of width 1 runs along the wall;
 - a **lamp pair**, lit and dead;
 - an optional **accent** block and **furniture** blocks (table, console, bunk, shelf), all plain cubes or slabs, never tile entities.
 
@@ -38,6 +38,8 @@ A group with several sets gets variety from the set draw, then from the wall, fl
 
 Lit: Chisel light stone (`chisel:glowstone`, light 15, an opaque cube, metas 4, 5, 8, 10, 13, 14, 15 for the tile, neon, panel and bismuth looks), else vanilla glowstone. Dead: a dark panel from the style's own family (Laboratory clear screen, Factory dots, Tyrian black, concrete weathered, Technical vent), else its vanilla fallback. A lamp is a full cube and works in the ceiling plane and as a floor light tile. The writer picks lit or dead from the activity level and the lamp grid; the palette only supplies the pair.
 
+A lit lamp drops 2 to 4 glowstone dust when mined, as vanilla glowstone does: Chisel's light stone drops the dust, not itself. A complex holds about 3,000 lamp marks (ceiling lamps and floor tiles), so an operational one, every lamp lit, yields about 9,000 dust, and a partly abandoned one about 4,000. A complex is a loot site and glowstone is cheap in GTNH, so the yield stands (D248). `ComplexContentCountsTest` prints the lamp count per complex and holds it between 2,000 and 4,500.
+
 Rejected as lamps: Project Red lamps (a tile entity per lamp, and the light comes from a per-world cache the tile feeds, so tens of thousands of them would start a tile tick each and need a power source); vanilla Redstone Lamp (a lit one turns itself off on the first neighbor update with no power); Ztones Flat Lamp (a thin, face-attached block, not a ceiling cube); Galacticraft Arc Lamp (a directional light block, not a cube).
 
 ## Planet stone (D244)
@@ -56,11 +58,11 @@ Worth is the value of mining the block in bulk. **Low** means it drops itself or
 | `chisel:concrete` | 0 default, 1 block, 3 blocks, 4 weathered, 5 weathered block, 10 asphalt | Grey and worn concrete | wall, floor, ceiling, accent, worn | Low |
 | `chisel:technical` | 3 large pipes, 5 small pipes, 7 vent, 9 insulation, 11 cables, 12 rusty plates, 13 grate, 15 rusty grate | Pipes, vents, grates | wall, ceiling, floor rows, accent | Low |
 | `chisel:marble`, `chisel:limestone` | marble 0, 1, 4, 5, 8, 9, 12; limestone 0, 1, 5, 11, 15 | Pale stone, panels, brick | wall, floor, ceiling | Low |
-| `chisel:glowstone` | 4, 5, 8, 10, 13, 14, 15 | Lit tile, neon, panel | lit lamp | Low (a Chisel variant, not 4 dust) |
-| `chisel:bookshelf` | 0 | Bookcase | shelf | Low |
+| `chisel:glowstone` | 4, 5, 8, 10, 13, 14, 15 | Lit tile, neon, panel | lit lamp | Low per block, but drops 2 to 4 glowstone dust like vanilla glowstone: about 9,000 dust from an operational complex (D248) |
+| `chisel:bookshelf` | 5 (abandoned) | Bookcase | shelf | Low (drops 3 books, like vanilla). Chisel's own bookshelf block has metas 1 to 8; meta 0 of the group is the vanilla bookshelf, so meta 0 of this block draws the missing texture |
 | `gregtech:gt.blockconcretes` | 3, 6, 7, 8, 11, 12, 13, 14, 15 | Dark and light concrete, bricks, smooth | GT fallback for walls and floors | Low (breaks into its cobble) |
 | `gregtech:gt.blockstones` | 3 marble bricks, 11 basalt bricks | Marble and basalt | GT fallback | Low |
-| `gregtech:gt.blockgranites` | 3, 6, 7 black; 11, 15 red | Granite brick, chiseled, smooth | `granite_hall` | Low |
+| `gregtech:gt.blockgranites` | 3, 6, 7 black; 11, 15 red | Granite brick, chiseled, smooth | `granite_hall` | Low, but slow to dig: harvest level 3 (a diamond-level pick; steel is not enough) and blast resistance 60 |
 | `Ztones:tile.ztones:vectBlock` (also `vectBlock`) | 0 to 3 | Dark panels | `ztones_server` | Low (decompiled ids) |
 | `Ztones:tile.ztones:korpBlock` | 4, 12 | Dark, cyan screen | server accent and console | Low |
 | `Ztones:tile.ztones:tankBlock` | 0, 1, 3, 5 | Grey plating | `ztones_tank` | Low |
@@ -78,4 +80,4 @@ The Ztones ids come from decompiling `ModBlocks.registerBlocks` (Ztones 2.2.2 ha
 ## Tests
 
 - `ComplexPaletteTest` (unit): with no pack mods every style resolves to a vanilla block; every registry name and meta is well formed; walls are uniform and styles are deterministic per seed; every group has at least two sets with at least four walls and four floor designs; the Silo Complex Wall is a wall choice; planets use local stone and other dimensions do not; lamps have a lit and a dead twin.
-- `icbm.palette.resolve` (scenario): resolves every style in the live registry, checks lit lamps emit 15, dead lamps do not and blocks are cubes, and notes which mod supplied each block.
+- `icbm.palette.resolve` (scenario): resolves every block of every style set in the live registry (walls, floors, ceilings, lamps, the accent, the worn block and the furniture), checks lit lamps emit 15, dead lamps do not, building blocks are cubes (furniture may be a slab), and that a Chisel block has a variation at its meta (`ICarvable.getManager(meta)` is not null), and notes which mod supplied each block.

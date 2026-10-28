@@ -427,6 +427,7 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
     @Override
     public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
         float z) {
+        com.gregguns.icbm.complex.gen.GtMachineHook.handOver(base, player); // a generated one becomes the player's
         if (!base.isClientSide() && RadarUnit.isStick(player.getHeldItem())) {
             RadarUnit.writeLink(base, player.getHeldItem(), player);
             return true;

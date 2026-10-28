@@ -650,6 +650,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         if (base.isClientSide()) {
             return true;
         }
+        com.gregguns.icbm.complex.gen.GtMachineHook.handOver(base, player); // a generated one becomes the player's
         if (loadFromRadarGun(player)) {
             return true;
         }
