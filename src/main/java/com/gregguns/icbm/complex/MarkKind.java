@@ -1,0 +1,28 @@
+package com.gregguns.icbm.complex;
+
+/** What a {@link Mark} asks the filler to put at its cell. */
+public enum MarkKind {
+    /** A loot chest; {@link Mark#key()} is the loot-table key (see {@link LootKeys}). */
+    LOOT_CHEST,
+    /** A silo guard spawner; {@link Mark#key()} is the guard tier ("post", "room", "deep"). */
+    SPAWNER,
+    /** A real machine; {@link Mark#key()} is a {@link MachineRole} name. */
+    MACHINE,
+    /** The origin cell of a wall that holds item frames (armory); the key is the loot-table key for the frames. */
+    ITEM_FRAME_WALL,
+    /** A light fixture cell; the operational level lights it, the damage pass may leave it dark. */
+    LIGHT,
+    /**
+     * A cell the damage pass may break, remove or bury; the key is the wall/floor/ceiling part ("wall", "floor",
+     * "roof").
+     */
+    DAMAGE_CELL,
+    /** A cell that floods when the room is abandoned (pump room floor). */
+    FLOOD_CELL,
+    /** A rubble/fallout placeholder cell (warhead magazine when abandoned). */
+    RUBBLE,
+    /** A sign cell; the key is a lang key for the text. */
+    SIGN,
+    /** A blast door between a tunnel and a section. */
+    BLAST_DOOR
+}
