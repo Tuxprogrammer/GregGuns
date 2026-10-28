@@ -17,11 +17,11 @@ The layout is grown, not stamped (`ComplexGrower`, D230). Every choice comes fro
 | Guard post, decontamination airlock | 10 x 10, 12 x 12 | 7 |
 
 - **Major halls:** three (25%) or four (75%) leave the hub's sides at a seeded offset.
-  - The first hall is straight and 50 to 62 long; it carries the silo gallery.
+  - The first hall is straight and 50 to 62 long; it carries the silo gallery. The strips a silo deep along both its sides stay free while the other halls grow, so no bend or side branch takes them (D245).
   - The others bend at their far end (85%), and some bend again (40%), never back toward the hub.
   - Up to three side branches leave the middle of a long segment.
   - A hall stops 20 blocks short of the edge, so rooms can cap it. A free far end grows toward the edge.
-- **Minor hallways:** 8 to 15 hallways, 30 to 70 long, leave a hall's side. Some leave another minor hallway's side as sub-hallways between branches. Their sides and far end take rooms.
+- **Minor hallways:** up to 15 hallways, 30 to 70 long, leave a hall's side. Over 10,000 seeds a plan has 0 to 15, median 5 (mean 5.5), and 3 to 8 in three plans in four (D246). Some leave another minor hallway's side as sub-hallways between branches. Their sides and far end take rooms.
 - **Rooms:** 35 to 40 rooms in all, the hub not counted.
   - Every mandatory kind is always present: launch control, comms, commander's office, warhead magazine, generator hall, armory and missile assembly. The rest come from the optional kinds, repeated as needed.
   - Rooms hang off halls side by side, each touching the last.
@@ -30,7 +30,7 @@ The layout is grown, not stamped (`ComplexGrower`, D230). Every choice comes fro
 - **Growth to coverage:** every room then grows a cell at a time into the rock around it.
   - The limit is 150% of its kind's nominal size per axis. A side never grows past twice the other.
   - While the built footprint is under 78%, the limit rises 20 points, up to six times.
-  - A plan that still misses 76%, 35 rooms or 4 silos is grown again from a seed mixed from the plan seed and the attempt number (up to eight attempts), and the best attempt is kept.
+  - A plan that still misses 76%, 35 rooms, 4 silos or 3 guard posts is grown again from a seed mixed from the plan seed and the attempt number (up to eight attempts), and the best attempt is kept.
   - Over 1000 seeds: coverage is at least 76% (mean 78.5%). The mean room footprint is about 1000 cells, six times the I6 room's 168: 75% coverage with 35 to 40 rooms needs that.
 - **Walls:** neighboring sections touch but never share a wall. A wall between two rooms is two blocks thick, so each side shows its own room's one wall block (D229 point 5).
 
@@ -39,8 +39,8 @@ The layout is grown, not stamped (`ComplexGrower`, D230). Every choice comes fro
 - **Count:** 4 to 10 silos: 4 (26%), 5 (24%), 6 (18%), 7 (12%), 8 (10%), 9 (6%), 10 (4%). Each misses exactly one part (D128).
 - **Where:** the silos line the gallery hall on both sides.
   - They stand in facing pairs, 7 blocks apart (5 of silo, 2 of rock), from the far end toward the hub. The last 14 blocks at the hub end stay clear.
-  - Seven or more silos split across a second straight hall when one exists, never more than two halls.
-  - A hall takes single silos only after it has a facing pair, so a gallery always has silos on both sides.
+  - Seven or more silos split across a second straight hall when one exists (a hall no other major hall leaves), never more than two halls. The first hall takes the larger half, and whatever the second cannot hold goes back to the first, which has room for ten. Every rolled silo is placed (D245).
+  - A hall takes single silos only after it has a facing pair, so a gallery always has silos on both sides. Only a hall that holds silos is a gallery (12 high, its sign and palette).
 - **Turned to face the hall:** each silo's structure is stamped turned so its controller face is toward the gallery (`SiloSlot.facing`, `x(column, aisle)`, `z(column, aisle)`). The controller and hatches are placed facing that way. A 3-wide walkway niche opens in the gallery wall in front of the controller.
 - **Launch Control** caps the gallery's far end. Its doorway opens onto the gallery, and both wall layers on either side of the doorway are glass panes from layer 3 to 6, so the room overlooks the silos. If the far end is taken, Launch Control opens off the gallery's side.
 - **Missile assembly floor** is the first room placed on the gallery's sides, in the span the silos leave free.
@@ -63,7 +63,7 @@ Doors and portals get **door frames** (the DOOR role): jambs either side and a l
 `ComplexRaster` holds one role per cell (`Cell`) and, per column, the section that owns it.
 
 - Each section writes its shell: WALL on its perimeter at every layer, FLOOR in layer 0 and CEILING in its top layer inside, air between.
-- Then doors (air), door frames, window panes, rails, lamps and furniture.
+- Then doors (air), door frames, window panes, lamps, furniture and rails.
 - The silo roles stay as they were (concrete, glass, beam, pad, controller, hatches).
 
 The writer resolves the building roles through the owning section's palette style: WALL, FLOOR, CEILING, LAMP, DOOR_FRAME and furniture. Glass and water resolve by themselves. See [palette](palette.md) and D235.
@@ -127,7 +127,7 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 - **Halls:**
   - A blast-door mark and a sign naming the hall (`wing.<0..3>` by compass direction, or `silo_gallery`) at each mouth off the hub.
   - Roof, floor and wall damage cells, scaled by area, kept off lamps and openings.
-  - A minecart rail along each major hall's centerline.
+  - A minecart rail along each major hall, one cell off its centerline: the centerline carries the middle row of floor light tiles, and a rail on glowstone drops off at the first block update beside it. A rail goes only over a FLOOR cell (D247).
 
 ## Guards (D233)
 

@@ -85,7 +85,6 @@ public final class ComplexRaster {
         for (Tunnel t : plan.tunnels()) section(t.id(), t.bounds());
         for (Door d : plan.doors()) open(d);
         for (Door d : plan.doors()) if (d.kind == Door.Kind.DOOR || d.kind == Door.Kind.PORTAL) frame(d);
-        for (Tunnel t : plan.tunnels()) if (t.major()) rails(t);
         for (SiloSlot s : plan.silos()) silo(s);
         for (Mark m : plan.allMarks()) {
             if (m.kind() == MarkKind.LIGHT) {
@@ -94,6 +93,8 @@ public final class ComplexRaster {
                 set(m.x(), m.y(), m.z(), furniture(m.key()));
             }
         }
+        // After the lamps: a rail needs a solid top under it, and a lit floor tile (glowstone) is not one.
+        for (Tunnel t : plan.tunnels()) if (t.major()) rails(t);
         // The escape ladder inside the level, up through its section's ceiling.
         for (int y = 1; y < plan.escapeTop(); y++) set(plan.escapeX(), y, plan.escapeZ(), Cell.LADDER);
     }
@@ -140,12 +141,33 @@ public final class ComplexRaster {
         if (at(x, y, z) == Cell.WALL) set(x, y, z, Cell.DOOR_FRAME);
     }
 
+    /** Offsets from a hall's centerline tried for its rail line, nearest first. */
+    private static final int[] RAIL_OFFSETS = { 0, 1, -1, 2, -2 };
+
+    /**
+     * A rail down a major hall, on the line nearest its center that crosses no floor light tile: a rail on glowstone
+     * drops off at the first block update next to it. Rails go only over a FLOOR cell, so a line with no clear choice
+     * leaves a gap over each tile rather than a rail that breaks.
+     */
     private void rails(Tunnel t) {
         Box b = t.bounds();
-        if (t.alongX()) {
-            for (int x = b.minX + 1; x < b.maxX - 1; x++) set(x, 1, b.centerZ(), Cell.RAIL_EW);
-        } else {
-            for (int z = b.minZ + 1; z < b.maxZ - 1; z++) set(b.centerX(), 1, z, Cell.RAIL_NS);
+        boolean ew = t.alongX();
+        int lo = ew ? b.minX + 1 : b.minZ + 1, hi = ew ? b.maxX - 1 : b.maxZ - 1;
+        int center = ew ? b.centerZ() : b.centerX();
+        int line = center;
+        for (int off : RAIL_OFFSETS) {
+            boolean clear = true;
+            for (int a = lo; a < hi && clear; a++) {
+                if (at(ew ? a : center + off, 0, ew ? center + off : a) == Cell.LAMP) clear = false;
+            }
+            if (clear) {
+                line = center + off;
+                break;
+            }
+        }
+        for (int a = lo; a < hi; a++) {
+            int x = ew ? a : line, z = ew ? line : a;
+            if (at(x, 0, z) == Cell.FLOOR && at(x, 1, z) == Cell.AIR) set(x, 1, z, ew ? Cell.RAIL_EW : Cell.RAIL_NS);
         }
     }
 

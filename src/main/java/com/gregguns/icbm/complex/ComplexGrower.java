@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Grows the geometry of one complex (D229, D230): the hub, the major halls leaving it (some bending once), the silo
+ * Grows the geometry of one complex (D229, D230): the hub, the major halls leaving it (most bending once or twice), the
+ * silo
  * gallery along one or two of them with Launch Control at its far end, then rooms and minor hallways attached
  * side to side, rooms branching off rooms, until the room count is reached. The rooms then grow into the rock around
  * them until the built footprint covers at least three quarters of the complex. Neighboring sections touch but never
@@ -23,6 +24,8 @@ final class ComplexGrower {
     static final int HUB = 0, MAJOR = 1, MINOR = 2, ROOM = 3;
     /** Owner value of a silo footprint in the occupancy map. */
     private static final short SILO = -1;
+    /** Owner value of the silo bands kept free beside the gallery hall while the other halls grow. */
+    private static final short RESERVED = -2;
 
     /** A section being grown: x1 and z1 exclusive, like {@link Box}. */
     static final class Node {
@@ -248,6 +251,13 @@ final class ComplexGrower {
         radars();
     }
 
+    /** @return the guard-post rooms placed so far */
+    int posts() {
+        int n = 0;
+        for (Node x : nodes) if (x.type == ROOM && x.kind == RoomKind.GUARD_POST) n++;
+        return n;
+    }
+
     int roomCount() {
         int n = 0;
         for (Node x : nodes) if (x.type == ROOM) n++;
@@ -306,7 +316,10 @@ final class ComplexGrower {
             out.add(seg);
             // The gallery hall stays straight; most others bend at their far end, some twice, never back toward the
             // hub, so the halls wind out toward the corners.
-            if (i == 0) continue;
+            if (i == 0) {
+                reserveSiloBands(seg);
+                continue;
+            }
             Node at = seg;
             for (int bend = 0; bend < 2; bend++) {
                 if (rnd.nextInt(100) >= (bend == 0 ? 85 : 40)) break;
@@ -322,7 +335,7 @@ final class ComplexGrower {
                 at = next;
             }
         }
-        // Up to two side branches: a major hall leaving the middle of a long segment, so the halls form a graph.
+        // Up to three side branches: a major hall leaving the middle of a long segment, so the halls form a graph.
         int branches = 0;
         for (Node seg : new ArrayList<Node>(out)) {
             if (branches >= 3 || seg.length() < 50 || out.indexOf(seg) == 0 || rnd.nextInt(100) >= 70) continue;
@@ -338,6 +351,24 @@ final class ComplexGrower {
             branches++;
         }
         return out;
+    }
+
+    /**
+     * Keeps the strips a silo deep along both sides of the gallery hall free, so no bend or side branch of another hall
+     * grows into them; {@link #gallery} frees them again before it lines the hall.
+     */
+    private void reserveSiloBands(Node g) {
+        for (int side : g.alongX() ? new int[] { 0, 2 } : new int[] { 1, 3 }) {
+            int[] b = adjacent(g, side, g.latLo(side), g.latHi(side) - g.latLo(side), ComplexLayout.SILO_SIZE);
+            for (int x = Math.max(0, b[0]); x < Math.min(S, b[2]); x++) {
+                for (int z = Math.max(0, b[1]); z < Math.min(S, b[3]); z++)
+                    if (own[x * S + z] == 0) own[x * S + z] = RESERVED;
+            }
+        }
+    }
+
+    private void releaseSiloBands() {
+        for (int i = 0; i < own.length; i++) if (own[i] == RESERVED) own[i] = 0;
     }
 
     /** The lateral start of the last {@code w} cells of a segment, at its far end. */
@@ -394,37 +425,44 @@ final class ComplexGrower {
         return 4;
     }
 
+    /** The silo count this growth rolled; {@link #silos} holds exactly this many unless no hall had room. */
+    int rolled;
+
     /**
      * Lines one or two straight major halls with silos on both sides, from the far end inward, each silo's controller
-     * facing the hall through a walkway in its wall.
+     * facing the hall through a walkway in its wall. Seven or more silos split across two straight halls when a
+     * second one exists, the first (Launch Control's) taking the larger half; whatever the second cannot hold goes
+     * back to the first, which always has room for ten. A hall that ends up with no silo is not a gallery.
      *
      * @return the gallery halls, the first being the one Launch Control caps
      */
     private List<Node> gallery(List<Node> majors) {
+        releaseSiloBands();
         int n = rollSilos(rnd);
+        rolled = n;
+        // Only a straight hall can carry facing pairs: a bend or a side branch takes one side where the pairs go.
         List<Node> cands = new ArrayList<Node>();
-        for (Node m : majors) if (m.parent == 0 && m.length() >= 40) cands.add(m);
+        for (Node m : majors) if (m.parent == 0 && m.length() >= 40 && straight(m)) cands.add(m);
         if (cands.isEmpty()) throw new IllegalStateException("no hall long enough for the silo gallery");
+        Node first = cands.get(0);
+        Node second = n >= 7 && cands.size() > 1 ? cands.get(1 + rnd.nextInt(cands.size() - 1)) : null;
         List<Node> halls = new ArrayList<Node>();
-        halls.add(cands.get(0));
-        if (n >= 7 && cands.size() > 1) halls.add(cands.get(1 + rnd.nextInt(cands.size() - 1)));
-        int left = n;
-        for (int i = 0; i < halls.size() && left > 0; i++) {
-            Node g = halls.get(i);
-            int want = i + 1 < halls.size() ? Math.max(3, left / 2) : left;
-            int placed = lineSilos(g, want);
+        halls.add(first);
+        int left = n - lineSilos(first, second == null ? n : n - n / 2);
+        if (second != null) {
+            int placed = lineSilos(second, left);
             left -= placed;
+            if (placed > 0) halls.add(second);
         }
-        if (left > 0) {
-            // A second hall when the first is full.
-            for (Node m : cands) {
-                if (left <= 0 || halls.size() >= 2) break;
-                if (halls.contains(m)) continue;
-                int placed = lineSilos(m, left);
-                if (placed > 0) {
-                    halls.add(m);
-                    left -= placed;
-                }
+        if (left > 0) left -= lineSilos(first, left);
+        for (Node m : cands) {
+            // Only if the first hall is full: another straight hall takes the rest.
+            if (left <= 0 || halls.size() >= 2) break;
+            if (halls.contains(m)) continue;
+            int placed = lineSilos(m, left);
+            if (placed > 0) {
+                halls.add(m);
+                left -= placed;
             }
         }
         for (Node g : halls) {
@@ -432,6 +470,19 @@ final class ComplexGrower {
             g.h = ComplexLayout.GALLERY_HEIGHT;
         }
         return halls;
+    }
+
+    /** @return whether no major hall leaves {@code m} (no bend at its far end, no side branch) */
+    private boolean straight(Node m) {
+        for (Node x : nodes) if (x.type == MAJOR && x.parent == m.id) return false;
+        return true;
+    }
+
+    /** @return how many silos already line hall {@code g} (one walkway each) */
+    private int silosOn(Node g) {
+        int c = 0;
+        for (Door d : doors) if (d.kind == Door.Kind.WALKWAY && d.a == g.id) c++;
+        return c;
     }
 
     /**
@@ -443,11 +494,11 @@ final class ComplexGrower {
     private int lineSilos(Node g, int want) {
         boolean alongX = g.alongX();
         int sideA = alongX ? 0 : 3, sideB = alongX ? 2 : 1;
-        int placed = 0;
+        int placed = 0, before = silosOn(g);
         int len = g.length();
         for (int pass = 0; pass < 2; pass++) {
             // Singles only where a facing pair already stands, so the silos always line both sides.
-            if (pass == 1 && placed < 2) break;
+            if (pass == 1 && before + placed < 2) break;
             for (int k = 0; placed < want && 3 + k * SILO_PITCH + 5 <= len - 14; k++) {
                 int off = 3 + k * SILO_PITCH;
                 int along = farCoord(g) + (g.dir == 0 || g.dir == 3 ? off : -off - 5);
@@ -669,6 +720,11 @@ final class ComplexGrower {
         for (Node m : new ArrayList<Node>(nodes)) {
             if (postsLeft <= 0) break;
             if (m.type == MINOR && guardPost(nodes.get(m.parent), m.dir, m)) postsLeft--;
+        }
+        // Last resort, so a plan never has fewer than three (D233): beside any major hall's mouth, bends and branches.
+        for (Node m : new ArrayList<Node>(nodes)) {
+            if (postsLeft <= 0 || posts() >= 3) break;
+            if (m.type == MAJOR && m.parent != 0 && guardPost(nodes.get(m.parent), m.dir, m)) postsLeft--;
         }
         // Whatever is still queued squeezes in wherever a side has room, smaller.
         for (int guard = 0; guard < 4000 && !queue.isEmpty() && roomCount() < target; guard++) {

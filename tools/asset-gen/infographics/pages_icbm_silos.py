@@ -733,7 +733,7 @@ A decontamination airlock waits in the corner between the hub and a hall.</div><
 <div class="card"><h3>Halls and rooms</h3><div class="pt" style="margin-top:6px">Major halls are {MAJOR_W} wide and {MAJOR_H} high, with a rail down the middle; minor hallways are {MINOR_W} wide and {MINOR_H} high. Rooms are {ROOM_H} high, grow to fill the rock around them and
 can hang off other rooms, so not every room has a straight line to the hub. About {COVERAGE}% of the footprint is built. Each hall mouth off the hub has a blast door and a sign naming its direction. A guard post stands at every branch.</div></div>
 <div class="card"><h3>The silo gallery</h3><div class="pt" style="margin-top:6px">The silos line a {GALLERY_H}-high hall on both sides, in facing pairs {SILO_PITCH} blocks apart, each turned so its controller faces the hall. A walkway niche opens in front of each controller.
-<b>Launch Control</b> caps the far end behind glass, so you look down on the silos from it. The <b>Missile Assembly</b> floor opens off the gallery's side. With seven or more silos the gallery splits across a second hall.</div></div></div>
+<b>Launch Control</b> caps the far end behind glass, so you look down on the silos from it. The <b>Missile Assembly</b> floor opens off the gallery's side. With seven or more silos the gallery can split across a second straight hall.</div></div></div>
 <div class="label" style="margin:16px 0 8px">Galleries by silo count, and how often each count turns up</div>
 <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:8px">{crops}</div></div>
 

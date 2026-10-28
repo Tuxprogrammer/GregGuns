@@ -63,9 +63,18 @@ public final class WindowedHeightProbe implements HeightProbe {
 
     @Override
     public int seaFloorY(int x, int z) {
-        if (!window.contains(x, z)) {
-            return NONE;
-        }
+        return window.contains(x, z) ? seaFloor(x, z) : NONE;
+    }
+
+    @Override
+    public int seaFloorYBeside(int x, int z) {
+        boolean near = x >= window.minX() - 1 && x <= window.maxX() + 1
+            && z >= window.minZ() - 1
+            && z <= window.maxZ() + 1;
+        return near ? seaFloor(x, z) : NONE;
+    }
+
+    private int seaFloor(int x, int z) {
         for (int y = reader.topY(x, z); y >= 0; y--) {
             switch (reader.kindAt(x, y, z)) {
                 case AIR:
