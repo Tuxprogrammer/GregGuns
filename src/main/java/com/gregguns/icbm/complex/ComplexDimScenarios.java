@@ -175,7 +175,10 @@ public final class ComplexDimScenarios {
                     for (int x = x0; x <= x1; x++) for (int z = z0; z <= z1; z++) cps.loadChunk(x, z);
                     long[] after = counters();
                     out.note(
-                        label + ": populates generator "
+                        "cell " + cx
+                            + ","
+                            + cz
+                            + ": populates generator "
                             + (StructureGenerator.populateCount() - popBefore)
                             + ", hook "
                             + (com.gregguns.worldgen.Ross128ProviderHook.populateCount() - hookBefore)
