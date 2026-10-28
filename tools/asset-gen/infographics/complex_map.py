@@ -148,8 +148,8 @@ def overlay(d: dict, p: dict, px: int, labels: bool = True, markers: bool = True
         x0, z0, x1, z1 = s["box"]
         out.append(f'<rect x="{x0 * px - 4}" y="{z0 * px - 4}" width="{(x1 - x0) * px + 8}" height="{(z1 - z0) * px + 8}" fill="none" stroke="#ff8a1f" stroke-width="3"/>')
         if labels:
-            # A gallery packs silos two cells apart: past four, the label is the short form inside the outline.
-            many = len(p["silos"]) > 4
+            # A gallery packs silos two cells apart: past two, the label is the short form inside the outline.
+            many = len(p["silos"]) > 2
             miss = ("ctrl" if many else "controller") if s["missing"] == "CONTROLLER" else ("EH" if many else "Energy Hatch")
             ty = (z0 + z1) / 2 * px + fs * .3 if many else z1 * px + 24
             out.append(f'<text x="{(x0 + x1) / 2 * px:.1f}" y="{ty:.1f}" text-anchor="middle" font-size="{fs * (.75 if many else 1):.1f}" font-weight="700" fill="#ffb066" {halo}>{"no " if many else "Silo, no "}{miss}</text>')
