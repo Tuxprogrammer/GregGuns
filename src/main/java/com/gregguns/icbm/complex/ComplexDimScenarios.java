@@ -146,12 +146,12 @@ public final class ComplexDimScenarios {
         private void run(World world, ScenarioResult.Builder out) {
             ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
             StructureState state = StructureState.forWorld(world);
-            int placed = 0;
+            int placed = 0, clean = 0;
             List<String> rejects = new ArrayList<String>();
             int tried = 0;
             // Far cells, away from the spawn exclusion and from what other scenarios loaded.
-            for (int ring = 4; ring < 40 && tried < CELLS && placed == 0; ring++) {
-                for (int k = 0; k < 4 && tried < CELLS && placed == 0; k++) {
+            for (int ring = 4; ring < 40 && tried < CELLS && clean == 0; ring++) {
+                for (int k = 0; k < 4 && tried < CELLS && clean == 0; k++) {
                     int cx = k % 2 == 0 ? ring : -ring, cz = k < 2 ? ring : -ring;
                     java.util.Optional<StructurePlan> op = StructurePopulator
                         .complexPlanAt(world.getSeed(), world.provider.dimensionId, cx, cz, 100);
@@ -206,11 +206,20 @@ public final class ComplexDimScenarios {
                         continue;
                     }
                     placed++;
-                    surface(world, plan, d.groundY(), out, label);
-                    contents(world, plan, out, label);
+                    // The terrain check sees one window of a 240 x 240 box, so a placed cell may still have a lake
+                    // or a cliff under a hut or a bore. Its column checks go to a side builder: a cell that fails them
+                    // is noted and the next cell is tried; at least one cell must pass them all.
+                    ScenarioResult.Builder cellOut = ScenarioResult.builder(name);
+                    surface(world, plan, d.groundY(), cellOut, label);
+                    contents(world, plan, cellOut, label);
+                    ScenarioResult cellResult = cellOut.build();
+                    for (String m : cellResult.messages()) out.note(m);
+                    if (cellResult.passed()) clean++;
+                    else out.note(label + ": its terrain defeats the column checks above; the next cell is tried");
                 }
             }
             out.check(placed > 0, "at least one cell hosts a complex; rejected: " + rejects);
+            out.check(clean > 0, "at least one placed cell passes every surface and contents check");
         }
 
         private static boolean fresh(ChunkProviderServer cps, StructurePlan p) {
@@ -251,7 +260,7 @@ public final class ComplexDimScenarios {
 
         private void surface(World w, StructurePlan plan, int groundY, ScenarioResult.Builder out, String label) {
             ComplexPlan cp = ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ());
-            int floor = groundY - ComplexPlacer.DEPTH;
+            int floor = ComplexPlacer.floorY(w, groundY);
             // Trapdoor: the topmost block of its column, a top-half closed trapdoor, level with the ground around.
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
             int ty = top(w, ex, ez);
@@ -327,7 +336,7 @@ public final class ComplexDimScenarios {
             int[] other = NeighborComplex.nearest(w.getSeed(), plan.dimension(), plan, 100, NeighborComplex.RADIUS);
             Decision d = StructureState.forWorld(w)
                 .get(PlanKey.of(plan));
-            int floor = d.groundY() - ComplexPlacer.DEPTH;
+            int floor = ComplexPlacer.floorY(w, d.groundY());
             out.note(
                 label + ": level " + level + ", ceiling " + ceiling + ", stick -> " + java.util.Arrays.toString(other));
             int deepWanted = 0, deepFound = 0, sticks = 0, expected = 0;

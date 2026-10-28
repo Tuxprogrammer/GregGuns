@@ -149,6 +149,11 @@ public final class ComplexPlacer implements ComplexWriter {
      * A pure function of the recorded height and the provider, so every window agrees.
      */
     int floorYOf(int groundY) {
+        return floorY(world, groundY);
+    }
+
+    /** @see #floorYOf the same rule for a given world (null: the recorded ground alone) */
+    public static int floorY(World world, int groundY) {
         int avg = world == null ? Integer.MAX_VALUE : world.provider.getAverageGroundLevel();
         return Math.max(MIN_FLOOR, Math.min(groundY, avg) - DEPTH);
     }

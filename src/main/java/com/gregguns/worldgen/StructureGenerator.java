@@ -168,7 +168,18 @@ public final class StructureGenerator implements IWorldGenerator {
         boolean general = allowed(world);
         // A complex the ledger already placed keeps generating when the config now keeps new ones out (a dimension
         // removed from the list, the chance lowered, a world type excluded): only new decisions stop.
-        if (complex != null && !complex.enabledIn(world)) complex = new LedgerOnly(complex);
+        if (complex != null && !complex.enabledIn(world)) {
+            boolean placedHere = !StructurePopulator
+                .complexPlans(
+                    world.getSeed(),
+                    world.provider.dimensionId,
+                    chunkX,
+                    chunkZ,
+                    0,
+                    StructureState.forWorld(world))
+                .isEmpty();
+            complex = placedHere ? new LedgerOnly(complex) : null;
+        }
         if (!general && complex == null) return;
         try (PopulateGuard.Scope ignored = PopulateGuard.enter(chunkX, chunkZ)) {
             PopulateWindow window = new PopulateWindow(chunkX, chunkZ);

@@ -80,6 +80,7 @@ public final class ControlLaunchScenario implements Scenario {
             return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
         }
         ctx.clearArea(8, 20);
+        clearClimb(ctx);
         MissileScenarios.floor(ctx, 6);
         for (int a = -1; a <= 1; a++) {
             for (int b = -1; b <= 1; b++) {
@@ -328,6 +329,27 @@ public final class ControlLaunchScenario implements Scenario {
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + 3, ctx.originY(), ctx.originZ());
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
+    }
+
+    /**
+     * Clears the climb above the pad. The harness clears 16 layers over an arena and the pad's clearing is 20 high,
+     * but a missile starts its arc about 20 blocks up and sweeps out over the arena's edge: wherever the world's own
+     * terrain stands higher there (a hillside at this slot), the arc starts inside rock and detonates on its fifth
+     * tick. The approach count below skips the arena's middle (|z| under 20), so it never saw this. Written straight
+     * to the world: the arena is a dev-only plot and nothing there is worth restoring.
+     */
+    private static void clearClimb(ScenarioContext ctx) {
+        World w = ctx.world();
+        for (int x = -12; x <= 12; x++) {
+            for (int z = -12; z <= 12; z++) {
+                for (int y = 16; y < 90; y++) {
+                    int bx = ctx.originX() + x, by = ctx.originY() + y, bz = ctx.originZ() + z;
+                    if (w.getBlock(bx, by, bz) != Blocks.air) {
+                        w.setBlock(bx, by, bz, Blocks.air, 0, 2);
+                    }
+                }
+            }
+        }
     }
 
     /**
