@@ -25,6 +25,7 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.gen.ChunkProviderServer;
+import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.DimensionManager;
 
 import com.gregguns.GregGuns;
@@ -46,16 +47,22 @@ import com.gregguns.icbm.complex.SiloSlot;
 import com.gregguns.icbm.complex.Tunnel;
 import com.gregguns.icbm.complex.gen.ComplexPlacer;
 import com.gregguns.icbm.complex.gen.GtMachineHook;
+import com.gregguns.worldgen.ClippingSink;
 import com.gregguns.worldgen.ComplexWriter;
 import com.gregguns.worldgen.Decision;
 import com.gregguns.worldgen.Footprint;
+import com.gregguns.worldgen.PlacementHarnessAccess;
 import com.gregguns.worldgen.PlanKey;
 import com.gregguns.worldgen.PoolEntry;
+import com.gregguns.worldgen.PopulateGuard;
+import com.gregguns.worldgen.PopulateWindow;
 import com.gregguns.worldgen.SizeClass;
 import com.gregguns.worldgen.StructureGrid;
 import com.gregguns.worldgen.StructurePlan;
 import com.gregguns.worldgen.StructurePopulator;
 import com.gregguns.worldgen.StructureState;
+import com.gregguns.worldgen.WorldColumnReader;
+import com.gregguns.worldgen.WorldTarget;
 
 import gregtech.api.enums.ItemList;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -68,7 +75,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
  */
 public final class I6VisualSetups {
 
-    private static final int GROUND = 63;
+    private static final int GROUND = 32;
     private static final long SEED = 0x51105L;
     private static final File OPS = new File("i6c-ops.txt");
 
@@ -89,6 +96,8 @@ public final class I6VisualSetups {
         registry.register(new Gen("pa", ActivityLevel.PARTLY_ABANDONED, SiloCeiling.EV));
         registry.register(new Gen("op", ActivityLevel.OPERATIONAL, SiloCeiling.EV));
         registry.register(new Gen("op_umv", ActivityLevel.OPERATIONAL, SiloCeiling.UMV));
+        registry.register(new Planet("moon"));
+        registry.register(new Planet("mars"));
         registry.register(new Do());
         registry.register(new Info());
         registry.register(new Scan());
@@ -161,20 +170,60 @@ public final class I6VisualSetups {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            World world = ctx.world();
-            StructurePlan plan = planOf(world, cellX, cellZ);
-            ComplexLevelScenarios.load(world, plan);
-            killEntities(world, plan);
-            ComplexLevelScenarios.slab(world, plan, true);
-            ComplexLevelScenarios.slab(world, plan, false);
-            ComplexPlacer placer = ComplexLevelScenarios.placer()
+            final World world = ctx.world();
+            final StructurePlan plan = planOf(world, cellX, cellZ);
+            final ComplexPlacer placer = ComplexLevelScenarios.placer()
                 .forceLevel(level)
                 .forceCeiling(ceiling);
-            int[] r = ComplexLevelScenarios.generate(world, plan, placer, "gregguns_complex_i6c");
-            GregGuns.LOG.info("I6C gen {} rejected={} violations={}", tag, r[0], r[1]);
-            dump(world, plan, ComplexPlacer.floorY(world, GROUND), tag);
-            return ScenarioResult.builder(name())
-                .build();
+            placer.enabledIn(world);
+            final ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
+            final List<int[]> chunks = new ArrayList<int[]>();
+            for (int cx = Math.floorDiv(plan.anchorX(), 16) - 2; cx
+                <= Math.floorDiv(plan.anchorX() + 240, 16) + 2; cx++) {
+                for (int cz = Math.floorDiv(plan.anchorZ(), 16) - 2; cz
+                    <= Math.floorDiv(plan.anchorZ() + 240, 16) + 2; cz++) {
+                    chunks.add(new int[] { cx, cz });
+                }
+            }
+            final List<int[]> windows = PlacementHarnessAccess.windowsOf(plan, false);
+            final StructureState state = new StructureState("gregguns_complex_i6c_" + tag);
+            final StructurePopulator populator = PlacementHarnessAccess.populator();
+            final int[] at = { 0, 0, 0, 0 }; // chunk index, window index, rejected, violations
+            final int before = PopulateGuard.violationCount();
+            // The whole build runs in slices of a few hundred milliseconds so the connected clients keep their
+            // keep-alives (a single 80 s tick disconnects them).
+            return ScenarioResult.pending(name(), 40000, ticks -> {
+                long end = System.nanoTime() + 250_000_000L;
+                while (System.nanoTime() < end) {
+                    if (at[0] < chunks.size()) {
+                        int[] c = chunks.get(at[0]++);
+                        cps.loadChunk(c[0], c[1]);
+                    } else if (at[1] < windows.size()) {
+                        int[] w = windows.get(at[1]++);
+                        PopulateWindow window = new PopulateWindow(w[0], w[1]);
+                        ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
+                        try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
+                            populator.populateComplex(
+                                plan,
+                                placer,
+                                window,
+                                sink,
+                                new WorldColumnReader(world),
+                                (x, z) -> Collections.singleton(Type.PLAINS),
+                                state);
+                        }
+                        at[2] += sink.rejectedWrites();
+                    } else {
+                        at[3] = PopulateGuard.violationCount() - before;
+                        Decision d = state.get(PlanKey.of(plan));
+                        GregGuns.LOG.info("I6C gen {} rejected={} violations={} decision={}", tag, at[2], at[3], d);
+                        dump(world, plan, ComplexPlacer.floorY(world, d == null ? 32 : d.groundY()), tag);
+                        return ScenarioResult.builder(name())
+                            .build();
+                    }
+                }
+                return null;
+            });
         }
     }
 
@@ -521,9 +570,6 @@ public final class I6VisualSetups {
                 case "shellcheck":
                     shellCheck(Integer.parseInt(t[1]));
                     break;
-                case "planet":
-                    planet(t[1]);
-                    break;
                 case "dim":
                     dim(player(t[1]), Integer.parseInt(t[2]));
                     break;
@@ -714,50 +760,79 @@ public final class I6VisualSetups {
     }
 
     /** Loads chunks around the first far cell that rolls a complex on the planet, through the real generator. */
-    private static void planet(String dimName) {
-        WorldServer world = worldNamed(dimName);
-        if (world == null) {
-            GregGuns.LOG.info("I6C planet {}: not present in this environment", dimName);
-            return;
+    private static final class Planet extends Setup {
+
+        private final String dimName;
+
+        Planet(String dimName) {
+            this.dimName = dimName;
         }
-        int chance = IcbmConfig.siloComplexChancePercent;
-        IcbmConfig.siloComplexChancePercent = 100;
-        try {
-            ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
-            StructureState state = StructureState.forWorld(world);
-            for (int ring = 4; ring < 40; ring++) {
-                for (int k = 0; k < 4; k++) {
+
+        @Override
+        public String name() {
+            return "testing.icbm_i6_planet_" + dimName;
+        }
+
+        @Override
+        public String description() {
+            return "I6 client-session setup (dev only): generates a real complex on '" + dimName
+                + "' through the chunk provider (chance forced to 100 percent) and leaves it. Not part of test all.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            final WorldServer world = worldNamed(dimName);
+            if (world == null) {
+                GregGuns.LOG.info("I6C planet {}: not present in this environment", dimName);
+                return ScenarioResult.skip(name(), "dimension '" + dimName + "' is not present");
+            }
+            final ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
+            final StructureState state = StructureState.forWorld(world);
+            StructurePlan found = null;
+            for (int ring = 4; ring < 40 && found == null; ring++) {
+                for (int k = 0; k < 4 && found == null; k++) {
                     int cx = k % 2 == 0 ? ring : -ring, cz = k < 2 ? ring : -ring;
                     Optional<StructurePlan> op = StructurePopulator
                         .complexPlanAt(world.getSeed(), world.provider.dimensionId, cx, cz, 100);
-                    if (!op.isPresent() || state.get(PlanKey.of(op.get())) != null) continue;
-                    StructurePlan plan = op.get();
-                    for (int x = Math.floorDiv(plan.anchorX(), 16) - 1; x
-                        <= Math.floorDiv(plan.anchorX() + 239, 16) + 1; x++) {
-                        for (int z = Math.floorDiv(plan.anchorZ(), 16) - 1; z
-                            <= Math.floorDiv(plan.anchorZ() + 239, 16) + 1; z++) {
-                            cps.loadChunk(x, z);
-                        }
-                    }
-                    Decision d = state.get(PlanKey.of(plan));
-                    GregGuns.LOG.info(
-                        "I6C planet {} dim={} provider={} cell={},{} decision={}",
-                        dimName,
-                        world.provider.dimensionId,
-                        world.provider.getDimensionName(),
-                        cx,
-                        cz,
-                        d);
-                    if (d != null && d.isPlaced()) {
-                        dump(world, plan, ComplexPlacer.floorY(world, d.groundY()), "planet-" + dimName);
-                        GregGuns.LOG.info("I6C planet ground={}", d.groundY());
-                        return;
-                    }
+                    if (op.isPresent() && state.get(PlanKey.of(op.get())) == null) found = op.get();
                 }
             }
-            GregGuns.LOG.info("I6C planet {}: no cell placed", dimName);
-        } finally {
-            IcbmConfig.siloComplexChancePercent = chance;
+            if (found == null) return ScenarioResult.fail(name(), "no free cell");
+            final StructurePlan plan = found;
+            final List<int[]> chunks = new ArrayList<int[]>();
+            for (int x = Math.floorDiv(plan.anchorX(), 16) - 1; x <= Math.floorDiv(plan.anchorX() + 239, 16) + 1; x++) {
+                for (int z = Math.floorDiv(plan.anchorZ(), 16) - 1; z
+                    <= Math.floorDiv(plan.anchorZ() + 239, 16) + 1; z++) {
+                    chunks.add(new int[] { x, z });
+                }
+            }
+            final int chance = IcbmConfig.siloComplexChancePercent;
+            IcbmConfig.siloComplexChancePercent = 100;
+            final int[] at = { 0 };
+            return ScenarioResult.pending(name(), 40000, ticks -> {
+                long end = System.nanoTime() + 250_000_000L;
+                while (System.nanoTime() < end && at[0] < chunks.size()) {
+                    int[] c = chunks.get(at[0]++);
+                    cps.loadChunk(c[0], c[1]);
+                }
+                if (at[0] < chunks.size()) return null;
+                IcbmConfig.siloComplexChancePercent = chance;
+                Decision d = state.get(PlanKey.of(plan));
+                GregGuns.LOG.info(
+                    "I6C planet {} dim={} provider={} cell={},{} decision={}",
+                    dimName,
+                    world.provider.dimensionId,
+                    world.provider.getDimensionName(),
+                    plan.cellX(),
+                    plan.cellZ(),
+                    d);
+                if (d != null && d.isPlaced()) {
+                    dump(world, plan, ComplexPlacer.floorY(world, d.groundY()), "planet-" + dimName);
+                    GregGuns.LOG.info("I6C planet ground={}", d.groundY());
+                }
+                return ScenarioResult.builder(name())
+                    .build();
+            });
         }
     }
 
