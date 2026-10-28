@@ -487,3 +487,10 @@ None right now. New questions are added here as the GregGuns-side sheets raise t
 | D253 | Energy-gun bar reads `charge` | GGS-02-13 now says the code never writes the NBT key `charge`; the durability bar reads it read-only through `ElectricGear.chargeReadOnly`, because IC2's manager creates a tag and NEI logs a forced tag update. The key is IC2's own storage layout (`// Decompiled:` hedge at `ElectricGear.CHARGE_KEY`), and `gun.energy.item` checks that the reader matches IC2's charge and adds no tag. |
 | D254 | GUI-vanish probe can fail | `GuiVanishProbe` registers an unguarded base read as a negative control and asserts it throws after removal, so all six `*_gui_vanish` scenarios prove the removal makes the crash condition. The radar probes cover getters that read memory only; the radars' GT main panel is not exercised. The recorder also captures `getOrCreateSyncHandler` values. `IcbmSync.live` now uses GT's own close test (`canAccessData` and same machine). `offReason()` names the first failing cause (own flag, Galacticraft, required modules). The antidote scenario asserts the guard is registered. |
 | D255 | Fake-player noise | Scenario-spawned fake players get a handler that drops packets, which ends the Witchery NPE pairs from `spawn`. The shared fake player in `DamageSources.annihilate` still logs one pair; deferred to I7 as log-only noise. The autotest connect check restarts its settle count when the screen changes. |
+
+### I6b fix round: real-pack screen fixes (D264)
+
+| ID | Decision | Detail |
+|---|---|---|
+| D264 | Screen fixes from the second real-pack pass (orchestrator, 2026-10-28) | (1) **Radar radius fields** (HV, EV, Tower) show the typed text for 100 ticks after the last key, then the clamped radius, so typing is never rewritten mid-edit. (2) **Launch Control:** Load target is locked during a countdown and after ignition, with a reason tooltip, and the server refuses it too; Save target stays live. (3) **Silo status** lines are white and the "ready" line green. (4) The Air-Defense Battery's link lines and the Radar Tower panel are sized so no line overlaps or clips. |
+
