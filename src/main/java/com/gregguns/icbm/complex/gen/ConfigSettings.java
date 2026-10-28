@@ -1,7 +1,6 @@
 package com.gregguns.icbm.complex.gen;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraftforge.common.BiomeDictionary.Type;
@@ -20,8 +19,15 @@ public final class ConfigSettings implements ComplexPlacer.Settings {
 
     @Override
     public boolean dimensionEnabled(String dimensionName) {
-        return IcbmConfig.siloComplexEnabled
-            && new HashSet<String>(Arrays.asList(IcbmConfig.siloComplexDimensions)).contains(dimensionName);
+        if (!IcbmConfig.siloComplexEnabled) {
+            return false;
+        }
+        for (String n : IcbmConfig.siloComplexDimensions) {
+            if (n.equalsIgnoreCase(dimensionName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

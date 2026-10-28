@@ -20,7 +20,7 @@ public final class PlanetTable {
     private static final Map<String, Integer> TIERS = new HashMap<String, Integer>();
 
     private static void put(int tier, String... names) {
-        for (String n : names) TIERS.put(n, tier);
+        for (String n : names) TIERS.put(key(n), tier);
     }
 
     static {
@@ -39,9 +39,17 @@ public final class PlanetTable {
 
     private PlanetTable() {}
 
+    /**
+     * Names compare case-insensitively: Galacticraft's providers say "Ross128b" and "Moon" where GalacticGreg says
+     * "ross128b".
+     */
+    private static String key(String name) {
+        return name.toLowerCase(java.util.Locale.ROOT);
+    }
+
     /** @return the rocket tier (0 Overworld, 1 to 9, {@link #ROLLED}), or null for a dimension without silos */
     public static Integer tierOf(String dimensionName) {
-        return TIERS.get(dimensionName);
+        return TIERS.get(key(dimensionName));
     }
 
     /** @return the dimension names that host complexes by default, in no particular order */
@@ -53,7 +61,7 @@ public final class PlanetTable {
      * @return the GT voltage index of the loot ceiling (EV 4, IV 5 ... UMV 14), or 0 for a rolled or unknown dimension
      */
     public static int ceilingVoltage(String dimensionName) {
-        Integer t = TIERS.get(dimensionName);
+        Integer t = TIERS.get(key(dimensionName));
         if (t == null || t == ROLLED) return 0;
         // GT voltage index: Overworld and Moon EV (4), T2 IV (5), T3 LuV (6) ... T9 UMV (12)
         return 4 + Math.max(0, t - 1);

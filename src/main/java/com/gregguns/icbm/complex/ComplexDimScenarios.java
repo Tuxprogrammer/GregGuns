@@ -95,15 +95,28 @@ public final class ComplexDimScenarios {
                 int[] ids = Ross128Dimensions.ids();
                 return ids.length > rossIndex ? srv.worldServerForDimension(ids[rossIndex]) : null;
             }
-            if (dimName.equals("Overworld")) return srv.worldServerForDimension(0);
+            if (dimName.equalsIgnoreCase("Overworld")) return srv.worldServerForDimension(0);
             for (int id : DimensionManager.getStaticDimensionIDs()) {
                 try {
                     WorldProvider p = DimensionManager.createProviderFor(id);
-                    if (p != null && dimName.equals(p.getDimensionName())) return srv.worldServerForDimension(id);
+                    if (p != null && dimName.equalsIgnoreCase(p.getDimensionName()))
+                        return srv.worldServerForDimension(id);
                 } catch (Throwable t) {
                     // a provider that cannot name itself without a world is not the one we want
                 }
             }
+            List<String> seen = new ArrayList<String>();
+            for (int id : DimensionManager.getStaticDimensionIDs()) {
+                try {
+                    seen.add(
+                        id + "="
+                            + DimensionManager.createProviderFor(id)
+                                .getDimensionName());
+                } catch (Throwable t) {
+                    seen.add(id + "=?");
+                }
+            }
+            GregGuns.LOG.info("{}: no provider named '{}' among {}", name, dimName, seen);
             return null;
         }
 
@@ -117,7 +130,7 @@ public final class ComplexDimScenarios {
             String actual = world.provider.getDimensionName();
             out.note("dimension id " + world.provider.dimensionId + " name '" + actual + "'");
             out.check(
-                dimName.equals("Overworld") || PlanetTable.tierOf(actual) != null,
+                dimName.equalsIgnoreCase("Overworld") || PlanetTable.tierOf(actual) != null,
                 "the provider's name '" + actual + "' is in the planet table");
             int chance = IcbmConfig.siloComplexChancePercent;
             IcbmConfig.siloComplexChancePercent = 100;
