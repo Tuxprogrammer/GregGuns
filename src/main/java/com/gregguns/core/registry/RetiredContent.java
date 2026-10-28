@@ -18,14 +18,21 @@ import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
  * Design record 0012 retired {@code part_heat_ray_focus} (the Reaction Chamber's non-consumed input). Stacks of it
  * vanish with no refund: the mod is an alpha with no stability promise. The Reaction Chamber and Retort machines are GT
  * MetaTileEntities under GT's own block, so they are not registry names; see {@code GregGunsMTEIDs#retired()}. Keep
- * the names for one alpha, then drop this class. Common side.
+ * the names for one alpha, then drop this class.
+ *
+ * <p>
+ * Design record 0024 retired the four spawner blocks ({@code zombie_hole}, {@code bug_hole}, {@code silo_guard},
+ * {@code silo_elite}); worldgen places vanilla mob spawners instead. Their blocks turn to air. Their old tiles
+ * ({@code gregguns:hole_spawner}) are not registry names: vanilla skips an unknown tile id with one log line when its
+ * chunk loads, and the chunk saves without it. Common side.
  */
-// Spec: docs/design/0012-retire-reaction-chamber-and-retort.md (Migration notes for existing worlds)
+// Spec: docs/design/0012-retire-reaction-chamber-and-retort.md (Migration notes for existing worlds),
+// docs/design/0024-vanilla-spawners.md
 public final class RetiredContent {
 
     /** Bare registry names (without {@code gregguns:}) that no longer exist. */
-    private static final Set<String> NAMES = Collections
-        .unmodifiableSet(new HashSet<>(Arrays.asList("part_heat_ray_focus")));
+    private static final Set<String> NAMES = Collections.unmodifiableSet(
+        new HashSet<>(Arrays.asList("part_heat_ray_focus", "zombie_hole", "bug_hole", "silo_guard", "silo_elite")));
 
     private RetiredContent() {}
 

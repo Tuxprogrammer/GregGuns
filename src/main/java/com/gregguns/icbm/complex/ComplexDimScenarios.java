@@ -39,7 +39,6 @@ import com.gregguns.worldgen.StructureGenerator;
 import com.gregguns.worldgen.StructurePlan;
 import com.gregguns.worldgen.StructurePopulator;
 import com.gregguns.worldgen.StructureState;
-import com.gregguns.worldgen.spawner.TileHoleSpawner;
 
 /**
  * Real generation of a silo complex per dimension: the chunks around a forced-100-percent complex are loaded through
@@ -514,10 +513,10 @@ public final class ComplexDimScenarios {
                     cut++;
                 } else if (p.kind() == Placement.Kind.SPAWNER) {
                     TileEntity t = w.getTileEntity(x, y, z);
-                    boolean deep = p.spawner() == com.gregguns.worldgen.spawner.HoleKind.SILO_ELITE;
+                    boolean deep = p.spawner() == com.gregguns.worldgen.spawner.SpawnerKind.SILO_ELITE;
                     if (deep) {
                         deepWanted++;
-                        if (t instanceof TileHoleSpawner) deepFound++;
+                        if (t instanceof net.minecraft.tileentity.TileEntityMobSpawner) deepFound++;
                     }
                 }
                 if (p.kind() == Placement.Kind.CHEST && p.bonuses()

@@ -11,12 +11,15 @@ import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import com.gregguns.entity.npc.ai.EntityAIHurtByFaction;
 import com.gregguns.entity.npc.ai.EntityAINpcMelee;
 import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.entity.npc.loot.NpcProfiles;
+import com.gregguns.entity.npc.spawn.SpawnerData;
+import com.gregguns.entity.npc.spawn.SpawnerOrigin;
 import com.gregguns.mob.model.MobAnimSource;
 
 /**
@@ -33,7 +36,7 @@ import com.gregguns.mob.model.MobAnimSource;
 // Deviation: the bite uses the shared melee task (20-tick swing cooldown, reach from the hitbox) instead of the
 // legacy per-tick check; no spider jockey; vanilla spider sounds (no dedicated sound assets yet); the aggro sound
 // plays once per new target, not every tick (NPC-07).
-public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSource {
+public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSource, SpawnerOrigin.NaturalCandidate {
 
     /** Hitbox width in blocks. */
     public static final float WIDTH = 1.1F;
@@ -60,6 +63,8 @@ public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSour
     private static final float BITE_VOLUME = 0.75F;
 
     private int attackTimer;
+    /** Set by the natural-spawn gate; never saved. */
+    private boolean naturalCandidate;
 
     /**
      * @param world the world; the entity registry calls this when it loads a bug
@@ -112,6 +117,35 @@ public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSour
     @Override
     protected boolean isValidLightLevel() {
         return true;
+    }
+
+    @Override
+    public void markNaturalCandidate() {
+        naturalCandidate = true;
+    }
+
+    /**
+     * Vanilla's rules, except when a GregGuns-marked spawner places the bug: then the light checks are skipped (see
+     * {@link SpawnerOrigin}). Natural spawns keep every rule.
+     */
+    @Override
+    public boolean getCanSpawnHere() {
+        if (SpawnerOrigin.placedByMarkedSpawner(this, naturalCandidate)) {
+            return SpawnerOrigin.canSpawnFromSpawner(this);
+        }
+        return super.getCanSpawnHere();
+    }
+
+    /**
+     * A GregGuns vanilla spawner places the bug: its {@code SpawnData} was just read and it has not joined the world,
+     * so this is where it takes the Infernal Mobs opt-out. The bug carries no equipment and no danger.
+     */
+    @Override
+    public void readEntityFromNBT(NBTTagCompound tag) {
+        super.readEntityFromNBT(tag);
+        if (SpawnerData.isFromSpawner(tag) && worldObj != null && !worldObj.isRemote) {
+            InfernalHooks.markSpawnerNpc(this);
+        }
     }
 
     /** No spider jockey and no random potion buffs from an egg or spawner. */

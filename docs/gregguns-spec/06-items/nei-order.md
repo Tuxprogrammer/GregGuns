@@ -20,7 +20,7 @@ Ten blocks, always in this sequence. Inside every block that has tiers, items ru
 | 6 | `ARMOR_PARTS` | Crafting parts of armor, tier by tier | `part_heavy_cloth` | `part_glider_wing` |
 | 7 | `UTILITY` | Turret plates cheapest first, the Explosive Charge, Reinforced Chest, Weapon Chest, Camp Flag, Bio Blob | `turret_armor_iron` | `bio_blob` |
 | 8 | `NPC_EGG` | The spawn egg; its subtypes follow [`NpcEggOrder`](../10-entities-npcs/index.md) (undead, bug, factions weakest first, mutants, bosses, machines) | `npc_egg` | `npc_egg` |
-| 9 | `WORLD_BLOCKS` | Zombie Hole, Bug Hole, Bug Nest, Bug Nest Slime | `zombie_hole` | `bug_nest_slime` |
+| 9 | `WORLD_BLOCKS` | Bug Nest, Bug Nest Slime | `bug_nest` | `bug_nest_slime` |
 | 10 | `DEV` | Dev-only items (registered only in a dev environment) | `probe_tool_gun` | `probe_tool_gun` |
 
 Blocks 1 to 3 register in the guns module, 4 to 6 in armor, 7 in utility, 8 in npcs, 9 and 10 in worldgen and guns (the dev probe is registered last). That is also the module registration order, so a NEW world's numeric ids already follow the table.

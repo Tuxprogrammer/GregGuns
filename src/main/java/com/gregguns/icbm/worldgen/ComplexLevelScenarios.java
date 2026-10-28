@@ -20,11 +20,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumDifficulty;
@@ -71,11 +73,10 @@ import com.gregguns.worldgen.StructureState;
 import com.gregguns.worldgen.WorldColumnReader;
 import com.gregguns.worldgen.WorldTarget;
 import com.gregguns.worldgen.loot.LootCategories;
-import com.gregguns.worldgen.spawner.HoleCaps;
-import com.gregguns.worldgen.spawner.HoleKind;
-import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
-import com.gregguns.worldgen.spawner.HoleSpawning;
-import com.gregguns.worldgen.spawner.TileHoleSpawner;
+import com.gregguns.worldgen.spawner.SpawnerKind;
+import com.gregguns.worldgen.spawner.SpawnerNbt;
+import com.gregguns.worldgen.spawner.SpawnerSettings;
+import com.gregguns.worldgen.spawner.VanillaSpawners;
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -365,7 +366,7 @@ public final class ComplexLevelScenarios {
                     last.put(key(p.x(), p.y(), p.z()), p);
                 }
             }
-            BlockHoleSpawnerCheck spawners = new BlockHoleSpawnerCheck();
+            SpawnerCheck spawners = new SpawnerCheck();
             com.gregguns.icbm.complex.gen.Styles styles = placer.stylesOf(plan);
             for (Placement p : last.values()) {
                 int x = ax + p.x(), y = floor + p.y(), z = az + p.z();
@@ -373,12 +374,16 @@ public final class ComplexLevelScenarios {
                 switch (p.kind()) {
                     case SPAWNER:
                         t.spawners++;
-                        if (p.spawner() == HoleKind.SILO_ELITE) t.elite++;
+                        if (p.spawner() == SpawnerKind.SILO_ELITE) t.elite++;
                         else t.guard++;
-                        TileEntity st = world.getTileEntity(x, y, z);
-                        if (b != HoleSpawnerRegistration.block(p.spawner()) || !(st instanceof TileHoleSpawner)
-                            || ((TileHoleSpawner) st).kind() != p.spawner()
-                            || ((TileHoleSpawner) st).ceiling() != ceiling) {
+                        NBTTagCompound st = VanillaSpawners.read(world.getTileEntity(x, y, z));
+                        if (b != Blocks.mob_spawner || st == null
+                            || !SpawnerNbt.isMarked(st)
+                            || !SpawnerNbt.entities(st)
+                                .equals(
+                                    p.spawner()
+                                        .mobNames())
+                            || SpawnerNbt.minDanger(st) != RolledCeiling.danger(ceiling)) {
                             t.badTiles++;
                         }
                         break;
@@ -424,7 +429,7 @@ public final class ComplexLevelScenarios {
             }
             marks(t, world, cp, styles, ax, az, floor);
             t.liveWarheadBlocks += warheadBlocksIn(world, ax, az, floor);
-            out.checkEquals(tag + ": spawner blocks with the wrong tile, kind or ceiling", 0, t.badTiles);
+            out.checkEquals(tag + ": spawners with the wrong mobs or danger floor", 0, t.badTiles);
             out.checkEquals(tag + ": chests missing or empty", 0, t.chestsEmpty);
             out.checkEquals(tag + ": chest stacks outside their table", 0, t.overCeiling);
             out.checkEquals(tag + ": machines placed wrong", t.machinesWanted - t.machinesSkipped, t.machinesRight);
@@ -473,20 +478,19 @@ public final class ComplexLevelScenarios {
             return n;
         }
 
-        /** Counts every silo-post block in the complex, to catch strays the placements do not list. */
-        private static final class BlockHoleSpawnerCheck {
+        /** Counts every GregGuns-marked mob spawner in the complex, to catch strays the placements do not list. */
+        private static final class SpawnerCheck {
 
             int last;
 
             int totalIn(World world, int ax, int az, int floor) {
-                Block g = HoleSpawnerRegistration.block(HoleKind.SILO_GUARD);
-                Block e = HoleSpawnerRegistration.block(HoleKind.SILO_ELITE);
                 int n = 0;
                 for (int x = ax; x < ax + 240; x++) {
                     for (int z = az; z < az + 240; z++) {
                         for (int y = floor; y < floor + ComplexRaster.LEVELS; y++) {
-                            Block b = world.getBlock(x, y, z);
-                            if (b == g || b == e) n++;
+                            if (world.getBlock(x, y, z) != Blocks.mob_spawner) continue;
+                            NBTTagCompound t = VanillaSpawners.read(world.getTileEntity(x, y, z));
+                            if (t != null && SpawnerNbt.isMarked(t)) n++;
                         }
                     }
                 }
@@ -679,10 +683,11 @@ public final class ComplexLevelScenarios {
 
         @Override
         public String description() {
-            return "Silo guard and elite posts spawn their own mobs (Army Soldier and Commando; Commando and"
-                + " Stormtrooper) at the stored ceiling's danger, within the M8 cap, with a fake player near; the guards"
-                + " attack that player; a broken post spawns nothing more, also after its chunk is saved, unloaded and"
-                + " reloaded, while the intact post comes back with its kind and ceiling (GGI-08-41..43).";
+            return "Silo guard and elite posts are vanilla mob spawners that, on a lit pad, spawn their own mobs (Army"
+                + " Soldier and Commando; Commando and Stormtrooper) at the ceiling's danger or above, armed, at most 3"
+                + " a cycle and 5 of a type, with a fake player near; the guards attack that player; a broken post"
+                + " spawns nothing more, also after its chunk is saved, unloaded and reloaded, while the intact post"
+                + " comes back with its mobs and danger floor (GGI-08-41..43).";
         }
 
         @Override
@@ -727,36 +732,52 @@ public final class ComplexLevelScenarios {
                 }
             };
             try {
-                world.setBlock(gx, y, cz0, HoleSpawnerRegistration.block(HoleKind.SILO_GUARD), 0, 3);
-                world.setTileEntity(gx, y, cz0, new TileHoleSpawner(HoleKind.SILO_GUARD, CEILING));
-                world.setBlock(ex, y, cz0, HoleSpawnerRegistration.block(HoleKind.SILO_ELITE), 0, 3);
-                world.setTileEntity(ex, y, cz0, new TileHoleSpawner(HoleKind.SILO_ELITE, CEILING));
-                TileHoleSpawner guardTile = (TileHoleSpawner) world.getTileEntity(gx, y, cz0);
-                TileHoleSpawner eliteTile = (TileHoleSpawner) world.getTileEntity(ex, y, cz0);
-                if (guardTile == null || eliteTile == null) {
+                // The pad is open to the sky, and glowstone in the floor beside each post makes it brighter still: the
+                // vanilla monster light checks would refuse every spot here, so any guard proves the spawner rule.
+                for (int[] d : new int[][] { { -2, 0 }, { 2, 0 }, { 0, -2 }, { 0, 2 } }) {
+                    world.setBlock(gx + d[0], GROUND, cz0 + d[1], Blocks.glowstone, 0, 3);
+                    world.setBlock(ex + d[0], GROUND, cz0 + d[1], Blocks.glowstone, 0, 3);
+                }
+                boolean placed = VanillaSpawners.placeInWorld(world, SpawnerKind.SILO_GUARD, gx, y, cz0, CEILING)
+                    && VanillaSpawners.placeInWorld(world, SpawnerKind.SILO_ELITE, ex, y, cz0, CEILING);
+                TileEntity guardTile = world.getTileEntity(gx, y, cz0);
+                TileEntity eliteTile = world.getTileEntity(ex, y, cz0);
+                if (!placed || !(guardTile instanceof TileEntityMobSpawner)
+                    || !(eliteTile instanceof TileEntityMobSpawner)) {
                     cleanup.run();
-                    return ScenarioResult.fail(name(), "the posts carry no tile");
+                    return ScenarioResult.fail(name(), "the posts are not vanilla mob spawners");
                 }
+                out.check(
+                    world.getBlockLightValue(gx, y, cz0 + 1) >= 12,
+                    "the guard post is lit: block light " + world.getBlockLightValue(gx, y, cz0 + 1));
                 final EntityPlayer player = fakePlayer(ctx, cx0 + 0.5, y, cz0 + 0.5);
-                HoleSpawning.Placer placer = npc -> {
-                    drops.track(npc);
-                    npcs.add(npc);
-                    ctx.spawn(npc);
-                    return true;
-                };
                 int danger = RolledCeiling.danger(CEILING);
-                List<EntityLiving> guards = new ArrayList<>();
-                List<EntityLiving> elites = new ArrayList<>();
-                for (int i = 0; i < 3; i++) {
-                    guards.addAll(guardTile.attempt(HoleSpawning.MARKER, placer));
-                    elites.addAll(eliteTile.attempt(HoleSpawning.MARKER, placer));
+                // Run the vanilla spawner logic directly: the first cycle after 40 ticks, then every 100 to 120.
+                int worstStep = 0;
+                for (int i = 0; i < 400; i++) {
+                    int before = near(world, SpawnerKind.SILO_GUARD, gx, y, cz0).size();
+                    guardTile.updateEntity();
+                    worstStep = Math.max(worstStep, near(world, SpawnerKind.SILO_GUARD, gx, y, cz0).size() - before);
+                    before = near(world, SpawnerKind.SILO_ELITE, ex, y, cz0).size();
+                    eliteTile.updateEntity();
+                    worstStep = Math.max(worstStep, near(world, SpawnerKind.SILO_ELITE, ex, y, cz0).size() - before);
                 }
-                out.check(!guards.isEmpty(), "the guard post placed nothing with a player 15 blocks away");
-                out.check(!elites.isEmpty(), "the elite post placed nothing with a player 15 blocks away");
-                out.check(guards.size() <= HoleCaps.MAX_NEARBY, "guard cap: " + guards.size());
-                out.check(elites.size() <= HoleCaps.MAX_NEARBY, "elite cap: " + elites.size());
-                checkMobs(out, "guard", guards, HoleKind.SILO_GUARD, danger);
-                checkMobs(out, "elite", elites, HoleKind.SILO_ELITE, danger);
+                List<EntityLiving> guards = near(world, SpawnerKind.SILO_GUARD, gx, y, cz0);
+                List<EntityLiving> elites = near(world, SpawnerKind.SILO_ELITE, ex, y, cz0);
+                for (EntityLiving e : guards) {
+                    drops.track(e);
+                    npcs.add(e);
+                }
+                for (EntityLiving e : elites) {
+                    drops.track(e);
+                    npcs.add(e);
+                }
+                SpawnerSettings s = SpawnerKind.SILO_GUARD.settings();
+                out.check(!guards.isEmpty(), "the lit guard post spawned nothing with a player 15 blocks away");
+                out.check(!elites.isEmpty(), "the lit elite post spawned nothing with a player 15 blocks away");
+                out.check(worstStep <= s.spawnCount(), "one cycle placed " + worstStep + ", more than 3");
+                checkMobs(out, "guard", guards, SpawnerKind.SILO_GUARD, danger, s.maxNearby());
+                checkMobs(out, "elite", elites, SpawnerKind.SILO_ELITE, danger, s.maxNearby());
                 out.note("guards " + guards.size() + ", elites " + elites.size() + ", danger floor " + danger);
                 final int[] phase = { 0 };
                 final int[] mark = { 0 };
@@ -784,6 +805,7 @@ public final class ComplexLevelScenarios {
                                     world.getTileEntity(gx, y, cz0) == null,
                                     "breaking the post removes its tile");
                                 killAll(npcs, drops);
+                                killAround(world, cx0, cz0, drops);
                                 mark[0] = ticks;
                                 phase[0] = 2;
                                 return null;
@@ -795,9 +817,10 @@ public final class ComplexLevelScenarios {
                                     0,
                                     soldiers(world, gx, y, cz0));
                                 out.check(
-                                    HoleSpawning.countNearby(world, HoleKind.SILO_ELITE, ex, y, cz0) > 0,
+                                    !near(world, SpawnerKind.SILO_ELITE, ex, y, cz0).isEmpty(),
                                     "the intact elite post keeps spawning, so the test can tell a dead post from a live one");
                                 killAll(npcs, drops);
+                                killAround(world, cx0, cz0, drops);
                                 out.check(
                                     saveUnloadReload(world, cps, gx >> 4, cz0 >> 4),
                                     "the post's chunk really unloaded");
@@ -811,11 +834,13 @@ public final class ComplexLevelScenarios {
                                     saveUnloadReload(world, cps, ex >> 4, cz0 >> 4),
                                     "the elite post's chunk really unloaded");
                                 TileEntity et = world.getTileEntity(ex, y, cz0);
+                                NBTTagCompound en = VanillaSpawners.read(et);
                                 out.check(
-                                    et instanceof TileHoleSpawner
-                                        && ((TileHoleSpawner) et).kind() == HoleKind.SILO_ELITE
-                                        && ((TileHoleSpawner) et).ceiling() == CEILING,
-                                    "the intact post reloads with its kind and ceiling: " + et);
+                                    en != null && SpawnerNbt.isMarked(en)
+                                        && SpawnerNbt.entities(en)
+                                            .equals(SpawnerKind.SILO_ELITE.mobNames())
+                                        && SpawnerNbt.minDanger(en) == RolledCeiling.danger(CEILING),
+                                    "the intact post reloads with its mobs and danger floor: " + en);
                                 mark[0] = ticks;
                                 phase[0] = 3;
                                 return null;
@@ -842,19 +867,56 @@ public final class ComplexLevelScenarios {
             }
         }
 
-        private static void checkMobs(ScenarioResult.Builder out, String what, List<EntityLiving> placed, HoleKind kind,
-            int danger) {
+        /**
+         * Every NPC is one of the post's mobs, starts at the danger floor or above (its equipment was rolled with it),
+         * no mob type passes the cap, and at least one holds a weapon.
+         */
+        private static void checkMobs(ScenarioResult.Builder out, String what, List<EntityLiving> placed,
+            SpawnerKind kind, int danger, int cap) {
+            Map<NpcMob, Integer> perType = new HashMap<>();
+            int armed = 0;
             for (EntityLiving e : placed) {
                 NpcMob mob = NpcMob.byName(EntityList.getEntityString(e));
                 out.check(
                     mob != null && kind.mobs()
                         .contains(mob),
                     what + " post placed " + mob);
+                perType.merge(mob, 1, Integer::sum);
                 if (e instanceof NpcEntity) {
                     out.check(
                         ((NpcEntity) e).danger() >= danger,
                         what + " danger " + ((NpcEntity) e).danger() + " < " + danger);
                 }
+                if (e.getHeldItem() != null) armed++;
+            }
+            for (Map.Entry<NpcMob, Integer> c : perType.entrySet()) {
+                out.check(c.getValue() <= cap, what + " post: " + c.getValue() + " " + c.getKey() + ", cap " + cap);
+            }
+            out.check(placed.isEmpty() || armed > 0, what + " post: no NPC holds a weapon");
+        }
+
+        /** Living NPCs of the kind's mobs in the box a vanilla spawner at (x, y, z) counts. */
+        private static List<EntityLiving> near(World world, SpawnerKind kind, int x, int y, int z) {
+            int r = kind.settings()
+                .countRadius();
+            List<String> names = kind.mobNames();
+            List<EntityLiving> out = new ArrayList<>();
+            for (Object o : world.getEntitiesWithinAABB(
+                EntityLiving.class,
+                AxisAlignedBB.getBoundingBox(x - r, y - 4, z - r, x + 1 + r, y + 5, z + 1 + r))) {
+                EntityLiving e = (EntityLiving) o;
+                if (!e.isDead && names.contains(EntityList.getEntityString(e))) out.add(e);
+            }
+            return out;
+        }
+
+        /** Kills every NPC around the pad, drops cancelled, including ones the posts spawned on their own tick. */
+        private static void killAround(World world, int cx0, int cz0, Drops drops) {
+            for (Object o : world.getEntitiesWithinAABB(
+                NpcEntity.class,
+                AxisAlignedBB.getBoundingBox(cx0 - 60, 0, cz0 - 60, cx0 + 60, 255, cz0 + 60))) {
+                drops.track((Entity) o);
+                ((EntityLiving) o).setDead();
             }
         }
 

@@ -24,7 +24,7 @@ import com.gregguns.worldgen.layout.Stamper;
 import com.gregguns.worldgen.loot.LazyChests;
 import com.gregguns.worldgen.loot.LootPending;
 import com.gregguns.worldgen.nest.NestPlacer;
-import com.gregguns.worldgen.spawner.HoleSpawnerHook;
+import com.gregguns.worldgen.spawner.VanillaSpawners;
 
 import cpw.mods.fml.common.IWorldGenerator;
 
@@ -98,8 +98,8 @@ public final class StructureGenerator implements IWorldGenerator {
             UtilityConfig.campFlagCapFactor).withNests(nestPlacer(keys));
         // Layout structures that carry a camp (the carrier) place their own flag from the layout marks.
         StructureHooks.setFlagHook(new CarrierFlag(layouts, flagBlock));
-        // Spawner marks (the Big Bunker's zombie holes, the Bug Nest's bug holes) become hole spawner blocks (G11).
-        StructureHooks.setSpawnerHook(new HoleSpawnerHook());
+        // Spawner marks (the Big Bunker's and the Bug Nest's) become vanilla mob spawners with GregGuns NBT (G11).
+        StructureHooks.setSpawnerHook(new VanillaSpawners());
     }
 
     private static NestPlacer nestPlacer(PaletteKeys keys) {

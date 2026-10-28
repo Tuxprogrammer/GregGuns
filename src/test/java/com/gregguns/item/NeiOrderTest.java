@@ -50,7 +50,7 @@ class NeiOrderTest {
         assertTrue(names.indexOf("pistol_9mm") < names.indexOf("casings"));
         assertTrue(names.indexOf("casings") < names.indexOf("reinforced_chest"));
         assertTrue(names.indexOf("reinforced_chest") < names.indexOf("npc_egg"));
-        assertTrue(names.indexOf("npc_egg") < names.indexOf("zombie_hole"));
+        assertTrue(names.indexOf("npc_egg") < names.indexOf("bug_nest"));
         assertTrue(names.indexOf("bug_nest") < names.indexOf("bug_nest_slime"));
     }
 

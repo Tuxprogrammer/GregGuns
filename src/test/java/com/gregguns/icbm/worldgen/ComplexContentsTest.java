@@ -19,7 +19,7 @@ import com.gregguns.icbm.complex.RoomKind;
 import com.gregguns.icbm.complex.Tunnel;
 import com.gregguns.icbm.worldgen.Placement.Bonus;
 import com.gregguns.icbm.worldgen.Placement.Kind;
-import com.gregguns.worldgen.spawner.HoleKind;
+import com.gregguns.worldgen.spawner.SpawnerKind;
 
 /** The activity and contents pass over real layouts. */
 class ComplexContentsTest {
@@ -175,7 +175,7 @@ class ComplexContentsTest {
             ComplexPlan plan = ComplexLayout.generate(s, 9, 9);
             for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 4, null)) {
                 if (p.kind() == Kind.SPAWNER) {
-                    assertTrue(p.spawner() == HoleKind.SILO_GUARD || p.spawner() == HoleKind.SILO_ELITE);
+                    assertTrue(p.spawner() == SpawnerKind.SILO_GUARD || p.spawner() == SpawnerKind.SILO_ELITE);
                 }
             }
         }

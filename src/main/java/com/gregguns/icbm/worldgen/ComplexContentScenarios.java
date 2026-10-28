@@ -16,8 +16,8 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.worldgen.loot.LootCategories;
-import com.gregguns.worldgen.spawner.HoleKind;
-import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
+import com.gregguns.worldgen.spawner.SpawnerKind;
+import com.gregguns.worldgen.spawner.VanillaSpawners;
 
 /**
  * Scenarios of the silo complex contents (I6 coder B): loot ceilings over generated chests, the bonus items and the
@@ -124,8 +124,8 @@ public final class ComplexContentScenarios {
                         "damaged body lacks its flag");
                 }
             }
-            for (HoleKind k : new HoleKind[] { HoleKind.SILO_GUARD, HoleKind.SILO_ELITE }) {
-                out.check(HoleSpawnerRegistration.block(k) != null, k + " block is not registered");
+            for (SpawnerKind k : new SpawnerKind[] { SpawnerKind.SILO_GUARD, SpawnerKind.SILO_ELITE }) {
+                out.check(VanillaSpawners.nbt(k, 0, 64, 0, 0) != null, k + " has no registered mob for its spawner");
             }
             return out.build();
         }
