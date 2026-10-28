@@ -1050,7 +1050,8 @@ public final class DefenseScenarios {
                     return null;
                 }
                 if (stage[0] == 2) {
-                    // Two shots 80 ticks apart (the clients are slow to shoot): a spinning dish is at a different angle in each, on both clients.
+                    // Two shots 80 ticks apart (the clients are slow to shoot): a spinning dish is at a different angle
+                    // in each, on both clients.
                     int dt = ticks - mark[0];
                     EntityRadarDish dish = r.dish();
                     if (dt == 12) {
