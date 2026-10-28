@@ -14,8 +14,14 @@ import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
+import com.gregguns.icbm.complex.PlanetTable;
 import com.gregguns.icbm.complex.SiloSlot;
 import com.gregguns.icbm.complex.SurfaceVariant;
+import com.gregguns.icbm.worldgen.ActivityLevel;
+import com.gregguns.icbm.worldgen.ComplexApplier;
+import com.gregguns.icbm.worldgen.ComplexContents;
+import com.gregguns.icbm.worldgen.Placement;
+import com.gregguns.icbm.worldgen.SiloCeiling;
 import com.gregguns.worldgen.ComplexWriter;
 import com.gregguns.worldgen.HeightProbe;
 import com.gregguns.worldgen.PopulateWindow;
@@ -113,6 +119,50 @@ public final class ComplexPlacer implements ComplexWriter {
         return r;
     }
 
+    private final Map<String, java.util.List<Placement>> contentsCache = new LinkedHashMap<String, java.util.List<Placement>>();
+    private boolean contents = true;
+
+    /**
+     * @param on whether the activity, guard and loot pass runs after the shell (scenarios of the shell alone turn it
+     *           off)
+     */
+    public ComplexPlacer withContents(boolean on) {
+        this.contents = on;
+        return this;
+    }
+
+    /** The ceiling of a complex: the dimension's table row, rolled per complex on Ross128b and Ross128ba. */
+    public int ceilingOf(StructurePlan plan) {
+        String name = world == null ? "Overworld" : world.provider.getDimensionName();
+        Integer tier = PlanetTable.tierOf(name);
+        if (tier != null && tier == PlanetTable.ROLLED) {
+            return SiloCeiling
+                .roll(plan.chestSeedBase(), com.gregguns.core.config.WorldgenConfig.ross128CeilingWeights);
+        }
+        return Math.max(SiloCeiling.EV, PlanetTable.ceilingVoltage(name));
+    }
+
+    /** The activity level of a complex, rolled from its seed. */
+    public ActivityLevel levelOf(ComplexPlan cp) {
+        return ActivityLevel.roll(cp.seed(), ActivityLevel.DEFAULT_WEIGHTS);
+    }
+
+    private java.util.List<Placement> contentsOf(StructurePlan plan, ComplexPlan cp) {
+        String key = plan.dimension() + ":" + plan.cellX() + ":" + plan.cellZ();
+        java.util.List<Placement> l = contentsCache.remove(key);
+        if (l == null) {
+            // The comms data stick points at the next grid cell over (block x, z; an approximation of its anchor).
+            int[] other = { plan.anchorX() + 64 * 16, plan.anchorZ() };
+            l = ComplexContents.build(cp, levelOf(cp), ceilingOf(plan), other);
+            if (contentsCache.size() >= 2) contentsCache.remove(
+                contentsCache.keySet()
+                    .iterator()
+                    .next());
+        }
+        contentsCache.put(key, l);
+        return l;
+    }
+
     @Override
     public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
         ComplexRaster raster = rasterOf(plan);
@@ -144,6 +194,18 @@ public final class ComplexPlacer implements ComplexWriter {
         for (Mark m : cp.allMarks()) {
             int wx = ax + m.x(), wz = az + m.z();
             if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, sink);
+        }
+        if (contents) {
+            ComplexApplier applier = new ComplexApplier(
+                new QuietSink(sink),
+                ax,
+                floorY,
+                az,
+                plan.chestSeedBase(),
+                plan.cellX(),
+                plan.cellZ(),
+                ceilingOf(plan));
+            for (Placement p : contentsOf(plan, cp)) applier.apply(p);
         }
         return n;
     }

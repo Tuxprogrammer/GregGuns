@@ -127,7 +127,7 @@ class ComplexPlacerTest {
             resolver,
             MachineHook.NONE,
             (p, m, x, y, z, s) -> marks(m, x, y, z),
-            settings);
+            settings).withContents(false);
         Result r = new Result();
         currentMarks = r.marks;
         List<int[]> order = new ArrayList<>();
