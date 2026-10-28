@@ -42,7 +42,7 @@
 - **GregGuns does:**
   - In `init`, registers the floppy `Golden Dome` (dye: yellow) from `assets/gregguns/lua/golden_dome/`, with recipe cycling off.
   - Adds a GT Assembler recipe: blank OC floppy plus `circuit.MV` gives Golden Dome.
-  - The disk's `.autorun.lua` links its `bin/` and `lib/` into the shell on mount and unlinks them on unmount, the same pattern OpenSecurity uses.
+  - The disk's `.autorun.lua` adds its `bin/` to `PATH` and its `lib/` to `package.path` on mount and takes them off on unmount. OpenOS runs the autorun as a process of its own and keeps variables per process, so the autorun edits the `PATH` table of every process above it, which includes the player's shell. OpenOS has no mount hook for `PATH`; a loot disk's `usr/bin` is meant for the `install` command.
 - **Pack-side change:** none.
 
 ## Components
@@ -109,3 +109,5 @@
 
 - Should `autodefense` also be able to call the GregGuns Turret (M6)? Lean no; that would need its own decision record.
 - Does the data-stick target format need a GT-wide convention (for example, matching GT's own data-stick coordinate format)? To be checked when data-stick targeting is specced.
+
+**Deviation (I5 client fixes).** `launch` and the other programs parse arguments with `gd.parse` (the library), because `shell.parse` reads `-48` as options; a negative number is an argument and `--` ends the options. `radarwatch` also ends on a plain Ctrl+C (a `key_down`; OpenOS raises `interrupted` only for Ctrl+Alt+C).

@@ -107,4 +107,31 @@ class GoldenDomeProgramsTest {
             assertTrue(!read(f).contains("Cancelled"), f);
         }
     }
+
+    @Test
+    void programsThatTakeNumbersParseThemWithTheLibraryNotShellParse() throws IOException {
+        // shell.parse reads "-48" as the options -4 and -8, so "launch -48 8512" printed the usage text.
+        for (String f : new String[] { "bin/launch.lua", "bin/emp.lua", "bin/autodefense.lua" }) {
+            String src = read(f);
+            assertTrue(src.contains("gd.parse(...)") && !src.contains("shell.parse"), f);
+        }
+        String lib = read("lib/goldendome.lua");
+        assertTrue(lib.contains("function gd.parse(") && lib.contains("tonumber(p)") && lib.contains("\"--\""));
+    }
+
+    @Test
+    void radarwatchEndsOnAPlainCtrlC() throws IOException {
+        // OpenOS only raises "interrupted" for Ctrl+Alt+C; a plain Ctrl+C is a key_down.
+        String src = read("bin/radarwatch.lua");
+        assertTrue(src.contains("key_down") && src.contains("isControlDown") && src.contains("interrupted"));
+    }
+
+    @Test
+    void theAutorunEditsThePathOfTheProcessesAboveItSoTheShellSeesIt() throws IOException {
+        // The autorun is a process of its own and OpenOS gives each process its own variables, so os.setenv alone
+        // never reached the shell ("launch: file not found").
+        String autorun = read(".autorun.lua");
+        assertTrue(autorun.contains("process.info(") && autorun.contains("rawget(info.data, \"vars\")"));
+        assertTrue(autorun.contains("-- Source:"));
+    }
 }

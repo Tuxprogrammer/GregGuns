@@ -1,8 +1,7 @@
 -- emp status | emp mode <all|missiles|machines> | emp radius <r> | emp fire
 local gd = require("goldendome")
-local shell = require("shell")
 
-local args = shell.parse(...)
+local args = gd.parse(...)
 local tower, why = gd.first("gg_emp_tower")
 if not tower then
   io.stderr:write(why .. "\n")

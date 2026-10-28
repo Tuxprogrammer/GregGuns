@@ -3,6 +3,7 @@ local gd = require("goldendome")
 local event = require("event")
 local term = require("term")
 local computer = require("computer")
+local keyboard = require("keyboard")
 
 local alarm = false
 local id = event.listen("radar_incoming", function()
@@ -31,7 +32,13 @@ local ok, err = pcall(function()
       computer.beep(1000, 0.3)
       computer.beep(1400, 0.3)
     end
-    event.pull(2)
+    -- OpenOS turns only Ctrl+Alt+C into an "interrupted" event; a plain Ctrl+C arrives as a key press (char 3, or
+    -- the C key with Ctrl held), so look for it here.
+    local name, _, char, code = event.pull(2)
+    if name == "interrupted" or (name == "key_down" and (char == 3
+        or (code == keyboard.keys.c and keyboard.isControlDown()))) then
+      break
+    end
   end
 end)
 event.cancel(id)

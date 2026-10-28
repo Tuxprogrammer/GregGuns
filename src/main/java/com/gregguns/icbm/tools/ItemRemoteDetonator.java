@@ -16,6 +16,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
 import com.gregguns.icbm.warhead.TileWarhead;
 
 import cpw.mods.fml.relauncher.Side;
@@ -219,7 +220,8 @@ public final class ItemRemoteDetonator extends Item implements Tiered {
         details.add(StatCollector.translateToLocal("gregguns.icbm.remote.tooltip.link"));
         details.add(StatCollector.translateToLocal("gregguns.icbm.remote.tooltip.fuse"));
         details.add(StatCollector.translateToLocal("gregguns.icbm.remote.tooltip.safety"));
-        tooltip.addAll(
+        TooltipWrap.addAll(
+            tooltip,
             HandheldTooltipFormat.lines(
                 tierLine,
                 StatCollector.translateToLocal("gregguns.icbm.remote.summary"),
@@ -228,7 +230,8 @@ public final class ItemRemoteDetonator extends Item implements Tiered {
                 shift));
         if (linked(stack)) {
             NBTTagCompound tag = stack.getTagCompound();
-            tooltip.add(
+            TooltipWrap.add(
+                tooltip,
                 String.format(
                     StatCollector.translateToLocal("gregguns.icbm.remote.tooltip.linked"),
                     tag.getInteger(K_X),
@@ -236,10 +239,10 @@ public final class ItemRemoteDetonator extends Item implements Tiered {
                     tag.getInteger(K_Z),
                     tag.getInteger(K_DIM)));
         } else {
-            tooltip.add(StatCollector.translateToLocal("gregguns.icbm.remote.tooltip.unlinked"));
+            TooltipWrap.add(tooltip, StatCollector.translateToLocal("gregguns.icbm.remote.tooltip.unlinked"));
         }
         if (shift) {
-            tooltip.add(AddedBy.line());
+            TooltipWrap.add(tooltip, AddedBy.line());
         }
     }
 }

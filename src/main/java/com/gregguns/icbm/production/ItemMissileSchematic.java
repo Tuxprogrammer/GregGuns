@@ -11,6 +11,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
 import com.gregguns.icbm.recipe.PartTooltipFormat;
 
 import cpw.mods.fml.common.Optional;
@@ -62,9 +63,9 @@ public final class ItemMissileSchematic extends Item implements Tiered, ISchemat
             StatCollector.translateToLocal("gregguns.icbm.part.tooltip.used"),
             StatCollector.translateToLocal("gregguns.icbm.schematic.used"));
         String hint = StatCollector.translateToLocal("gregguns.icbm.part.tooltip.shift");
-        tooltip.addAll(PartTooltipFormat.lines(tierLine, summary, usedIn, hint, shift));
+        TooltipWrap.addAll(tooltip, PartTooltipFormat.lines(tierLine, summary, usedIn, hint, shift));
         if (shift) {
-            tooltip.add(AddedBy.line());
+            TooltipWrap.add(tooltip, AddedBy.line());
         }
     }
 }

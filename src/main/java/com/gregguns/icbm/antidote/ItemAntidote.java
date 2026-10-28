@@ -15,6 +15,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -81,7 +82,8 @@ public final class ItemAntidote extends Item implements Tiered {
                 StatCollector.translateToLocal("gregguns.icbm.antidote.tooltip.guard"),
                 AntidoteRules.PROTECTION_TICKS / 20L));
         details.add(StatCollector.translateToLocal("gregguns.icbm.antidote.tooltip.armor"));
-        tooltip.addAll(
+        TooltipWrap.addAll(
+            tooltip,
             com.gregguns.icbm.tools.HandheldTooltipFormat.lines(
                 tierLine,
                 StatCollector.translateToLocal("gregguns.icbm.antidote.summary"),
@@ -89,7 +91,7 @@ public final class ItemAntidote extends Item implements Tiered {
                 StatCollector.translateToLocal("gregguns.icbm.part.tooltip.shift"),
                 shift));
         if (shift) {
-            tooltip.add(AddedBy.line());
+            TooltipWrap.add(tooltip, AddedBy.line());
         }
     }
 }
