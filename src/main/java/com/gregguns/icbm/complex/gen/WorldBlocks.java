@@ -92,8 +92,8 @@ public final class WorldBlocks implements BlockResolver {
                 return new ResolvedBlock(GregGunsCasings.INSTANCE, GregGunsCasings.WORKS_CASING, false);
             case "hutRoof":
                 return new ResolvedBlock(GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_CASING, false);
-            case "mast":
-                return new ResolvedBlock(Blocks.iron_bars, 0, false);
+            case "radarCasing":
+                return new ResolvedBlock(GregGunsCasings.INSTANCE, GregGunsCasings.RADAR_CASING, false);
             default:
                 return null;
         }

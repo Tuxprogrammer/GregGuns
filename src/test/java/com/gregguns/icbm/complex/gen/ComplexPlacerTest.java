@@ -129,12 +129,7 @@ class ComplexPlacerTest {
             resolver,
             MachineHook.NONE,
             (p, m, x, y, z, s) -> marks(m, x, y, z),
-            settings).withContents(false)
-                .withRadarDish(
-                    (sink, x, y, z) -> {
-                        if (sink.setBlock(x, y, z, named.get("dish") == null ? dishBlock() : named.get("dish"), 0))
-                            dishes++;
-                    });
+            settings).withContents(false);
         Result r = new Result();
         currentMarks = r.marks;
         List<int[]> order = new ArrayList<>();
@@ -184,13 +179,8 @@ class ComplexPlacerTest {
         return r;
     }
 
-    private int dishes;
     /** The sea floor the probe reports inside a window (a valley or a lake bed), or NONE for no answer. */
     private int seaFloor = HeightProbe.NONE;
-
-    private Block dishBlock() {
-        return named.computeIfAbsent("dish", k -> new Block(Material.iron) {});
-    }
 
     private List<String> currentMarks;
 
@@ -222,7 +212,7 @@ class ComplexPlacerTest {
     }
 
     @Test
-    void everyRadarStationGetsAHutAMastAndADish() {
+    void everyRadarStationGetsAHutAndTheSmallRadarOnItsRoof() {
         StructureGrid g = new StructureGrid(
             64,
             64,
@@ -233,33 +223,52 @@ class ComplexPlacerTest {
         for (int cell = 3; cell < 40; cell++) {
             StructurePlan p = g.planAt(77L, 0, SizeClass.BIG, cell, 4)
                 .get();
-            int[] st = null;
             java.util.List<int[]> stations = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings)
                 .rasterOf(p)
                 .plan()
                 .radarStations();
             if (stations.isEmpty()) continue;
-            st = stations.get(0);
-            dishes = 0;
             Result r = run(p, false);
-            assertEquals(stations.size(), dishes, "one dish per station");
             assertEquals(0, r.outside);
             assertEquals(0, r.duplicates);
-            int hx = p.anchorX() + st[0], hz = p.anchorZ() + st[1];
-            String wall = r.cells.get(hx + "," + (GROUND + 1) + "," + hz);
-            assertTrue(wall != null && !wall.startsWith(System.identityHashCode(air) + ":"), "hut corner is a wall");
-            assertEquals(
-                r.cells.get(hx + "," + (GROUND + 1) + "," + hz),
-                r.cells.get((hx + 4) + "," + (GROUND + 2) + "," + hz),
-                "walls are one block");
-            assertTrue(
-                r.cells.get((hx + 2) + "," + (GROUND + 2) + "," + (hz + 4))
-                    .startsWith(System.identityHashCode(air) + ":"),
-                "the doorway is open");
-            assertTrue(
-                r.cells.get((hx + 2) + "," + (GROUND + 8) + "," + (hz + 2))
-                    .startsWith(System.identityHashCode(named.get("mast")) + ":"),
-                "mast above the roof");
+            String casing = Integer.toString(System.identityHashCode(named.get("radarCasing")));
+            String airId = Integer.toString(System.identityHashCode(air));
+            for (int[] st : stations) {
+                int hx = p.anchorX() + st[0], hz = p.anchorZ() + st[1];
+                int cx = hx + 2, cz = hz + 2, roof = GROUND + 4;
+                String wall = r.cells.get(hx + "," + (GROUND + 1) + "," + hz);
+                assertTrue(wall != null && !wall.startsWith(airId + ":"), "hut corner is a wall");
+                assertTrue(
+                    r.cells.get(cx + "," + (GROUND + 2) + "," + (hz + 4))
+                        .startsWith(airId + ":"),
+                    "the doorway is open");
+                // The radar is RadarShape's piece: 17 casings, the controller and the Maintenance Hatch as machine
+                // placeholders, the pedestal on top, the Energy Hatch's place a casing.
+                int casings = 0, machines = 0;
+                for (int dx = -1; dx <= 1; dx++)
+                    for (int dz = -1; dz <= 1; dz++) for (int layer = 1; layer <= 3; layer++) {
+                        String v = r.cells.get((cx + dx) + "," + (roof + layer) + "," + (cz + dz));
+                        int want = RadarStation.cellAt(dx, dz, layer);
+                        if (want == RadarStation.NOTHING) {
+                            assertTrue(
+                                v == null || v.startsWith(airId + ":"),
+                                "nothing at " + dx + "," + dz + "," + layer);
+                        } else if (want == RadarStation.CASING) {
+                            assertTrue(
+                                v != null && v.startsWith(casing + ":"),
+                                "casing at " + dx + "," + dz + "," + layer);
+                            casings++;
+                        } else {
+                            assertTrue(v != null && v.startsWith(airId + ":"), "machine placeholder");
+                            machines++;
+                        }
+                    }
+                assertEquals(com.gregguns.icbm.defense.RadarShape.casingPositions() - 1, casings);
+                assertEquals(2, machines, "the controller and the Maintenance Hatch");
+                String pedestal = r.cells.get(cx + "," + (roof + 3) + "," + cz);
+                assertTrue(pedestal != null && pedestal.startsWith(casing + ":"), "pedestal");
+                assertEquals(com.gregguns.icbm.complex.Cell.RADAR_CONTROLLER, RadarStation.cellAt(0, -1, 2));
+            }
             return;
         }
         throw new AssertionError("no complex with a radar station in the cells tried");

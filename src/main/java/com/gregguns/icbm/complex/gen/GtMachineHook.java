@@ -58,6 +58,8 @@ public final class GtMachineHook implements MachineHook {
         switch (cell) {
             case Cell.CONTROLLER:
                 return GregGunsMTEIDs.MISSILE_SILO;
+            case Cell.RADAR_CONTROLLER:
+                return GregGunsMTEIDs.RADAR_HV;
             case Cell.HATCH_BUS:
                 return ItemList.Hatch_Input_Bus_HV.get(1)
                     .getItemDamage();

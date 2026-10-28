@@ -25,7 +25,9 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.gen.ComplexPlacer;
 import com.gregguns.icbm.complex.gen.ConfigSettings;
+import com.gregguns.icbm.complex.gen.GtMachineHook;
 import com.gregguns.icbm.complex.gen.NeighborComplex;
+import com.gregguns.icbm.complex.gen.RadarStation;
 import com.gregguns.icbm.worldgen.ActivityLevel;
 import com.gregguns.icbm.worldgen.ComplexContents;
 import com.gregguns.icbm.worldgen.Placement;
@@ -258,6 +260,33 @@ public final class ComplexDimScenarios {
             return -1;
         }
 
+        /**
+         * The radar on the hut roof: a Radar Casing pedestal, an HV radar controller that stands unformed (no Energy
+         * Hatch), and a station that forms once an Energy Hatch takes the place under the controller (D125, D210).
+         */
+        private void radarStation(World w, int groundY, int cx, int cz, ScenarioResult.Builder out, String label) {
+            int roof = groundY + 4;
+            out.check(
+                w.getBlock(cx, roof + 3, cz) == com.gregguns.block.GregGunsCasings.INSTANCE
+                    && w.getBlockMetadata(cx, roof + 3, cz) == com.gregguns.block.GregGunsCasings.RADAR_CASING,
+                label + ": a Radar Casing pedestal on the radar");
+            int[] c = RadarStation.controllerOffset();
+            TileEntity t = w.getTileEntity(cx + c[0], roof + c[1], cz + c[2]);
+            boolean controller = t instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) t)
+                    .getMetaTileEntity() instanceof com.gregguns.icbm.defense.MTERadar;
+            out.check(controller, label + ": an HV radar controller in the station");
+            if (!controller) return;
+            out.check(
+                !com.gregguns.machine.DevStructureBuilder.check(w, cx + c[0], roof + c[1], cz + c[2]),
+                label + ": the station is inert without an Energy Hatch");
+            int[] e = RadarStation.energyHatchOffset();
+            new GtMachineHook().place(w, Cell.HATCH_ENERGY, cx + e[0], roof + e[1], cz + e[2]);
+            out.check(
+                com.gregguns.machine.DevStructureBuilder.check(w, cx + c[0], roof + c[1], cz + c[2]),
+                label + ": the station forms once an Energy Hatch takes its place");
+        }
+
         private void surface(World w, StructurePlan plan, int groundY, ScenarioResult.Builder out, String label) {
             ComplexPlan cp = ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ());
             int floor = ComplexPlacer.floorY(w, groundY);
@@ -321,9 +350,7 @@ public final class ComplexDimScenarios {
                     corner == com.gregguns.block.GregGunsCasings.INSTANCE,
                     label + ": radar hut wall is a casing");
                 out.check(w.isAirBlock(hx + 2, groundY + 1, hz + 4), label + ": radar hut doorway open");
-                out.check(
-                    w.getBlock(hx + 2, groundY + 12, hz + 2) == Blocks.redstone_block,
-                    label + ": PLACEHOLDER_RADAR_DISH on the mast");
+                radarStation(w, groundY, hx + 2, hz + 2, out, label);
             }
         }
 

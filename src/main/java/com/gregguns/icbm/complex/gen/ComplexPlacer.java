@@ -66,7 +66,6 @@ public final class ComplexPlacer implements ComplexWriter {
     private final MachineHook machines;
     private final MarkFiller filler;
     private final Settings settings;
-    private RadarDishHook dish = RadarDishHook.NONE;
     private java.util.function.Consumer<String> skipListener = r -> {};
     /** The world of the populate call in progress (set by the gate check that precedes every call). */
     private World world;
@@ -77,12 +76,6 @@ public final class ComplexPlacer implements ComplexWriter {
         this.machines = machines;
         this.filler = filler;
         this.settings = settings;
-    }
-
-    /** @param hook how the radar stations' dishes are made (default none; the module installs the placeholder) */
-    public ComplexPlacer withRadarDish(RadarDishHook hook) {
-        this.dish = hook;
-        return this;
     }
 
     /** @param listener told the reason of each skipped plan (scenarios); the log line is written regardless */
@@ -422,14 +415,16 @@ public final class ComplexPlacer implements ComplexWriter {
         return n;
     }
 
-    /** Radar hut footprint: a 5 x 5 floor, walls three high, a roof, and a mast above. */
+    /** Radar hut footprint: a 5 x 5 floor, walls three high, a roof, and the small radar (D125) standing on it. */
     static final int HUT = 5;
     static final int WALL_H = 3;
     static final int MAST_H = 7;
 
     /**
-     * Radar stations (D128, 0 to 2 per complex): a small hut with a doorway on its south side, a mast on its roof and
-     * the dish hook at the mast top. Everything is built off the recorded ground height, so a hut that straddles
+     * Radar stations (D128, 0 to 2 per complex): a small hut with a doorway on its south side and, on its roof, the
+     * small radar (D125, {@link RadarStation}): a Radar Casing base, the pedestal, an HV radar controller and a
+     * Maintenance Hatch, with the Energy Hatch left out. Everything is built off the recorded ground height, so a hut
+     * that straddles
      * windows stays level; each column's own ground fills the foundation below the floor or clears the bump above
      * it. A column with no land (water) is left alone.
      */
@@ -445,10 +440,11 @@ public final class ComplexPlacer implements ComplexWriter {
                     if (g == HeightProbe.NONE) continue;
                     ResolvedBlock wall = blocks.named("hutWall", x, groundY, z);
                     ResolvedBlock roof = blocks.named("hutRoof", x, groundY, z);
-                    ResolvedBlock bar = blocks.named("mast", x, groundY, z);
+                    ResolvedBlock casing = blocks.named("radarCasing", x, groundY, z);
                     boolean edge = x == hx || x == hx + HUT - 1 || z == hz || z == hz + HUT - 1;
                     boolean door = x == cx && z == hz + HUT - 1;
-                    boolean mast = x == cx && z == cz;
+                    int dx = x - cx, dz = z - cz;
+                    boolean padColumn = Math.abs(dx) <= 1 && Math.abs(dz) <= 1;
                     int top = groundY + WALL_H + 1 + MAST_H;
                     // One write per cell: foundation, floor, walls, roof, then air up to the mast top (it clears
                     // trees and terrain bumps in the way).
@@ -458,12 +454,21 @@ public final class ComplexPlacer implements ComplexWriter {
                         if (h <= 0) b = wall;
                         else if (h <= WALL_H) b = edge && !(door && h <= 2) ? wall : null;
                         else if (h == WALL_H + 1) b = roof;
-                        else if (mast) b = bar;
+                        else if (padColumn) {
+                            int cell = RadarStation.cellAt(dx, dz, h - (WALL_H + 1));
+                            if (cell == RadarStation.CASING) b = casing;
+                            else if (cell != RadarStation.NOTHING) {
+                                // The controller and the Maintenance Hatch are GT machines: the placeholder is air,
+                                // then the hook builds the machine, as for the silo.
+                                if (sink.setBlock(x, y, z, blocks.air(), 0)) {
+                                    n++;
+                                    if (world != null) machines.place(world, (byte) cell, x, y, z);
+                                }
+                                continue;
+                            }
+                        }
                         if (b != null ? sink.setBlock(x, y, z, b.block, b.meta)
                             : y > groundY && sink.setBlock(x, y, z, blocks.air(), 0)) n++;
-                    }
-                    if (mast) {
-                        dish.place(sink, x, groundY + WALL_H + 2 + MAST_H, z);
                     }
                 }
             }
