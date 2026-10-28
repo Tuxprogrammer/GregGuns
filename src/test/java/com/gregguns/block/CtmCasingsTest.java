@@ -46,6 +46,12 @@ class CtmCasingsTest {
         CONNECTED.put("bastion_plating_steel", GregGunsCasings.BASTION_STEEL);
         CONNECTED.put("bastion_plating_aluminum", GregGunsCasings.BASTION_ALUMINUM);
         CONNECTED.put("bastion_plating_carbon", GregGunsCasings.BASTION_CARBON);
+        CONNECTED.put("radar_casing", GregGunsCasings.RADAR_CASING);
+    }
+
+    /** Casings whose base texture is not {@code casings/<name>.png}: the radar's is NTM art in a thirdparty folder. */
+    private static String basePath(String name) {
+        return "radar_casing".equals(name) ? "thirdparty/ntm/radar_casing" : name;
     }
 
     /** The plain block that borrows the Steel Bastion Plating's look (D205): its folder, block id and base texture. */
@@ -146,7 +152,7 @@ class CtmCasingsTest {
                 assertEquals(16, tile.getHeight(), name + " tile " + i);
             }
             BufferedImage zero = image(CTM.resolve(name + "/0.png"));
-            BufferedImage base = image(BASE.resolve(name + ".png"));
+            BufferedImage base = image(BASE.resolve(basePath(name) + ".png"));
             assertEquals(16, base.getWidth(), name);
             assertEquals(16, base.getHeight(), name);
             for (int y = 0; y < 16; y++) {
@@ -167,10 +173,18 @@ class CtmCasingsTest {
     }
 
     @Test
+    void theThirdPartyTileSetCarriesItsLicense() {
+        assertTrue(Files.exists(CTM.resolve("radar_casing/LICENSE.txt")), "LGPL notice beside the NTM-derived tiles");
+        assertTrue(Files.exists(CTM.resolve("radar_casing/GPL-3.0.txt")));
+    }
+
+    @Test
     void theBaseTexturesAreTheOnesTheBlockRegisters() throws IOException {
         String src = new String(Files.readAllBytes(CASINGS_SRC), StandardCharsets.UTF_8);
         for (String name : CONNECTED.keySet()) {
-            assertTrue(src.contains("\"gregguns:casings/" + name + "\""), name + " is not a GregGunsCasings texture");
+            assertTrue(
+                src.contains("\"gregguns:casings/" + basePath(name) + "\""),
+                name + " is not a GregGunsCasings texture");
         }
     }
 }

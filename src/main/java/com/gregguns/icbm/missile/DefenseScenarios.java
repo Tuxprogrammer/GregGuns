@@ -19,6 +19,7 @@ import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.defense.DefenseMachines;
+import com.gregguns.icbm.defense.EntityRadarDish;
 import com.gregguns.icbm.defense.EntitySam;
 import com.gregguns.icbm.defense.ItemRadarGun;
 import com.gregguns.icbm.defense.MTEAirDefense;
@@ -62,6 +63,7 @@ public final class DefenseScenarios {
         registry.register(new TowerDetects());
         registry.register(new TowerSaveReload());
         registry.register(new MpDefense());
+        RadarDishScenarios.registerAll(registry);
         I4ClientSetups.registerAll(registry);
         I5ClientSetups.registerAll(registry);
         I5VisualSetups.registerAll(registry);
@@ -137,13 +139,37 @@ public final class DefenseScenarios {
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
     }
 
-    private static MTERadar radar(IGregTechTileEntity b) {
+    static MTERadar radar(IGregTechTileEntity b) {
         return b != null && b.getMetaTileEntity() instanceof MTERadar ? (MTERadar) b.getMetaTileEntity() : null;
     }
 
     private static MTEAirDefense battery(IGregTechTileEntity b) {
         return b != null && b.getMetaTileEntity() instanceof MTEAirDefense ? (MTEAirDefense) b.getMetaTileEntity()
             : null;
+    }
+
+    /**
+     * Builds the small radar around a placed controller, feeds its hatch and waits until it runs (D125). Call every
+     * tick after the warm-up with a state array of two ints that starts at zero.
+     *
+     * @return 1 once the radar is formed and running, 0 while it is not yet, -1 when it never got there
+     */
+    static int radarReady(ScenarioContext ctx, MTERadar r, int dx, int cy, int dz, ItemList hatch, int ticks,
+        int[] st) {
+        if (st[0] == 0) {
+            boolean formed = DevStructureBuilder
+                .buildRadar(ctx.world(), ctx.originX() + dx, ctx.originY() + cy, ctx.originZ() + dz, hatch).formed;
+            if (formed) {
+                st[0] = 1;
+                st[1] = ticks;
+            }
+            return ticks > 400 ? -1 : 0;
+        }
+        powerHatch(ctx, dx, cy, dz);
+        if (r.online()) {
+            return 1;
+        }
+        return ticks > st[1] + 400 ? -1 : 0;
     }
 
     private static void power(IGregTechTileEntity b) {
@@ -238,7 +264,9 @@ public final class DefenseScenarios {
                 IMetaTileEntity m = GregTechAPI.METATILEENTITIES[ids[i]];
                 out.check(types[i].isInstance(m), "MTE " + ids[i] + " should be a " + types[i].getSimpleName());
                 if (m != null) {
-                    if (m instanceof gregtech.api.metatileentity.implementations.MTETieredMachineBlock) {
+                    if (m instanceof MTERadar) {
+                        out.checkEquals("tier of " + ids[i], tiers[i], ((MTERadar) m).tier());
+                    } else if (m instanceof gregtech.api.metatileentity.implementations.MTETieredMachineBlock) {
                         out.checkEquals(
                             "tier of " + ids[i],
                             tiers[i],
@@ -357,17 +385,19 @@ public final class DefenseScenarios {
             }
             final int target = 80;
             place(ctx, GregGunsMTEIDs.RADAR_HV, 12, 0, target);
-            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 14, 0, target);
-            // A lamp south of each machine: the world, not the machine, says whether the strength left the block.
-            ctx.setBlock(12, 0, target + 1, Blocks.redstone_lamp, 0);
-            ctx.setBlock(14, 0, target + 1, Blocks.redstone_lamp, 0);
+            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 16, 0, target);
+            // A lamp in front (north) of each machine: the world, not the machine, says whether the strength left the
+            // block. The radar's structure fills the rest of its sides.
+            ctx.setBlock(12, 0, target - 1, Blocks.redstone_lamp, 0);
+            ctx.setBlock(16, 0, target + 1, Blocks.redstone_lamp, 0);
+            final int[] rig = { 0, 0 };
             final int[] lampPower = { 0, 0 };
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final Seen seen = new Seen();
             final int[] stage = { 0 };
             return ScenarioResult.pending(name(), 1500, ticks -> {
                 IGregTechTileEntity rb = live(ctx, 12, 0, target);
-                IGregTechTileEntity bb = live(ctx, 14, 0, target);
+                IGregTechTileEntity bb = live(ctx, 16, 0, target);
                 MTERadar r = radar(rb);
                 MTEAirDefense b = battery(bb);
                 if (ticks < WARMUP_TICKS) {
@@ -376,8 +406,14 @@ public final class DefenseScenarios {
                 if (r == null || b == null) {
                     return finish(terrain, ScenarioResult.fail(name(), "a machine is gone after the warm-up"));
                 }
-                power(rb);
                 power(bb);
+                int ready = radarReady(ctx, r, 12, 0, target, ItemList.Hatch_Energy_HV, ticks, rig);
+                if (ready < 0) {
+                    return finish(terrain, ScenarioResult.fail(name(), "the radar never formed and ran"));
+                }
+                if (ready == 0) {
+                    return null;
+                }
                 if (stage[0] == 0) {
                     // Protect a circle that holds the target; link the battery by a stick; load two SAMs.
                     r.setRadius(100);
@@ -391,8 +427,8 @@ public final class DefenseScenarios {
                     return null;
                 }
                 observe(seen, r, b, w, m, ticks, ctx.originZ());
-                lampPower[0] = Math.max(lampPower[0], neighborPower(ctx, 12, 0, target + 1));
-                lampPower[1] = Math.max(lampPower[1], neighborPower(ctx, 14, 0, target + 1));
+                lampPower[0] = Math.max(lampPower[0], neighborPower(ctx, 12, 0, target - 1));
+                lampPower[1] = Math.max(lampPower[1], neighborPower(ctx, 16, 0, target + 1));
                 if (seen.deadAt < 0 && ticks < 1200) {
                     return null;
                 }
@@ -408,7 +444,7 @@ public final class DefenseScenarios {
                     lampPower[0] >= 1,
                     "the world powers the block beside the radar during the threat (" + lampPower[0]
                         + ")"
-                        + lampInfo(ctx, 12, 0, target + 1, live(ctx, 12, 0, target), ForgeDirection.SOUTH));
+                        + lampInfo(ctx, 12, 0, target - 1, live(ctx, 12, 0, target), ForgeDirection.NORTH));
                 out.check(
                     lampPower[1] == 15,
                     "the world powers the block beside the battery with 15 while engaging (" + lampPower[1] + ")");
@@ -454,13 +490,14 @@ public final class DefenseScenarios {
             final int target = 80;
             // Beside the impact point, 28 blocks off the impact point, protecting only 20 blocks.
             place(ctx, GregGunsMTEIDs.RADAR_HV, -28, 0, 80);
-            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, -26, 0, 80);
+            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, -24, 0, 80);
+            final int[] rig = { 0, 0 };
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final Seen seen = new Seen();
             final int[] stage = { 0 };
             return ScenarioResult.pending(name(), 1500, ticks -> {
                 IGregTechTileEntity rb = live(ctx, -28, 0, 80);
-                IGregTechTileEntity bb = live(ctx, -26, 0, 80);
+                IGregTechTileEntity bb = live(ctx, -24, 0, 80);
                 MTERadar r = radar(rb);
                 MTEAirDefense b = battery(bb);
                 if (ticks < WARMUP_TICKS) {
@@ -469,8 +506,14 @@ public final class DefenseScenarios {
                 if (r == null || b == null) {
                     return finish(terrain, ScenarioResult.fail(name(), "a machine is gone after the warm-up"));
                 }
-                power(rb);
                 power(bb);
+                int ready = radarReady(ctx, r, -28, 0, 80, ItemList.Hatch_Energy_HV, ticks, rig);
+                if (ready < 0) {
+                    return finish(terrain, ScenarioResult.fail(name(), "the radar never formed and ran"));
+                }
+                if (ready == 0) {
+                    return null;
+                }
                 if (stage[0] == 0) {
                     r.setRadius(20);
                     bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, linkStick(rb, w));
@@ -522,13 +565,15 @@ public final class DefenseScenarios {
                 return finish(terrain, ScenarioResult.fail(name(), "could not arm"));
             }
             place(ctx, GregGunsMTEIDs.RADAR_HV, -12, 0, -30);
-            place(ctx, GregGunsMTEIDs.RADAR_EV, -10, 0, -30);
+            place(ctx, GregGunsMTEIDs.RADAR_EV, -6, 0, -30);
+            final int[] rigHv = { 0, 0 };
+            final int[] rigEv = { 0, 0 };
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final boolean[] hvSaw = { false };
             final int[] stage = { 0 };
             return ScenarioResult.pending(name(), 1500, ticks -> {
                 IGregTechTileEntity hb = live(ctx, -12, 0, -30);
-                IGregTechTileEntity eb = live(ctx, -10, 0, -30);
+                IGregTechTileEntity eb = live(ctx, -6, 0, -30);
                 MTERadar hv = radar(hb);
                 MTERadar ev = radar(eb);
                 if (ticks < WARMUP_TICKS) {
@@ -537,8 +582,14 @@ public final class DefenseScenarios {
                 if (hv == null || ev == null) {
                     return finish(terrain, ScenarioResult.fail(name(), "a radar is gone after the warm-up"));
                 }
-                power(hb);
-                power(eb);
+                int readyHv = radarReady(ctx, hv, -12, 0, -30, ItemList.Hatch_Energy_HV, ticks, rigHv);
+                int readyEv = radarReady(ctx, ev, -6, 0, -30, ItemList.Hatch_Energy_EV, ticks, rigEv);
+                if (readyHv < 0 || readyEv < 0) {
+                    return finish(terrain, ScenarioResult.fail(name(), "a radar never formed and ran"));
+                }
+                if (readyHv == 0 || readyEv == 0) {
+                    return null;
+                }
                 if (stage[0] == 0) {
                     out.checkEquals("HV range", 128, hv.rangeIfOn());
                     out.checkEquals("EV range", 256, ev.rangeIfOn());
@@ -629,6 +680,11 @@ public final class DefenseScenarios {
                         return null;
                     }
                     out.check(t.online(), "the tower runs on EU");
+                    out.check(
+                        t.dish() != null && t.dish()
+                            .spin()
+                            .spinning(),
+                        "the tower's dish stands on the mast and spins");
                     out.checkEquals("state when clear", RadarRules.State.CLEAR, t.state());
                     out.check(
                         DevStructureBuilder.buildRadarTower(w, x, y, z, ItemList.Hatch_Energy_LuV).formed,
@@ -643,7 +699,7 @@ public final class DefenseScenarios {
     }
 
     /** Energy for the tower's hatch, which sits under the controller. */
-    private static void powerHatch(ScenarioContext ctx, int dx, int cy, int dz) {
+    static void powerHatch(ScenarioContext ctx, int dx, int cy, int dz) {
         IGregTechTileEntity hatch = live(ctx, dx, cy - 1, dz);
         if (hatch != null) {
             hatch.increaseStoredEnergyUnits(1_000_000L, true);
@@ -896,6 +952,9 @@ public final class DefenseScenarios {
      */
     private static final class MpDefense extends Base {
 
+        /** The tower's offset from the origin, blocks west of the radar. */
+        private static final int TOWER_DX = -8;
+
         @Override
         public String name() {
             return "testing.icbm_mp_defense";
@@ -903,7 +962,7 @@ public final class DefenseScenarios {
 
         @Override
         public String description() {
-            return "Two clients see an HV radar's active front and a SAM in flight at a missile, and take matching shots. Needs 2 clients and Galacticraft; not part of test all.";
+            return "Two clients see an HV radar's dish turning (two shots, 80 ticks apart) and a SAM in flight at a missile, and take matching shots. Needs 2 clients and Galacticraft; not part of test all.";
         }
 
         @Override
@@ -931,7 +990,11 @@ public final class DefenseScenarios {
             }
             final int rz = 30;
             place(ctx, GregGunsMTEIDs.RADAR_HV, 6, 0, rz);
+            final int[] rig = { 0, 0 };
+            final float[] angleA = { -1 };
             place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 40, 0, rz);
+            // A Radar Tower west of the radar, so the clients see its larger dish on the mast.
+            place(ctx, GregGunsMTEIDs.RADAR_TOWER, TOWER_DX, 0, rz);
             for (net.minecraft.entity.player.EntityPlayerMP p : players) {
                 p.setGameType(net.minecraft.world.WorldSettings.GameType.CREATIVE);
             }
@@ -955,49 +1018,117 @@ public final class DefenseScenarios {
                 if (r == null || b == null) {
                     return finish(terrain, ScenarioResult.fail(name(), "a machine is gone after the warm-up"));
                 }
-                power(rb);
                 power(bb);
+                int ready = radarReady(ctx, r, 6, 0, rz, ItemList.Hatch_Energy_HV, ticks, rig);
+                if (ready < 0) {
+                    return finish(terrain, ScenarioResult.fail(name(), "the radar never formed and ran"));
+                }
+                if (ready == 0) {
+                    return null;
+                }
+                powerHatch(ctx, TOWER_DX, 0, rz);
                 if (stage[0] == 0) {
+                    DevStructureBuilder
+                        .buildRadarTower(w, (int) ox + TOWER_DX, (int) oy, (int) oz + rz, ItemList.Hatch_Energy_IV);
                     r.setRadius(100);
                     bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, linkStick(rb, w));
                     // The battery stays empty until the radar has been photographed, so the SAM flies afterwards.
                     for (net.minecraft.entity.player.EntityPlayerMP p : players) {
                         MissileShotsScenario.signal(p, "hud", "off");
                     }
-                    out.checkEquals(
-                        "launch",
-                        LaunchResult.OK,
-                        m.launch(ctx.originX() + 0.5, ctx.originZ() + 80 + 0.5, null));
                     stage[0] = 1;
                     return null;
                 }
                 if (stage[0] == 1) {
-                    // The radar's front faces north; stand in front of it, one client either side.
-                    if (r.state() != RadarRules.State.THREAT) {
-                        return ticks < 900 ? null : finish(terrain, ScenarioResult.fail(name(), "no threat seen"));
-                    }
+                    // The radar's front faces north; stand in front of it, one client either side, looking at the
+                    // dish on top (its middle is 1.5 blocks behind the controller and 2 above its floor).
                     for (int i = 0; i < players.size(); i++) {
-                        double side = i % 2 == 0 ? 3.0 : -1.0;
+                        double side = i % 2 == 0 ? 4.0 : -4.0;
                         MissileShotsScenario.cam(
                             players.get(i),
                             ox + 6.5 + side,
-                            oy + 2.0,
-                            oz + rz - 4.0,
+                            oy + 3.5,
+                            oz + rz - 5.0,
                             ox + 6.5,
-                            oy + 0.8,
-                            oz + rz + 0.5);
+                            oy + 2.6,
+                            oz + rz + 1.5);
                     }
                     mark[0] = ticks;
                     stage[0] = 2;
                     return null;
                 }
                 if (stage[0] == 2) {
-                    if (ticks < mark[0] + 12) {
+                    // Two shots 80 ticks apart (the clients are slow to shoot): a spinning dish is at a different angle
+                    // in each, on both clients.
+                    int dt = ticks - mark[0];
+                    EntityRadarDish dish = r.dish();
+                    if (dt == 12) {
+                        out.check(
+                            dish != null && dish.spin()
+                                .spinning(),
+                            "the dish stands and spins");
+                        angleA[0] = dish == null ? -1
+                            : dish.spin()
+                                .angle(w.getTotalWorldTime());
+                        for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                            MissileShotsScenario.signal(p, "shot", "icbm-radar-dish-a");
+                        }
+                    }
+                    if (dt < 92) {
                         return null;
                     }
+                    float b2 = dish == null ? -1
+                        : dish.spin()
+                            .angle(w.getTotalWorldTime());
+                    out.check(Math.abs(b2 - angleA[0]) > 30.0F, "the dish turned between the shots");
                     for (net.minecraft.entity.player.EntityPlayerMP p : players) {
-                        MissileShotsScenario.signal(p, "shot", "icbm-i4-1-radar-active");
+                        MissileShotsScenario.signal(p, "shot", "icbm-radar-dish-b");
                     }
+                    stage[0] = 25;
+                    return null;
+                }
+                if (stage[0] == 25) {
+                    // Hold the cameras until the clients have taken the second shot, then turn them to the tower.
+                    if (ticks < mark[0] + 160) {
+                        return null;
+                    }
+                    for (int i = 0; i < players.size(); i++) {
+                        double side = i % 2 == 0 ? 6.0 : -6.0;
+                        MissileShotsScenario.cam(
+                            players.get(i),
+                            ox + TOWER_DX + 0.5 + side,
+                            oy + 8.5,
+                            oz + rz - 7.0,
+                            ox + TOWER_DX + 0.5,
+                            oy + 6.8,
+                            oz + rz + 1.5);
+                    }
+                    mark[0] = ticks;
+                    stage[0] = 26;
+                    return null;
+                }
+                if (stage[0] == 26) {
+                    int dt = ticks - mark[0];
+                    MTERadarTower tower = tower(live(ctx, TOWER_DX, 0, rz));
+                    if (dt == 40 || dt == 120) {
+                        out.check(
+                            tower != null && tower.dish() != null
+                                && tower.dish()
+                                    .spin()
+                                    .spinning(),
+                            "the tower's dish stands and spins");
+                        for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                            MissileShotsScenario
+                                .signal(p, "shot", dt == 40 ? "icbm-tower-dish-a" : "icbm-tower-dish-b");
+                        }
+                    }
+                    if (dt < 220) {
+                        return null;
+                    }
+                    out.checkEquals(
+                        "launch",
+                        LaunchResult.OK,
+                        m.launch(ctx.originX() + 0.5, ctx.originZ() + 80 + 0.5, null));
                     stage[0] = 3;
                     return null;
                 }
@@ -1152,26 +1283,48 @@ public final class DefenseScenarios {
 
         @Override
         public String description() {
-            return "A radar's protected radius survives a save and reload of the machine, and a new battery starts without a link.";
+            return "A radar controller's protected radius survives a save and reload of its tile, and a new battery starts without a link.";
         }
 
         @Override
         ScenarioResult go(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             ctx.clearArea(8, 24);
-            IGregTechTileEntity rb = place(ctx, GregGunsMTEIDs.RADAR_EV, 0, 0, 0);
-            MTERadar r = radar(rb);
-            r.setRadius(77);
-            net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
-            r.saveNBTData(tag);
-            MTERadar copy = (MTERadar) r.newMetaEntity(rb);
-            copy.loadNBTData(tag);
-            out.checkEquals("radius after reload", 77, copy.protectedRadius());
-            out.checkEquals(
-                "the battery starts without a link",
-                null,
-                battery(place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 3, 0, 0)).link());
-            return out.build();
+            place(ctx, GregGunsMTEIDs.RADAR_EV, 0, 0, 0);
+            final int[] stage = { 0 };
+            return ScenarioResult.pending(name(), 200, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                MTERadar r = radar(live(ctx, 0, 0, 0));
+                if (r == null) {
+                    return ScenarioResult.fail(name(), "the controller is gone");
+                }
+                if (stage[0] == 0) {
+                    r.setRadius(77);
+                    int x = ctx.originX();
+                    int z = ctx.originZ();
+                    TileEntity old = ctx.world()
+                        .getTileEntity(x, ctx.originY(), z);
+                    net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+                    old.writeToNBT(tag);
+                    old.invalidate();
+                    ctx.world()
+                        .getChunkFromBlockCoords(x, z)
+                        .addTileEntity(TileEntity.createAndLoadEntity(tag));
+                    stage[0] = 1;
+                    return null;
+                }
+                if (ticks < WARMUP_TICKS + 20) {
+                    return null;
+                }
+                out.checkEquals("radius after reload", 77, r.protectedRadius());
+                out.checkEquals(
+                    "the battery starts without a link",
+                    null,
+                    battery(place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 6, 0, 0)).link());
+                return out.build();
+            });
         }
     }
 }

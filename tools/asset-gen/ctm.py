@@ -43,9 +43,41 @@ LAYOUT = (
 )
 assert len(LAYOUT) == 47 and len(set(LAYOUT)) == 47
 
+NTM_RADAR = "textures/blocks/casings/thirdparty/ntm/radar_casing.png"
+FRAME = 2   # the NTM casing's outer frame is two pixels wide on every side
+
+
+def ntm_radar_casing(rng, fr: "ba.Edges" = ba.ALL_EDGES):
+    """The Radar Casing (HBM's Nuclear Tech Mod art, LGPL-3.0) with the frame removed from the unframed sides.
+
+    The inside of the art is hazard bands: a side with no frame takes the pattern on across the seam (the band
+    nearest the edge is repeated; the vertical hatching continues with its own 4-pixel period), a framed side keeps
+    the original pixels, and a notch keeps the original 2x2 corner so the hole's corner stays marked."""
+    import numpy as np
+    from PIL import Image
+    src = np.array(Image.open(outroot.RES / NTM_RADAR).convert("RGBA"))
+    ext = src.copy()
+    for y in range(16):
+        for x in range(16):
+            yy = 2 if y < FRAME else 13 if y > 15 - FRAME else y
+            xx = x + 4 if x < FRAME else x - 4 if x > 15 - FRAME else x
+            ext[y, x] = src[yy, xx]
+    c = Canvas(16)
+    for y in range(16):
+        for x in range(16):
+            framed = ((y < FRAME and fr.t) or (y > 15 - FRAME and fr.b) or (x < FRAME and fr.l)
+                      or (x > 15 - FRAME and fr.r))
+            in_band = y < FRAME or y > 15 - FRAME or x < FRAME or x > 15 - FRAME
+            notch = any(("t" in n and y < FRAME or "b" in n and y > 15 - FRAME)
+                        and ("l" in n and x < FRAME or "r" in n and x > 15 - FRAME) for n in fr.notch)
+            c.a[y, x] = src[y, x] if (framed or notch or not in_band) else ext[y, x]
+    return [c]
+
+
 # name (the file under textures/blocks/casings/) -> (painter, meta of gregguns:casings, title for the credits)
 # The metas are GregGunsCasings.WORKS_CASING, GANTRY_CASING and BASTION_IRON .. BASTION_CARBON; CtmCasingsTest
-# checks that they agree. Ram Housing, Gantry Beam/Hoist, Repair Cradle, Reaction Casing and Radar Casing stay single.
+# checks that they agree. Ram Housing, Gantry Beam/Hoist, Repair Cradle and Reaction Casing stay single. The Radar Casing (meta 11) is NTM art,
+# so its tiles are cut from that PNG by ntm_radar_casing below, not from a painter.
 CASINGS = {
     "works_casing": (ba.works_casing, 0),
     "gantry_casing": (ba.gantry_casing, 3),
@@ -53,7 +85,13 @@ CASINGS = {
     "bastion_plating_steel": (ba.bastion_steel, 8),
     "bastion_plating_aluminum": (ba.bastion_aluminum, 9),
     "bastion_plating_carbon": (ba.bastion_carbon, 10),
+    "radar_casing": (ntm_radar_casing, 11),
 }
+# Casings whose base texture is not textures/blocks/casings/<name>.png: name -> path under textures/blocks/casings/
+BASE_OF = {"radar_casing": "thirdparty/ntm/radar_casing"}
+# Casings derived from third-party art: name -> license text for the credit row
+THIRD_PARTY = {"radar_casing": "LGPL-3.0 (derived from HBM's Nuclear Tech Mod radar casing, see textures/blocks/casings/thirdparty/ntm; "
+               "its LICENSE.txt and GPL-3.0.txt sit beside the tiles)"}
 BLOCK = "gregguns:casings"
 # Plain blocks (no meta) that borrow a casing's look: name -> (painter, block id, casing whose tiles it reuses). The
 # complex wall (D205) is not a GT casing, so it carries its own rule over the Steel Bastion Plating tiles.
@@ -131,12 +169,19 @@ def write_all(check: bool) -> None:
             if i == 0 and check:
                 base = painter(rng_for(asset_id))[0].image()
                 assert list(tile.getdata()) == list(base.getdata()), f"{name}: tile 0 differs from the base painter"
+        if name in THIRD_PARTY:
+            import shutil
+            for lic in ("LICENSE.txt", "GPL-3.0.txt"):
+                shutil.copyfile(outroot.RES / "textures/blocks/casings/thirdparty/ntm" / lic, d / lic)
         (d / f"{name}.properties").write_text(properties(name, meta, block, source), encoding="utf-8", newline="\n")
         rows.append([f"block.casing.{name}.ctm", f"src/main/resources/assets/gregguns/mcpatcher/ctm/{name}/ (0.png to 46.png)",
                      "tools/asset-gen/ctm.py", seed_for(asset_id),
-                     "procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the "
-                     "casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture",
-                     "MIT", "2026-10-27"])
+                     ("connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from NTM's radar "
+                      "casing PNG with its frame masked per edge (ntm_radar_casing); tile 0 is the base texture"
+                      if name in THIRD_PARTY else
+                      "procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the "
+                      "casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture"),
+                     THIRD_PARTY.get(name, "MIT"), "2026-10-27"])
     out = outroot.CREDITS_DIR / "ctm.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8", newline="") as fh:
