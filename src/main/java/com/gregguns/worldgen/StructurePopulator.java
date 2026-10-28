@@ -230,7 +230,7 @@ public final class StructurePopulator {
         return n;
     }
 
-    private int populateComplex(StructurePlan plan, ComplexWriter writer, PopulateWindow window, WindowedSink sink,
+    public int populateComplex(StructurePlan plan, ComplexWriter writer, PopulateWindow window, WindowedSink sink,
         ColumnReader reader, BiomeSource biomes, StructureState state) {
         String key = PlanKey.of(plan);
         PlacedFootprint fp = new PlacedFootprint(
