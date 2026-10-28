@@ -1,6 +1,7 @@
 package com.gregguns.icbm;
 
 import com.gregguns.compat.ModIds;
+import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModPresence;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
@@ -35,7 +36,18 @@ public final class IcbmAvailability {
         if (ModuleState.isActive(ModuleId.ICBM)) {
             return "the ICBM module is on";
         }
-        return galacticraftPresent() ? "the ICBM module is off (modules.icbm is false in the config)"
-            : "the ICBM module is off (Galacticraft is not installed)";
+        if (!ModuleFlags.isEnabled(ModuleId.ICBM)) {
+            return "the ICBM module is off (" + ModuleState.disabledFlag(ModuleId.ICBM) + " is false in the config)";
+        }
+        if (!galacticraftPresent()) {
+            return "the ICBM module is off (Galacticraft is not installed)";
+        }
+        for (ModuleId required : ModuleId.ICBM.requires()) {
+            if (!ModuleState.isActive(required)) {
+                return "the ICBM module is off (" + ModuleState.disabledFlag(required)
+                    + " is false in the config, and ICBM requires it)";
+            }
+        }
+        return "the ICBM module is off";
     }
 }

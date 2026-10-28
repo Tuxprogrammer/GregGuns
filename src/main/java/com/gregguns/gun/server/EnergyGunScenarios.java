@@ -2,6 +2,7 @@ package com.gregguns.gun.server;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -89,10 +90,23 @@ public final class EnergyGunScenarios {
             out.checkEquals("capacity", (double) gun.capacityEu(), gun.getMaxCharge(stack));
             out.checkEquals("a fresh gun is empty", 0L, gun.chargeOf(stack));
             out.checkEquals("empty bar", 1.0, gun.getDurabilityForDisplay(stack));
+            out.check(
+                !stack.hasTagCompound(),
+                "drawing the bar on a fresh gun adds no NBT tag (NEI forced-update WARN)");
 
             double taken = ElectricGear.charge(stack, 3500, Tier.LV);
             out.checkEquals("EU accepted", 3500.0, taken);
             out.checkEquals("stored EU", 3500L, gun.chargeOf(stack));
+            out.checkEquals(
+                "the read-only bar reader matches what IC2 stored",
+                ElectricGear.charge(stack),
+                ElectricGear.chargeReadOnly(stack));
+            NBTTagCompound before = (NBTTagCompound) stack.getTagCompound()
+                .copy();
+            gun.getDurabilityForDisplay(stack);
+            out.check(
+                before.equals(stack.getTagCompound()),
+                "drawing the bar on a charged gun leaves its NBT unchanged");
             out.check(
                 Math.abs(gun.getDurabilityForDisplay(stack) - EnergyMath.barFraction(3500, gun.capacityEu())) < 1e-9,
                 "the bar shows the charge");

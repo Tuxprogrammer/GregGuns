@@ -24,19 +24,19 @@ public final class DefenseGuiProbes {
         registry.register(
             GuiVanishProbe.scenario(
                 "icbm.defense.radar_hv_gui_vanish",
-                "Reading every sync value of the HV Radar settings panel after its block is removed does not throw.",
+                "Reading every sync value of the HV Radar settings panel after its block is removed does not throw (the panel getters read memory only, and a control proves the probe can fail).",
                 GregGunsMTEIDs.RADAR_HV,
                 (m, sync) -> new RadarMultiGui<>((MTERadar) m).buildRadarPanel(sync, new ModularPanel("probe"))));
         registry.register(
             GuiVanishProbe.scenario(
                 "icbm.defense.radar_ev_gui_vanish",
-                "Reading every sync value of the EV Radar settings panel after its block is removed does not throw.",
+                "Reading every sync value of the EV Radar settings panel after its block is removed does not throw (the panel getters read memory only, and a control proves the probe can fail).",
                 GregGunsMTEIDs.RADAR_EV,
                 (m, sync) -> new RadarMultiGui<>((MTERadar) m).buildRadarPanel(sync, new ModularPanel("probe"))));
         registry.register(
             GuiVanishProbe.scenario(
                 "icbm.defense.radar_tower_gui_vanish",
-                "Reading every sync value of the Radar Tower settings panel after its block is removed does not throw.",
+                "Reading every sync value of the Radar Tower settings panel after its block is removed does not throw (the panel getters read memory only, and a control proves the probe can fail).",
                 GregGunsMTEIDs.RADAR_TOWER,
                 (m, sync) -> new RadarMultiGui<>((MTERadarTower) m).buildRadarPanel(sync, new ModularPanel("probe"))));
     }

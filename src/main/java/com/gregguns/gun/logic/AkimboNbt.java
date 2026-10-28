@@ -35,8 +35,9 @@ public final class AkimboNbt {
     public static final String KEY_SECOND = "akimbo_second";
 
     /**
-     * IC2's stack-NBT key of an electric item's stored EU. The code never reads or writes it (GGS-02-13); it only
-     * clears it from a copied tag so the akimbo recipes can set the summed or halved charge through IC2 instead.
+     * IC2's stack-NBT key of an electric item's stored EU. The code never writes it (GGS-02-13); the only read is the
+     * durability bar's read-only reader, and the akimbo recipes clear it from a copied tag so they can set the summed
+     * or halved charge through IC2 instead.
      */
     public static final String KEY_CHARGE = "charge";
 

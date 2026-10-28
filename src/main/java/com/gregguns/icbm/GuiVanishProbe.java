@@ -3,6 +3,7 @@ package com.gregguns.icbm;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cleanroommc.modularui.value.sync.LongSyncValue;
 import com.cleanroommc.modularui.value.sync.ModularSyncManager;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.value.sync.SyncHandler;
@@ -54,6 +55,14 @@ public final class GuiVanishProbe {
             handlers.add(handler);
             return this;
         }
+
+        @Override
+        public <T extends SyncHandler<?>> T getOrCreateSyncHandler(String name, int id, Class<T> type,
+            java.util.function.Supplier<T> supplier) {
+            T handler = supplier.get();
+            handlers.add(handler);
+            return handler;
+        }
     }
 
     /**
@@ -79,7 +88,7 @@ public final class GuiVanishProbe {
             @Override
             public ScenarioResult run(ScenarioContext ctx) {
                 if (!ModuleState.isActive(ModuleId.ICBM)) {
-                    return ScenarioResult.skip(name, "the ICBM module is off");
+                    return ScenarioResult.skip(name, IcbmAvailability.offReason());
                 }
                 ctx.clearArea(6, 4);
                 EmpScenarios.place(ctx, 0, 0, 0, mteId);
@@ -98,9 +107,27 @@ public final class GuiVanishProbe {
                         registrar.register(mte, rec);
                         out.check(rec.handlers.size() >= 3, "the screen registered its sync values");
                         out.check(readAll(rec), "every value reads while the machine stands");
+                        // Negative control: a getter that reads the base unguarded, registered like any other.
+                        rec.syncValue(
+                            "probe_control",
+                            99,
+                            new LongSyncValue(
+                                () -> mte.getBaseMetaTileEntity()
+                                    .getStoredEU()));
                         ctx.world()
                             .setBlockToAir(ctx.originX(), ctx.originY(), ctx.originZ());
                         out.check(!IcbmSync.live(mte), "the machine reads as gone after its block is removed");
+                        boolean controlThrew = false;
+                        try {
+                            ((ValueSyncHandler<?, ?>) rec.handlers.get(rec.handlers.size() - 1))
+                                .updateCacheFromSource(true);
+                        } catch (RuntimeException e) {
+                            controlThrew = true;
+                        }
+                        out.check(
+                            controlThrew,
+                            "negative control: an unguarded base read throws after removal, so this probe can fail");
+                        rec.handlers.remove(rec.handlers.size() - 1);
                         boolean survived = true;
                         String failure = "";
                         for (int pass = 0; pass < 2; pass++) {

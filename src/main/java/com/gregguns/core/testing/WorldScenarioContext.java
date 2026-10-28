@@ -7,7 +7,12 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -157,10 +162,26 @@ public final class WorldScenarioContext implements ScenarioContext {
     @Override
     public <T extends Entity> T spawn(T entity) {
         PackMobGuard.protect(entity);
+        giveNetHandler(entity);
         world.spawnEntityInWorld(entity);
         PackMobGuard.afterJoin(entity);
         spawned.add(entity);
         return entity;
+    }
+
+    /**
+     * A fake player has no network handler, and mods that message a joining player (Witchery) throw and log an error
+     * pair for it. Give it one that drops every packet.
+     */
+    private void giveNetHandler(Entity entity) {
+        if (entity instanceof EntityPlayerMP && ((EntityPlayerMP) entity).playerNetServerHandler == null) {
+            EntityPlayerMP p = (EntityPlayerMP) entity;
+            new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p) {
+
+                @Override
+                public void sendPacket(Packet packet) {}
+            };
+        }
     }
 
     @Override
