@@ -60,6 +60,26 @@ class HeightProbeTest {
         assertEquals(64, p.landY(23, 23));
     }
 
+    /** The sea floor one column past the window lies in a loaded chunk; two columns past is never read. */
+    @Test
+    void seaFloorBesideReadsOneColumnPastTheWindowAndNoFurther() {
+        GridColumns cols = new GridColumns((x, z) -> 40, (x, z) -> 62);
+        HeightProbe p = new WindowedHeightProbe(world.window(), cols);
+        assertEquals(40, p.seaFloorYBeside(7, 10));
+        assertEquals(40, p.seaFloorYBeside(24, 24));
+        assertEquals(40, p.seaFloorYBeside(15, 15));
+        assertEquals(HeightProbe.NONE, p.seaFloorY(7, 10), "the plain read stays inside the window");
+        int before = cols.reads.size();
+        assertEquals(HeightProbe.NONE, p.seaFloorYBeside(6, 10));
+        assertEquals(HeightProbe.NONE, p.seaFloorYBeside(10, 25));
+        assertEquals(before, cols.reads.size(), "nothing read two columns out");
+        // Columns 7 and 24 lie in chunks 0 and 1: the four chunks a populate call for chunk (0, 0) has loaded.
+        for (int[] r : cols.reads) {
+            int cx = PopulateWindow.chunkOf(r[0]), cz = PopulateWindow.chunkOf(r[2]);
+            assertTrue(cx >= 0 && cx <= 1 && cz >= 0 && cz <= 1, "read in chunk " + cx + "," + cz);
+        }
+    }
+
     /**
      * Runs every terrain operation over a footprint that sticks far out of the window on all sides and asserts that
      * no column outside the window was read and no foreign chunk was requested.

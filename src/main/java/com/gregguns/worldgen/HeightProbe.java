@@ -24,4 +24,14 @@ public interface HeightProbe {
 
     /** Y of the first non-liquid block below the water (or the ground itself when dry); {@link #NONE} if none. */
     int seaFloorY(int x, int z);
+
+    /**
+     * {@link #seaFloorY} that also answers for a column one block outside the window. The window lies 8 blocks inside
+     * the four chunks the populate call has loaded ({@link PopulateWindow}), so a column one block past any edge is in
+     * one of them and reading it never forces a chunk. {@link #NONE} further out. A probe that cannot see past its
+     * window answers only inside it.
+     */
+    default int seaFloorYBeside(int x, int z) {
+        return seaFloorY(x, z);
+    }
 }

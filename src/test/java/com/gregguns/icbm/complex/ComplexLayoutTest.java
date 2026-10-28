@@ -171,7 +171,9 @@ class ComplexLayoutTest {
                     here++;
                     sides.add(si.facing());
                 }
-                if (here >= 2) assertEquals(2, sides.size(), "seed " + s + ": silos line both sides of the gallery");
+                // A gallery hall always holds silos, on both its sides (R1 M1: no empty second gallery).
+                assertTrue(here >= 2, "seed " + s + ": a gallery hall with " + here + " silos");
+                assertEquals(2, sides.size(), "seed " + s + ": silos line both sides of the gallery");
             }
         }
         int low = counts[4] + counts[5] + counts[6], mid = counts[7] + counts[8], high = counts[9] + counts[10];
@@ -182,6 +184,38 @@ class ComplexLayoutTest {
         assertTrue(low > n * 6 / 10, "mostly 4 to 6: " + low);
         assertTrue(mid > n / 10 && mid < low, "sometimes 7 or 8: " + mid);
         assertTrue(high > 0 && high < mid, "rarely 9 or 10: " + high);
+    }
+
+    /**
+     * Every rolled silo is placed: the gallery hall keeps its silo bands free while the other halls grow, and a second
+     * gallery is chosen among straight halls only, so a high roll never collapses to four or five (R1 M1).
+     */
+    @Test
+    void everyRolledSiloIsPlacedAndASecondGalleryOnlyOnAStraightHall() {
+        int n = 1500, two = 0;
+        java.util.Random r = new java.util.Random(77);
+        for (int i = 0; i < n; i++) {
+            long seed = ComplexLayout.cellSeed(r.nextLong(), r.nextInt(2000) - 1000, r.nextInt(2000) - 1000);
+            ComplexGrower g = ComplexLayout.grown(seed);
+            assertEquals(g.rolled, g.silos.size(), "seed " + seed + ": placed as rolled");
+            int galleries = 0;
+            for (ComplexGrower.Node h : g.nodes) {
+                if (!h.gallery) continue;
+                galleries++;
+                assertEquals(ComplexLayout.GALLERY_HEIGHT, h.h);
+                for (ComplexGrower.Node x : g.nodes) {
+                    assertTrue(
+                        x.type != ComplexGrower.MAJOR || x.parent != h.id,
+                        "seed " + seed + ": no major hall leaves a gallery");
+                }
+            }
+            if (galleries == 2) {
+                two++;
+                assertTrue(g.rolled >= 7, "seed " + seed + ": two galleries only for seven or more");
+            }
+            assertTrue(g.posts() >= ComplexLayout.MIN_POSTS, "seed " + seed + ": guard posts " + g.posts());
+        }
+        assertTrue(two > 0, "some plans split their silos over two galleries");
     }
 
     @Test

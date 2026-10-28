@@ -104,9 +104,9 @@ public final class ComplexLayout {
     static final int ATTEMPTS = 8;
 
     /**
-     * Grows the plan's geometry. A growth that misses the coverage target (with a margin) or the room count is grown
-     * again from a seed mixed from the plan seed and the attempt number, and the best attempt is kept, so the result
-     * is still a pure function of the seed (D230).
+     * Grows the plan's geometry. A growth that misses the coverage target (with a margin), or the room, silo or
+     * guard-post count, is grown again from a seed mixed from the plan seed and the attempt number, and the best attempt
+     * is kept, so the result is still a pure function of the seed (D230).
      */
     static ComplexGrower grown(long seed) {
         ComplexGrower best = null;
@@ -122,11 +122,15 @@ public final class ComplexLayout {
             int cover = g.coveredColumns() * 100 / (SIZE * SIZE);
             int rooms = g.roomCount();
             int silos = g.silos.size();
+            int posts = g.posts();
             boolean ok = rooms >= MIN_ROOMS && rooms <= MAX_ROOMS
                 && cover >= MIN_COVERAGE_PERCENT + 1
-                && silos >= MIN_SILOS;
+                && silos >= MIN_SILOS
+                && posts >= MIN_POSTS;
             if (ok) return g;
-            int score = cover - 10 * Math.max(0, MIN_ROOMS - rooms) - 100 * Math.max(0, MIN_SILOS - silos);
+            int score = cover - 10 * Math.max(0, MIN_ROOMS - rooms)
+                - 100 * Math.max(0, MIN_SILOS - silos)
+                - 10 * Math.max(0, MIN_POSTS - posts);
             if (score > bestScore) {
                 bestScore = score;
                 best = g;
@@ -138,6 +142,9 @@ public final class ComplexLayout {
 
     /** The silo count: four to ten (D229). */
     public static final int MIN_SILOS = 4, MAX_SILOS = 10;
+
+    /** The fewest guard-post rooms a plan has (D233: three to five). */
+    public static final int MIN_POSTS = 3;
 
     /** The room count (the hub not counted), D229. */
     public static final int MIN_ROOMS = 35, MAX_ROOMS = 40;

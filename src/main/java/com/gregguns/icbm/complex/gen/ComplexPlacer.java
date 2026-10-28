@@ -101,7 +101,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (st == null) {
             String dim = world == null ? "Overworld" : DimensionKey.of(world);
             st = styles.of(raster, dim, levelOf(raster.plan()));
-            if (stylesCache.size() >= 2) stylesCache.remove(
+            if (stylesCache.size() >= CACHED) stylesCache.remove(
                 stylesCache.keySet()
                     .iterator()
                     .next());
@@ -190,13 +190,20 @@ public final class ComplexPlacer implements ComplexWriter {
         return plan.dimension() + ":" + plan.chestSeedBase();
     }
 
-    /** The raster of a plan, cached for the dozens of windows one complex spans (two entries are enough). */
+    /**
+     * Complexes whose raster, contents and styles stay cached. A complex spans up to 225 windows, and several can
+     * populate interleaved (players in several dimensions), so a short cache would rebuild them window after window. A
+     * raster is about 0.8 MB.
+     */
+    static final int CACHED = 6;
+
+    /** The raster of a plan, cached for the windows one complex spans. */
     public ComplexRaster rasterOf(StructurePlan plan) {
         String key = cacheKey(plan);
         ComplexRaster r = cache.remove(key);
         if (r == null) {
             r = new ComplexRaster(ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ()));
-            if (cache.size() >= 2) {
+            if (cache.size() >= CACHED) {
                 cache.remove(
                     cache.keySet()
                         .iterator()
@@ -281,7 +288,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 : NeighborComplex
                     .nearest(world.getSeed(), plan.dimension(), plan, settings.chancePercent(), NeighborComplex.RADIUS);
             l = ComplexContents.build(cp, levelOf(cp), ceilingOf(plan), other);
-            if (contentsCache.size() >= 2) contentsCache.remove(
+            if (contentsCache.size() >= CACHED) contentsCache.remove(
                 contentsCache.keySet()
                     .iterator()
                     .next());
@@ -301,9 +308,24 @@ public final class ComplexPlacer implements ComplexWriter {
         }
     }
 
+    /** Plans no layout grew from (never seen in 40,000 seeds), so each is logged once, not once per window. */
+    private final Set<String> unbuildable = new java.util.LinkedHashSet<String>();
+
     private int writeWindow(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
-        ComplexRaster raster = rasterOf(plan);
+        ComplexRaster raster;
+        try {
+            raster = unbuildable.contains(cacheKey(plan)) ? null : rasterOf(plan);
+        } catch (IllegalStateException e) {
+            // Every regrowth failed: skip the complex rather than throw out of chunk populate.
+            if (unbuildable.size() >= 16) unbuildable.remove(
+                unbuildable.iterator()
+                    .next());
+            unbuildable.add(cacheKey(plan));
+            skipped(plan, "layout");
+            raster = null;
+        }
+        if (raster == null) return 0;
         ComplexPlan cp = raster.plan();
         int floorY = floorYOf(groundY);
         int ax = plan.anchorX(), az = plan.anchorZ();
@@ -323,6 +345,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 }
             }
         }
+        int[] seal = sealFloors(probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
         WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
         Styles st = stylesOf(plan);
         int maskedColumns = 0;
@@ -334,6 +357,8 @@ public final class ComplexPlacer implements ComplexWriter {
                     byte c = raster.at(lx, y, lz);
                     if (c == Cell.NONE) continue;
                     int wy = floorY + y;
+                    // Open cells beside a cut-off column whose ground lies under them face its water or air: wall.
+                    if (y >= 1 && Cell.open(c) && wy > seal[ColumnMaskSink.index(window, x, z)]) c = Cell.WALL;
                     if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
                         if (under.setBlock(x, wy, z, air, 0) && world != null) {
                             machines.place(world, c, x, wy, z, siloFacing(cp, lx, lz));
@@ -381,8 +406,45 @@ public final class ComplexPlacer implements ComplexWriter {
      * @return whether the column is cut off
      */
     public static boolean cutOff(HeightProbe probe, int floorY, int x, int z) {
-        int g = probe.seaFloorY(x, z);
+        return cutOffAt(probe.seaFloorY(x, z), floorY);
+    }
+
+    private static boolean cutOffAt(int g, int floorY) {
         return g != HeightProbe.NONE && g < floorY + ComplexLayout.SILO_HEIGHT + 2;
+    }
+
+    /**
+     * Where a written column borders a cut-off one. The cut-off column keeps its natural terrain, and where that
+     * ground lies lower than the level's open cells beside it, a hall would open sideways onto the lake or valley
+     * over it. Per window column: the lowest such neighbor's ground, so the writer walls up every open cell above it
+     * ({@link Integer#MAX_VALUE} when no neighbor is cut off). A neighbor outside the window is read through
+     * {@link HeightProbe#seaFloorYBeside}: one column past the window still lies in a loaded chunk.
+     */
+    private static int[] sealFloors(HeightProbe probe, PopulateWindow window, int floorY, boolean[] mask, int x0,
+        int x1, int z0, int z1, int ax, int az) {
+        int[] seal = new int[PopulateWindow.SIZE * PopulateWindow.SIZE];
+        java.util.Arrays.fill(seal, Integer.MAX_VALUE);
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                int i = ColumnMaskSink.index(window, x, z);
+                if (mask[i]) continue;
+                for (int d = 0; d < 4; d++) {
+                    int nx = x + (d == 1 ? 1 : d == 3 ? -1 : 0), nz = z + (d == 2 ? 1 : d == 0 ? -1 : 0);
+                    // Outside the complex nothing is written next to an open cell: every section ends in its wall.
+                    if (nx < ax || nz < az || nx >= ax + ComplexLayout.SIZE || nz >= az + ComplexLayout.SIZE) continue;
+                    int g;
+                    if (window.contains(nx, nz)) {
+                        if (!mask[ColumnMaskSink.index(window, nx, nz)]) continue;
+                        g = probe.seaFloorY(nx, nz);
+                    } else {
+                        g = probe.seaFloorYBeside(nx, nz);
+                        if (!cutOffAt(g, floorY)) continue;
+                    }
+                    seal[i] = Math.min(seal[i], g);
+                }
+            }
+        }
+        return seal;
     }
 
     /** How far above the ground a surface opening is cleared of leaves, logs and snow. */

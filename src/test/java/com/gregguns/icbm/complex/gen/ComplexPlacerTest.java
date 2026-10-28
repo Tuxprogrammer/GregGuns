@@ -19,7 +19,9 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.icbm.complex.Cell;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.worldgen.ClippingSink;
 import com.gregguns.worldgen.ComplexWriter;
@@ -165,7 +167,13 @@ class ComplexPlacerTest {
 
                 @Override
                 public int seaFloorY(int x, int z) {
-                    return seaFloor != NONE && w.contains(x, z) ? seaFloor : NONE;
+                    return w.contains(x, z) ? seaFloorAt(x, z) : NONE;
+                }
+
+                @Override
+                public int seaFloorYBeside(int x, int z) {
+                    boolean near = x >= w.minX() - 1 && x <= w.maxX() + 1 && z >= w.minZ() - 1 && z <= w.maxZ() + 1;
+                    return near ? seaFloorAt(x, z) : NONE;
                 }
             };
             if (placer.write(plan, GROUND, w, sink, probe) > 0) r.windowsWithWrites++;
@@ -181,6 +189,13 @@ class ComplexPlacerTest {
 
     /** The sea floor the probe reports inside a window (a valley or a lake bed), or NONE for no answer. */
     private int seaFloor = HeightProbe.NONE;
+    /** A lake bed over part of the footprint: x0, z0, x1, z1 (exclusive) and its floor y, or null for none. */
+    private int[] lake;
+
+    private int seaFloorAt(int x, int z) {
+        if (lake != null && x >= lake[0] && z >= lake[1] && x < lake[2] && z < lake[3]) return lake[4];
+        return seaFloor;
+    }
 
     private List<String> currentMarks;
 
@@ -293,6 +308,62 @@ class ComplexPlacerTest {
         // The surface block beside the trapdoor is the terrain's own, so the trapdoor stays camouflaged.
         assertNull(r.cells.get(bx + "," + GROUND + "," + bz), "no backing at the surface cell");
         assertEquals(0, r.duplicates);
+    }
+
+    /**
+     * A lake bed under the hub's open air is cut off, and its natural terrain stays. The hub's open cells around it,
+     * above the bed, become wall, so the hub never opens sideways onto the lake (R1 M2), across window edges too.
+     */
+    @Test
+    void aHallBesideACutOffLakeBedIsWalledUpAboveTheBed() {
+        StructurePlan p = plan();
+        int floor = GROUND - ComplexPlacer.DEPTH;
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        com.gregguns.icbm.complex.Box hub = cp.hall()
+            .bounds();
+        int lx0 = p.anchorX() + hub.minX + 12, lz0 = p.anchorZ() + hub.minZ + 12;
+        // 20 x 14 spans window edges both ways (windows are 16 wide).
+        lake = new int[] { lx0, lz0, lx0 + 20, lz0 + 14, floor + 8 };
+        Result r;
+        try {
+            r = run(p, false);
+        } finally {
+            lake = null;
+        }
+        String[] open = { "c" + Cell.AIR, "c" + Cell.RAIL_NS, "c" + Cell.RAIL_EW, "c" + Cell.LADDER };
+        String wall = Integer.toString(System.identityHashCode(named.get("c" + Cell.WALL)));
+        int faces = 0, walled = 0;
+        for (int x = lx0 - 1; x <= lx0 + 20; x++) {
+            for (int z = lz0 - 1; z <= lz0 + 14; z++) {
+                boolean in = x >= lx0 && z >= lz0 && x < lx0 + 20 && z < lz0 + 14;
+                if (in) {
+                    for (int y = floor; y < floor + ComplexRaster.LEVELS; y++) {
+                        assertNull(r.cells.get(x + "," + y + "," + z), "the cut-off column keeps its terrain");
+                    }
+                    continue;
+                }
+                // A corner column only touches the lake diagonally, where water never flows.
+                boolean corner = (x == lx0 - 1 || x == lx0 + 20) && (z == lz0 - 1 || z == lz0 + 14);
+                if (corner) continue;
+                for (int y = floor + 1; y < floor + hub.sizeY() - 1; y++) {
+                    String v = r.cells.get(x + "," + y + "," + z);
+                    if (y <= floor + 8) continue; // the bed's own ground faces these
+                    faces++;
+                    for (String o : open) {
+                        Block b = named.get(o);
+                        assertTrue(
+                            b == null || v == null || !v.startsWith(System.identityHashCode(b) + ":"),
+                            "open cell facing the lake at " + x + "," + y + "," + z);
+                    }
+                    if (v != null && v.startsWith(wall + ":")) walled++;
+                }
+            }
+        }
+        assertTrue(faces > 100 && walled == faces, "every cell around the lake above its bed is wall: " + walled + "/" + faces);
+        // The plain hub away from the lake is still open.
+        String far = r.cells.get((p.anchorX() + hub.minX + 3) + "," + (floor + 2) + "," + (p.anchorZ() + hub.minZ + 3));
+        assertTrue(far != null && !far.startsWith(wall + ":"), "the rest of the hub is open");
     }
 
     @Test

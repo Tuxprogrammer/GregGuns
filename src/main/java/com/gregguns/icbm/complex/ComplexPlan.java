@@ -6,7 +6,8 @@ import java.util.List;
 
 /**
  * A complete silo complex plan in complex-local coordinates (x, z in [0, SIZE), y relative to the level floor). Its
- * sections are the hub, the rooms and the halls, each with its own id: the hub is 0, then the rooms, then the halls.
+ * sections are the hub, the rooms and the halls, each with its own id: the hub is 0, the others in the order they
+ * grew (the major halls first, then rooms and minor hallways interleaved). Nothing relies on that order.
  */
 public final class ComplexPlan {
 
