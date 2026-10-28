@@ -62,15 +62,22 @@ def main() -> None:
     # 5. every shipped set: properties, 47 tiles of 16x16, tile 0 is the base texture, one set per meta
     metas = {}
     sets = sorted(p.name for p in C.CTM_ROOT.iterdir() if p.is_dir())
-    assert len(sets) == len(C.gen.CASINGS) and set(sets) == set(C.gen.CASINGS), sets
+    expected = set(C.gen.CASINGS) | set(C.gen.PLAIN)
+    assert len(sets) == len(expected) and set(sets) == expected, sets
     for name in sets:
         t = C.CtmTexture(name)
-        assert t.props["matchBlocks"] == C.gen.BLOCK and t.meta == C.gen.CASINGS[name][1], name
-        assert t.meta not in metas, f"{name} and {metas.get(t.meta)} share meta {t.meta}"
-        metas[t.meta] = name
+        if name in C.gen.PLAIN:
+            # a plain block (the Silo Complex Wall): its own block id, no metadata, the tiles of the casing it borrows
+            _, block, borrowed = C.gen.PLAIN[name]
+            assert t.props["matchBlocks"] == block and "metadata" not in t.props and t.meta == 0, name
+            assert (t.dir / "0.png").read_bytes() == (C.CTM_ROOT / borrowed / "0.png").read_bytes(), name
+        else:
+            assert t.props["matchBlocks"] == C.gen.BLOCK and t.meta == C.gen.CASINGS[name][1], name
+            assert t.meta not in metas, f"{name} and {metas.get(t.meta)} share meta {t.meta}"
+            metas[t.meta] = name
         for tile in t.tiles:
             assert Image.open(tile).size == (16, 16), tile
-        base = C.REPO / "src/main/resources/assets/gregguns/textures/blocks/casings" / f"{name}.png"
+        base = C.REPO / "src/main/resources/assets/gregguns/textures/blocks/casings" / f"{C.gen.PLAIN[name][2] if name in C.gen.PLAIN else C.gen.BASE_OF.get(name, name)}.png"
         assert np.array_equal(np.array(Image.open(base).convert("RGBA")), np.array(Image.open(t.base).convert("RGBA"))), name
     # 6. the voxel path uses it: two casings side by side, the left one is open on its right and the right one on its left
     t = C.CtmTexture("works_casing")
