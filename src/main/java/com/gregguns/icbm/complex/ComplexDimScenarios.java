@@ -227,6 +227,27 @@ public final class ComplexDimScenarios {
             // Trapdoor: the topmost block of its column, a top-half closed trapdoor, level with the ground around.
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
             int ty = top(w, ex, ez);
+            out.note(
+                label + ": escape column "
+                    + ex
+                    + ","
+                    + ez
+                    + " top "
+                    + ty
+                    + " "
+                    + w.getBlock(ex, ty, ez)
+                        .getUnlocalizedName()
+                    + " above "
+                    + w.getBlock(ex, ty + 1, ez)
+                        .getUnlocalizedName()
+                    + " below "
+                    + w.getBlock(ex, ty - 1, ez)
+                        .getUnlocalizedName()
+                    + " groundY "
+                    + groundY
+                    + " chunkLoaded "
+                    + w.getChunkProvider()
+                        .chunkExists(ex >> 4, ez >> 4));
             out.check(w.getBlock(ex, ty, ez) == Blocks.trapdoor, label + ": the escape ladder ends in a trapdoor");
             out.checkEquals(label + ": trapdoor is closed and in the top half", 8, w.getBlockMetadata(ex, ty, ez));
             for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
