@@ -12,6 +12,7 @@ All sheets are written and match what is built; the tuning that remains is I7.
 - activity-levels.md: abandoned, partly abandoned, operational; the per-level damage pass in the layout (D36).
 - silo-guard-spawner.md: the spawner block on the M8 spawner system, mob lists (D36).
 - loot-and-ceilings.md: loot by tier, salvage, the planet table (D38).
+- palette.md: the decorative blocks of a complex: 11 style sets, fallback chains, lamps, planet stone and the mining-worth rule (D240 to D244).
 - planets-and-placement.md: sparse grid per dimension, flags, Ross128 rolled ceilings (D17, D38, 0019).
 
 ## Integration map
