@@ -24,7 +24,7 @@ The Repair Bench, built as a row of repair arches. It mends armor and guns from 
 
 ## Interior lamps
 
-The booth and every repair bay need one lamp under the beam (5 in the 4-bay gantry). Use glowstone, a redstone lamp or any block with light level 12 or more. Without them the gantry will not form, so add lamps to gantries you built earlier.
+The booth and every repair bay need one lamp under the beam (5 in the 4-bay gantry). Use glowstone, a redstone lamp or any block with light level 12 or more.
 
 ## Hatches
 

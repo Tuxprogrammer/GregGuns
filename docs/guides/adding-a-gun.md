@@ -1,6 +1,6 @@
 # Adding a gun
 
-How to add a ballistic gun. Since the gun-definitions restructure, **a gun is one definition class plus one line in each of two lists**; everything else (the item, its recipe, its scenarios, the tests) follows from the definition. Worked examples: `PistolDef` (magazine, machine recipe), `RevolverDef` (loose-round ammo), `SawedOffDef` (pellets), `HandCannonDef` (hand-crafted, gravity projectile), `BoltActionDef` (scope, rechamber, camos).
+How to add a ballistic gun. **A gun is one definition class plus one line in each of two lists**; everything else (the item, its recipe, its scenarios, the tests) follows from the definition. Worked examples: `PistolDef` (magazine, machine recipe), `RevolverDef` (loose-round ammo), `SawedOffDef` (pellets), `HandCannonDef` (hand-crafted, gravity projectile), `BoltActionDef` (scope, rechamber, camos).
 
 Read first: the gun's sheet in [techguns-spec/02-guns](../techguns-spec/02-guns/index.md) (`sheets-*.md`, `per-gun-behavior.md`, `gun-lifecycle.md`), its visual sheet in [03-gun-visuals-audio/gun-sheets.md](../techguns-spec/03-gun-visuals-audio/gun-sheets.md), and its row in [gregguns-spec/02-guns/recipes.md](../gregguns-spec/02-guns/recipes.md). Never copy Techguns code or box lists (CLAUDE.md, rule 1).
 
