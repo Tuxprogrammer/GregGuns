@@ -252,7 +252,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
   - EU cost grows continuously with radius.
 - **The T3 EMP warhead** (D80, moved from I3): it reuses the EMP machinery built for the tower above (the kill-chance table, the device cap and the nearest-first order), as a T3 blast type at LuV to ZPM.
 - **Carried over from I3:**
-  - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios. **Status (I4): mitigated, not root-caused.** The scenario now waits for a quiet engine (D98), which removes the flake; D98 lists candidate causes and none was shown to be the real one.
+  - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios. **Status (I5): root-caused (D98).** Guidance scatter put the aim point off the 9-block target platform in about one run in eight; the platform now covers the scatter (radius 13) and the waits run on their own clocks. The failure message also names where the missile aimed and detonated and whether the platform stood.
   - The silo's shaft-chunk guard (mating, pumping and spawning wait for loaded shaft chunks) has no scenario; add one.
   - Take the Galacticraft rocket NEI shot in the real pack. In the dev client the NASA Workbench recipe tables are empty and GalaxySpace's rocket handlers aren't registered.
     **Status (I4 fix E): moves to the alpha real-pack check.**

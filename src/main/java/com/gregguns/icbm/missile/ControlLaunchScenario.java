@@ -45,6 +45,13 @@ public final class ControlLaunchScenario implements Scenario {
     private static final int WARMUP_TICKS = 45;
     private static final int DISTANCE = 70;
     /**
+     * Half-size of each target platform. An unguided T1 aims at a random point within its scatter of the typed target
+     * (about 12 blocks per axis at this range), and the missile lands on whatever ground is there: a platform of
+     * radius 9 was missed in about one run in eight, and the blast then went off 25 blocks below it. The platform has
+     * to cover the whole scatter square ({@code ControlLaunchScenarioTest}).
+     */
+    static final int PLATFORM_RADIUS = 13;
+    /**
      * Every wait below runs on its own clock, not on the scenario's. A blast left running by an earlier scenario shares
      * the engine's tick budget and starves this scenario's blasts, so a wait measured from the scenario's start ran
      * out under load (the old flake); the total only has to cover the sum of the waits.
@@ -98,8 +105,8 @@ public final class ControlLaunchScenario implements Scenario {
             (WorldServer) w,
             new GameProfile(UUID.nameUUIDFromBytes("gg-launch".getBytes(StandardCharsets.UTF_8)), "[GGLaunch]"));
         player.setPosition(ctx.originX() + 3.5, ctx.originY() + 1, ctx.originZ() + 2.5);
-        final MissileScenarios.Target first = new MissileScenarios.Target(ctx, 0, DISTANCE, 9);
-        final MissileScenarios.Target second = new MissileScenarios.Target(ctx, 0, -DISTANCE, 9);
+        final MissileScenarios.Target first = new MissileScenarios.Target(ctx, 0, DISTANCE, PLATFORM_RADIUS);
+        final MissileScenarios.Target second = new MissileScenarios.Target(ctx, 0, -DISTANCE, PLATFORM_RADIUS);
         final ScenarioResult.Builder out = ScenarioResult.builder(name());
         final EntityMissile[] missile = new EntityMissile[1];
         final int[] stage = { 0 };
@@ -336,7 +343,7 @@ public final class ControlLaunchScenario implements Scenario {
         int hi = dz > 0 ? dz + 40 : -20;
         for (int z = lo; z <= hi; z++) {
             for (int x = -30; x <= 30; x++) {
-                boolean cleared = Math.abs(x) <= 15 + 9 && Math.abs(z - dz) <= 15 + 9;
+                boolean cleared = Math.abs(x) <= PLATFORM_RADIUS + 6 && Math.abs(z - dz) <= PLATFORM_RADIUS + 6;
                 if (cleared) {
                     continue;
                 }
