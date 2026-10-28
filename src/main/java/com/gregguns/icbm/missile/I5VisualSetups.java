@@ -51,11 +51,11 @@ import gregtech.api.metatileentity.BaseMetaTileEntity;
  * anchor, logs "I5V ..." lines and leaves it standing for a human-driven client; the long ones restore every config
  * switch they change when their blast is over. None is part of {@code test all}.
  */
-public final class I5ClientSetups {
+public final class I5VisualSetups {
 
     private static final double EYE = 1.62;
 
-    private I5ClientSetups() {}
+    private I5VisualSetups() {}
 
     /** @param registry where to add the setups */
     public static void registerAll(ScenarioRegistry registry) {
