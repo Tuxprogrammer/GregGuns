@@ -101,7 +101,11 @@ final class PaletteSets {
 
     private static final BlockRef WOOD_TABLE = of(v("wooden_slab", 1));
     private static final BlockRef STONE_TABLE = of(v("stone_slab", 7));
-    private static final BlockRef SHELF = of(e(CH, "bookshelf", 0), v("bookshelf", 0));
+    /**
+     * Chisel's "abandoned" bookshelf. Chisel's own bookshelf block has variations at metas 1 to 8 only (meta 0 of the
+     * group is the vanilla bookshelf), so meta 0 of {@code chisel:bookshelf} would draw the missing texture.
+     */
+    private static final BlockRef SHELF = of(e(CH, "bookshelf", 5), v("bookshelf", 0));
     private static final BlockRef BUNK = of(v("wool", 11));
     private static final BlockRef BUNK_GREY = of(v("wool", 7));
     private static final BlockRef SCREEN_DARK = of(e(CH, "laboratoryblock", 10), v("stained_hardened_clay", 15));

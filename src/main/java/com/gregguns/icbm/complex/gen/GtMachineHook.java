@@ -1,7 +1,9 @@
 package com.gregguns.icbm.complex.gen;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gregguns.GregGuns;
@@ -92,6 +94,38 @@ public final class GtMachineHook implements MachineHook {
     public static void claim(IGregTechTileEntity base) {
         base.setOwnerName(OWNER_NAME);
         base.setOwnerUuid(OWNER_UUID);
+    }
+
+    /**
+     * Hands a generated machine to the first real player who uses it: a captured silo, Launch Control or radar then
+     * files its power-fail notices, wireless energy and launches under that player instead of the complex. GT sets an
+     * owner only while none is set ({@code BaseMetaTileEntity.playerOwnsThis}), so the complex's owner would stick
+     * otherwise (D250). A fake player (a turtle, a deployer) never takes a machine over.
+     *
+     * @param base   the machine's tile
+     * @param player the player who right-clicked it
+     * @return true when the machine changed hands
+     */
+    // Source: GT sets the owner only when it is empty, at 5.09.54.205:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/BaseMetaTileEntity.java#L1305-L1314
+    public static boolean handOver(IGregTechTileEntity base, EntityPlayer player) {
+        if (base == null || player == null
+            || !takesOver(base.getOwnerUuid(), player instanceof FakePlayer, base.isClientSide())) {
+            return false;
+        }
+        base.setOwnerName(player.getDisplayName());
+        base.setOwnerUuid(player.getUniqueID());
+        return true;
+    }
+
+    /**
+     * @param owner      the machine's owner UUID (null when it has none)
+     * @param fakePlayer whether the user is a fake player
+     * @param clientSide whether this is the client's copy
+     * @return whether the user takes the machine over: only a real player, on the server, from the complex
+     */
+    static boolean takesOver(java.util.UUID owner, boolean fakePlayer, boolean clientSide) {
+        return !clientSide && !fakePlayer && OWNER_UUID.equals(owner);
     }
 
     @Override

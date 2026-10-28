@@ -483,13 +483,47 @@ final class ComplexFurnisher {
 
         /**
          * Keeps a 5 x 5 block free around (a, d) for the NASA Workbench and its free ring; false if it does not fit.
+         * The 3 x 3 core (GC's fake blocks) must be strictly free, so a lit floor tile is never buried under it. A
+         * floor light tile may sit in the outer ring: it is a floor-layer block, and the ring is kept clear from
+         * layer 1 up, so the tile stays and still lights the room.
          */
         boolean nasa(int a, int d) {
-            for (int da = -2; da <= 2; da++) for (int dd = -2; dd <= 2; dd++) if (!free(a + da, d + dd)) return false;
-            for (int da = -2; da <= 2; da++) for (int dd = -2; dd <= 2; dd++) occ[(a + da) * D + d + dd] = KEEP;
+            for (int da = -2; da <= 2; da++) {
+                for (int dd = -2; dd <= 2; dd++) {
+                    boolean core = Math.abs(da) <= 1 && Math.abs(dd) <= 1;
+                    if (!free(a + da, d + dd) && (core || !lightTile(a + da, d + dd))) return false;
+                }
+            }
+            for (int da = -2; da <= 2; da++) {
+                for (int dd = -2; dd <= 2; dd++) {
+                    int i = (a + da) * D + d + dd;
+                    if (occ[i] == FREE) occ[i] = KEEP;
+                }
+            }
             occ[a * D + d] = SOLID;
             r.add(MarkKind.MACHINE, f.x(a, d), 1, f.z(a, d), MachineRole.NASA_WORKBENCH.name());
             return true;
+        }
+
+        /**
+         * Places the NASA Workbench at the fitting center nearest (a, d) (Manhattan distance, then depth, then
+         * lateral); false only if no 5 x 5 block anywhere in the room fits.
+         */
+        boolean nasaNear(int a, int d) {
+            List<int[]> c = new ArrayList<int[]>();
+            for (int ca = 2; ca <= L - 3; ca++) for (int cd = 2; cd <= D - 3; cd++) c.add(new int[] { ca, cd });
+            java.util.Collections.sort(c, (p, q) -> {
+                int k = (Math.abs(p[0] - a) + Math.abs(p[1] - d)) - (Math.abs(q[0] - a) + Math.abs(q[1] - d));
+                if (k != 0) return k;
+                k = p[1] - q[1];
+                return k != 0 ? k : p[0] - q[0];
+            });
+            for (int[] p : c) if (nasa(p[0], p[1])) return true;
+            return false;
+        }
+
+        private boolean lightTile(int a, int d) {
+            return a >= 0 && d >= 0 && a < L && d < D && occ[a * D + d] == LIGHT_TILE;
         }
 
         /**
@@ -628,7 +662,8 @@ final class ComplexFurnisher {
         sign(r, fit.f);
         int L = fit.L, D = fit.D, ma = L / 2, md = D / 2, last = L - 1;
         int q = Math.max(1, L * D / AREA_STEP);
-        int guards = Math.max(1, q / 2);
+        // D234: room guards, back-row chests and repeated machines all grow one step per AREA_STEP interior cells.
+        int guards = q;
         byte T = Cell.FURN_TABLE, C = Cell.FURN_CONSOLE, B = Cell.FURN_BUNK, SH = Cell.FURN_SHELF;
         switch (r.kind()) {
             case LAUNCH_CONTROL:
@@ -642,12 +677,12 @@ final class ComplexFurnisher {
                 fit.mark(MarkKind.MACHINE, ma, md, MachineRole.RADAR.name());
                 fit.column(C, 0, 2, D - 4, 4, 1);
                 fit.column(C, last, 2, D - 4, 4, 1);
-                fit.backRow(MarkKind.LOOT_CHEST, Math.max(1, q / 2), LootKeys.CONTROL);
+                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.CONTROL);
                 break;
             case COMMS:
                 fit.mark(MarkKind.MACHINE, ma, md, MachineRole.COMMS.name());
                 fit.column(C, 0, 2, D - 4, 4, 1);
-                fit.backRow(MarkKind.LOOT_CHEST, Math.max(1, q / 2), LootKeys.COMMS);
+                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.COMMS);
                 break;
             case COMMANDER_OFFICE:
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.SAFE);
@@ -666,7 +701,7 @@ final class ComplexFurnisher {
                     }
                 }
                 rubble(fit, Math.max(2, q));
-                fit.backRow(MarkKind.LOOT_CHEST, Math.max(1, q / 2), LootKeys.MAGAZINE);
+                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.MAGAZINE);
                 spawners(fit, guards, "room");
                 break;
             }
@@ -675,7 +710,7 @@ final class ComplexFurnisher {
                     fit.mark(MarkKind.MACHINE, 1, d, MachineRole.FUEL_TANK.name());
                     fit.mark(MarkKind.MACHINE, last - 1, d, MachineRole.FUEL_TANK.name());
                 }
-                fit.backRow(MarkKind.LOOT_CHEST, Math.max(1, q / 2), LootKeys.FUEL);
+                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.FUEL);
                 break;
             case GENERATOR_HALL:
                 for (int a = 2, n = 0; a <= last - 2 && n < 2 + q; a += 4, n++) {
@@ -685,13 +720,13 @@ final class ComplexFurnisher {
                 spawners(fit, guards, "room");
                 break;
             case AIR_HANDLING:
-                for (int i = 0, n = Math.max(1, q / 2); i < n; i++) {
+                for (int i = 0, n = q; i < n; i++) {
                     fit.mark(MarkKind.MACHINE, (int) ((i + 0.5) * L / n), md, MachineRole.AIR_HANDLER.name());
                 }
                 fit.row(SH, 0, 2, last - 2, 3, 2);
                 break;
             case PUMP_ROOM:
-                for (int i = 0, n = Math.max(1, q / 2); i < n; i++) {
+                for (int i = 0, n = q; i < n; i++) {
                     fit.mark(MarkKind.MACHINE, (int) ((i + 0.5) * L / n), md, MachineRole.PUMP.name());
                 }
                 for (int a = 0; a <= last; a += 2) {
@@ -701,7 +736,7 @@ final class ComplexFurnisher {
                 }
                 break;
             case WORKSHOP:
-                fit.nasa(2, 2);
+                fit.nasaNear(2, 2);
                 fit.mark(MarkKind.MACHINE, ma + 2, md, MachineRole.WORKBENCH.name());
                 if (q > 2) fit.mark(MarkKind.MACHINE, ma + 6, md, MachineRole.WORKBENCH.name());
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.WORKSHOP);
@@ -730,11 +765,11 @@ final class ComplexFurnisher {
                 fit.column(B, 0, 2, D - 4, 2, 1);
                 fit.column(B, last, 2, D - 4, 2, 1);
                 fit.row(SH, 0, 3, last - 3, 3, 2);
-                fit.backRow(MarkKind.LOOT_CHEST, Math.max(1, q / 2), LootKeys.MEDICAL);
+                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.MEDICAL);
                 break;
             case ARMORY:
                 frames(fit);
-                fit.backRow(MarkKind.LOOT_CHEST, Math.max(1, q / 2), LootKeys.ARMORY);
+                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.ARMORY);
                 fit.column(T, 0, 3, D - 4, 4, 1);
                 spawners(fit, guards, "room");
                 break;
@@ -757,10 +792,10 @@ final class ComplexFurnisher {
                 fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.COMMS);
                 break;
             case MISSILE_ASSEMBLY:
-                if (!fit.nasa(ma, md)) fit.nasa(3, 3);
+                fit.nasaNear(ma, md);
                 fit.mark(MarkKind.MACHINE, 2, md, MachineRole.WORKBENCH.name());
                 fit.mark(MarkKind.MACHINE, last - 2, md, MachineRole.WORKBENCH.name());
-                for (int i = 0; i < 2 + q / 2; i++) {
+                for (int i = 0; i < 1 + q; i++) {
                     fit.mark(MarkKind.MACHINE, 3 + i * 3, 0, MachineRole.MAGAZINE_CASING.name());
                 }
                 fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.SALVAGE);
@@ -779,7 +814,7 @@ final class ComplexFurnisher {
                         }
                     }
                 }
-                for (int i = 0, n = Math.max(1, q / 2); i < n; i++) {
+                for (int i = 0, n = q; i < n; i++) {
                     fit.mark(MarkKind.MACHINE, (int) ((i + 0.5) * L / n), 0, MachineRole.PUMP.name());
                 }
                 break;

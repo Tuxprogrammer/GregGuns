@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.MarkKind;
+import com.gregguns.icbm.complex.Room;
+import com.gregguns.icbm.complex.RoomKind;
+import com.gregguns.icbm.complex.Tunnel;
 import com.gregguns.icbm.worldgen.Placement.Bonus;
 import com.gregguns.icbm.worldgen.Placement.Kind;
 import com.gregguns.worldgen.spawner.HoleKind;
@@ -71,6 +74,49 @@ class ComplexContentsTest {
         assertEquals(0, sum(ActivityLevel.OPERATIONAL, 4, Kind.COLLAPSE)[0]);
         assertTrue(
             sum(ActivityLevel.OPERATIONAL, 4, Kind.LIGHT)[0] > 2 * sum(ActivityLevel.ABANDONED, 4, Kind.LIGHT)[0]);
+    }
+
+    /** D252: Launch Control and the silo gallery never cave in, at any level; other rooms still do. */
+    @Test
+    void launchControlAndTheGalleryNeverCollapse() {
+        int rolled = 0, others = 0, controls = 0;
+        for (ActivityLevel level : ActivityLevel.values()) {
+            ActivityProfile p = ActivityProfile.of(level);
+            for (long s = 0; s < 120; s++) {
+                ComplexPlan plan = ComplexLayout.generate(s, 2, 5);
+                List<Placement> all = ComplexContents.build(plan, level, 4, null);
+                for (Placement c : all) {
+                    if (c.kind() != Kind.COLLAPSE) continue;
+                    for (Room r : plan.rooms()) {
+                        if (r.kind() == RoomKind.LAUNCH_CONTROL) {
+                            assertFalse(
+                                c.box()
+                                    .overlapsXZ(r.bounds()),
+                                level + " seed " + s + ": Launch Control caved in");
+                        }
+                    }
+                    for (Tunnel t : plan.tunnels()) {
+                        if (t.gallery()) {
+                            assertFalse(
+                                c.box()
+                                    .overlapsXZ(t.bounds()),
+                                level + " seed " + s + ": the gallery caved in");
+                        }
+                    }
+                    others++;
+                }
+                for (Room r : plan.rooms()) {
+                    if (r.kind() != RoomKind.LAUNCH_CONTROL) continue;
+                    controls++;
+                    if (ComplexContents.collapseRoll(plan.seed(), r.id(), p)) rolled++;
+                }
+            }
+        }
+        assertTrue(controls >= 360, "Launch Control rooms checked: " + controls);
+        assertTrue(rolled > 0, "the roll alone would have caved some in, so the check can fail: " + rolled);
+        assertTrue(others > 0, "other rooms still cave in: " + others);
+        assertFalse(ComplexContents.mayCollapse(RoomKind.LAUNCH_CONTROL));
+        assertTrue(ComplexContents.mayCollapse(RoomKind.STOCKPILE));
     }
 
     @Test

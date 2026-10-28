@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.world.World;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
@@ -236,8 +237,9 @@ public final class ComplexPlacer implements ComplexWriter {
     }
 
     /**
-     * The ceiling the table gives a dimension: its row, or EV for a dimension the owner added to the config that the
-     * table does not list. Ross128b and ba roll one per complex from their own nine weights.
+     * The ceiling the table gives a dimension: its row, or EV for a dimension the table does not list (only a
+     * scenario asks for one: a listed dimension outside the table generates nothing, {@link ConfigSettings}). Ross128b
+     * and ba roll one per complex from their own nine weights.
      *
      * @param dimensionKey a {@link DimensionKey}
      * @param seedBase     the plan's seed base
@@ -451,15 +453,42 @@ public final class ComplexPlacer implements ComplexWriter {
     static final int CLEAR_ABOVE = 32;
 
     /**
-     * Clears the cells over a column's ground: above {@code landY} there is only air, foliage, wood or ice (that is how
-     * {@code landY} is found), so a shaft mouth or the escape trapdoor is never left under leaves or a trunk.
+     * Clears the natural cover over a column's ground, so a shaft mouth or the escape trapdoor is never left under
+     * leaves or a trunk: foliage (plants, vines, snow layers, cactus), logs and leaves ({@code isWood} or
+     * {@code isLeaves}) and ice, up to {@link #CLEAR_ABOVE} over the ground. Above that only ice goes on, while it
+     * lasts, so an ice spike over the opening is cut whole rather than left floating. Anything else stays: a chest,
+     * a fence, another mod's structure, and every block that carries a tile entity. Reads only this window's columns
+     * (the populate world; nothing without one, as in unit tests).
      */
     private int clearAbove(WindowedSink sink, int x, int z, int groundY) {
+        if (world == null || !sink.window()
+            .contains(x, z)) {
+            return 0;
+        }
         int n = 0;
-        for (int y = groundY + 1; y <= Math.min(BUILD_HEIGHT, groundY + CLEAR_ABOVE); y++) {
+        int cap = Math.min(BUILD_HEIGHT, groundY + CLEAR_ABOVE);
+        for (int y = groundY + 1; y <= BUILD_HEIGHT; y++) {
+            Block b = world.getBlock(x, y, z);
+            Material m = b.getMaterial();
+            boolean ice = m == Material.ice || m == Material.packedIce;
+            if (y > cap && !ice) break;
+            if (m == Material.air || !clearable(b, m, ice, x, y, z)) continue;
             if (sink.setBlock(x, y, z, blocks.air(), 0)) n++;
         }
         return n;
+    }
+
+    /** @return whether a block over a surface opening is natural cover the clear may remove */
+    private boolean clearable(Block b, Material m, boolean ice, int x, int y, int z) {
+        if (b.hasTileEntity(world.getBlockMetadata(x, y, z))) return false;
+        if (ice) return true;
+        if (m == Material.leaves || m == Material.plants
+            || m == Material.vine
+            || m == Material.snow
+            || m == Material.cactus) {
+            return true;
+        }
+        return b.isWood(world, x, y, z) || b.isLeaves(world, x, y, z);
     }
 
     /** @return whether the role is a building role the section's style decides */
@@ -560,7 +589,7 @@ public final class ComplexPlacer implements ComplexWriter {
                             : b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
                     }
                     n += mouth(s.variant(), bore, x, z, sx, sz, top, sink);
-                    if (!(bore && s.variant() == SurfaceVariant.CLOSED)) n += clearAbove(sink, x, z, top);
+                    if (!(bore && s.variant() == SurfaceVariant.CLOSED)) n += clearAbove(sink, x, z, Math.max(top, g));
                 }
             }
         }
