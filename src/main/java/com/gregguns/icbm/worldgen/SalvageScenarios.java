@@ -83,8 +83,8 @@ public final class SalvageScenarios {
                     .voltage(TierEU.RECIPE_UV)
                     .find();
                 if (fit != null) {
-                    out.note("damage " + damaged.getItemDamage() + " matched input " + fit.mInputs[0] + " damage "
-                        + fit.mInputs[0].getItemDamage() + " out " + fit.mOutputs[0]);
+                    out.note("matched " + java.util.Arrays.toString(fit.mInputs) + " -> "
+                        + java.util.Arrays.toString(fit.mOutputs) + " special " + fit.mSpecialItems);
                 }
                 out.check(fit == null, "a damaged body must not take the guidance fit with " + computer);
                 fits++;
