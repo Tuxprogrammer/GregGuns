@@ -285,12 +285,12 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** antimatter and red matter previews and effects, the `icbm-fallout` sheet, the complete `icbm-warheads`, and the endgame quests.
 
 **Exit gate:**
-- [ ] The ender and anti-gravitational T3 warheads detonate within the tick budget. Scenario.
-- [ ] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
-- [ ] Fallout blocks process into their yields in GT machines. Scenario.
-- [ ] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
-- [ ] `icbm-fallout`, the complete `icbm-warheads` and the endgame quests have landed, and the owner has been told.
-- [ ] The milestone review fix list is closed.
+- [x] The ender and anti-gravitational T3 warheads detonate within the tick budget. Scenario.
+- [x] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
+- [x] Fallout blocks process into their yields in GT machines. Scenario.
+- [x] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
+- [x] `icbm-fallout`, the complete `icbm-warheads` and the endgame quests have landed, and the owner has been told.
+- [x] The milestone review fix list is closed.
 
 ## I6 · World: missile silos on every planet
 
