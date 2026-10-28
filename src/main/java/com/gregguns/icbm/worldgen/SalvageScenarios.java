@@ -72,7 +72,7 @@ public final class SalvageScenarios {
                 "the damaged body recycles as an intact body does, not for more");
             // Not a body in a recipe: every guidance fit, at every voltage.
             MissileBuildSpec spec = MissileBuildSpec.byNumber(1);
-            int fits = 0;
+            int fits = 0; // computers the intact body can be fitted with (Mk I gives no step on a T1 body)
             for (com.gregguns.icbm.recipe.IcbmPart computer : spec.computers()) {
                 Item c = IcbmParts.get(computer);
                 if (c == null) {
@@ -83,15 +83,16 @@ public final class SalvageScenarios {
                     .items(intact, comp, GTUtility.getIntegratedCircuit(spec.fitCircuit()))
                     .voltage(TierEU.RECIPE_UV)
                     .find();
-                out.check(isFit(realFit), "the intact body has a guidance fit with " + computer + ": " + realFit);
+                if (isFit(realFit)) {
+                    fits++;
+                }
                 GTRecipe fit = RecipeMaps.assemblerRecipes.findRecipeQuery()
                     .items(damaged, comp, GTUtility.getIntegratedCircuit(spec.fitCircuit()))
                     .voltage(TierEU.RECIPE_UV)
                     .find();
                 out.check(!isFit(fit), "a damaged body must not take the guidance fit with " + computer);
-                fits++;
             }
-            out.check(fits > 0, "a T1 guidance computer exists to test with");
+            out.check(fits > 0, "the intact body has at least one guidance fit, so the damaged-body check can fail");
             return out.build();
         }
     }
