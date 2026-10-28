@@ -266,7 +266,11 @@ public final class ComplexPlacer implements ComplexWriter {
                     if (g == HeightProbe.NONE) continue;
                     boolean bore = x > sx && x < sx + 4 && z > sz && z < sz + 4;
                     int top = Math.min(g, BUILD_HEIGHT - 8);
-                    for (int y = floorY + ComplexLayout.SILO_HEIGHT; y <= top; y++) {
+                    // The mouth writes the top cell itself (cap, or air up to build height), so the bore stops under
+                    // it.
+                    boolean mouthOwnsTop = bore && (s.variant() == SurfaceVariant.CLOSED
+                        || s.variant() == SurfaceVariant.HALF_OPEN && x <= sx + 2);
+                    for (int y = floorY + ComplexLayout.SILO_HEIGHT; y <= (mouthOwnsTop ? top - 1 : top); y++) {
                         ResolvedBlock b = bore ? null : blocks.named("ring", x, y, z);
                         if (bore ? sink.setBlock(x, y, z, air, 0)
                             : b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
