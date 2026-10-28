@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -1043,6 +1044,14 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public int getPollutionPerSecond(ItemStack stack) {
         return 0;
+    }
+
+    /** A generated silo becomes the first real player's who uses it (D250); then GT's own handling. */
+    @Override
+    public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
+        float z) {
+        com.gregguns.icbm.complex.gen.GtMachineHook.handOver(base, player);
+        return super.onRightclick(base, player, side, x, y, z);
     }
 
     // --- tooltip ----------------------------------------------------------------------------------------------------

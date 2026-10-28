@@ -1,5 +1,6 @@
 package com.gregguns.icbm.complex.palette;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -14,6 +15,10 @@ import com.gregguns.worldgen.layout.ResolvedBlock;
 
 /** Scenarios of the complex palette (I6b). Dev environment only. Server side. */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/palette.md (Tests)
+// Source: Chisel blocks implement ICarvable, whose getManager(int meta) returns CarvableHelper.getVariation(meta),
+// null for a meta with no variation (the block then draws the missing texture), at 2.17.34-GTNH:
+// https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/com/cricketcraft/chisel/api/ICarvable.java
+// https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/com/cricketcraft/chisel/api/carving/CarvableHelper.java
 public final class PaletteScenarios {
 
     private PaletteScenarios() {}
@@ -32,8 +37,9 @@ public final class PaletteScenarios {
 
         @Override
         public String description() {
-            return "Every style of every group resolves to real, full-cube blocks in the live registry; lit lamps emit"
-                + " 15, dead lamps do not; the note lists which mod supplied what.";
+            return "Every block of every style set (walls, floors, ceilings, lamps, accent, worn block, furniture)"
+                + " resolves in the live registry, building blocks are full cubes, a Chisel block has a variation at"
+                + " its meta, lit lamps emit 15 and dead lamps do not; the note lists which mod supplied what.";
         }
 
         @Override
@@ -62,6 +68,16 @@ public final class PaletteScenarios {
                             check(out, set.id + " ceiling", p.at(x, z, 8, 8), null, reg, byMod, missing);
                         }
                     }
+                }
+                if (set.accent != null) {
+                    check(out, set.id + " accent", set.accent, null, reg, byMod, missing);
+                }
+                if (set.worn != null) {
+                    check(out, set.id + " worn", set.worn, null, reg, byMod, missing);
+                }
+                for (Map.Entry<Furniture, BlockRef> f : set.furniture.entrySet()) {
+                    // Tables are slabs: furniture is checked for a real block and variation, not for a full cube.
+                    check(out, set.id + " furniture " + f.getKey(), f.getValue(), null, reg, byMod, missing);
                 }
             }
             for (StyleGroup g : StyleGroup.values()) {
@@ -97,6 +113,10 @@ public final class PaletteScenarios {
                 return;
             }
             Block b = r.block;
+            Boolean variation = chiselVariation(b, r.meta);
+            if (variation != null) {
+                out.check(variation, what + " " + e + " has no Chisel variation at meta " + r.meta);
+            }
             if (lit != null) {
                 if (lit) {
                     out.check(b.getLightValue() == 15, what + " " + e + " emits " + b.getLightValue());
@@ -105,8 +125,37 @@ public final class PaletteScenarios {
                 }
             }
             out.check(
-                b.isOpaqueCube() || b.renderAsNormalBlock() || what.endsWith("lamp"),
+                b.isOpaqueCube() || b.renderAsNormalBlock() || what.endsWith("lamp") || what.contains(" furniture "),
                 what + " " + e + " not a cube");
+        }
+
+        /**
+         * @return whether a Chisel block has a variation at {@code meta}; null when the block is not a Chisel
+         *         {@code ICarvable} (or Chisel is absent), so there is nothing to check
+         */
+        private static Boolean chiselVariation(Block b, int meta) {
+            if (!implementsByName(b.getClass(), "com.cricketcraft.chisel.api.ICarvable")) {
+                return null;
+            }
+            try {
+                Method m = b.getClass()
+                    .getMethod("getManager", int.class);
+                return m.invoke(b, meta) != null;
+            } catch (ReflectiveOperationException | RuntimeException ex) {
+                return null;
+            }
+        }
+
+        private static boolean implementsByName(Class<?> c, String name) {
+            for (Class<?> k = c; k != null; k = k.getSuperclass()) {
+                for (Class<?> i : k.getInterfaces()) {
+                    if (i.getName()
+                        .equals(name) || implementsByName(i, name)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

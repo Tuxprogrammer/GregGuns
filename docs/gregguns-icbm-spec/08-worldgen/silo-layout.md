@@ -99,8 +99,8 @@ The plan is pure geometry and deterministic. It never changes by activity level.
   - The back wall is the wall opposite the doorway to the room's parent, whichever of the four sides that is.
   - Chests and wall machines stand against the back wall; machines stand in the middle row.
   - The sign hangs on the doorway's jamb, facing in.
-- **Kept clear:** the cells inside every doorway, two deep and one wider each side, any door of the room. Light tiles are kept clear too. If furniture walls a chest, machine or guard off from the doorway, the shortest way through the furniture is cleared.
-- **Scaling:** chest, machine and guard counts grow by one step per 450 interior cells.
+- **Kept clear:** the cells inside every doorway, two deep and one wider each side, any door of the room. Light tiles are kept clear too. The NASA Workbench needs a 5 x 5 block: its 3 x 3 core strictly free (no light tile under Galacticraft's fake blocks), its outer ring free from layer 1 up (a floor light tile may lie in it). It takes the fitting center nearest the wanted cell (D252). If furniture walls a chest, machine or guard off from the doorway, the shortest way through the furniture is cleared.
+- **Scaling:** chest, machine and guard counts grow by one step per 450 interior cells: a room of `q = max(1, interior / 450)` steps gets `q` room guards, `q` back-row chests and `q` repeated machines (D252).
 - **Furniture:** `FURNITURE` marks with the key TABLE, CONSOLE, BUNK or SHELF (shelves and racks two high). The raster writes them as furniture roles drawn from the style. `BASIN` is standing water sunk into the floor layer.
 
 | Kind | Furnishing |
@@ -112,14 +112,14 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 | Fuel depot | Fuel tanks along both side walls; fuel chests |
 | Generator hall | A row of generators; a battery buffer in a back corner; guards |
 | Air handling, pump room | Their machines in the middle row; shelves (air); flood cells (pump) |
-| Workshop | The NASA Workbench with its free ring; workbenches; a workshop chest; tables |
+| Workshop | The NASA Workbench with its free ring, near the back-left corner; workbenches; a workshop chest; tables |
 | Bunks, infirmary | Bunks or beds along the side walls; chests; shelves (infirmary) |
 | Stockpile | Chests along the back wall; rows of shelves |
 | Mess galley, cafeteria | A counter, rows of tables, galley chests |
 | Armory | Two staggered rows of item frames on the back wall, split around a doorway; chests; tables; guards |
 | Vehicle bay | Battery buffers and a workbench on the back wall; a workshop chest; a bench of tables |
 | Server room | Rows of two-high racks; a comms machine; a comms chest |
-| Missile assembly | The NASA Workbench in the middle; two workbenches; casing frame boxes on the back wall; salvage chests; guards |
+| Missile assembly | The NASA Workbench in the middle, or the fitting place nearest it; two workbenches; casing frame boxes on the back wall; salvage chests; guards |
 | Water treatment | Basins of standing water in rows; pumps on the back wall |
 | Guard post | A `post` spawner |
 
@@ -143,9 +143,9 @@ The plan is pure geometry and deterministic. It never changes by activity level.
   - concrete `C`/`F`, clear glass `G`, Gantry Beam `B`, Galacticraft pad `P`, with the 3 x 3 bore open;
   - the controller and hatches (input bus and maintenance beside it, energy and input HV below) are real GT machines facing the gallery;
   - exactly one part is missing: the controller (concrete in its place) or the Energy Hatch.
-- **Shaft:** above the silo, a 5 x 5 concrete ring around the bore up to the ground height read in the shaft's window, with the open, half open or closed mouth variants. The 32 blocks over each mouth cell are cleared, so a mouth never sits under a canopy (only leaves, logs, snow or ice can lie above the ground there, D239).
-- **Owner:** every generated GT machine (silo controllers and hatches, radar controllers, room machines) carries the owner "[Silo Complex]" with a fixed UUID, so GT's power-fail tracker has an owner when one stops or is broken (D239).
-- **Escape:** a 1 x 1 ladder at the dead end of a minor hallway (else of a major hall, else the hub's corner), clinging to the end wall (`ComplexPlan.escapeMeta`). It runs up through its section's ceiling (`escapeTop`) to a closed top-half trapdoor flush with the ground, with the 32 blocks over the trapdoor cleared. A lake over the column gets no trapdoor. The cell behind it is stone up to just under the surface block.
+- **Shaft:** above the silo, a 5 x 5 concrete ring around the bore up to the ground height read in the shaft's window, with the open, half open or closed mouth variants. Natural cover over each mouth cell is cleared up to 32 blocks over the ground, so a mouth never sits under a canopy: plants, vines, snow layers, cactus, logs and leaves (`isWood` or `isLeaves`) and ice. Ice goes on being cleared above 32 while it lasts, so an ice spike is cut whole. Any other block stays (a chest, a fence, another mod's build), and so does every block with a tile entity (D239, D250).
+- **Owner:** every generated GT machine (silo controllers and hatches, radar controllers, room machines) carries the owner "[Silo Complex]" with a fixed UUID, so GT's power-fail tracker has an owner when one stops or is broken (D239). The first real player (not a fake player) to right-click a generated Missile Silo, Launch Control or radar takes it over, so its power-fail notices, wireless energy and launches are that player's. GT's own machines in the rooms (generators, buffers, pumps) keep the complex as owner (D250).
+- **Escape:** a 1 x 1 ladder at the dead end of a minor hallway (else of a major hall, else the hub's corner), clinging to the end wall (`ComplexPlan.escapeMeta`). It runs up through its section's ceiling (`escapeTop`) to a closed top-half trapdoor flush with the ground, with the natural cover over the trapdoor cleared as over a mouth. A lake over the column gets no trapdoor. The cell behind it is stone up to just under the surface block.
 - **`landY`:** `HeightProbe.landY` is the top solid block, so the trapdoor replaces it and lies flush (D201).
 - **Radar stations (D215):** 0 to 2 huts anywhere on the surface, at least 12 blocks apart, 3 blocks clear of every silo shaft and clear of the escape column. Each is the same 5 x 5 hut with the small radar on its roof as before, inert without its Energy Hatch.
 - **Armory frames:**
@@ -157,5 +157,5 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 
 - **Unit:**
   - `ComplexLayoutTest`: coverage over 200 seeds, rooms and kinds, sizes and heights, no overlaps, silo distribution over 1000 seeds, both sides and at most two halls, Launch Control and the assembly floor, posts at branch points, the escape ladder, armory frames, door-relative furnishing over 150 seeds with every mark reachable, reachability of every section and walkway, the lamp grid, the light simulation, and determinism.
-  - `ComplexRasterTest`, `ComplexPlacerTest` (never cascading, order independence), `ComplexSignsTest`, `ComplexContentsTest` (lamps by run and section), `PaletteStylesTest` and `ComplexExportTest`.
+  - `ComplexRasterTest`, `ComplexPlacerTest` (never cascading, order independence), `ComplexSignsTest`, `ComplexContentsTest` (lamps by run and section), `PaletteStylesTest` (interior pattern coordinates), `ComplexContentCountsTest` (a NASA Workbench in every missile assembly floor and workshop, room guards per area step, the lamp count printed and held in a band), `GtMachineHookTest` (who takes a generated machine over) and `ComplexExportTest`.
 - **Scenarios:** `icbm.complex.*` (places, skips, levels, guards, dim.*, loot and machines). The fixed-cell scenarios build on `ComplexArena`: every column cleared from the chunk's top, stone below the floor the placer really uses (D239).

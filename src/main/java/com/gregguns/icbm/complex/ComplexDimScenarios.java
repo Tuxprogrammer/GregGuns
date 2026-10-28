@@ -178,12 +178,15 @@ public final class ComplexDimScenarios {
                 PlanetTable.tierOf(actual));
             int chance = IcbmConfig.siloComplexChancePercent;
             IcbmConfig.siloComplexChancePercent = 100;
+            Set<Long> loadedAtStart = world.getChunkProvider() instanceof ChunkProviderServer
+                ? loaded((ChunkProviderServer) world.getChunkProvider())
+                : new HashSet<Long>();
             try {
                 PopulateGuard.register();
                 run(world, out);
             } finally {
                 IcbmConfig.siloComplexChancePercent = chance;
-                release(world);
+                release(world, loadedAtStart, out);
             }
             return out.build();
         }
@@ -292,7 +295,6 @@ public final class ComplexDimScenarios {
                 PopulateGuard.violationCount() };
         }
 
-        /** Y of the topmost block that stops movement (trees and plants skipped), or -1. */
         /** The placer's own cut-off rule (D207), read from the world around the column. */
         private static boolean cutOff(World w, int floor, int x, int z) {
             com.gregguns.worldgen.PopulateWindow win = new com.gregguns.worldgen.PopulateWindow(
@@ -306,13 +308,24 @@ public final class ComplexDimScenarios {
         }
 
         /**
-         * Lets the dimension go once its scenario is done: its chunks are queued for unload, and a planet's world is
-         * queued to unload too (Forge unloads it on a later tick when nothing keeps it). One prefix run visits about
-         * 25 planets of about 2,600 chunks each in the real pack; held together they ran an 8 GB server out of memory.
+         * Lets the dimension go once its scenario is done: the chunks the scenario loaded are queued for unload, and a
+         * planet's world is queued to unload too (Forge unloads it on a later tick when nothing keeps it). One prefix
+         * run visits about 25 planets of about 2,600 chunks each in the real pack; held together they ran an 8 GB
+         * server out of memory. Nothing is released while a player is in the dimension (a client session standing on
+         * the Moon), and chunks that were loaded before the scenario stay.
          */
-        private static void release(World world) {
+        private static void release(World world, Set<Long> loadedAtStart, ScenarioResult.Builder out) {
             if (!(world.getChunkProvider() instanceof ChunkProviderServer)) return;
-            ((ChunkProviderServer) world.getChunkProvider()).unloadAllChunks();
+            if (!world.playerEntities.isEmpty()) {
+                out.note("a player is in this dimension: its chunks and world stay loaded");
+                return;
+            }
+            ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
+            for (long key : loaded(cps)) {
+                if (loadedAtStart.contains(key)) continue;
+                // Chunk coordinates; spawn chunks of a dimension that keeps its spawn loaded are left alone.
+                cps.unloadChunksIfNotNearSpawn((int) (key >> 32), (int) key);
+            }
             if (world.provider.dimensionId != 0) DimensionManager.unloadWorld(world.provider.dimensionId);
         }
 
@@ -336,6 +349,7 @@ public final class ComplexDimScenarios {
             return false;
         }
 
+        /** Y of the topmost block that stops movement (trees and plants skipped), or -1. */
         private static int top(World w, int x, int z) {
             for (int y = 254; y > 0; y--) {
                 Block b = w.getBlock(x, y, z);
