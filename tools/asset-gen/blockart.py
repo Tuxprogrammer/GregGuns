@@ -204,12 +204,14 @@ def gantry_beam(rng):
     c.rect(0, 13, 16, 16, steel)                               # bottom flange
     c.hline(0, 16, 13, hx("#b4bac6"))
     c.hline(0, 16, 15, hx("#4a4f59"))
-    for y in range(3, 13):                                     # yellow-black safety stripe on the web
+    # Yellow-black safety stripe on the web. The stripe period (8) and the rivet spacing (8) divide the 16-pixel
+    # tile, so a row of beams reads as one unbroken stripe with no mark at the block seams.
+    for y in range(3, 13):
         for x in range(16):
-            c.px(x, y, hx("#e0b020") if ((x + y) // 3) % 2 == 0 else hx("#202226"))
+            c.px(x, y, hx("#e0b020") if ((x + y) // 4) % 2 == 0 else hx("#202226"))
     c.hline(0, 16, 3, hx("#14161a"))
     c.hline(0, 16, 12, hx("#14161a"))
-    for x in (2, 13):
+    for x in (3, 11):
         rivet(c, x, 1, steel)
         rivet(c, x, 14, steel)
     return [c]
