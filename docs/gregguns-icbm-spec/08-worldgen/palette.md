@@ -1,8 +1,8 @@
 # Complex palette: blocks, style sets and lamps
 
 - **Baseline:** none (the ICBM baseline has no worldgen).
-- **Decisions:** D229 (the redesign), D205 (the complex wall), D217 (floor light), D240 to D244, D248, D251
-- **Pack mods:** Chisel, GregTech, Ztones, Galacticraft (Core and Mars); every one optional (D241)
+- **Decisions:** D229 (the redesign), D205 (the complex wall), D217 (floor light), D240 to D244, D248, D251, D259 to D262
+- **Pack mods:** Chisel, GregTech, Ztones, Galacticraft (Core and Mars), BiblioCraft (furniture); every one optional (D241, D262)
 - **Code:** `com.gregguns.icbm.complex.palette` (`ComplexPalette`, `RoomStyle`, `BlockRef`, `PaletteSets`)
 
 ## What it does
@@ -12,15 +12,18 @@ Every room, hall and the hub gets a `RoomStyle` from `ComplexPalette.styleFor(ki
 - **one wall block**, the same everywhere in the room, drawn once from the style set's wall choices;
 - a **floor pattern** and a **ceiling pattern**, each a function of the interior cell `(x, z)` and the interior size (checker, border plus field, double ring, stripes, bands, grid lines, center strip). Interior cell 0 is the first cell inside the section's wall, so a border of width 1 runs along the wall;
 - a **lamp pair**, lit and dead;
-- an optional **accent** block and **furniture** blocks (table, console, bunk, shelf), all plain cubes or slabs, never tile entities.
+- an optional **accent** block and **furniture** blocks (table, console, bunk, shelf), all plain cubes or slabs, never tile entities. They are the small rooms' cube furniture, and what a room shows of a BiblioCraft piece when BiblioCraft is absent (see [Furniture](#furniture-d259-d262-d263)).
+
+**The ceiling never shows the wall's block (D261).** A ceiling cell tries, in order: the drawn ceiling design, the set's other ceiling designs, the accent, then vanilla stone and vanilla stone bricks. It takes the first whose resolved block and meta differ from the wall's. The last two differ from each other, so one of them always differs from the wall, in every set and with any mix of pack mods missing. `RoomStyle.ceiling` does this on the server; `RoomStyle.ceilingEntry` is the pure twin the test uses.
 
 Each block is a `BlockRef`: a chain of registry ids, pack block first, GregTech next, vanilla last. `PaletteResolver` walks the chain with `GameRegistry.findBlock` on first use on the server and caches the result; nothing resolves at class load. With no pack mod and no GregTech loaded, every chain ends on a vanilla block, so the dev environment still generates.
 
-## Style sets (11)
+## Style sets (12)
 
 | Set | Look | Groups it dresses |
 |---|---|---|
-| `lab_white` | Chisel Laboratory panels, tiles, screens; GT light concrete; vanilla quartz | medical, server room, command, cafeteria |
+| `lab_white` | Chisel Laboratory panels, tiles, screens, the dark gray steel walls and the two-tone checker floor; GT light concrete; vanilla quartz | medical, server room, command, cafeteria |
+| `lab_dark` | Chisel Laboratory dark gray steel walls (large and small steel), the two-tone checker tile floor, white panel ceilings (D260) | medical, server room, command |
 | `factory_tile` | Chisel Factory plating, metal box, hazard rows; GT dark bricks | power, workshop, vehicle bay, missile assembly, storage, halls, gallery |
 | `tyrian_dark` | Chisel Tyrian dark plate, blue strip | command, hub, gallery, major hall, guard, server room |
 | `concrete_bunker` | Silo Complex Wall (D205) or Chisel concrete, weathered when abandoned; GT light concrete | storage, guard, minor hall, crew, gallery, vehicle bay |
@@ -52,7 +55,7 @@ Worth is the value of mining the block in bulk. **Low** means it drops itself or
 
 | Block (registry id) | Metas used | Look | Use | Worth |
 |---|---|---|---|---|
-| `chisel:laboratoryblock` | 0 wall panel, 1 dotted panel, 2 large wall, 3 roundel, 5 large tile, 6 small tile, 7 floor tile, 9 clear screen, 10 fuzz screen, 11 large steel, 12 small steel, 15 info console | White and steel-grey lab panels | wall, floor, ceiling, dead lamp, console | Low (carves from any stone) |
+| `chisel:laboratoryblock` | 0 wall panel, 1 dotted panel, 2 large wall, 3 roundel, 5 large tile, 6 small tile, 7 floor tile, 8 checker tile (two-tone), 9 clear screen, 10 fuzz screen, 11 large steel, 12 small steel, 15 info console | White and steel-grey lab panels | wall, floor, ceiling, dead lamp, console | Low (carves from any stone) |
 | `chisel:factoryblock` | 0 dots, 3 platex, 6 hazard, 7 hazard orange, 9 metal box, 13 plating, 15 column | Industrial grey plates, hazard stripes | wall, floor, ceiling, accent | Low |
 | `chisel:tyrian` | 3 soft plate, 8 plate tiles, 11 blue plating, 12 black, 13 black 2, 15 plate | Dark sci-fi plate | wall, floor, ceiling | Low |
 | `chisel:concrete` | 0 default, 1 block, 3 blocks, 4 weathered, 5 weathered block, 10 asphalt | Grey and worn concrete | wall, floor, ceiling, accent, worn | Low |
@@ -73,11 +76,36 @@ Worth is the value of mining the block in bulk. **Low** means it drops itself or
 | `gregguns:complex_wall` | 0 | Steel Bastion Plating look | one wall choice (D205) | None (breaks into itself, no recipe) |
 | vanilla: `stone`, `stonebrick` 0 2 3, `quartz_block` 0, `glowstone`, `sandstone` 2, `stained_hardened_clay` 7 14 15, `wool` 0 7 11, `wooden_slab` 1, `stone_slab` 7, `bookshelf` | as listed | Fallbacks and furniture | fallbacks, furniture | Low (glowstone gives 2 to 4 dust per block) |
 
-Not used, on purpose: GT machine casings, GT frame boxes, GT metal and storage blocks, GT sheet-metal blocks (they cost plates), Chisel steel and metal blocks (they carve from metal blocks), Galacticraft tin and aluminum decoration blocks (they pay in tin and aluminum), Desh blocks. BiblioCraft furniture is a tile entity per piece (and all rights reserved), so tables, shelves and bunks are plain cubes and slabs instead. Carpenter's Blocks are tile entities too.
+Not used, on purpose: GT machine casings, GT frame boxes, GT metal and storage blocks, GT sheet-metal blocks (they cost plates), Chisel steel and metal blocks (they carve from metal blocks), Galacticraft tin and aluminum decoration blocks (they pay in tin and aluminum), Desh blocks. Carpenter's Blocks are tile entities per block and are not used.
+
+## Furniture (D259, D262, D263)
+
+The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) get real furniture from BiblioCraft 1.11.7 when it is loaded, and the cube furniture above when it is not. Each piece is a tile entity, so only the small rooms hold them: about 19 rooms of a complex, and about 900 tile-entity pieces (BiblioCraft and lockers) over 300 plans.
+
+| Piece | BiblioCraft block (registry name) | Meta | Facing (tile NBT) | Without BiblioCraft |
+|---|---|---|---|---|
+| Chair, stool | `BiblioSeats` | wood | `Angle`; `hasBack` 1 for a chair, 0 for a stool; `backWoodType` | a wooden stair, its back away from the table |
+| Table | `BiblioTable` | wood | none; a lone table's `leg1`..`leg4` off, `top1`..`top4` and `monoleg` on (neighbors join when a player builds next to it) | the style's table |
+| Desk | `BiblioDesk` | wood | `deskAngle` | the style's table |
+| Typewriter | `BiblioTypewriter` | 3 (black) | `angle`, which for the typewriter is the keys' facing itself (seen in the real-pack renders) | none |
+| Clipboard | `BiblioClipboard` | 0 | `angle` | none |
+| Bookcase | `Bibliotheca` | wood | `bookcaseAngle` | the style's shelf |
+| Medicine cabinet | `BiblioPotionShelf` | wood | `potionshelfAngle` | the style's shelf |
+| Tool rack | `BiblioRack` | wood | `rackAngle` | the style's shelf |
+| Armor stand | `Armor Stand` | angle below, angle + 4 above | the meta | none |
+| Locker | GregTech's ULV Locker (`gregtech:gt.blockmachines`, the `Locker_ULV` item), facing into the room (D263) | | GT front facing | the style's shelf |
+| Server rack | the style's console block, two high | | | the same |
+
+- **Wood:** one per room, spruce, dark oak, birch or oak, from the plan seed and the room id.
+- **Facing:** BiblioCraft turns a piece to face the player who places it, storing `(playerFacing + 1) % 4` (player facing 0 south, 1 west, 2 north, 3 east). A piece whose front faces `f` gets `(f + 3) % 4`; the typewriter's model is a quarter turn off, so it gets `f`. The real-pack renders confirm chairs face their tables, desks face their chairs, and shelves, bookcases, cabinets, clipboards and lockers face into the room.
+- **How it is placed:** `FurnitureFiller` (the complex's mark filler) sets the block through the window's sink by registry name (`GameRegistry.findBlock`, guarded by `Loader.isModLoaded("BiblioCraft")`), then writes the facing into the tile's own NBT (`writeToNBT`, set the keys, `readFromNBT`). No BiblioCraft class is linked and none of its assets ship (D262).
+- **Worth:** BiblioCraft furniture is wood and drops itself; a GT ULV Locker is a cheap machine. Nothing here is a material sink worth farming.
 
 The Ztones ids come from decompiling `ModBlocks.registerBlocks` (Ztones 2.2.2 has no public source): lamps and tiles register under their plain name, the metal sets under the block's unlocalized name `tile.ztones:<set>Block`. Both spellings are chained, and a wrong guess only means the fallback (a Chisel or GT block) is drawn. `icbm.palette.resolve` logs which chain entries the live pack fails to find.
 
 ## Tests
 
+- `CeilingContrastTest` (unit, D261): over every style group, dimension, activity level and 48 seeds, rooms of three sizes and all 64 mixes of the six mods a chain names, no ceiling cell resolves to the wall's block; the drawn design stands wherever it differs; the `lab_dark` set has the steel walls and the checker floor.
+- `BiblioFurnitureTest` (unit): every BiblioCraft piece has a registry name, the facing turns all four ways, each piece writes its facing key, and a stair chair's back is opposite its facing.
 - `ComplexPaletteTest` (unit): with no pack mods every style resolves to a vanilla block; every registry name and meta is well formed; walls are uniform and styles are deterministic per seed; every group has at least two sets with at least four walls and four floor designs; the Silo Complex Wall is a wall choice; planets use local stone and other dimensions do not; lamps have a lit and a dead twin.
 - `icbm.palette.resolve` (scenario): resolves every block of every style set in the live registry (walls, floors, ceilings, lamps, the accent, the worn block and the furniture), checks lit lamps emit 15, dead lamps do not, building blocks are cubes (furniture may be a slab), and that a Chisel block has a variation at its meta (`ICarvable.getManager(meta)` is not null), and notes which mod supplied each block.
