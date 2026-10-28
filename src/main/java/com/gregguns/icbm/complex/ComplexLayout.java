@@ -105,7 +105,8 @@ public final class ComplexLayout {
 
     /**
      * Grows the plan's geometry. A growth that misses the coverage target (with a margin), or the room, silo or
-     * guard-post count, is grown again from a seed mixed from the plan seed and the attempt number, and the best attempt
+     * guard-post count, is grown again from a seed mixed from the plan seed and the attempt number, and the best
+     * attempt
      * is kept, so the result is still a pure function of the seed (D230).
      */
     static ComplexGrower grown(long seed) {

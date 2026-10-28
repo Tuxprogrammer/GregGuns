@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Grows the geometry of one complex (D229, D230): the hub, the major halls leaving it (most bending once or twice), the silo
+ * Grows the geometry of one complex (D229, D230): the hub, the major halls leaving it (most bending once or twice), the
+ * silo
  * gallery along one or two of them with Launch Control at its far end, then rooms and minor hallways attached
  * side to side, rooms branching off rooms, until the room count is reached. The rooms then grow into the rock around
  * them until the built footprint covers at least three quarters of the complex. Neighboring sections touch but never
@@ -360,7 +361,8 @@ final class ComplexGrower {
         for (int side : g.alongX() ? new int[] { 0, 2 } : new int[] { 1, 3 }) {
             int[] b = adjacent(g, side, g.latLo(side), g.latHi(side) - g.latLo(side), ComplexLayout.SILO_SIZE);
             for (int x = Math.max(0, b[0]); x < Math.min(S, b[2]); x++) {
-                for (int z = Math.max(0, b[1]); z < Math.min(S, b[3]); z++) if (own[x * S + z] == 0) own[x * S + z] = RESERVED;
+                for (int z = Math.max(0, b[1]); z < Math.min(S, b[3]); z++)
+                    if (own[x * S + z] == 0) own[x * S + z] = RESERVED;
             }
         }
     }

@@ -360,7 +360,9 @@ class ComplexPlacerTest {
                 }
             }
         }
-        assertTrue(faces > 100 && walled == faces, "every cell around the lake above its bed is wall: " + walled + "/" + faces);
+        assertTrue(
+            faces > 100 && walled == faces,
+            "every cell around the lake above its bed is wall: " + walled + "/" + faces);
         // The plain hub away from the lake is still open.
         String far = r.cells.get((p.anchorX() + hub.minX + 3) + "," + (floor + 2) + "," + (p.anchorZ() + hub.minZ + 3));
         assertTrue(far != null && !far.startsWith(wall + ":"), "the rest of the hub is open");
