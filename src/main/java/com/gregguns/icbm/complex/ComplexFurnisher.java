@@ -617,19 +617,37 @@ final class ComplexFurnisher {
             }
         }
 
-        /** Writes the furniture that survived as FURNITURE marks, one per layer. */
+        /**
+         * Writes the furniture that survived as FURNITURE marks, one per layer. A chair whose table the reachability
+         * pass cleared away is dropped too.
+         */
         void commit() {
+            java.util.Map<Long, String> bottom = new java.util.HashMap<>();
+            for (int a = 0; a < L; a++) {
+                for (int d = 0; d < D; d++) {
+                    if (occ[a * D + d] == FURN) bottom.put(cell(f.x(a, d), f.z(a, d)), furn[a * D + d][0]);
+                }
+            }
             for (int a = 0; a < L; a++) {
                 for (int d = 0; d < D; d++) {
                     int i = a * D + d;
                     if (occ[i] != FURN) continue;
                     String[] l = furn[i];
+                    if (FurniturePiece.of(l[0]) == FurniturePiece.CHAIR) {
+                        int fc = furnFacing[i];
+                        String front = bottom.get(cell(f.x(a, d) + RoomFurniture.DX[fc], f.z(a, d) + RoomFurniture.DZ[fc]));
+                        if (!RoomFurniture.seatsAt(front)) continue;
+                    }
                     for (int y = 1; y <= l.length; y++) {
                         r.add(MarkKind.FURNITURE, f.x(a, d), y, f.z(a, d), l[y - 1], furnFacing[i], 1);
                     }
                 }
             }
         }
+    }
+
+    private static long cell(int x, int z) {
+        return (long) x << 32 | (z & 0xffffffffL);
     }
 
     /** Offsets tried around a wanted cell, nearest first, a step in depth costing two steps along the row. */

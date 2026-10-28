@@ -130,10 +130,9 @@ public final class RoomFurniture {
                 // The desk faces the door, the commander behind it, two visitors' chairs in front.
                 if (fl.put(ma, 3, dir.toBack, desk, typewriter)) {
                     fl.put(ma, 2, dir.toDoor, chair);
-                    fl.put(ma - 1, 5, dir.toBack, chair);
-                    fl.put(ma + 1, 5, dir.toBack, chair);
+                    if (fl.put(ma + 1, 3, dir.toBack, desk)) fl.put(ma + 1, 4, dir.toBack, chair);
+                    fl.put(ma, 4, dir.toBack, chair);
                 }
-                fl.put(ma + 1, 3, dir.toBack, desk);
                 column(fl, 0, 2, D - 4, 3, dir.plusA, bookcase, bookcase);
                 fl.put(last, 2, dir.minusA, stand, standTop);
                 break;
@@ -214,6 +213,18 @@ public final class RoomFurniture {
             fl.put(in, d, seatFacing, chair);
             if (k++ % 2 == 0) fl.top(a, d, clip);
         }
+    }
+
+    /** World offsets of one step in each facing (0 south, 1 west, 2 north, 3 east). */
+    static final int[] DX = { 0, -1, 0, 1 }, DZ = { 1, 0, -1, 0 };
+
+    /**
+     * @param bottom the key of the bottom layer of the piece a chair faces, or null for none
+     * @return whether a chair can face it: a table, a desk or a console
+     */
+    static boolean seatsAt(String bottom) {
+        FurniturePiece p = FurniturePiece.of(bottom);
+        return CONSOLE.equals(bottom) || p == FurniturePiece.WOOD_TABLE || p == FurniturePiece.DESK;
     }
 
     /** A table of {@code n} cells along a at depth d, a chair either side of each table cell. */
