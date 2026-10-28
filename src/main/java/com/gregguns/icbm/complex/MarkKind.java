@@ -11,7 +11,7 @@ public enum MarkKind {
     /**
      * The first frame cell of a wall that holds item frames (armory): the room cell in front of the wall. The key is
      * the loot-table key for the frames; {@link Mark#facing()} is the way they face and {@link Mark#extent()} how many
-     * hang along the wall (every second cell, in +X or +Z).
+     * hang along the wall ({@link ComplexLayout#FRAME_STRIDE} cells apart, in +X or +Z).
      */
     ITEM_FRAME_WALL,
     /** A light fixture cell; the operational level lights it, the damage pass may leave it dark. */

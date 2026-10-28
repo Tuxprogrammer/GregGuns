@@ -48,7 +48,7 @@ public final class ItemBlockHoleSpawner extends ItemBlock {
                 HoleCaps.MAX_NEARBY,
                 HoleCaps.MAX_PER_ATTEMPT));
         String hint = StatCollector.translateToLocal("gregguns.icbm.part.tooltip.shift");
-        tooltip.addAll(HoleTooltipFormat.lines(tierLine, summary, details, hint, shift));
+        com.gregguns.icbm.TooltipWrap.addAll(tooltip, HoleTooltipFormat.lines(tierLine, summary, details, hint, shift));
         if (shift) {
             tooltip.add(AddedBy.line());
         }

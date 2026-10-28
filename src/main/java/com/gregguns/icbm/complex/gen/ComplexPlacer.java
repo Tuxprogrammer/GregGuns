@@ -390,14 +390,15 @@ public final class ComplexPlacer implements ComplexWriter {
         int x = plan.anchorX() + cp.escapeX(), z = plan.anchorZ() + cp.escapeZ();
         int n = 0;
         // A ladder clings to the block behind it, and a natural cave the shaft crosses has none: the cell behind the
-        // whole climb is written solid, from the level up to that column's own ground. Its window writes it, whether
-        // or not the window holds the ladder.
+        // whole climb is written solid, from the level up to just under that column's own surface block. The surface
+        // block itself stays as the terrain made it, so nothing but the trapdoor's own cell differs from the grass
+        // beside it. Its window writes it, whether or not the window holds the ladder.
         int meta = cp.escapeMeta();
         int bx = x + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = z + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
         if (window.contains(bx, bz)) {
             int bg = probe.landY(bx, bz);
             if (bg != HeightProbe.NONE) {
-                for (int y = floorY + ComplexLayout.HEIGHT; y <= bg; y++) {
+                for (int y = floorY + ComplexLayout.HEIGHT; y < bg; y++) {
                     ResolvedBlock b = blocks.named("backing", bx, y, bz);
                     if (b != null && sink.setBlock(bx, y, bz, b.block, b.meta)) n++;
                 }

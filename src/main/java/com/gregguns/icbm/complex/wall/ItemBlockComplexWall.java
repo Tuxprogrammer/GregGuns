@@ -13,6 +13,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
 import com.gregguns.explosion.nuclear.FalloutTooltipFormat;
+import com.gregguns.icbm.TooltipWrap;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -36,7 +37,8 @@ public final class ItemBlockComplexWall extends ItemBlock {
         boolean shift = GuiScreen.isShiftKeyDown();
         List<String> details = new java.util.ArrayList<String>();
         details.add(StatCollector.translateToLocal(TIP + ".1"));
-        tooltip.addAll(
+        TooltipWrap.addAll(
+            tooltip,
             FalloutTooltipFormat.lines(
                 String.format(
                     StatCollector.translateToLocal("gregguns.icbm.part.tooltip.tier"),

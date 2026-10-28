@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gregguns.icbm.complex.Box;
+import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.complex.Mark;
@@ -99,8 +100,8 @@ public final class ComplexContents {
             }
             boolean alongZ = f.facing() == 1 || f.facing() == 3;
             for (int i = 0; i < f.extent(); i++) {
-                int x = f.x() + (alongZ ? 0 : 2 * i);
-                int z = f.z() + (alongZ ? 2 * i : 0);
+                int x = f.x() + (alongZ ? 0 : ComplexLayout.FRAME_STRIDE * i);
+                int z = f.z() + (alongZ ? ComplexLayout.FRAME_STRIDE * i : 0);
                 cells.add(wallKey(x, f.y(), z));
                 cells.add(wallKey(x - FRAME_DX[f.facing()], f.y(), z - FRAME_DZ[f.facing()]));
             }

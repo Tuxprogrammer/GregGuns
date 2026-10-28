@@ -20,4 +20,22 @@ public final class FactionRules {
         }
         return a == NpcFaction.HOSTILE || b == NpcFaction.HOSTILE;
     }
+
+    /**
+     * Whether a shot from {@code shooter} passes through {@code target} instead of hitting it: both belong to the same
+     * NPC faction, and members of one faction never hurt each other. A guard firing past a comrade at a player leaves
+     * the comrade untouched.
+     *
+     * @param shooter whoever fired, or null
+     * @param target  the entity the shot meets
+     * @return true when both are {@link HasNpcFaction} of one faction
+     */
+    // Deviation: Techguns bullets hit any entity on their path, so crowded guards wounded each other.
+    public static boolean sparesFriend(Object shooter, Object target) {
+        if (!(shooter instanceof HasNpcFaction) || !(target instanceof HasNpcFaction) || shooter == target) {
+            return false;
+        }
+        NpcFaction a = ((HasNpcFaction) shooter).npcFaction();
+        return a != null && a == ((HasNpcFaction) target).npcFaction();
+    }
 }

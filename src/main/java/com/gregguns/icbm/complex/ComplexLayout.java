@@ -244,8 +244,11 @@ public final class ComplexLayout {
             row[r] = true;
             minZ = Math.min(minZ, s.bounds().minZ - 6);
         }
-        tunnels.add(new Tunnel(new Box(138, 0, 106, 142, HEIGHT, 111), -1));
+        Tunnel stub = new Tunnel(new Box(138, 0, 106, 142, HEIGHT, 111), -1);
+        lamp(stub);
+        tunnels.add(stub);
         Tunnel trunk = new Tunnel(new Box(140, 0, minZ, 145, HEIGHT, 111), -1);
+        lamp(trunk);
         // D36: guards thicken with depth; the trunk's far end and each silo's walkway hold a "deep" post.
         trunk.add(MarkKind.SPAWNER, 142, 1, minZ + 2, "deep");
         tunnels.add(trunk);
@@ -253,6 +256,7 @@ public final class ComplexLayout {
             if (!row[r]) continue;
             int oz = SILO_ORIGINS[r * 2][1];
             Tunnel rowTunnel = new Tunnel(new Box(145, 0, oz - 6, 196, HEIGHT, oz), -1);
+            lamp(rowTunnel);
             for (SiloSlot s : silos) {
                 if (s.bounds().minZ == oz) rowTunnel.add(MarkKind.SPAWNER, s.bounds().minX + 2, 1, oz - 3, "deep");
             }
@@ -260,16 +264,58 @@ public final class ComplexLayout {
         }
     }
 
+    /** Lights a link tunnel the way {@link #lampCells} does for every other box. */
+    private static void lamp(Tunnel t) {
+        for (int[] c : lampCells(t.bounds())) t.add(MarkKind.LIGHT, c[0], HEIGHT - 2, c[1], "emergency");
+    }
+
+    /**
+     * Horizontal reach of one lamp on the walking floor. A lamp hangs in the top air row, four cells over the floor,
+     * and block light falls one level per cell (15 at the lamp), so a floor cell {@code h} cells away sideways reads
+     * {@code 15 - 4 - h}: within {@value} cells it is 8 or more.
+     */
+    public static final int LAMP_REACH = 3;
+
+    /**
+     * The lamp cells of a box's ceiling, as {x, z} pairs, so that every interior floor cell lies within
+     * {@link #LAMP_REACH} cells (Manhattan) of a lamp and reads block light 8 or more once the lamps are lit (D217).
+     * A diagonal lattice with the density of a perfect tiling of reach-3 diamonds (one lamp per 25 cells), then a
+     * lamp for every cell near an edge the lattice leaves short. Deterministic, and it draws no random numbers.
+     *
+     * @param b a room, hall or tunnel box (its interior is one cell in from each side)
+     * @return the lamp cells
+     */
+    public static List<int[]> lampCells(Box b) {
+        int x0 = b.minX + 1, x1 = b.maxX - 2, z0 = b.minZ + 1, z1 = b.maxZ - 2;
+        List<int[]> out = new ArrayList<int[]>();
+        boolean[][] lit = new boolean[x1 - x0 + 1][z1 - z0 + 1];
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                if (Math.floorMod(x + 7 * z, 25) == 0) light(out, lit, x0, z0, x, z);
+            }
+        }
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                if (!lit[x - x0][z - z0]) light(out, lit, x0, z0, Math.min(x + 2, x1), Math.min(z + 1, z1));
+            }
+        }
+        return out;
+    }
+
+    private static void light(List<int[]> out, boolean[][] lit, int x0, int z0, int x, int z) {
+        out.add(new int[] { x, z });
+        for (int i = 0; i < lit.length; i++) {
+            for (int j = 0; j < lit[i].length; j++) {
+                if (Math.abs(x0 + i - x) + Math.abs(z0 + j - z) <= LAMP_REACH) lit[i][j] = true;
+            }
+        }
+    }
+
     private static void addTunnelMarks(Tunnel t, int wing, Random rnd) {
         Box b = t.bounds();
         boolean alongZ = wing == N || wing == S;
-        int len = alongZ ? b.sizeZ() : b.sizeX();
         int mid = alongZ ? b.centerX() : b.centerZ();
-        for (int p = 6; p < len; p += 8) {
-            int x = alongZ ? mid : (wing == E ? b.minX + p : b.maxX - 1 - p);
-            int z = alongZ ? (wing == S ? b.minZ + p : b.maxZ - 1 - p) : mid;
-            t.add(MarkKind.LIGHT, x, HEIGHT - 2, z, "emergency");
-        }
+        for (int[] c : lampCells(b)) t.add(MarkKind.LIGHT, c[0], HEIGHT - 2, c[1], "emergency");
         int sx = alongZ ? mid : (wing == E ? b.minX + 1 : b.maxX - 2);
         int sz = alongZ ? (wing == S ? b.minZ + 1 : b.maxZ - 2) : mid;
         t.add(MarkKind.BLAST_DOOR, sx, 1, sz, "mouth");
@@ -283,8 +329,15 @@ public final class ComplexLayout {
     }
 
     /**
+     * Cells between two frames of a row on an armory wall. A long rifle in a frame draws about three blocks wide, so
+     * frames three cells apart leave every gun its own stretch of wall.
+     */
+    public static final int FRAME_STRIDE = 3;
+
+    /**
      * Two rows of item frames on the armory's far wall (the wall opposite its doorway; see
-     * {@code ComplexRaster.roomDoor}), one frame every second cell.
+     * {@code ComplexRaster.roomDoor}), one frame every {@link #FRAME_STRIDE} cells. The upper row starts one cell
+     * further along, so no frame sits directly above another and the guns of the two rows stagger.
      */
     private static void addFrameWall(Room r, int ix0, int ix1, int iz0, int iz1) {
         boolean alongZ = r.wing() == N || r.wing() == S;
@@ -293,13 +346,31 @@ public final class ComplexLayout {
         if (alongZ) {
             int x = doorOnHighSide ? ix0 : ix1;
             int facing = doorOnHighSide ? 3 : 1;
-            for (int y = 2; y <= 3; y++)
-                r.add(MarkKind.ITEM_FRAME_WALL, x, y, iz0, LootKeys.ARMORY, facing, (iz1 - iz0 + 2) / 2);
+            for (int y = 2; y <= 3; y++) {
+                int shift = y - 2;
+                r.add(
+                    MarkKind.ITEM_FRAME_WALL,
+                    x,
+                    y,
+                    iz0 + shift,
+                    LootKeys.ARMORY,
+                    facing,
+                    (iz1 - iz0 - shift) / FRAME_STRIDE + 1);
+            }
         } else {
             int z = doorOnHighSide ? iz0 : iz1;
             int facing = doorOnHighSide ? 0 : 2;
-            for (int y = 2; y <= 3; y++)
-                r.add(MarkKind.ITEM_FRAME_WALL, ix0, y, z, LootKeys.ARMORY, facing, (ix1 - ix0 + 2) / 2);
+            for (int y = 2; y <= 3; y++) {
+                int shift = y - 2;
+                r.add(
+                    MarkKind.ITEM_FRAME_WALL,
+                    ix0 + shift,
+                    y,
+                    z,
+                    LootKeys.ARMORY,
+                    facing,
+                    (ix1 - ix0 - shift) / FRAME_STRIDE + 1);
+            }
         }
     }
 
@@ -424,12 +495,7 @@ public final class ComplexLayout {
         Box b = r.bounds();
         int ix0 = b.minX + 1, ix1 = b.maxX - 2, iz0 = b.minZ + 1, iz1 = b.maxZ - 2;
         int cx = b.centerX(), cz = b.centerZ();
-        // Lights: the four inner corners and the center.
-        r.add(MarkKind.LIGHT, ix0, HEIGHT - 2, iz0, "room");
-        r.add(MarkKind.LIGHT, ix1, HEIGHT - 2, iz0, "room");
-        r.add(MarkKind.LIGHT, ix0, HEIGHT - 2, iz1, "room");
-        r.add(MarkKind.LIGHT, ix1, HEIGHT - 2, iz1, "room");
-        r.add(MarkKind.LIGHT, cx, HEIGHT - 2, cz, "room");
+        for (int[] c : lampCells(b)) r.add(MarkKind.LIGHT, c[0], HEIGHT - 2, c[1], "room");
         // Damage cells scale with the area.
         int area = b.sizeX() * b.sizeZ();
         for (int i = 0, n = Math.max(3, area / 14); i < n; i++) {

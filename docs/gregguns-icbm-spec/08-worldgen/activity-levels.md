@@ -37,7 +37,7 @@ Depth band: 0 is the central hall, then one band per 30 blocks of distance from 
 | `DAMAGE_CELL` wall | air (breach), rubble, or intact |
 | `DAMAGE_CELL` floor | air (hole), rubble, or intact |
 | `DAMAGE_CELL` roof | air, or intact (rubble is never placed overhead: it would fall) |
-| `LIGHT` | a lit light, or nothing |
+| `LIGHT` | a lit light, or nothing. The lamps of a box form a lattice that puts every floor cell within 3 cells of a lamp, so a fully lit box reads block light 8 or more on the floor (D217) |
 | `FLOOD_CELL` | water when not operational |
 | `RUBBLE` | fallout rubble (placeholder until I5's fallout blocks are on master) |
 | `MACHINE` | the machine, or a husk |

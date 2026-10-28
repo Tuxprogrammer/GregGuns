@@ -72,6 +72,7 @@ public final class SiloScenarios {
         registry.register(new T3EmpLaunch());
         registry.register(new Fuels());
         registry.register(new PowerLoss());
+        registry.register(new Resume());
         registry.register(new UnformedPad());
         registry.register(new HandStack());
         registry.register(new ShaftChunkScenario());
@@ -971,6 +972,102 @@ public final class SiloScenarios {
                 out.check(FluidRegistry.isFluidRegistered(test), "test fluid " + test + " is registered");
             }
             return out.build();
+        }
+    }
+
+    /** A silo that stopped itself for a broken structure switches back on once it forms again (D216). */
+    private static final class Resume implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.resume";
+        }
+
+        @Override
+        public String description() {
+            return "A silo that loses a part stops itself with the incomplete-structure message; when the part is back and the silo forms it switches itself on again and the message clears (no soft mallet needed). A silo a player switched off stays off.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            return ScenarioResult.pending(name(), 800, ticks -> {
+                if (ticks < WARMUP + 120) { // past GT's start-up check delay
+                    return null;
+                }
+                MTEMissileSilo s = silo(ctx);
+                if (s == null) {
+                    return ScenarioResult.fail(name(), "no silo controller");
+                }
+                IGregTechTileEntity base = s.getBaseMetaTileEntity();
+                World w = ctx.world();
+                int x = ctx.originX(), y = ctx.originY() + CY, z = ctx.originZ();
+                switch (stage[0]) {
+                    case 0:
+                        out.check(formed(ctx), "the silo forms");
+                        out.check(base.isAllowedToWork(), "a formed silo is switched on");
+                        w.setBlockToAir(x, y - 1, z); // the Energy Hatch
+                        out.check(!formed(ctx), "without its Energy Hatch the silo is not formed");
+                        mark[0] = ticks;
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        if (ticks - mark[0] < 10) {
+                            return null;
+                        }
+                        out.check(!base.isAllowedToWork(), "the silo stopped itself");
+                        out.checkEquals(
+                            "with the incomplete-structure reason",
+                            gregtech.api.util.shutdown.ShutDownReasonRegistry.STRUCTURE_INCOMPLETE.getID(),
+                            base.getLastShutDownReason()
+                                .getID());
+                        out.check(s.resumeScheduled(), "it remembers it stopped itself");
+                        com.gregguns.icbm.complex.gen.GtMachineHook.placeMte(
+                            w,
+                            ItemList.Hatch_Energy_LuV.get(1)
+                                .getItemDamage(),
+                            x,
+                            y - 1,
+                            z);
+                        out.check(formed(ctx), "the silo forms again with its part back");
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        if (ticks - mark[0] < 10) {
+                            return null;
+                        }
+                        out.check(base.isAllowedToWork(), "the silo switched itself back on");
+                        out.checkEquals(
+                            "and the shutdown message is gone",
+                            gregtech.api.util.shutdown.ShutDownReasonRegistry.NONE.getID(),
+                            base.getLastShutDownReason()
+                                .getID());
+                        out.check(!s.resumeScheduled(), "nothing is left pending");
+                        base.disableWorking(); // a player's soft mallet
+                        mark[0] = ticks;
+                        stage[0] = 3;
+                        return null;
+                    default:
+                        if (ticks - mark[0] < 40) {
+                            return null;
+                        }
+                        out.check(!base.isAllowedToWork(), "a silo a player switched off stays off");
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                }
+            });
         }
     }
 
