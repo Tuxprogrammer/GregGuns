@@ -12,5 +12,8 @@ public final class ComplexWallRegistration {
     public static void preInit(ModuleRegistrar registrar) {
         BlockComplexWall.instance = registrar
             .registerBlock(BlockComplexWall.NAME, new BlockComplexWall(), ItemBlockComplexWall.class);
+        // The registrar names the texture after the block; the block draws the Steel Bastion Plating's (no art of its
+        // own), so the name is set again after registering.
+        BlockComplexWall.instance.setBlockTextureName(BlockComplexWall.TEXTURE);
     }
 }
