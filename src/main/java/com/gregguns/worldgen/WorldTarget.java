@@ -29,7 +29,11 @@ public final class WorldTarget implements WindowedSink.Target {
 
     @Override
     public void spawn(Entity entity, double x, double y, double z) {
-        entity.setPosition(x, y, z);
+        // A hanging entity (item frame) sets its own position and thin bounding box from its wall and direction;
+        // setPosition would replace the box with a cube, and the frame would pop off at its first surface check.
+        if (!(entity instanceof net.minecraft.entity.EntityHanging)) {
+            entity.setPosition(x, y, z);
+        }
         world.spawnEntityInWorld(entity);
     }
 }

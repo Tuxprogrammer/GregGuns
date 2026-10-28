@@ -12,11 +12,11 @@ public final class ComplexPlan {
     private final List<Room> rooms;
     private final List<Tunnel> tunnels;
     private final List<SiloSlot> silos;
-    private final int escapeX, escapeZ;
+    private final int escapeX, escapeZ, escapeMeta;
     private final List<int[]> radarStations;
 
     ComplexPlan(long seed, int cellX, int cellZ, Room hall, List<Room> rooms, List<Tunnel> tunnels,
-        List<SiloSlot> silos, int escapeX, int escapeZ, List<int[]> radarStations) {
+        List<SiloSlot> silos, int escapeX, int escapeZ, int escapeMeta, List<int[]> radarStations) {
         this.seed = seed;
         this.cellX = cellX;
         this.cellZ = cellZ;
@@ -26,6 +26,7 @@ public final class ComplexPlan {
         this.silos = Collections.unmodifiableList(silos);
         this.escapeX = escapeX;
         this.escapeZ = escapeZ;
+        this.escapeMeta = escapeMeta;
         this.radarStations = Collections.unmodifiableList(radarStations);
     }
 
@@ -66,6 +67,11 @@ public final class ComplexPlan {
 
     public int escapeZ() {
         return escapeZ;
+    }
+
+    /** Metadata of the escape ladder blocks: 2 to 5, clinging to the solid wall behind the column. */
+    public int escapeMeta() {
+        return escapeMeta;
     }
 
     /** Radar station surface positions as {x, z}. */

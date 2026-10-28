@@ -34,6 +34,7 @@ public final class ComplexApplier {
     private final int cellX;
     private final int cellZ;
     private final int ceiling;
+    private final net.minecraft.world.World world;
 
     /**
      * @param sink      the clipped sink
@@ -47,6 +48,18 @@ public final class ComplexApplier {
      */
     public ComplexApplier(WindowedSink sink, int ox, int oy, int oz, long worldSeed, int cellX, int cellZ,
         int ceiling) {
+        this(sink, null, ox, oy, oz, worldSeed, cellX, cellZ, ceiling);
+    }
+
+    /**
+     * As above, with the world the item frames of a {@link Placement.Kind#FRAME_WALL} are created in (an entity needs
+     * one). Without a world the frame walls are skipped.
+     *
+     * @param world the world being populated, or null
+     */
+    public ComplexApplier(WindowedSink sink, net.minecraft.world.World world, int ox, int oy, int oz, long worldSeed,
+        int cellX, int cellZ, int ceiling) {
+        this.world = world;
         this.sink = sink;
         this.ox = ox;
         this.oy = oy;
@@ -89,10 +102,53 @@ public final class ComplexApplier {
             case COLLAPSE:
                 collapse(p.box());
                 break;
+            case FRAME_WALL:
+                frameWall(p);
+                break;
             default:
-                break; // FRAME_WALL: item frames are entities; placed by the generator's entity step
+                break;
         }
     }
+
+    /**
+     * Hangs the frames of an armory wall: one every second cell from the mark's cell, along +X or +Z (the wall's
+     * axis), each holding a gun from {@link SiloFrames}. A frame whose gun does not resolve this run stays empty
+     * rather than showing a guess.
+     */
+    private void frameWall(Placement p) {
+        if (world == null) {
+            return;
+        }
+        boolean alongZ = p.facing() == 1 || p.facing() == 3;
+        for (int i = 0; i < p.extent(); i++) {
+            int lx = p.x() + (alongZ ? 0 : 2 * i);
+            int lz = p.z() + (alongZ ? 2 * i : 0);
+            int x = ox + lx;
+            int z = oz + lz;
+            if (!sink.window()
+                .contains(x, z)) {
+                continue;
+            }
+            int y = oy + p.y();
+            net.minecraft.entity.item.EntityItemFrame frame = new net.minecraft.entity.item.EntityItemFrame(
+                world,
+                x,
+                y,
+                z,
+                p.facing());
+            String ref = SiloFrames.gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, GUN);
+            ItemStack gun = ref == null ? null : com.gregguns.worldgen.loot.LootCategories.stack(ref, 1);
+            if (gun != null) {
+                frame.setDisplayedItem(gun);
+            }
+            sink.spawn(frame, frame.posX, frame.posY, frame.posZ);
+        }
+    }
+
+    private static final java.util.function.Predicate<String> GUN = ref -> {
+        net.minecraft.item.Item it = com.gregguns.entity.npc.NpcItems.item(ref);
+        return it instanceof com.gregguns.item.gun.ItemGun;
+    };
 
     private static Block rubble(int x, int y, int z) {
         return ((x * 31 + y * 17 + z * 13) & 3) == 0 ? Blocks.gravel : Blocks.cobblestone;

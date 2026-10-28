@@ -24,6 +24,10 @@ public final class Room {
         marks.add(new Mark(k, x, y, z, key));
     }
 
+    void add(MarkKind k, int x, int y, int z, String key, int facing, int extent) {
+        marks.add(new Mark(k, x, y, z, key, facing, extent));
+    }
+
     public int id() {
         return id;
     }

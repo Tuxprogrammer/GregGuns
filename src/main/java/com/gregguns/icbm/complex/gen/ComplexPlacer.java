@@ -56,6 +56,7 @@ public final class ComplexPlacer implements ComplexWriter {
     private final MachineHook machines;
     private final MarkFiller filler;
     private final Settings settings;
+    private RadarDishHook dish = RadarDishHook.NONE;
     /** The world of the populate call in progress (set by the gate check that precedes every call). */
     private World world;
     private final Map<String, ComplexRaster> cache = new LinkedHashMap<String, ComplexRaster>();
@@ -65,6 +66,12 @@ public final class ComplexPlacer implements ComplexWriter {
         this.machines = machines;
         this.filler = filler;
         this.settings = settings;
+    }
+
+    /** @param hook how the radar stations' dishes are made (default none; the module installs the placeholder) */
+    public ComplexPlacer withRadarDish(RadarDishHook hook) {
+        this.dish = hook;
+        return this;
     }
 
     @Override
@@ -151,8 +158,10 @@ public final class ComplexPlacer implements ComplexWriter {
         String key = plan.dimension() + ":" + plan.cellX() + ":" + plan.cellZ();
         java.util.List<Placement> l = contentsCache.remove(key);
         if (l == null) {
-            // The comms data stick points at the next grid cell over (block x, z; an approximation of its anchor).
-            int[] other = { plan.anchorX() + 64 * 16, plan.anchorZ() };
+            // The comms data stick points at the nearest other complex the seed rolls (block x, z of its hall).
+            int[] other = world == null ? null
+                : NeighborComplex
+                    .nearest(world.getSeed(), plan.dimension(), plan, settings.chancePercent(), NeighborComplex.RADIUS);
             l = ComplexContents.build(cp, levelOf(cp), ceilingOf(plan), other);
             if (contentsCache.size() >= 2) contentsCache.remove(
                 contentsCache.keySet()
@@ -184,13 +193,15 @@ public final class ComplexPlacer implements ComplexWriter {
                         n++;
                         continue;
                     }
-                    ResolvedBlock b = blocks.resolve(c, x, wy, z);
+                    ResolvedBlock b = c == Cell.LADDER ? blocks.ladder(cp.escapeMeta(), x, wy, z)
+                        : blocks.resolve(c, x, wy, z);
                     if (b != null && sink.setBlock(x, wy, z, b.block, b.meta)) n++;
                 }
             }
         }
         n += shafts(cp, plan, floorY, window, sink, probe);
         n += ladder(cp, plan, floorY, window, sink, probe);
+        n += radars(cp, plan, groundY, window, sink, probe);
         for (Mark m : cp.allMarks()) {
             int wx = ax + m.x(), wz = az + m.z();
             if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, sink);
@@ -198,6 +209,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(sink),
+                world,
                 ax,
                 floorY,
                 az,
@@ -268,11 +280,62 @@ public final class ComplexPlacer implements ComplexWriter {
         if (g == HeightProbe.NONE) return 0;
         int n = 0;
         for (int y = floorY + ComplexLayout.HEIGHT; y < g; y++) {
-            ResolvedBlock b = blocks.named("ladder", x, y, z);
+            ResolvedBlock b = blocks.ladder(cp.escapeMeta(), x, y, z);
             if (b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
         }
+        // landY is the top solid block, so the trapdoor replaces it; a top-half trapdoor then lies flush with the
+        // surface (its top face at g + 1, level with the terrain around it).
         ResolvedBlock t = blocks.named("trapdoor", x, g, z);
         if (t != null && sink.setBlock(x, g, z, t.block, t.meta)) n++;
+        return n;
+    }
+
+    /** Radar hut footprint: a 5 x 5 floor, walls three high, a roof, and a mast above. */
+    static final int HUT = 5;
+    static final int WALL_H = 3;
+    static final int MAST_H = 7;
+
+    /**
+     * Radar stations (D128, 0 to 2 per complex): a small hut with a doorway on its south side, a mast on its roof and
+     * the dish hook at the mast top. Everything is built off the recorded ground height, so a hut that straddles
+     * windows stays level; each column's own ground fills the foundation below the floor or clears the bump above
+     * it. A column with no land (water) is left alone.
+     */
+    private int radars(ComplexPlan cp, StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink,
+        HeightProbe probe) {
+        int n = 0;
+        for (int[] st : cp.radarStations()) {
+            int hx = plan.anchorX() + st[0], hz = plan.anchorZ() + st[1];
+            int cx = hx + HUT / 2, cz = hz + HUT / 2;
+            for (int x = Math.max(hx, window.minX()); x <= Math.min(hx + HUT - 1, window.maxX()); x++) {
+                for (int z = Math.max(hz, window.minZ()); z <= Math.min(hz + HUT - 1, window.maxZ()); z++) {
+                    int g = probe.landY(x, z);
+                    if (g == HeightProbe.NONE) continue;
+                    ResolvedBlock wall = blocks.named("hutWall", x, groundY, z);
+                    ResolvedBlock roof = blocks.named("hutRoof", x, groundY, z);
+                    ResolvedBlock bar = blocks.named("mast", x, groundY, z);
+                    boolean edge = x == hx || x == hx + HUT - 1 || z == hz || z == hz + HUT - 1;
+                    boolean door = x == cx && z == hz + HUT - 1;
+                    boolean mast = x == cx && z == cz;
+                    int top = groundY + WALL_H + 1 + MAST_H;
+                    // One write per cell: foundation, floor, walls, roof, then air up to the mast top (it clears
+                    // trees and terrain bumps in the way).
+                    for (int y = Math.min(g, groundY - 1) + 1; y <= top; y++) {
+                        ResolvedBlock b = null;
+                        int h = y - groundY;
+                        if (h <= 0) b = wall;
+                        else if (h <= WALL_H) b = edge && !(door && h <= 2) ? wall : null;
+                        else if (h == WALL_H + 1) b = roof;
+                        else if (mast) b = bar;
+                        if (b != null ? sink.setBlock(x, y, z, b.block, b.meta)
+                            : y > groundY && sink.setBlock(x, y, z, blocks.air(), 0)) n++;
+                    }
+                    if (mast) {
+                        dish.place(sink, x, groundY + WALL_H + 2 + MAST_H, z);
+                    }
+                }
+            }
+        }
         return n;
     }
 }

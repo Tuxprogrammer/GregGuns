@@ -72,6 +72,8 @@ public final class Placement {
     private String extra;
     private final String key;
     private final Box box;
+    private final int facing;
+    private final int extent;
 
     private Placement(Builder b) {
         this.kind = b.kind;
@@ -89,6 +91,8 @@ public final class Placement {
         this.extra = b.extra;
         this.key = b.key;
         this.box = b.box;
+        this.facing = b.facing;
+        this.extent = b.extent;
     }
 
     static Builder at(Kind kind, int x, int y, int z) {
@@ -178,6 +182,16 @@ public final class Placement {
         return box;
     }
 
+    /** @return the hanging direction of a frame wall (0 south, 1 west, 2 north, 3 east), else 0 */
+    public int facing() {
+        return facing;
+    }
+
+    /** @return the frame count of a frame wall, one every second cell along it (+X or +Z), else 1 */
+    public int extent() {
+        return extent;
+    }
+
     @Override
     public String toString() {
         return kind + "@"
@@ -209,6 +223,8 @@ public final class Placement {
         private String extra;
         private String key;
         private Box box;
+        private int facing;
+        private int extent = 1;
 
         private Builder(Kind kind, int x, int y, int z) {
             this.kind = kind;
@@ -252,6 +268,12 @@ public final class Placement {
 
         Builder extra(String v) {
             extra = v;
+            return this;
+        }
+
+        Builder frames(int facingDir, int count) {
+            facing = facingDir;
+            extent = count;
             return this;
         }
 

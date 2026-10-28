@@ -127,7 +127,12 @@ class ComplexPlacerTest {
             resolver,
             MachineHook.NONE,
             (p, m, x, y, z, s) -> marks(m, x, y, z),
-            settings).withContents(false);
+            settings).withContents(false)
+                .withRadarDish(
+                    (sink, x, y, z) -> {
+                        if (sink.setBlock(x, y, z, named.get("dish") == null ? dishBlock() : named.get("dish"), 0))
+                            dishes++;
+                    });
         Result r = new Result();
         currentMarks = r.marks;
         List<int[]> order = new ArrayList<>();
@@ -177,6 +182,12 @@ class ComplexPlacerTest {
         return r;
     }
 
+    private int dishes;
+
+    private Block dishBlock() {
+        return named.computeIfAbsent("dish", k -> new Block(Material.iron) {});
+    }
+
     private List<String> currentMarks;
 
     private void marks(Mark m, int x, int y, int z) {
@@ -204,5 +215,49 @@ class ComplexPlacerTest {
         Collections.sort(back.marks);
         assertEquals(fwd.marks, back.marks, "each mark reported once, in whichever window holds it");
         assertTrue(fwd.marks.size() > 200);
+    }
+
+    @Test
+    void everyRadarStationGetsAHutAMastAndADish() {
+        StructureGrid g = new StructureGrid(
+            64,
+            64,
+            64,
+            Collections.singletonMap(
+                SizeClass.BIG,
+                Collections.singletonList(new PoolEntry(ComplexWriter.ID, 1, 1, new Footprint(240, 12, 240)))));
+        for (int cell = 3; cell < 40; cell++) {
+            StructurePlan p = g.planAt(77L, 0, SizeClass.BIG, cell, 4)
+                .get();
+            int[] st = null;
+            java.util.List<int[]> stations = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings)
+                .rasterOf(p)
+                .plan()
+                .radarStations();
+            if (stations.isEmpty()) continue;
+            st = stations.get(0);
+            dishes = 0;
+            Result r = run(p, false);
+            assertEquals(stations.size(), dishes, "one dish per station");
+            assertEquals(0, r.outside);
+            assertEquals(0, r.duplicates);
+            int hx = p.anchorX() + st[0], hz = p.anchorZ() + st[1];
+            String wall = r.cells.get(hx + "," + (GROUND + 1) + "," + hz);
+            assertTrue(wall != null && !wall.startsWith(System.identityHashCode(air) + ":"), "hut corner is a wall");
+            assertEquals(
+                r.cells.get(hx + "," + (GROUND + 1) + "," + hz),
+                r.cells.get((hx + 4) + "," + (GROUND + 2) + "," + hz),
+                "walls are one block");
+            assertTrue(
+                r.cells.get((hx + 2) + "," + (GROUND + 2) + "," + (hz + 4))
+                    .startsWith(System.identityHashCode(air) + ":"),
+                "the doorway is open");
+            assertTrue(
+                r.cells.get((hx + 2) + "," + (GROUND + 8) + "," + (hz + 2))
+                    .startsWith(System.identityHashCode(named.get("mast")) + ":"),
+                "mast above the roof");
+            return;
+        }
+        throw new AssertionError("no complex with a radar station in the cells tried");
     }
 }

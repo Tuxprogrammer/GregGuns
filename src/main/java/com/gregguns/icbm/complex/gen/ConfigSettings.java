@@ -14,7 +14,8 @@ public final class ConfigSettings implements ComplexPlacer.Settings {
 
     /** @return the writer the ICBM module installs: real blocks, real GT machines, marks left to the filler */
     public static ComplexPlacer writer() {
-        return new ComplexPlacer(new WorldBlocks(), new GtMachineHook(), MarkFiller.NONE, new ConfigSettings());
+        return new ComplexPlacer(new WorldBlocks(), new GtMachineHook(), MarkFiller.NONE, new ConfigSettings())
+            .withRadarDish(RadarDishHook.PLACEHOLDER_RADAR_DISH);
     }
 
     @Override

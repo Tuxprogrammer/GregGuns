@@ -135,7 +135,7 @@ public final class ComplexLayout {
         for (int i = 0; i < radarCount; i++) {
             radars.add(new int[] { 24 + rnd.nextInt(72), 150 + rnd.nextInt(66) });
         }
-        return new ComplexPlan(seed, cellX, cellZ, hall, rooms, tunnels, silos, esc[0], esc[1], radars);
+        return new ComplexPlan(seed, cellX, cellZ, hall, rooms, tunnels, silos, esc[0], esc[1], ladderMeta(ew), radars);
     }
 
     /** The room box of a slot: {@code side} 0 is the low-coordinate side of the corridor, 1 the high side. */
@@ -188,6 +188,20 @@ public final class ComplexLayout {
         }
     }
 
+    /** Ladder metadata that clings to the wing end's wall: the wall lies behind the ladder, away from the corridor. */
+    private static int ladderMeta(int wing) {
+        switch (wing) {
+            case N:
+                return 3; // wall at -Z
+            case S:
+                return 2; // wall at +Z
+            case E:
+                return 4; // wall at +X
+            default:
+                return 5; // wall at -X
+        }
+    }
+
     private static int[] escapePos(int wing) {
         Box b = wingBox(wing);
         switch (wing) {
@@ -215,11 +229,18 @@ public final class ComplexLayout {
             minZ = Math.min(minZ, s.bounds().minZ - 6);
         }
         tunnels.add(new Tunnel(new Box(138, 0, 106, 142, HEIGHT, 111), -1));
-        tunnels.add(new Tunnel(new Box(140, 0, minZ, 145, HEIGHT, 111), -1));
+        Tunnel trunk = new Tunnel(new Box(140, 0, minZ, 145, HEIGHT, 111), -1);
+        // D36: guards thicken with depth; the trunk's far end and each silo's walkway hold a "deep" post.
+        trunk.add(MarkKind.SPAWNER, 142, 1, minZ + 2, "deep");
+        tunnels.add(trunk);
         for (int r = 0; r < 2; r++) {
             if (!row[r]) continue;
             int oz = SILO_ORIGINS[r * 2][1];
-            tunnels.add(new Tunnel(new Box(145, 0, oz - 6, 196, HEIGHT, oz), -1));
+            Tunnel rowTunnel = new Tunnel(new Box(145, 0, oz - 6, 196, HEIGHT, oz), -1);
+            for (SiloSlot s : silos) {
+                if (s.bounds().minZ == oz) rowTunnel.add(MarkKind.SPAWNER, s.bounds().minX + 2, 1, oz - 3, "deep");
+            }
+            tunnels.add(rowTunnel);
         }
     }
 
@@ -242,6 +263,27 @@ public final class ComplexLayout {
             int x = alongZ ? mid + (rnd.nextBoolean() ? -1 : 1) : b.minX + rnd.nextInt(b.sizeX());
             int z = alongZ ? b.minZ + rnd.nextInt(b.sizeZ()) : mid + (rnd.nextBoolean() ? -1 : 1);
             t.add(MarkKind.DAMAGE_CELL, x, HEIGHT - 1, z, "roof");
+        }
+    }
+
+    /**
+     * Two rows of item frames on the armory's far wall (the wall opposite its doorway; see
+     * {@code ComplexRaster.roomDoor}), one frame every second cell.
+     */
+    private static void addFrameWall(Room r, int ix0, int ix1, int iz0, int iz1) {
+        boolean alongZ = r.wing() == N || r.wing() == S;
+        Box b = r.bounds();
+        boolean doorOnHighSide = alongZ ? b.maxX <= CORRIDOR_LO : b.maxZ <= CORRIDOR_LO;
+        if (alongZ) {
+            int x = doorOnHighSide ? ix0 : ix1;
+            int facing = doorOnHighSide ? 3 : 1;
+            for (int y = 2; y <= 3; y++)
+                r.add(MarkKind.ITEM_FRAME_WALL, x, y, iz0, LootKeys.ARMORY, facing, (iz1 - iz0 + 2) / 2);
+        } else {
+            int z = doorOnHighSide ? iz0 : iz1;
+            int facing = doorOnHighSide ? 0 : 2;
+            for (int y = 2; y <= 3; y++)
+                r.add(MarkKind.ITEM_FRAME_WALL, ix0, y, z, LootKeys.ARMORY, facing, (ix1 - ix0 + 2) / 2);
         }
     }
 
@@ -346,8 +388,7 @@ public final class ComplexLayout {
                 r.add(MarkKind.LOOT_CHEST, ix0, 1, iz1, LootKeys.MEDICAL);
                 break;
             case ARMORY:
-                r.add(MarkKind.ITEM_FRAME_WALL, ix0, 2, b.minZ, LootKeys.ARMORY);
-                r.add(MarkKind.ITEM_FRAME_WALL, ix1, 2, b.minZ, LootKeys.ARMORY);
+                addFrameWall(r, ix0, ix1, iz0, iz1);
                 r.add(MarkKind.LOOT_CHEST, cx, 1, iz1, LootKeys.ARMORY);
                 r.add(MarkKind.SPAWNER, ix1, 1, iz1, "room");
                 break;

@@ -8,7 +8,11 @@ public enum MarkKind {
     SPAWNER,
     /** A real machine; {@link Mark#key()} is a {@link MachineRole} name. */
     MACHINE,
-    /** The origin cell of a wall that holds item frames (armory); the key is the loot-table key for the frames. */
+    /**
+     * The first frame cell of a wall that holds item frames (armory): the room cell in front of the wall. The key is
+     * the loot-table key for the frames; {@link Mark#facing()} is the way they face and {@link Mark#extent()} how many
+     * hang along the wall (every second cell, in +X or +Z).
+     */
     ITEM_FRAME_WALL,
     /** A light fixture cell; the operational level lights it, the damage pass may leave it dark. */
     LIGHT,

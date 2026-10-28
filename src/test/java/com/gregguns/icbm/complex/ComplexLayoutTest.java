@@ -152,4 +152,65 @@ class ComplexLayoutTest {
         assertTrue(counts[1] > 650 && counts[1] > counts[2] && counts[2] > counts[3]);
         assertTrue(counts[4] > 0);
     }
+
+    @Test
+    void armoryFramesHangOnASolidWallInsideTheRoomAwayFromTheDoor() {
+        int walls = 0;
+        for (long seed = 0; seed < 120; seed++) {
+            ComplexPlan p = ComplexLayout.generate(seed, (int) seed, 2);
+            ComplexRaster raster = new ComplexRaster(p);
+            for (Room r : p.rooms()) {
+                for (Mark m : r.marks()) {
+                    if (m.kind() != MarkKind.ITEM_FRAME_WALL) continue;
+                    walls++;
+                    assertEquals(RoomKind.ARMORY, r.kind());
+                    boolean alongZ = m.facing() == 1 || m.facing() == 3;
+                    assertTrue(m.extent() >= 4, "an armory wall holds several frames: " + m.extent());
+                    int[] back = { 0, 0 }; // offsets from the frame cell to the wall behind it
+                    switch (m.facing()) {
+                        case 0:
+                            back[1] = -1;
+                            break;
+                        case 1:
+                            back[0] = 1;
+                            break;
+                        case 2:
+                            back[1] = 1;
+                            break;
+                        default:
+                            back[0] = -1;
+                            break;
+                    }
+                    for (int i = 0; i < m.extent(); i++) {
+                        int x = m.x() + (alongZ ? 0 : 2 * i), z = m.z() + (alongZ ? 2 * i : 0);
+                        assertEquals(Cell.AIR, raster.at(x, m.y(), z), "frame cell is air inside the room");
+                        assertEquals(Cell.WALL, raster.at(x + back[0], m.y(), z + back[1]), "a solid wall behind it");
+                        assertTrue(
+                            x > r.bounds().minX && x < r.bounds().maxX - 1
+                                && z > r.bounds().minZ
+                                && z < r.bounds().maxZ - 1,
+                            "inside the room");
+                    }
+                }
+            }
+        }
+        assertTrue(walls > 100, "armories are mandatory, two rows each: " + walls);
+    }
+
+    @Test
+    void silosAreGuardedFromDeepInAndTheEscapeLadderClingsToItsWall() {
+        for (long seed = 0; seed < 120; seed++) {
+            ComplexPlan p = ComplexLayout.generate(seed, (int) seed, 3);
+            int deep = 0;
+            for (Mark m : p.allMarks()) if (m.kind() == MarkKind.SPAWNER && "deep".equals(m.key())) deep++;
+            assertTrue(
+                deep >= p.silos()
+                    .size() + 1,
+                "a post per silo walkway and one at the trunk end: " + deep);
+            ComplexRaster raster = new ComplexRaster(p);
+            int meta = p.escapeMeta();
+            int dx = meta == 4 ? 1 : meta == 5 ? -1 : 0, dz = meta == 2 ? 1 : meta == 3 ? -1 : 0;
+            assertEquals(Cell.WALL, raster.at(p.escapeX() + dx, 3, p.escapeZ() + dz), "ladder meta " + meta);
+        }
+    }
 }

@@ -20,8 +20,6 @@ import gregtech.api.GregTechAPI;
 // Gantry Beam 'B', pad 'P').
 public final class WorldBlocks implements BlockResolver {
 
-    /** Finished concrete variants (stone and brick finishes, both colors); see SiloConcrete.acceptsMeta. */
-    private static final int[] WALL_METAS = { 3, 11, 7, 15 };
     private static final int[] SILO_METAS = { 8, 11, 8, 12 };
 
     private static ResolvedBlock concrete(int[] metas, int x, int y, int z) {
@@ -41,7 +39,10 @@ public final class WorldBlocks implements BlockResolver {
     public ResolvedBlock resolve(byte cell, int x, int y, int z) {
         switch (cell) {
             case Cell.WALL:
-                return concrete(WALL_METAS, x, y, z);
+                // GregGuns Bastion Plating (steel): connected textures (design record 0023) join the shells of the
+                // rooms and tunnels into one plated mass. The silo and its shaft stay GT concrete, the silo's own
+                // accepted finish (SiloConcrete.acceptsMeta).
+                return new ResolvedBlock(GregGunsCasings.INSTANCE, GregGunsCasings.BASTION_STEEL, false);
             case Cell.AIR:
                 return new ResolvedBlock(Blocks.air, 0, false);
             case Cell.RAIL_NS:
@@ -66,6 +67,11 @@ public final class WorldBlocks implements BlockResolver {
     }
 
     @Override
+    public ResolvedBlock ladder(int meta, int x, int y, int z) {
+        return new ResolvedBlock(Blocks.ladder, meta, false);
+    }
+
+    @Override
     public ResolvedBlock named(String what, int x, int y, int z) {
         switch (what) {
             case "ring":
@@ -74,7 +80,15 @@ public final class WorldBlocks implements BlockResolver {
             case "ladder":
                 return new ResolvedBlock(Blocks.ladder, 2, false);
             case "trapdoor":
-                return new ResolvedBlock(Blocks.trapdoor, 0, false);
+                // Bit 3 is the top half: a closed trapdoor in the top half of the surface block lies flush with the
+                // terrain around it.
+                return new ResolvedBlock(Blocks.trapdoor, 8, false);
+            case "hutWall":
+                return new ResolvedBlock(GregGunsCasings.INSTANCE, GregGunsCasings.WORKS_CASING, false);
+            case "hutRoof":
+                return new ResolvedBlock(GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_CASING, false);
+            case "mast":
+                return new ResolvedBlock(Blocks.iron_bars, 0, false);
             default:
                 return null;
         }

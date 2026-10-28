@@ -116,6 +116,7 @@ public final class ComplexContents {
                         Placement.at(Kind.FRAME_WALL, m.x(), m.y(), m.z())
                             .category(SiloLootTables.categoryName(m.key(), ceiling))
                             .key(m.key())
+                            .frames(m.facing(), m.extent())
                             .build());
                     break;
                 case LIGHT:

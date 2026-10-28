@@ -12,6 +12,14 @@ public interface BlockResolver {
      */
     ResolvedBlock named(String what, int x, int y, int z);
 
+    /**
+     * @param meta ladder metadata 2 to 5 (the side it clings to)
+     * @return a ladder block clinging to the wall behind the escape column
+     */
+    default ResolvedBlock ladder(int meta, int x, int y, int z) {
+        return named("ladder", x, y, z);
+    }
+
     /** @return the air block */
     net.minecraft.block.Block air();
 }

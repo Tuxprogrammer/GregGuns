@@ -191,6 +191,25 @@ public final class StructurePopulator {
             java.util.Collections.singletonList(
                 new PoolEntry(ComplexWriter.ID, 1, 1, new Footprint(ComplexWriter.SIZE, 12, ComplexWriter.SIZE)))));
 
+    /**
+     * The silo complex of one grid cell, from the seed alone: no world, no chunk. Whether terrain later rejects it is
+     * not known here.
+     *
+     * @return the plan if the cell rolls a complex at {@code chancePercent}, else empty
+     */
+    public static java.util.Optional<StructurePlan> complexPlanAt(long worldSeed, int dimension, int cellX, int cellZ,
+        int chancePercent) {
+        java.util.Optional<StructurePlan> p = COMPLEX_GRID.planAt(worldSeed, dimension, SizeClass.BIG, cellX, cellZ);
+        if (p.isPresent() && Math.floorMod(
+            StructureGrid.mix(
+                p.get()
+                    .chestSeedBase() + 0x51L),
+            100) < chancePercent) {
+            return p;
+        }
+        return java.util.Optional.empty();
+    }
+
     /** @return the complex plans that overlap the window and passed the chance roll */
     public static List<StructurePlan> complexPlans(long worldSeed, int dimension, int cx, int cz, int chancePercent) {
         List<StructurePlan> out = new java.util.ArrayList<StructurePlan>();
