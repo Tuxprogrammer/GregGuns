@@ -82,7 +82,7 @@ class CtmTexture:
         self.props = parse_properties(self.dir / f"{name}.properties")
         p = self.props
         assert p.get("method") == "ctm" and p.get("tiles") == "0-46" and p.get("connect", "block") == "block", p
-        self.meta = int(p["metadata"])
+        self.meta = int(p.get("metadata", 0))   # a plain block (the Silo Complex Wall) has no metadata line
         self.tiles = [self.dir / f"{i}.png" for i in range(47)]
         self.base = self.tiles[0]
         h = hashlib.sha1()

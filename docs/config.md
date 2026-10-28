@@ -148,7 +148,7 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 
 ## ICBM blasts (`icbm`)
 
-All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-icbm-spec/02-explosives/blast-engine.md)). A blast removes terrain according to its tier's `terrainDamageT<n>` key alone (D52); `explosions.blockDamage` governs hand-held weapons and is not consulted. Claims and spawn protection still apply through the explosion events and, for a player's blast, `BlockEvent.BreakEvent`.
+Every key is synced except the `icbm.siloComplex*` keys, which only the server reads. The synced ones govern every ICBM blast ([blast-engine.md](gregguns-icbm-spec/02-explosives/blast-engine.md)). A blast removes terrain according to its tier's `terrainDamageT<n>` key alone (D52); `explosions.blockDamage` governs hand-held weapons and is not consulted. Claims and spawn protection still apply through the explosion events and, for a player's blast, `BlockEvent.BreakEvent`.
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
@@ -161,6 +161,12 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.maxGridMemoryMb` | int | `256` | 16 to 4096 | yes | Caps the memory of all running blasts' grids together; a blast that would go past it waits in the queue until another finishes its cast. A lone blast always runs. |
 | `icbm.fuseMultiplier` | double | `1.0` | 0.1 to 10 | yes | Multiplier on a redstone- or hand-lit warhead's fuse. The base is `20 * (3 + ceil(radius / 3))` ticks from the warhead's blast radius at its fill (D51); a warhead set off by another explosion keeps a fixed 10 tick fuse. |
 | `icbm.blastDrops` | boolean | `false` | n/a | yes | Whether destroyed blocks drop items. |
+| `icbm.siloComplexEnabled` | boolean | `true` | n/a | no | Whether silo complexes (D128) generate. Also needs `modules.worldgen` and `worldgen.spawnStructures`. |
+| `icbm.siloComplexDimensions` | string list | Overworld and every D38 planet | n/a | no | Dimensions that get complexes, by the dimension's key (case-insensitive): "Overworld", or a Galacticraft planet's own unlocalized name such as `moon`, `iojupiter`, `ganymed`, `barnarda2`, `vega1`, `ross128b`. Remove a name to keep complexes out of that planet; a name the D38 table lacks gets the lowest (EV) ceiling. A complex that already generated keeps generating after its dimension is removed. |
+| `icbm.siloComplexChancePercent` | int | `25` | 0 to 100 | no | Share of the sparse grid's cells (one per 64 x 64 chunks) that attempt a complex. Complexes already generated stay whatever the value; only new decisions follow it. |
+| `icbm.siloComplexRoss128Weights` | int list | `30, 22, 16, 11, 8, 6, 4, 2, 1` | nine values | no | Weights, EV first to UMV last, of the loot ceiling a complex on Ross128b or Ross128ba rolls. |
+| `icbm.siloComplexOverworldBiomes` | string list | dry and temperate land types | n/a | no | Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all. |
+| `icbm.siloComplexActivityWeights` | int list | `50, 35, 15` | three weights, 0 or more | no | Relative weights of the activity levels (abandoned, partly abandoned, operational) a complex rolls from its seed. Other lists keep the default. |
 | `icbm.maxMissilesInFlight` | int | `20` | 1 to 100 | yes | Most missiles in flight at once, server wide (D11). Each holds at most two chunks. |
 | `icbm.missileFuelFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's fuel tank (D20, D60). |
 | `icbm.missileRangeFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's range (D60). |

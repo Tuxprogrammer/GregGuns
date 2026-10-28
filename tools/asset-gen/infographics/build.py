@@ -19,9 +19,10 @@ import pages_icbm_fallout  # noqa: E402
 import pages_icbm_heavy  # noqa: E402
 import pages_icbm_missile  # noqa: E402
 import pages_icbm_silo  # noqa: E402
+import pages_icbm_silos  # noqa: E402
 import pages_more as _more  # noqa: E402
 
-PAGES = {**_more.PAGES, **pages_icbm.PAGES, **pages_icbm_missile.PAGES, **pages_icbm_silo.PAGES,
+PAGES = {**_more.PAGES, **pages_icbm.PAGES, **pages_icbm_missile.PAGES, **pages_icbm_silo.PAGES, **pages_icbm_silos.PAGES,
          **pages_icbm_defense.PAGES, **pages_icbm_heavy.PAGES, **pages_icbm_fallout.PAGES}
 
 

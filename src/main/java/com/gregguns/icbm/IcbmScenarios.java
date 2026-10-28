@@ -27,6 +27,9 @@ final class IcbmScenarios {
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new ModuleGate());
         IcbmBlastScenarios.registerAll(registry);
+        com.gregguns.icbm.worldgen.ComplexContentScenarios.registerAll(registry);
+        com.gregguns.icbm.worldgen.ComplexLevelScenarios.registerAll(registry);
+        com.gregguns.icbm.worldgen.I6VisualSetups.registerAll(registry);
     }
 
     /**

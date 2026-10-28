@@ -29,6 +29,7 @@ public final class IcbmModule implements GregGunsModule {
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         WarheadRegistration.preInit(registrar);
+        com.gregguns.icbm.complex.wall.ComplexWallRegistration.preInit(registrar);
         com.gregguns.icbm.production.ProductionItems.register(registrar);
         com.gregguns.icbm.missile.MissileRegistration.preInit(registrar);
         com.gregguns.icbm.defense.DefenseMachines.registerItems(registrar);
@@ -66,6 +67,7 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.tools.ToolRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.launcher.LauncherWarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.antidote.AntidoteRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.complex.ComplexScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             // The OpenComputers scenario exists only with the mod; its class names OC types.
             if (cpw.mods.fml.common.Loader.isModLoaded("OpenComputers")) {
                 com.gregguns.icbm.compat.oc.OcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
@@ -77,6 +79,8 @@ public final class IcbmModule implements GregGunsModule {
     public void init(FMLInitializationEvent event) {
         // Only reached when the module is enabled, which already implies Galacticraft is present.
         GregGuns.LOG.info("ICBM module active (Galacticraft present)");
+        com.gregguns.worldgen.StructureGenerator
+            .setComplexWriter(com.gregguns.icbm.complex.gen.ConfigSettings.writer());
         WarheadRegistration.init();
         com.gregguns.icbm.missile.MissileRegistration.init();
         com.gregguns.icbm.production.MissileRecipes.init();
@@ -92,5 +96,11 @@ public final class IcbmModule implements GregGunsModule {
         com.gregguns.icbm.tools.ToolRegistration.init();
         com.gregguns.icbm.launcher.LauncherWarheadRegistration.init();
         com.gregguns.icbm.antidote.AntidoteRegistration.init();
+    }
+
+    /** After every mod's items exist: the silo complex loot tables (GT parts resolve through the unificator). */
+    @Override
+    public void postInit(cpw.mods.fml.common.event.FMLPostInitializationEvent event) {
+        com.gregguns.icbm.worldgen.SiloChests.register();
     }
 }

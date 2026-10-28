@@ -54,6 +54,11 @@ class CtmCasingsTest {
         return "radar_casing".equals(name) ? "thirdparty/ntm/radar_casing" : name;
     }
 
+    /** The plain block that borrows the Steel Bastion Plating's look (D205): its folder, block id and base texture. */
+    private static final String WALL = "complex_wall";
+    private static final String WALL_BLOCK = "gregguns:" + com.gregguns.icbm.complex.wall.BlockComplexWall.NAME;
+    private static final String WALL_BASE = "bastion_plating_steel";
+
     private static Properties load(String name) throws IOException {
         Properties p = new Properties();
         try (Reader r = Files
@@ -80,9 +85,12 @@ class CtmCasingsTest {
                 .sorted()
                 .collect(Collectors.toList());
         }
+        List<String> expected = CONNECTED.keySet()
+            .stream()
+            .collect(Collectors.toList());
+        expected.add(WALL);
         assertEquals(
-            CONNECTED.keySet()
-                .stream()
+            expected.stream()
                 .sorted()
                 .collect(Collectors.toList()),
             dirs);
@@ -111,6 +119,28 @@ class CtmCasingsTest {
                     name);
             }
         }
+    }
+
+    @Test
+    void theComplexWallIsAPlainBlockRuleOverTheSteelPlatingTiles() throws IOException {
+        Properties p = load(WALL);
+        assertEquals("ctm", p.getProperty("method"));
+        assertEquals(WALL_BLOCK, p.getProperty("matchBlocks"));
+        assertEquals(null, p.getProperty("metadata"), "a plain block has no metadata to match");
+        assertEquals("block", p.getProperty("connect"));
+        assertEquals("0-46", p.getProperty("tiles"));
+        for (int i = 0; i < 47; i++) {
+            BufferedImage mine = image(CTM.resolve(WALL + "/" + i + ".png"));
+            BufferedImage steel = image(CTM.resolve(WALL_BASE + "/" + i + ".png"));
+            for (int y = 0; y < 16; y++) for (int x = 0; x < 16; x++) {
+                assertEquals(steel.getRGB(x, y), mine.getRGB(x, y), "tile " + i + " at " + x + "," + y);
+            }
+        }
+        assertEquals(
+            "gregguns:casings/" + WALL_BASE,
+            com.gregguns.icbm.complex.wall.BlockComplexWall.TEXTURE,
+            "no art of its own");
+        assertTrue(Files.exists(BASE.resolve(WALL_BASE + ".png")), "the texture the block registers exists");
     }
 
     @Test

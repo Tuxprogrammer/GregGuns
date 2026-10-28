@@ -25,6 +25,7 @@ The main findings:
 **No integration point, so no sheet.** See the Techguns spec and the [design records](../../design/README.md):
 
 - AI task list, the burst ranged AI, hurt-by-target rules and factions: [ai.md](../../techguns-spec/10-entities-npcs/ai.md). The only pack touch is target selection (GGS-10-08, GGS-10-28), which is in the sheets above.
+- **Deviation, friendly fire:** a bullet or hitscan shot passes through an NPC of its shooter's own faction (`FactionRules.sparesFriend`, [D218](../../gregguns-icbm-spec/DECISIONS.md)), so a crowd of guards firing at a player doesn't wound itself. Techguns bullets hit any entity on their path and only skipped the revenge. Explosions and area effects still hit everyone.
 - Models, renderers, animations, textures and sounds: [rendering-and-models.md](../../techguns-spec/10-entities-npcs/rendering-and-models.md), [textures.md](../../techguns-spec/10-entities-npcs/textures.md), [sounds.md](../../techguns-spec/10-entities-npcs/sounds.md), with [0006](../../design/0006-art-direction.md). Infernal Mobs' glow is a particle effect and needs no renderer cooperation.
 - Attack Helicopter flight and the Alien Bug's legacy AI: [ai.md](../../techguns-spec/10-entities-npcs/ai.md#6-attack-helicopter). The helicopter is excluded from Infernal Mobs.
 - Turret entity: its overlap with OpenModularTurrets is a block and machine matter, in [09-machines-utility](../09-machines-utility/index.md). The entity-side facts (not `IMob`, no drops) are in [infernal-mobs.md](infernal-mobs.md).

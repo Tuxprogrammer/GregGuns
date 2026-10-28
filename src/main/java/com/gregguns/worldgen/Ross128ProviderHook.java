@@ -17,13 +17,15 @@ import com.gregguns.GregGuns;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
- * Makes structures reach Ross128b and Ross128ba although Galacticraft skips Forge world generators there.
+ * Makes structures and silo complexes reach every Galacticraft dimension that needs it (Ross128b and Ross128ba, and
+ * each
+ * other non-Overworld world where the complex is enabled) although Galacticraft skips Forge world generators there.
  *
  * <p>
  * Galacticraft's {@code ChunkProviderServerMixin} wraps the {@code GameRegistry.generateWorld} call of
  * {@code ChunkProviderServer.populate} and drops it on every {@code IGalacticraftWorldProvider} world, except for a
  * short whitelist of other mods' generators (GT ore, GalacticGreg, CoFH, Dense Ores, AE2 meteorites, Thaumcraft
- * nodes), unless {@code enableOtherModsFeatures} is on. Both Ross128 providers are Galacticraft worlds, so the
+ * nodes), unless {@code enableOtherModsFeatures} is on. Those providers are Galacticraft worlds, so the
  * {@link StructureGenerator} registered with Forge never runs there. This hook wraps the dimension's chunk provider
  * once, when the world loads, and runs the generator right after the provider's own {@code populate}, inside the same
  * call and on the same chunk, so the populate window and the no-cascade rules (GGS-11-08, 09) hold unchanged. If
@@ -32,7 +34,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
  *
  * <p>
  * Deviation from the M8 design, recorded in structure-placement.md: the standard Forge populate path is not enough on
- * these two dimensions, so they get this one extra hook. Server side.
+ * these dimensions, so they get this one extra hook. Server side.
  */
 // Source:
 // https://github.com/GTNewHorizons/Galacticraft/blob/3.4.34-GTNH/src/main/java/micdoodle8/mods/galacticraft/core/mixins/early/minecraft/ChunkProviderServerMixin.java
@@ -54,8 +56,12 @@ public final class Ross128ProviderHook {
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
         World world = event.world;
-        if (world.isRemote || !WorldgenSettings.generatorWanted()
-            || !WorldgenSettings.isRoss128(world.provider.dimensionId)) {
+        if (world.isRemote || !WorldgenSettings.generatorWanted()) {
+            return;
+        }
+        // Ross128 for the ordinary structures; any Galacticraft planet that hosts silo complexes (I6) for the complex,
+        // since Galacticraft drops Forge's generators on all of them, not only on Ross128.
+        if (!WorldgenSettings.isRoss128(world.provider.dimensionId) && !StructureGenerator.complexWanted(world)) {
             return;
         }
         if (wrap(world)) {

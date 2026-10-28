@@ -191,12 +191,15 @@ public final class MissileRecipes {
                     spec.plates()
                         .id()
                         .indexOf(':') + 1));
-        GTOreDictUnificator.addItemData(
-            new ItemStack(body),
-            new ItemData(
-                new MaterialStack(
-                    main,
-                    OrePrefixes.compressed.getMaterialAmount() * spec.plates()
-                        .count())));
+        ItemData data = new ItemData(
+            new MaterialStack(
+                main,
+                OrePrefixes.compressed.getMaterialAmount() * spec.plates()
+                    .count()));
+        GTOreDictUnificator.addItemData(new ItemStack(body), data);
+        // The damaged body (a silo complex's salvage) is its own item damage, so no recipe takes it for a body; it
+        // recycles for the same plates and nothing more.
+        GTOreDictUnificator
+            .addItemData(new ItemStack(body, 1, com.gregguns.icbm.missile.ItemBlockMissileBody.SALVAGE_DAMAGE), data);
     }
 }

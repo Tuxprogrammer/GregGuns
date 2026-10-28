@@ -1,12 +1,14 @@
 package com.gregguns.worldgen;
 
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.BiomeDictionary.Type;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.config.UtilityConfig;
@@ -45,6 +47,20 @@ public final class StructureGenerator implements IWorldGenerator {
 
     /** What a generator needs to run: the populator and its source of truth for the grid. */
     private static volatile StructurePopulator real;
+    /** The procedural underground complex (ICBM silo complex), set by its module; null when absent. */
+    private static volatile ComplexWriter complexWriter;
+
+    /** @param writer the complex writer, or null for none */
+    public static void setComplexWriter(ComplexWriter writer) {
+        complexWriter = writer;
+    }
+
+    /** @return whether the silo complex is on in this non-Overworld world (its chunk provider then needs the hook) */
+    static boolean complexWanted(World world) {
+        ComplexWriter c = complexWriter;
+        return c != null && world.provider.dimensionId != 0 && c.enabledIn(world);
+    }
+
     /** Replaces {@link #real} while a scenario runs (forced spacing, a test layout). Tests only. */
     private static volatile StructurePopulator override;
     /** Replaces the world biome lookup while a scenario runs (a desert square for the nest). Tests only. */
@@ -148,7 +164,23 @@ public final class StructureGenerator implements IWorldGenerator {
         }
         StructurePopulator populator = override != null ? override : real;
         if (populator == null) return;
-        if (!allowed(world)) return;
+        ComplexWriter complex = complexWriter;
+        boolean general = allowed(world);
+        // A complex the ledger already placed keeps generating when the config now keeps new ones out (a dimension
+        // removed from the list, the chance lowered, a world type excluded): only new decisions stop.
+        if (complex != null && !complex.enabledIn(world)) {
+            boolean placedHere = !StructurePopulator
+                .complexPlans(
+                    world.getSeed(),
+                    world.provider.dimensionId,
+                    chunkX,
+                    chunkZ,
+                    0,
+                    StructureState.forWorld(world))
+                .isEmpty();
+            complex = placedHere ? new LedgerOnly(complex) : null;
+        }
+        if (!general && complex == null) return;
         try (PopulateGuard.Scope ignored = PopulateGuard.enter(chunkX, chunkZ)) {
             PopulateWindow window = new PopulateWindow(chunkX, chunkZ);
             ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
@@ -162,13 +194,55 @@ public final class StructureGenerator implements IWorldGenerator {
                 biomeOverride != null ? biomeOverride
                     : (x, z) -> StructureBiomes.typesAt(world.getWorldChunkManager(), x, z),
                 StructureState.forWorld(world),
-                new WorldMarks(world, sink));
+                new WorldMarks(world, sink),
+                complex,
+                general);
             STAMPED.addAndGet(n);
             ACCEPTED.addAndGet(sink.acceptedWrites());
             REJECTED.addAndGet(sink.rejectedWrites());
         } catch (RuntimeException e) {
             // A broken structure must not kill chunk generation; the log names the chunk.
             GregGuns.LOG.error("Structure generation failed at chunk " + chunkX + "," + chunkZ, e);
+        }
+    }
+
+    /** A complex writer that decides nothing new: its chance is 0, so only plans the ledger placed are written. */
+    private static final class LedgerOnly implements ComplexWriter {
+
+        private final ComplexWriter inner;
+
+        LedgerOnly(ComplexWriter inner) {
+            this.inner = inner;
+        }
+
+        @Override
+        public boolean enabledIn(World world) {
+            return false;
+        }
+
+        @Override
+        public int chancePercent() {
+            return 0;
+        }
+
+        @Override
+        public boolean biomeOk(int dimension, Set<Type> types) {
+            return false;
+        }
+
+        @Override
+        public int minGroundY() {
+            return inner.minGroundY();
+        }
+
+        @Override
+        public void skipped(StructurePlan plan, String reason) {
+            inner.skipped(plan, reason);
+        }
+
+        @Override
+        public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
+            return inner.write(plan, groundY, window, sink, probe);
         }
     }
 

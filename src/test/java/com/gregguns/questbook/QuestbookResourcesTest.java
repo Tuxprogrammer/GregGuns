@@ -173,7 +173,7 @@ class QuestbookResourcesTest {
     @Test
     void questCountMatchesTheSpec() {
         assertEquals(
-            148 + SKIP_TRIGGERS,
+            151 + SKIP_TRIGGERS,
             QUESTS.size(),
             "update docs/gregguns-spec/12-questbook when the count changes");
     }
@@ -365,6 +365,8 @@ class QuestbookResourcesTest {
             names.add(w.itemName());
         }
         names.add("trinitite_shard");
+        // The silo-complex quest's icon: the complex wall block.
+        names.add(com.gregguns.icbm.complex.wall.BlockComplexWall.NAME);
         Set<Integer> machines = registeredMachineIds();
         Set<String> entities = new HashSet<>();
         for (NpcMob mob : NpcMob.values()) {

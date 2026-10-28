@@ -171,6 +171,7 @@ public final class HitscanTracer {
             || e instanceof GenericProjectile) {
             return false;
         }
-        return shooter == null || e != shooter && e != shooter.ridingEntity;
+        return shooter == null || e != shooter && e != shooter.ridingEntity
+            && !com.gregguns.entity.npc.FactionRules.sparesFriend(shooter, e);
     }
 }

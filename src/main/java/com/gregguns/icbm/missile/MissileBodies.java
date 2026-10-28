@@ -53,10 +53,10 @@ public final class MissileBodies {
 
     /**
      * @param stack any stack
-     * @return the tier if it is a missile body, else null
+     * @return the tier if it is a missile body, else null; a damaged body (a complex's salvage) is no body
      */
     public static MissileTier tierOf(ItemStack stack) {
-        if (stack == null) {
+        if (stack == null || ItemBlockMissileBody.isSalvage(stack)) {
             return null;
         }
         for (MissileTier t : MissileTier.values()) {
