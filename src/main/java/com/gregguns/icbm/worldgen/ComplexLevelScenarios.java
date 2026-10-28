@@ -197,6 +197,8 @@ public final class ComplexLevelScenarios {
         int lightsPlaced;
         int lightMarks;
         int lightsLit;
+        /** Lowest block light on an open floor cell of the hall (15 when nothing was read). */
+        int hallMinLight = 15;
         int floodMarks;
         int floodWet;
         int collapses;
@@ -320,6 +322,9 @@ public final class ComplexLevelScenarios {
                 ab.lightsLit * 4 < ab.lightMarks,
                 "an abandoned complex is dark: " + ab.lightsLit + "/" + ab.lightMarks);
             out.checkEquals("operational lights lit", op.lightMarks, op.lightsLit);
+            out.check(
+                op.hallMinLight >= 8,
+                "an operational hall reads block light 8 or more on every open floor cell: " + op.hallMinLight);
             out.check(ab.floodMarks > 0 ? ab.floodWet == ab.floodMarks : true, "abandoned pump room is flooded");
             out.checkEquals("operational flooding", 0, op.floodWet);
         }
@@ -531,6 +536,15 @@ public final class ComplexLevelScenarios {
                     if (b == Blocks.water || b == Blocks.flowing_water) t.floodWet++;
                     if (world.getBlock(x, y, z) == Blocks.water || world.getBlock(x, y, z) == Blocks.flowing_water) {
                         t.floodSpill++;
+                    }
+                }
+            }
+            com.gregguns.icbm.complex.Box hall = cp.hall()
+                .bounds();
+            for (int x = hall.minX + 1; x <= hall.maxX - 2; x++) {
+                for (int z = hall.minZ + 1; z <= hall.maxZ - 2; z++) {
+                    if (world.isAirBlock(ax + x, floor + 1, az + z)) {
+                        t.hallMinLight = Math.min(t.hallMinLight, world.getBlockLightValue(ax + x, floor + 1, az + z));
                     }
                 }
             }
