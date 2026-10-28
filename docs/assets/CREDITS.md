@@ -368,6 +368,17 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | model.charge.exp_charge | src/main/resources/assets/gregguns/textures/models/charges/exp_charge.png | tools/asset-gen/charge_models.py | 4076177377 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 | model.charge.exp_charge_armed | src/main/resources/assets/gregguns/textures/models/charges/exp_charge_armed.png | tools/asset-gen/charge_models.py | 578581585 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 
+### ctm (6)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
+| block.casing.works_casing.ctm | src/main/resources/assets/gregguns/mcpatcher/ctm/works_casing/ (0.png to 46.png) | tools/asset-gen/ctm.py | 1298013103 | procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture | MIT | 2026-10-27 |
+| block.casing.gantry_casing.ctm | src/main/resources/assets/gregguns/mcpatcher/ctm/gantry_casing/ (0.png to 46.png) | tools/asset-gen/ctm.py | 2481966547 | procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture | MIT | 2026-10-27 |
+| block.casing.bastion_plating_iron.ctm | src/main/resources/assets/gregguns/mcpatcher/ctm/bastion_plating_iron/ (0.png to 46.png) | tools/asset-gen/ctm.py | 2427674011 | procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture | MIT | 2026-10-27 |
+| block.casing.bastion_plating_steel.ctm | src/main/resources/assets/gregguns/mcpatcher/ctm/bastion_plating_steel/ (0.png to 46.png) | tools/asset-gen/ctm.py | 269727629 | procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture | MIT | 2026-10-27 |
+| block.casing.bastion_plating_aluminum.ctm | src/main/resources/assets/gregguns/mcpatcher/ctm/bastion_plating_aluminum/ (0.png to 46.png) | tools/asset-gen/ctm.py | 1950548891 | procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture | MIT | 2026-10-27 |
+| block.casing.bastion_plating_carbon.ctm | src/main/resources/assets/gregguns/mcpatcher/ctm/bastion_plating_carbon/ (0.png to 46.png) | tools/asset-gen/ctm.py | 2741731313 | procedural connected-texture set, 47 tiles in the MCPatcher/OptiFine ctm layout, cut from the casing painter (blockart.py) with the frame on chosen sides; tile 0 is the base texture | MIT | 2026-10-27 |
+
 ### entity_models (7)
 
 | asset | path | generator | seed | method | license | date |
