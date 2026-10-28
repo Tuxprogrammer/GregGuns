@@ -47,6 +47,7 @@ public final class BuildScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new BuildMultiblocksScenario());
         registry.register(new InteriorShotsScenario());
+        CtmCasingsScenario.register(registry);
     }
 
     /** The three multiblocks form after {@code build}. */
