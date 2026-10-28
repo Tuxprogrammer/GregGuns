@@ -108,6 +108,7 @@ final class AntidoteScenarios {
             sicken(dosed);
             // The guard's own handler is called directly: posting on the bus would run every other mod's player tick
             // on a fake player that has no network handler (Thaumcraft's runic shielding sends it a packet).
+            out.check(AntidoteRegistration.guardRegistered(), "the guard is registered on the Forge event bus");
             AntidoteGuard guard = new AntidoteGuard();
             return ScenarioResult.pending(name(), 24, ticks -> {
                 guard.onLivingUpdate(new LivingEvent.LivingUpdateEvent(dosed));

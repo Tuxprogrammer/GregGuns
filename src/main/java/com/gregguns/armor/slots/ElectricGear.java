@@ -28,7 +28,13 @@ public final class ElectricGear {
 
     private static final String NV_TAG = "nightVision";
 
-    /** IC2's NBT key for an item's stored EU. */
+    /**
+     * IC2's NBT key for an item's stored EU. Only {@link #chargeReadOnly} reads it, for the durability bar; every write
+     * goes through IC2's manager.
+     */
+    // Decompiled: IC2 2.2.828 ic2.core.item.ElectricItemManager keeps the stored EU as a double under "charge" in the
+    // stack's own NBT, removes the key when the charge reaches 0, and reads a missing key as 0. IC2 has no public
+    // source; only that storage layout was relied on, and gun.energy.item fails if it drifts.
     static final String CHARGE_KEY = "charge";
 
     private ElectricGear() {}

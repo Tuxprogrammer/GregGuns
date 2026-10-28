@@ -85,6 +85,7 @@ public final class ClientAutotest {
     private int fireClock = -1;
     private int fireRemaining;
     private int menuTicks;
+    private Class<?> menuScreenClass;
     private boolean connectStarted;
     private int connectTicks;
     private int retries;
@@ -180,7 +181,13 @@ public final class ClientAutotest {
             }
             return;
         }
-        // Alpha pass: the real pack's main menu is not a GuiMainMenu, so any title-like screen counts.
+        // Alpha pass: the real pack's main menu is not a GuiMainMenu, so the first screen that stays up unchanged for
+        // MENU_SETTLE_TICKS counts. A screen change (a startup notice closing) restarts the count.
+        Class<?> screenClass = mc.currentScreen == null ? null : mc.currentScreen.getClass();
+        if (screenClass != menuScreenClass) {
+            menuScreenClass = screenClass;
+            menuTicks = 0;
+        }
         if (mc.currentScreen == null || mc.currentScreen instanceof GuiConnecting
             || mc.theWorld != null
             || ++menuTicks < MENU_SETTLE_TICKS) {

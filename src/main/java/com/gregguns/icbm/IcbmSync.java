@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
 
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 
 /**
  * Sync values the ICBM screens share.
@@ -42,8 +43,12 @@ public final class IcbmSync {
      * @return true when the machine has a base tile that is not invalid
      */
     public static boolean live(IMetaTileEntity machine) {
-        Object base = machine == null ? null : machine.getBaseMetaTileEntity();
-        return base != null && !(base instanceof TileEntity && ((TileEntity) base).isInvalid());
+        IGregTechTileEntity base = machine == null ? null : machine.getBaseMetaTileEntity();
+        // GT's own close test for an open screen (MetaTileEntityGuiHandler.canInteractWith): it covers a broken block
+        // and an unloaded chunk, and a base that now hosts a different machine.
+        return base != null && !(base instanceof TileEntity && ((TileEntity) base).isInvalid())
+            && base.canAccessData()
+            && base.getMetaTileEntity() == machine;
     }
 
     /** @return a getter that yields {@code fallback} once the machine's tile is gone */

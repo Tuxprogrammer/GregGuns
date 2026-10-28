@@ -219,16 +219,13 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
 
     @Override
     public String radiusText() {
-        return Integer.toString(unit.radius());
+        return unit.radiusText(getBaseMetaTileEntity().getTimer());
     }
 
     @Override
     public void setRadiusText(String text) {
-        try {
-            setRadius(Integer.parseInt(text.trim()));
-        } catch (NumberFormatException e) {
-            // Ignored: the field keeps its value.
-        }
+        unit.typeRadius(text, radiusCeiling(), getBaseMetaTileEntity().getTimer());
+        getBaseMetaTileEntity().markDirty();
     }
 
     // --- RadarView (OpenComputers) -------------------------------------------------------------------------------

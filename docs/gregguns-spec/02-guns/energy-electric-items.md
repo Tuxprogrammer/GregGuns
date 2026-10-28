@@ -71,7 +71,7 @@ Rows are lines in the [stats table](https://github.com/GTNewHorizons/GT5-Unoffic
 - **GGS-02-10.** `getTier(stack)` equals the GT tier index of the gun's [0001](../../design/0001-tier-map.md) tier.
 - **GGS-02-11.** `canProvideEnergy(stack)` is `false` and `getTransferLimit(stack)` is `GTValues.V[tier]`.
 - **GGS-02-12.** Energy guns spend EU only on the server and only for player shooters, and skip the spend for a creative-mode player.
-- **GGS-02-13.** An energy gun's ammo and reload state are stored in a GregGuns NBT tag. The code never reads or writes the stack's damage value for ammo, and never uses the NBT key `charge`.
+- **GGS-02-13.** An energy gun's ammo and reload state are stored in a GregGuns NBT tag. The code never reads or writes the stack's damage value for ammo, and never writes the NBT key `charge`. The durability bar reads it read-only (`ElectricGear.chargeReadOnly`), because IC2's manager creates a tag when asked and NEI logs a forced tag update; the key is IC2's storage layout, checked by `gun.energy.item`.
 - **GGS-02-14.** The default capacity of an energy gun of tier T is the capacity of the GT item in the table above, and each gun's value is a config option.
 - **GGS-02-15.** The creative tab lists each energy gun twice, empty and fully charged.
 - **GGS-02-16.** A gun fails to charge in a GT charger or battery buffer of any other tier. The tooltip names the required tier.
@@ -79,7 +79,7 @@ Rows are lines in the [stats table](https://github.com/GTNewHorizons/GT5-Unoffic
 ## Tests
 
 - GGS-02-09, 10, 11, 14: unit test that instantiates each gun item and checks the `IElectricItem` values against the tier table.
-- GGS-02-12, 13: `/gregguns test` scenario that fires an energy gun and checks the stored charge, the damage value and the NBT.
+- GGS-02-12, 13: `/gregguns test` scenario that fires an energy gun and checks the stored charge, the damage value and the NBT, and that the bar reader matches IC2's charge and adds no tag.
 - GGS-02-16: `/gregguns test` scenario that places a gun in an LV and an MV battery buffer and checks that only the LV buffer accepts an LV gun.
 - GGS-02-15: manual check of the creative tab.
 - A `runServer` check that IC2 and GT are loaded and the item registers.

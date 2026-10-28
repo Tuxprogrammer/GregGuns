@@ -37,14 +37,21 @@ public final class AntidoteRegistration {
             Ing.gt("dust", "Charcoal", 2, Tier.LV, 0.2)));
 
     private static ItemAntidote item;
+    private static boolean guardRegistered;
 
     private AntidoteRegistration() {}
+
+    /** @return whether the guard is on the Forge bus; scenarios assert it so dropping the registration fails */
+    public static boolean guardRegistered() {
+        return guardRegistered;
+    }
 
     /** Registers the item and the guard. */
     public static void preInit(ModuleRegistrar registrar) {
         item = registrar.registerItem(ItemAntidote.NAME, new ItemAntidote());
         item.setTextureName("gregguns:thirdparty/ntm/antidote");
         MinecraftForge.EVENT_BUS.register(new AntidoteGuard());
+        guardRegistered = true;
     }
 
     /** Queues the recipe. Enabled module only. */

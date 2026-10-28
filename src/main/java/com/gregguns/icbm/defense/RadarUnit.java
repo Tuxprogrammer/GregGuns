@@ -23,7 +23,12 @@ public final class RadarUnit {
 
     private static final String K_RADIUS = "radius";
 
+    /** Ticks after the last keystroke that the field still echoes the typed text. */
+    private static final int DRAFT_TICKS = 100;
+
     private int radius = RadarRules.DEFAULT_RADIUS;
+    private String draft;
+    private long draftTick;
     private Sweep sweep = Sweep.EMPTY;
     private RadarRules.State state = RadarRules.State.OFF;
     private int signal = -1;
@@ -40,6 +45,39 @@ public final class RadarUnit {
      */
     public void setRadius(int wanted, int range) {
         radius = RadarRules.clampRadius(wanted, range);
+    }
+
+    /**
+     * A radius typed into a screen field. The radius takes effect clamped at once, but the field keeps echoing what
+     * was typed while the player is still typing, so a cleared field or a half-typed number is not rewritten under
+     * their fingers; {@link #radiusText} falls back to the real radius {@value #DRAFT_TICKS} ticks after the last key.
+     *
+     * @param text  the field's text
+     * @param range the radar's range, for the clamp
+     * @param now   the radar's tick counter
+     */
+    public void typeRadius(String text, int range, long now) {
+        String t = text.trim();
+        if (!t.isEmpty()) {
+            try {
+                setRadius(Integer.parseInt(t), range);
+            } catch (NumberFormatException e) {
+                return; // not a number: the field keeps its value
+            }
+        }
+        draft = t;
+        draftTick = now;
+    }
+
+    /**
+     * @param now the radar's tick counter
+     * @return what the screen's radius field shows: the text being typed, else the real radius
+     */
+    public String radiusText(long now) {
+        if (draft != null && now >= draftTick && now - draftTick <= DRAFT_TICKS) {
+            return draft;
+        }
+        return Integer.toString(radius);
     }
 
     /** @return the latest sweep */
