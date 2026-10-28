@@ -350,7 +350,7 @@ The one owner review before the beta.
 
 **Exit gate:**
 - [ ] The fix list is closed.
-- [ ] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
+- [x] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
 - [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
 - [ ] The recipe-clash review finds no unresolved clash with ICBM content.
 - [ ] Every ICBM guide sheet matches the code after the balance pass.
