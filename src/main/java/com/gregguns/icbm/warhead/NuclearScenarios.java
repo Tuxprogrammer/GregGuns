@@ -183,9 +183,11 @@ final class NuclearScenarios {
                         }
                         return null;
                     }
-                    // Keep the cube's chunks pinned every tick: an unloaded chunk reads as air to the blast's snapshot and is
+                    // Keep the cube's chunks pinned every tick: an unloaded chunk reads as air to the blast's snapshot
+                    // and is
                     // never broken ("never load a chunk"), which left a partial crater (350k of 447k blocks, the center
-                    // column still stone) when the server queued them for unload under load. loadChunk takes a chunk off
+                    // column still stone) when the server queued them for unload under load. loadChunk takes a chunk
+                    // off
                     // the unload queue again; the count of ticks that found one gone goes into the failure message.
                     for (int x = (cx - half) >> 4; x <= (cx + half) >> 4; x++) {
                         for (int z = (cz - half) >> 4; z <= (cz + half) >> 4; z++) {
