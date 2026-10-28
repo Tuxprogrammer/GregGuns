@@ -206,7 +206,7 @@ final class PaletteSets {
                     stripes(f13, f6, 8, true),
                     borderField(f7, f3, 1),
                     checker(f0, f13, 2),
-                    centerStrip(f13, f7, 3),
+                    centerStrip(f13, f9, 3),
                     bands(f13, f3, 4, false))
                 .ceilings(plain(f13), grid(f3, technical(7), 5), plain(technical(9)))
                 .lamp(litLamp(8), f0)
@@ -291,7 +291,7 @@ final class PaletteSets {
                     stripes(f13, te13, 4, true),
                     borderField(f6, f13, 1),
                     checker(f13, te15, 3),
-                    centerStrip(f13, f7, 4))
+                    centerStrip(f13, te13, 4))
                 .ceilings(plain(te9), grid(te9, te11, 6), plain(te12))
                 .lamp(litLamp(5), te7)
                 .accent(te3)
@@ -402,7 +402,7 @@ final class PaletteSets {
                 .walls(lab11, lab12, t15)
                 .floors(
                     checker(lab12, lab11, 3),
-                    borderField(f7, lab12, 2),
+                    borderField(f3, lab12, 2),
                     centerStrip(lab11, f6, 3),
                     bands(lab11, lab12, 5, true))
                 .ceilings(plain(lab12), grid(lab11, lab12, 5), plain(lab11))
