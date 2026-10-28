@@ -57,6 +57,7 @@ public final class ComplexPlacer implements ComplexWriter {
     private final MarkFiller filler;
     private final Settings settings;
     private RadarDishHook dish = RadarDishHook.NONE;
+    private java.util.function.Consumer<String> skipListener = r -> {};
     /** The world of the populate call in progress (set by the gate check that precedes every call). */
     private World world;
     private final Map<String, ComplexRaster> cache = new LinkedHashMap<String, ComplexRaster>();
@@ -71,6 +72,12 @@ public final class ComplexPlacer implements ComplexWriter {
     /** @param hook how the radar stations' dishes are made (default none; the module installs the placeholder) */
     public ComplexPlacer withRadarDish(RadarDishHook hook) {
         this.dish = hook;
+        return this;
+    }
+
+    /** @param listener told the reason of each skipped plan (scenarios); the log line is written regardless */
+    public ComplexPlacer withSkipListener(java.util.function.Consumer<String> listener) {
+        this.skipListener = listener;
         return this;
     }
 
@@ -100,6 +107,7 @@ public final class ComplexPlacer implements ComplexWriter {
 
     @Override
     public void skipped(StructurePlan plan, String reason) {
+        skipListener.accept(reason);
         GregGuns.LOG.info(
             "Silo complex skipped at dimension {} cell {},{} ({}): {}",
             plan.dimension(),

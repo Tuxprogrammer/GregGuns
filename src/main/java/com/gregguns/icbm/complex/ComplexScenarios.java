@@ -45,6 +45,8 @@ public final class ComplexScenarios {
 
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Places());
+        registry.register(new Skips());
+        ComplexDimScenarios.registerAll(registry);
     }
 
     private static StructurePlan plan(World world) {
@@ -70,10 +72,19 @@ public final class ComplexScenarios {
 
     /** Stone up to the ground with a grass top, air above (only the part the complex can touch). */
     private static void slab(World world, StructurePlan p, boolean clear) {
+        slab(world, p, clear, (x, z) -> GROUND, 0);
+    }
+
+    /** As above with a ground height per column and an optional water depth over it. */
+    private static void slab(World world, StructurePlan p, boolean clear, java.util.function.IntBinaryOperator ground,
+        int water) {
         for (int x = p.anchorX() - 4; x < p.anchorX() + 244; x++) {
             for (int z = p.anchorZ() - 4; z < p.anchorZ() + 244; z++) {
-                for (int y = GROUND + 12; y >= GROUND - ComplexPlacer.DEPTH - 2; y--) {
-                    Block b = clear ? Blocks.air : y > GROUND ? Blocks.air : y == GROUND ? Blocks.grass : Blocks.stone;
+                int g = ground.applyAsInt(x, z);
+                for (int y = Math.max(g, GROUND) + 12; y
+                    >= Math.max(1, Math.min(g, GROUND) - ComplexPlacer.DEPTH - 2); y--) {
+                    Block b = clear ? Blocks.air
+                        : y > g + water ? Blocks.air : y > g ? Blocks.water : y == g ? Blocks.grass : Blocks.stone;
                     if (world.getBlock(x, y, z) != b || world.getBlockMetadata(x, y, z) != 0) {
                         world.setBlock(x, y, z, b, 0, 2);
                     }
@@ -216,6 +227,99 @@ public final class ComplexScenarios {
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
             out.check(world.getBlock(ex, GROUND, ez) == Blocks.trapdoor, "the escape ladder ends in a trapdoor");
             out.check(world.getBlock(ex, GROUND - 2, ez) == Blocks.ladder, "the escape shaft has a ladder");
+        }
+    }
+
+    /** Terrain that cannot host a complex is skipped, logged once, and left untouched. */
+    private static final class Skips implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.complex.skips";
+        }
+
+        @Override
+        public String description() {
+            return "A complex over water, over ground too low, over a steep ridge, or in a biome off the Overworld"
+                + " whitelist is rejected once with a reason, writes nothing, and leaves the terrain as it was;"
+                + " flat dry ground in the same place is placed (skip-and-log, D128).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            World world = ctx.world();
+            StructurePlan plan = plan(world);
+            String[] names = { "water", "low", "steep", "biome", "flat" };
+            try {
+                load(world, plan);
+                for (String c : names) {
+                    if (c.equals("biome") && world.provider.dimensionId != 0) continue; // the whitelist is Overworld
+                                                                                        // only
+                    java.util.function.IntBinaryOperator ground = (x, z) -> c.equals("low") ? 20
+                        : c.equals("steep") && x < plan.anchorX() + 120 ? GROUND + 24 : GROUND;
+                    slab(world, plan, true);
+                    slab(world, plan, false, ground, c.equals("water") ? 4 : 0);
+                    long before = snapshot(world, plan);
+                    java.util.List<String> reasons = new java.util.ArrayList<String>();
+                    final boolean ocean = c.equals("biome");
+                    ComplexPlacer placer = new ComplexPlacer(
+                        new WorldBlocks(),
+                        new GtMachineHook(),
+                        MarkFiller.NONE,
+                        new ComplexPlacer.Settings() {
+
+                            public boolean dimensionEnabled(String n) {
+                                return true;
+                            }
+
+                            public int chancePercent() {
+                                return 100;
+                            }
+
+                            public java.util.Set<Type> overworldBiomes() {
+                                return Collections.singleton(Type.PLAINS);
+                            }
+                        }).withContents(false)
+                            .withSkipListener(reasons::add);
+                    placer.enabledIn(world);
+                    StructureState state = new StructureState("gregguns_complex_skip_" + c);
+                    StructurePopulator populator = com.gregguns.worldgen.PlacementHarnessAccess.populator();
+                    int rejected = 0;
+                    for (int[] w : com.gregguns.worldgen.PlacementHarnessAccess.windowsOf(plan, false)) {
+                        PopulateWindow window = new PopulateWindow(w[0], w[1]);
+                        ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
+                        try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
+                            populator.populateComplex(
+                                plan,
+                                placer,
+                                window,
+                                sink,
+                                new WorldColumnReader(world),
+                                (x, z) -> Collections
+                                    .singleton(ocean && world.provider.dimensionId == 0 ? Type.OCEAN : Type.PLAINS),
+                                state);
+                        }
+                        rejected += sink.rejectedWrites();
+                    }
+                    com.gregguns.worldgen.Decision d = state.get(com.gregguns.worldgen.PlanKey.of(plan));
+                    out.check(d != null, c + ": a decision was recorded");
+                    if (d == null) continue;
+                    if (c.equals("flat")) {
+                        out.check(d.isPlaced(), "flat dry ground is placed: " + d);
+                        out.checkEquals("flat: no skip logged", 0, reasons.size());
+                    } else {
+                        out.check(!d.isPlaced(), c + ": rejected, got " + d);
+                        out.checkEquals(c + ": logged once", 1, reasons.size());
+                        out.checkEquals(c + ": nothing written", before, snapshot(world, plan));
+                        out.note(c + " -> " + reasons);
+                    }
+                    out.checkEquals(c + ": writes dropped outside a window", 0, rejected);
+                }
+            } finally {
+                slab(world, plan, true);
+            }
+            return out.build();
         }
     }
 }
