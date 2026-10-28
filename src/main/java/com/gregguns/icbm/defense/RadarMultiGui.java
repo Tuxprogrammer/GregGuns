@@ -66,18 +66,33 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
                 .tooltipBuilder(t -> t.addLine(IKey.lang("gregguns.icbm.radar_tower.gui.button"))));
     }
 
-    private ModularPanel buildRadarPanel(PanelSyncManager psm, ModularPanel parent) {
+    ModularPanel buildRadarPanel(PanelSyncManager psm, ModularPanel parent) {
         Shown shown = new Shown();
-        psm.syncValue("field_radius", 0, IcbmSync.editableText(multiblock::radiusText, multiblock::setRadiusText));
-        psm.syncValue("st_range", 0, new IntSyncValue(multiblock::rangeIfOn, v -> shown.range = v));
-        psm.syncValue("st_det", 0, new IntSyncValue(multiblock::detectedCount, v -> shown.detected = v));
-        psm.syncValue("st_inc", 0, new IntSyncValue(multiblock::incomingCount, v -> shown.incoming = v));
+        psm.syncValue(
+            "field_radius",
+            0,
+            IcbmSync.editableText(IcbmSync.guard(multiblock, multiblock::radiusText, ""), multiblock::setRadiusText));
+        psm.syncValue(
+            "st_range",
+            0,
+            new IntSyncValue(IcbmSync.guard(multiblock, multiblock::rangeIfOn, 0), v -> shown.range = v));
+        psm.syncValue(
+            "st_det",
+            0,
+            new IntSyncValue(IcbmSync.guard(multiblock, multiblock::detectedCount, 0), v -> shown.detected = v));
+        psm.syncValue(
+            "st_inc",
+            0,
+            new IntSyncValue(IcbmSync.guard(multiblock, multiblock::incomingCount, 0), v -> shown.incoming = v));
         psm.syncValue(
             "st_state",
             0,
             new IntSyncValue(
-                () -> multiblock.state()
-                    .ordinal(),
+                IcbmSync.guard(
+                    multiblock,
+                    () -> multiblock.state()
+                        .ordinal(),
+                    0),
                 v -> shown.state = v));
         return new ModularPanel("radarPanel").relative(parent)
             .leftRel(1)

@@ -20,6 +20,7 @@ import com.gregguns.GregGuns;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.text.AddedBy;
+import com.gregguns.icbm.IcbmSync;
 import com.gregguns.icbm.missile.LaunchResult;
 import com.gregguns.icbm.missile.LaunchSite;
 import com.gregguns.icbm.missile.MissileStatus;
@@ -110,6 +111,8 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     private final FireTrigger shots = new FireTrigger();
     private final FireTrigger redstoneEdge = new FireTrigger();
     private final FireTrigger coverEdge = new FireTrigger();
+    private static final Snapshot GONE = new Snapshot(ControlStatus.NO_PAD, false, 0, 0, 0, 0, 0);
+
     private Snapshot snapshot;
     private long snapshotTick;
     private ControlStatus lastShot;
@@ -421,6 +424,10 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     /** @return the current pre-check and pad facts, recomputed at most every few ticks; server side only */
     Snapshot snapshot() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (base == null || !IcbmSync.live(this)) {
+            // The block vanished under an open screen (broken, exploded, chunk unloaded): show an empty pad.
+            return GONE;
+        }
         long now = base.getTimer();
         if (snapshot != null && now - snapshotTick < SNAPSHOT_TICKS && now >= snapshotTick) {
             return snapshot;

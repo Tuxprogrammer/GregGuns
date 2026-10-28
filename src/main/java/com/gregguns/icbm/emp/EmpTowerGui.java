@@ -109,50 +109,68 @@ final class EmpTowerGui extends MTETieredMachineBlockBaseGui<MTEEmpTower> {
             "field_radius",
             0,
             IcbmSync.editableText(
-                () -> Integer.toString(machine.radius()),
+                IcbmSync.guard(machine, () -> Integer.toString(machine.radius()), "0"),
                 v -> machine.setRadiusFromGui(sync.getPlayer(), parse(v))));
         sync.syncValue(
             "st_gate",
             0,
             new IntSyncValue(
-                () -> machine.gate()
-                    .ordinal(),
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.gate()
+                        .ordinal(),
+                    0),
                 v -> state.gate = v));
         sync.syncValue(
             "st_eu",
             0,
             new LongSyncValue(
-                () -> machine.getBaseMetaTileEntity()
-                    .getStoredEU(),
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.getBaseMetaTileEntity()
+                        .getStoredEU(),
+                    0L),
                 v -> state.eu = v));
-        sync.syncValue("st_cost", 0, new LongSyncValue(machine::cost, v -> state.cost = v));
-        sync.syncValue("st_cool", 0, new IntSyncValue(machine::cooldownLeft, v -> state.cooldown = v));
+        sync.syncValue(
+            "st_cost",
+            0,
+            new LongSyncValue(IcbmSync.guard(machine, machine::cost, 0L), v -> state.cost = v));
+        sync.syncValue(
+            "st_cool",
+            0,
+            new IntSyncValue(IcbmSync.guard(machine, machine::cooldownLeft, 0), v -> state.cooldown = v));
         sync.syncValue(
             "st_mode",
             0,
             new IntSyncValue(
-                () -> machine.mode()
-                    .ordinal(),
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.mode()
+                        .ordinal(),
+                    0),
                 v -> state.mode = v));
         sync.syncValue(
             "st_devices",
             0,
             new IntSyncValue(
-                () -> machine.lastResult() == null ? -1 : machine.lastResult().devices,
+                IcbmSync.guard(machine, () -> machine.lastResult() == null ? -1 : machine.lastResult().devices, -1),
                 v -> state.devices = v));
         sync.syncValue(
             "st_missiles",
             0,
             new IntSyncValue(
-                () -> machine.lastResult() == null ? -1
-                    : machine.lastResult().missilesDestroyed + machine.lastResult().missilesFried
-                        + machine.lastResult().missilesTriggered,
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.lastResult() == null ? -1
+                        : machine.lastResult().missilesDestroyed + machine.lastResult().missilesFried
+                            + machine.lastResult().missilesTriggered,
+                    -1),
                 v -> state.missiles = v));
         sync.syncValue(
             "st_issues",
             0,
             new IntSyncValue(
-                () -> machine.lastResult() == null ? -1 : machine.lastResult().issues,
+                IcbmSync.guard(machine, () -> machine.lastResult() == null ? -1 : machine.lastResult().issues, -1),
                 v -> state.issues = v));
         sync.syncValue(
             F_FIRE,

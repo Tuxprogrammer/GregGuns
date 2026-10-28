@@ -28,6 +28,9 @@ public final class ElectricGear {
 
     private static final String NV_TAG = "nightVision";
 
+    /** IC2's NBT key for an item's stored EU. */
+    static final String CHARGE_KEY = "charge";
+
     private ElectricGear() {}
 
     /**
@@ -53,6 +56,21 @@ public final class ElectricGear {
     public static double charge(ItemStack stack) {
         IElectricItemManager m = ElectricItem.manager;
         return m == null ? 0.0 : m.getCharge(stack);
+    }
+
+    /**
+     * The stored EU read straight from the stack's NBT, without creating any tag (IC2 keeps it under {@code charge}).
+     * The durability bar runs every frame, and a getter that writes NBT makes NEI log a forced tag update.
+     *
+     * @param stack an electric item
+     * @return its stored EU, 0 when it has no tag yet
+     */
+    public static double chargeReadOnly(ItemStack stack) {
+        if (stack == null || !stack.hasTagCompound()) {
+            return 0.0;
+        }
+        return stack.getTagCompound()
+            .getDouble(CHARGE_KEY);
     }
 
     /**

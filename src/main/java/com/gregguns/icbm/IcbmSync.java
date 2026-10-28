@@ -1,9 +1,15 @@
 package com.gregguns.icbm;
 
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
+import net.minecraft.tileentity.TileEntity;
+
 import com.cleanroommc.modularui.value.sync.StringSyncValue;
+
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 
 /**
  * Sync values the ICBM screens share.
@@ -26,5 +32,32 @@ public final class IcbmSync {
      */
     public static StringSyncValue editableText(Supplier<String> getter, Consumer<String> setter) {
         return new StringSyncValue(getter, setter).allowC2S();
+    }
+
+    /**
+     * Whether a machine still has a live tile under it. A GUI keeps syncing on the server after its block is broken
+     * or its chunk unloads; every getter on that path must check this first (GT clears the machine's base tile).
+     *
+     * @param machine the machine behind an open screen
+     * @return true when the machine has a base tile that is not invalid
+     */
+    public static boolean live(IMetaTileEntity machine) {
+        Object base = machine == null ? null : machine.getBaseMetaTileEntity();
+        return base != null && !(base instanceof TileEntity && ((TileEntity) base).isInvalid());
+    }
+
+    /** @return a getter that yields {@code fallback} once the machine's tile is gone */
+    public static IntSupplier guard(IMetaTileEntity machine, IntSupplier getter, int fallback) {
+        return () -> live(machine) ? getter.getAsInt() : fallback;
+    }
+
+    /** @return a getter that yields {@code fallback} once the machine's tile is gone */
+    public static LongSupplier guard(IMetaTileEntity machine, LongSupplier getter, long fallback) {
+        return () -> live(machine) ? getter.getAsLong() : fallback;
+    }
+
+    /** @return a getter that yields {@code fallback} once the machine's tile is gone */
+    public static Supplier<String> guard(IMetaTileEntity machine, Supplier<String> getter, String fallback) {
+        return () -> live(machine) ? getter.get() : fallback;
     }
 }

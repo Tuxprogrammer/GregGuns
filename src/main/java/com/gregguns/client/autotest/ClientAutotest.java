@@ -180,7 +180,10 @@ public final class ClientAutotest {
             }
             return;
         }
-        if (!(mc.currentScreen instanceof GuiMainMenu) || ++menuTicks < MENU_SETTLE_TICKS) {
+        // Alpha pass: the real pack's main menu is not a GuiMainMenu, so any title-like screen counts.
+        if (mc.currentScreen == null || mc.currentScreen instanceof GuiConnecting
+            || mc.theWorld != null
+            || ++menuTicks < MENU_SETTLE_TICKS) {
             return;
         }
         connectStarted = true;

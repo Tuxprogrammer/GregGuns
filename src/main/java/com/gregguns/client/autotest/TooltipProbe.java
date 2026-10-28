@@ -28,6 +28,8 @@ public final class TooltipProbe {
 
     private int slot = -1;
     private boolean shift;
+    /** The key buffer is missing under lwjgl3ify; say so once, not on every draw. */
+    private static boolean pressWarned;
 
     public void setSlot(String arg) {
         slot = "off".equals(arg) ? -1 : Integer.parseInt(arg);
@@ -47,7 +49,10 @@ public final class TooltipProbe {
                 .get(null);
             keys.put(Keyboard.KEY_LSHIFT, (byte) (down ? 1 : 0));
         } catch (ReflectiveOperationException | RuntimeException e) {
-            GregGuns.LOG.error("[gregguns] AUTOTEST could not set the shift key", e);
+            if (!pressWarned) {
+                pressWarned = true;
+                GregGuns.LOG.warn("[gregguns] AUTOTEST cannot set the shift key here (lwjgl3ify has no key buffer)", e);
+            }
         }
     }
 
