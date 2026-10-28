@@ -341,3 +341,18 @@ Context: how GTNH fuels rockets. The evidence is the SpaceRace quest line, Galac
 ## Open
 
 None right now. New questions are added here as the GregGuns-side sheets raise them.
+
+### I6 layout and generation decisions (coder A, D170 to D179)
+
+| # | Decision | Detail |
+|---|---|---|
+| D170 | Complex geometry | Local coordinates 0 to 239; hall 36 x 28 at (102, 106); four wings 90 blocks long with 5 slots per side (pitch 16); level of 7 layers; 60 to 85% of the 40 slots used; every mandatory room always present; one guard post per wing mouth and one decontamination airlock |
+| D171 | Silo count | 78% one, 15% two, 5% three, 2% four, clustered north-east of the hall; real 5 x 5 x 12 silos with the controller facing north; each lacks exactly one part (controller or Energy Hatch) |
+| D172 | Depth | The level floor is 24 blocks under the recorded ground; shafts rise to the ground read in their own window |
+| D173 | Grid | A dedicated 64-chunk grid with its own 25% chance roll (`siloComplexChancePercent`), keeping M8's spawn exclusion; the ordinary structure pools are untouched |
+| D174 | Dimension flags | A name list (`siloComplexDimensions`) by provider dimension name, default every D38 planet; the generator runs a dimension for the complex even when the ordinary structures are not allowed there |
+| D175 | Overworld biomes | A whitelist of biome types (`siloComplexOverworldBiomes`) plus M8's land check; failures are logged and recorded |
+| D176 | Never cascading | The plan and raster derive only from the plan seed; each window writes its own columns; proved by unit tests and `icbm.complex.places` |
+| D177 | Surface variants | Open, half open (west half of the bore capped), closed (capped, two outer cells air to build height) per silo; the ring is concrete |
+| D178 | Escape ladder | A 1 x 1 ladder and a closed trapdoor at ground level at a wing end |
+| D179 | Contents seam | The shell stamp is followed in the same window by the guards-and-loot pass (`ComplexContents`, `ComplexApplier`) through a sink that drops out-of-window writes quietly; the ceiling comes from `PlanetTable` (rolled on Ross128), the activity level from the plan seed |
