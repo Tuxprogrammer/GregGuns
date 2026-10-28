@@ -1,78 +1,185 @@
 package com.gregguns.icbm.defense;
 
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.lazy;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
+import static gregtech.api.enums.HatchElement.Energy;
+import static gregtech.api.enums.HatchElement.Maintenance;
+import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTUtility.validMTEList;
+
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import com.cleanroommc.modularui.factory.PosGuiData;
-import com.cleanroommc.modularui.screen.ModularPanel;
-import com.cleanroommc.modularui.screen.UISettings;
-import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.gregguns.GregGuns;
+import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
 import com.gregguns.icbm.component.RadarView;
 import com.gregguns.icbm.detect.ContactSource;
+import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
+import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
+import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
+import com.gtnewhorizon.structurelib.structure.IStructureElement;
+import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
+import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 
 import gregtech.api.enums.GTValues;
+import gregtech.api.enums.Textures;
+import gregtech.api.interfaces.IIconContainer;
+import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.ICasingTextureProvider;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.metatileentity.implementations.MTEExtendedPowerMultiBlockBase;
+import gregtech.api.metatileentity.implementations.MTEHatch;
+import gregtech.api.recipe.check.CheckRecipeResult;
+import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.recipe.check.SimpleCheckRecipeResult;
+import gregtech.api.render.TextureFactory;
+import gregtech.api.structure.error.StructureError;
+import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
- * A single-block radar (HV or EV, D14): scans the missile tracker for missiles in flight within its range, flags the
- * ones aimed inside its protected radius, and reports them by redstone, by the active flag a GT machine-state cover
- * reads, by its GUI and by the data stick link a battery listens to. The hull's voltage sets the range
- * ({@link RadarRules#range}); it draws a quarter amp while scanning. Construct only inside GT's MTE window. Both sides.
+ * The small radar (D125, converting the I4 single blocks in place): a 3x3 Radar Casing base, two high, with a pedestal
+ * and a spinning dish on top ({@link EntityRadarDish}). The controller's voltage tier sets the range
+ * ({@link RadarRules#range}: HV 128, EV 256) and the power (a quarter amp of that tier while it runs); an Energy Hatch
+ * of that tier or better pays for it. Contacts, the protected radius, the redstone outputs and the data stick link are
+ * the tower's ({@link RadarUnit}). A controller with no structure does nothing: no scan, no outputs, no dish. Construct
+ * only inside GT's MTE window, after {@link GregGunsCasings#create} has run. Both sides.
  */
-// Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md
-public final class MTERadar extends DefenseBlock implements RadarSource, RadarView {
+// Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md (The small radar)
+// Source (the pattern: a non-recipe multiblock whose checkProcessing sets power and time):
+// https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEMultiBlockBase.java#L877
+public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
+    implements ISurvivalConstructable, ICasingTextureProvider, RadarSource, RadarView, RadarPanel, RadarDishHost {
 
-    /** The data stick slot. */
-    public static final int SLOT_STICK = 0;
-    /** How far a pressing player may stand from the block, blocks. */
-    static final double USE_DISTANCE = 8.0;
+    private static final String PIECE = "radar";
+    private static final int CYCLE_TICKS = 20;
+    /** Scan steps a fresh load may stay unformed before the dish is taken down. */
+    private static final int UNFORMED_GRACE_STEPS = 20;
 
     private final RadarUnit unit = new RadarUnit();
+    private final RadarDishKeeper dish = new RadarDishKeeper(RadarShape.DISH_HEIGHT, 1.0F);
+    private final int tier;
+    private final IIconContainer front;
+    private final IIconContainer frontActive;
+    private int casingCount;
     private boolean online;
+    private int unformedSteps;
+    private int steps;
 
     /**
      * The prototype that registers the machine under {@code id}.
      *
-     * @param id              the MTE id
-     * @param name            GT's internal name
-     * @param nameRegional    the English display name
-     * @param tier            the hull's voltage index (HV 3, EV 4)
-     * @param descriptionKeys lang keys of the tooltip lines
-     * @param iconDir         the overlay folder under {@code textures/blocks/}
+     * @param id           the MTE id
+     * @param name         GT's internal name
+     * @param nameRegional the English display name
+     * @param tier         the controller's voltage index (HV 3, EV 4)
+     * @param iconDir      the overlay folder under {@code textures/blocks/}, with a trailing slash
      */
-    public MTERadar(int id, String name, String nameRegional, int tier, String[] descriptionKeys, String iconDir) {
-        super(id, name, nameRegional, tier, 1, descriptionKeys, iconDir);
+    public MTERadar(int id, String name, String nameRegional, int tier, String iconDir) {
+        super(id, name, nameRegional);
+        this.tier = tier;
+        this.front = Textures.BlockIcons.customOptional(GregGuns.MODID, iconDir + "OVERLAY_FRONT");
+        this.frontActive = Textures.BlockIcons.customOptional(GregGuns.MODID, iconDir + "OVERLAY_FRONT_ACTIVE");
     }
 
-    private MTERadar(String name, int tier, String[] descriptionKeys, Icons icons) {
-        super(name, tier, 1, descriptionKeys, icons);
+    private MTERadar(String name, int tier, IIconContainer front, IIconContainer frontActive) {
+        super(name);
+        this.tier = tier;
+        this.front = front;
+        this.frontActive = frontActive;
     }
 
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity baseMetaTileEntity) {
-        return new MTERadar(mName, mTier, mDescriptionArray, icons());
+        return new MTERadar(mName, tier, front, frontActive);
     }
 
-    // --- RadarSource -------------------------------------------------------------------------------------------
+    private static final class Structure {
+
+        static final IStructureDefinition<MTERadar> DEFINITION = build();
+
+        private Structure() {}
+
+        private static IStructureElement<MTERadar> casing() {
+            return lazy(() -> ofBlock(GregGunsCasings.INSTANCE, GregGunsCasings.RADAR_CASING));
+        }
+
+        private static IStructureDefinition<MTERadar> build() {
+            int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.RADAR_CASING);
+            return StructureDefinition.<MTERadar>builder()
+                .addShape(PIECE, RadarShape.PIECES[0])
+                .addElement('C', onElementPass(MTERadar::onCasingAdded, casing()))
+                .addElement(
+                    'H',
+                    buildHatchAdder(MTERadar.class).atLeast(Energy, Maintenance)
+                        .casingIndex(casingIndex)
+                        .hint(1)
+                        .buildAndChain(onElementPass(MTERadar::onCasingAdded, casing())))
+                .build();
+        }
+    }
+
+    private void onCasingAdded() {
+        casingCount++;
+    }
+
+    @Override
+    public IStructureDefinition<MTERadar> getStructureDefinition() {
+        return Structure.DEFINITION;
+    }
+
+    @Override
+    public void checkMachine(IGregTechTileEntity baseMetaTileEntity, ItemStack stack, List<StructureError> errors) {
+        casingCount = 0;
+        if (!checkPiece(PIECE, RadarShape.CONTROLLER_COLUMN, RadarShape.CONTROLLER_ROW, 0, errors)) {
+            return;
+        }
+        checkCasingMin(errors, casingCount, RadarShape.CASING_MINIMUM);
+        checkHasAnyEnergy(errors);
+        checkHasMaintenanceHatch(errors);
+    }
+
+    // --- RadarSource ------------------------------------------------------------------------------------------
+
+    /** @return the voltage index of the weakest Energy Hatch, or -1 when there is none */
+    int hatchTier() {
+        int lowest = Integer.MAX_VALUE;
+        for (MTEHatch hatch : validMTEList(mEnergyHatches)) {
+            lowest = Math.min(lowest, hatch.mTier);
+        }
+        return lowest == Integer.MAX_VALUE ? -1 : lowest;
+    }
+
+    /** @return whether the last structure check found a complete radar */
+    @Override
+    public boolean isFormed() {
+        return mMachine;
+    }
 
     @Override
     public boolean online() {
-        return online;
+        return online && mMachine;
     }
 
     @Override
     public Sweep sweep() {
-        return online ? unit.sweep() : Sweep.EMPTY;
+        return online() ? unit.sweep() : Sweep.EMPTY;
     }
 
     @Override
     public int range() {
-        return online ? RadarRules.range(mTier) : 0;
+        return online() ? RadarRules.range(tier) : 0;
     }
 
     @Override
@@ -80,12 +187,46 @@ public final class MTERadar extends DefenseBlock implements RadarSource, RadarVi
         return unit.radius();
     }
 
+    /** @return the detection range this controller gives, online or not */
+    @Override
+    public int rangeIfOn() {
+        return RadarRules.range(tier);
+    }
+
+    /** @return the controller's voltage index (HV 3, EV 4) */
+    public int tier() {
+        return tier;
+    }
+
+    /**
+     * Sets the protected radius, clamped to the range; for scenarios and the GUI field.
+     *
+     * @param radius blocks
+     */
+    public void setRadius(int radius) {
+        unit.setRadius(radius, rangeIfOn());
+        getBaseMetaTileEntity().markDirty();
+    }
+
+    @Override
+    public String radiusText() {
+        return Integer.toString(unit.radius());
+    }
+
+    @Override
+    public void setRadiusText(String text) {
+        try {
+            setRadius(Integer.parseInt(text.trim()));
+        } catch (NumberFormatException e) {
+            // Ignored: the field keeps its value.
+        }
+    }
+
     // --- RadarView (OpenComputers) -------------------------------------------------------------------------------
 
     @Override
     public int setProtectedRadius(int blocks) {
         setRadius(blocks);
-        getBaseMetaTileEntity().markDirty();
         return unit.radius();
     }
 
@@ -100,18 +241,32 @@ public final class MTERadar extends DefenseBlock implements RadarSource, RadarVi
     }
 
     @Override
-    public java.util.List<? extends ContactSource> contacts() {
+    public List<? extends ContactSource> contacts() {
         return sweep().detected();
     }
 
-    /** @return the shared radar state (the GUI and the scenarios read it) */
-    RadarUnit unit() {
-        return unit;
+    @Override
+    public int detectedCount() {
+        return unit.sweep()
+            .detected()
+            .size();
     }
 
-    /** @return the detection range this hull gives, online or not */
-    public int rangeIfOn() {
-        return RadarRules.range(mTier);
+    @Override
+    public int incomingCount() {
+        return unit.sweep()
+            .incoming()
+            .size();
+    }
+
+    @Override
+    public String panelTitleKey() {
+        return "gregguns.icbm.radar.gui.title";
+    }
+
+    @Override
+    protected MTEMultiBlockBaseGui<?> getGui() {
+        return new RadarMultiGui<>(this);
     }
 
     /** @return what the radar reports now */
@@ -124,7 +279,26 @@ public final class MTERadar extends DefenseBlock implements RadarSource, RadarVi
         return unit.signal();
     }
 
-    // --- tick --------------------------------------------------------------------------------------------------
+    // --- running ----------------------------------------------------------------------------------------------
+
+    @Override
+    public @Nonnull CheckRecipeResult checkProcessing() {
+        if (!ModuleState.isActive(ModuleId.ICBM)) {
+            return CheckRecipeResultRegistry.NO_RECIPE; // the module is off: registered but inert
+        }
+        int t = hatchTier();
+        if (t < 0) {
+            return CheckRecipeResultRegistry.NO_RECIPE;
+        }
+        if (t < tier) {
+            return SimpleCheckRecipeResult.ofFailure("gregguns_radar_tier");
+        }
+        mMaxProgresstime = CYCLE_TICKS;
+        lEUt = -RadarRules.euPerTick(GTValues.V[tier]);
+        mEfficiency = 10000;
+        mEfficiencyIncrease = 10000;
+        return CheckRecipeResultRegistry.SUCCESSFUL;
+    }
 
     @Override
     public void onPostTick(IGregTechTileEntity base, long tick) {
@@ -135,112 +309,170 @@ public final class MTERadar extends DefenseBlock implements RadarSource, RadarVi
         if (tick % RadarRules.SCAN_TICKS != 0) {
             return;
         }
-        long cost = RadarRules.euPerTick(GTValues.V[mTier]) * RadarRules.SCAN_TICKS;
-        online = base.decreaseStoredEnergyUnits(cost, false);
-        unit.scan(base.getWorld(), base.getXCoord() + 0.5, base.getZCoord() + 0.5, rangeIfOn(), online);
-        unit.publish(base);
+        scanNow();
     }
 
-    /** Runs one scan now, free of charge when the block holds the energy (scenarios and the GUI use this). */
+    /** One scan now: it runs while the structure is formed and a cycle is paid for. */
     void scanNow() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
-        long cost = RadarRules.euPerTick(GTValues.V[mTier]) * RadarRules.SCAN_TICKS;
-        online = base.decreaseStoredEnergyUnits(cost, false);
+        online = mMachine && base.isActive() && hatchTier() >= tier;
         unit.scan(base.getWorld(), base.getXCoord() + 0.5, base.getZCoord() + 0.5, rangeIfOn(), online);
-        unit.publish(base);
+        // The active flag is the machine's own "running" state here, so only the redstone strength is driven.
+        unit.publishRedstone(base);
+        tendDish(base);
     }
 
-    // --- stick and radius --------------------------------------------------------------------------------------
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index == SLOT_STICK && isStick(stack);
-    }
-
-    @Override
-    public boolean allowPutStack(IGregTechTileEntity base, int index, ForgeDirection side, ItemStack stack) {
-        return index == SLOT_STICK && isStick(stack);
-    }
-
-    @Override
-    public boolean allowPullStack(IGregTechTileEntity base, int index, ForgeDirection side, ItemStack stack) {
-        return false;
-    }
-
-    boolean mayUse(EntityPlayer player) {
-        IGregTechTileEntity base = getBaseMetaTileEntity();
-        if (player == null || base == null || base.isClientSide() || player.isDead) {
-            return false;
+    /** Spawns the dish when formed, spins it while the radar runs, and takes it down once the structure is gone. */
+    private void tendDish(IGregTechTileEntity base) {
+        if (mMachine) {
+            unformedSteps = 0;
+            dish.update(base, online(), ++steps % RadarDishKeeper.CHECK_STEPS == 0);
+        } else if (++unformedSteps >= UNFORMED_GRACE_STEPS) {
+            dish.remove();
         }
-        double dx = player.posX - (base.getXCoord() + 0.5);
-        double dy = player.posY - (base.getYCoord() + 0.5);
-        double dz = player.posZ - (base.getZCoord() + 0.5);
-        return player.worldObj == base.getWorld() && dx * dx + dy * dy + dz * dz <= USE_DISTANCE * USE_DISTANCE;
+    }
+
+    /** @return the dish entity now standing on the radar, or null (scenarios read it) */
+    public EntityRadarDish dish() {
+        return dish.dish();
+    }
+
+    @Override
+    public void onRemoval() {
+        dish.remove();
+        super.onRemoval();
     }
 
     /**
-     * Writes this radar's link to the stick in the slot.
-     *
-     * @param player the pressing player
-     * @return true when the stick was written
+     * GT only exposes a machine's per-side redstone strength to the world when the machine says so (default false), so
+     * without this the strength set by the scan never reaches a neighboring lamp.
      */
-    public boolean saveLink(EntityPlayer player) {
-        return mayUse(player) && RadarUnit.writeLink(getBaseMetaTileEntity(), getStackInSlot(SLOT_STICK), player);
-    }
-
-    /**
-     * Sets the protected radius, clamped to the range; for scenarios and the GUI field.
-     *
-     * @param radius blocks
-     */
-    public void setRadius(int radius) {
-        unit.setRadius(radius, rangeIfOn());
-    }
-
-    /** @return the protected radius text for the GUI field */
-    String radiusText() {
-        return Integer.toString(unit.radius());
-    }
-
-    /** @param text what the player typed; anything that is not a number is ignored, the rest is clamped */
-    void setRadiusText(String text) {
-        try {
-            unit.setRadius(Integer.parseInt(text.trim()), rangeIfOn());
-            getBaseMetaTileEntity().markDirty();
-        } catch (NumberFormatException e) {
-            // Ignored: the field keeps its value.
-        }
-    }
-
-    // --- GUI and NBT -------------------------------------------------------------------------------------------
-
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/BaseMetaTileEntity.java#L1726-L1729
+    // (getGeneralRS returns 0 unless allowGeneralRedstoneOutput(); default false in CommonMetaTileEntity#L610)
     @Override
-    public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
-        float z) {
-        if (base.isClientSide()) {
-            return true;
-        }
-        ItemStack held = player.getHeldItem();
-        if (isStick(held)) {
-            RadarUnit.writeLink(base, held, player);
-            return true;
-        }
-        openGui(player);
+    public boolean allowGeneralRedstoneOutput() {
         return true;
     }
 
     @Override
-    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
-        return new RadarGui(this).build(guiData, syncManager, uiSettings);
+    public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
+        float z) {
+        if (!base.isClientSide() && RadarUnit.isStick(player.getHeldItem())) {
+            RadarUnit.writeLink(base, player.getHeldItem(), player);
+            return true;
+        }
+        return super.onRightclick(base, player, side, x, y, z);
     }
 
     @Override
-    public void saveNBTData(NBTTagCompound nbt) {
-        unit.save(nbt);
+    public void saveNBTData(NBTTagCompound tag) {
+        super.saveNBTData(tag);
+        unit.save(tag);
     }
 
     @Override
-    public void loadNBTData(NBTTagCompound nbt) {
-        unit.load(nbt);
+    public void loadNBTData(NBTTagCompound tag) {
+        super.loadNBTData(tag);
+        unit.load(tag);
+    }
+
+    @Override
+    public boolean supportsInputSeparation() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsBatchMode() {
+        return false;
+    }
+
+    @Override
+    public int getPollutionPerSecond(ItemStack stack) {
+        return 0;
+    }
+
+    // --- tooltip ----------------------------------------------------------------------------------------------
+
+    @Override
+    protected MultiblockTooltipBuilder createTooltip() {
+        MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
+        tt.addMachineType(lang("type"))
+            .addInfo(lang("info.scan"))
+            .addInfo(lang("info.range"))
+            .addInfo(lang("info.link"))
+            .addInfo(lang("info.outputs"))
+            .addInfo(lang("info.dish"))
+            .beginStructureBlock(RadarShape.WIDTH, RadarShape.HEIGHT, RadarShape.DEPTH, false)
+            .addController(lang("structure.controller"))
+            .addCasingInfoRange(
+                StatCollector.translateToLocal("gregguns.casings.11.name"),
+                RadarShape.CASING_MINIMUM,
+                RadarShape.casingPositions(),
+                false)
+            .addEnergyHatch(lang("structure.hatch"), 1)
+            .addMaintenanceHatch(lang("structure.hatch"), 1)
+            .addStructureInfo(lang("structure.pedestal"))
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
+        return tt;
+    }
+
+    private static String lang(String key) {
+        return StatCollector.translateToLocal("gregguns.machine.radar." + key);
+    }
+
+    // --- textures ---------------------------------------------------------------------------------------------
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity baseMetaTileEntity, ForgeDirection side, ForgeDirection facing,
+        int colorIndex, boolean active, boolean redstoneLevel) {
+        ITexture casing = getCasingTexture();
+        if (side != facing) {
+            return new ITexture[] { casing };
+        }
+        return new ITexture[] { casing, TextureFactory.builder()
+            .addIcon(active ? frontActive : front)
+            .extFacing()
+            .build() };
+    }
+
+    @Override
+    public ITexture getCasingTexture() {
+        return Textures.BlockIcons.getCasingTextureForId(GregGunsCasings.textureIndex(GregGunsCasings.RADAR_CASING));
+    }
+
+    // --- construction -----------------------------------------------------------------------------------------
+
+    @Override
+    public void construct(ItemStack trigger, boolean hintsOnly) {
+        buildPiece(PIECE, trigger, hintsOnly, RadarShape.CONTROLLER_COLUMN, RadarShape.CONTROLLER_ROW, 0);
+    }
+
+    @Override
+    public int survivalConstruct(ItemStack trigger, int elementBudget, ISurvivalBuildEnvironment env) {
+        if (mMachine) {
+            return -1;
+        }
+        return survivalBuildPiece(
+            PIECE,
+            trigger,
+            RadarShape.CONTROLLER_COLUMN,
+            RadarShape.CONTROLLER_ROW,
+            0,
+            elementBudget,
+            env,
+            false,
+            true);
+    }
+
+    @Override
+    protected IAlignmentLimits getInitialAlignmentLimits() {
+        return (d, r, f) -> (d.flag & (ForgeDirection.UP.flag | ForgeDirection.DOWN.flag)) == 0 && r.isNotRotated()
+            && !f.isVerticallyFliped();
+    }
+
+    @Override
+    public boolean isRotationChangeAllowed() {
+        return false;
     }
 }

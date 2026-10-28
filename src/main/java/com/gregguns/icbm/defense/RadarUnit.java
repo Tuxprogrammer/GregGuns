@@ -104,6 +104,24 @@ public final class RadarUnit {
         }
     }
 
+    /**
+     * Sets the redstone strength on every side, only when it changed. A multiblock's active flag is its own running
+     * state, so it is left alone.
+     *
+     * @param base the tile
+     */
+    public void publishRedstone(IGregTechTileEntity base) {
+        int want = RadarRules.redstone(
+            sweep.incoming()
+                .size());
+        if (want != signal) {
+            signal = want;
+            for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+                base.setInternalOutputRedstoneSignal(d, (byte) want);
+            }
+        }
+    }
+
     /** Clears the outputs when the radar goes away or switches off. */
     public void reset() {
         sweep = Sweep.EMPTY;

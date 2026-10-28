@@ -17,15 +17,19 @@ import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import com.gregguns.icbm.IcbmSync;
 
+import gregtech.api.metatileentity.implementations.MTEMultiBlockBase;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
- * The radar tower's controller screen: GT's multiblock screen plus one button that opens a small radar panel with the
- * protected radius field, the range and the contact counts. The numbers reach the client as read-only sync values; the
- * radius field re-checks on the server ({@link MTERadarTower#setRadiusText}). Built on both sides.
+ * A multiblock radar's controller screen (the small radar and the tower): GT's multiblock screen plus one button that
+ * opens a small radar panel with the protected radius field, the range and the contact counts. The numbers reach the
+ * client as read-only sync values; the radius field re-checks on the server ({@link RadarPanel#setRadiusText}). Built
+ * on both sides.
+ *
+ * @param <T> the controller class
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md (Tower, GUI)
-final class RadarTowerGui extends MTEMultiBlockBaseGui<MTERadarTower> {
+final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEMultiBlockBaseGui<T> {
 
     private static final Pattern DIGITS = Pattern.compile("[0-9]{0,5}");
     private static final int PANEL_W = 150;
@@ -38,8 +42,8 @@ final class RadarTowerGui extends MTEMultiBlockBaseGui<MTERadarTower> {
         int incoming;
     }
 
-    RadarTowerGui(MTERadarTower tower) {
-        super(tower);
+    RadarMultiGui(T radar) {
+        super(radar);
     }
 
     @Override
@@ -74,7 +78,7 @@ final class RadarTowerGui extends MTEMultiBlockBaseGui<MTERadarTower> {
                 Flow.column()
                     .full()
                     .padding(4)
-                    .child(label(() -> tr("gregguns.icbm.radar_tower.gui.title")))
+                    .child(label(() -> tr(multiblock.panelTitleKey())))
                     .child(label(() -> trf("gregguns.icbm.radar.gui.range", shown.range)))
                     .child(label(() -> trf("gregguns.icbm.radar.gui.contacts", shown.detected, shown.incoming)))
                     .child(label(() -> tr("gregguns.icbm.radar.gui.radius")))
