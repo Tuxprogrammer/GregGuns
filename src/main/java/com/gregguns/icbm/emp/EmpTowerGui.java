@@ -131,8 +131,14 @@ final class EmpTowerGui extends MTETieredMachineBlockBaseGui<MTEEmpTower> {
                         .getStoredEU(),
                     0L),
                 v -> state.eu = v));
-        sync.syncValue("st_cost", 0, new LongSyncValue(IcbmSync.guard(machine, machine::cost, 0L), v -> state.cost = v));
-        sync.syncValue("st_cool", 0, new IntSyncValue(IcbmSync.guard(machine, machine::cooldownLeft, 0), v -> state.cooldown = v));
+        sync.syncValue(
+            "st_cost",
+            0,
+            new LongSyncValue(IcbmSync.guard(machine, machine::cost, 0L), v -> state.cost = v));
+        sync.syncValue(
+            "st_cool",
+            0,
+            new IntSyncValue(IcbmSync.guard(machine, machine::cooldownLeft, 0), v -> state.cooldown = v));
         sync.syncValue(
             "st_mode",
             0,

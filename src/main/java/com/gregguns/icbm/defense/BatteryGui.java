@@ -18,7 +18,6 @@ import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.cleanroommc.modularui.widgets.slot.ModularSlot;
-
 import com.gregguns.icbm.IcbmSync;
 
 import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseGui;
@@ -93,8 +92,14 @@ final class BatteryGui extends MTETieredMachineBlockBaseGui<MTEAirDefense> {
                         .ordinal(),
                     0),
                 v -> state.state = v));
-        sync.syncValue("st_threats", 0, new IntSyncValue(IcbmSync.guard(machine, machine::threats, 0), v -> state.threats = v));
-        sync.syncValue("st_sams", 0, new IntSyncValue(IcbmSync.guard(machine, machine::samCount, 0), v -> state.sams = v));
+        sync.syncValue(
+            "st_threats",
+            0,
+            new IntSyncValue(IcbmSync.guard(machine, machine::threats, 0), v -> state.threats = v));
+        sync.syncValue(
+            "st_sams",
+            0,
+            new IntSyncValue(IcbmSync.guard(machine, machine::samCount, 0), v -> state.sams = v));
         sync.syncValue(
             "st_eu",
             0,

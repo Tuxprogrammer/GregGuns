@@ -38,7 +38,6 @@ public final class DefenseGuiProbes {
                 "icbm.defense.radar_tower_gui_vanish",
                 "Reading every sync value of the Radar Tower settings panel after its block is removed does not throw.",
                 GregGunsMTEIDs.RADAR_TOWER,
-                (m, sync) -> new RadarMultiGui<>((MTERadarTower) m)
-                    .buildRadarPanel(sync, new ModularPanel("probe"))));
+                (m, sync) -> new RadarMultiGui<>((MTERadarTower) m).buildRadarPanel(sync, new ModularPanel("probe"))));
     }
 }

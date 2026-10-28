@@ -111,7 +111,9 @@ public final class GuiVanishProbe {
                                 failure = e.toString();
                             }
                         }
-                        out.check(survived, "reading every sync value after the block is gone does not throw " + failure);
+                        out.check(
+                            survived,
+                            "reading every sync value after the block is gone does not throw " + failure);
                     } catch (RuntimeException e) {
                         out.check(false, "probe failed: " + e);
                     }
