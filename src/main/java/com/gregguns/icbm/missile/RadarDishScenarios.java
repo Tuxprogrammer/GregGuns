@@ -77,6 +77,22 @@ final class RadarDishScenarios {
         return n;
     }
 
+    /** How many data sticks lie as items near a position; removes them when asked. */
+    private static int sticksNear(World w, int x, int y, int z, boolean remove) {
+        int n = 0;
+        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x - 3, y - 3, z - 3, x + 4, y + 4, z + 4);
+        for (Object o : w.getEntitiesWithinAABB(EntityItem.class, box)) {
+            EntityItem item = (EntityItem) o;
+            if (item.getEntityItem() != null && ItemList.Tool_DataStick.isStackEqual(item.getEntityItem(), false, true)) {
+                n++;
+            }
+            if (remove) {
+                item.setDead();
+            }
+        }
+        return n;
+    }
+
     /** What a stuck radar reports, for a failure message. */
     private static String why(ScenarioContext ctx, MTERadar r) {
         IGregTechTileEntity base = r.getBaseMetaTileEntity();
@@ -141,8 +157,10 @@ final class RadarDishScenarios {
                 .addTileEntity(TileEntity.createAndLoadEntity(tag));
             final boolean[] stickHeld = {
                 DefenseScenarios.radar(DefenseScenarios.live(ctx, 0, CY, 0)).mInventory[0] != null };
+            final int[] sticksSeen = { 0 };
             return ScenarioResult.pending(name(), 300, ticks -> {
                 if (ticks < WARMUP_TICKS + 60) {
+                    sticksSeen[0] = Math.max(sticksSeen[0], sticksNear(w, x, y, z, false));
                     return null;
                 }
                 MTERadar r = DefenseScenarios.radar(DefenseScenarios.live(ctx, 0, CY, 0));
@@ -164,15 +182,7 @@ final class RadarDishScenarios {
                 out.checkEquals("no dish", 0, dishes(ctx, 0, 0));
                 out.check(stickHeld[0], "the reloaded tile held the data stick, as an I4 save does");
                 out.check(r.mInventory[0] == null, "the controller no longer holds the stick");
-                int sticks = 0;
-                AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x - 3, y - 3, z - 3, x + 4, y + 4, z + 4);
-                for (Object o : w.getEntitiesWithinAABB(EntityItem.class, box)) {
-                    EntityItem item = (EntityItem) o;
-                    if (ItemList.Tool_DataStick.isStackEqual(item.getEntityItem(), false, true)) {
-                        sticks++;
-                    }
-                    item.setDead();
-                }
+                int sticks = Math.max(sticksSeen[0], sticksNear(w, x, y, z, true));
                 out.checkEquals("the stick was handed back as an item", 1, sticks);
                 return out.build();
             });

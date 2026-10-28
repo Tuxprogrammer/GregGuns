@@ -341,15 +341,13 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
         }
     }
 
-    /** Turns the machine back on once it is formed and its hatches hold the power for a cycle. */
+    /**
+     * Gets a radar that is formed, allowed to work and paid for but not running going again. GT's controller only
+     * looks for a recipe when something pushes it to (no periodic polling), so a radar that found no power at its
+     * first check, or was switched back on after a stop, would otherwise sit idle with power in its hatch. After a
+     * stop of its own (D195) it is also switched back on first.
+     */
     private void resumeIfPowered(IGregTechTileEntity base) {
-        if (!resumeWhenPowered) {
-            return;
-        }
-        if (base.isAllowedToWork()) {
-            resumeWhenPowered = false; // someone turned it back on
-            return;
-        }
         if (!mMachine) {
             return;
         }
@@ -358,9 +356,15 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
             stored += hatch.getBaseMetaTileEntity()
                 .getStoredEU();
         }
-        if (hatchTier() >= tier && stored >= 2 * RadarRules.euPerTick(GTValues.V[tier])) {
+        if (hatchTier() < tier || stored < 2 * RadarRules.euPerTick(GTValues.V[tier])) {
+            return;
+        }
+        if (resumeWhenPowered && !base.isAllowedToWork()) {
             base.enableWorking();
-            resumeWhenPowered = false;
+        }
+        resumeWhenPowered = false;
+        if (base.isAllowedToWork() && !base.isActive()) {
+            scheduleRecipeCheckImmediate();
         }
     }
 
