@@ -100,6 +100,7 @@ public final class ComplexLevelScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Levels());
         registry.register(new Guards());
+        SalvageScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
