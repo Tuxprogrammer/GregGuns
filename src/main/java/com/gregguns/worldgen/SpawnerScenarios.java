@@ -60,8 +60,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 // docs/gregguns-spec/10-entities-npcs/spawning.md (spawner NPCs)
 public final class SpawnerScenarios {
 
-    /** Update calls that cover the first cycle (40 ticks) and four more (at most 120 ticks each). */
-    private static final int RUN_TICKS = 600;
+    /** Update calls that cover the first cycle (40 ticks) and at least nine more (at most 120 ticks each). */
+    private static final int RUN_TICKS = 1200;
 
     private SpawnerScenarios() {}
 
@@ -209,7 +209,7 @@ public final class SpawnerScenarios {
 
         @Override
         public String description() {
-            return "A Big Bunker spawner (vanilla mob spawner, UHV ceiling) with a player 6 blocks away, run for 600 of"
+            return "A Big Bunker spawner (vanilla mob spawner, UHV ceiling) with a player 6 blocks away, run for 1200 of"
                 + " its own updates: it spawns only zombie NPCs, at most 3 a cycle and 5 of each type in vanilla's count"
                 + " box, every NPC starts at danger 5 (the floor) with its equipment rolled, and the tile NBT carries"
                 + " the GregGuns settings (PLAN-M8 G11).";
@@ -246,6 +246,8 @@ public final class SpawnerScenarios {
                 for (Map.Entry<String, Integer> c : perType.entrySet()) {
                     out.check(c.getValue() <= s.maxNearby(), c.getValue() + " " + c.getKey() + ", more than 5");
                 }
+                // Ten even picks over three types all landing on one has odds of about 1 in 6,500.
+                out.check(perType.size() >= 2, "the potentials should give more than one zombie type: " + perType);
                 out.note("spawned " + perType + ", worst cycle " + worst);
             } finally {
                 rig.finish();
