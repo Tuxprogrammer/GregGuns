@@ -307,8 +307,27 @@ public final class ComplexDimScenarios {
                 for (Object o : es) {
                     EntityItemFrame f = (EntityItemFrame) o;
                     frames++;
-                    if (f.getDisplayedItem() == null || !(f.getDisplayedItem()
-                        .getItem() instanceof com.gregguns.item.gun.ItemGun) || !f.onValidSurface()) bad++;
+                    boolean noGun = f.getDisplayedItem() == null || !(f.getDisplayedItem()
+                        .getItem() instanceof com.gregguns.item.gun.ItemGun);
+                    boolean invalid = !f.onValidSurface();
+                    if (noGun || invalid) {
+                        bad++;
+                        if (bad <= 3) out.note(
+                            label + ": frame at "
+                                + f.posX
+                                + ","
+                                + f.posY
+                                + ","
+                                + f.posZ
+                                + " dir "
+                                + f.hangingDirection
+                                + " item "
+                                + f.getDisplayedItem()
+                                + " noGun="
+                                + noGun
+                                + " invalid="
+                                + invalid);
+                    }
                 }
             }
             out.check(frames >= expected * 8 / 10, label + ": armory frames " + frames + " of " + expected);

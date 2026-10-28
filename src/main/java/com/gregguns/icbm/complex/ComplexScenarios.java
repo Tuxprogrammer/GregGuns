@@ -81,7 +81,7 @@ public final class ComplexScenarios {
         for (int x = p.anchorX() - 4; x < p.anchorX() + 244; x++) {
             for (int z = p.anchorZ() - 4; z < p.anchorZ() + 244; z++) {
                 int g = ground.applyAsInt(x, z);
-                for (int y = Math.max(g, GROUND) + 12; y
+                for (int y = clear ? GROUND + 40 : Math.max(g, GROUND) + 12; y
                     >= Math.max(1, Math.min(g, GROUND) - ComplexPlacer.DEPTH - 2); y--) {
                     Block b = clear ? Blocks.air
                         : y > g + water ? Blocks.air : y > g ? Blocks.water : y == g ? Blocks.grass : Blocks.stone;
