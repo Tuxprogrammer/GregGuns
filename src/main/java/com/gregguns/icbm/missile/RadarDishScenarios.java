@@ -77,6 +77,24 @@ final class RadarDishScenarios {
         return n;
     }
 
+    /** What a stuck radar reports, for a failure message. */
+    private static String why(ScenarioContext ctx, MTERadar r) {
+        IGregTechTileEntity base = r.getBaseMetaTileEntity();
+        IGregTechTileEntity hatch = DefenseScenarios.live(ctx, 0, CY - 1, 0);
+        return "formed " + r.isFormed()
+            + ", allowed to work "
+            + base.isAllowedToWork()
+            + ", active "
+            + base.isActive()
+            + ", online "
+            + r.online()
+            + ", hatch EU "
+            + (hatch == null ? -1 : hatch.getStoredEU())
+            + ", last stop "
+            + base.getLastShutDownReason()
+                .getID();
+    }
+
     private static void drain(ScenarioContext ctx, int dx, int dz) {
         IGregTechTileEntity hatch = DefenseScenarios.live(ctx, dx, CY - 1, dz);
         if (hatch != null) {
@@ -228,7 +246,8 @@ final class RadarDishScenarios {
                         && r.dish()
                             .spin()
                             .spinning())) {
-                        return ticks < mark[0] + 400 ? null : ScenarioResult.fail(name(), "never ran and spun");
+                        return ticks < mark[0] + 400 ? null
+                            : ScenarioResult.fail(name(), "never ran and spun: " + why(ctx, r));
                     }
                     angle[0] = r.dish()
                         .spin()
@@ -283,7 +302,8 @@ final class RadarDishScenarios {
                             .spin()
                             .spinning())) {
                         return ticks < mark[0] + 400 ? null
-                            : ScenarioResult.fail(name(), "did not restart by itself when the power came back");
+                            : ScenarioResult
+                                .fail(name(), "did not restart by itself when the power came back: " + why(ctx, r));
                     }
                     out.check(true, "the radar restarts and the dish spins again when the power returns");
                     // Break a corner of the base, then recheck the structure.
