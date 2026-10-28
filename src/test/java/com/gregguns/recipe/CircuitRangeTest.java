@@ -25,7 +25,9 @@ import com.gregguns.utility.rampart.BastionPlating;
 /**
  * GT's programmed circuit ({@code ItemIntegratedCircuit.MAX_CIRCUIT_NUMBER}) only goes from 1 to 24, so a recipe on
  * any other number cannot be fed in survival. This is the global check: every table row and spec enum, and every
- * literal in a {@code .circuit(n)} call or a circuit constant in the main sources, must fall in that range.
+ * literal in a {@code .circuit(n)} call or a circuit constant in the main sources, must fall in that range (0 stands
+ * for
+ * "no circuit").
  */
 class CircuitRangeTest {
 
@@ -35,7 +37,7 @@ class CircuitRangeTest {
     private static final Pattern CASING = Pattern.compile("(?:WORKS_CASING|GANTRY_CASING)\\s*=\\s*(\\d+)");
 
     private static void check(List<String> bad, String what, int circuit) {
-        if (circuit < 1 || circuit > MAX) {
+        if (circuit < 0 || circuit > MAX) { // 0 is "no circuit"
             bad.add(what + " = " + circuit);
         }
     }
@@ -91,7 +93,11 @@ class CircuitRangeTest {
                 f -> f.toString()
                     .endsWith(".java"))::iterator) {
                 String text = new String(Files.readAllBytes(p), StandardCharsets.UTF_8);
-                for (Pattern pattern : new Pattern[] { CALL, CONSTANT, CASING }) {
+                boolean casings = p.getFileName()
+                    .toString()
+                    .equals("CasingCircuits.java");
+                for (Pattern pattern : casings ? new Pattern[] { CALL, CONSTANT, CASING }
+                    : new Pattern[] { CALL, CONSTANT }) {
                     Matcher m = pattern.matcher(text);
                     while (m.find()) {
                         seen++;
