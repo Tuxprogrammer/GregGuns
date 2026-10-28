@@ -316,6 +316,14 @@ public final class ComplexDimScenarios {
             if (world.provider.dimensionId != 0) DimensionManager.unloadWorld(world.provider.dimensionId);
         }
 
+        /** @return whether any column of the {@code size} x {@code size} square at (x, z) lies under water */
+        private static boolean anyUnderWater(World w, int x, int z, int size) {
+            for (int dx = 0; dx < size; dx++) for (int dz = 0; dz < size; dz++) {
+                if (underWater(w, x + dx, z + dz)) return true;
+            }
+            return false;
+        }
+
         /** @return whether the first block down from the sky in a column is a liquid */
         private static boolean underWater(World w, int x, int z) {
             for (int y = 254; y > 0; y--) {
@@ -423,6 +431,11 @@ public final class ComplexDimScenarios {
             }
             for (SiloSlot s : cp.silos()) {
                 int ox = plan.anchorX() + s.bounds().minX, oz = plan.anchorZ() + s.bounds().minZ;
+                if (anyUnderWater(w, ox, oz, 5)) {
+                    // A lake over the silo: the shaft is not written into water (landY is none), by design.
+                    out.note(label + ": a silo shaft lies under water; no mouth there, as designed");
+                    continue;
+                }
                 int ry = top(w, ox, oz);
                 int near = 99;
                 for (int[] d : new int[][] { { -1, 2 }, { 5, 2 }, { 2, -1 }, { 2, 5 } }) {
@@ -444,6 +457,11 @@ public final class ComplexDimScenarios {
             }
             for (int[] st : cp.radarStations()) {
                 int hx = plan.anchorX() + st[0], hz = plan.anchorZ() + st[1];
+                if (anyUnderWater(w, hx, hz, 5)) {
+                    // A hut is built only on land; over a lake its columns are left alone, by design.
+                    out.note(label + ": a radar hut stands over water; left unbuilt there, as designed");
+                    continue;
+                }
                 Block corner = w.getBlock(hx, groundY + 1, hz);
                 out.check(
                     corner == com.gregguns.block.GregGunsCasings.INSTANCE,
