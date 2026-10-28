@@ -173,3 +173,13 @@ def hatch(kind: str, casing: Path) -> Path:
 def hull(tier: str, face="SIDE") -> Path:
     name = "MACHINE_BRONZE" if tier == "Steam" else f"MACHINE_{tier}"
     return iconset(f"{name}_{face}" if _has(f"assets/gregtech/textures/blocks/iconsets/{name}_{face}.png") else f"{name}_SIDE")
+
+
+MACHINE_METAL = (210, 220, 255)   # GT's "Machine Metal" dye, the color an undyed machine casing is drawn with
+
+
+def hull_tinted(tier: str, face="SIDE") -> Path:
+    """A hull face drawn as the game draws an undyed machine: the casing icon times the Machine Metal dye. The light
+    high-tier icons (IV) are near white until tinted."""
+    src = Image.open(hull(tier, face)).convert("RGBA")
+    return _save(_tint(src, MACHINE_METAL), f"hull-tinted-{tier}-{face}")

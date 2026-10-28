@@ -331,7 +331,7 @@ def hero_room() -> Path:
     breach in the wall and a hole in the floor."""
     b = S.Build("silos-hall")
     cw = S._wall("complex_wall")
-    side, top = gt.hull("EV"), gt.hull("EV", "TOP")
+    side, top = gt.hull_tinted("EV"), gt.hull_tinted("EV", "TOP")
     b.define("w", "Silo Complex Wall", cw)
     b.define("hull", "EV Machine Hull", (top, side, side))
     b.define("lamp", "Lamp", S.lamp_tex())
@@ -448,7 +448,7 @@ def silo_front(missing: str | None) -> Path:
 
 
 def hull_block(tier: str) -> Path:
-    side, top = gt.hull(tier), gt.hull(tier, "TOP")
+    side, top = gt.hull_tinted(tier), gt.hull_tinted(tier, "TOP")
     return K.voxels(f"silos-hull-{tier}", {(0, 0, 0): "h"}, {"h": (top, side, side)}, yaw=-34, pitch=28, ppu=96)
 
 
