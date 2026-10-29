@@ -7,6 +7,7 @@ import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.entity.npc.EnderIoSpawners;
 import com.gregguns.entity.npc.InfernalDropsHandler;
 import com.gregguns.entity.npc.InfernalHooks;
 import com.gregguns.entity.npc.NpcCampPort;
@@ -46,6 +47,9 @@ public final class NpcModule implements GregGunsModule {
         if (Loader.isModLoaded(InfernalHooks.MOD_ID)) {
             MinecraftForge.EVENT_BUS.register(new InfernalDropsHandler());
         }
+        // D273: keep EnderIO's Broken Spawner drop and break burst off GregGuns NPCs (IMC, only when EnderIO is
+        // loaded).
+        EnderIoSpawners.send();
         // N6: the CheckSpawn gate and the SpecialSpawn danger carrier.
         MinecraftForge.EVENT_BUS.register(new NpcSpawnHandler());
         if (DevEnvironment.testHooksEnabled()) {

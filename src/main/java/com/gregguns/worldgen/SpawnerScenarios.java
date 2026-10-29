@@ -12,7 +12,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
@@ -29,16 +34,19 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.world.BlockEvent;
 
 import com.gregguns.core.config.NpcConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.entity.npc.EnderIoSpawners;
 import com.gregguns.entity.npc.InfernalHooks;
 import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.NpcMob;
 import com.gregguns.entity.npc.loot.InfernalOptOut;
+import com.gregguns.entity.npc.spawn.SpawnerOrigin;
 import com.gregguns.worldgen.PlacementHarness.Placement;
 import com.gregguns.worldgen.spawner.SpawnerKind;
 import com.gregguns.worldgen.spawner.SpawnerNbt;
@@ -46,12 +54,15 @@ import com.gregguns.worldgen.spawner.SpawnerSettings;
 import com.gregguns.worldgen.spawner.VanillaSpawners;
 import com.mojang.authlib.GameProfile;
 
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * The spawner scenarios (M8 G11): GregGuns spawners are vanilla mob spawners with GregGuns NBT. They check the
- * caps, the player gate, the danger floor, the light rule, the Infernal marker, the client preview path and the Big
- * Bunker's two spawners. The vanilla spawner logic is driven by calling the tile's own update, so every check runs the
+ * caps, the player gate, the danger floor, the light rule, the Infernal marker, the client preview path, the Big
+ * Bunker's two spawners, a spawner moved off its origin (D275) and, in the real pack, EnderIO's break handling (D273).
+ * The vanilla spawner logic is driven by calling the tile's own update, so every check runs the
  * real code.
  * Every NPC is killed at the end with its drops cancelled. Dev environment only; needs {@code worldgen} (and so
  * {@code npcs}) in {@code GG_MODULES}. Server side.
@@ -73,6 +84,8 @@ public final class SpawnerScenarios {
         registry.register(new InfernalMarker());
         registry.register(new Preview());
         registry.register(new BigBunker());
+        registry.register(new Moved());
+        registry.register(new EnderIoBreak());
     }
 
     /** Cancels the drops of the NPCs it was told about, so killing them leaves no item entity. */
@@ -186,14 +199,19 @@ public final class SpawnerScenarios {
 
     /** Runs the spawner's own update {@code ticks} times; returns the most mobs one call added. */
     private static int drive(Rig rig, TileEntityMobSpawner tile, SpawnerKind kind, int ticks) {
+        return drive(rig, tile, kind, ticks, 0);
+    }
+
+    /** As {@link #drive(Rig, TileEntityMobSpawner, SpawnerKind, int)}, counting around the origin offset {@code dx}. */
+    private static int drive(Rig rig, TileEntityMobSpawner tile, SpawnerKind kind, int ticks, int dx) {
         int worst = 0;
         for (int i = 0; i < ticks; i++) {
-            int before = rig.near(kind, 0)
+            int before = rig.near(kind, dx)
                 .size();
             tile.updateEntity();
             worst = Math.max(
                 worst,
-                rig.near(kind, 0)
+                rig.near(kind, dx)
                     .size() - before);
         }
         return worst;
@@ -579,6 +597,255 @@ public final class SpawnerScenarios {
             }
             out.checkEquals("cleanup: mob spawners left", 0, left);
             return out.build();
+        }
+    }
+
+    /**
+     * A spawner carried off its origin with its NBT, as a JABBA diamond dolly does (D275): on a lit floor it spawns
+     * nothing, and an NPC it places directly takes the lowest danger, while the same spawner on its origin spawns there
+     * and places NPCs at its floor.
+     */
+    private static final class Moved implements Scenario {
+
+        @Override
+        public String name() {
+            return "worldgen.spawner_moved";
+        }
+
+        @Override
+        public String description() {
+            return "On a glowstone floor: a Silo Elite Post's tile NBT (UHV ceiling, origin 12 blocks west) placed at a"
+                + " new block spawns nothing over 300 updates with a player beside it, gives a placed NPC danger 0 and"
+                + " no light bypass; the same post on its own origin spawns on the floor and places NPCs at danger 5"
+                + " (D275).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Rig rig = new Rig(ctx);
+            SpawnerKind kind = SpawnerKind.SILO_ELITE;
+            try {
+                for (int dx = -9; dx <= 9; dx++) {
+                    for (int dz = -4; dz <= 4; dz++) {
+                        ctx.setBlock(dx, -1, dz, Blocks.glowstone, 0);
+                    }
+                }
+                // Generated at -6, then carried to +6 with its NBT: the dolly's writeToNBT and readFromNBT.
+                TileEntityMobSpawner home = rig.spawner(kind, -6, RolledCeiling.MAX);
+                if (home == null) {
+                    out.check(false, "the spawner should carry a mob spawner tile");
+                    return out.build();
+                }
+                out.check(SpawnerOrigin.markedAtOrigin(home), "the generated post stands on its origin");
+                NBTTagCompound carried = VanillaSpawners.read(home);
+                ctx.setBlock(-6, 0, 0, Blocks.air, 0);
+                int mx = ctx.originX() + 6, my = ctx.originY(), mz = ctx.originZ();
+                ctx.setBlock(6, 0, 0, Blocks.mob_spawner, 0);
+                carried.setInteger("x", mx);
+                carried.setInteger("y", my);
+                carried.setInteger("z", mz);
+                rig.world.setTileEntity(mx, my, mz, TileEntity.createAndLoadEntity(carried));
+                TileEntity t = rig.world.getTileEntity(mx, my, mz);
+                if (!(t instanceof TileEntityMobSpawner)) {
+                    out.check(false, "the moved spawner should carry a mob spawner tile");
+                    return out.build();
+                }
+                TileEntityMobSpawner moved = (TileEntityMobSpawner) t;
+                out.check(SpawnerNbt.isMarked(VanillaSpawners.read(moved)), "the moved tile keeps the GregGuns NBT");
+                out.check(!SpawnerOrigin.markedAtOrigin(moved), "the moved post is off its origin");
+                int lx = mx + 1, ly = my, lz = mz + 1;
+                out.check(
+                    rig.world.getBlockLightValue(lx, ly, lz) >= 14,
+                    "the spot is lit: " + rig.world.getBlockLightValue(lx, ly, lz));
+                String own = moved.func_145881_a()
+                    .getEntityNameToSpawn();
+                out.check(
+                    !LightRule.candidate(rig, own, lx, ly, lz)
+                        .getCanSpawnHere(),
+                    "beside the moved post the light rule holds");
+
+                // An NPC the moved post places takes the lowest danger, without the Infernal opt-out.
+                Entity placed = moved.func_145881_a()
+                    .func_98265_a(LightRule.candidate(rig, own, lx, ly, lz));
+                out.check(
+                    placed instanceof NpcEntity && ((NpcEntity) placed).danger() == 0,
+                    "an NPC from the moved post starts at danger 0, got "
+                        + (placed instanceof NpcEntity ? ((NpcEntity) placed).danger() : String.valueOf(placed)));
+                if (placed != null) placed.setDead();
+
+                rig.playerAt(7.0);
+                drive(rig, moved, kind, 300, 6);
+                out.checkEquals(
+                    "guards the moved post spawned on the lit floor",
+                    0,
+                    rig.near(kind, 6)
+                        .size());
+
+                // Control: the same kind on its own origin at +6 spawns on the same floor, at its floor danger.
+                TileEntityMobSpawner fresh = rig.spawner(kind, 6, RolledCeiling.MAX);
+                if (fresh == null) {
+                    out.check(false, "the control spawner should carry a mob spawner tile");
+                    return out.build();
+                }
+                String freshOwn = fresh.func_145881_a()
+                    .getEntityNameToSpawn();
+                Entity floor = fresh.func_145881_a()
+                    .func_98265_a(LightRule.candidate(rig, freshOwn, lx, ly, lz));
+                out.check(
+                    floor instanceof NpcEntity && ((NpcEntity) floor).danger() == 5,
+                    "an NPC from a post on its origin starts at its floor 5, got "
+                        + (floor instanceof NpcEntity ? ((NpcEntity) floor).danger() : String.valueOf(floor)));
+                if (floor != null) floor.setDead();
+                drive(rig, fresh, kind, 300, 6);
+                out.check(
+                    !rig.near(kind, 6)
+                        .isEmpty(),
+                    "the control post on its origin spawns on the lit floor");
+            } finally {
+                rig.finish();
+            }
+            return out.build();
+        }
+    }
+
+    /**
+     * EnderIO handles every mob spawner a survival player breaks: unless the mob is blacklisted it drops a Broken
+     * Spawner and runs extra spawn cycles. GregGuns blacklists its NPCs by IMC (D273). Real pack only: skips without
+     * EnderIO.
+     */
+    private static final class EnderIoBreak implements Scenario {
+
+        @Override
+        public String name() {
+            return "worldgen.spawner_enderio";
+        }
+
+        @Override
+        public String description() {
+            return "With EnderIO loaded: every spawner NPC is on EnderIO's Powered Spawner blacklist; a survival player"
+                + " with a diamond pickaxe breaks a Silo Elite Post next to them and gets no Broken Spawner and no burst"
+                + " of guards, while a plain Pig spawner broken the same way drops a Broken Spawner (the harness can"
+                + " see one). Skips without EnderIO (D273).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (!Loader.isModLoaded(EnderIoSpawners.MOD_ID)) {
+                return ScenarioResult.skip(name(), "EnderIO is not loaded (real pack only)");
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Rig rig = new Rig(ctx);
+            DropWatcher watcher = new DropWatcher();
+            MinecraftForge.EVENT_BUS.register(watcher);
+            try {
+                for (SpawnerKind kind : SpawnerKind.values()) {
+                    for (String name : kind.mobNames()) {
+                        Boolean listed = enderIoBlacklisted(name);
+                        out.check(Boolean.TRUE.equals(listed), name + " is not on EnderIO's blacklist: " + listed);
+                    }
+                }
+                rig.playerAt(2.0);
+                rig.player.inventory.currentItem = 0;
+                rig.player.inventory.setInventorySlotContents(0, new ItemStack(Items.diamond_pickaxe));
+
+                // Control: a plain Pig spawner drops a Broken Spawner, so a missing drop below means something.
+                ctx.setBlock(-3, 0, 0, Blocks.mob_spawner, 0);
+                TileEntity pig = rig.world.getTileEntity(ctx.originX() - 3, ctx.originY(), ctx.originZ());
+                if (pig instanceof TileEntityMobSpawner) {
+                    ((TileEntityMobSpawner) pig).func_145881_a()
+                        .setEntityName("Pig");
+                }
+                watcher.reset();
+                rig.player.theItemInWorldManager.tryHarvestBlock(ctx.originX() - 3, ctx.originY(), ctx.originZ());
+                out.check(watcher.brokenSpawners > 0, "the Pig spawner should drop a Broken Spawner (control)");
+
+                TileEntityMobSpawner post = rig.spawner(SpawnerKind.SILO_ELITE, 0, RolledCeiling.MAX);
+                if (post == null) {
+                    out.check(false, "the post should carry a mob spawner tile");
+                    return out.build();
+                }
+                int before = rig.near(SpawnerKind.SILO_ELITE, 0)
+                    .size();
+                watcher.reset();
+                boolean broke = rig.player.theItemInWorldManager
+                    .tryHarvestBlock(ctx.originX(), ctx.originY(), ctx.originZ());
+                out.check(
+                    broke && rig.world.getBlock(ctx.originX(), ctx.originY(), ctx.originZ()) == Blocks.air,
+                    "the player breaks the post");
+                out.check(watcher.harvests > 0, "the post's harvest should fire HarvestDropsEvent");
+                out.checkEquals("Broken Spawners from the post", 0, watcher.brokenSpawners);
+                out.checkEquals(
+                    "guards burst out of the broken post",
+                    before,
+                    rig.near(SpawnerKind.SILO_ELITE, 0)
+                        .size());
+            } finally {
+                MinecraftForge.EVENT_BUS.unregister(watcher);
+                clearDrops(rig);
+                rig.finish();
+            }
+            return out.build();
+        }
+
+        /**
+         * @return whether EnderIO's Powered Spawner config blacklists the entity, or null when it cannot be read
+         */
+        // Source:
+        // https://github.com/GTNewHorizons/EnderIO/blob/2.10.48/src/main/java/crazypants/enderio/machine/spawner/PoweredSpawnerConfig.java#L27-L49
+        private static Boolean enderIoBlacklisted(String name) {
+            try {
+                Class<?> cfg = Class.forName("crazypants.enderio.machine.spawner.PoweredSpawnerConfig");
+                Object inst = cfg.getMethod("getInstance")
+                    .invoke(null);
+                return (Boolean) cfg.getMethod("isBlackListed", String.class)
+                    .invoke(inst, name);
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                return null;
+            }
+        }
+
+        /** Removes the item and experience entities the breaks left near the origin. */
+        private static void clearDrops(Rig rig) {
+            AxisAlignedBB box = AxisAlignedBB.getBoundingBox(
+                rig.ctx.originX() - 8,
+                rig.ctx.originY() - 4,
+                rig.ctx.originZ() - 8,
+                rig.ctx.originX() + 8,
+                rig.ctx.originY() + 8,
+                rig.ctx.originZ() + 8);
+            for (Object o : rig.world.getEntitiesWithinAABB(EntityItem.class, box)) {
+                ((Entity) o).setDead();
+            }
+            for (Object o : rig.world.getEntitiesWithinAABB(EntityXPOrb.class, box)) {
+                ((Entity) o).setDead();
+            }
+        }
+
+        /** Sees every mob spawner harvest last, after EnderIO added its drop, and empties the drops. */
+        public static final class DropWatcher {
+
+            int harvests;
+            int brokenSpawners;
+
+            void reset() {
+                harvests = 0;
+                brokenSpawners = 0;
+            }
+
+            @SubscribeEvent(priority = EventPriority.LOWEST)
+            public void onHarvest(BlockEvent.HarvestDropsEvent event) {
+                if (event.block != Blocks.mob_spawner) return;
+                harvests++;
+                for (ItemStack stack : event.drops) {
+                    Object id = stack == null ? null : Item.itemRegistry.getNameForObject(stack.getItem());
+                    if (id != null && String.valueOf(id)
+                        .startsWith(EnderIoSpawners.MOD_ID + ":")) {
+                        brokenSpawners++;
+                    }
+                }
+                event.drops.clear();
+            }
         }
     }
 }

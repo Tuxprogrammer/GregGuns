@@ -761,17 +761,17 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 
 <div class="sec"><h2>Guards</h2>
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-<div class="card"><div class="post"><div style="text-align:center">{img(guard_post, h=100)}</div><div><h3>Silo Guard Post</h3>
-<div class="pt">A monster spawner of <b>Army Soldiers</b> and <b>Commandos</b>. It stands at hall branches and in the rooms.</div></div></div>
+<div class="card"><div class="post"><div style="text-align:center">{img(guard_post, h=100)}<div class="cap" style="margin-top:0">Inside: Army Soldier or Commando</div></div><div><h3>Silo Guard Post</h3>
+<div class="pt">A monster spawner of <b>Army Soldiers</b> and <b>Commandos</b>. It stands at hall branches and in the rooms. The figure turning in the cage is the guard it sends next.</div></div></div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{soldier}</div><b>Army Soldier</b></div><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div></div></div>
-<div class="card"><div class="post"><div style="text-align:center">{img(elite_post, h=100)}</div><div><h3>Silo Elite Post</h3>
-<div class="pt">A monster spawner of <b>Commandos</b> and <b>Stormtroopers</b>. It holds the silo walkways, the far end of the gallery, and the deep rooms.</div></div></div>
+<div class="card"><div class="post"><div style="text-align:center">{img(elite_post, h=100)}<div class="cap" style="margin-top:0">Inside: Commando or Stormtrooper</div></div><div><h3>Silo Elite Post</h3>
+<div class="pt">A monster spawner of <b>Commandos</b> and <b>Stormtroopers</b>. It holds the silo walkways, the far end of the gallery, and the deep rooms. A Stormtrooper in the cage marks an elite post.</div></div></div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div><div class="mob"><div class="guide" style="padding:0 6px">{storm}</div><b>Stormtrooper</b></div></div></div>
 <div class="card"><h3>How the posts behave</h3>
 <ul class="pt" style="margin:8px 0 0 18px;line-height:1.45">
 <li>Each post is a Minecraft monster spawner with the guards inside. It wakes only when a player is within <b>24 blocks</b>, in lit rooms too.</li>
 <li>At most <b>5</b> of each guard type near it, up to <b>3</b> at a time, every <b>5 to 6 seconds</b>.</li>
-<li><b>Break the spawner and it is gone</b> for good. It drops nothing.</li>
+<li><b>Break the spawner and it is gone</b> for good. It drops nothing. By hand it is slow, as every spawner in the pack is; a missile warhead destroys it outright.</li>
 <li>Guards are armed to match the planet: danger <b>3</b> up to IV, <b>4</b> at LuV and ZPM, <b>5</b> from UV up.</li>
 <li>An abandoned complex has no posts at all.</li></ul></div></div></div>
 
@@ -799,7 +799,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A clear glass block stands under where the controller is.</div></div>
 <div style="text-align:center"><div class="spot">{img(front[2], h=250)}</div><div class="cap"><b style="color:var(--txt)">Repaired.</b> The controller (blue ring) and the hatches (orange rings) in their places.</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:16px">
-<div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> An operational complex always has an elite post at each silo walkway, and a partly abandoned one often does. Break their spawners, or fight what they spawn.</div></div>
+<div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> An operational complex always has an elite post at each silo walkway, and a partly abandoned one often does. Mine their spawners (slow by hand), blow them up with a warhead, or fight what they spawn.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Find the part.</b> Check the Safe, Stockpile, Workshop and Control chests: about {pct(PROFILES[0]["part"])} of abandoned, {pct(PROFILES[1]["part"])} of partly abandoned and {pct(PROFILES[2]["part"])} of operational silos have theirs lying in one. A missing part is not lost: the controller and a GregTech Energy Hatch are both craftable.</div></div>
 <div class="step"><span class="num">3</span><div class="t"><b>Put it in.</b> Mine the concrete and set the controller facing out, or mine the glass and set the Energy Hatch in its place. The silo forms and switches itself on.</div></div>
 <div class="step"><span class="num">4</span><div class="t"><b>Power and launch.</b> Run EU to the Energy Hatch. A found hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Then add a Launch Control, fuel and a missile as for any silo.</div></div></div></div></div>

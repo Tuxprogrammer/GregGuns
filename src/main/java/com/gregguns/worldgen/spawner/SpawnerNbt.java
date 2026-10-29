@@ -11,11 +11,12 @@ import com.gregguns.entity.npc.spawn.SpawnerData;
 /**
  * Builds and reads the tile NBT of a GregGuns vanilla mob spawner: the {@code MobSpawnerBaseLogic} fields from a
  * {@link SpawnerSettings}, one {@code SpawnPotentials} entry per mob (weight 1 each, so the pick is even), and the
- * GregGuns {@link SpawnerData} in every entry's {@code Properties}. {@code EntityId} and {@code SpawnData} name the
- * first entry, so even the first cycle takes the {@code SpawnData} path. Pure apart from the NBT classes.
+ * GregGuns {@link SpawnerData} in every entry's {@code Properties}, carrying the danger floor and the block the
+ * spawner is placed at (its origin). {@code EntityId} and {@code SpawnData} name the first entry, so even the first
+ * cycle takes the {@code SpawnData} path. Pure apart from the NBT classes.
  *
  * <p>
- * Usage: {@code new TileEntityMobSpawner().readFromNBT(SpawnerNbt.build(names, first, settings, minDanger))}.
+ * Usage: {@code new TileEntityMobSpawner().readFromNBT(SpawnerNbt.build(names, first, settings, minDanger, x, y, z))}.
  */
 // Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (spawner marks)
 // Source: Minecraft 1.7.10 MobSpawnerBaseLogic#readFromNBT (field names and types: shorts, EntityId string,
@@ -34,16 +35,23 @@ public final class SpawnerNbt {
      * @param first       the index of the entry the first cycle uses
      * @param settings    the spawner settings
      * @param minDanger   the danger floor 0 to 5 carried to each NPC
-     * @return the tile compound, without x, y and z
+     * @param x           world X of the spawner block, written as the tile's position and its origin
+     * @param y           world Y
+     * @param z           world Z
+     * @return the tile compound
      * @throws IllegalArgumentException when no entity is named
      */
-    public static NBTTagCompound build(List<String> entityNames, int first, SpawnerSettings settings, int minDanger) {
+    public static NBTTagCompound build(List<String> entityNames, int first, SpawnerSettings settings, int minDanger,
+        int x, int y, int z) {
         if (entityNames.isEmpty()) {
             throw new IllegalArgumentException("a spawner needs at least one entity");
         }
         String head = entityNames.get(Math.floorMod(first, entityNames.size()));
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString("id", TILE_ID);
+        tag.setInteger("x", x);
+        tag.setInteger("y", y);
+        tag.setInteger("z", z);
         tag.setString("EntityId", head);
         tag.setShort("Delay", (short) settings.firstDelay());
         tag.setShort("MinSpawnDelay", (short) settings.minDelay());
@@ -57,11 +65,11 @@ public final class SpawnerNbt {
             NBTTagCompound entry = new NBTTagCompound();
             entry.setString("Type", name);
             entry.setInteger("Weight", 1);
-            entry.setTag("Properties", SpawnerData.spawnData(minDanger));
+            entry.setTag("Properties", SpawnerData.spawnData(minDanger, x, y, z));
             potentials.appendTag(entry);
         }
         tag.setTag("SpawnPotentials", potentials);
-        tag.setTag("SpawnData", SpawnerData.spawnData(minDanger));
+        tag.setTag("SpawnData", SpawnerData.spawnData(minDanger, x, y, z));
         return tag;
     }
 

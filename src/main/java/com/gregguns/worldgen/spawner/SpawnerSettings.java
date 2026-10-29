@@ -8,9 +8,9 @@ package com.gregguns.worldgen.spawner;
  * count box; cycles are {@link #minDelay()} to {@link #maxDelay()} ticks apart. Pure: no Minecraft types.
  *
  * <p>
- * Vanilla counts per mob type (the entity class it is about to spawn), in a box of {@code 2 * spawnRange} blocks
- * horizontally and 4 blocks vertically around the spawner, and picks one weighted type per cycle. So "5 nearby" is
- * per type: a Zombie spawner can hold up to 5 of each of its three zombies.
+ * Vanilla counts per mob type (the entity class it is about to spawn), in the spawner's block grown by
+ * {@code 2 * spawnRange} blocks each way horizontally (17 across for range 4) and 4 blocks up and down, and picks one
+ * weighted type per cycle. So "5 nearby" is per type: a Zombie spawner can hold up to 5 of each of its three zombies.
  */
 // Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (spawner marks), PLAN-M8 section 2 ("5 near, 3 per try")
 // Source: Minecraft 1.7.10 MobSpawnerBaseLogic#updateSpawner, #readFromNBT and #resetTimer (MCP-decompiled with
@@ -83,7 +83,10 @@ public final class SpawnerSettings {
         return firstDelay;
     }
 
-    /** @return the horizontal half-width of the box vanilla counts nearby mobs in: twice the spawn range */
+    /**
+     * @return how far the box vanilla counts nearby mobs in reaches past the spawner block on each horizontal side:
+     *         twice the spawn range
+     */
     public int countRadius() {
         return 2 * spawnRange;
     }

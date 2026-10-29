@@ -126,24 +126,31 @@ public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSour
 
     /**
      * Vanilla's rules, except when a GregGuns-marked spawner places the bug: then the light checks are skipped (see
-     * {@link SpawnerOrigin}). Natural spawns keep every rule.
+     * {@link SpawnerOrigin}). Natural spawns keep every rule. The cheap peaceful, collision and liquid checks run
+     * before the spawner scan, so a spawner that keeps failing does not scan tile entities every tick.
      */
     @Override
     public boolean getCanSpawnHere() {
-        if (SpawnerOrigin.placedByMarkedSpawner(this, naturalCandidate)) {
-            return SpawnerOrigin.canSpawnFromSpawner(this);
+        if (!naturalCandidate && worldObj != null && !worldObj.isRemote) {
+            if (!SpawnerOrigin.canSpawnFromSpawner(this)) {
+                return false; // vanilla's answer too: these checks are part of it
+            }
+            if (SpawnerOrigin.placedByMarkedSpawner(this, false)) {
+                return true;
+            }
         }
         return super.getCanSpawnHere();
     }
 
     /**
-     * A GregGuns vanilla spawner places the bug: its {@code SpawnData} was just read and it has not joined the world,
-     * so this is where it takes the Infernal Mobs opt-out. The bug carries no equipment and no danger.
+     * A GregGuns vanilla spawner on its worldgen origin places the bug: its {@code SpawnData} was just read and it has
+     * not joined the world, so this is where it takes the Infernal Mobs opt-out. A spawner carried away from its
+     * origin is a plain vanilla spawner, and its bugs get no opt-out. The bug carries no equipment and no danger.
      */
     @Override
     public void readEntityFromNBT(NBTTagCompound tag) {
         super.readEntityFromNBT(tag);
-        if (SpawnerData.isFromSpawner(tag) && worldObj != null && !worldObj.isRemote) {
+        if (SpawnerData.isFromSpawner(tag) && SpawnerOrigin.placedFromOrigin(this, tag)) {
             InfernalHooks.markSpawnerNpc(this);
         }
     }

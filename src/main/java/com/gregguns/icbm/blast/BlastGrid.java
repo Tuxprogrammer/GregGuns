@@ -33,6 +33,21 @@ public final class BlastGrid {
     }
 
     /**
+     * The resistance a blast charges for a solid, breakable block (D274). A GregGuns guard spawner still on the block
+     * worldgen placed it at counts as vanilla stone, {@link BlastRayCaster#REF_RESISTANCE}, so a warhead destroys the
+     * post and its rays pass on; GregTech's {@code harderMobSpawner} gives every mob spawner a resistance in the
+     * millions, which would leave posts standing in the crater and shade the blocks behind them. Every other block,
+     * foreign or moved spawners included, keeps the pack's value.
+     *
+     * @param gregGunsPost   true for a GregGuns spawner on its origin
+     * @param packResistance the block's own explosion resistance in this pack
+     * @return the resistance to charge
+     */
+    public static float cellResistance(boolean gregGunsPost, float packResistance) {
+        return gregGunsPost ? (float) BlastRayCaster.REF_RESISTANCE : packResistance;
+    }
+
+    /**
      * @param resistance the block's explosion resistance
      * @return the cell value for a breakable block
      */

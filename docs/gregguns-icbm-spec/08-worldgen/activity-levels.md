@@ -55,7 +55,7 @@ Depth band: 0 is the hub, then one band per 30 blocks of distance from it, up to
 
 ## Tests
 
-Unit: `ActivityLevelTest`, `ComplexContentsTest` (lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.levels` (each level, plus Operational at UMV, generated onto a slab one window at a time and read back: spawner count, kind, tile and ceiling; the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
+Unit: `ActivityLevelTest`, `ComplexContentsTest` (lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.levels` (each level, plus Operational at UMV, generated onto a slab one window at a time and read back: spawner count, each spawner's mobs and danger floor (its vanilla mob spawner NBT); the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
 
 ## Open questions
 

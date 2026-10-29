@@ -45,6 +45,7 @@ In-memory pack-fit hooks ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md)). Eac
 | `compat.backhandGuns` | boolean | `true` | n/a | no | Adds every GregGuns gun to Backhand's `offhandBlacklist` and `mainhandUseStopsOffhandFallback`. |
 | `compat.thaumcraftMobAspects` | boolean | `true` | n/a | no | Registers Thaumcraft scan aspects for the GregGuns NPCs. |
 | `compat.listHooks` | boolean | `true` | n/a | no | Adds `gregguns.` to AngerMod's `butcherItems` and `gregguns.SimpleTurret` to Mobs Info's `MobBlacklist`. |
+| `compat.enderioSpawnerBlacklist` | boolean | `true` | n/a | no | Puts every GregGuns NPC on EnderIO's Powered Spawner blacklist by IMC: a broken GregGuns spawner drops no Broken Spawner and releases no burst, and GregGuns NPCs stay out of the Powered Spawner. |
 
 ## Debug (`debug`)
 
