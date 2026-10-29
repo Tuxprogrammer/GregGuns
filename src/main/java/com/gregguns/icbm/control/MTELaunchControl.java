@@ -72,38 +72,6 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     private static final String K_HAS_Z = "hasZ";
     private static final String K_COOL = "cool";
 
-    /** What the block knows about the pad and the missile right now; recomputed every few ticks on the server. */
-    static final class Snapshot {
-
-        final ControlStatus status;
-        final boolean padFound;
-        final int minRange;
-        final int maxRange;
-        final int distance;
-        /** Expected blast radius at the target, tenths of a block; 0 when unknown. */
-        final int radiusTenths;
-        final int tier;
-        /** Ticks left on a running countdown (D88), -1 when none. */
-        final int countdown;
-
-        Snapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
-            int tier) {
-            this(status, padFound, minRange, maxRange, distance, radiusTenths, tier, -1);
-        }
-
-        Snapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
-            int tier, int countdown) {
-            this.countdown = countdown;
-            this.status = status;
-            this.padFound = padFound;
-            this.minRange = minRange;
-            this.maxRange = maxRange;
-            this.distance = distance;
-            this.radiusTenths = radiusTenths;
-            this.tier = tier;
-        }
-    }
-
     private boolean hasX;
     private boolean hasZ;
     private int tx;
@@ -111,9 +79,9 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     private final FireTrigger shots = new FireTrigger();
     private final FireTrigger redstoneEdge = new FireTrigger();
     private final FireTrigger coverEdge = new FireTrigger();
-    private static final Snapshot GONE = new Snapshot(ControlStatus.NO_PAD, false, 0, 0, 0, 0, 0);
+    private static final LaunchSnapshot GONE = new LaunchSnapshot(ControlStatus.NO_PAD, false, 0, 0, 0, 0, 0);
 
-    private Snapshot snapshot;
+    private LaunchSnapshot snapshot;
     private long snapshotTick;
     private ControlStatus lastShot;
     private TargetStick.Outcome lastStick;
@@ -426,7 +394,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     // --- the shot -------------------------------------------------------------------------------------------------
 
     /** @return the current pre-check and pad facts, recomputed at most every few ticks; server side only */
-    Snapshot snapshot() {
+    LaunchSnapshot snapshot() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
         if (base == null || !IcbmSync.live(this)) {
             // The block vanished under an open screen (broken, exploded, chunk unloaded): show an empty pad.
@@ -441,7 +409,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         return snapshot;
     }
 
-    private Snapshot compute(IGregTechTileEntity base) {
+    private LaunchSnapshot compute(IGregTechTileEntity base) {
         LaunchTarget t = target();
         boolean energy = base.getStoredEU() >= EU_PER_SHOT;
         World w = base.getWorld();
@@ -449,7 +417,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             ? LaunchSites.find(w, base.getXCoord(), base.getYCoord(), base.getZCoord())
             : null;
         if (site == null) {
-            return new Snapshot(
+            return new LaunchSnapshot(
                 LaunchGate.check(t, false, energy, shots.coolingDown(), false, false, false, 0, 0, 0),
                 false,
                 0,
@@ -459,11 +427,6 @@ public final class MTELaunchControl extends MTETieredMachineBlock
                 0);
         }
         int cd = site.countdownTicks();
-        if (cd >= 0 || site.ignited()) {
-            // A launch is in progress: the missile has left the pad's "armed" state, so the gate has nothing to say
-            // (D88).
-            return new Snapshot(cd >= 0 ? ControlStatus.COUNTDOWN : ControlStatus.IGNITED, true, 0, 0, 0, 0, 0, cd);
-        }
         MissileStatus ms = site.status();
         int min = ms.present() ? ms.tier()
             .minRange() : 0;
@@ -477,7 +440,19 @@ public final class MTELaunchControl extends MTETieredMachineBlock
                     .name());
         }
         int radius = t.isSet() && ms.present() ? (int) Math.round(site.expectedRadius(t.aimX(), t.aimZ()) * 10.0) : 0;
-        return new Snapshot(
+        if (cd >= 0 || site.ignited()) {
+            // A launch is in progress (D88): the gate has nothing to say, but the screen keeps the locked target's
+            // real distance, range and blast radius (D279).
+            return LaunchSnapshot.inProgress(
+                cd,
+                min,
+                max,
+                dist,
+                radius,
+                ms.present() ? ms.tier()
+                    .number() : 0);
+        }
+        return new LaunchSnapshot(
             st,
             true,
             min,
@@ -502,7 +477,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         }
         attempts++;
         snapshot = null;
-        Snapshot s = snapshot();
+        LaunchSnapshot s = snapshot();
         if (s.status != ControlStatus.READY) {
             lastShot = s.status;
             return s.status;

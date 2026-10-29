@@ -187,7 +187,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             new InteractionSyncHandler().setOnMousePressed(m -> machine.saveToStick(sync.getPlayer())));
     }
 
-    private MTELaunchControl.Snapshot snap() {
+    private LaunchSnapshot snap() {
         return machine.snapshot();
     }
 

@@ -33,8 +33,6 @@ import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEMultiBlockBaseGui<T> {
 
     private static final Pattern DIGITS = Pattern.compile("[0-9]{0,5}");
-    private static final int PANEL_W = 200;
-    private static final int PANEL_H = 82;
 
     private static final class Shown {
 
@@ -95,13 +93,12 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
                     0),
                 v -> shown.state = v));
         return new ModularPanel("radarPanel").relative(parent)
-            .leftRel(1)
-            .topRel(0)
-            .size(PANEL_W, PANEL_H)
+            .align(Alignment.TopCenter)
+            .size(RadarPanelLayout.PANEL_W, RadarPanelLayout.PANEL_H)
             .child(
                 Flow.column()
                     .full()
-                    .padding(4)
+                    .padding(RadarPanelLayout.PAD)
                     .child(label(() -> tr(multiblock.panelTitleKey())))
                     .child(label(() -> tr(RadarRules.State.values()[shown.state].langKey())))
                     .child(label(() -> trf("gregguns.icbm.radar.gui.range", shown.range)))
@@ -115,7 +112,7 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
     }
 
     private static IWidget label(java.util.function.Supplier<String> text) {
-        return new TextWidget<>(IKey.dynamic(text)).size(PANEL_W - 8, 10)
+        return new TextWidget<>(IKey.dynamic(text)).size(RadarPanelLayout.LINE_W, 10)
             .alignment(Alignment.CenterLeft)
             .marginBottom(2);
     }
