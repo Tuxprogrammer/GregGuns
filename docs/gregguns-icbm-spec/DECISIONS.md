@@ -532,3 +532,10 @@ None right now. New questions are added here as the GregGuns-side sheets raise t
 | D276 | Furniture over holes, locker fallback, piece lookup (F9, V2 m1, m2, m7) | A floor `DAMAGE_CELL` column is not free for furniture (not free but still walkable for the reachability flood), so no piece floats over a hole or rubble. A GT Locker is only placed after checking the pack registers its meta tile entity; otherwise the shell's shelf stays. `placeMte`/`placeLocker` return whether they placed. `FurniturePiece.of` looks keys up in a map, with no exception for cube keys. A tile-entity census over 300 plans: about 535 pieces in about 17 rooms per complex (palette.md updated). The frame-cost question (V2 M1) stays with K1. |
 | D277 | Role audit upkeep (F9, V2 m3, m4, m5) | `RoleAudit.release(World)` audits and drops a world's trackers when it unloads. Tracker block ids are `char`s, so ids of 32768 and above are read correctly. The audit wrapper copies the inner result verbatim (`ScenarioResult.Builder.from`) and adds only its own note and check. Foreign walls: rooms sit two walls thick and doors cut both, so no open cell touches a neighbor's wall in any generated plan; `RoleAuditTest` asserts that over 12 seeds, and the audit keeps its foreign-wall branch as a guard. |
 | D278 | Furnishing reachability for every door (F9, V2 m6) | `RoomFurnitureTest` also checks that every other door of a room (a child's, an airlock's second) still has a reachable cell next to it after furnishing. |
+
+### I6b re-check fixes: screens (D279)
+
+| ID | Decision | Detail |
+|---|---|---|
+| D279 | Radar panel and countdown status (orchestrator, 2026-10-28) | (1) The radar settings panel (HV, EV and Tower) opens as an overlay inside the controller screen, 190 wide inside the 198-wide screen and clear of the R button, so every line keeps its value at the smallest window (854x480, GUI scale 2). (2) During a countdown and after ignition, Launch Control's status keeps the locked target's distance, range and blast radius instead of showing zero or unknown. |
+
