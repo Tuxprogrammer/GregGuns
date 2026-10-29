@@ -28,7 +28,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/palette.md (Furniture); D259; D262
 // Decompiled: BiblioCraft[v1.11.7][MC1.7.10].jar (GTNH 2.9.0-RC-2; no 1.7.10 source exists, and its copyright.txt
-// allows decompiling). Inferred from decompiled bytecode, unverified, and may change when the pack updates BiblioCraft.
+// allows decompiling for private use). Inferred from decompiled bytecode, unverified, and may change when the pack
+// updates BiblioCraft.
 // Facts only, no code: the registry names in jds.bibliocraft.blocks.BlockLoader, the metas in the BlockItem*.subName
 // arrays (0 oak, 1 spruce, 2 birch, 3 jungle, 4 acacia, 5 dark oak;
 // typewriter metas are dye colors, 3 black), the angle rule in each block's onBlockPlacedBy, the armor stand's meta

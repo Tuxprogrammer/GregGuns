@@ -85,6 +85,37 @@ class RoomFurnitureTest {
     }
 
     @Test
+    void noFurnitureStandsOverAFloorHole() {
+        int checked = 0;
+        for (long i = 0; i < PLANS; i++) {
+            ComplexPlan p = plan(i);
+            for (Room r : p.rooms()) {
+                Set<Long> holes = new HashSet<>();
+                for (Mark m : r.marks()) {
+                    if (m.kind() == MarkKind.DAMAGE_CELL && m.y() == 0 && "floor".equals(m.key())) {
+                        holes.add(key(m.x(), m.z()));
+                    }
+                }
+                for (Mark m : r.marks()) {
+                    if (!furnitureMark(m)) continue;
+                    checked++;
+                    assertFalse(holes.contains(key(m.x(), m.z())), r.kind() + " furniture over a floor hole: " + m);
+                }
+            }
+        }
+        assertTrue(checked > 0);
+    }
+
+    @Test
+    void cubeKeysAreNotPieces() {
+        assertNull(FurniturePiece.of("TABLE"));
+        assertNull(FurniturePiece.of("BASIN"));
+        assertNull(FurniturePiece.of(null));
+        assertEquals(FurniturePiece.CHAIR, FurniturePiece.of("CHAIR:3"));
+        assertEquals(FurniturePiece.ARMOR_STAND_TOP, FurniturePiece.of("ARMOR_STAND_TOP"));
+    }
+
+    @Test
     void noFurnitureBlocksADoorOrThePathToAMark() {
         for (long i = 0; i < PLANS; i++) {
             ComplexPlan p = plan(i);
@@ -126,6 +157,17 @@ class RoomFurnitureTest {
                         if (blocked.contains(key(x, z)) || !seen.add(key(x, z))) continue;
                         q.add(new int[] { x, z });
                     }
+                }
+                // Every other door of the room (a child room's, an airlock's second door) still reaches the floor.
+                for (Door o : p.doors()) {
+                    if (o.kind == Door.Kind.WINDOW || !o.joins(r.id()) || o == d) continue;
+                    boolean open = false;
+                    for (int x = o.x0; x <= o.x1; x++) {
+                        for (int z = o.z0; z <= o.z1; z++) {
+                            for (int[] n : nb) open |= seen.contains(key(x + n[0], z + n[1]));
+                        }
+                    }
+                    assertTrue(open, "plan " + i + " " + r.kind() + ": furniture walls off door " + o);
                 }
                 for (long s : solid) {
                     int x = (int) (s >> 32), z = (int) s;

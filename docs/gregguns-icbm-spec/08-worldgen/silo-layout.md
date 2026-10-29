@@ -112,7 +112,7 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 |---|---|
 | Launch control | Launch Control machine in the middle; a console row facing the windows with a chair behind each console; control chests; guards |
 | Radar and tracking, comms | The radar or comms machine in the middle; consoles along the side walls (both for radar, one for comms) with a chair at each and a clipboard over every other one; comms adds a desk with a typewriter on the other side wall; chests on the back wall |
-| Commander's office | A safe and a stockpile chest in the back corners; a two-cell desk facing the door with a typewriter, the commander's chair behind it and two visitors' chairs in front; two-high bookcases along a side wall; an armor stand |
+| Commander's office | A safe and a stockpile chest in the back corners; a two-cell desk with a typewriter, its front toward the commander's chair at the back wall and the two visitors' chairs on the door side; two-high bookcases along a side wall; an armor stand |
 | Warhead magazine | A grid of inert Stainless Steel frame boxes 3 apart; fallout rubble marks; magazine chests; guards |
 | Fuel depot | Fuel tanks along both side walls; fuel chests |
 | Generator hall | A row of generators; a battery buffer in a back corner; guards |

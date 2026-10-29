@@ -555,8 +555,8 @@ The ICBM module has about 110 scenarios, all named `icbm.<area>.<name>`. They re
 | `icbm.defense.`, `icbm.emp.` | Radar, Air-Defense Battery, EMP Tower, handheld tools | [05-detection-defense](../gregguns-icbm-spec/05-detection-defense/index.md) |
 | `icbm.oc.` | OpenComputers components and the Golden Dome | [golden-dome.md](../gregguns-icbm-spec/01-core/golden-dome.md) |
 | `icbm.antidote.`, `icbm.tools.` | Antidote, Remote Detonator, Defuse Kit | [06-blocks-items](../gregguns-icbm-spec/06-blocks-items/index.md) |
-| `icbm.complex.` | Silo complexes: places, levels, guards, loot, one scenario per dimension (`icbm.complex.dim.<key>`; the planet scenarios skip with a logged reason when the planet's mod is not loaded, D220) | [08-worldgen](../gregguns-icbm-spec/08-worldgen/index.md) |
-| `icbm.palette.` | Complex palette resolution: every style resolves in the live registry, lamps emit, blocks are cubes | [palette.md](../gregguns-icbm-spec/08-worldgen/palette.md) |
+| `icbm.complex.` | Silo complexes: places, levels, guards, loot, one scenario per dimension (`icbm.complex.dim.<key>`; each fails on a role-audit violation, and `icbm.complex.role_audit_probe` proves the audit can fail; the planet scenarios skip with a logged reason when the planet's mod is not loaded, D220) | [08-worldgen](../gregguns-icbm-spec/08-worldgen/index.md) |
+| `icbm.palette.` | Complex palette resolution: every style resolves in the live registry, lamps emit, blocks are cubes, and no set shares a block between floor, wall and ceiling (D265) | [palette.md](../gregguns-icbm-spec/08-worldgen/palette.md) |
 | `icbm.module_gate`, `icbm.content_gate` | The module switch; ICBM-only content hidden with the module off | D223 |
 
 Gate runs (D68): `gregguns test icbm.` with Galacticraft, and a `--no-galacticraft --boot-only` boot. The full suite (`gregguns test all`) runs at the alpha and beta checkpoints.

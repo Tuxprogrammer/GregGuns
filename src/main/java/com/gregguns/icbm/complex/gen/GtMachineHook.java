@@ -55,23 +55,25 @@ public final class GtMachineHook implements MachineHook {
         placeMte(world, id, x, y, z, ForgeDirection.NORTH);
     }
 
-    /**
-     * As {@link #placeMte(World, int, int, int, int)}, facing {@code front}.
-     *
-     * @param front the way the machine's front faces
-     */
     /** The locker of the small rooms (D263): GregTech's ULV Locker, which holds a suit of armor. */
     public static final ItemList LOCKER = ItemList.Locker_ULV;
+
+    /** @return true when the pack registers the locker's meta tile entity (else the shell's shelf must stay) */
+    public static boolean lockerAvailable() {
+        return GregTechAPI.METATILEENTITIES[LOCKER.get(1)
+            .getItemDamage()] != null;
+    }
 
     /**
      * Places a GT Locker whose front faces {@code facing} (0 south, 1 west, 2 north, 3 east: a hanging direction).
      *
      * @param world the world; the cell is already air and inside the window
+     * @return false when the pack has no such locker (the caller restores the cell)
      */
-    public static void placeLocker(World world, int x, int y, int z, int facing) {
+    public static boolean placeLocker(World world, int x, int y, int z, int facing) {
         ForgeDirection[] byHanging = { ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.NORTH,
             ForgeDirection.EAST };
-        placeMte(
+        return placeMte(
             world,
             LOCKER.get(1)
                 .getItemDamage(),
@@ -81,23 +83,30 @@ public final class GtMachineHook implements MachineHook {
             byHanging[facing & 3]);
     }
 
-    public static void placeMte(World world, int id, int x, int y, int z, ForgeDirection front) {
+    /**
+     * As {@link #placeMte(World, int, int, int, int)}, facing {@code front}.
+     *
+     * @param front the way the machine's front faces
+     * @return false when the pack has no such meta tile entity or the world gave no GT tile (a warning is logged)
+     */
+    public static boolean placeMte(World world, int id, int x, int y, int z, ForgeDirection front) {
         String cell = x + "," + y + "," + z;
         IMetaTileEntity proto = GregTechAPI.METATILEENTITIES[id];
         if (proto == null) {
             GregGuns.LOG.warn("Silo complex: no meta tile entity {} for cell {}", id, cell);
-            return;
+            return false;
         }
         world.setBlock(x, y, z, GregTechAPI.sBlockMachines, proto.getTileEntityBaseType(), 2);
         TileEntity tile = world.getTileEntity(x, y, z);
         if (!(tile instanceof IGregTechTileEntity)) {
             GregGuns.LOG.warn("Silo complex: no GT tile entity at {} {} {}", x, y, z);
-            return;
+            return false;
         }
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
         claim(base);
         base.setFrontFacing(front);
+        return true;
     }
 
     /** The owner every generated machine carries (D239). */

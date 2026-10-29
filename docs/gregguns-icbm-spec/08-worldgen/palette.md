@@ -93,7 +93,7 @@ Not used, on purpose: GT machine casings, GT frame boxes, GT metal and storage b
 
 ## Furniture (D259, D262, D263)
 
-The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) get real furniture from BiblioCraft 1.11.7 when it is loaded, and the cube furniture above when it is not. Each piece is a tile entity, so only the small rooms hold them: about 19 rooms of a complex, and about 900 tile-entity pieces (BiblioCraft and lockers) over 300 plans.
+The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) get real furniture from BiblioCraft 1.11.7 when it is loaded, and the cube furniture above when it is not. Each piece is a tile entity, so only the small rooms hold them: about 17 rooms of a complex, and about 535 tile-entity pieces (BiblioCraft and lockers) over 300 plans.
 
 | Piece | BiblioCraft block (registry name) | Meta | Facing (tile NBT) | Without BiblioCraft |
 |---|---|---|---|---|
@@ -106,7 +106,7 @@ The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) ge
 | Medicine cabinet | `BiblioPotionShelf` | wood | `potionshelfAngle` | the style's shelf |
 | Tool rack | `BiblioRack` | wood | `rackAngle` | the style's shelf |
 | Armor stand | `Armor Stand` | angle below, angle + 4 above | the meta | none |
-| Locker | GregTech's ULV Locker (`gregtech:gt.blockmachines`, the `Locker_ULV` item), facing into the room (D263) | | GT front facing | the style's shelf |
+| Locker | GregTech's ULV Locker (`gregtech:gt.blockmachines`, the `Locker_ULV` item), facing into the room (D263) | | GT front facing | the GT Locker (the style's shelf only without a world, or when the pack has no Locker) |
 | Server rack | the style's console block, two high | | | the same |
 
 - **Wood:** one per room, spruce, dark oak, birch or oak, from the plan seed and the room id.

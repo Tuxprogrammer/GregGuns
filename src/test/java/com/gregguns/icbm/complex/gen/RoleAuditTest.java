@@ -2,7 +2,6 @@ package com.gregguns.icbm.complex.gen;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,12 +126,12 @@ class RoleAuditTest {
     }
 
     @Test
-    void aWallOfAnotherSectionFacingInCountsAsThisSectionsWall() {
-        // Over every plan the audit reads, count the walls a section shows that another section owns: whatever their
-        // number, a shared block with them would be reported (the reader below makes every foreign wall the floor's).
-        int foreign = 0;
-        List<String> found = new ArrayList<>();
-        for (long seed = 0; seed < 6; seed++) {
+    void noWallOfAnotherSectionFacesIntoASection() {
+        // Rooms sit two walls thick and doors cut both, so an open cell never touches a neighbor's wall: over these
+        // plans the reader below (every foreign wall the floor's block) finds nothing. The audit keeps the foreign-wall
+        // branch as a guard; a layout that does produce such walls fails here and must then teach styleFor about D266
+        // across a shared wall.
+        for (long seed = 0; seed < 12; seed++) {
             ComplexPlan plan = ComplexLayout.generate(seed, 3, (int) seed);
             ComplexRaster raster = new ComplexRaster(plan);
             List<RoleAudit.Violation> v = RoleAudit.audit(raster, (x, y, z) -> {
@@ -141,13 +140,7 @@ class RoleAuditTest {
                 if (c == Cell.WALL) return "floor" + (raster.ownerAt(x, z) + 1);
                 return c == Cell.CEILING ? "ceiling" + raster.ownerAt(x, z) : null;
             });
-            for (RoleAudit.Violation x : v) {
-                if (x.cells[1] != null && x.cells[1][3] != x.section) foreign++;
-                found.add(x.roles());
-            }
+            assertTrue(v.isEmpty(), "seed " + seed + ": a foreign wall faces in, " + v.size() + " sections");
         }
-        // Each reported pair is FLOOR and WALL, and only through a neighbor's wall.
-        for (String r : found) assertEquals("FLOOR and WALL", r);
-        assertEquals(found.size(), foreign);
     }
 }
