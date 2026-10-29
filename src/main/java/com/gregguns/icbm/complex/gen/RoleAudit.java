@@ -280,7 +280,7 @@ public final class RoleAudit {
         final int ax, floorY, az;
         final byte[] writer = new byte[ComplexLayout.SIZE * ComplexRaster.LEVELS * ComplexLayout.SIZE];
         /** The block id each cell's last write placed, so a later change by someone else shows. */
-        final short[] placed = new short[ComplexLayout.SIZE * ComplexRaster.LEVELS * ComplexLayout.SIZE];
+        final char[] placed = new char[ComplexLayout.SIZE * ComplexRaster.LEVELS * ComplexLayout.SIZE];
 
         Tracker(World world, ComplexRaster raster, Styles styles, String where, String level, int ax, int floorY,
             int az) {
@@ -303,7 +303,7 @@ public final class RoleAudit {
                 || y >= ComplexRaster.LEVELS) return;
             int i = (x * ComplexRaster.LEVELS + y) * ComplexLayout.SIZE + z;
             writer[i] = who;
-            placed[i] = (short) Block.getIdFromBlock(block);
+            placed[i] = (char) Block.getIdFromBlock(block);
         }
 
         int placed(int x, int y, int z) {
@@ -352,6 +352,22 @@ public final class RoleAudit {
         synchronized (TRACKERS) {
             l = new ArrayList<>(TRACKERS.values());
             TRACKERS.clear();
+        }
+        for (Tracker t : l) check(t);
+    }
+
+    /** Audits and forgets the complexes written into a world that is unloading, so no tracker keeps it alive. */
+    public static void release(World w) {
+        List<Tracker> l = new ArrayList<>();
+        synchronized (TRACKERS) {
+            for (java.util.Iterator<Tracker> it = TRACKERS.values()
+                .iterator(); it.hasNext();) {
+                Tracker t = it.next();
+                if (t.world == w) {
+                    l.add(t);
+                    it.remove();
+                }
+            }
         }
         for (Tracker t : l) check(t);
     }

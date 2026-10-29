@@ -182,6 +182,18 @@ public final class ScenarioResult {
             return this;
         }
 
+        /**
+         * Copies an inner result as it is: its pass or fail and its messages, each unchanged.
+         *
+         * @param inner the result to copy
+         * @return this builder
+         */
+        public Builder from(ScenarioResult inner) {
+            if (!inner.passed()) passed = false;
+            messages.addAll(inner.messages());
+            return this;
+        }
+
         /** @return the finished result */
         public ScenarioResult build() {
             return new ScenarioResult(scenario, passed, messages);

@@ -1,6 +1,8 @@
 package com.gregguns.icbm.complex;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * The furniture of the small rooms (D259). A {@link MarkKind#FURNITURE} mark keys one of these as
@@ -20,7 +22,10 @@ public enum FurniturePiece {
     CHAIR(Cell.AIR),
     /** A seat with no back: a bench or a stool. Falls back to a stair. */
     STOOL(Cell.AIR),
-    /** A wooden table, one cell; neighbors join into a long table. */
+    /**
+     * A wooden table, one cell; neighbors join into a long table only on a later neighbor update (generation writes
+     * them apart).
+     */
     WOOD_TABLE(Cell.FURN_TABLE),
     /** A writing desk; its front faces the chair. */
     DESK(Cell.FURN_TABLE),
@@ -88,10 +93,12 @@ public enum FurniturePiece {
     public static FurniturePiece of(String key) {
         if (key == null) return null;
         int i = key.indexOf(':');
-        try {
-            return valueOf((i < 0 ? key : key.substring(0, i)).toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return BY_NAME.get((i < 0 ? key : key.substring(0, i)).toUpperCase(Locale.ROOT));
+    }
+
+    /** Every piece by name, so a cube key (TABLE, CONSOLE, BASIN) misses without a thrown exception. */
+    private static final Map<String, FurniturePiece> BY_NAME = new HashMap<String, FurniturePiece>();
+    static {
+        for (FurniturePiece p : values()) BY_NAME.put(p.name(), p);
     }
 }

@@ -108,7 +108,9 @@ public final class ConfigSettings implements ComplexPlacer.Settings {
 
         @SubscribeEvent
         public void onUnload(WorldEvent.Unload event) {
-            if (!event.world.isRemote) placer.releaseWorld();
+            if (event.world.isRemote) return;
+            placer.releaseWorld();
+            RoleAudit.release(event.world);
         }
     }
 }

@@ -422,6 +422,18 @@ final class ComplexFurnisher {
                     occ[a * D + d] = inZone(x, z) ? DOORWAY : floorLamp[x * S + z] ? LIGHT_TILE : FREE;
                 }
             }
+            // A floor hole or rubble cell (damage runs first) would leave a piece floating over it: not free, still
+            // walkable.
+            for (Mark m : r.marks()) {
+                if (m.kind() != MarkKind.DAMAGE_CELL || m.y() != 0 || !"floor".equals(m.key())) continue;
+                for (int a = 0; a < L; a++) {
+                    for (int d = 0; d < D; d++) {
+                        if (f.x(a, d) == m.x() && f.z(a, d) == m.z() && occ[a * D + d] == FREE) {
+                            occ[a * D + d] = LIGHT_TILE;
+                        }
+                    }
+                }
+            }
         }
 
         @Override

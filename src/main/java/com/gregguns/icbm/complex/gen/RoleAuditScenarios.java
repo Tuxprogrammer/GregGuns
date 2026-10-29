@@ -115,10 +115,7 @@ public final class RoleAuditScenarios {
             int read = RoleAudit.audits() - audits;
             if (found == 0 && read == 0) return r;
             ScenarioResult.Builder out = ScenarioResult.builder(r.scenario());
-            for (String m : r.messages()) {
-                if (r.passed()) out.note(m);
-                else out.check(false, m);
-            }
+            out.from(r);
             out.note(
                 "role audit: " + read
                     + " complexes read back, "

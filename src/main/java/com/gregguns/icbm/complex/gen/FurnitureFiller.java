@@ -31,7 +31,7 @@ public final class FurnitureFiller implements MarkFiller {
         int facing = mark.facing() & 3;
         if (p == FurniturePiece.LOCKER) {
             // D263: GregTech's Locker, the pack's one real locker block; the shell's shelf stays without a world.
-            if (world != null && sink.setBlock(x, y, z, Blocks.air, 0)) {
+            if (world != null && GtMachineHook.lockerAvailable() && sink.setBlock(x, y, z, Blocks.air, 0)) {
                 GtMachineHook.placeLocker(world, x, y, z, facing);
             }
             return;

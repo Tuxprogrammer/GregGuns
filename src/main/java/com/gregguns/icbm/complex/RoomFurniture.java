@@ -133,7 +133,7 @@ public final class RoomFurniture {
                 if (fl.put(last, md, dir.minusA, desk, typewriter)) fl.put(last - 1, md, dir.plusA, chair);
                 break;
             case COMMANDER_OFFICE:
-                // The desk faces the door, the commander behind it, two visitors' chairs in front.
+                // The desk's front faces the commander at the back wall; two visitors' chairs stand on the door side.
                 if (fl.put(ma, 3, dir.toBack, desk, typewriter)) {
                     fl.put(ma, 2, dir.toDoor, chair);
                     if (fl.put(ma + 1, 3, dir.toBack, desk)) fl.put(ma + 1, 4, dir.toBack, chair);
