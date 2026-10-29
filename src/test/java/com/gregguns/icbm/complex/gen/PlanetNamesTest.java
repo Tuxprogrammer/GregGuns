@@ -26,13 +26,12 @@ class PlanetNamesTest {
         { "ganymed", "3" }, { "iojupiter", "4" }, { "mercury", "4" }, { "venus", "4" }, { "enceladus", "5" },
         { "titan", "5" }, { "miranda", "5" }, { "oberon", "5" }, { "proteus", "6" }, { "triton", "6" },
         { "pluto", "7" }, { "haumea", "7" }, { "makemake", "7" }, { "barnarda2", "8" }, { "barnarda4", "8" },
-        { "barnarda5", "8" }, { "centauribb", "8" }, { "tcetie", "8" }, { "vega1", "8" }, { "anubis", "9" },
-        { "horus", "9" }, { "maahes", "9" }, { "neper", "9" }, { "seth", "9" }, { "ross128b", "-1" },
-        { "ross128ba", "-1" } };
+        { "barnarda5", "8" }, { "centauribb", "8" }, { "vega1", "8" }, { "anubis", "9" }, { "horus", "9" },
+        { "maahes", "9" }, { "neper", "9" }, { "seth", "9" }, { "ross128b", "-1" }, { "ross128ba", "-1" } };
 
     @Test
-    void allThirtyFourNamesAreInTheTableWithTheirTier() {
-        assertEquals(34, BODIES.length);
+    void allThirtyThreeNamesAreInTheTableWithTheirTier() {
+        assertEquals(33, BODIES.length);
         for (String[] b : BODIES) {
             Integer tier = PlanetTable.tierOf(b[0]);
             assertEquals(Integer.valueOf(b[1]), tier, b[0]);
@@ -43,9 +42,11 @@ class PlanetNamesTest {
             }
         }
         assertEquals(
-            34,
+            33,
             PlanetTable.names()
                 .size());
+        // T Ceti E is an ocean world with no dry ground for a complex (D239).
+        assertNull(PlanetTable.tierOf("tcetie"));
     }
 
     @Test

@@ -605,7 +605,7 @@ for i, (cid, disp, desc, pal, fr, ft) in enumerate(CASINGS):
 # Decorative blocks (07). Techguns footprints kept (32 px, ctm 64 px sheets).
 DECOR = [  # (prefix pattern, family, brief, palette, pri)
     (r"container_", "Shipping container (Chisel CTM group)", "Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles.", ["#8B2A2A"], "P3"),
-    (r"concrete", "Concrete (Chisel CTM group)", "Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles.", mc("Stone"), "P3"),
+    (r"concrete", "Concrete (Chisel CTM group)", "Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles.", mc("Stone"), "P3"),
     (r"metalpanel2_", "Connected metal panel (metalpanel2)", "Connected-texture metal panel, stated variant.", mc("Iron"), "P3"),
     (r"metalpanel", "Metal panel", "Riveted metal panel, stated variant (dark, hazard-stripe, rusty).", mc("Iron"), "P3"),
     (r"metalgrate_", "Metal grate", "Floor grate, stated variant.", mc("Iron"), "P3"),
@@ -616,7 +616,7 @@ DECOR = [  # (prefix pattern, family, brief, palette, pri)
     (r"door01", "Bunker door", "Riveted gray steel door half (upper has window slit).", mc("Iron"), "P3"),
     (r"screen_|controlpanel_", "Radar screen / control panel", "Radar screen or control-panel face; overlay is an animated scan/blink strip.", ["#101010", "#30F060"], "P3"),
     (r"steelframe_", "Steel frame (Chisel CTM group)", "Open steel scaffold/frame block, stated finish.", mc("Steel"), "P3"),
-    (r"bugnest", "Alien nest block", "Alien nest sand/slime/egg block (worldgen structure parts, hole = Bug Hole top).", ["#B0A070", "#303020"], "P3"),
+    (r"bugnest", "Alien nest block", "Alien nest sand/slime/egg block (worldgen structure parts).", ["#B0A070", "#303020"], "P3"),
     (r"airMarker", "Air marker", "Transparent block with a dark frame and the letters 'AIR'.", ["#303030"], "P3"),
 ]
 for p, f in sorted(TEX.items()):

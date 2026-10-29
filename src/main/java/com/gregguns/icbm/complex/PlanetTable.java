@@ -32,7 +32,8 @@ public final class PlanetTable {
         put(5, "enceladus", "titan", "miranda", "oberon");
         put(6, "proteus", "triton");
         put(7, "pluto", "haumea", "makemake");
-        put(8, "barnarda2", "barnarda4", "barnarda5", "centauribb", "tcetie", "vega1");
+        // T Ceti E (tcetie) is an ocean world: no cell has the dry ground a complex needs, so it hosts none (D239).
+        put(8, "barnarda2", "barnarda4", "barnarda5", "centauribb", "vega1");
         put(9, "anubis", "horus", "maahes", "neper", "seth");
         put(ROLLED, "ross128b", "ross128ba");
     }

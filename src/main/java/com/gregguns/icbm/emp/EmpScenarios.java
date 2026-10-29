@@ -45,6 +45,12 @@ public final class EmpScenarios {
     /** @param registry where to add the scenarios */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Registered());
+        registry.register(
+            com.gregguns.icbm.GuiVanishProbe.scenario(
+                "icbm.emp.gui_vanish",
+                "Reading every sync value of the EMP Tower screen after its block is removed does not throw.",
+                GregGunsMTEIDs.EMP_TOWER,
+                (m, sync) -> new EmpTowerGui((MTEEmpTower) m).registerSyncValues(sync)));
         registry.register(new Gate());
         registry.register(new Triggers());
         registry.register(new DensePulse());

@@ -56,6 +56,7 @@ class LangFilesTest {
             "gregguns.autotest",
             "gregguns.autotest.connect",
             "gregguns.explosions",
+            "gregguns.icbm.roleAudit",
             "gregguns.projectile",
             "gregguns.showcase.player",
             "gregguns.soak.regressionMs",

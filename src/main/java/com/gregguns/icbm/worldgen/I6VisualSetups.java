@@ -276,8 +276,10 @@ public final class I6VisualSetups {
         for (Tunnel t : cp.tunnels()) {
             Box b = t.bounds();
             GregGuns.LOG.info(
-                "I6C tunnel wing={} min={},{} max={},{}",
-                t.wing(),
+                "I6C tunnel id={} major={} gallery={} min={},{} max={},{}",
+                t.id(),
+                t.major(),
+                t.gallery(),
                 ax + b.minX,
                 az + b.minZ,
                 ax + b.maxX,
@@ -322,34 +324,24 @@ public final class I6VisualSetups {
     private static void logRoom(int ax, int az, int floor, Room r, String what) {
         Box b = r.bounds();
         String door = "none";
-        if (r.wing() >= 0) {
-            boolean alongZ = r.wing() == ComplexLayout.N || r.wing() == ComplexLayout.S;
-            if (alongZ) {
-                boolean high = b.maxX <= 118;
-                door = "wallX=" + (ax + (high ? b.maxX - 1 : b.minX))
-                    + " z="
-                    + (az + b.centerZ() - 1)
-                    + ".."
-                    + (az + b.centerZ())
-                    + " inward="
-                    + (high ? "-X" : "+X");
-            } else {
-                boolean high = b.maxZ <= 118;
-                door = "wallZ=" + (az + (high ? b.maxZ - 1 : b.minZ))
-                    + " x="
-                    + (ax + b.centerX() - 1)
-                    + ".."
-                    + (ax + b.centerX())
-                    + " inward="
-                    + (high ? "-Z" : "+Z");
-            }
+        if (r.door() != null) {
+            com.gregguns.icbm.complex.Door d = r.door();
+            door = "x=" + (ax + d.x0)
+                + ".."
+                + (ax + d.x1)
+                + " z="
+                + (az + d.z0)
+                + ".."
+                + (az + d.z1)
+                + " side="
+                + r.doorSide();
         }
         GregGuns.LOG.info(
-            "I6C {} id={} kind={} wing={} min={},{} max={},{} door[{}]",
+            "I6C {} id={} kind={} parent={} min={},{} max={},{} door[{}]",
             what,
             r.id(),
             r.kind(),
-            r.wing(),
+            r.parent(),
             ax + b.minX,
             az + b.minZ,
             ax + b.maxX,
@@ -420,7 +412,7 @@ public final class I6VisualSetups {
                         if (r.kind() == RoomKind.ARMORY) armory++;
                         if (r.kind() == RoomKind.STOCKPILE) {
                             stock++;
-                            stockSides.append(r.wing())
+                            stockSides.append(r.doorSide())
                                 .append(
                                     r.bounds()
                                         .centerX() < 120 ? "L" : "H")
@@ -729,11 +721,17 @@ public final class I6VisualSetups {
         SiloSlot s = lastCp.silos()
             .get(silo);
         ItemStack part = partFor(s);
-        int ox = lastPlan.anchorX() + s.bounds().minX, oz = lastPlan.anchorZ() + s.bounds().minZ;
+        int cx = lastPlan.anchorX() + s.controllerX(), cz = lastPlan.anchorZ() + s.controllerZ();
         boolean noController = s.missing() == MissingPart.CONTROLLER;
         int y = lastFloor + (noController ? 2 : 1);
-        GtMachineHook.placeMte(lastWorld, part.getItemDamage(), ox + 2, y, oz);
-        TileEntity ctl = lastWorld.getTileEntity(ox + 2, lastFloor + 2, oz);
+        GtMachineHook.placeMte(
+            lastWorld,
+            part.getItemDamage(),
+            cx,
+            y,
+            cz,
+            net.minecraftforge.common.util.ForgeDirection.values()[new int[] { 2, 5, 3, 4 }[s.facing()]]);
+        TileEntity ctl = lastWorld.getTileEntity(cx, lastFloor + 2, cz);
         if (ctl instanceof IGregTechTileEntity) {
             IGregTechTileEntity g = (IGregTechTileEntity) ctl;
             g.setOwnerName("complex-test");
@@ -742,13 +740,13 @@ public final class I6VisualSetups {
         GregGuns.LOG.info(
             "I6C placepart silo={} at {},{},{} formed={} controller=({},{},{})",
             silo,
-            ox + 2,
+            cx,
             y,
-            oz,
-            com.gregguns.machine.DevStructureBuilder.check(lastWorld, ox + 2, lastFloor + 2, oz),
-            ox + 2,
+            cz,
+            com.gregguns.machine.DevStructureBuilder.check(lastWorld, cx, lastFloor + 2, cz),
+            cx,
             lastFloor + 2,
-            oz);
+            cz);
     }
 
     /** Finds the radar controller of hut n, swaps its Radar Casing for an HV Energy Hatch, powers it and checks. */

@@ -40,7 +40,7 @@ public final class ComplexSigns {
     public static int[] resolve(ComplexRaster raster, Mark m) {
         int x = m.x(), y = m.y(), z = m.z();
         byte here = raster.at(x, y, z);
-        if (here == Cell.WALL) {
+        if (solid(here)) {
             // The layout's own choice first: Mark.facing() is the hanging direction into the room (0 S, 1 W, 2 N, 3 E).
             int[][] hang = { { 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 0 } };
             int[] want = hang[Math.floorMod(m.facing(), 4)];
@@ -65,7 +65,7 @@ public final class ComplexSigns {
                 if (c == Cell.AIR) {
                     continue;
                 }
-                if (c == Cell.WALL && k < bestDist) {
+                if (solid(c) && k < bestDist) {
                     bestDist = k;
                     best = new int[] { x + d[0] * (k - 1), y, z + d[1] * (k - 1), facing(d[0], d[1]) };
                 }
@@ -73,6 +73,11 @@ public final class ComplexSigns {
             }
         }
         return best;
+    }
+
+    /** @return whether a sign can hang on the cell: a section's wall or a door frame */
+    private static boolean solid(byte c) {
+        return c == Cell.WALL || c == Cell.DOOR_FRAME;
     }
 
     /** @return the wall-sign data value for a wall at (dx, dz) from the sign */

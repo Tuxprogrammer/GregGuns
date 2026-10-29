@@ -175,6 +175,7 @@ When a pack update changes the version, update the tag in `// Source:` links and
 - Reading any mod's source or bytecode to learn how to interoperate with it is fine.
 - **Copying is not.** GregGuns is MIT. The pack's mods are mostly LGPL or GPL, and some are All Rights Reserved (see the License column of `MOD-INDEX.md`). Write integration code from your understanding of the API; don't transplant implementation code.
 - Calling a mod's public API, implementing its interfaces and reading its constants is integration, not copying.
+- **BiblioCraft** (ARR, the 1.7.10 jar's copyright.txt allows decompiling for private use) is an optional integration: the ICBM silo complexes place its furniture by registry name and set facing through tile-entity NBT keys learned from the jar (`BiblioFurniture`, ICBM D262). GregGuns links none of its classes and ships none of its assets. The author's MIT source for 1.12 and newer ([Nuchaz/BiblioCraft-Source](https://github.com/Nuchaz/BiblioCraft-Source)) is a secondary reference only; the 1.7.10 jar stays the authority for names, metas and keys.
 
 ## Updating the reference pack
 

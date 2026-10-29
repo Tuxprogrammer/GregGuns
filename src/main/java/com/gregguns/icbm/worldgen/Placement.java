@@ -65,7 +65,7 @@ public final class Placement {
     private final int y;
     private final int z;
     private final String category;
-    private final com.gregguns.worldgen.spawner.HoleKind spawner;
+    private final com.gregguns.worldgen.spawner.SpawnerKind spawner;
     private final MachineRole role;
     private final int tier;
     private final boolean dead;
@@ -129,7 +129,7 @@ public final class Placement {
     }
 
     /** @return the spawner kind of a spawner, else null */
-    public com.gregguns.worldgen.spawner.HoleKind spawner() {
+    public com.gregguns.worldgen.spawner.SpawnerKind spawner() {
         return spawner;
     }
 
@@ -226,7 +226,7 @@ public final class Placement {
         private final int y;
         private final int z;
         private String category;
-        private com.gregguns.worldgen.spawner.HoleKind spawner;
+        private com.gregguns.worldgen.spawner.SpawnerKind spawner;
         private MachineRole role;
         private int tier;
         private boolean dead;
@@ -251,7 +251,7 @@ public final class Placement {
             return this;
         }
 
-        Builder spawner(com.gregguns.worldgen.spawner.HoleKind v) {
+        Builder spawner(com.gregguns.worldgen.spawner.SpawnerKind v) {
             spawner = v;
             return this;
         }

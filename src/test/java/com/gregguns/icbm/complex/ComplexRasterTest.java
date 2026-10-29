@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class ComplexRasterTest {
 
     private static boolean open(byte c) {
-        return c == Cell.AIR || c == Cell.RAIL_NS || c == Cell.RAIL_EW || c == Cell.LADDER;
+        return Cell.open(c);
     }
 
     /** Flood fill from the hall floor level: every room interior and every silo walkway is reachable on foot. */
@@ -24,11 +24,9 @@ class ComplexRasterTest {
             Deque<int[]> q = new ArrayDeque<int[]>();
             q.add(
                 new int[] { p.hall()
-                    .bounds()
-                    .centerX(),
+                    .bounds().minX + 1,
                     p.hall()
-                        .bounds()
-                        .centerZ() });
+                        .bounds().minZ + 1 });
             seen[q.peek()[0]][q.peek()[1]] = true;
             int[][] d = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
             while (!q.isEmpty()) {
@@ -42,14 +40,15 @@ class ComplexRasterTest {
                 }
             }
             for (Room room : p.rooms()) {
-                assertTrue(
-                    seen[room.bounds()
-                        .centerX()][room.bounds()
-                            .centerZ()],
-                    "seed " + s + " " + room.kind());
+                Box b = room.bounds();
+                boolean any = false;
+                for (int x = b.minX + 1; x < b.maxX - 1 && !any; x++) {
+                    for (int z = b.minZ + 1; z < b.maxZ - 1; z++) any |= seen[x][z];
+                }
+                assertTrue(any, "seed " + s + " " + room.kind());
             }
             for (SiloSlot silo : p.silos()) {
-                assertTrue(seen[silo.bounds().minX + 2][silo.bounds().minZ - 1], "seed " + s + " silo front");
+                assertTrue(seen[silo.frontX()][silo.frontZ()], "seed " + s + " silo front");
             }
         }
     }
@@ -60,13 +59,14 @@ class ComplexRasterTest {
             ComplexPlan p = ComplexLayout.generate(s, 5, 1);
             ComplexRaster r = new ComplexRaster(p);
             for (SiloSlot silo : p.silos()) {
-                int ox = silo.bounds().minX, oz = silo.bounds().minZ;
-                boolean controller = r.at(ox + 2, 2, oz) == Cell.CONTROLLER;
-                boolean energy = r.at(ox + 2, 1, oz) == Cell.HATCH_ENERGY;
+                boolean controller = r.at(silo.controllerX(), 2, silo.controllerZ()) == Cell.CONTROLLER;
+                boolean energy = r.at(silo.controllerX(), 1, silo.controllerZ()) == Cell.HATCH_ENERGY;
                 assertEquals(silo.missing() == MissingPart.CONTROLLER, !controller);
                 assertEquals(silo.missing() == MissingPart.ENERGY_HATCH, !energy);
-                assertEquals(Cell.SILO_PAD, r.at(ox + 2, 0, oz + 2));
-                assertEquals(Cell.AIR, r.at(ox + 2, 5, oz + 2), "the bore is open");
+                assertEquals(Cell.SILO_PAD, r.at(silo.shaftX(), 0, silo.shaftZ()));
+                assertEquals(Cell.AIR, r.at(silo.shaftX(), 5, silo.shaftZ()), "the bore is open");
+                // The controller sits in the face toward the gallery: the walkway in front of it is open.
+                assertEquals(Cell.AIR, r.at(silo.frontX(), 2, silo.frontZ()), "walkway open");
             }
         }
     }

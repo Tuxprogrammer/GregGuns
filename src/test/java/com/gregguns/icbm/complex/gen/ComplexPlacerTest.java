@@ -19,8 +19,9 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.icbm.complex.ComplexLayout;
+import com.gregguns.icbm.complex.Cell;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.worldgen.ClippingSink;
 import com.gregguns.worldgen.ComplexWriter;
@@ -166,7 +167,13 @@ class ComplexPlacerTest {
 
                 @Override
                 public int seaFloorY(int x, int z) {
-                    return seaFloor != NONE && w.contains(x, z) ? seaFloor : NONE;
+                    return w.contains(x, z) ? seaFloorAt(x, z) : NONE;
+                }
+
+                @Override
+                public int seaFloorYBeside(int x, int z) {
+                    boolean near = x >= w.minX() - 1 && x <= w.maxX() + 1 && z >= w.minZ() - 1 && z <= w.maxZ() + 1;
+                    return near ? seaFloorAt(x, z) : NONE;
                 }
             };
             if (placer.write(plan, GROUND, w, sink, probe) > 0) r.windowsWithWrites++;
@@ -182,6 +189,13 @@ class ComplexPlacerTest {
 
     /** The sea floor the probe reports inside a window (a valley or a lake bed), or NONE for no answer. */
     private int seaFloor = HeightProbe.NONE;
+    /** A lake bed over part of the footprint: x0, z0, x1, z1 (exclusive) and its floor y, or null for none. */
+    private int[] lake;
+
+    private int seaFloorAt(int x, int z) {
+        if (lake != null && x >= lake[0] && z >= lake[1] && x < lake[2] && z < lake[3]) return lake[4];
+        return seaFloor;
+    }
 
     private List<String> currentMarks;
 
@@ -285,7 +299,7 @@ class ComplexPlacerTest {
         int bx = x + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = z + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
         int floor = GROUND - ComplexPlacer.DEPTH;
         String backing = Integer.toString(System.identityHashCode(named.get("backing")));
-        for (int y = floor + ComplexLayout.HEIGHT; y < GROUND; y++) {
+        for (int y = floor + cp.escapeTop(); y < GROUND; y++) {
             String ladder = r.cells.get(x + "," + y + "," + z);
             String behind = r.cells.get(bx + "," + y + "," + bz);
             assertTrue(behind != null && behind.startsWith(backing + ":"), "backing at y " + y + ", windows or not");
@@ -296,6 +310,72 @@ class ComplexPlacerTest {
         assertEquals(0, r.duplicates);
     }
 
+    /**
+     * A lake bed under the hub's open air is cut off, and its natural terrain stays. The hub's open cells around it,
+     * above the bed, become wall, so the hub never opens sideways onto the lake (R1 M2), across window edges too.
+     */
+    @Test
+    void aHallBesideACutOffLakeBedIsWalledUpAboveTheBed() {
+        StructurePlan p = plan();
+        int floor = GROUND - ComplexPlacer.DEPTH;
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        com.gregguns.icbm.complex.Box hub = cp.hall()
+            .bounds();
+        // The lake's west and north edges lie on window edges, so those faces are sealed from a column the window
+        // beside it reads one past its own (HeightProbe.seaFloorYBeside); the east and south edges fall inside windows.
+        int lx0 = windowEdge(p.anchorX() + hub.minX + 8), lz0 = windowEdge(p.anchorZ() + hub.minZ + 8);
+        final int lw = 16, ld = 12;
+        lake = new int[] { lx0, lz0, lx0 + lw, lz0 + ld, floor + 8 };
+        Result r;
+        try {
+            r = run(p, false);
+        } finally {
+            lake = null;
+        }
+        String[] open = { "c" + Cell.AIR, "c" + Cell.RAIL_NS, "c" + Cell.RAIL_EW, "c" + Cell.LADDER };
+        String wall = Integer.toString(System.identityHashCode(named.get("c" + Cell.WALL)));
+        int faces = 0, walled = 0;
+        for (int x = lx0 - 1; x <= lx0 + lw; x++) {
+            for (int z = lz0 - 1; z <= lz0 + ld; z++) {
+                boolean in = x >= lx0 && z >= lz0 && x < lx0 + lw && z < lz0 + ld;
+                if (in) {
+                    for (int y = floor; y < floor + ComplexRaster.LEVELS; y++) {
+                        assertNull(r.cells.get(x + "," + y + "," + z), "the cut-off column keeps its terrain");
+                    }
+                    continue;
+                }
+                // A corner column only touches the lake diagonally, where water never flows.
+                boolean corner = (x == lx0 - 1 || x == lx0 + lw) && (z == lz0 - 1 || z == lz0 + ld);
+                if (corner) continue;
+                for (int y = floor + 1; y < floor + hub.sizeY() - 1; y++) {
+                    String v = r.cells.get(x + "," + y + "," + z);
+                    if (y <= floor + 8) continue; // the bed's own ground faces these
+                    faces++;
+                    for (String o : open) {
+                        Block b = named.get(o);
+                        assertTrue(
+                            b == null || v == null || !v.startsWith(System.identityHashCode(b) + ":"),
+                            "open cell facing the lake at " + x + "," + y + "," + z);
+                    }
+                    if (v != null && v.startsWith(wall + ":")) walled++;
+                }
+            }
+        }
+        assertTrue(
+            faces > 80 && walled == faces,
+            "every cell around the lake above its bed is wall: " + walled + "/" + faces);
+        // The plain hub away from the lake is still open.
+        String far = r.cells.get((p.anchorX() + hub.minX + 3) + "," + (floor + 2) + "," + (p.anchorZ() + hub.minZ + 3));
+        assertTrue(far != null && !far.startsWith(wall + ":"), "the rest of the hub is open");
+    }
+
+    /** @return the first window's west (or north) edge at or after {@code v} */
+    private static int windowEdge(int v) {
+        int e = PopulateWindow.chunkOf(v - PopulateWindow.OFFSET) * 16 + PopulateWindow.OFFSET;
+        return e < v ? e + PopulateWindow.SIZE : e;
+    }
+
     @Test
     void aColumnWhoseGroundLiesTooCloseAboveTheLevelIsCutOff() {
         StructurePlan p = plan();
@@ -304,9 +384,15 @@ class ComplexPlacerTest {
         Result valley = run(p, false);
         seaFloor = HeightProbe.NONE;
         int under = 0;
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        int ex = p.anchorX() + cp.escapeX(), ez = p.anchorZ() + cp.escapeZ();
         for (String key : valley.cells.keySet()) {
-            int y = Integer.parseInt(key.split(",")[1]);
-            if (y < floor + ComplexLayout.HEIGHT) under++;
+            String[] c = key.split(",");
+            int y = Integer.parseInt(c[1]), x = Integer.parseInt(c[0]), z = Integer.parseInt(c[2]);
+            // The escape shaft rises above its section by design; the level itself is what must not be written.
+            if (Math.abs(x - ex) <= 1 && Math.abs(z - ez) <= 1 && y >= floor + cp.escapeTop()) continue;
+            if (y < floor + com.gregguns.icbm.complex.ComplexRaster.LEVELS) under++;
         }
         assertEquals(0, under, "nothing of the level is written under such ground");
         assertEquals(0, valley.outside);

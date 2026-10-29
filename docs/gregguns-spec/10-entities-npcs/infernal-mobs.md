@@ -105,7 +105,7 @@ How each enabled modifier meets a GregGuns NPC:
 
 - **Pack config:** none.
 - **Source:** if the entity's persistent data already holds a non-empty modifier string, the join handler calls `addEntityModifiersByString` and **skips** the rolling path, and an unparseable string adds no modifiers. [EntityEventHandler#L70-L80](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/events/EntityEventHandler.java#L70-L80), [InfernalMobsCore#L582-L595](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L582-L595). The key is `InfernalMobsCore.getNBTTag()`.
-- **GregGuns does:** NPCs spawned by the Bug Hole and Zombie Hole spawner blocks ([07-blocks](../../techguns-spec/07-blocks/index.md)) get a non-modifier marker string in that key before they join the world, unless `infernal.allowSpawnerNpcs` is true (default false). A spawner is a farm, and the pack has anti-farming off. This relies on internal behavior, so it is guarded by the soft-dependency check and covered by a test.
+- **GregGuns does:** NPCs placed by a GregGuns structure spawner (a vanilla mob spawner with GregGuns `SpawnData`, see [spawning](spawning.md#spawner-npcs)) get a non-modifier marker string in that key while they read their spawn data, before they join the world, unless `infernal.allowSpawnerNpcs` is true (default false). A spawner is a farm, and the pack has anti-farming off. This relies on internal behavior, so it is guarded by the soft-dependency check and covered by a test.
 - **Pack-side change:** none.
 
 ## Requirements
@@ -140,7 +140,7 @@ How each enabled modifier meets a GregGuns NPC:
 | GGS-10-08 | `/gregguns test` scenario: Ghastly Army Soldier fires fireballs at a player in view. |
 | GGS-10-09 | Unit test: a canceled `LivingDeathEvent` leaves no gore request. |
 | GGS-10-10 to 12 | Unit tests for the band function and roll count. `/gregguns test` scenario: kill 50 elite and 50 ultra spawns and check that every drop is in the table for its band. |
-| GGS-10-13 | runServer check: a Zombie Hole spawns 100 NPCs and none has a modifier. |
+| GGS-10-13 | Scenario `worldgen.spawner_infernal_marker`: every NPC a GregGuns spawner places carries the marker when it joins the world (with Infernal Mobs loaded). runServer check: a Big Bunker spawner spawns 100 NPCs and none has a modifier. |
 | GGS-10-14 | Unit test: write and read an NPC with a modifier string in its persistent data. The string survives. |
 
 Spawn note for tests: `/spawninfernal x y z <EntityList name> <modifiers>` builds the entity by constructor only. [InfernalCommandSpawnInfernal#L45-L62](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/commands/InfernalCommandSpawnInfernal.java#L45-L62). It does not run the equipment roll, so the NPC is unarmed. Give it a gun first, or spawn from an egg and then add modifiers.

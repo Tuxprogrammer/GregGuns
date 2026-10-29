@@ -56,6 +56,7 @@ public final class DefenseScenarios {
     /** @param registry where to add the scenarios */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Registered());
+        com.gregguns.icbm.defense.DefenseGuiProbes.registerAll(registry);
         registry.register(new Intercept());
         registry.register(new NotIncoming());
         registry.register(new RangeByTier());

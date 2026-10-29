@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
@@ -107,9 +106,13 @@ final class AntidoteScenarios {
                         .getTotalWorldTime()),
                 "the other player is not protected");
             sicken(dosed);
+            // The guard's own handler is called directly: posting on the bus would run every other mod's player tick
+            // on a fake player that has no network handler (Thaumcraft's runic shielding sends it a packet).
+            out.check(AntidoteRegistration.guardRegistered(), "the guard is registered on the Forge event bus");
+            AntidoteGuard guard = new AntidoteGuard();
             return ScenarioResult.pending(name(), 24, ticks -> {
-                MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingUpdateEvent(dosed));
-                MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingUpdateEvent(other));
+                guard.onLivingUpdate(new LivingEvent.LivingUpdateEvent(dosed));
+                guard.onLivingUpdate(new LivingEvent.LivingUpdateEvent(other));
                 if (ticks < 12) {
                     return null;
                 }

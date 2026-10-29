@@ -69,6 +69,16 @@ A handler that cancels the join at `EventPriority.HIGHEST` stops the first and t
   - Item unlocalized names contain `gregguns.` (a convention for [06-items](../06-items/pack-loot.md) to follow).
 - **Pack-side change:** add `gregguns.` to `kamikaze.butcherItems` in `config/angermod.cfg`. The match is a substring on the lowercase unlocalized name, so one entry covers every GregGuns item.
 
+### Spawner NPCs
+
+Every GregGuns structure spawner (the Big Bunker's, the Alien Bug Nest's and the ICBM silo posts) is the vanilla `minecraft:mob_spawner` with GregGuns tile NBT ([design record 0024](../../design/0024-vanilla-spawners.md), [11-worldgen structure-placement](../11-worldgen/structure-placement.md#spawner-marks)). Vanilla 1.7.10 `MobSpawnerBaseLogic` does three things that would break our NPCs, and each has a fix:
+
+- **No egg setup.** With `SpawnData` set, vanilla copies it over the new entity's NBT, calls `readFromNBT` and spawns, and never calls `onSpawnWithEgg`. Our `SpawnData` holds `GGSpawner: {MinDanger: n, X, Y, Z}`, the last three the spawner's own block (its origin). `NpcEntity.readEntityFromNBT` sees the key (server side, with a world) and, when the spawner at that origin is a GregGuns spawner still standing on it (`SpawnerOrigin.placedFromOrigin`), sets the danger to the larger of the spawn position's (`NpcSpawnHandler.dangerAt`) and `n` and marks the Infernal opt-out ([infernal-mobs](infernal-mobs.md)); otherwise the danger is 0. Then it runs `onSpawnWithEgg`, which rolls the equipment at that danger. The Alien Bug takes only the Infernal marker, on the same origin condition. The key is never written back.
+- **Light before data.** Vanilla asks `getCanSpawnHere()` before it applies `SpawnData`, and the monster checks (`EntityMob#isValidLightLevel` and `#getBlockPathWeight`) refuse bright spots, so lit rooms would never spawn. `NpcEntity` and `AlienBug` skip only those two checks when a GregGuns-marked spawner of their own type is placing them (`SpawnerOrigin`: a spawner within 4 blocks each way and 1 up or down whose current entry is that entity and carries `GGSpawner` naming the spawner's own position; loaded chunks only). The `CheckSpawn` handler first marks every natural candidate, and a marked candidate always keeps every vanilla rule. Peaceful, collision and liquid checks always stay, and run before the spawner scan, so a spawner that keeps failing (Peaceful, a cramped spot) does not scan tile entities every tick.
+- **A moved spawner.** A JABBA diamond dolly carries a spawner with its NBT. Its `GGSpawner` origin no longer matches its block, so it is a plain vanilla spawner of its mobs: the light rules apply and its NPCs start at danger 0 (ICBM D275).
+- **The client preview.** The client builds the spinning mob with a null world and reads `SpawnData` into it. The NPC skips all of the above without a world, so the preview has no gear and needs no server state.
+- **Source:** Minecraft 1.7.10 `MobSpawnerBaseLogic#updateSpawner` and `#func_98265_a` (MCP-decompiled with Forge 10.13.4.1614, which does not patch the class); `SpawnerAnimals#findChunksForSpawning` fires `CheckSpawn` before `getCanSpawnHere`.
+
 ### Dimensions
 
 [0005](../../design/0005-world-presence.md) allows the Overworld only, so the default list is `[0]` and every other dimension is excluded without being named. For reference, the pack's own dimension settings:
@@ -94,6 +104,11 @@ Hardcore Ender Expansion works in the End (`overrideBiomeMobs=false`, `overpower
 | GGS-10-27 | GregGuns registers its spawn entries no later than EnderZoo's `postInit`. The mod's dependency string declares `before:EnderZoo`, and the load order is covered by a test. |
 | GGS-10-28 | NPC target selection ignores any player with `capabilities.disableDamage` set. That covers creative mode, spectator and AngerMod spawn protection. |
 | GGS-10-29 | Difficulty scaling in GregGuns applies to gun damage and accuracy once ([GUN-06](../../techguns-spec/BUGS.md)). It does not change `maxHealth` or `attackDamage` by difficulty. |
+| GGS-10-33 | An NPC that a GregGuns spawner places starts at the larger of its position's danger and the spawner's `MinDanger`, with its equipment rolled at that danger, before it joins the world. |
+| GGS-10-34 | A GregGuns spawner spawns its NPCs in a lit spot. The same NPC as a natural-spawn candidate, away from any spawner, or beside a plain vanilla spawner keeps the vanilla light checks. |
+| GGS-10-35 | The vanilla client preview path (entity with a null world, `SpawnData` read into it) works for every spawner NPC and rolls nothing. |
+| GGS-10-36 | A GregGuns spawner carried off its origin with its NBT is a plain vanilla spawner of its NPCs: the light checks apply and its NPCs start at danger 0. |
+| GGS-10-37 | With EnderIO loaded, breaking a GregGuns spawner drops no Broken Spawner and runs no extra spawn cycles. |
 
 ## Tests
 
@@ -106,6 +121,11 @@ Hardcore Ender Expansion works in the End (`overrideBiomeMobs=false`, `overpower
 | GGS-10-27 | runServer check with an `enderzoo/SpawnConfig_User.xml` entry that removes `gregguns.Bandit` from plains: the entry takes effect. |
 | GGS-10-28 | Manual check: a freshly respawned player with AngerMod protection stands in view of an NPC. The NPC does not fire. |
 | GGS-10-29 | Unit test: at each difficulty, `maxHealth` and `attackDamage` are the base values on a fresh NPC (before EnderZoo's tick). |
+| GGS-10-33 | Unit test `SpawnerDataTest`. Scenarios `worldgen.spawner_caps` (UHV floor: every NPC at danger 5), `worldgen.spawner_infernal_marker` (danger set at join) and `icbm.complex.guards` (danger floor, armed). |
+| GGS-10-34 | Scenarios `worldgen.spawner_light` and `icbm.complex.guards` (lit pad). |
+| GGS-10-35 | Scenario `worldgen.spawner_preview`. |
+| GGS-10-36 | Unit tests `SpawnerDataTest`, `SpawnerNbtTest`. Scenario `worldgen.spawner_moved`. |
+| GGS-10-37 | Unit test `EnderIoSpawnersTest`. Scenario `worldgen.spawner_enderio` (real pack; skips without EnderIO). |
 
 ## Open questions
 

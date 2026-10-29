@@ -7714,7 +7714,7 @@
    "#B0A070",
    "#303020"
   ],
-  "brief": "Alien nest block, 'bugnestblock'. Alien nest sand/slime/egg block (worldgen structure parts, hole = Bug Hole top). Footprint kept (16x16).",
+  "brief": "Alien nest block, 'bugnestblock'. Alien nest sand/slime/egg block (worldgen structure parts). Footprint kept (16x16).",
   "footprint_ref": "textures/blocks/bugnestblock.png",
   "priority": "P3"
  },
@@ -7734,7 +7734,7 @@
    "#B0A070",
    "#303020"
   ],
-  "brief": "Alien nest block, 'bugnestblock_hole'. Alien nest sand/slime/egg block (worldgen structure parts, hole = Bug Hole top). Footprint kept (16x16).",
+  "brief": "Alien nest block, 'bugnestblock_hole'. Alien nest sand/slime/egg block (worldgen structure parts). Footprint kept (16x16).",
   "footprint_ref": "textures/blocks/bugnestblock_hole.png",
   "priority": "P3"
  },
@@ -7754,7 +7754,7 @@
    "#B0A070",
    "#303020"
   ],
-  "brief": "Alien nest block, 'bugnesteggs'. Alien nest sand/slime/egg block (worldgen structure parts, hole = Bug Hole top). Footprint kept (16x64, 4-frame strip).",
+  "brief": "Alien nest block, 'bugnesteggs'. Alien nest sand/slime/egg block (worldgen structure parts). Footprint kept (16x64, 4-frame strip).",
   "footprint_ref": "textures/blocks/bugnesteggs.png",
   "priority": "P3"
  },
@@ -7774,7 +7774,7 @@
    "#B0A070",
    "#303020"
   ],
-  "brief": "Alien nest block, 'bugnestslimy'. Alien nest sand/slime/egg block (worldgen structure parts, hole = Bug Hole top). Footprint kept (16x16).",
+  "brief": "Alien nest block, 'bugnestslimy'. Alien nest sand/slime/egg block (worldgen structure parts). Footprint kept (16x16).",
   "footprint_ref": "textures/blocks/bugnestslimy.png",
   "priority": "P3"
  },
@@ -7856,7 +7856,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete01'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete01'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete01.png",
   "priority": "P3"
  },
@@ -7875,7 +7875,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete02'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete02'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete02.png",
   "priority": "P3"
  },
@@ -7894,7 +7894,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete03'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete03'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete03.png",
   "priority": "P3"
  },
@@ -7913,7 +7913,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete04'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete04'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete04.png",
   "priority": "P3"
  },
@@ -7932,7 +7932,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete_hole'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete_hole'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete_hole.png",
   "priority": "P3"
  },
@@ -7951,7 +7951,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete_old2-ctmv'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (64x64).",
+  "brief": "Concrete (Chisel CTM group), 'concrete_old2-ctmv'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (64x64).",
   "footprint_ref": "textures/blocks/concrete_old2-ctmv.png",
   "priority": "P3"
  },
@@ -7970,7 +7970,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete_old2-top'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete_old2-top'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete_old2-top.png",
   "priority": "P3"
  },
@@ -7989,7 +7989,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete_r-ctm'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (64x64).",
+  "brief": "Concrete (Chisel CTM group), 'concrete_r-ctm'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (64x64).",
   "footprint_ref": "textures/blocks/concrete_r-ctm.png",
   "priority": "P3"
  },
@@ -8008,7 +8008,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete_r'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete_r'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete_r.png",
   "priority": "P3"
  },
@@ -8027,7 +8027,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete_r02-ctm'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (64x64).",
+  "brief": "Concrete (Chisel CTM group), 'concrete_r02-ctm'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (64x64).",
   "footprint_ref": "textures/blocks/concrete_r02-ctm.png",
   "priority": "P3"
  },
@@ -8046,7 +8046,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Concrete (Chisel CTM group), 'concrete_r02'. Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
+  "brief": "Concrete (Chisel CTM group), 'concrete_r02'. Poured concrete in the stated variant; -ctm/-ctmv sheets are connected tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/concrete_r02.png",
   "priority": "P3"
  },

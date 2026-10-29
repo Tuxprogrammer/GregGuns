@@ -129,7 +129,7 @@ class NestPlacerTest {
             plan.spawners()
                 .size(),
             fwd.marks.size(),
-            "one Bug Hole mark per chamber, no duplicates");
+            "one bug spawner mark per chamber, no duplicates");
         for (int[] h : plan.spawners()) {
             assertTrue(fwd.marks.contains(NestPlacer.BUG_HOLE_TAG + "@" + h[0] + "," + h[1] + "," + h[2]));
         }

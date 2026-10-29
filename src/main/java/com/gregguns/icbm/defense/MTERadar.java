@@ -215,16 +215,13 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
 
     @Override
     public String radiusText() {
-        return Integer.toString(unit.radius());
+        return unit.radiusText(getBaseMetaTileEntity().getTimer());
     }
 
     @Override
     public void setRadiusText(String text) {
-        try {
-            setRadius(Integer.parseInt(text.trim()));
-        } catch (NumberFormatException e) {
-            // Ignored: the field keeps its value.
-        }
+        unit.typeRadius(text, rangeIfOn(), getBaseMetaTileEntity().getTimer());
+        getBaseMetaTileEntity().markDirty();
     }
 
     // --- RadarView (OpenComputers) -------------------------------------------------------------------------------
@@ -427,6 +424,7 @@ public final class MTERadar extends MTEExtendedPowerMultiBlockBase<MTERadar>
     @Override
     public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
         float z) {
+        com.gregguns.icbm.complex.gen.GtMachineHook.handOver(base, player); // a generated one becomes the player's
         if (!base.isClientSide() && RadarUnit.isStick(player.getHeldItem())) {
             RadarUnit.writeLink(base, player.getHeldItem(), player);
             return true;

@@ -39,7 +39,6 @@ import com.gregguns.worldgen.StructureGenerator;
 import com.gregguns.worldgen.StructurePlan;
 import com.gregguns.worldgen.StructurePopulator;
 import com.gregguns.worldgen.StructureState;
-import com.gregguns.worldgen.spawner.TileHoleSpawner;
 
 /**
  * Real generation of a silo complex per dimension: the chunks around a forced-100-percent complex are loaded through
@@ -149,7 +148,7 @@ public final class ComplexDimScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             if (!com.gregguns.core.module.ModuleState.isActive(com.gregguns.core.module.ModuleId.ICBM)) {
-                return ScenarioResult.skip(name(), "the ICBM module is off (Galacticraft missing or modules.icbm off)");
+                return ScenarioResult.skip(name(), com.gregguns.icbm.IcbmAvailability.offReason());
             }
             World world = world();
             if (world == null) {
@@ -178,11 +177,15 @@ public final class ComplexDimScenarios {
                 PlanetTable.tierOf(actual));
             int chance = IcbmConfig.siloComplexChancePercent;
             IcbmConfig.siloComplexChancePercent = 100;
+            Set<Long> loadedAtStart = world.getChunkProvider() instanceof ChunkProviderServer
+                ? loaded((ChunkProviderServer) world.getChunkProvider())
+                : new HashSet<Long>();
             try {
                 PopulateGuard.register();
                 run(world, out);
             } finally {
                 IcbmConfig.siloComplexChancePercent = chance;
+                release(world, loadedAtStart, out);
             }
             return out.build();
         }
@@ -291,6 +294,60 @@ public final class ComplexDimScenarios {
                 PopulateGuard.violationCount() };
         }
 
+        /** The placer's own cut-off rule (D207), read from the world around the column. */
+        private static boolean cutOff(World w, int floor, int x, int z) {
+            com.gregguns.worldgen.PopulateWindow win = new com.gregguns.worldgen.PopulateWindow(
+                Math.floorDiv(x - 8, 16),
+                Math.floorDiv(z - 8, 16));
+            return ComplexPlacer.cutOff(
+                new com.gregguns.worldgen.WindowedHeightProbe(win, new com.gregguns.worldgen.WorldColumnReader(w)),
+                floor,
+                x,
+                z);
+        }
+
+        /**
+         * Lets the dimension go once its scenario is done: the chunks the scenario loaded are queued for unload, and a
+         * planet's world is queued to unload too (Forge unloads it on a later tick when nothing keeps it). One prefix
+         * run visits about 25 planets of about 2,600 chunks each in the real pack; held together they ran an 8 GB
+         * server out of memory. Nothing is released while a player is in the dimension (a client session standing on
+         * the Moon), and chunks that were loaded before the scenario stay.
+         */
+        private static void release(World world, Set<Long> loadedAtStart, ScenarioResult.Builder out) {
+            if (!(world.getChunkProvider() instanceof ChunkProviderServer)) return;
+            if (!world.playerEntities.isEmpty()) {
+                out.note("a player is in this dimension: its chunks and world stay loaded");
+                return;
+            }
+            ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
+            for (long key : loaded(cps)) {
+                if (loadedAtStart.contains(key)) continue;
+                // Chunk coordinates; spawn chunks of a dimension that keeps its spawn loaded are left alone.
+                cps.unloadChunksIfNotNearSpawn((int) (key >> 32), (int) key);
+            }
+            if (world.provider.dimensionId != 0) DimensionManager.unloadWorld(world.provider.dimensionId);
+        }
+
+        /** @return whether any column of the {@code size} x {@code size} square at (x, z) lies under water */
+        private static boolean anyUnderWater(World w, int x, int z, int size) {
+            for (int dx = 0; dx < size; dx++) for (int dz = 0; dz < size; dz++) {
+                if (underWater(w, x + dx, z + dz)) return true;
+            }
+            return false;
+        }
+
+        /** @return whether the first block down from the sky in a column is a liquid */
+        private static boolean underWater(World w, int x, int z) {
+            for (int y = 254; y > 0; y--) {
+                Block b = w.getBlock(x, y, z);
+                if (b.getMaterial() == net.minecraft.block.material.Material.air || b.isLeaves(w, x, y, z)
+                    || b.isWood(w, x, y, z)) continue;
+                return b.getMaterial()
+                    .isLiquid();
+            }
+            return false;
+        }
+
         /** Y of the topmost block that stops movement (trees and plants skipped), or -1. */
         private static int top(World w, int x, int z) {
             for (int y = 254; y > 0; y--) {
@@ -356,16 +413,42 @@ public final class ComplexDimScenarios {
                     + " chunkLoaded "
                     + w.getChunkProvider()
                         .chunkExists(ex >> 4, ez >> 4));
-            out.check(w.getBlock(ex, ty, ez) == Blocks.trapdoor, label + ": the escape ladder ends in a trapdoor");
-            out.checkEquals(label + ": trapdoor is closed and in the top half", 8, w.getBlockMetadata(ex, ty, ez));
-            for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
-                int ny = top(w, ex + d[0], ez + d[1]);
-                out.check(Math.abs(ny - ty) <= 1, label + ": trapdoor flush with terrain " + ty + " vs " + ny);
+            if (underWater(w, ex, ez)) {
+                // A lake over the escape column: the placer writes no trapdoor into water, by design (landY is none).
+                out.note(label + ": the escape column lies under water; no trapdoor there, as designed");
+            } else {
+                out.check(w.getBlock(ex, ty, ez) == Blocks.trapdoor, label + ": the escape ladder ends in a trapdoor");
+                out.checkEquals(label + ": trapdoor is closed and in the top half", 8, w.getBlockMetadata(ex, ty, ez));
+                // Flush: on a slope the neighbors up and down the slope differ, the two across it are level.
+                int level = 0;
+                StringBuilder around = new StringBuilder();
+                for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
+                    int ny = top(w, ex + d[0], ez + d[1]);
+                    around.append(ny)
+                        .append(' ');
+                    if (Math.abs(ny - ty) <= 1) level++;
+                }
+                out.check(level >= 2, label + ": trapdoor flush with the terrain " + ty + " vs " + around);
+                out.check(w.getBlock(ex, ty - 1, ez) == Blocks.ladder, label + ": a ladder under the trapdoor");
+                out.checkEquals(
+                    label + ": ladder clings to its wall",
+                    cp.escapeMeta(),
+                    w.getBlockMetadata(ex, ty - 1, ez));
+                out.check(
+                    !w.getBlock(ex, ty + 1, ez)
+                        .getMaterial()
+                        .blocksMovement()
+                        && !w.getBlock(ex, ty + 1, ez)
+                            .isLeaves(w, ex, ty + 1, ez),
+                    label + ": nothing grows over the trapdoor");
             }
-            out.check(w.getBlock(ex, ty - 1, ez) == Blocks.ladder, label + ": a ladder under the trapdoor");
-            out.checkEquals(label + ": ladder clings to its wall", cp.escapeMeta(), w.getBlockMetadata(ex, ty - 1, ez));
             for (SiloSlot s : cp.silos()) {
                 int ox = plan.anchorX() + s.bounds().minX, oz = plan.anchorZ() + s.bounds().minZ;
+                if (anyUnderWater(w, ox, oz, 5)) {
+                    // A lake over the silo: the shaft is not written into water (landY is none), by design.
+                    out.note(label + ": a silo shaft lies under water; no mouth there, as designed");
+                    continue;
+                }
                 int ry = top(w, ox, oz);
                 int near = 99;
                 for (int[] d : new int[][] { { -1, 2 }, { 5, 2 }, { 2, -1 }, { 2, 5 } }) {
@@ -387,6 +470,11 @@ public final class ComplexDimScenarios {
             }
             for (int[] st : cp.radarStations()) {
                 int hx = plan.anchorX() + st[0], hz = plan.anchorZ() + st[1];
+                if (anyUnderWater(w, hx, hz, 5)) {
+                    // A hut is built only on land; over a lake its columns are left alone, by design.
+                    out.note(label + ": a radar hut stands over water; left unbuilt there, as designed");
+                    continue;
+                }
                 Block corner = w.getBlock(hx, groundY + 1, hz);
                 out.check(
                     corner == com.gregguns.block.GregGunsCasings.INSTANCE,
@@ -408,18 +496,27 @@ public final class ComplexDimScenarios {
             int floor = ComplexPlacer.floorY(w, d.groundY());
             out.note(
                 label + ": level " + level + ", ceiling " + ceiling + ", stick -> " + java.util.Arrays.toString(other));
-            int deepWanted = 0, deepFound = 0, sticks = 0, expected = 0;
+            int deepWanted = 0, deepFound = 0, sticks = 0, expected = 0, cut = 0;
             for (Placement p : ComplexContents.build(cp, level, ceiling, other)) {
                 int x = plan.anchorX() + p.x(), y = floor + p.y(), z = plan.anchorZ() + p.z();
                 if (p.kind() == Placement.Kind.FRAME_WALL) {
-                    expected += p.extent(); // a collapsed armory hangs none
+                    // A collapsed armory hangs none; a frame over a column the terrain cut off is not written (D207).
+                    boolean alongZ = p.facing() == 1 || p.facing() == 3;
+                    for (int i = 0; i < p.extent(); i++) {
+                        int fx = x + (alongZ ? 0 : ComplexLayout.FRAME_STRIDE * i);
+                        int fz = z + (alongZ ? ComplexLayout.FRAME_STRIDE * i : 0);
+                        if (cutOff(w, floor, fx, fz)) cut++;
+                        else expected++;
+                    }
                 }
-                if (p.kind() == Placement.Kind.SPAWNER) {
+                if (p.kind() == Placement.Kind.SPAWNER && cutOff(w, floor, x, z)) {
+                    cut++;
+                } else if (p.kind() == Placement.Kind.SPAWNER) {
                     TileEntity t = w.getTileEntity(x, y, z);
-                    boolean deep = p.spawner() == com.gregguns.worldgen.spawner.HoleKind.SILO_ELITE;
+                    boolean deep = p.spawner() == com.gregguns.worldgen.spawner.SpawnerKind.SILO_ELITE;
                     if (deep) {
                         deepWanted++;
-                        if (t instanceof TileHoleSpawner) deepFound++;
+                        if (t instanceof net.minecraft.tileentity.TileEntityMobSpawner) deepFound++;
                     }
                 }
                 if (p.kind() == Placement.Kind.CHEST && p.bonuses()
@@ -431,6 +528,7 @@ public final class ComplexDimScenarios {
                         label + ": the stick holds the real neighbor coordinates " + p.extra());
                 }
             }
+            if (cut > 0) out.note(label + ": " + cut + " frames or posts stand over columns the terrain cut off");
             out.checkEquals(label + ": every planned elite/deep guard post stands", deepWanted, deepFound);
             if (other == null) out.check(sticks == 0, label + ": no stick without another complex");
             int frames = 0, bad = 0;
@@ -445,7 +543,7 @@ public final class ComplexDimScenarios {
                         floor,
                         plan.anchorZ() + b.minZ,
                         plan.anchorX() + b.maxX,
-                        floor + ComplexLayout.HEIGHT,
+                        floor + b.sizeY(),
                         plan.anchorZ() + b.maxZ));
                 for (Object o : es) {
                     EntityItemFrame f = (EntityItemFrame) o;

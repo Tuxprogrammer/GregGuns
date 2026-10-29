@@ -296,10 +296,10 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 **Entry gate:** I5 done.
 
 **Scope:**
-- **Abandoned Missile Silos** (D17, D128): a flat underground complex of about 240 x 240 blocks, with a central hall, wings and randomly picked rooms around one to four real silos. The silo shafts take the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
+- **Abandoned Missile Silos** (D17, D128): a flat underground complex of about 240 x 240 blocks, with a hub, major and minor halls, 35 to 40 rooms and a gallery of four to ten real silos (reshaped in I6b, D229). The silo shafts take the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
 - **Real machines in the rooms** (D129), within the D38 ceiling; reviewed at the beta playthrough.
 - **Activity levels** (D36): abandoned, partly abandoned and operational, each with its own damage pass built into the layout.
-- **A silo guard spawner block** with shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
+- **Silo guard posts**, vanilla mob spawners of shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
 - **Loot ceilings and planet silos** (D38):
   - the Overworld caps at EV;
   - silos generate on every Galacticraft, GalaxySpace and Amun-Ra planet with solid ground, with the ceiling rising one tier per rocket tier (Moon EV, up to T9 at UMV);
@@ -314,6 +314,33 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - [x] No loot exceeds the dimension's ceiling (or, on Ross128, the silo's rolled ceiling), checked over many generated chests. Unit test plus scenario.
 - [x] `icbm-silos` and the silo quests (`gg.icbm.silo_complex`, `silo_repair`, `silo_radar`) have landed, and the owner has been told.
 - [x] The milestone review fix list is closed.
+
+## I6b · Silo complex redesign
+
+**Entry gate:** I6 done and the alpha fix round merged.
+
+**Scope (D229 to D244):**
+- **Layout** (D229, D230, D232): a grown layout of a 51 x 40 hub, 20-wide major halls and 5-wide minor hallways, rooms branching off halls and off rooms, 35 to 40 rooms of about four times the old floor area, and a gallery of 4 to 10 silos on at most two halls with a shared Launch Control. One flat level.
+- **Coverage:** at least 75% of the 240 x 240 footprint is built space, as a hard tested target.
+- **Palette** (D240 to D244): varied floors and ceilings, uniform walls within a room, pack blocks with fallbacks, and no new decorative blocks in our mod.
+- **Lamps** (D231, D242): flush in the ceiling layer on grid lines, lit or dead by activity level.
+- **New room kinds,** furnishing, guard posts at branch points, and loot and marks scaled by room area (D233, D234).
+- **Cost** (D236): a debug line per complex and generation that does not cascade.
+- **Guides:** the `icbm-silos` sheet rebuilt for the new layout, and the silo quest text.
+- **Owner additions during the build:** BiblioCraft furniture in small rooms and a Chisel lab finish (D259 to D263, D272); floor, wall and ceiling are three different blocks in every room, checked after each room is built (D265 to D267); every spawner GregGuns placed is the vanilla mob spawner with NBT (D268 to D271, D273 to D275, design record 0024).
+
+**Exit gate:**
+- [x] Coverage is at least 75% over many seeds. Unit test.
+- [x] Silo count follows the 4 to 10 weights, in at most two halls. Unit test.
+- [x] Every room is reachable on foot, and the room count is 35 to 40. Unit test.
+- [x] Hub and hall sizes, and the lamp grid, match D230 and D231. Unit test.
+- [x] The palette resolves with no extra mods, every style resolves, and walls are uniform within a room. Unit test and `icbm.palette.resolve`.
+- [x] `gregguns test icbm.` with Galacticraft and `worldgen.` report 0 failed, and ICBM turns itself off cleanly without Galacticraft.
+- [x] Generation cost is measured and does not cascade.
+- [x] The maps are re-exported and reviewed, and the `icbm-silos` sheet and silo quest text match the layout.
+- [x] The fix round (layout, generation, alpha fixes, docs) is closed.
+- [x] Furniture stays in small rooms with doors and paths clear; every room's floor, wall and ceiling are three different blocks, with 0 audit violations in the real pack.
+- [x] Vanilla spawners spawn armed guards in lit complexes, drop nothing when broken (EnderIO included), and old worlds load without the removed blocks.
 
 ## Alpha gate · 0.4.0-alpha
 

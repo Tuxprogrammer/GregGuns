@@ -172,9 +172,16 @@ public final class NpcSpawnHandler {
             NpcConfig.perPlayerCap);
     }
 
-    /** Denies a natural spawn that fails the gate. */
+    /**
+     * Marks every GregGuns natural-spawn candidate, so it keeps the full vanilla spot rules even beside a GregGuns
+     * spawner ({@link SpawnerOrigin}), then denies a natural spawn that fails the gate. Forge fires this event only
+     * from natural spawning, before {@code getCanSpawnHere}.
+     */
     @SubscribeEvent
     public void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
+        if (event.entityLiving instanceof SpawnerOrigin.NaturalCandidate) {
+            ((SpawnerOrigin.NaturalCandidate) event.entityLiving).markNaturalCandidate();
+        }
         if (event.world.isRemote || !(event.entityLiving instanceof NpcEntity)) {
             return;
         }

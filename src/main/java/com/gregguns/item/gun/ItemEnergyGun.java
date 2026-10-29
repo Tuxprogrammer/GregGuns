@@ -104,7 +104,7 @@ public class ItemEnergyGun extends ItemGun implements IElectricItem {
 
     @Override
     public double getDurabilityForDisplay(ItemStack stack) {
-        return EnergyMath.barFraction(chargeOf(stack), capacityEu());
+        return EnergyMath.barFraction((long) Math.floor(ElectricGear.chargeReadOnly(stack)), capacityEu());
     }
 
     @Override

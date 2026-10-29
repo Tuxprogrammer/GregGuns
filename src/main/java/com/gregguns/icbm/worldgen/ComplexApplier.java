@@ -10,9 +10,8 @@ import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.control.ControlMachines;
 import com.gregguns.worldgen.WindowedSink;
-import com.gregguns.worldgen.spawner.HoleKind;
-import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
-import com.gregguns.worldgen.spawner.TileHoleSpawner;
+import com.gregguns.worldgen.spawner.SpawnerKind;
+import com.gregguns.worldgen.spawner.VanillaSpawners;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
@@ -73,6 +72,23 @@ public final class ComplexApplier {
         this.ceiling = ceiling;
     }
 
+    /** The lit lamp of the section at a complex-local cell (the palette's), or null for glowstone. */
+    public interface Lamps {
+
+        com.gregguns.worldgen.layout.ResolvedBlock lit(int x, int y, int z);
+    }
+
+    private Lamps lamps;
+
+    /**
+     * @param lamps where lit lamps come from; null keeps glowstone
+     * @return this
+     */
+    public ComplexApplier withLamps(Lamps lamps) {
+        this.lamps = lamps;
+        return this;
+    }
+
     /** @param p a placement */
     public void apply(Placement p) {
         int x = ox + p.x();
@@ -90,9 +106,13 @@ public final class ComplexApplier {
                 // out into the room or the corridor.
                 sink.setBlock(x, y - 1, z, Blocks.water, 0);
                 break;
-            case LIGHT:
-                sink.setBlock(x, y, z, Blocks.glowstone, 0);
+            case LIGHT: {
+                // The lit lamp of the section's style (D231); glowstone without one.
+                com.gregguns.worldgen.layout.ResolvedBlock lamp = lamps == null ? null : lamps.lit(p.x(), p.y(), p.z());
+                if (lamp != null) sink.setBlock(x, y, z, lamp.block, lamp.meta);
+                else sink.setBlock(x, y, z, Blocks.glowstone, 0);
                 break;
+            }
             case CHEST:
                 if (sink.setBlock(x, y, z, Blocks.chest, 2)) {
                     sink.setTile(x, y, z, SiloChests.filledChest(p, worldSeed, cellX, cellZ));
@@ -167,11 +187,9 @@ public final class ComplexApplier {
         return ((x * 31 + y * 17 + z * 13) & 3) == 0 ? Blocks.gravel : Blocks.cobblestone;
     }
 
-    private void spawner(HoleKind kind, int x, int y, int z) {
-        Block b = HoleSpawnerRegistration.block(kind);
-        if (b != null && sink.setBlock(x, y, z, b, 0)) {
-            sink.setTile(x, y, z, new TileHoleSpawner(kind, ceiling));
-        }
+    /** A silo post: a vanilla mob spawner whose guards start at the complex ceiling's danger (D36). */
+    private void spawner(SpawnerKind kind, int x, int y, int z) {
+        VanillaSpawners.place(sink, kind, x, y, z, ceiling);
     }
 
     private void collapse(Box box) {
@@ -227,6 +245,7 @@ public final class ComplexApplier {
         if (sink.setBlock(x, y, z, GregTechAPI.sBlockMachines, proto.getTileEntityBaseType())) {
             gregtech.api.metatileentity.BaseMetaTileEntity tile = new gregtech.api.metatileentity.BaseMetaTileEntity();
             tile.setInitialValuesAsNBT(null, (short) mteId);
+            com.gregguns.icbm.complex.gen.GtMachineHook.claim(tile);
             sink.setTile(x, y, z, tile);
         }
     }

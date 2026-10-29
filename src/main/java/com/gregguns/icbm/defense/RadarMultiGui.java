@@ -33,8 +33,6 @@ import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEMultiBlockBaseGui<T> {
 
     private static final Pattern DIGITS = Pattern.compile("[0-9]{0,5}");
-    private static final int PANEL_W = 170;
-    private static final int PANEL_H = 82;
 
     private static final class Shown {
 
@@ -66,27 +64,41 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
                 .tooltipBuilder(t -> t.addLine(IKey.lang("gregguns.icbm.radar_tower.gui.button"))));
     }
 
-    private ModularPanel buildRadarPanel(PanelSyncManager psm, ModularPanel parent) {
+    ModularPanel buildRadarPanel(PanelSyncManager psm, ModularPanel parent) {
         Shown shown = new Shown();
-        psm.syncValue("field_radius", 0, IcbmSync.editableText(multiblock::radiusText, multiblock::setRadiusText));
-        psm.syncValue("st_range", 0, new IntSyncValue(multiblock::rangeIfOn, v -> shown.range = v));
-        psm.syncValue("st_det", 0, new IntSyncValue(multiblock::detectedCount, v -> shown.detected = v));
-        psm.syncValue("st_inc", 0, new IntSyncValue(multiblock::incomingCount, v -> shown.incoming = v));
+        psm.syncValue(
+            "field_radius",
+            0,
+            IcbmSync.editableText(IcbmSync.guard(multiblock, multiblock::radiusText, ""), multiblock::setRadiusText));
+        psm.syncValue(
+            "st_range",
+            0,
+            new IntSyncValue(IcbmSync.guard(multiblock, multiblock::rangeIfOn, 0), v -> shown.range = v));
+        psm.syncValue(
+            "st_det",
+            0,
+            new IntSyncValue(IcbmSync.guard(multiblock, multiblock::detectedCount, 0), v -> shown.detected = v));
+        psm.syncValue(
+            "st_inc",
+            0,
+            new IntSyncValue(IcbmSync.guard(multiblock, multiblock::incomingCount, 0), v -> shown.incoming = v));
         psm.syncValue(
             "st_state",
             0,
             new IntSyncValue(
-                () -> multiblock.state()
-                    .ordinal(),
+                IcbmSync.guard(
+                    multiblock,
+                    () -> multiblock.state()
+                        .ordinal(),
+                    0),
                 v -> shown.state = v));
         return new ModularPanel("radarPanel").relative(parent)
-            .leftRel(1)
-            .topRel(0)
-            .size(PANEL_W, PANEL_H)
+            .align(Alignment.TopCenter)
+            .size(RadarPanelLayout.PANEL_W, RadarPanelLayout.PANEL_H)
             .child(
                 Flow.column()
                     .full()
-                    .padding(4)
+                    .padding(RadarPanelLayout.PAD)
                     .child(label(() -> tr(multiblock.panelTitleKey())))
                     .child(label(() -> tr(RadarRules.State.values()[shown.state].langKey())))
                     .child(label(() -> trf("gregguns.icbm.radar.gui.range", shown.range)))
@@ -100,7 +112,7 @@ final class RadarMultiGui<T extends MTEMultiBlockBase & RadarPanel> extends MTEM
     }
 
     private static IWidget label(java.util.function.Supplier<String> text) {
-        return new TextWidget<>(IKey.dynamic(text)).size(PANEL_W - 8, 10)
+        return new TextWidget<>(IKey.dynamic(text)).size(RadarPanelLayout.LINE_W, 10)
             .alignment(Alignment.CenterLeft)
             .marginBottom(2);
     }

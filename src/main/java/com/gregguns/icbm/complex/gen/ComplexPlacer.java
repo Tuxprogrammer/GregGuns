@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.world.World;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
@@ -78,6 +79,38 @@ public final class ComplexPlacer implements ComplexWriter {
         this.settings = settings;
     }
 
+    private Styles.Factory styles = Styles.Factory.NONE;
+
+    /**
+     * @param factory where each section's look comes from: {@link PaletteStyles#FACTORY} in the game, none in unit
+     *                tests (every role then falls to the block resolver)
+     * @return this
+     */
+    public ComplexPlacer withStyles(Styles.Factory factory) {
+        this.styles = factory;
+        stylesCache.clear();
+        return this;
+    }
+
+    private final Map<String, Styles> stylesCache = new LinkedHashMap<String, Styles>();
+
+    /** The styles of a plan's sections, cached like the raster; they depend on the dimension and the level too. */
+    public Styles stylesOf(StructurePlan plan) {
+        ComplexRaster raster = rasterOf(plan);
+        String key = cacheKey(plan) + ":" + (forcedLevel == null ? "" : forcedLevel.name());
+        Styles st = stylesCache.remove(key);
+        if (st == null) {
+            String dim = world == null ? "Overworld" : DimensionKey.of(world);
+            st = styles.of(raster, dim, levelOf(raster.plan()));
+            if (stylesCache.size() >= CACHED) stylesCache.remove(
+                stylesCache.keySet()
+                    .iterator()
+                    .next());
+        }
+        stylesCache.put(key, st);
+        return st;
+    }
+
     /** @param listener told the reason of each skipped plan (scenarios); the log line is written regardless */
     public ComplexPlacer withSkipListener(java.util.function.Consumer<String> listener) {
         this.skipListener = listener;
@@ -101,6 +134,8 @@ public final class ComplexPlacer implements ComplexWriter {
         world = null;
         cache.clear();
         contentsCache.clear();
+        stylesCache.clear();
+        summaries.clear();
     }
 
     @Override
@@ -156,13 +191,20 @@ public final class ComplexPlacer implements ComplexWriter {
         return plan.dimension() + ":" + plan.chestSeedBase();
     }
 
-    /** The raster of a plan, cached for the dozens of windows one complex spans (two entries are enough). */
+    /**
+     * Complexes whose raster, contents and styles stay cached. A complex spans up to 225 windows, and several can
+     * populate interleaved (players in several dimensions), so a short cache would rebuild them window after window. A
+     * raster is about 0.8 MB.
+     */
+    static final int CACHED = 6;
+
+    /** The raster of a plan, cached for the windows one complex spans. */
     public ComplexRaster rasterOf(StructurePlan plan) {
         String key = cacheKey(plan);
         ComplexRaster r = cache.remove(key);
         if (r == null) {
             r = new ComplexRaster(ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ()));
-            if (cache.size() >= 2) {
+            if (cache.size() >= CACHED) {
                 cache.remove(
                     cache.keySet()
                         .iterator()
@@ -195,8 +237,9 @@ public final class ComplexPlacer implements ComplexWriter {
     }
 
     /**
-     * The ceiling the table gives a dimension: its row, or EV for a dimension the owner added to the config that the
-     * table does not list. Ross128b and ba roll one per complex from their own nine weights.
+     * The ceiling the table gives a dimension: its row, or EV for a dimension the table does not list (only a
+     * scenario asks for one: a listed dimension outside the table generates nothing, {@link ConfigSettings}). Ross128b
+     * and ba roll one per complex from their own nine weights.
      *
      * @param dimensionKey a {@link DimensionKey}
      * @param seedBase     the plan's seed base
@@ -225,6 +268,7 @@ public final class ComplexPlacer implements ComplexWriter {
     public ComplexPlacer forceLevel(ActivityLevel level) {
         this.forcedLevel = level;
         contentsCache.clear();
+        stylesCache.clear();
         return this;
     }
 
@@ -246,7 +290,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 : NeighborComplex
                     .nearest(world.getSeed(), plan.dimension(), plan, settings.chancePercent(), NeighborComplex.RADIUS);
             l = ComplexContents.build(cp, levelOf(cp), ceilingOf(plan), other);
-            if (contentsCache.size() >= 2) contentsCache.remove(
+            if (contentsCache.size() >= CACHED) contentsCache.remove(
                 contentsCache.keySet()
                     .iterator()
                     .next());
@@ -266,9 +310,24 @@ public final class ComplexPlacer implements ComplexWriter {
         }
     }
 
+    /** Plans no layout grew from (never seen in 40,000 seeds), so each is logged once, not once per window. */
+    private final Set<String> unbuildable = new java.util.LinkedHashSet<String>();
+
     private int writeWindow(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
-        ComplexRaster raster = rasterOf(plan);
+        ComplexRaster raster;
+        try {
+            raster = unbuildable.contains(cacheKey(plan)) ? null : rasterOf(plan);
+        } catch (IllegalStateException e) {
+            // Every regrowth failed: skip the complex rather than throw out of chunk populate.
+            if (unbuildable.size() >= 16) unbuildable.remove(
+                unbuildable.iterator()
+                    .next());
+            unbuildable.add(cacheKey(plan));
+            skipped(plan, "layout");
+            raster = null;
+        }
+        if (raster == null) return 0;
         ComplexPlan cp = raster.plan();
         int floorY = floorYOf(groundY);
         int ax = plan.anchorX(), az = plan.anchorZ();
@@ -282,38 +341,62 @@ public final class ComplexPlacer implements ComplexWriter {
         boolean masked = false;
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
-                int g = probe.seaFloorY(x, z);
-                if (g != HeightProbe.NONE && g < floorY + ComplexLayout.SILO_HEIGHT + 2) {
+                if (cutOff(probe, floorY, x, z)) {
                     mask[ColumnMaskSink.index(window, x, z)] = true;
                     masked = true;
                 }
             }
         }
+        int[] seal = sealFloors(probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
         WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
+        Styles st = stylesOf(plan);
+        // The role audit (D267): tag every write with the pass that made it, then read the complex back once its
+        // last window is written. Off in normal play.
+        RoleAudit.TaggingSink tagUnder = null, tagSink = null;
+        String auditKey = null;
+        if (RoleAudit.enabled()) {
+            auditKey = System.identityHashCode(this) + ":" + cacheKey(plan);
+            RoleAudit.Tracker t = RoleAudit
+                .tracker(auditKey, world, raster, st, auditWhere(plan, floorY), levelOf(cp).name(), ax, floorY, az);
+            under = tagUnder = new RoleAudit.TaggingSink(under, t);
+            sink = tagSink = new RoleAudit.TaggingSink(sink, t);
+        }
+        int maskedColumns = 0;
+        for (boolean m : mask) if (m) maskedColumns++;
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 for (int y = 0; y < ComplexRaster.LEVELS; y++) {
-                    byte c = raster.at(x - ax, y, z - az);
+                    int lx = x - ax, lz = z - az;
+                    byte c = raster.at(lx, y, lz);
                     if (c == Cell.NONE) continue;
                     int wy = floorY + y;
+                    // Open cells beside a cut-off column whose ground lies under them face its water or air: wall.
+                    if (y >= 1 && Cell.open(c) && wy > seal[ColumnMaskSink.index(window, x, z)]) c = Cell.WALL;
                     if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
-                        if (under.setBlock(x, wy, z, air, 0) && world != null) machines.place(world, c, x, wy, z);
+                        if (under.setBlock(x, wy, z, air, 0) && world != null) {
+                            machines.place(world, c, x, wy, z, siloFacing(cp, lx, lz));
+                        }
                         n++;
                         continue;
                     }
-                    ResolvedBlock b = c == Cell.LADDER ? blocks.ladder(cp.escapeMeta(), x, wy, z)
-                        : blocks.resolve(c, x, wy, z);
+                    ResolvedBlock b = c == Cell.LADDER ? blocks.ladder(cp.escapeMeta(), x, wy, z) : null;
+                    if (b == null && styled(c)) b = st.block(c, lx, y, lz);
+                    if (b == null) b = blocks.resolve(c, x, wy, z);
                     if (b != null && under.setBlock(x, wy, z, b.block, b.meta)) n++;
                 }
             }
         }
+        if (tagSink != null) tagSink.as(RoleAudit.SHAFT);
         n += shafts(cp, plan, floorY, window, sink, probe);
         n += ladder(cp, plan, floorY, window, sink, probe);
         n += radars(cp, plan, groundY, window, sink, probe);
+        if (tagUnder != null) tagUnder.as(RoleAudit.MARK);
         for (Mark m : cp.allMarks()) {
             int wx = ax + m.x(), wz = az + m.z();
-            if (window.contains(wx, wz)) filler.fill(plan, m, wx, floorY + m.y(), wz, under);
+            if (window.contains(wx, wz)) filler.fill(world, plan, m, wx, floorY + m.y(), wz, under);
         }
+        if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
+        if (tagSink != null) tagSink.as(RoleAudit.SIGNS);
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(under),
@@ -324,11 +407,198 @@ public final class ComplexPlacer implements ComplexWriter {
                 plan.chestSeedBase(),
                 plan.cellX(),
                 plan.cellZ(),
-                ceilingOf(plan));
+                ceilingOf(plan)).withLamps(st::litLamp);
             for (Placement p : contentsOf(plan, cp)) applier.apply(p);
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
         }
+        if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;
+    }
+
+    /**
+     * A column whose own ground (the sea floor under water) lies less than 14 blocks above the level floor is cut off:
+     * nothing of the level, its marks or its contents is written there (D207). Scenarios use the same rule to know
+     * which marks to expect.
+     *
+     * @return whether the column is cut off
+     */
+    public static boolean cutOff(HeightProbe probe, int floorY, int x, int z) {
+        return cutOffAt(probe.seaFloorY(x, z), floorY);
+    }
+
+    private static boolean cutOffAt(int g, int floorY) {
+        return g != HeightProbe.NONE && g < floorY + ComplexLayout.SILO_HEIGHT + 2;
+    }
+
+    /**
+     * Where a written column borders a cut-off one. The cut-off column keeps its natural terrain, and where that
+     * ground lies lower than the level's open cells beside it, a hall would open sideways onto the lake or valley
+     * over it. Per window column: the lowest such neighbor's ground, so the writer walls up every open cell above it
+     * ({@link Integer#MAX_VALUE} when no neighbor is cut off). A neighbor outside the window is read through
+     * {@link HeightProbe#seaFloorYBeside}: one column past the window still lies in a loaded chunk.
+     */
+    private static int[] sealFloors(HeightProbe probe, PopulateWindow window, int floorY, boolean[] mask, int x0,
+        int x1, int z0, int z1, int ax, int az) {
+        int[] seal = new int[PopulateWindow.SIZE * PopulateWindow.SIZE];
+        java.util.Arrays.fill(seal, Integer.MAX_VALUE);
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                int i = ColumnMaskSink.index(window, x, z);
+                if (mask[i]) continue;
+                for (int d = 0; d < 4; d++) {
+                    int nx = x + (d == 1 ? 1 : d == 3 ? -1 : 0), nz = z + (d == 2 ? 1 : d == 0 ? -1 : 0);
+                    // Outside the complex nothing is written next to an open cell: every section ends in its wall.
+                    if (nx < ax || nz < az || nx >= ax + ComplexLayout.SIZE || nz >= az + ComplexLayout.SIZE) continue;
+                    int g;
+                    if (window.contains(nx, nz)) {
+                        if (!mask[ColumnMaskSink.index(window, nx, nz)]) continue;
+                        g = probe.seaFloorY(nx, nz);
+                    } else {
+                        g = probe.seaFloorYBeside(nx, nz);
+                        if (!cutOffAt(g, floorY)) continue;
+                    }
+                    seal[i] = Math.min(seal[i], g);
+                }
+            }
+        }
+        return seal;
+    }
+
+    /** How far above the ground a surface opening is cleared of leaves, logs and snow. */
+    static final int CLEAR_ABOVE = 32;
+
+    /**
+     * Clears the natural cover over a column's ground, so a shaft mouth or the escape trapdoor is never left under
+     * leaves or a trunk: foliage (plants, vines, snow layers, cactus), logs and leaves ({@code isWood} or
+     * {@code isLeaves}) and ice, up to {@link #CLEAR_ABOVE} over the ground. Above that only ice goes on, while it
+     * lasts, so an ice spike over the opening is cut whole rather than left floating. Anything else stays: a chest,
+     * a fence, another mod's structure, and every block that carries a tile entity. Reads only this window's columns
+     * (the populate world; nothing without one, as in unit tests).
+     */
+    private int clearAbove(WindowedSink sink, int x, int z, int groundY) {
+        if (world == null || !sink.window()
+            .contains(x, z)) {
+            return 0;
+        }
+        int n = 0;
+        int cap = Math.min(BUILD_HEIGHT, groundY + CLEAR_ABOVE);
+        for (int y = groundY + 1; y <= BUILD_HEIGHT; y++) {
+            Block b = world.getBlock(x, y, z);
+            Material m = b.getMaterial();
+            boolean ice = m == Material.ice || m == Material.packedIce;
+            if (y > cap && !ice) break;
+            if (m == Material.air || !clearable(b, m, ice, x, y, z)) continue;
+            if (sink.setBlock(x, y, z, blocks.air(), 0)) n++;
+        }
+        return n;
+    }
+
+    /** @return whether a block over a surface opening is natural cover the clear may remove */
+    private boolean clearable(Block b, Material m, boolean ice, int x, int y, int z) {
+        if (b.hasTileEntity(world.getBlockMetadata(x, y, z))) return false;
+        if (ice) return true;
+        if (m == Material.leaves || m == Material.plants
+            || m == Material.vine
+            || m == Material.snow
+            || m == Material.cactus) {
+            return true;
+        }
+        return b.isWood(world, x, y, z) || b.isLeaves(world, x, y, z);
+    }
+
+    /** @return whether the role is a building role the section's style decides */
+    private static boolean styled(byte c) {
+        switch (c) {
+            case Cell.WALL:
+            case Cell.FLOOR:
+            case Cell.CEILING:
+            case Cell.LAMP:
+            case Cell.DOOR_FRAME:
+            case Cell.FURN_TABLE:
+            case Cell.FURN_CONSOLE:
+            case Cell.FURN_BUNK:
+            case Cell.FURN_SHELF:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /** @return the facing of the silo whose footprint holds the column (its machines face the gallery) */
+    static int siloFacing(ComplexPlan cp, int lx, int lz) {
+        for (SiloSlot s : cp.silos()) {
+            if (s.bounds()
+                .contains(lx, 0, lz)) return s.facing();
+        }
+        return 0;
+    }
+
+    /** Per complex: windows written, blocks written, columns cut off, writes the sink refused. */
+    private final Map<String, int[]> summaries = new LinkedHashMap<String, int[]>();
+
+    /**
+     * Counts what each window wrote and, once every window over the complex has run, logs one line at debug level, so
+     * a complex that writes nothing in a pack shows up in the log with its numbers (D236).
+     *
+     * @return whether this was the complex's last window
+     */
+    private boolean summarize(StructurePlan plan, int floorY, PopulateWindow window, int blocksWritten,
+        int maskedColumns, WindowedSink sink) {
+        String key = cacheKey(plan);
+        int[] s = summaries.get(key);
+        if (s == null) {
+            if (summaries.size() >= 16) summaries.remove(
+                summaries.keySet()
+                    .iterator()
+                    .next());
+            s = new int[4];
+            summaries.put(key, s);
+        }
+        s[0]++;
+        s[1] += blocksWritten;
+        s[2] += maskedColumns;
+        s[3] = sink.rejectedWrites();
+        if (s[0] == windowsOver(plan.anchorX()) * windowsOver(plan.anchorZ())) {
+            GregGuns.LOG.debug(
+                "Silo complex at dimension {} cell {},{} anchor {},{} floor y {}: {} windows, {} blocks, {} columns cut"
+                    + " off, last window refused {} writes",
+                plan.dimension(),
+                plan.cellX(),
+                plan.cellZ(),
+                plan.anchorX(),
+                plan.anchorZ(),
+                floorY,
+                s[0],
+                s[1],
+                s[2],
+                s[3]);
+            summaries.remove(key);
+            return true;
+        }
+        return false;
+    }
+
+    /** @return where a complex lies, for the role audit's log line */
+    private String auditWhere(StructurePlan plan, int floorY) {
+        String dim = world == null ? "Overworld" : DimensionKey.of(world);
+        return "dimension " + dim
+            + " cell "
+            + plan.cellX()
+            + ","
+            + plan.cellZ()
+            + " anchor "
+            + plan.anchorX()
+            + ","
+            + plan.anchorZ()
+            + " floor y "
+            + floorY;
+    }
+
+    /** @return how many populate windows along one axis overlap a complex anchored at {@code a} */
+    static int windowsOver(int a) {
+        int first = Math.floorDiv(a - PopulateWindow.OFFSET, 16);
+        int last = Math.floorDiv(a + ComplexLayout.SIZE - 1 - PopulateWindow.OFFSET, 16);
+        return last - first + 1;
     }
 
     /** The 5 x 5 shaft ring and 3 x 3 bore from the top of the silo to the surface, and the mouth variant. */
@@ -354,6 +624,7 @@ public final class ComplexPlacer implements ComplexWriter {
                             : b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
                     }
                     n += mouth(s.variant(), bore, x, z, sx, sz, top, sink);
+                    if (!(bore && s.variant() == SurfaceVariant.CLOSED)) n += clearAbove(sink, x, z, Math.max(top, g));
                 }
             }
         }
@@ -398,7 +669,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (window.contains(bx, bz)) {
             int bg = probe.landY(bx, bz);
             if (bg != HeightProbe.NONE) {
-                for (int y = floorY + ComplexLayout.HEIGHT; y < bg; y++) {
+                for (int y = floorY + cp.escapeTop(); y < bg; y++) {
                     ResolvedBlock b = blocks.named("backing", bx, y, bz);
                     if (b != null && sink.setBlock(bx, y, bz, b.block, b.meta)) n++;
                 }
@@ -407,7 +678,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (!window.contains(x, z)) return n;
         int g = probe.landY(x, z);
         if (g == HeightProbe.NONE) return n;
-        for (int y = floorY + ComplexLayout.HEIGHT; y < g; y++) {
+        for (int y = floorY + cp.escapeTop(); y < g; y++) {
             ResolvedBlock b = blocks.ladder(meta, x, y, z);
             if (b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
         }
@@ -415,6 +686,7 @@ public final class ComplexPlacer implements ComplexWriter {
         // surface (its top face at g + 1, level with the terrain around it).
         ResolvedBlock t = blocks.named("trapdoor", x, g, z);
         if (t != null && sink.setBlock(x, g, z, t.block, t.meta)) n++;
+        n += clearAbove(sink, x, z, g);
         return n;
     }
 

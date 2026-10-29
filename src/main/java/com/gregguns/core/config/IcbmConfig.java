@@ -178,12 +178,13 @@ public class IcbmConfig {
 
     @Config.Comment({ "Dimensions that get silo complexes (D38), by key: \"Overworld\", or a Galacticraft planet's own",
         "unlocalized name such as moon, iojupiter, ganymed or barnarda2. Remove a name to keep new complexes out of",
-        "that planet. Default: the Overworld and every planet of the D38 table." })
+        "that planet. A name outside the D38 table gets no complexes (the log says so once). Default: the Overworld",
+        "and every planet of the D38 table except T Ceti E, an ocean world (D239)." })
     @Config.Sync(false)
     public static String[] siloComplexDimensions = { "Overworld", "moon", "mars", "phobos", "deimos", "ceres",
         "callisto", "europa", "ganymed", "iojupiter", "mercury", "venus", "enceladus", "titan", "miranda", "oberon",
         "proteus", "triton", "pluto", "haumea", "makemake", "barnarda2", "barnarda4", "barnarda5", "centauribb",
-        "tcetie", "vega1", "anubis", "horus", "maahes", "neper", "seth", "ross128b", "ross128ba" };
+        "vega1", "anubis", "horus", "maahes", "neper", "seth", "ross128b", "ross128ba" };
 
     @Config.Comment({ "Nine weights, EV first to UMV last, for the loot ceiling a complex on Ross128b or Ross128ba",
         "rolls (D38). A complex rolls once from its own seed; negative weights count as 0. Default: 30, 22, 16, 11,",

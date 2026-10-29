@@ -20,4 +20,15 @@ public interface MarkFiller {
      * @param z    world z
      */
     void fill(StructurePlan plan, Mark mark, int x, int y, int z, WindowedSink sink);
+
+    /**
+     * As {@link #fill(StructurePlan, Mark, int, int, int, WindowedSink)}, with the world being populated, for a filler
+     * that sets a tile entity's state after placing its block (a piece of furniture, D259). The placer calls this one.
+     *
+     * @param world the world, or null when the writer has none (a unit test)
+     */
+    default void fill(net.minecraft.world.World world, StructurePlan plan, Mark mark, int x, int y, int z,
+        WindowedSink sink) {
+        fill(plan, mark, x, y, z, sink);
+    }
 }

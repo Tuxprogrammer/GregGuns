@@ -32,8 +32,8 @@ class NestPlanTest {
             assertTrue(main.r == 5 && !main.hive, "main chamber radius 5, no hole");
             int holes = p.spawners()
                 .size();
-            assertEquals(n - 1, holes, "one Bug Hole per satellite or child");
-            assertTrue(holes >= 5 && holes <= 10, "5 to 10 Bug Holes: " + holes);
+            assertEquals(n - 1, holes, "one bug spawner per satellite or child");
+            assertTrue(holes >= 5 && holes <= 10, "5 to 10 bug spawners: " + holes);
             for (NestPlan.Chamber c : p.chambers()) {
                 assertTrue(c.r >= 3 && c.r <= 5, "radius 3 to 5");
             }

@@ -14,7 +14,7 @@ import com.gregguns.icbm.complex.SiloSlot;
 import com.gregguns.icbm.complex.Tunnel;
 import com.gregguns.icbm.worldgen.Placement.Bonus;
 import com.gregguns.icbm.worldgen.Placement.Kind;
-import com.gregguns.worldgen.spawner.HoleKind;
+import com.gregguns.worldgen.spawner.SpawnerKind;
 
 /**
  * The activity pass (D36) and the contents pass (D129): turns a layout's marks into {@link Placement}s for one activity
@@ -54,8 +54,7 @@ public final class ComplexContents {
 
         mark(plan.hall(), hall, false, p, seed, ceiling, hall, out, chests, chestCounter, level);
         for (Room r : plan.rooms()) {
-            boolean collapsed = r.kind() != RoomKind.GUARD_POST && r.kind() != RoomKind.DECON_AIRLOCK
-                && Mix.unit(Mix.of(seed, S_COLLAPSE, r.id(), 0)) < p.collapseChance();
+            boolean collapsed = mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p);
             if (collapsed) {
                 collapses.add(
                     Placement.at(Kind.COLLAPSE, r.bounds().minX, r.bounds().minY, r.bounds().minZ)
@@ -71,6 +70,21 @@ public final class ComplexContents {
         List<Placement> all = new ArrayList<>(collapses);
         all.addAll(out);
         return keepFrameWalls(all);
+    }
+
+    /**
+     * Whether a room of this kind may cave in. Guard posts and the airlock never do, and neither does Launch Control:
+     * it overlooks the silo gallery and is the complex's goal, so it stays walkable at every level (D252); its lamps,
+     * rubble and breaches still follow the level. The halls, the gallery among them, never collapse either: they are
+     * marked with {@code collapsed = false}.
+     */
+    static boolean mayCollapse(RoomKind kind) {
+        return kind != RoomKind.GUARD_POST && kind != RoomKind.DECON_AIRLOCK && kind != RoomKind.LAUNCH_CONTROL;
+    }
+
+    /** @return whether a room's collapse roll comes up, before {@link #mayCollapse} is asked */
+    static boolean collapseRoll(long seed, int roomId, ActivityProfile p) {
+        return Mix.unit(Mix.of(seed, S_COLLAPSE, roomId, 0)) < p.collapseChance();
     }
 
     private static final int[] FRAME_DX = { 0, -1, 0, 1 };
@@ -174,7 +188,7 @@ public final class ComplexContents {
                             .build());
                     break;
                 case LIGHT:
-                    if (Mix.unit(Mix.of(seed, S_LIGHT, m.x() * 4096L + m.z(), m.y())) < p.litChance()) {
+                    if (Mix.unit(lightRoll(seed, m, level)) < p.litChance()) {
                         out.add(
                             Placement.at(Kind.LIGHT, m.x(), m.y(), m.z())
                                 .build());
@@ -203,10 +217,40 @@ public final class ComplexContents {
                 case MACHINE:
                     machine(m, p, seed, ceiling, out);
                     break;
+                case FURNITURE:
+                    FurnitureWear.wear(m, collapsed, level, seed, out);
+                    break;
                 default:
                     break; // signs and blast doors are the layout's own
             }
         }
+    }
+
+    /**
+     * The roll that decides whether a lamp burns (D231). A lamp's key names its section and its run (a grid line of
+     * lamps, with the floor light tiles under them): an abandoned complex lights or kills whole runs, a partly
+     * abandoned one whole sections, so the dark parts read as dead circuits rather than scattered bulbs. The share lit
+     * stays the D36 rate either way.
+     *
+     * @return a hash to compare with the level's lit chance
+     */
+    static long lightRoll(long seed, Mark m, ActivityLevel level) {
+        String[] k = m.key()
+            .split(":");
+        if (k.length == 3 && "lamp".equals(k[0])) {
+            try {
+                long section = Long.parseLong(k[1]), run = Long.parseLong(k[2]);
+                if (level == ActivityLevel.PARTLY_ABANDONED) {
+                    return Mix.of(seed, S_LIGHT, section, -1);
+                }
+                if (level == ActivityLevel.ABANDONED) {
+                    return Mix.of(seed, S_LIGHT, section * 4096L + run, -2);
+                }
+            } catch (NumberFormatException e) {
+                // fall through to a roll per lamp
+            }
+        }
+        return Mix.of(seed, S_LIGHT, m.x() * 4096L + m.z(), m.y());
     }
 
     private static double rubbleMarkChance(ActivityLevel level) {
@@ -279,7 +323,7 @@ public final class ComplexContents {
             && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
         out.add(
             Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
-                .spawner(elite ? HoleKind.SILO_ELITE : HoleKind.SILO_GUARD)
+                .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
                 .build());
     }
 

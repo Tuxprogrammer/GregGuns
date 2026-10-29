@@ -151,8 +151,11 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             "st_eu",
             0,
             new LongSyncValue(
-                () -> machine.getBaseMetaTileEntity()
-                    .getStoredEU(),
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.getBaseMetaTileEntity()
+                        .getStoredEU(),
+                    0L),
                 v -> state.eu = v));
         sync.syncValue(
             "st_target",
@@ -184,7 +187,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             new InteractionSyncHandler().setOnMousePressed(m -> machine.saveToStick(sync.getPlayer())));
     }
 
-    private MTELaunchControl.Snapshot snap() {
+    private LaunchSnapshot snap() {
         return machine.snapshot();
     }
 
@@ -279,9 +282,10 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 84,
                 70,
                 () -> tr("gregguns.icbm.control.gui.load"),
-                this::hasStick,
+                () -> hasStick() && !launchUnderway(),
                 () -> "gregguns.icbm.control.gui.load.tip",
-                () -> hasStick() ? null : "gregguns.icbm.control.gui.stick_missing"));
+                () -> !hasStick() ? "gregguns.icbm.control.gui.stick_missing"
+                    : launchUnderway() ? "gregguns.icbm.control.gui.load.locked" : null));
         content.child(
             control(
                 F_SAVE,
@@ -318,6 +322,12 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 () -> "gregguns.icbm.control.gui.fire.tip",
                 () -> canFire() ? null : ControlStatus.values()[state.status].langKey()));
         return content;
+    }
+
+    /** @return whether a countdown runs or the missile has left: the target is frozen until the pad is ready again */
+    private boolean launchUnderway() {
+        ControlStatus s = ControlStatus.values()[state.status];
+        return s == ControlStatus.COUNTDOWN || s == ControlStatus.IGNITED;
     }
 
     private boolean canAbort() {

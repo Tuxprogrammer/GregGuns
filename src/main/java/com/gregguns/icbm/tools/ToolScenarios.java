@@ -40,7 +40,7 @@ final class ToolScenarios {
 
     private static String gate() {
         if (!ModuleState.isActive(ModuleId.ICBM) || !IcbmAvailability.galacticraftPresent()) {
-            return "the ICBM module is off (Galacticraft missing)";
+            return com.gregguns.icbm.IcbmAvailability.offReason();
         }
         return null;
     }

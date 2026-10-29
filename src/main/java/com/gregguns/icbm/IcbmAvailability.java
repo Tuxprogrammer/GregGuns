@@ -1,7 +1,10 @@
 package com.gregguns.icbm;
 
 import com.gregguns.compat.ModIds;
+import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModPresence;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 
 /**
  * Runtime probe for the ICBM module's optional mods. Never loads a Galacticraft or OpenComputers class: every reference
@@ -22,5 +25,29 @@ public final class IcbmAvailability {
     /** @return whether OpenComputers is loaded (the optional scripting hook, D13); probed once and cached */
     public static boolean openComputersPresent() {
         return ModPresence.isLoaded(ModIds.OPEN_COMPUTERS);
+    }
+
+    /**
+     * The real cause of an inactive module, for the reasons scenarios give when they skip.
+     *
+     * @return why the ICBM module is off, or "the ICBM module is on" when it is not
+     */
+    public static String offReason() {
+        if (ModuleState.isActive(ModuleId.ICBM)) {
+            return "the ICBM module is on";
+        }
+        if (!ModuleFlags.isEnabled(ModuleId.ICBM)) {
+            return "the ICBM module is off (" + ModuleState.disabledFlag(ModuleId.ICBM) + " is false in the config)";
+        }
+        if (!galacticraftPresent()) {
+            return "the ICBM module is off (Galacticraft is not installed)";
+        }
+        for (ModuleId required : ModuleId.ICBM.requires()) {
+            if (!ModuleState.isActive(required)) {
+                return "the ICBM module is off (" + ModuleState.disabledFlag(required)
+                    + " is false in the config, and ICBM requires it)";
+            }
+        }
+        return "the ICBM module is off";
     }
 }

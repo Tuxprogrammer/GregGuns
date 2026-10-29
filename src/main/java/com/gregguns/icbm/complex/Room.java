@@ -4,20 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** A room shell: a kind, its footprint, the wing it hangs off and its marks. */
+/**
+ * A room shell: a kind, its footprint and height (the box's y range), the section it opens from and its marks. The hub
+ * is a room too (the assembly bay), with no parent and no primary door.
+ */
 public final class Room {
 
     private final int id;
     private final RoomKind kind;
-    private final Box bounds;
-    private final int wing;
+    private Box bounds;
+    private final int parent;
+    private Door door;
     private final List<Mark> marks = new ArrayList<Mark>();
 
-    Room(int id, RoomKind kind, Box bounds, int wing) {
+    Room(int id, RoomKind kind, Box bounds, int parent) {
         this.id = id;
         this.kind = kind;
         this.bounds = bounds;
-        this.wing = wing;
+        this.parent = parent;
     }
 
     void add(MarkKind k, int x, int y, int z, String key) {
@@ -28,6 +32,15 @@ public final class Room {
         marks.add(new Mark(k, x, y, z, key, facing, extent));
     }
 
+    void bounds(Box b) {
+        this.bounds = b;
+    }
+
+    void door(Door d) {
+        this.door = d;
+    }
+
+    /** @return the section id (see {@link ComplexPlan#section}); the hub is 0 */
     public int id() {
         return id;
     }
@@ -36,13 +49,25 @@ public final class Room {
         return kind;
     }
 
+    /** @return the footprint; {@code maxY} is the room's height (floor layer 0, ceiling layer {@code maxY - 1}) */
     public Box bounds() {
         return bounds;
     }
 
-    /** Wing index (0 N, 1 E, 2 S, 3 W), or -1 for the hall and silo annex. */
-    public int wing() {
-        return wing;
+    /** @return the section the room was entered from (a hall, the hub or another room), or -1 for the hub */
+    public int parent() {
+        return parent;
+    }
+
+    /** @return the doorway to the parent, which the room is furnished around (D208), or null for the hub */
+    public Door door() {
+        return door;
+    }
+
+    /** @return the side of the room its doorway is in (0 north, 1 east, 2 south, 3 west), or -1 for the hub */
+    public int doorSide() {
+        if (door == null) return -1;
+        return door.a == id ? door.side : (door.side + 2) & 3;
     }
 
     public List<Mark> marks() {

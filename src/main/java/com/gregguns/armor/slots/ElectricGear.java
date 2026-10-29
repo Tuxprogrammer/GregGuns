@@ -28,6 +28,15 @@ public final class ElectricGear {
 
     private static final String NV_TAG = "nightVision";
 
+    /**
+     * IC2's NBT key for an item's stored EU. Only {@link #chargeReadOnly} reads it, for the durability bar; every write
+     * goes through IC2's manager.
+     */
+    // Decompiled: IC2 2.2.828 ic2.core.item.ElectricItemManager keeps the stored EU as a double under "charge" in the
+    // stack's own NBT, removes the key when the charge reaches 0, and reads a missing key as 0. IC2 has no public
+    // source; only that storage layout was relied on, and gun.energy.item fails if it drifts.
+    static final String CHARGE_KEY = "charge";
+
     private ElectricGear() {}
 
     /**
@@ -53,6 +62,21 @@ public final class ElectricGear {
     public static double charge(ItemStack stack) {
         IElectricItemManager m = ElectricItem.manager;
         return m == null ? 0.0 : m.getCharge(stack);
+    }
+
+    /**
+     * The stored EU read straight from the stack's NBT, without creating any tag (IC2 keeps it under {@code charge}).
+     * The durability bar runs every frame, and a getter that writes NBT makes NEI log a forced tag update.
+     *
+     * @param stack an electric item
+     * @return its stored EU, 0 when it has no tag yet
+     */
+    public static double chargeReadOnly(ItemStack stack) {
+        if (stack == null || !stack.hasTagCompound()) {
+            return 0.0;
+        }
+        return stack.getTagCompound()
+            .getDouble(CHARGE_KEY);
     }
 
     /**

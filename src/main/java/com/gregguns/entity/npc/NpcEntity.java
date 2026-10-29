@@ -21,6 +21,9 @@ import com.gregguns.entity.npc.ai.EntityAIGunAttack;
 import com.gregguns.entity.npc.ai.EntityAIHurtByFaction;
 import com.gregguns.entity.npc.ai.EntityAINpcMelee;
 import com.gregguns.entity.npc.loot.NpcProfile;
+import com.gregguns.entity.npc.spawn.NpcSpawnHandler;
+import com.gregguns.entity.npc.spawn.SpawnerData;
+import com.gregguns.entity.npc.spawn.SpawnerOrigin;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.NpcFiring;
 import com.gregguns.gun.logic.ShotOffset;
@@ -50,7 +53,8 @@ import com.gregguns.projectile.Projectiles;
  */
 // Spec: docs/techguns-spec/10-entities-npcs/ai.md (sections 2 and 3), docs/techguns-spec/10-entities-npcs/per-mob.md
 // (0. shared GenericNPC mechanics), docs/gregguns-spec/10-entities-npcs/spawning.md (GGS-10-28, GGS-10-29)
-public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFaction, MobAnimSource {
+public class NpcEntity extends EntityMob
+    implements IRangedAttackMob, HasNpcFaction, MobAnimSource, SpawnerOrigin.NaturalCandidate {
 
     /** One in this many ticks the player scan runs (a TPS guard; Techguns scanned every tick). */
     public static final int SCAN_CHANCE = 10;
@@ -67,6 +71,8 @@ public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFact
     private EntityAIBase combatTask;
     private double lastShotFactor = 1.0;
     private boolean aiming;
+    /** Set by the natural-spawn gate; never saved. */
+    private boolean naturalCandidate;
 
     /**
      * @param world the world; the entity registry calls this when it loads an NPC
@@ -269,6 +275,56 @@ public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFact
         super.readEntityFromNBT(tag);
         danger = tag.hasKey(DANGER_TAG) ? tag.getInteger(DANGER_TAG) : DANGER_UNSET;
         setCombatTask();
+        if (SpawnerData.isFromSpawner(tag) && worldObj != null && !worldObj.isRemote) {
+            spawnedBySpawner(tag);
+        }
+    }
+
+    /**
+     * A vanilla spawner with GregGuns {@code SpawnData} is placing this NPC: the data was just read, and the NPC has
+     * not joined the world yet. Does what the spawner's own path skips: the egg-style setup that rolls the equipment.
+     * When the spawner stands on its worldgen origin ({@link SpawnerOrigin#placedFromOrigin}) the danger is the spawn
+     * position's raised to the spawner's floor, and the NPC takes the Infernal Mobs opt-out (before Infernal sees the
+     * join). A spawner carried away from its origin acts as a plain vanilla spawner of the NPC at the lowest danger,
+     * 0, so moving a deep post into a base farms nothing better than the weakest gear. The key is never written back,
+     * so a reload does not repeat this.
+     *
+     * @param tag the merged NBT, holding {@link SpawnerData#KEY}
+     */
+    private void spawnedBySpawner(NBTTagCompound tag) {
+        if (SpawnerOrigin.placedFromOrigin(this, tag)) {
+            setDanger(SpawnerData.danger(NpcSpawnHandler.dangerAt(worldObj, posX, posZ), SpawnerData.minDanger(tag)));
+            InfernalHooks.markSpawnerNpc(this);
+        } else {
+            setDanger(0);
+        }
+        onSpawnWithEgg(null);
+    }
+
+    // --- spawn rules ------------------------------------------------------------------------------------------------
+
+    @Override
+    public void markNaturalCandidate() {
+        naturalCandidate = true;
+    }
+
+    /**
+     * Vanilla's rules, except when a GregGuns-marked spawner of this type places the NPC: then the light checks are
+     * skipped, so lit complexes and rooms keep their guards (see {@link SpawnerOrigin}). Natural spawns always keep
+     * every rule. The cheap peaceful, collision and liquid checks run before the spawner scan, so a spawner that keeps
+     * failing (Peaceful, a cramped post) does not scan the chunks' tile entities every tick.
+     */
+    @Override
+    public boolean getCanSpawnHere() {
+        if (!naturalCandidate && worldObj != null && !worldObj.isRemote) {
+            if (!SpawnerOrigin.canSpawnFromSpawner(this)) {
+                return false; // vanilla's answer too: these checks are part of it
+            }
+            if (SpawnerOrigin.placedByMarkedSpawner(this, false)) {
+                return true;
+            }
+        }
+        return super.getCanSpawnHere();
     }
 
     // --- firing ---------------------------------------------------------------------------------------------------

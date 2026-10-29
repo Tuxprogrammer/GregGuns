@@ -45,6 +45,7 @@ In-memory pack-fit hooks ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md)). Eac
 | `compat.backhandGuns` | boolean | `true` | n/a | no | Adds every GregGuns gun to Backhand's `offhandBlacklist` and `mainhandUseStopsOffhandFallback`. |
 | `compat.thaumcraftMobAspects` | boolean | `true` | n/a | no | Registers Thaumcraft scan aspects for the GregGuns NPCs. |
 | `compat.listHooks` | boolean | `true` | n/a | no | Adds `gregguns.` to AngerMod's `butcherItems` and `gregguns.SimpleTurret` to Mobs Info's `MobBlacklist`. |
+| `compat.enderioSpawnerBlacklist` | boolean | `true` | n/a | no | Puts every GregGuns NPC on EnderIO's Powered Spawner blacklist by IMC: a broken GregGuns spawner drops no Broken Spawner and releases no burst, and GregGuns NPCs stay out of the Powered Spawner. |
 
 ## Debug (`debug`)
 
@@ -162,7 +163,7 @@ Every key is synced except the `icbm.siloComplex*` keys, which only the server r
 | `icbm.fuseMultiplier` | double | `1.0` | 0.1 to 10 | yes | Multiplier on a redstone- or hand-lit warhead's fuse. The base is `20 * (3 + ceil(radius / 3))` ticks from the warhead's blast radius at its fill (D51); a warhead set off by another explosion keeps a fixed 10 tick fuse. |
 | `icbm.blastDrops` | boolean | `false` | n/a | yes | Whether destroyed blocks drop items. |
 | `icbm.siloComplexEnabled` | boolean | `true` | n/a | no | Whether silo complexes (D128) generate. Also needs `modules.worldgen` and `worldgen.spawnStructures`. |
-| `icbm.siloComplexDimensions` | string list | Overworld and every D38 planet | n/a | no | Dimensions that get complexes, by the dimension's key (case-insensitive): "Overworld", or a Galacticraft planet's own unlocalized name such as `moon`, `iojupiter`, `ganymed`, `barnarda2`, `vega1`, `ross128b`. Remove a name to keep complexes out of that planet; a name the D38 table lacks gets the lowest (EV) ceiling. A complex that already generated keeps generating after its dimension is removed. |
+| `icbm.siloComplexDimensions` | string list | Overworld and every D38 planet except T Ceti E, an ocean world (D239) | n/a | no | Dimensions that get complexes, by the dimension's key (case-insensitive): "Overworld", or a Galacticraft planet's own unlocalized name such as `moon`, `iojupiter`, `ganymed`, `barnarda2`, `vega1`, `ross128b`. Remove a name to keep complexes out of that planet; a name the D38 table lacks gets no complexes, and the log says so once. A complex that already generated keeps generating after its dimension is removed. |
 | `icbm.siloComplexChancePercent` | int | `25` | 0 to 100 | no | Share of the sparse grid's cells (one per 64 x 64 chunks) that attempt a complex. Complexes already generated stay whatever the value; only new decisions follow it. |
 | `icbm.siloComplexRoss128Weights` | int list | `30, 22, 16, 11, 8, 6, 4, 2, 1` | nine values | no | Weights, EV first to UMV last, of the loot ceiling a complex on Ross128b or Ross128ba rolls. |
 | `icbm.siloComplexOverworldBiomes` | string list | dry and temperate land types | n/a | no | Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all. |

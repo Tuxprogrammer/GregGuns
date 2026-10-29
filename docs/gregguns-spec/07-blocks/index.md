@@ -18,7 +18,7 @@ Most of the Techguns block catalog has no integration point: shipped shapes, mod
 No integration point; see the Techguns spec and the design records:
 
 - Ore clusters, titanium iron and uranium ore blocks, Creeper Acid fluid: dropped by [0005](../../design/0005-world-presence.md) and [0002](../../design/0002-machine-deconfliction.md). GT owns ores and fluids.
-- Alien nest blocks and the Zombie Hole: world gen, owned by [11](../../techguns-spec/11-worldgen/index.md).
+- Alien nest blocks: world gen, owned by [11](../../techguns-spec/11-worldgen/index.md). **Deviation:** Techguns' spawner blocks have no GregGuns block; structures place the vanilla mob spawner ([design record 0024](../../design/0024-vanilla-spawners.md)).
 - Door, ladder, lamp, sandbag, camo net, radar and panel models, sounds and textures: [block-rendering-and-models](../../techguns-spec/07-blocks/block-rendering-and-models.md), [sounds](../../techguns-spec/07-blocks/sounds.md), [textures](../../techguns-spec/07-blocks/textures.md).
 - Machine blocks (`basicMachine`, `oreDrill`): [08](../08-machines-production/) and [09](../09-machines-utility/index.md).
 - Block hardness and harvest tiers: the Techguns values stand. GT wrench rules are in block-platform.md. No pack mod changes them.
