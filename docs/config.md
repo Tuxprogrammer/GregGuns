@@ -260,10 +260,10 @@ These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their
 
 **Questbook install.** Set `questbook.install=true` and restart the server. After BetterQuesting has loaded its database, GregGuns reads the quest line from `assets/gregguns/questbook/` in its own jar and upserts it by fixed quest ID, marks the database for BetterQuesting's next world save, syncs connected players and logs `Installed/updated GregGuns quest line: N quests`.
 
-- **Safe to leave on.** It only touches the GregGuns quests and the GregGuns line. Every other quest and line stays as it is. Player progress is kept: completion and claims live per quest ID, and task progress is restored after the definition is replaced. A GregGuns update that changes a quest text or position updates it on the next start.
+- **Safe to leave on.** It only touches the GregGuns quests and the GregGuns line. Every other quest and line stays as it is. Player progress is kept: completion and claims live per quest ID, and task progress is restored after the definition is replaced. The install rewrites GregGuns quest text and positions on each start.
 - **Tab order.** The GregGuns tab is added after the existing tabs the first time. If an admin later moves it, the move is kept. **In the GTNH pack this does not hold:** while the pack's `config/modpack-update` marker is present, DreamCoreMod runs `/bq_admin default load` on every start, which rebuilds the database from the pack's DefaultQuests. The install then adds the GregGuns line again (the log says "121 added") and the tab goes back to last. Player progress is still kept.
 - **Off is not removal.** Setting the key back to `false` does nothing at all: an installed line stays in the world's database. To remove it, open the questbook in edit mode (`/bq_admin edit`) and delete the GregGuns line and its quests, or delete the quests by ID with the `/bq_admin` commands. Back up `betterquesting/` in the world folder first; deleting a quest also deletes its progress. While the key stays `true`, a removed quest comes back on the next start, so turn the key off first.
-- **Dropped quests.** A quest an older GregGuns shipped and a newer one dropped is not removed by the install; delete it by hand if you care.
+- **Retired quests.** The install never removes a quest. Delete one by hand if you want it gone.
 
 ## Rules for new options
 
