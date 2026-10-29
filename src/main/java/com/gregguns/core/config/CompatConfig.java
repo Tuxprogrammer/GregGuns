@@ -26,4 +26,9 @@ public class CompatConfig {
         "trigger its 10% explosion) and 'gregguns.SimpleTurret' to Mobs Info's MobBlacklist, in memory at startup.",
         "Needs the respective mod; ignored without it. Their config files are never written. Default: true." })
     public static boolean listHooks = true;
+
+    @Config.Comment({ "Puts every GregGuns NPC on EnderIO's Powered Spawner blacklist by IMC at startup, so breaking a",
+        "GregGuns structure spawner drops no Broken Spawner and releases no burst of extra mobs, and GregGuns NPCs",
+        "cannot be farmed in a Powered Spawner. Needs EnderIO; ignored without it. Default: true." })
+    public static boolean enderioSpawnerBlacklist = true;
 }

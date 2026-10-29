@@ -20,7 +20,7 @@
 ## Stages of a blast
 
 1. **Accept** (`BlastEngine.start`): post `ExplosionEvent.Start` (a cancel refuses the blast), decide whether terrain may break (`TerrainRule`: the tier's `icbm.terrainDamageT<n>` only, never `explosions.blockDamage`, D52), play the sound and particles, queue the job.
-2. **Snapshot** (server thread, one slab per slice): copy the resistance of every block in the radius into `BlastGrid`. Unloaded chunks become a wall; the blast never loads a chunk (ICBM-02-95).
+2. **Snapshot** (server thread, one slab per slice): copy the resistance of every block in the radius into `BlastGrid`. Unloaded chunks become a wall; the blast never loads a chunk (ICBM-02-95). A GregGuns guard spawner on its origin is copied as stone (resistance 6) instead of GregTech's `harderMobSpawner` value, so warheads destroy guard posts (D274).
 3. **Cast** (worker thread): `BlastRayCaster` returns the reached cells, each once, nearest first.
 4. **Decide** (server thread, slices, see [Incremental crater](#incremental-crater-i3)): post `ExplosionEvent.Detonate` with the cell list and the victim list, a batch at a time; listeners may remove from either. Hurt the remaining victims on the damage ramp (or annihilate, see [annihilation](annihilation.md)). Every victim in the radius is also pushed away from the center on the same ramp (`Knockback`: 2.0 blocks per tick in the core, zero at the radius, reduced by knockback resistance; players get the vanilla push packet with no blocks). Knockback is part of the shared engine, so no blast type adds its own. Keep the surviving cells in order.
 5. **Apply** (server thread, slices under the shared budget): break 48 blocks per slice through `ProjectileExplosion.breakBlock`, skipping unloaded cells. No drops unless `icbm.blastDrops`.
@@ -86,7 +86,7 @@ Each blast copies a `(2R+1)^3` cube of 2-byte cells (about 3 bytes with the resu
 
 ## Tests
 
-Units: `BlastRayCasterTest`, `BlastSchedulerTest`, `BlastJobStateTest`, `DamageRampTest`, `KnockbackTest`, `TerrainRuleTest`. Scenarios: `icbm.blast.pipeline` (every explosive, three modes: allowed, the tier switch off, listener veto; `explosions.blockDamage` is set off in the allowed mode to prove it is ignored), `icbm.blast.budget` (three radius-18 blasts at once, worst tick against the budget), `icbm.blast.save_reload` (saved and reloaded mid-crater; blocks broken equal blocks pending at the save), `icbm.blast.crater_size` (D59), `icbm.blast.effect_veto` (fire and glass). Unit: `GridMemoryTest`.
+Units: `BlastRayCasterTest`, `BlastSchedulerTest`, `BlastJobStateTest`, `DamageRampTest`, `KnockbackTest`, `TerrainRuleTest`. Scenarios: `icbm.blast.pipeline` (every explosive, three modes: allowed, the tier switch off, listener veto; `explosions.blockDamage` is set off in the allowed mode to prove it is ignored), `icbm.blast.budget` (three radius-18 blasts at once, worst tick against the budget), `icbm.blast.save_reload` (saved and reloaded mid-crater; blocks broken equal blocks pending at the save), `icbm.blast.crater_size` (D59), `icbm.blast.effect_veto` (fire and glass), `icbm.blast.spawner_post` (D274: a GregGuns guard post on its origin is stone to a blast; a plain spawner and a moved post keep GregTech's resistance). Unit: `GridMemoryTest`, `BlastGridTest`.
 
 ## Bugs avoided
 

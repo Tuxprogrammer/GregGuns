@@ -23,8 +23,11 @@ class SpawnerNbtTest {
 
     @Test
     void writesEveryVanillaFieldFromTheSettings() {
-        NBTTagCompound t = SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 3);
+        NBTTagCompound t = SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 3, 10, 64, -20);
         assertEquals("MobSpawner", t.getString("id"));
+        assertEquals(10, t.getInteger("x"));
+        assertEquals(64, t.getInteger("y"));
+        assertEquals(-20, t.getInteger("z"));
         assertEquals(40, t.getShort("Delay"));
         assertEquals(100, t.getShort("MinSpawnDelay"));
         assertEquals(120, t.getShort("MaxSpawnDelay"));
@@ -41,7 +44,7 @@ class SpawnerNbtTest {
 
     @Test
     void potentialsAreEvenAndAllMarked() {
-        NBTTagCompound t = SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 3);
+        NBTTagCompound t = SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 3, 10, 64, -20);
         NBTTagList list = t.getTagList("SpawnPotentials", 10);
         assertEquals(2, list.tagCount());
         for (int i = 0; i < list.tagCount(); i++) {
@@ -49,33 +52,35 @@ class SpawnerNbtTest {
             assertEquals(GUARDS.get(i), e.getString("Type"));
             assertEquals(1, e.getInteger("Weight"));
             assertEquals(3, SpawnerData.minDanger(e.getCompoundTag("Properties")));
+            assertTrue(SpawnerData.atOrigin(e.getCompoundTag("Properties"), 10, 64, -20));
         }
         assertEquals(GUARDS, SpawnerNbt.entities(t));
         assertTrue(SpawnerNbt.isMarked(t));
         assertEquals(3, SpawnerNbt.minDanger(t));
+        assertTrue(SpawnerData.atOrigin(t.getCompoundTag("SpawnData"), 10, 64, -20));
     }
 
     @Test
     void entityIdAndSpawnDataNameTheFirstEntry() {
         assertEquals(
             "gregguns.ArmySoldier",
-            SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 0)
+            SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 0, 10, 64, -20)
                 .getString("EntityId"));
         assertEquals(
             "gregguns.Commando",
-            SpawnerNbt.build(GUARDS, 1, SpawnerSettings.STANDARD, 0)
+            SpawnerNbt.build(GUARDS, 1, SpawnerSettings.STANDARD, 0, 10, 64, -20)
                 .getString("EntityId"));
         assertEquals(
             "gregguns.ArmySoldier",
-            SpawnerNbt.build(GUARDS, 6, SpawnerSettings.STANDARD, 0)
+            SpawnerNbt.build(GUARDS, 6, SpawnerSettings.STANDARD, 0, 10, 64, -20)
                 .getString("EntityId"));
         assertEquals(
             "gregguns.Commando",
-            SpawnerNbt.build(GUARDS, -1, SpawnerSettings.STANDARD, 0)
+            SpawnerNbt.build(GUARDS, -1, SpawnerSettings.STANDARD, 0, 10, 64, -20)
                 .getString("EntityId"));
         assertTrue(
             SpawnerData.isFromSpawner(
-                SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 0)
+                SpawnerNbt.build(GUARDS, 0, SpawnerSettings.STANDARD, 0, 10, 64, -20)
                     .getCompoundTag("SpawnData")));
     }
 
@@ -92,6 +97,6 @@ class SpawnerNbtTest {
     void noEntityIsRefused() {
         assertThrows(
             IllegalArgumentException.class,
-            () -> SpawnerNbt.build(Collections.<String>emptyList(), 0, SpawnerSettings.STANDARD, 0));
+            () -> SpawnerNbt.build(Collections.<String>emptyList(), 0, SpawnerSettings.STANDARD, 0, 10, 64, -20));
     }
 }

@@ -12,6 +12,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
@@ -28,6 +31,7 @@ import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.config.ExplosionsConfig;
 import com.gregguns.core.config.IcbmConfig;
+import com.gregguns.entity.npc.spawn.SpawnerOrigin;
 import com.gregguns.explosion.Annihilation;
 import com.gregguns.explosion.ExplosionRules;
 import com.gregguns.explosion.ProjectileExplosion;
@@ -301,12 +305,21 @@ final class BlastJob implements BlastTask {
                     .isLiquid()) {
                         grid.set(ox, oy, oz, BlastGrid.encode((float) BlastRayCaster.LIQUID_COST));
                     } else {
-                        // The full-signature resistance, so GregTech's override is used (GGS-04-13).
-                        float res = block.getExplosionResistance(null, world, wx, wy, wz, st.x, st.y, st.z);
+                        // The full-signature resistance, so GregTech's override is used (GGS-04-13); a GregGuns
+                        // guard spawner on its origin counts as stone (D274).
+                        float res = BlastGrid.cellResistance(
+                            block == Blocks.mob_spawner && gregGunsPost(wx, wy, wz),
+                            block.getExplosionResistance(null, world, wx, wy, wz, st.x, st.y, st.z));
                         grid.set(ox, oy, oz, BlastGrid.encode(res));
                     }
             }
         }
+    }
+
+    /** @return true when the mob spawner at the block is a GregGuns spawner on its worldgen origin */
+    private boolean gregGunsPost(int x, int y, int z) {
+        TileEntity t = world.getTileEntity(x, y, z);
+        return t instanceof TileEntityMobSpawner && SpawnerOrigin.markedAtOrigin((TileEntityMobSpawner) t);
     }
 
     private void submitCast() {

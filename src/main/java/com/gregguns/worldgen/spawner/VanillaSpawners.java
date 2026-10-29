@@ -93,11 +93,7 @@ public final class VanillaSpawners implements StructureHooks.SpawnerHook {
         }
         // The first cycle's mob is a function of the position, so regenerating the same spot gives the same spawner.
         int first = (x * 31 + y * 17 + z * 13) & 0xFFFF;
-        NBTTagCompound tag = SpawnerNbt.build(names, first, kind.settings(), RolledCeiling.danger(ceiling));
-        tag.setInteger("x", x);
-        tag.setInteger("y", y);
-        tag.setInteger("z", z);
-        return tag;
+        return SpawnerNbt.build(names, first, kind.settings(), RolledCeiling.danger(ceiling), x, y, z);
     }
 
     /**

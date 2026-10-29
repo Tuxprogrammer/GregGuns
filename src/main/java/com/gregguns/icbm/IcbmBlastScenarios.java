@@ -5,6 +5,9 @@ import java.util.List;
 
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ExplosionEvent;
@@ -15,6 +18,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.entity.npc.spawn.SpawnerOrigin;
 import com.gregguns.explosion.PackExplosionProbe;
 import com.gregguns.icbm.blast.BlastEngine;
 import com.gregguns.icbm.explosive.BlastContext;
@@ -24,14 +28,16 @@ import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.ExplosiveTier;
 import com.gregguns.icbm.explosive.Explosives;
 import com.gregguns.icbm.explosive.IcbmBlasts;
+import com.gregguns.worldgen.spawner.SpawnerKind;
+import com.gregguns.worldgen.spawner.VanillaSpawners;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Scenarios of the blast engine (I1): every registered explosive detonates through the shared pipeline and respects
  * protection and the per-tier terrain switch (D52); several large blasts at once stay within the tick budget; a blast
- * survives a save and a reload. Dev environment only, server side. They register hidden test explosives that the
- * registry's {@code all()} does not list.
+ * survives a save and a reload; a GregGuns guard post is stone to a blast (D274). Dev environment only, server side.
+ * They register hidden test explosives that the registry's {@code all()} does not list.
  */
 // Spec: docs/ROADMAP-ICBM.md (I1 exit gate); docs/gregguns-icbm-spec/02-explosives/blast-engine.md
 final class IcbmBlastScenarios {
@@ -82,6 +88,7 @@ final class IcbmBlastScenarios {
         registry.register(PackExplosionProbe.skipIfProtected(new SaveReload()));
         registry.register(PackExplosionProbe.skipIfProtected(new CraterSize()));
         registry.register(PackExplosionProbe.skipIfProtected(new EffectVeto()));
+        registry.register(PackExplosionProbe.skipIfProtected(new SpawnerPost()));
     }
 
     /** Counts the hook calls, so a scenario can see the effect ran on the shared pipeline. */
@@ -784,6 +791,118 @@ final class IcbmBlastScenarios {
                 }
             }
             return n;
+        }
+    }
+
+    // ---- 6. a GregGuns guard post is stone to a blast; other spawners keep the pack's resistance (D274) ----
+
+    private static final class SpawnerPost implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.blast.spawner_post";
+        }
+
+        @Override
+        public String description() {
+            return "A radius-8 blast in a stone slab with three mob spawners 3 blocks from the center: a Silo Guard"
+                + " Post on its origin is destroyed and the stone behind it goes too; a plain vanilla spawner and a"
+                + " post moved off its origin keep the pack's resistance and stand when GregTech's harderMobSpawner"
+                + " is on (D274).";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 24;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final World w = ctx.world();
+            final int cx = ctx.originX();
+            final int cy = ctx.originY() + 14;
+            final int cz = ctx.originZ();
+            final int half = 11;
+            final int sy = cy - 1;
+            if (VanillaSpawners.nbt(SpawnerKind.SILO_GUARD, cx, sy, cz, 0) == null) {
+                return ScenarioResult.skip(name(), "the silo guard NPCs are not registered (npcs module off)");
+            }
+            final boolean savedBlockDamage = ExplosionsConfig.blockDamage;
+            final boolean[] savedTerrain = saveTerrain();
+            restoreTerrain(new boolean[] { true, true, true, true });
+            for (int x = cx - half; x <= cx + half; x++) {
+                for (int z = cz - half; z <= cz + half; z++) {
+                    for (int y = cy - half; y < cy + half; y++) {
+                        w.setBlock(x, y, z, y < cy ? Blocks.stone : Blocks.air, 0, 2);
+                    }
+                }
+            }
+            // East: a post on its origin. West: a plain vanilla spawner. South: a post whose origin is elsewhere.
+            VanillaSpawners.placeInWorld(w, SpawnerKind.SILO_GUARD, cx + 3, sy, cz, 0);
+            w.setBlock(cx - 3, sy, cz, Blocks.mob_spawner, 0, 2);
+            TileEntity plain = w.getTileEntity(cx - 3, sy, cz);
+            if (plain instanceof TileEntityMobSpawner) {
+                ((TileEntityMobSpawner) plain).func_145881_a()
+                    .setEntityName("Zombie");
+            }
+            NBTTagCompound away = VanillaSpawners.nbt(SpawnerKind.SILO_GUARD, cx + 100, sy, cz + 3, 0);
+            away.setInteger("x", cx);
+            away.setInteger("z", cz + 3);
+            w.setBlock(cx, sy, cz + 3, Blocks.mob_spawner, 0, 2);
+            w.setTileEntity(cx, sy, cz + 3, TileEntity.createAndLoadEntity(away));
+            final boolean harder = Blocks.mob_spawner.getExplosionResistance(null) > 1000.0F;
+            out.check(
+                SpawnerOrigin.markedAtOrigin((TileEntityMobSpawner) w.getTileEntity(cx + 3, sy, cz)),
+                "the east post stands on its origin");
+            out.check(
+                !SpawnerOrigin.markedAtOrigin((TileEntityMobSpawner) w.getTileEntity(cx, sy, cz + 3)),
+                "the south post is off its origin");
+            ExplosionsConfig.blockDamage = false;
+            BlastEngine.instance()
+                .clear();
+            final Runnable restore = () -> {
+                restoreTerrain(savedTerrain);
+                ExplosionsConfig.blockDamage = savedBlockDamage;
+                for (int x = cx - half; x <= cx + half; x++) {
+                    for (int z = cz - half; z <= cz + half; z++) {
+                        for (int y = cy - half; y < cy + half; y++) {
+                            w.setBlock(x, y, z, Blocks.air, 0, 2);
+                        }
+                    }
+                }
+            };
+            if (!IcbmBlasts.detonate(w, cx + 0.5, cy + 0.5, cz + 0.5, sphere, sphere.maxFill(), null)) {
+                restore.run();
+                return out.check(false, "the blast should be accepted")
+                    .build();
+            }
+            return ScenarioResult.pending(name(), 1200, ticks -> {
+                BlastEngine engine = BlastEngine.instance();
+                if (!engine.lastBlastDone() && ticks < 1100) {
+                    return null;
+                }
+                try {
+                    out.check(
+                        engine.lastBlastDone(),
+                        "the blast should finish (stage " + engine.lastBlastStage() + ")");
+                    engine.clear();
+                    out.check(w.getBlock(cx + 3, sy, cz) == Blocks.air, "the post on its origin is destroyed");
+                    out.check(
+                        w.getBlock(cx + 5, sy, cz) == Blocks.air,
+                        "the stone behind the post is broken (the blast passes through)");
+                    if (harder) {
+                        out.check(w.getBlock(cx - 3, sy, cz) == Blocks.mob_spawner, "the plain spawner stands");
+                        out.check(w.getBlock(cx, sy, cz + 3) == Blocks.mob_spawner, "the moved post stands");
+                    } else {
+                        out.note(
+                            "harderMobSpawner is off: every spawner has vanilla resistance; foreign checks skipped");
+                    }
+                    return out.build();
+                } finally {
+                    restore.run();
+                }
+            });
         }
     }
 }

@@ -299,7 +299,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Abandoned Missile Silos** (D17, D128): a flat underground complex of about 240 x 240 blocks, with a hub, major and minor halls, 35 to 40 rooms and a gallery of four to ten real silos (reshaped in I6b, D229). The silo shafts take the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
 - **Real machines in the rooms** (D129), within the D38 ceiling; reviewed at the beta playthrough.
 - **Activity levels** (D36): abandoned, partly abandoned and operational, each with its own damage pass built into the layout.
-- **A silo guard spawner block** with shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
+- **Silo guard posts**, vanilla mob spawners of shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
 - **Loot ceilings and planet silos** (D38):
   - the Overworld caps at EV;
   - silos generate on every Galacticraft, GalaxySpace and Amun-Ra planet with solid ground, with the ceiling rising one tier per rocket tier (Moon EV, up to T9 at UMV);

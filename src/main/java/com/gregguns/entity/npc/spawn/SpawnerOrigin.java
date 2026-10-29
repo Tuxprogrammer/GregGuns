@@ -22,6 +22,11 @@ import net.minecraft.world.chunk.Chunk;
  * {@link #canSpawnFromSpawner}, which keeps peaceful, collision and liquid checks and drops the light checks. Natural
  * spawning, spawn eggs and plain vanilla spawners keep the full vanilla rules. The scan reads only loaded chunks and
  * never loads one. Server side.
+ *
+ * <p>
+ * A marked spawner counts only while it stands on the block worldgen placed it at ({@link #markedAtOrigin}): a
+ * spawner carried elsewhere with its NBT (a JABBA diamond dolly) is a plain vanilla spawner of its mob, with the light
+ * rules, no danger floor and no blast exception.
  */
 // Spec: docs/gregguns-spec/10-entities-npcs/spawning.md (spawner NPCs)
 // Source: Minecraft 1.7.10 MobSpawnerBaseLogic#updateSpawner (setLocationAndAngles, getCanSpawnHere, then
@@ -68,7 +73,7 @@ public final class SpawnerOrigin {
                 for (TileEntity t : chunk.chunkTileEntityMap.values()) {
                     if (t instanceof TileEntityMobSpawner && !t.isInvalid()
                         && SpawnerData.inSpawnBox(npc.posX - t.xCoord, npc.posY - t.yCoord, npc.posZ - t.zCoord)
-                        && spawnsMarked(((TileEntityMobSpawner) t).func_145881_a(), name)) {
+                        && spawnsMarked((TileEntityMobSpawner) t, name)) {
                         return true;
                     }
                 }
@@ -78,17 +83,62 @@ public final class SpawnerOrigin {
     }
 
     /**
-     * @param logic a spawner's logic
-     * @param name  an entity name
-     * @return true when the spawner's current entry is that entity and carries GregGuns {@link SpawnerData}
+     * @param tile a spawner tile
+     * @param name an entity name
+     * @return true when the spawner's current entry is that entity and the spawner is {@link #markedAtOrigin}
      */
-    public static boolean spawnsMarked(MobSpawnerBaseLogic logic, String name) {
-        MobSpawnerBaseLogic.WeightedRandomMinecart entry = logic.getRandomEntity();
-        if (entry == null || !name.equals(logic.getEntityNameToSpawn())) {
+    public static boolean spawnsMarked(TileEntityMobSpawner tile, String name) {
+        return name.equals(
+            tile.func_145881_a()
+                .getEntityNameToSpawn())
+            && markedAtOrigin(tile);
+    }
+
+    /**
+     * Whether a spawner is a GregGuns spawner on the block worldgen placed it at: its current entry carries
+     * {@link SpawnerData} whose origin is the tile's own position. Every entry of a GregGuns spawner carries the same
+     * data, so the current one stands for all of them.
+     *
+     * @param tile a spawner tile, may be null
+     * @return true for a GregGuns spawner that has not been moved
+     */
+    public static boolean markedAtOrigin(TileEntityMobSpawner tile) {
+        if (tile == null) {
+            return false;
+        }
+        MobSpawnerBaseLogic.WeightedRandomMinecart entry = tile.func_145881_a()
+            .getRandomEntity();
+        if (entry == null) {
             return false;
         }
         NBTTagCompound data = entry.field_98222_b;
-        return SpawnerData.isFromSpawner(data);
+        return SpawnerData.atOrigin(data, tile.xCoord, tile.yCoord, tile.zCoord);
+    }
+
+    /**
+     * Whether an NPC whose merged spawn NBT carries {@link SpawnerData} is being placed by that spawner on its own
+     * origin: the origin is within the spawn box of the NPC, its chunk is loaded, and the tile there is a spawner
+     * {@link #markedAtOrigin}. False for a spawner carried away from its origin, so its NPCs get no danger floor.
+     *
+     * @param npc the NPC, positioned, with a server world
+     * @param tag its merged NBT
+     * @return true when the GregGuns setup applies
+     */
+    public static boolean placedFromOrigin(EntityLiving npc, NBTTagCompound tag) {
+        World world = npc.worldObj;
+        if (world == null || world.isRemote || !SpawnerData.originNear(tag, npc.posX, npc.posY, npc.posZ)) {
+            return false;
+        }
+        NBTTagCompound inner = tag.getCompoundTag(SpawnerData.KEY);
+        int x = inner.getInteger(SpawnerData.ORIGIN_X);
+        int y = inner.getInteger(SpawnerData.ORIGIN_Y);
+        int z = inner.getInteger(SpawnerData.ORIGIN_Z);
+        if (!world.getChunkProvider()
+            .chunkExists(x >> 4, z >> 4)) {
+            return false; // never load a chunk for this
+        }
+        TileEntity t = world.getTileEntity(x, y, z);
+        return t instanceof TileEntityMobSpawner && !t.isInvalid() && markedAtOrigin((TileEntityMobSpawner) t);
     }
 
     /**

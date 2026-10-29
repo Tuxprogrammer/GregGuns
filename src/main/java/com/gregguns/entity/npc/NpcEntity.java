@@ -281,16 +281,23 @@ public class NpcEntity extends EntityMob
     }
 
     /**
-     * A GregGuns vanilla spawner is placing this NPC: its {@code SpawnData} was just read, and the NPC has not joined
-     * the world yet. Does what the spawner's own path skips: the danger (the spawn position's, raised to the spawner's
-     * floor), the Infernal Mobs opt-out (before Infernal sees the join) and the egg-style setup that rolls the
-     * equipment. The key is never written back, so a reload does not repeat this.
+     * A vanilla spawner with GregGuns {@code SpawnData} is placing this NPC: the data was just read, and the NPC has
+     * not joined the world yet. Does what the spawner's own path skips: the egg-style setup that rolls the equipment.
+     * When the spawner stands on its worldgen origin ({@link SpawnerOrigin#placedFromOrigin}) the danger is the spawn
+     * position's raised to the spawner's floor, and the NPC takes the Infernal Mobs opt-out (before Infernal sees the
+     * join). A spawner carried away from its origin acts as a plain vanilla spawner of the NPC at the lowest danger,
+     * 0, so moving a deep post into a base farms nothing better than the weakest gear. The key is never written back,
+     * so a reload does not repeat this.
      *
      * @param tag the merged NBT, holding {@link SpawnerData#KEY}
      */
     private void spawnedBySpawner(NBTTagCompound tag) {
-        setDanger(SpawnerData.danger(NpcSpawnHandler.dangerAt(worldObj, posX, posZ), SpawnerData.minDanger(tag)));
-        InfernalHooks.markSpawnerNpc(this);
+        if (SpawnerOrigin.placedFromOrigin(this, tag)) {
+            setDanger(SpawnerData.danger(NpcSpawnHandler.dangerAt(worldObj, posX, posZ), SpawnerData.minDanger(tag)));
+            InfernalHooks.markSpawnerNpc(this);
+        } else {
+            setDanger(0);
+        }
         onSpawnWithEgg(null);
     }
 
@@ -304,12 +311,18 @@ public class NpcEntity extends EntityMob
     /**
      * Vanilla's rules, except when a GregGuns-marked spawner of this type places the NPC: then the light checks are
      * skipped, so lit complexes and rooms keep their guards (see {@link SpawnerOrigin}). Natural spawns always keep
-     * every rule.
+     * every rule. The cheap peaceful, collision and liquid checks run before the spawner scan, so a spawner that keeps
+     * failing (Peaceful, a cramped post) does not scan the chunks' tile entities every tick.
      */
     @Override
     public boolean getCanSpawnHere() {
-        if (SpawnerOrigin.placedByMarkedSpawner(this, naturalCandidate)) {
-            return SpawnerOrigin.canSpawnFromSpawner(this);
+        if (!naturalCandidate && worldObj != null && !worldObj.isRemote) {
+            if (!SpawnerOrigin.canSpawnFromSpawner(this)) {
+                return false; // vanilla's answer too: these checks are part of it
+            }
+            if (SpawnerOrigin.placedByMarkedSpawner(this, false)) {
+                return true;
+            }
         }
         return super.getCanSpawnHere();
     }
