@@ -327,17 +327,20 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **New room kinds,** furnishing, guard posts at branch points, and loot and marks scaled by room area (D233, D234).
 - **Cost** (D236): a debug line per complex and generation that does not cascade.
 - **Guides:** the `icbm-silos` sheet rebuilt for the new layout, and the silo quest text.
+- **Owner additions during the build:** BiblioCraft furniture in small rooms and a Chisel lab finish (D259 to D263, D272); floor, wall and ceiling are three different blocks in every room, checked after each room is built (D265 to D267); every spawner GregGuns placed is the vanilla mob spawner with NBT (D268 to D271, D273 to D275, design record 0024).
 
 **Exit gate:**
-- [ ] Coverage is at least 75% over many seeds. Unit test.
-- [ ] Silo count follows the 4 to 10 weights, in at most two halls. Unit test.
-- [ ] Every room is reachable on foot, and the room count is 35 to 40. Unit test.
-- [ ] Hub and hall sizes, and the lamp grid, match D230 and D231. Unit test.
-- [ ] The palette resolves with no extra mods, every style resolves, and walls are uniform within a room. Unit test and `icbm.palette.resolve`.
-- [ ] `gregguns test icbm.` with Galacticraft and `worldgen.` report 0 failed, and ICBM turns itself off cleanly without Galacticraft.
-- [ ] Generation cost is measured and does not cascade.
-- [ ] The maps are re-exported and reviewed, and the `icbm-silos` sheet and silo quest text match the layout.
-- [ ] The fix round (layout, generation, alpha fixes, docs) is closed.
+- [x] Coverage is at least 75% over many seeds. Unit test.
+- [x] Silo count follows the 4 to 10 weights, in at most two halls. Unit test.
+- [x] Every room is reachable on foot, and the room count is 35 to 40. Unit test.
+- [x] Hub and hall sizes, and the lamp grid, match D230 and D231. Unit test.
+- [x] The palette resolves with no extra mods, every style resolves, and walls are uniform within a room. Unit test and `icbm.palette.resolve`.
+- [x] `gregguns test icbm.` with Galacticraft and `worldgen.` report 0 failed, and ICBM turns itself off cleanly without Galacticraft.
+- [x] Generation cost is measured and does not cascade.
+- [x] The maps are re-exported and reviewed, and the `icbm-silos` sheet and silo quest text match the layout.
+- [x] The fix round (layout, generation, alpha fixes, docs) is closed.
+- [x] Furniture stays in small rooms with doors and paths clear; every room's floor, wall and ceiling are three different blocks, with 0 audit violations in the real pack.
+- [x] Vanilla spawners spawn armed guards in lit complexes, drop nothing when broken (EnderIO included), and old worlds load without the removed blocks.
 
 ## Alpha gate · 0.4.0-alpha
 
