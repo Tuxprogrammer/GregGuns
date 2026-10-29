@@ -8,6 +8,8 @@ GregGuns is a from-scratch rewrite inspired by [Techguns](https://github.com/pWn
 
 > [!IMPORTANT]
 > **Beta.** [**GregGuns 0.3.3-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) is out for **GTNH 2.9.0-RC-2**. Everything planned for the first full version is in: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins, an optional questbook tab, and now aim down sights, an in-game guide and structures on Ross128. It has been tested inside the real pack. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) list the known issues (one is with shader packs), and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
+>
+> An opt-in preview is also available: [**GregGuns 0.4.0-alpha**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-alpha-pre) is a pre-release that adds the optional ICBM module (warheads, missiles, silos, radars, air defense and abandoned silo complexes). The module is off by default, and the alpha has had far less play than the beta.
 
 ## For players
 
