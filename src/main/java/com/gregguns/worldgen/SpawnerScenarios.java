@@ -734,10 +734,12 @@ public final class SpawnerScenarios {
             if (!Loader.isModLoaded(EnderIoSpawners.MOD_ID)) {
                 return ScenarioResult.skip(name(), "EnderIO is not loaded (real pack only)");
             }
-            ScenarioResult.Builder out = ScenarioResult.builder(name());
-            Rig rig = new Rig(ctx);
-            DropWatcher watcher = new DropWatcher();
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final Rig rig = new Rig(ctx);
+            final DropWatcher watcher = new DropWatcher();
             MinecraftForge.EVENT_BUS.register(watcher);
+            final int x = ctx.originX(), y = ctx.originY(), z = ctx.originZ();
+            final TileEntityMobSpawner post;
             try {
                 for (SpawnerKind kind : SpawnerKind.values()) {
                     for (String name : kind.mobNames()) {
@@ -748,44 +750,56 @@ public final class SpawnerScenarios {
                 rig.playerAt(2.0);
                 rig.player.inventory.currentItem = 0;
                 rig.player.inventory.setInventorySlotContents(0, new ItemStack(Items.diamond_pickaxe));
-
-                // Control: a plain Pig spawner drops a Broken Spawner, so a missing drop below means something.
+                // Control: a plain Pig spawner (vanilla's default entity) drops a Broken Spawner.
                 ctx.setBlock(-3, 0, 0, Blocks.mob_spawner, 0);
-                TileEntity pig = rig.world.getTileEntity(ctx.originX() - 3, ctx.originY(), ctx.originZ());
-                if (pig instanceof TileEntityMobSpawner) {
-                    ((TileEntityMobSpawner) pig).func_145881_a()
-                        .setEntityName("Pig");
-                }
-                watcher.reset();
-                rig.player.theItemInWorldManager.tryHarvestBlock(ctx.originX() - 3, ctx.originY(), ctx.originZ());
-                out.check(watcher.brokenSpawners > 0, "the Pig spawner should drop a Broken Spawner (control)");
-
-                TileEntityMobSpawner post = rig.spawner(SpawnerKind.SILO_ELITE, 0, RolledCeiling.MAX);
-                if (post == null) {
-                    out.check(false, "the post should carry a mob spawner tile");
-                    return out.build();
-                }
-                int before = rig.near(SpawnerKind.SILO_ELITE, 0)
-                    .size();
-                watcher.reset();
-                boolean broke = rig.player.theItemInWorldManager
-                    .tryHarvestBlock(ctx.originX(), ctx.originY(), ctx.originZ());
-                out.check(
-                    broke && rig.world.getBlock(ctx.originX(), ctx.originY(), ctx.originZ()) == Blocks.air,
-                    "the player breaks the post");
-                out.check(watcher.harvests > 0, "the post's harvest should fire HarvestDropsEvent");
-                out.checkEquals("Broken Spawners from the post", 0, watcher.brokenSpawners);
-                out.checkEquals(
-                    "guards burst out of the broken post",
-                    before,
-                    rig.near(SpawnerKind.SILO_ELITE, 0)
-                        .size());
-            } finally {
-                MinecraftForge.EVENT_BUS.unregister(watcher);
-                clearDrops(rig);
-                rig.finish();
+                post = rig.spawner(SpawnerKind.SILO_ELITE, 0, RolledCeiling.MAX);
+            } catch (RuntimeException e) {
+                finish(rig, watcher);
+                throw e;
             }
-            return out.build();
+            if (post == null) {
+                finish(rig, watcher);
+                return out.check(false, "the post should carry a mob spawner tile")
+                    .build();
+            }
+            // Wait a few ticks: placing the post replaced the default tile setBlock made, and the world drops that
+            // invalid tile from its loaded list only on its next tick. EnderIO's non-player drop path scans that list,
+            // so breaking at once would find the stale Pig tile, a case no player meets in a real world.
+            return ScenarioResult.pending(name(), 200, ticks -> {
+                if (ticks < 3) {
+                    return null;
+                }
+                try {
+                    watcher.reset();
+                    rig.player.theItemInWorldManager.tryHarvestBlock(x - 3, y, z);
+                    out.check(
+                        watcher.brokenSpawners > 0,
+                        "the Pig spawner should drop a Broken Spawner (control); drops " + watcher.seen);
+                    int before = rig.near(SpawnerKind.SILO_ELITE, 0)
+                        .size();
+                    watcher.reset();
+                    boolean broke = rig.player.theItemInWorldManager.tryHarvestBlock(x, y, z);
+                    out.check(broke && rig.world.getBlock(x, y, z) == Blocks.air, "the player breaks the post");
+                    out.check(watcher.harvests > 0, "the post's harvest should fire HarvestDropsEvent");
+                    out.check(
+                        watcher.brokenSpawners == 0,
+                        "the post dropped " + watcher.brokenSpawners + " EnderIO item(s): " + watcher.seen);
+                    out.checkEquals(
+                        "guards burst out of the broken post",
+                        before,
+                        rig.near(SpawnerKind.SILO_ELITE, 0)
+                            .size());
+                    return out.build();
+                } finally {
+                    finish(rig, watcher);
+                }
+            });
+        }
+
+        private static void finish(Rig rig, DropWatcher watcher) {
+            MinecraftForge.EVENT_BUS.unregister(watcher);
+            clearDrops(rig);
+            rig.finish();
         }
 
         /**
@@ -827,10 +841,12 @@ public final class SpawnerScenarios {
 
             int harvests;
             int brokenSpawners;
+            final List<String> seen = new ArrayList<>();
 
             void reset() {
                 harvests = 0;
                 brokenSpawners = 0;
+                seen.clear();
             }
 
             @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -842,6 +858,7 @@ public final class SpawnerScenarios {
                     if (id != null && String.valueOf(id)
                         .startsWith(EnderIoSpawners.MOD_ID + ":")) {
                         brokenSpawners++;
+                        seen.add(id + " " + stack.getDisplayName());
                     }
                 }
                 event.drops.clear();
