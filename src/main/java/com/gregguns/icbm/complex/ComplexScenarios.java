@@ -113,7 +113,8 @@ public final class ComplexScenarios {
         out.check(hatchIs(world, cx - rx, y - 1, cz - rz, 'M'), "Maintenance Hatch under it");
         // Clear glass in every other window cell: the row above, under the controller, and (with the Energy Hatch
         // missing) where it would stand.
-        int[][] glass = { { 0, 1, 0 }, { 1, 1, 0 }, { -1, 1, 0 }, { 0, -1, 0 }, { 1, 0, energyThere ? 1 : 0 } };
+        // The cell above the Energy Hatch (column 1, row 1) holds the silo's own Launch Control (D288), not glass.
+        int[][] glass = { { 0, 1, 0 }, { 1, 1, 1 }, { -1, 1, 0 }, { 0, -1, 0 }, { 1, 0, energyThere ? 1 : 0 } };
         for (int[] g : glass) {
             if (g[2] == 1) continue;
             int gx = cx + g[0] * rx, gz = cz + g[0] * rz, gy = y + g[1];

@@ -379,7 +379,9 @@ public final class SiloScenarios {
                             tile(ctx, 1, -1, 0) != null && tile(ctx, 1, -1, 0)
                                 .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance,
                             "the Maintenance Hatch stands on the viewer's left, under the Input Hatch");
-                        for (int[] g : new int[][] { { 0, 1 }, { 0, -1 }, { 1, 1 }, { -1, 1 } }) {
+                        // The window cell above the Energy Hatch (-1, 1) holds the silo's own Launch Control (D288), so
+                        // it is not glass.
+                        for (int[] g : new int[][] { { 0, 1 }, { 0, -1 }, { 1, 1 } }) {
                             out.check(
                                 SiloGlass.accepts(
                                     w.getBlock(x + g[0], y + g[1], z),
