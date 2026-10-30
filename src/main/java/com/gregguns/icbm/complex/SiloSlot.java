@@ -77,6 +77,53 @@ public final class SiloSlot {
         }
     }
 
+    /** The four hatch roles a generated silo carries. */
+    public static final byte[] HATCH_ROLES = { Cell.HATCH_ENERGY, Cell.HATCH_BUS, Cell.HATCH_POWER,
+        Cell.HATCH_MAINTENANCE };
+
+    /**
+     * Where a generated silo's hatch stands, seen by a viewer in front of the controller (the face's window is three
+     * wide and three high with the controller in the middle; the hatches fill the two outer columns of its lower two
+     * rows, glass everywhere else):
+     *
+     * <pre>
+     *   viewer's left          viewer's right
+     *   glass  glass  glass     (y 3)
+     *   Input Hatch  [controller]  Energy Hatch   (y 2)
+     *   Maintenance  glass  Input Bus  (y 1)
+     * </pre>
+     *
+     * @param role one of {@link #HATCH_ROLES}
+     * @return complex-local {x, y, z}, y being the layer above the floor layer 0 (the controller is at y 2)
+     */
+    public int[] hatchCell(byte role) {
+        // This turn puts the low shape column on the viewer's right (see SiloShape.WINDOW_COLUMN_LOW).
+        int right = com.gregguns.icbm.silo.SiloShape.WINDOW_COLUMN_LOW;
+        int left = com.gregguns.icbm.silo.SiloShape.WINDOW_COLUMN_HIGH;
+        int col, y;
+        switch (role) {
+            case Cell.HATCH_ENERGY:
+                col = right;
+                y = 2;
+                break;
+            case Cell.HATCH_BUS:
+                col = right;
+                y = 1;
+                break;
+            case Cell.HATCH_POWER:
+                col = left;
+                y = 2;
+                break;
+            case Cell.HATCH_MAINTENANCE:
+                col = left;
+                y = 1;
+                break;
+            default:
+                throw new IllegalArgumentException("not a hatch role: " + role);
+        }
+        return new int[] { x(col, 0), y, z(col, 0) };
+    }
+
     /** @return complex-local x of the controller (y 2) */
     public int controllerX() {
         return x(2, 0);

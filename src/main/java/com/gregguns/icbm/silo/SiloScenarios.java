@@ -66,6 +66,8 @@ public final class SiloScenarios {
     /** @param registry where to add the scenarios */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Structure());
+        registry.register(new HatchLayout());
+        registry.register(new FormedPad());
         registry.register(new Tiers());
         registry.register(new Refusals());
         registry.register(new T3Launch());
@@ -312,6 +314,251 @@ public final class SiloScenarios {
     }
 
     // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * The owner's layout forms: hatches in the window's outer columns (Energy Hatch and Input Bus on the viewer's
+     * right,
+     * Input Hatch and Maintenance Hatch on the left), glass in the middle column, and concrete or glass in the two
+     * window cells above the hatches.
+     */
+    private static final class HatchLayout implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.hatch_layout";
+        }
+
+        @Override
+        public String description() {
+            return "A silo with the four hatches in the outer columns of the controller's face (Energy Hatch and Input Bus on the viewer's right, Input Hatch and Maintenance Hatch on the left) and clear glass in the middle forms; concrete or glass in the two window corners above the hatches forms; stone there, or a hatch in the middle column, are checked too; the old layout still forms.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            DevStructureBuilder.Outcome first = build(ctx, ItemList.Hatch_Energy_LuV);
+            out.note("first attempt: " + first);
+            int[] stage = { 0 };
+            return ScenarioResult.pending(name(), 600, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                World w = ctx.world();
+                int x = ctx.originX();
+                int y = ctx.originY() + CY;
+                int z = ctx.originZ();
+                switch (stage[0]) {
+                    case 0:
+                        if (!formed(ctx) && ticks < WARMUP + 40) {
+                            return null;
+                        }
+                        out.check(formed(ctx), "the old layout (hatches beside and under the controller) still forms");
+                        out.note(
+                            "arrange: "
+                                + DevStructureBuilder.arrangeSiloHatches(w, x, y, z, ItemList.Hatch_Energy_LuV));
+                        stage[0] = 1;
+                        return null;
+                    case 1: {
+                        out.check(formed(ctx), "the hatches in the outer columns form the silo");
+                        out.check(
+                            tile(ctx, -1, 0, 0) != null && tile(ctx, -1, 0, 0)
+                                .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchEnergy,
+                            "the Energy Hatch stands on the viewer's right (west for a north-facing controller)");
+                        out.check(
+                            tile(ctx, 1, -1, 0) != null && tile(ctx, 1, -1, 0)
+                                .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance,
+                            "the Maintenance Hatch stands on the viewer's left, under the Input Hatch");
+                        for (int[] g : new int[][] { { 0, 1 }, { 0, -1 }, { 1, 1 }, { -1, 1 } }) {
+                            out.check(
+                                SiloGlass.accepts(
+                                    w.getBlock(x + g[0], y + g[1], z),
+                                    w.getBlockMetadata(x + g[0], y + g[1], z)),
+                                "clear glass at window cell " + g[0] + ", " + g[1]);
+                        }
+                        // The owner's build: concrete in the two window cells above the hatches.
+                        w.setBlock(x - 1, y + 1, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        w.setBlock(x + 1, y + 1, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        out.check(formed(ctx), "concrete in the two window corners above the hatches forms the silo");
+                        w.setBlock(x + 1, y + 1, z, Blocks.stone, 0, 2);
+                        out.check(!formed(ctx), "stone in a window corner does not form the silo");
+                        w.setBlock(x + 1, y + 1, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        // Glass stays required in the middle column's cells, and in the side rings beyond the window.
+                        Block glass = w.getBlock(x, y + 1, z);
+                        int glassMeta = w.getBlockMetadata(x, y + 1, z);
+                        w.setBlock(x, y + 1, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        out.check(
+                            !formed(ctx),
+                            "the window's middle column is glass or hatches only: concrete there does not form");
+                        w.setBlock(x, y + 1, z, glass, glassMeta, 2);
+                        w.setBlock(x - 2, y, z + 1, GregTechAPI.sBlockConcretes, 8, 2);
+                        out.check(!formed(ctx), "concrete in a side glass ring does not form the silo");
+                        w.setBlock(x - 2, y, z + 1, glass, glassMeta, 2);
+                        out.check(formed(ctx), "the silo forms again with the glass back");
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    }
+                    default:
+                        return out.build();
+                }
+            });
+        }
+    }
+
+    /**
+     * The shaft floor as a player makes it: nine Galacticraft launch pad blocks that Galacticraft forms into its pad
+     * (the Full block at the center, dummy blocks on the other eight). The silo forms with every state of it.
+     */
+    private static final class FormedPad implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.formed_pad";
+        }
+
+        @Override
+        public String description() {
+            return "A silo whose nine shaft-floor pad blocks are placed one at a time as a player would, until Galacticraft forms the pad (Full block at the center, dummy blocks on the other eight), forms; so does the unformed pad; a buggy pad block (meta 1) or a stone cell in the floor does not.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Block pad = GalacticraftParts.findBlock(GalacticraftParts.PAD);
+            Block full = GalacticraftParts.findBlock(GalacticraftParts.PAD_FULL);
+            Block multi = GalacticraftParts.findBlock(GalacticraftParts.PAD_MULTI);
+            out.check(pad != null && full != null && multi != null, "Galacticraft's three pad blocks resolve");
+            if (pad == null || full == null || multi == null) {
+                return out.build();
+            }
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] since = { 0 };
+            return ScenarioResult.pending(name(), 900, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                World w = ctx.world();
+                int x = ctx.originX();
+                int y = ctx.originY() + CY - 2;
+                int z = ctx.originZ() + 2;
+                switch (stage[0]) {
+                    case 0:
+                        if (!formed(ctx) && ticks < WARMUP + 40) {
+                            return null;
+                        }
+                        out.check(formed(ctx), "the silo forms from the builder's pad blocks");
+                        // Tear the floor out and lay nine pad blocks one at a time.
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlockToAir(x + dx, y, z + dz);
+                            }
+                        }
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 3);
+                            }
+                        }
+                        stage[0] = 1;
+                        since[0] = ticks;
+                        return null;
+                    case 1:
+                        if (w.getBlock(x, y, z) != full && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(
+                            w.getBlock(x, y, z) == full,
+                            "Galacticraft formed the pad: the Full block at the center");
+                        int dummies = 0;
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                if ((dx != 0 || dz != 0) && w.getBlock(x + dx, y, z + dz) == multi) {
+                                    dummies++;
+                                }
+                            }
+                        }
+                        out.check(dummies == 8, "dummy blocks on the other eight: " + dummies);
+                        out.check(formed(ctx), "the silo forms with the formed Galacticraft pad");
+                        // As a player finds it: the pad forms while the silo is unformed (a pane out), the pane goes
+                        // back, and the silo forms by itself with no update-structure click.
+                        stage[0] = 4;
+                        since[0] = ticks;
+                        return null;
+                    case 4:
+                        // Unform the silo, rebuild the pad from nine blocks and put the missing pane back after GC
+                        // has formed it: only the silo's own recheck can notice.
+                        w.setBlock(x + 1, y + 4, z - 2, Blocks.stone, 0, 2);
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlockToAir(x + dx, y, z + dz);
+                            }
+                        }
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 3);
+                            }
+                        }
+                        stage[0] = 5;
+                        since[0] = ticks;
+                        return null;
+                    case 5:
+                        if (w.getBlock(x, y, z) != full && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(w.getBlock(x, y, z) == full, "Galacticraft formed the pad again");
+                        out.check(!formed(ctx), "the silo is unformed with a stone block in the wall");
+                        w.setBlock(x + 1, y + 4, z - 2, GregTechAPI.sBlockConcretes, 8, 2);
+                        stage[0] = 6;
+                        since[0] = ticks;
+                        return null;
+                    case 6: {
+                        boolean controller = silo(ctx) != null && silo(ctx).isFormed();
+                        if (!controller && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(controller, "the silo's controller reports formed by itself within 200 ticks");
+                        stage[0] = 2;
+                        return null;
+                    }
+                    case 2:
+                        // The unformed state: a lone block of the pad in each cell, no Galacticraft forming.
+                        w.setBlockToAir(x, y, z);
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 2);
+                            }
+                        }
+                        out.check(formed(ctx), "the silo forms with the nine unformed pad blocks");
+                        w.setBlock(x + 1, y, z + 1, pad, 1, 2);
+                        out.check(!formed(ctx), "a buggy fueling pad block in the floor does not form the silo");
+                        w.setBlock(x + 1, y, z + 1, Blocks.stone, 0, 2);
+                        out.check(!formed(ctx), "a stone block in the pad floor does not form the silo");
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    default:
+                        return out.build();
+                }
+            });
+        }
+    }
 
     /** The Energy Hatch tier sets the missiles the silo launches, and the silo's factors apply (D70). */
     private static final class Tiers implements Scenario {

@@ -186,6 +186,7 @@ public final class ComplexRaster {
                     cell = Cell.SILO_CONCRETE;
                     break;
                 case 'G':
+                case 'W':
                     cell = Cell.SILO_GLASS;
                     break;
                 case 'B':
@@ -203,11 +204,11 @@ public final class ComplexRaster {
             }
             set(s.x(c, a), 11 - r, s.z(c, a), cell);
         }
-        // Hatches around the controller (column 2, y 2, front aisle): bus and maintenance beside it, energy and power
-        // below.
-        set(s.x(1, 0), 2, s.z(1, 0), Cell.HATCH_BUS);
-        set(s.x(3, 0), 2, s.z(3, 0), Cell.HATCH_MAINTENANCE);
-        set(s.x(3, 0), 1, s.z(3, 0), Cell.HATCH_POWER);
-        if (s.missing() != MissingPart.ENERGY_HATCH) set(s.x(2, 0), 1, s.z(2, 0), Cell.HATCH_ENERGY);
+        // The hatches stand in the window's outer columns, two high, so the missile shows through the middle.
+        for (byte role : SiloSlot.HATCH_ROLES) {
+            if (role == Cell.HATCH_ENERGY && s.missing() == MissingPart.ENERGY_HATCH) continue;
+            int[] at = s.hatchCell(role);
+            set(at[0], at[1], at[2], role);
+        }
     }
 }

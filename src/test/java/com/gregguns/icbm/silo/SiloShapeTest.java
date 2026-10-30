@@ -34,7 +34,8 @@ class SiloShapeTest {
 
     @Test
     void theBlockCountsMatchTheSheet() {
-        assertEquals(35, SiloShape.count("G"));
+        assertEquals(35, SiloShape.count("G") + SiloShape.count("W"));
+        assertEquals(6, SiloShape.count("W"));
         assertEquals(12 * 7, SiloShape.count("C"));
         assertEquals(9, SiloShape.count("P"));
         assertEquals(12, SiloShape.count("F"));
@@ -61,7 +62,9 @@ class SiloShapeTest {
         String[][] p = SiloShape.piece();
         for (int r = 8; r <= 10; r++) {
             assertTrue(
-                p[0][r].contains("G") && p[4][r].contains("G") && p[2][r].startsWith("G") && p[2][r].endsWith("G"));
+                (p[0][r].contains("G") || p[0][r].contains("W")) && p[4][r].contains("G")
+                    && p[2][r].startsWith("G")
+                    && p[2][r].endsWith("G"));
         }
     }
 

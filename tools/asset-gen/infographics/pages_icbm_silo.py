@@ -54,9 +54,10 @@ def silo_cells() -> dict:
     return cells
 
 
-# Where the sheet shows each hatch: in the glass rings or the floor's outer ring.
-HATCHES = [((0, 1, 2), "input_bus", LEFT), ((4, 1, 2), "input_hatch", RIGHT), ((2, 0, 4), "energy_hatch", BACK),
-           ((3, 1, 0), "maintenance_hatch", FRONT)]
+# Where the sheet shows each hatch: the two outer columns of the controller's face, two high, so the missile shows through
+# the middle. Seen from the front: Input Hatch and Maintenance Hatch on the left, Energy Hatch and Input Bus on the right.
+HATCHES = [((1, 2, 0), "input_hatch", FRONT), ((1, 1, 0), "maintenance_hatch", FRONT),
+           ((3, 2, 0), "energy_hatch", FRONT), ((3, 1, 0), "input_bus", FRONT)]
 
 
 def silo_build() -> S.Build:
@@ -226,7 +227,7 @@ def silo() -> str:
 <div class="req"><div class="t" style="grid-column:1/3"><b>{n_glass + 1} Clear Glass</b> &middot; the three rings above the floor, so the missile shows. Use Tinkers&#39; Construct Clear Glass or EnderIO Quite Clear Glass, mixed freely; no other glass fits. Hatches and the controller replace glass panes</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>{n_beam} Gantry Beam</b> &middot; the rim on top</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>1 Missile Silo controller</b> (HV) &middot; middle of the front wall, in the middle glass ring; it faces away from the shaft</div></div>
-<div class="label" style="margin:14px 0 4px">Hatches &middot; go anywhere except the top rim and the pad: in the walls, the glass rings or the floor&#39;s outer ring</div>{hatch_rows}</div></div>
+<div class="label" style="margin:14px 0 4px">Hatches &middot; best in the face&#39;s outer columns; any wall, glass or floor-ring cell works</div>{hatch_rows}</div></div>
 <h2 style="margin:24px 0 12px">Layer by layer</h2>
 <div class="card" style="display:flex;justify-content:space-around;gap:10px;padding:22px 14px">{layers}</div>
 <div class="muted" style="font-size:16px;margin-top:8px">Dark squares are the open shaft; light blue is glass; silver is the launch pad. The front wall is the top row. Looking down from above.</div>

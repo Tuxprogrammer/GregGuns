@@ -453,13 +453,14 @@ def silo_front(missing: str | None) -> Path:
     b.hatches = []
     gc = S._casing("gantry_casing")
     b.blocks[(2, 2, 0)] = "casing" if missing == "controller" else ("ctrl", FRONT)
-    b.hatch((1, 2, 0), "input_bus", FRONT, gc)
-    b.hatch((3, 2, 0), "maintenance_hatch", FRONT, gc)
-    b.hatch((3, 1, 0), "input_hatch", FRONT, gc)
+    # Seen from the front: Input Hatch and Maintenance Hatch on the left, Energy Hatch and Input Bus on the right.
+    b.hatch((1, 2, 0), "input_hatch", FRONT, gc)
+    b.hatch((1, 1, 0), "maintenance_hatch", FRONT, gc)
+    b.hatch((3, 1, 0), "input_bus", FRONT, gc)
     if missing != "hatch":
-        b.hatch((2, 1, 0), "energy_hatch", FRONT, gc)
+        b.hatch((3, 2, 0), "energy_hatch", FRONT, gc)
     else:
-        b.blocks[(2, 1, 0)] = "glass"
+        b.blocks[(3, 2, 0)] = "glass"
     return SILO.render(b, yaw=-22, pitch=22, ppu=84, ground=False, missile=False, marks=True, cut=lambda x, y, z: y > 3 or z > 1)
 
 
@@ -798,7 +799,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="card"><div class="pt" style="margin-bottom:10px">Every silo in a complex is a real <b>Missile Silo</b>, built from the same structure you would build yourself, with its bus and hatches in place. Each is missing <b>exactly one part</b>. Put it back and the silo forms.</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
 <div style="text-align:center"><div class="spot">{img(front[0], h=250)}</div><div class="cap"><b style="color:var(--txt)">No controller.</b> A concrete block stands in the middle of the front wall.</div></div>
-<div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A clear glass block stands under where the controller is.</div></div>
+<div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A clear glass block stands where the Energy Hatch goes, beside the controller.</div></div>
 <div style="text-align:center"><div class="spot">{img(front[2], h=250)}</div><div class="cap"><b style="color:var(--txt)">Repaired.</b> The controller (blue ring) and the hatches (orange rings) in their places.</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:16px">
 <div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> An operational complex always has an elite post at each silo walkway, and a partly abandoned one often does. Mine their spawners (slow by hand), blow them up with a warhead, or fight what they spawn.</div></div>

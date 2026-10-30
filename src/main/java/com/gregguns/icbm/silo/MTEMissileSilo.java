@@ -2,6 +2,7 @@ package com.gregguns.icbm.silo;
 
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.lazy;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
 import static gregtech.api.enums.HatchElement.Energy;
 import static gregtech.api.enums.HatchElement.InputBus;
@@ -215,6 +216,18 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                         .casingIndex(casingIndex)
                         .hint(2)
                         .buildAndChain(SiloGlass.element()))
+                // TODO(integration): the Launch Control agent adds SiloLaunchControl.ELEMENT to this atLeast list
+                // too; its canonical cell is the front aisle, shape row 8, WINDOW_COLUMN_LOW (the viewer's right, one
+                // above the controller), which the generated and the dev layouts leave free.
+                // The window edges of the controller's face (the columns either side of the controller): glass, the
+                // wall's concrete or a hatch, so hatches can stand in the outer columns with the glass in the middle.
+                .addElement(
+                    'W',
+                    buildHatchAdder(MTEMissileSilo.class)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .casingIndex(casingIndex)
+                        .hint(2)
+                        .buildAndChain(ofChain(SiloGlass.element(), SiloConcrete.element())))
                 .addElement('P', com.gregguns.icbm.compat.GalacticraftPads.element())
                 .addElement('B', casing(GregGunsCasings.GANTRY_BEAM))
                 .build();
@@ -382,6 +395,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
 
     // --- the doors (D89) ---------------------------------------------------------------------------------------------
 
+    /** How often an unformed silo asks GT to check its structure again, ticks. */
+    private static final int STRUCTURE_RECHECK_TICKS = 40;
+
     @Override
     public void onPostTick(IGregTechTileEntity base, long tick) {
         super.onPostTick(base, tick);
@@ -390,6 +406,14 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         World w = base.getWorld();
         if (!mMachine) {
+            // GT never hears of a block changing inside the shaft floor, and Galacticraft turns nine pad blocks into
+            // its formed pad (a Full block and dummy blocks) without a neighbor update the controller sees, so an
+            // unformed silo rechecks itself on a slow timer: the next tick runs GT's own structure check.
+            // Source: MTEMultiBlockBase#onPostTick runs checkStructure when --mUpdate reaches 0:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEMultiBlockBase.java#L619-L631
+            if (tick % STRUCTURE_RECHECK_TICKS == 0 && mUpdate <= 0) {
+                mUpdate = 1;
+            }
             // A freshly loaded silo is unformed until its first structure check; only a lasting gap counts (D90).
             if (++unformedTicks >= UNFORMED_GRACE_TICKS) {
                 comeApart(w);
@@ -1164,7 +1188,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             .addInputHatch(lang("structure.hatch"), 1)
             .addEnergyHatch(lang("structure.hatch"), 1)
             .addMaintenanceHatch(lang("structure.hatch"), 1)
-            .addCasing(Integer.toString(SiloShape.count("G")), lang("structure.glass"), false)
+            .addCasing(Integer.toString(SiloShape.count("G") + SiloShape.count("W")), lang("structure.glass"), false)
             .addCasing(Integer.toString(SiloShape.count("B")), lang("structure.rim"), false)
             .addAir(lang("structure.shaft"))
             .addStructureInfo(lang("structure.footer"))

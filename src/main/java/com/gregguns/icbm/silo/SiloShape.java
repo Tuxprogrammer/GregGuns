@@ -16,7 +16,9 @@ package com.gregguns.icbm.silo;
  * either the nine unformed blocks or the formed pad), {@code G} clear glass
  * (Tinkers' Clear Glass or EnderIO's Quite Clear Glass, see {@link SiloGlass}) where a hatch or the controller may
  * replace it (the three rings just above the floor), {@code B} Gantry Beam (the rim), {@code ~} controller, a space
- * means anything. The
+ * means anything. {@code W} is a window-edge cell of the controller's face (the left and right columns of the glass
+ * window): clear glass, or the wall's concrete, or a hatch (the owner's build puts hatches in these two columns and
+ * concrete above them, so the missile shows through the middle column). The
  * 3x3 shaft is also spaces, not "air", so a body
  * stacked by hand in it does not unform the silo; the missile's own climb check keeps the way up clear.
  *
@@ -47,6 +49,16 @@ public final class SiloShape {
     /** The fewest casing blocks (C and F) the silo needs to form; the rest of the positions may be hatches. */
     public static final int CASING_MINIMUM = 84;
 
+    /**
+     * The window-edge columns of the controller's face (counted from the left of the shape). The world-generation
+     * turn ({@code SiloSlot}) puts the low column on the right of a viewer standing in front of the controller, so the
+     * Energy Hatch, built on {@link #WINDOW_COLUMN_LOW}, is on that viewer's right and the Maintenance Hatch, on
+     * {@link #WINDOW_COLUMN_HIGH}, on the left.
+     */
+    public static final int WINDOW_COLUMN_LOW = 1;
+    /** See {@link #WINDOW_COLUMN_LOW}. */
+    public static final int WINDOW_COLUMN_HIGH = 3;
+
     /** The silo, one fixed piece. */
     // spotless:off
     public static final String[][][] PIECES = { SILO() };
@@ -61,9 +73,9 @@ public final class SiloShape {
             " CCC ",
             " CCC ",
             " CCC ",
-            " GGG ",
-            " G~G ",
-            " GGG ",
+            " WGW ",
+            " W~W ",
+            " WGW ",
             " FFF " },
           { "B   B",
             "C   C",
@@ -149,9 +161,12 @@ public final class SiloShape {
         return count("CF");
     }
 
-    /** @return the number of positions where a hatch may go (D117): walls, glass, the floor ring and the controller */
+    /**
+     * @return the number of positions where a hatch may go (D117): walls, glass (window edges too), the floor ring and
+     *         the controller
+     */
     public static int hatchPositions() {
-        return count("C") + count("G") + count("F") + count("~");
+        return count("C") + count("G") + count("W") + count("F") + count("~");
     }
 
     /**

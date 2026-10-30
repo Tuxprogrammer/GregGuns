@@ -51,6 +51,15 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - The Missile Silo no longer starts a mating cycle or a fuel pump without power. With no EU in its Energy Hatch it used to take the body, warhead or fuel, power-fail on the first tick and switch itself back on, over and over. It now takes nothing, shows "No power" in its status line, and starts by itself once the hatch holds enough EU.
 
 - Silo complex lights are always light-emitting blocks. A lit lamp is Chisel light stone or glowstone and is checked to give light when the palette resolves it, and a dead lamp is never a Chisel Technical vent. The vents are a sparse accent in the ceilings of plant rooms, halls, bunkers and granite halls, never a light. The role audit now reports a lit lamp that gives no light.
+
+## Silo hatches moved to the outer columns
+
+- A generated silo's four hatches now stand in the two outer columns of the controller's face, two high, and the rest of the glass window is clear glass, so the missile shows through the middle. From the gallery: the Input Hatch over the Maintenance Hatch on the left, the Energy Hatch over the Input Bus on the right.
+- A Missile Silo you build accepts the same layout: the cells either side of the controller in the three front glass rings take clear glass, a hatch or the wall's concrete.
+
+## Fixed
+
+- A Missile Silo whose pad Galacticraft forms after the rest is built now forms by itself within a couple of seconds. It used to stay "incomplete" until the player clicked Update Structure.
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.
 - Abandoned houses and other structures no longer place Chisel glass panes (and gold blocks) at a variant Chisel does not define, which showed the ERROR texture. They use Chisel's borderless pane and large-ingot gold now, and any Chisel block at an undefined variant is replaced by its vanilla stand-in.
 
