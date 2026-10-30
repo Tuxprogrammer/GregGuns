@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import com.gregguns.core.config.NpcConfig;
 import com.gregguns.entity.npc.ai.EntityAIGunAttack;
 import com.gregguns.entity.npc.ai.EntityAIHurtByFaction;
 import com.gregguns.entity.npc.ai.EntityAINpcMelee;
@@ -318,6 +319,9 @@ public class NpcEntity extends EntityMob
      */
     @Override
     public boolean getCanSpawnHere() {
+        if (!NpcSpawnGate.allowed(NpcMob.byName(EntityList.getEntityString(this)))) {
+            return false; // the kind's npcs.* flag is off
+        }
         if (!naturalCandidate && worldObj != null && !worldObj.isRemote) {
             if (!SpawnerOrigin.canSpawnFromSpawner(this)) {
                 return false; // vanilla's answer too: these checks are part of it
@@ -355,7 +359,7 @@ public class NpcEntity extends EntityMob
         // Difficulty damage once, here; the NPC-to-player factor is applied at the hit by DamageSources.hit.
         for (ShotOffset offset : offsets) {
             Projectiles.launcher()
-                .launch(worldObj, this, stats, offset, (float) scaling.damageFactor());
+                .launch(worldObj, this, stats, offset, NpcFiring.damageScale(scaling, NpcConfig.gunDamageEnabled));
         }
         GunSoundPlayer.playFire(this, gun.fireEvent(), null);
         swingItem();

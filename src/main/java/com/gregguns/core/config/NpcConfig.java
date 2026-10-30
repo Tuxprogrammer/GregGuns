@@ -25,16 +25,20 @@ public class NpcConfig {
     @Config.Comment({ "Bandits spawn naturally.", "Default: true." })
     public static boolean bandits = true;
 
-    @Config.Comment({ "Mini-bosses (Psycho Steve, Dictator Dave) may spawn.", "Default: true." })
+    @Config.Comment({
+        "Mini-bosses (Psycho Steve, Dictator Dave) may spawn: naturally, from eggs and from camps. Off, none does.",
+        "Default: true." })
     public static boolean miniBosses = true;
 
-    @Config.Comment({ "Super Mutants may spawn (camps and eggs).", "Default: true." })
+    @Config.Comment({ "Super Mutants may spawn (camps, eggs and spawners). Off, none does.", "Default: true." })
     public static boolean mutants = true;
 
-    @Config.Comment({ "Alien Bugs may spawn (spawner block and egg).", "Default: true." })
+    @Config.Comment({
+        "Alien Bugs may spawn (spawner block and egg). Off, the spawner stays idle and the egg does nothing.",
+        "Default: true." })
     public static boolean alienBug = true;
 
-    @Config.Comment({ "The Cyberdemon may spawn (egg and command only).", "Default: true." })
+    @Config.Comment({ "The Cyberdemon may spawn (egg and command only). Off, the egg does nothing.", "Default: true." })
     public static boolean cyberdemon = true;
 
     @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: true." })

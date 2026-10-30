@@ -73,6 +73,15 @@ public final class NpcFiring {
     private NpcFiring() {}
 
     /**
+     * The damage multiplier an NPC passes to the launcher: the scaling's factor, or 0 when
+     * {@code npcs.gunDamageEnabled}
+     * is off (the bullets still fly but hurt nothing).
+     */
+    public static float damageScale(Scaling scaling, boolean gunDamageEnabled) {
+        return gunDamageEnabled ? (float) scaling.damageFactor() : 0.0F;
+    }
+
+    /**
      * Difficulty factors. Turrets use 1.0 for both; other NPCs use {@link #NPC_DAMAGE_SCALE} times the difficulty
      * damage factor, and the difficulty accuracy factor once.
      */

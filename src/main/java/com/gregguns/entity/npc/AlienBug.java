@@ -131,6 +131,9 @@ public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSour
      */
     @Override
     public boolean getCanSpawnHere() {
+        if (!NpcSpawnGate.allowed(NpcMob.ALIEN_BUG)) {
+            return false; // npcs.alienBug is off: no spawner, camp or natural spawn
+        }
         if (!naturalCandidate && worldObj != null && !worldObj.isRemote) {
             if (!SpawnerOrigin.canSpawnFromSpawner(this)) {
                 return false; // vanilla's answer too: these checks are part of it

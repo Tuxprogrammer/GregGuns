@@ -164,12 +164,16 @@ public class ItemNpcEgg extends Item implements Tiered {
      * @param y       feet Y
      * @param z       feet Z
      * @param tagName the name tag to apply, or null
-     * @return the spawned entity, or null if the mob is unknown, unregistered or the world refused it
+     * @return the spawned entity, or null if the mob is unknown, unregistered, switched off by its {@code npcs} flag or
+     *         refused by the world
      */
     public static Entity spawn(World world, NpcMob mob, double x, double y, double z, String tagName) {
         if (mob == null || !NpcRegistry.isRegistered(mob)) {
             GregGuns.LOG.warn("Spawn egg for an unregistered NPC kind: {}", mob);
             return null;
+        }
+        if (!NpcSpawnGate.allowed(mob)) {
+            return null; // its npcs.* flag is off: nothing spawns and the egg is kept
         }
         Entity entity = EntityList.createEntityByName(mob.fullName(), world);
         if (entity == null) {

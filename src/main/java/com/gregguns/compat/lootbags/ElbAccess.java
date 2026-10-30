@@ -95,7 +95,7 @@ final class ElbAccess {
                 .getField("LootGroupHandler")
                 .get(null);
             if (handler == null) {
-                // ELB sets the handler in its preInit; GregGuns must load after it (mcmod.info "dependencies").
+                // ELB sets the handler in its preInit; GregGuns must load after it (the @Mod dependencies string).
                 com.gregguns.GregGuns.LOG.error("EnhancedLootBags has not run its preInit yet; no GregGuns loot bags");
                 return null;
             }
