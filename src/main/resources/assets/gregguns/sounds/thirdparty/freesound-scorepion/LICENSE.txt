@@ -1,0 +1,6 @@
+minigun_spin_up.ogg and minigun_spin_down.ogg are cut from "minigun.mp3" by scorepion
+(https://freesound.org/people/scorepion/sounds/424917/), published under Creative Commons CC0 1.0 Universal
+(public domain dedication): https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+The cuts are trimmed, faded, gain-adjusted, mono, 44.1 kHz Vorbis, made by tools/asset-gen/minigun_spin_sounds.py.
+CC0 asks for no attribution; it is given anyway in docs/assets/CREDITS.md.

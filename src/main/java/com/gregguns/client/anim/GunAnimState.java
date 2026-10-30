@@ -148,6 +148,11 @@ public final class GunAnimState {
         triggerInput = null;
     }
 
+    /** @return the rotor speed as a fraction of full speed, 0 at rest or with no rotor */
+    public double spinFraction() {
+        return spin == null ? 0.0 : spin.fraction();
+    }
+
     /** @return the gun tag whose rotor this record spins, or -1 */
     public int spinTag() {
         return spin == null ? -1 : spinTag;

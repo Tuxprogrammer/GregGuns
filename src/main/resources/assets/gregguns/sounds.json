@@ -331,6 +331,14 @@
     "category": "player",
     "sounds": ["guns/minigun_start_a"]
   },
+  "guns.minigun.spin_up": {
+    "category": "player",
+    "sounds": ["thirdparty/freesound-scorepion/minigun_spin_up"]
+  },
+  "guns.minigun.spin_down": {
+    "category": "player",
+    "sounds": ["thirdparty/freesound-scorepion/minigun_spin_down"]
+  },
   "guns.minigun.reload": {
     "category": "player",
     "sounds": ["guns/minigun_reload"]
