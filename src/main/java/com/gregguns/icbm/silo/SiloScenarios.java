@@ -455,7 +455,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "The silo does not mate a body without a warhead, a damaged (salvage) body, or a body with a warhead too heavy for it, keeps the items in the bus, and does not pump a fluid the missile does not accept.";
+            return "The silo does not mate a body without a warhead, with an inert warhead, a damaged (salvage) body, or a body with a warhead too heavy for it, keeps the items in the bus, and does not pump a fluid the missile does not accept.";
         }
 
         @Override
@@ -473,7 +473,7 @@ public final class SiloScenarios {
             int[] stage = { 0 };
             int[] mark = { 0 };
             EntityMissile[] m = new EntityMissile[1];
-            return ScenarioResult.pending(name(), 900, ticks -> {
+            return ScenarioResult.pending(name(), 1100, ticks -> {
                 if (ticks < WARMUP) {
                     return null;
                 }
@@ -507,6 +507,24 @@ public final class SiloScenarios {
                             tile(ctx, -1, 0, 0).getStackInSlot(0) != null
                                 && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
                             "both items stay in the bus");
+                        // D282: an inert warhead (a payload, no charges) is not a warhead to the silo.
+                        putBus(
+                            ctx,
+                            MissileBodies.body(MissileTier.T1),
+                            com.gregguns.icbm.warhead.InertWarheads.stack(WarheadCasing.T1, "shrapnel"));
+                        mark[0] = ticks;
+                        stage[0] = 6;
+                        return null;
+                    case 6:
+                        power(ctx);
+                        if (ticks < mark[0] + 100) {
+                            return null;
+                        }
+                        out.check(silo(ctx).missile() == null, "an inert warhead is not mated (D282)");
+                        out.check(
+                            tile(ctx, -1, 0, 0).getStackInSlot(0) != null
+                                && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
+                            "the body and the inert warhead stay in the bus");
                         // A damaged body (a silo complex's salvage) with a fitting warhead: not a body.
                         ItemStack damaged = MissileBodies.body(MissileTier.T1);
                         damaged.setItemDamage(com.gregguns.icbm.missile.ItemBlockMissileBody.SALVAGE_DAMAGE);
