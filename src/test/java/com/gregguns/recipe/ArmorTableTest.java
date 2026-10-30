@@ -144,6 +144,31 @@ class ArmorTableTest {
     }
 
     @Test
+    void handSetsAreLinedWithThePacksTannedLeather() {
+        // Owner request 2026-10-30: the pack's Tanned Leather is the lining; the light Scout set is mostly plain
+        // leather (6 Tanned Leather for the set), the Miner and Steam sets use it in every cloth cell (15 and 11).
+        assertEquals("item:Backpack:tannedLeather", ArmorTable.CLOTH);
+        assertEquals(6, cells(ArmorTable.SCOUT, ArmorTable.CLOTH));
+        assertEquals(18, cells(ArmorTable.SCOUT, ArmorTable.LEATHER));
+        assertEquals(15, cells(ArmorTable.MINER, ArmorTable.CLOTH));
+        assertEquals(11, cells(ArmorTable.STEAM, ArmorTable.CLOTH));
+    }
+
+    private static int cells(java.util.List<ArmorTable.HandRow> rows, String ingredient) {
+        int n = 0;
+        for (ArmorTable.HandRow row : rows) {
+            for (String line : row.pattern()) {
+                for (char c : line.toCharArray()) {
+                    n += ingredient.equals(
+                        row.keys()
+                            .get(c)) ? 1 : 0;
+                }
+            }
+        }
+        return n;
+    }
+
+    @Test
     void steamGridsAreBronzePlates3_5_4_2AndDifferFromEveryOtherHandGrid() {
         int[] plates = { 3, 5, 4, 2 };
         for (int i = 0; i < 4; i++) {
