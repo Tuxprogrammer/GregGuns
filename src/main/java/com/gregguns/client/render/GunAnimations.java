@@ -16,6 +16,8 @@ import com.gregguns.client.anim.GunAnimState;
 import com.gregguns.client.anim.MuzzleLight;
 import com.gregguns.client.anim.ShotOrigin;
 import com.gregguns.client.render.profile.GunTransforms;
+import com.gregguns.client.sound.RotorSounds;
+import com.gregguns.item.gun.ItemGun;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -49,6 +51,7 @@ public final class GunAnimations {
     private final ZoomController zoom = new ZoomController();
     private final AdsController ads = new AdsController();
     private final ChargeShift chargeShift = new ChargeShift();
+    private final RotorSounds rotorSounds = new RotorSounds();
     private long tick;
     private float partial;
 
@@ -208,8 +211,19 @@ public final class GunAnimations {
                 continue;
             }
             Entity holder = world == null ? null : world.getEntityByID(e.getKey());
-            s.spinTick(holder instanceof EntityLivingBase && heldTag((EntityLivingBase) holder) == tag);
+            boolean holds = holder instanceof EntityLivingBase && heldTag((EntityLivingBase) holder) == tag;
+            s.spinTick(holds);
+            if (holds) {
+                ItemStack held = ((EntityLivingBase) holder).getHeldItem();
+                if (held.getItem() instanceof ItemGun) {
+                    rotorSounds.update(
+                        (EntityLivingBase) holder,
+                        ((ItemGun) held.getItem()).contentName(),
+                        s.spinFraction());
+                }
+            }
         }
+        rotorSounds.endTick();
     }
 
     /** Called at the start of every rendered frame with the partial tick. */
@@ -220,6 +234,7 @@ public final class GunAnimations {
     /** Drops every record and the zoom (world unload, disconnect). */
     void clear() {
         states.clear();
+        rotorSounds.stopAll();
         zoom.reset();
         ads.reset();
         chargeShift.reset();

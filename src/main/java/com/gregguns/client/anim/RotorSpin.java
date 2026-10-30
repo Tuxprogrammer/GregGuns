@@ -74,6 +74,11 @@ public final class RotorSpin {
         return speed;
     }
 
+    /** @return the current speed as a fraction of full speed, 0 to 1 */
+    public double fraction() {
+        return speed / spec.fullSpeed;
+    }
+
     /** Stops dead at angle 0 (the gun was put away, or a reload began). */
     public void reset() {
         speed = 0.0;

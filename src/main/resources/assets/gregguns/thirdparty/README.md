@@ -1,6 +1,6 @@
 # Third-party assets
 
-This folder is the home of the rules for third-party assets (ICBM module, design record 0018 § 10-11, D28, D35). It holds no assets yet.
+This folder is the home of the rules for third-party assets (ICBM module, design record 0018 § 10-11, D28, D35). It holds no assets of its own; the third-party files sit in the standard asset folders under `thirdparty/<source>/`.
 
 Every other asset in GregGuns is original and MIT. A third-party asset is a human-made file under **CC0, CC-BY, MIT or LGPL**. Nothing NC, ND, share-alike-only or All Rights Reserved, and never the current ICBM-Classic 1.12 assets. Check the license at the source before adding a file.
 
