@@ -145,15 +145,15 @@ class MobAnimatorTest {
         MobModelDef def = model(
             "[0,0,0]",
             "{\"type\":\"swing\",\"part\":\"p\",\"axis\":\"x\",\"amplitude\":50}",
-            "{\"type\":\"pose\",\"part\":\"p\",\"when\":\"carrying\",\"mode\":\"set\",\"angles\":{\"x\":-50}}",
+            "{\"type\":\"pose\",\"part\":\"p\",\"when\":\"carrying\",\"mode\":\"set\",\"angles\":{\"x\":-25}}",
             "{\"type\":\"pose\",\"part\":\"p\",\"when\":\"aiming\",\"mode\":\"set\",\"angles\":{\"x\":-90}}");
         AnimInput in = new AnimInput();
         in.limbSwingAmount = 1.0F;
         assertEquals(rad(50), eval(def, in)[0], EPS); // no gun: the swing stands
         in.carrying = true;
-        assertEquals(rad(-50), eval(def, in)[0], EPS); // hip carry: the swing is gone
+        assertEquals(rad(-25), eval(def, in)[0], EPS); // hip carry: the swing is gone
         in.limbSwing = 1.3F;
-        assertEquals(rad(-50), eval(def, in)[0], EPS); // and stays gone while walking
+        assertEquals(rad(-25), eval(def, in)[0], EPS); // and stays gone while walking
         in.aiming = true;
         assertEquals(rad(-90), eval(def, in)[0], EPS); // aiming: the aim pose alone
     }
@@ -168,7 +168,7 @@ class MobAnimatorTest {
             in.limbSwing = 0.7F;
             in.limbSwingAmount = 1.0F;
             float[] arm = eval(def, in, "rightArm");
-            assertEquals(rad(-50), arm[0], EPS, name + " arm x");
+            assertEquals(rad(-25), arm[0], EPS, name + " arm x");
             in.aiming = true;
             assertEquals(rad(-90), eval(def, in, "rightArm")[0], EPS, name + " aim x");
         }

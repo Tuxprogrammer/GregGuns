@@ -292,7 +292,7 @@
    "when": "carrying",
    "mode": "set",
    "angles": {
-    "x": -50,
+    "x": -25,
     "y": -10,
     "z": 0
    }

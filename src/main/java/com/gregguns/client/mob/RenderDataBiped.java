@@ -147,6 +147,10 @@ public final class RenderDataBiped extends RenderBiped {
                 model.setHandOffset(0.0F, 0.0F, 0.0F);
             }
             GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
+            if (HipCarry.applies(true, isAiming(living))) {
+                // The arm hangs at the hip; lift the gun about the hand so it points forward, slightly down.
+                GL11.glRotatef(HipCarry.GUN_LIFT_DEGREES, 1.0F, 0.0F, 0.0F);
+            }
             HeldGunFrame.apply(GL_SINK);
             GL11.glColor3f(1.0F, 1.0F, 1.0F);
             renderManager.itemRenderer.renderItem(living, held, 0);
