@@ -498,7 +498,7 @@ class ComplexLayoutTest {
                 TreeSet<Integer> xs = new TreeSet<Integer>(), zs = new TreeSet<Integer>();
                 Set<Long> ceiling = new java.util.HashSet<Long>(), floor = new java.util.HashSet<Long>();
                 for (Mark m : marks) {
-                    if (m.kind() != MarkKind.LIGHT) continue;
+                    if (m.kind() != MarkKind.LIGHT || walkwayLamp(m)) continue;
                     assertTrue(m.y() == b.sizeY() - 1 || m.y() == 0, "lamps are flush in the ceiling or floor: " + m);
                     assertTrue(
                         m.key()
@@ -533,6 +533,49 @@ class ComplexLayoutTest {
                 else assertTrue(floor.isEmpty());
             }
         }
+    }
+
+    /** @return whether the light mark is a silo walkway's lamp, which stands outside its gallery's grid */
+    private static boolean walkwayLamp(Mark m) {
+        String[] k = m.key()
+            .split(":");
+        return k.length == 3 && Integer.parseInt(k[2]) >= ComplexFurnisher.WALKWAY_RUN;
+    }
+
+    /**
+     * Owner bug (alpha playtest): the walkway in front of a silo's window was dark, lit only from the gallery's grid
+     * lamps far up and out. Every walkway has one lamp flush in the gallery wall right over its middle column, an
+     * ordinary light mark of the gallery, and its middle floor cell reads block light 12 or more.
+     */
+    @Test
+    void everySiloWalkwayHasALampOverItsMiddleColumn() {
+        int walkways = 0;
+        for (long s = 0; s < 60; s++) {
+            ComplexPlan p = plan(s);
+            ComplexRaster r = new ComplexRaster(p);
+            for (Door d : p.doors()) {
+                if (d.kind != Door.Kind.WALKWAY) continue;
+                walkways++;
+                int x = (d.x0 + d.x1) / 2, z = (d.z0 + d.z1) / 2;
+                assertEquals(Cell.LAMP, r.at(x, d.y1 + 1, z), "seed " + s + " walkway " + d + ": lamp over the niche");
+                boolean marked = false;
+                Object owner = p.section(d.a);
+                List<Mark> marks = owner instanceof Room ? ((Room) owner).marks() : ((Tunnel) owner).marks();
+                for (Mark m : marks) {
+                    marked |= m.kind() == MarkKind.LIGHT && m.x() == x
+                        && m.y() == d.y1 + 1
+                        && m.z() == z
+                        && walkwayLamp(m);
+                }
+                assertTrue(marked, "seed " + s + " walkway " + d + ": the lamp is a light mark of its gallery");
+                // Straight down through the open niche: 15 at the lamp, one less per cell.
+                for (int y = d.y1; y >= d.y0; y--) {
+                    assertTrue(Cell.open(r.at(x, y, z)), "seed " + s + " walkway " + d + " open at y " + y);
+                }
+                assertTrue(15 - (d.y1 + 1 - d.y0) >= 12, "the walkway floor reads 12 or more");
+            }
+        }
+        assertTrue(walkways > 100, "the seeds hold silos: " + walkways);
     }
 
     private static void assertGrid(TreeSet<Integer> lines, int lo, int hi, int gap, String what) {

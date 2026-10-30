@@ -313,6 +313,8 @@ public final class ClientAutotest {
             case "view" -> Minecraft.getMinecraft().gameSettings.thirdPersonView = Integer.parseInt(args[0]);
             // hud off hides the GUI layer (hotbar, hands, crosshair) for clean worn-model screenshots (F1).
             case "hud" -> Minecraft.getMinecraft().gameSettings.hideGUI = "off".equals(args[0]);
+            // fov <degrees>: the world field of view, as the options slider sets it (70 normal, 110 Quake Pro).
+            case "fov" -> Minecraft.getMinecraft().gameSettings.fovSetting = Float.parseFloat(args[0]);
             case "shot" -> {
                 pendingShot = args[0];
                 shotFrames = 0;

@@ -144,9 +144,10 @@ public final class GrimReaperProfile {
         // END GENERATED BOXES
     };
 
-    // In-hand fit: first-person length, centre and muzzle and third-person length come from the in-hand notes'
-    // section 7 row (InHandTargets). The row already accounts for Techguns turning this model 180 degrees: the far
-    // tip, our +X muzzle cap, is the muzzle.
+    // In-hand fit: first-person length, centre and muzzle and third-person length come from the gun's InHandTargets
+    // row. The first-person part deviates from the in-hand notes (see the row): their hold put the rear of this tall
+    // launcher behind the eye, a slab over the lower right of the screen. Third person keeps the notes' figures. The
+    // far tip, our +X muzzle cap, is the muzzle.
     private static final InHandFit.Placement FIT = InHandFit
         .fit("grim_reaper", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
     private static final double FP_SCALE = FIT.fpScale;

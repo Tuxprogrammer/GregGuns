@@ -58,14 +58,20 @@ class ControlStatusTextTest {
         try (InputStream in = ControlStatusTextTest.class.getResourceAsStream("/assets/gregguns/lang/en_US.lang")) {
             lang.load(new java.io.InputStreamReader(in, StandardCharsets.UTF_8));
         }
+        java.util.List<String> keys = new java.util.ArrayList<>();
         for (ControlStatus s : ControlStatus.values()) {
-            String text = lang.getProperty(s.langKey());
-            assertTrue(text != null, s.langKey() + " is missing");
+            keys.add(s.langKey());
+        }
+        // The line shown while no target is set and the missile is ready.
+        keys.add(LaunchGate.SITE_READY_KEY);
+        for (String key : keys) {
+            String text = lang.getProperty(key);
+            assertTrue(text != null, key + " is missing");
             int width = 0;
             for (char c : text.toCharArray()) {
                 width += px(c);
             }
-            assertTrue(width <= ROW_PX, s.langKey() + " is " + width + " px, the row holds " + ROW_PX + ": " + text);
+            assertTrue(width <= ROW_PX, key + " is " + width + " px, the row holds " + ROW_PX + ": " + text);
         }
     }
 }

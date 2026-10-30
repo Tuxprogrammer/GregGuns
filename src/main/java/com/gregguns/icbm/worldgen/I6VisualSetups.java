@@ -749,13 +749,15 @@ public final class I6VisualSetups {
         ItemStack part = partFor(s);
         int cx = lastPlan.anchorX() + s.controllerX(), cz = lastPlan.anchorZ() + s.controllerZ();
         boolean noController = s.missing() == MissingPart.CONTROLLER;
-        int y = lastFloor + (noController ? 2 : 1);
+        // A missing Energy Hatch goes where the complex leaves its gap: the window's right column (D290).
+        int[] at = noController ? new int[] { s.controllerX(), 2, s.controllerZ() }
+            : s.hatchCell(com.gregguns.icbm.complex.Cell.HATCH_ENERGY);
         GtMachineHook.placeMte(
             lastWorld,
             part.getItemDamage(),
-            cx,
-            y,
-            cz,
+            lastPlan.anchorX() + at[0],
+            lastFloor + at[1],
+            lastPlan.anchorZ() + at[2],
             net.minecraftforge.common.util.ForgeDirection.values()[new int[] { 2, 5, 3, 4 }[s.facing()]]);
         TileEntity ctl = lastWorld.getTileEntity(cx, lastFloor + 2, cz);
         if (ctl instanceof IGregTechTileEntity) {
@@ -766,9 +768,9 @@ public final class I6VisualSetups {
         GregGuns.LOG.info(
             "I6C placepart silo={} at {},{},{} formed={} controller=({},{},{})",
             silo,
-            cx,
-            y,
-            cz,
+            lastPlan.anchorX() + at[0],
+            lastFloor + at[1],
+            lastPlan.anchorZ() + at[2],
             com.gregguns.machine.DevStructureBuilder.check(lastWorld, cx, lastFloor + 2, cz),
             cx,
             lastFloor + 2,
