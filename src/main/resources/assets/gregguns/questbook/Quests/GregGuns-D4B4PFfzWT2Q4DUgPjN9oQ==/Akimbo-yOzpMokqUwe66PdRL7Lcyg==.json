@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Two guns, one trigger. Akimbo Pistols and Akimbo Revolvers are made by combining two identical sidearms in a crafting grid. No machine is needed, and no offhand slot either: the akimbo gun is a single item that fires with alternating hands. Either one completes this quest.\n\nThe pair doubles your clip, and a reload uses two magazines (or two bullets for the revolvers). Put the gun in a crafting grid alone and it splits back into the two originals, ammo included.\n\n[note]Akimbo Mac10s, available at HV, fire both guns on every pull.[/note]",
+      "desc:8": "Two guns, one trigger. Akimbo Pistols and Akimbo Revolvers are made by combining two identical sidearms in a crafting grid. No machine is needed, and no offhand slot either: the akimbo gun is a single item that fires with alternating hands. Either one completes this quest.\n\nThe pair doubles your clip, and a reload uses two magazines (or two bullets for the revolvers). Put the gun in a crafting grid alone and it splits back into the two originals, ammo included.\n\n[note]Two Mac10s make Akimbo Mac10s the same way, and those fire both guns on every pull.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

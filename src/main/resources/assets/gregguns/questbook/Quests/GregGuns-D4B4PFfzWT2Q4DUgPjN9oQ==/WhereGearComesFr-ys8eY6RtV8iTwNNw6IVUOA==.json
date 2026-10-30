@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Nothing here appears from thin air. Guns are assembled from parts, and the parts come from the same GregTech materials as everything else you build. Besides crafting, you can find gear in quest loot bags, in chests at ruins and bunkers, and on hostile soldiers. NEI lists every recipe and drop.\n\nStart with the two simplest parts. A Stone Barrel is stone around a small bronze pipe, worked with a file and a hammer. A Wooden Stock is three logs and a saw. Hold both to finish this quest, and the Hand Cannon is one crafting grid away.\n\n[note]Press R on any item in NEI to see how it is made, or U to see what it is used for.[/note]",
+      "desc:8": "Nothing here appears from thin air. Guns are assembled from parts, and the parts come from the same GregTech materials as everything else you build. Besides crafting, you can find gear in quest loot bags, in chests at ruins and bunkers, and on hostile soldiers. NEI lists every recipe and drop.\n\nStart with the two simplest parts. A Stone Barrel is stone around a tiny bronze pipe, worked with a file and a hammer. A Wooden Stock is three logs and a saw. Hold both to finish this quest, and the Hand Cannon is one crafting grid away.\n\n[note]Press R on any item in NEI to see how it is made, or U to see what it is used for.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

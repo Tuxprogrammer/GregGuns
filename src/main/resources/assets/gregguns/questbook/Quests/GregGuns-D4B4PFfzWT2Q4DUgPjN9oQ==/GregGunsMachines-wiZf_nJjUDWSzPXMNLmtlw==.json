@@ -22,7 +22,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Almost everything you build in GregGuns runs on plain GregTech machines: assemblers, presses, benches. Only a handful of machines are GregGuns\u0027 own, and they are GregTech machines too, so they take EU and follow GT\u0027s voltage rules.\n\nThe Repair Bench and the Armory Gantry mend gear. The Turret and the Rampart defend your base. The Camo Bench cycles the camouflage of guns, armor and camo nets. The Ammo Press and the Ammunition Works make ammunition, which the ammo chapter covers.\n\nStart with the cheapest and most fun one: build a Camo Bench. It is an LV machine, so you can build it right now. Check NEI for the recipe.\n\n[note]Single blocks come in tiers. A bench or turret must be at least as high a tier as the item it works on.[/note]",
+      "desc:8": "Almost everything you build in GregGuns runs on plain GregTech machines: assemblers, presses, benches. Only a handful of machines are GregGuns\u0027 own, and they are GregTech machines too, so most take EU and follow GT\u0027s voltage rules.\n\nThe Repair Bench and the Armory Gantry mend gear. The Turret and the Rampart defend your base. The Camo Bench cycles the camouflage of guns and armor, and it needs no power. The Ammo Press and the Ammunition Works make ammunition, which the ammo chapter covers.\n\nStart with the cheapest and most fun one: build a Camo Bench. It is an LV machine, so you can build it right now. Check NEI for the recipe.\n\n[note]Single blocks come in tiers. A bench or turret must be at least as high a tier as the item it works on.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

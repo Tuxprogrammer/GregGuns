@@ -180,7 +180,7 @@
       "key": "gg.ev.adv_ammo",
       "title": "Advanced Ammunition",
       "tier": "EV",
-      "desc": "Advanced bullets are the EV ammo step up: titanium-jacketed rounds with a little TNT in the load. The PDW and the Pulse Rifle shoot them from Advanced Magazines.\n\nMake the bullets in an EV Ammo Press from titanium foil, titanium rounds and a block of TNT. Build empty Advanced Magazines, then load them with advanced bullets in the same machine. NEI will tell you the circuit that selects each recipe.\n\nThis quest asks for a loaded magazine, so you know the whole line works.",
+      "desc": "Advanced bullets are the EV ammo step up: titanium-jacketed rounds with a little TNT in the load. The PDW and the Pulse Rifle shoot them from Advanced Magazines.\n\nMake the bullets in an EV Ammo Press from titanium foil, titanium rounds and a block of TNT. Build empty Advanced Magazines, then load them in the same machine, four at a time with three advanced bullets each. NEI will tell you the circuit that selects each recipe.\n\nThis quest asks for a loaded magazine, so you know the whole line works.",
       "pre": [
         "gg.ev.intro"
       ],
@@ -195,7 +195,7 @@
             },
             {
               "id": "gregguns:mag_advanced_empty",
-              "count": 1,
+              "count": 4,
               "damage": 0
             }
           ]
@@ -591,8 +591,13 @@
             {
               "id": "gregtech:gt.metaitem.01",
               "count": 1,
-              "damage": 17028,
-              "ore": "plateTitanium"
+              "damage": 8502,
+              "ore": "gemRuby"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 32683
             }
           ]
         },
@@ -674,7 +679,7 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregguns:part_laser_focus",
+              "id": "gregguns:part_barrel_laser",
               "count": 1,
               "damage": 0
             },
@@ -763,7 +768,7 @@
       "key": "gg.ev.t3_armor",
       "title": "T3 Combat Armor",
       "tier": "EV",
-      "desc": "Advanced Combat armor is the first armor with real penetration resistance. It is the base for the Exo Suit later, so even if you plan to go powered, you want a set.\n\nEach piece is an EV Assembler recipe of Epoxid Fiber Reinforced and titanium plates, with a programmed circuit to pick the helmet, chestplate, leggings or boots. A chestplate is six epoxy plates and two titanium plates. The quest checks the chestplate, but wear the whole set for the bonuses.\n\n[note]Check NEI for the exact circuit numbers.[/note]",
+      "desc": "Advanced Combat armor resists armor-piercing hits better than any earlier set, and it needs no charge. It is the base for the Exo Suit later, so even if you plan to go powered, you want a set.\n\nEach piece is an EV Assembler recipe of Epoxid Fiber Reinforced and titanium plates, with a programmed circuit to pick the helmet, chestplate, leggings or boots. A chestplate is six epoxy plates and two titanium plates. The quest checks the chestplate, but wear the whole set for the bonuses.\n\n[note]Check NEI for the exact circuit numbers.[/note]",
       "pre": [
         "gg.ev.intro"
       ],
@@ -1187,7 +1192,7 @@
       "key": "gg.ev.summary",
       "title": "Energy Weapons Done",
       "tier": "EV",
-      "desc": "You made it through the electric age. A Laser Rifle in your hands and a Hazardous Environment suit on your back put you ahead of most of what EV can throw at you, including pollution gas, radiation and the occasional unfriendly creature.\n\nKeep your charger and your battery buffer close. Everything in this tier that uses energy needs a charger of exactly the right tier, and a flat laser is just an expensive club.\n\nIV is next, with tungstensteel, blasters, power armor and the anti-gravity device. The IV Assembler runs at 7,680 EU/t and the energy guns take a Lapotronic Orb for a battery, so start planning your power and your orbs.\n\n[note]This quest pays double, and the bag is the second reward. Spend the coins at the Vending Machine.[/note]",
+      "desc": "You made it through the electric age. A Laser Rifle in your hands and a Hazardous Environment suit on your back put you ahead of most of what EV can throw at you, including pollution gas, radiation and the occasional unfriendly creature.\n\nKeep your charger and your battery buffer close. Everything in this tier that uses energy needs a charger of exactly the right tier, and a flat laser is just an expensive club.\n\nIV is next, with tungstensteel, blasters, power armor and the anti-gravity device. The IV Assembler runs at 7,680 EU/t and the energy guns take a Lapotronic Orb for a battery, so start planning your power and your orbs.\n\n[note]This capstone pays extra, with three bags. Spend the coins at the Vending Machine.[/note]",
       "pre": [
         "gg.ev.laser",
         "gg.ev.hev",

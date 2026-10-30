@@ -32,7 +32,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Powered suit on your back, blaster in your hands. Every piece of it came out of GregTech machines, not a crafting table.\n\nFrom here, LuV recipes move to the Assembly Line. A weapon needs a research item scanned first, so keep a spare of whatever you want to unlock: an Alien Blaster needs a De-Atomizer Pistol, a Nether Blaster needs a Blaster Rifle. The line also asks for lubricant and more soldering alloy.\n\nHSS-G is the gate material at LuV, so start your HSS-G line now. The coins and the bag below are yours to spend while you set it up.\n\n[note]This capstone pays double, with a second bag. The coins spend at the Vending Machine.[/note]",
+      "desc:8": "Powered suit on your back, blaster in your hands. Every piece of it came out of GregTech machines, not a crafting table.\n\nAt LuV, the Nether Blaster and its Nether Charges move to the Assembly Line. Each needs a research item scanned first, so keep a spare: the Nether Blaster scans a Blaster Rifle, and the charge scans an Advanced Bullet. The gun recipes there also ask for lubricant and more soldering alloy.\n\nHSS-G is the gate material at LuV, so start your HSS-G line now. The coins and the bag below are yours to spend while you set it up.\n\n[note]This capstone pays extra, with three bags. The coins spend at the Vending Machine.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

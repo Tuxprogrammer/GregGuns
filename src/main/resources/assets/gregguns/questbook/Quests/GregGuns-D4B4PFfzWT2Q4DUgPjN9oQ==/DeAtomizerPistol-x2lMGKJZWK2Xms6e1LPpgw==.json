@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A compact energy pistol. The akimbo version holds a pair, one in each hand, for twice the volume of fire.\n\nBuild one in the IV Assembler from a Laser Barrel, a Sonic Emitter, Mechanical Parts T3, a Lapotronic Orb, an IV circuit, titanium and tungstensteel plates and screws. To make the pair, put two identical pistols in the crafting grid. The quest takes either one.\n\n[note]The akimbo pair is an electric item too. Charge it at an IV buffer.[/note]",
+      "desc:8": "A compact energy pistol. The akimbo version holds a pair, one in each hand, for twice the volume of fire.\n\nBuild one in the IV Assembler from a Laser Barrel, a Sonic Emitter, Mechanical Parts T3, a Lapotronic Orb, an IV circuit, titanium and tungstensteel plates and screws. To make the pair, put two De-Atomizer Pistols in the crafting grid. The quest takes either one.\n\n[note]The akimbo pair is an electric item too. Charge it at an IV buffer.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

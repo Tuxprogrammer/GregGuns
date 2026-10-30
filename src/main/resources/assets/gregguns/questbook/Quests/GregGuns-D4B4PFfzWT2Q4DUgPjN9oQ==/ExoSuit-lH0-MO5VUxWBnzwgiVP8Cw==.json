@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Exo Suit is the lighter powered suit. It trades some of the power armor\u0027s resistance for a better jump and a lower build cost, and it is the upgrade path for the Advanced Combat armor you built at EV.\n\nEach piece is an upgrade in the IV Assembler: an Advanced Combat piece, Mechanical Parts T3, an IV circuit, an IV electric motor and a tungstensteel plate. The Advanced Combat piece is used up and the Exo piece comes out fresh. Charge the chestplate at an IV buffer for the bonuses.\n\n[note]You need both tiers: the Advanced Combat piece is EV work, the upgrade is IV.[/note]",
+      "desc:8": "The Exo Suit is the lighter powered suit. It trades some of the power armor\u0027s resistance for a better jump and a lower build cost, and it is the upgrade path for the Advanced Combat armor you built at EV.\n\nEach piece is an upgrade in the IV Assembler: an Advanced Combat piece, Mechanical Parts T3, an IV circuit, an IV electric motor and one or two tungstensteel plates. The Advanced Combat piece is used up and the Exo piece comes out fresh. Charge the chestplate at an IV buffer for the bonuses.\n\n[note]You need both tiers: the Advanced Combat piece is EV work, the upgrade is IV.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

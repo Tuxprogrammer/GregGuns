@@ -5,7 +5,7 @@
       "key": "gg.luv.intro",
       "title": "Assembly-Line Weapons",
       "tier": "LuV",
-      "desc": "LuV is where GregGuns leaves the plain Assembler behind. The Nether Blaster is built on the Assembly Line, with a research item scanned first, just like GT's own LuV parts. The Alien Blaster, the Grim Reaper and the Golden Gun are LuV Assembler builds, but they all want HSS-G plates and LuV circuits.\n\nHSS-G is the gate material, so the first job is a good supply of HSS-G plates and LuV circuits. Energy guns at this tier are tier 6 electric items: they take a Lapotronic Orb II as their battery, come out uncharged, and only charge in a LuV charger or battery buffer.\n\nAssembly Line recipes need a scanned research item, lubricant and soldering alloy, and a scanned weapon is matched whatever its charge or wear. Keep a spare of the weapon one tier below the one you want to build.\n\n[note]Press R over any item in NEI for the exact recipe. Quests only check what you carry and never take it.[/note]",
+      "desc": "LuV is where GregGuns leaves the plain Assembler behind. The Nether Blaster is built on the Assembly Line, with a research item scanned first, just like GT's own LuV parts. The Alien Blaster, the Grim Reaper and the Golden Gun are LuV Assembler builds, but they all want HSS-G plates and LuV parts.\n\nHSS-G is the gate material, so the first job is a good supply of HSS-G plates and LuV circuits. Energy guns at this tier are tier 6 electric items: they take a Lapotronic Orb II as their battery, come out uncharged, and only charge in a LuV charger or battery buffer.\n\nAssembly Line recipes need a scanned research item and fluids such as soldering alloy, lubricant or lava, and a scanned weapon is matched whatever its charge or wear. Keep a spare of the weapon one tier below the one you want to build.\n\n[note]Press R over any item in NEI for the exact recipe. Quests only check what you carry and never take it.[/note]",
       "pre": [
         "gg.iv.intro",
         1493,
@@ -97,9 +97,15 @@
             },
             {
               "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 29086,
+              "ore": "foilGold"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
               "count": 1,
-              "damage": 17372,
-              "ore": "plateHSSG"
+              "damage": 17086,
+              "ore": "plateGold"
             }
           ]
         },
@@ -189,6 +195,12 @@
               "count": 1,
               "damage": 17372,
               "ore": "plateHSSG"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17086,
+              "ore": "plateGold"
             }
           ]
         },

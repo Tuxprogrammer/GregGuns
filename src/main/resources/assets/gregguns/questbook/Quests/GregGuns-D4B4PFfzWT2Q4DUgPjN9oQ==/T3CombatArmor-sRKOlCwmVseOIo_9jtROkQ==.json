@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Advanced Combat armor is the first armor with real penetration resistance. It is the base for the Exo Suit later, so even if you plan to go powered, you want a set.\n\nEach piece is an EV Assembler recipe of Epoxid Fiber Reinforced and titanium plates, with a programmed circuit to pick the helmet, chestplate, leggings or boots. A chestplate is six epoxy plates and two titanium plates. The quest checks the chestplate, but wear the whole set for the bonuses.\n\n[note]Check NEI for the exact circuit numbers.[/note]",
+      "desc:8": "Advanced Combat armor resists armor-piercing hits better than any earlier set, and it needs no charge. It is the base for the Exo Suit later, so even if you plan to go powered, you want a set.\n\nEach piece is an EV Assembler recipe of Epoxid Fiber Reinforced and titanium plates, with a programmed circuit to pick the helmet, chestplate, leggings or boots. A chestplate is six epoxy plates and two titanium plates. The quest checks the chestplate, but wear the whole set for the bonuses.\n\n[note]Check NEI for the exact circuit numbers.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

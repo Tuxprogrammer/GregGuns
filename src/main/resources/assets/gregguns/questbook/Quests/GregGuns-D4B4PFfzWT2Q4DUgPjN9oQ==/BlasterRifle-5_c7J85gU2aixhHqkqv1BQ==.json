@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Blaster Rifle is the high-damage energy rifle of the IV tier: a laser with an IV emitter behind it and a Lapotronic Orb for a battery. It is the weapon that makes Laser Rifles feel like toys.\n\nBuild it in the IV Assembler from a Laser Barrel, a Carbon Receiver, a Carbon Gunstock, an IV emitter, a Lapotronic Orb, two IV circuits, a glass lens, tungstensteel plates and screws, and soldering alloy. NEI has the full list.\n\n[note]It is an electric item of tier 5. Only an IV charger or battery buffer will charge it.[/note]",
+      "desc:8": "The Blaster Rifle is the high-damage energy rifle of the IV tier: a laser with an IV emitter behind it and a Lapotronic Orb for a battery. It is the weapon that makes Laser Rifles feel like toys.\n\nBuild it in the IV Assembler from a Laser Barrel, a Carbon Receiver, a Carbon Gunstock, an IV emitter, a Lapotronic Orb, two IV circuits, tungstensteel plates and screws, and soldering alloy. NEI has the full list.\n\n[note]It is an electric item of tier 5. Only an IV charger or battery buffer will charge it.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

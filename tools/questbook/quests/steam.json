@@ -7,7 +7,7 @@
       "tier": "Steam",
       "desc": [
         "Before electricity, there is bronze. The Steam chapter builds everything with a crafting table, a hammer and a file: a single-shot Hand Cannon, stone ammunition, and three sets of light armor. No machine is required, although one steam-powered Ammo Press makes bullets for you.",
-        "The gate material here is bronze (wrought iron for the Miner set). Hold eight bronze plates to open the chapter; the Hand Cannon eats a plate, and the Steam armor takes fourteen.",
+        "The gate material here is bronze (cast iron for the Miner set). Hold eight bronze plates to open the chapter; the Hand Cannon eats a plate, and the Steam armor takes fourteen.",
         "The plan is simple. Build the cannon and some bullets, test them on zombies, then dress for the job: Heavy Cloth is the base of every armor set, and bronze plates armor the parts that matter. When you have all of that and a few steel plates, the LV chapter is next.",
         "[note]This chapter pays the first loot bags and Pam's snacks. Eat up, then go shoot something.[/note]"
       ],
@@ -426,7 +426,7 @@
       "tier": "Steam",
       "desc": [
         "Heavy Cloth is the lining of almost every armor set in GregGuns, from the Steam age to the late game. Four wool blocks of any color around a piece of leather make three of it at a crafting table.",
-        "You need plenty: the Steam armor alone takes eight pieces on top of its bronze plates. Hold nine to finish this quest, which is three crafts of wool and leather.",
+        "You need plenty: the Steam armor alone takes eleven pieces on top of its bronze plates. Hold nine to finish this quest, which is three crafts of wool and leather.",
         "[note]Any wool color works, and any mix of colors.[/note]"
       ],
       "pre": [
@@ -607,9 +607,9 @@
       "title": "T1 Miner Armor",
       "tier": "Steam",
       "desc": [
-        "The Miner set trades some of the Scout's lightness for wrought iron plates and a helmet with a yellow band. The Miner's Jacket is the quest item: Heavy Cloth framed by wrought iron plates, crafted by hand. Wrought iron comes from the Better Than Iron quests, and its plates are hammered flat from ingots.",
-        "All four pieces are crafted at a table; NEI shows each pattern. The helmet wants yellow dye, and the boots use wrought iron nuggets.",
-        "[note]Wrought iron is the alternative gate for the Steam tier. If you have bronze but no wrought iron yet, build the Scout set first.[/note]"
+        "The Miner set trades some of the Scout's lightness for cast iron plates and a helmet with a yellow band. The Miner's Jacket is the quest item: six Heavy Cloth above two cast iron plates, crafted by hand. Cast iron comes from the Better Than Iron quests, and its plates are hammered flat from ingots.",
+        "All four pieces are crafted at a table; NEI shows each pattern. The helmet wants yellow dye, and the boots use cast iron nuggets.",
+        "[note]Cast iron is the alternative gate for the Steam tier. If you have bronze but no cast iron yet, build the Scout set first.[/note]"
       ],
       "pre": [
         "gg.steam.heavy_cloth"
@@ -620,8 +620,13 @@
           "items": [
             {
               "id": "gregguns:part_heavy_cloth",
-              "count": 5,
+              "count": 6,
               "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17304
             }
           ]
         },

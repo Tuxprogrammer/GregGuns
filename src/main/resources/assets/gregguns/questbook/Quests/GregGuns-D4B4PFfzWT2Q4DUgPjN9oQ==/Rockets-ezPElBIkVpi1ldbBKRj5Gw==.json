@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Rockets are the biggest bang you can carry at HV: a real blast radius in a single shot. The Rocket Launcher fires them, and so does the Grim Reaper much later.\n\nMake them in the HV Ammo Press from stainless steel plates, TNT dust, gunpowder and an HV circuit that acts as the fuze. Each run yields four rockets. NEI will show the exact recipe.\n\n[warn]Rockets blow up where they land. Never fire one at a wall closer than the blast radius, and never at your own feet.[/warn]",
+      "desc:8": "Rockets are the biggest bang you can carry at HV: a real blast radius in a single shot. The Rocket Launcher fires them, and so does the Grim Reaper much later.\n\nMake them in the HV Ammo Press from four stainless steel plates, two TNT, four gunpowder and an HV circuit that acts as the fuze. Each run yields four rockets. NEI will show the exact recipe.\n\n[warn]Rockets blow up where they land. Never fire one at a wall closer than the blast radius, and never at your own feet.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -125,6 +125,12 @@
           "Damage:2": 17306,
           "OreDict:8": "plateStainlessSteel",
           "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:tnt"
         }
       },
       "taskID:8": "bq_standard:optional_retrieval"

@@ -98,7 +98,7 @@
       "tier": "LV",
       "desc": [
         "Every loose round in the LV press is two small GregTech parts plus gunpowder. The case is a foil: a thin brass sheet made in the Bending Machine. The slug is a round: a small metal ball made in a Lathe from a nugget, or by hand with a file. Lead rounds go into pistol bullets and shotgun pellets; steel rounds go into rifle bullets.",
-        "Hold sixteen brass foils, sixteen lead rounds and sixteen steel rounds to finish. That is exactly one press run of each kind. Brass is a copper and zinc alloy; check NEI for how to make it.",
+        "Hold sixteen brass foils, sixteen lead rounds and sixteen steel rounds to finish. Each recipe takes sixteen of a part, so that is one run's worth of each. Brass is a copper and zinc alloy; check NEI for how to make it.",
         "[note]Make plenty. A single 9mm batch eats sixteen of each part.[/note]"
       ],
       "pre": [
@@ -309,6 +309,11 @@
               "id": "gregtech:gt.metaitem.01",
               "count": 2,
               "damage": 17305
+            },
+            {
+              "id": "gregtech:gt.metaitem.02",
+              "count": 8,
+              "damage": 23305
             },
             {
               "id": "gregguns:part_mechanical_2",
@@ -751,7 +756,7 @@
       "desc": [
         "A GregGuns electric item has one tier, and only a GregTech charger or battery buffer of exactly that tier will charge it. A higher-tier charger does not work, which is how GregTech treats its own tools. The Night Vision Goggles are MV, and the Tactical Mask is HV.",
         "Hold either one to finish this quest, then match your charger to it. The pack's Battery Buffer and charger quests show how to build them.",
-        "[note]Check the item's tooltip for its tier. If it will not charge, you probably have the wrong tier of buffer.[/note]"
+        "[note]The tooltip shows the charge but not the tier, so remember: goggles MV, mask HV. If it will not charge, you probably have the wrong tier of buffer.[/note]"
       ],
       "pre": [
         "gg.ammo.intro",
@@ -835,7 +840,7 @@
       "tier": "HV",
       "desc": [
         "Fuel Tanks hold GregTech fuel for the Flamethrower and the Chainsaw. A GregTech Fluid Canner fills an empty tank with a thousand millibuckets of an accepted liquid fuel; Diesel from the oil line works. A full tank is worth a hundred rounds for the Flamethrower and three hundred for the Chainsaw.",
-        "Hold two filled tanks to finish this quest. A half-used tank counts as filled, but the Canner cannot top it up, so empty and refill it.",
+        "Hold two Fuel Tanks to finish this quest, then fill them. A gun only loads a completely full tank and hands the empty one back, so keep spares in rotation.",
         "[note]The tank itself is an HV Assembler recipe from stainless steel.[/note]"
       ],
       "pre": [
@@ -912,7 +917,7 @@
       "title": "Advanced Ammunition",
       "tier": "EV",
       "desc": [
-        "EV ammunition is made with titanium. Advanced Bullets (16 titanium foil, 16 titanium rounds and a TNT block make 16) fill Advanced Magazines, while Rifle Bullets fill Minigun Ammo Drums, 64 to a run. Both families have their own empty-magazine recipe in the EV press.",
+        "EV ammunition is made with titanium. Advanced Bullets (16 titanium foil, 16 titanium rounds and a TNT block make 16) fill Advanced Magazines, while 64 Rifle Bullets fill four Minigun Ammo Drums in one run. Both families have their own empty-magazine recipe in the EV press.",
         "Either an Advanced Magazine or a Minigun Ammo Drum counts. Hold eight magazines or four drums to finish this quest.",
         "[note]Only an EV press runs these recipes. Titanium plates and Mechanical Parts T3 are the gate inputs.[/note]"
       ],
@@ -979,8 +984,8 @@
           ]
         }
       ],
-      "x": 1066,
-      "y": 348,
+      "x": 1030,
+      "y": 384,
       "size": 24,
       "main": false,
       "icon": {
@@ -996,11 +1001,11 @@
       "tier": "HV",
       "desc": [
         "The Ammunition Works is a multiblock press hall with high parallels: four per press bay per voltage tier, so a long hall at HV runs dozens of presses' worth of work at once. Build it when one press cannot keep up. It is a 5-wide, 7-tall strip that grows three blocks per bay (two to eight bays).",
-        "The controller is an HV hand recipe, the casings are stainless steel from an Assembler, and an item pipe casing floor sets the belt tier. Each bay needs an interior lamp or the hall will not form. Use the structure hologram for the layout.",
-        "[note]Rounds go in the feeder end and boxed ammunition comes out of the packing end.[/note]"
+        "The controller is an HV hand recipe with a Works Casing in each corner. The casings are stainless steel from an Assembler, each bay holds three Ram Housings, and an item pipe casing floor sets the belt tier. Each bay needs an interior lamp or the hall will not form. Use the structure hologram for the layout.",
+        "[note]Parts go in at the feeder end and finished ammunition comes out of the packing end.[/note]"
       ],
       "pre": [
-        "gg.ammo.advanced",
+        "gg.ammo.heavy",
         160
       ],
       "tasks": [
@@ -1009,12 +1014,12 @@
           "items": [
             {
               "id": "gregguns:casings",
-              "count": 16,
+              "count": 4,
               "damage": 0
             },
             {
               "id": "gregguns:casings",
-              "count": 4,
+              "count": 6,
               "damage": 1
             }
           ]
@@ -1071,7 +1076,7 @@
           ]
         }
       ],
-      "x": 1102,
+      "x": 1066,
       "y": 348,
       "size": 24,
       "main": true,
@@ -1088,7 +1093,7 @@
       "tier": "HV",
       "desc": [
         "An optional annex behind the packing end of the Works, built around six workbench tables. The bench takes finished rounds from the packing end and empty magazines from its own input bus, and puts loaded magazines in its own output bus, so the hall delivers finished magazines instead of loose rounds.",
-        "Hold eight AS50 or LMG magazines made by the Works to finish. NEI shows the bench layout, and the Works scanner reports whether it is complete.",
+        "Hold eight AS50 or LMG magazines made by the Works to finish. The structure hologram shows the bench when you set its height channel to 1, and the Works scanner reports whether the bench is active.",
         "[note]The bench uses the same loaded-magazine recipes as the single presses.[/note]"
       ],
       "pre": [
@@ -1154,7 +1159,7 @@
         }
       ],
       "x": 1102,
-      "y": 384,
+      "y": 348,
       "size": 24,
       "main": false,
       "icon": {

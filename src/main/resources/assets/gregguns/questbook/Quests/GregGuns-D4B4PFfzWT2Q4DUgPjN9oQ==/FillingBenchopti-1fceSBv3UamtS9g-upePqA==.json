@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "An optional annex behind the packing end of the Works, built around six workbench tables. The bench takes finished rounds from the packing end and empty magazines from its own input bus, and puts loaded magazines in its own output bus, so the hall delivers finished magazines instead of loose rounds.\n\nHold eight AS50 or LMG magazines made by the Works to finish. NEI shows the bench layout, and the Works scanner reports whether it is complete.\n\n[note]The bench uses the same loaded-magazine recipes as the single presses.[/note]",
+      "desc:8": "An optional annex behind the packing end of the Works, built around six workbench tables. The bench takes finished rounds from the packing end and empty magazines from its own input bus, and puts loaded magazines in its own output bus, so the hall delivers finished magazines instead of loose rounds.\n\nHold eight AS50 or LMG magazines made by the Works to finish. The structure hologram shows the bench when you set its height channel to 1, and the Works scanner reports whether the bench is active.\n\n[note]The bench uses the same loaded-magazine recipes as the single presses.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Every loose round in the LV press is two small GregTech parts plus gunpowder. The case is a foil: a thin brass sheet made in the Bending Machine. The slug is a round: a small metal ball made in a Lathe from a nugget, or by hand with a file. Lead rounds go into pistol bullets and shotgun pellets; steel rounds go into rifle bullets.\n\nHold sixteen brass foils, sixteen lead rounds and sixteen steel rounds to finish. That is exactly one press run of each kind. Brass is a copper and zinc alloy; check NEI for how to make it.\n\n[note]Make plenty. A single 9mm batch eats sixteen of each part.[/note]",
+      "desc:8": "Every loose round in the LV press is two small GregTech parts plus gunpowder. The case is a foil: a thin brass sheet made in the Bending Machine. The slug is a round: a small metal ball made in a Lathe from a nugget, or by hand with a file. Lead rounds go into pistol bullets and shotgun pellets; steel rounds go into rifle bullets.\n\nHold sixteen brass foils, sixteen lead rounds and sixteen steel rounds to finish. Each recipe takes sixteen of a part, so that is one run\u0027s worth of each. Brass is a copper and zinc alloy; check NEI for how to make it.\n\n[note]Make plenty. A single 9mm batch eats sixteen of each part.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

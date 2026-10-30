@@ -81,7 +81,7 @@
       "key": "gg.zpm.cell",
       "title": "Nuclear Power Cell",
       "tier": "ZPM",
-      "desc": "A sealed uranium cell, the part that makes ZPM feel nuclear. Weapons here do not burn it as ammo: the Death Ray runs on stored energy. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nTwo cells come from four Naquadah alloy plates, four lead plates, eight enriched uranium dust, four redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating. When a cell is used up, a ZPM Assembler refuels it from the depleted cell and four more enriched uranium dust.\n\n[warn]Radioactive. Keep depleted cells in a lead-lined chest, or wear full radiation hazmat while carrying them.[/warn]",
+      "desc": "A sealed uranium cell, the part that makes ZPM feel nuclear. Weapons here do not burn it as ammo: the Death Ray runs on stored energy. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nTwo cells come from four Naquadah alloy plates, four lead plates, eight enriched uranium dust, four redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating.\n\n[note]A fresh cell is safe to carry. NEI also lists a ZPM Assembler recipe that refills a depleted cell; a depleted cell is radioactive, so wear full radiation hazmat around one.[/note]",
       "pre": [
         "gg.zpm.intro"
       ],
@@ -170,7 +170,7 @@
       "key": "gg.zpm.rad_emitter",
       "title": "Rad Emitter",
       "tier": "ZPM",
-      "desc": "The Rad Emitter is the Death Ray's business end: a ZPM emitter that sprays radiation along a beam. It is a ZPM Assembly Line part.\n\nBuild it from a ZPM emitter, two lead plates, a block of enriched uranium dust, two Mechanical Parts T3, two ZPM circuits and soldering alloy. The research item is a Sonic Emitter, scanned in a Research Station. NEI shows the full recipe.\n\n[warn]It carries uranium. Wear full radiation hazmat when carrying a stack.[/warn]",
+      "desc": "The Rad Emitter is the Death Ray's business end: a ZPM emitter that sprays radiation along a beam. It is a ZPM Assembly Line part.\n\nBuild it from a ZPM emitter, two lead plates, one enriched uranium dust, two Mechanical Parts T3, two ZPM circuits and soldering alloy. The research item is a Sonic Emitter, scanned in a Research Station. NEI shows the full recipe.\n\n[note]The lead plates seal the uranium in, so the emitter is safe to carry. Only the tactical nuke rocket and a depleted cell irradiate you.[/note]",
       "pre": [
         "gg.zpm.intro"
       ],
@@ -190,9 +190,9 @@
             },
             {
               "id": "gregtech:gt.metaitem.01",
-              "count": 1,
-              "damage": 17325,
-              "ore": "plateNaquadahAlloy"
+              "count": 2,
+              "damage": 17089,
+              "ore": "plateLead"
             }
           ]
         },
@@ -366,7 +366,7 @@
       "key": "gg.zpm.warhead",
       "title": "Small Nuclear Warhead",
       "tier": "ZPM",
-      "desc": "The warhead is the payload of a tactical nuke rocket. It is a lead-shielded block of uranium and TNT wired for a ZPM fuze.\n\nCraft two at a time in a ZPM Assembly Line from lead plates, TNT dust, LuV circuits, enriched uranium dust and one Naquadah alloy plate, with soldering alloy. NEI lists the research item and the rest.\n\n[warn]Radioactive. A stack of warheads irradiates you unless you wear full radiation hazmat.[/warn]",
+      "desc": "The warhead is the payload of a tactical nuke rocket. It is a lead-shielded block of uranium and TNT wired to a proximity fuze.\n\nCraft two at a time in a ZPM Assembly Line from lead plates, TNT, LuV circuits, enriched uranium dust and one Naquadah alloy plate, with soldering alloy. NEI lists the research item and the rest.\n\n[note]The lead keeps the warhead safe to carry. The tactical nuke rocket you build from it is radioactive.[/note]",
       "pre": [
         "gg.zpm.intro"
       ],
@@ -450,7 +450,7 @@
       "key": "gg.zpm.nuke_rocket",
       "title": "Tactical Nuke Rocket",
       "tier": "ZPM",
-      "desc": "A rocket with a nuclear warhead. One is enough to level a neighborhood, so treat it like a decision.\n\nBuild it in the ZPM Assembly Line from a regular Rocket, a Small Nuclear Warhead, two Naquadah alloy plates, two lead plates, a ZPM circuit and soldering alloy. The research item is a Rocket.\n\n[warn]Radioactive, and it is the biggest explosion in the mod. Only fire it where nobody lives, and wear full radiation hazmat while you carry it.[/warn]",
+      "desc": "A rocket with a nuclear warhead. One is enough to level a neighborhood, so treat it like a decision.\n\nBuild it in the ZPM Assembly Line from a regular Rocket, a Small Nuclear Warhead, two Naquadah alloy plates, two lead plates, a ZPM circuit and soldering alloy. The research item is a Rocket.\n\n[warn]Radioactive, and it is the biggest blast any GregGuns gun fires. Only fire it where nobody lives, and wear full radiation hazmat while you carry it.[/warn]",
       "pre": [
         "gg.zpm.warhead"
       ],
@@ -544,7 +544,7 @@
       "key": "gg.zpm.nuke_launcher",
       "title": "Nuke Launcher",
       "tier": "ZPM",
-      "desc": "A shoulder-fired nuclear weapon. Inside 60% of its blast radius it annihilates anything that lives, and a boss takes half of its maximum health.\n\nIt is an Assembly Line build, researched from the Grim Reaper. The inputs are two Hardened Steel Barrels, a Carbon Receiver, a ZPM electric motor, two ZPM circuits, four lead plates, four Naquadah alloy plates and eight screws, with soldering alloy and lubricant. The tactical nuke rocket is its ammo.\n\n[warn]The nuke is the largest blast in GregGuns. Do not fire it from inside your own base.[/warn]\n\n[note]Servers that keep explosions.blockDamage off leave the terrain intact. Creatures are still hit.[/note]",
+      "desc": "A shoulder-fired nuclear weapon. Inside 60% of its blast radius it annihilates anything that lives, and a boss takes half of its maximum health.\n\nIt is an Assembly Line build, researched from the Grim Reaper. The inputs are two Hardened Steel Barrels, a Carbon Receiver, a ZPM electric motor, two ZPM circuits, four lead plates, four Naquadah alloy plates and eight screws, with soldering alloy and lubricant. The tactical nuke rocket is its ammo.\n\n[warn]The nuke is the largest blast of any GregGuns gun. Do not fire it from inside your own base.[/warn]\n\n[note]Servers that keep explosions.blockDamage off leave the terrain intact. Creatures are still hit.[/note]",
       "pre": [
         "gg.zpm.nuke_rocket"
       ],
@@ -638,7 +638,7 @@
       "key": "gg.zpm.summary",
       "title": "Top of the Tree",
       "tier": "ZPM",
-      "desc": "That is everything GregGuns offers. A continuous beam that ignores armor, and a rocket launcher that ends arguments. You built both from naquadah, lead and uranium, on the same Assembly Line that makes the rest of the pack's ZPM gear.\n\nFrom here, the rest of the mod is yours to play with. The ICBM line takes you from rockets to missiles and silos, the NPC chapters have things worth hunting, and the pack has plenty of ZPM to go. Take the coins, open the bags, and keep your hazmat on.\n\nIf you want a longer game, go back and fill in the quests you skipped. Every chapter has side builds that pay well and teach something the capstones do not.\n\n[note]This capstone pays out the biggest reward in the tab, with four bags and the best meal.[/note]",
+      "desc": "That is the top of the GregGuns gun tree. A continuous beam that ignores armor, and a rocket launcher that ends arguments. You built both from naquadah, lead and uranium, on the same Assembly Line that makes the rest of the pack's ZPM gear.\n\nFrom here, the rest of the mod is yours to play with. The ICBM line takes you from rockets to missiles and silos, the NPC chapters have things worth hunting, and the pack has plenty of ZPM to go. Take the coins, open the bags, and keep your hazmat on.\n\nIf you want a longer game, go back and fill in the quests you skipped. Every chapter has side builds that pay well and teach something the capstones do not.\n\n[note]This capstone pays out the biggest reward in the tab, with four bags and the best meal.[/note]",
       "pre": [
         "gg.zpm.death_ray",
         "gg.zpm.nuke_launcher"

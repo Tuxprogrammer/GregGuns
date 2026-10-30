@@ -6,8 +6,8 @@
       "title": "Ruins and Camps",
       "tier": "Steam",
       "desc": [
-        "Factories, houses, bunkers, camps and ships dot the Overworld, and their chests hold GregGuns gear you would otherwise have to craft. Each structure draws from loot tables with a tier ceiling: the small ruins stop at LV, and everything bigger stops at MV, so a trip is worth it at any stage but never hands you the next tier early.",
-        "Structures spawn only in the Overworld and an admin can turn any of them off in the worldgen section of the GregGuns config. Vanilla chests fill when the world generates; Weapon and Reinforced chests fill the first time someone opens them.",
+        "Factories, houses, bunkers, camps and ships dot the Overworld, and their chests hold GregGuns gear you would otherwise have to craft. Each structure draws from loot tables with a tier ceiling. In the Overworld the small ruins stop at LV and everything bigger stops at MV, so a trip is worth it at any stage but never hands you the next tier early.",
+        "Structures also spawn on Ross128b and its moon, where each one rolls its own ceiling and can hold far better loot. An admin can turn any of them off in the worldgen section of the GregGuns config. Vanilla chests fill when the world generates; Weapon and Reinforced chests fill the first time someone opens them.",
         "Each quest in this chapter asks you to bring back something you can find there. Craftable items count too, so you can also build your way through, but the loot is free.",
         "[note]Go armed: carry a Hand Cannon and some stone bullets before you leave the base.[/note]"
       ],
@@ -92,7 +92,7 @@
       "tier": "LV",
       "desc": [
         "The small factory, train station, gas station and medium house are the easy stops. Their chests draw from the LV weapon table: 9mm and shotgun rounds, revolvers, sawed-offs and the occasional Hand Cannon. The medium house also holds Reinforced Chests of GregTech ingots (tin, copper, lead, iron) and a few Weapon Chests.",
-        "Bring back a revolver, sawed-off or Hand Cannon, and some 9mm or shotgun rounds. Both are LV guns you can also build with a steel plate, so check NEI if the chests are not generous."
+        "Bring back a revolver, sawed-off or Hand Cannon, and some 9mm or shotgun rounds. The revolver and sawed-off are LV builds and the Hand Cannon is steam age, so check NEI if the chests are not generous."
       ],
       "pre": [
         "gg.site.intro",
@@ -200,7 +200,7 @@
       "title": "Dungeon Weapons",
       "tier": "LV",
       "desc": [
-        "Roguelike dungeons sink deep into the ground. Near the surface they hold LV gear, deeper down MV gear, depending on how your pack's dungeon loot is set up.",
+        "Roguelike dungeons sink deep into the ground. They hold GregGuns gear only if your server adds it to the dungeon loot files; when it does, the upper levels hold LV gear and the deeper ones MV.",
         "Bring back one gun and one blade from your delve: a pistol, revolver or sawed-off, and a Combat Knife or Crowbar. If the dungeon is stingy, you can always build them.",
         "[warn]Dungeons are full of vanilla mobs and traps. Bring armor, light and an exit plan.[/warn]"
       ],

@@ -12,7 +12,7 @@
       "tier": "Steam",
       "desc": [
         "Soldiers, bandits and the walking dead share the Overworld with you, and most of them are armed. Some carry real guns, some drop real ammo, and a few drop things you cannot easily make yet. Hunting them is the cheapest way to stock up on rounds and cloth, and every hunt in this chapter pays out.",
-        "Zombies, skeletons, bandits and Psycho Steve spawn on their own in the Overworld. The rest come from structures: a Big Bunker or a silo complex holds ordinary vanilla mob spawners with an NPC spinning inside. A spawner only works while you are within 24 blocks, caps how many of its mob stand around it, and drops nothing when broken. GregTech makes spawners very slow to mine by hand, so treat them as a farm, not a trophy.",
+        "Zombies, skeletons, bandits and Psycho Steve spawn on their own in the Overworld. The rest come from structures: camp flags send out soldiers, and a Big Bunker or a silo complex holds ordinary vanilla mob spawners with an NPC spinning inside. A spawner only works while you are within 24 blocks, caps how many of its mob stand around it, and drops nothing when broken. GregTech makes spawners very slow to mine by hand, so treat them as a farm, not a trophy.",
         "Some natural spawns are Infernal: a glowing name, a boss bar and a pile of modifiers. Elite mobs have up to five, ultra up to ten, infernal more, and each rank drops better GregGuns gear (LV, MV, and MV with a rare HV roll). Spawner NPCs skip the Infernal roll by default.",
         "[note]Go armed: hold a Hand Cannon and 16 stone bullets to start the chapter.[/note]"
       ],
@@ -101,8 +101,8 @@
       "title": "Walking Dead",
       "tier": "Steam",
       "desc": [
-        "Three kinds of zombie carry guns instead of just groaning. Farmers and miners are the common ones and carry hoes, picks and the odd Hand Cannon. Soldiers are rarer, tougher and often wear Combat armor.",
-        "Kill three of each. They drop heavy cloth, gunpowder and food, which feeds your armor and ammo crafting."
+        "Three kinds of zombie carry guns instead of just groaning. Farmers and miners are the common ones and carry hoes, picks and the odd Hand Cannon. Soldiers are rarer, tougher and often wear Soldier's armor.",
+        "Kill three of each. They drop heavy cloth and gunpowder, plus food, coal, iron or ammo depending on the kind, which feeds your armor and ammo crafting."
       ],
       "pre": [
         "gg.npc.intro"
@@ -181,7 +181,7 @@
       "title": "Skeleton Soldiers",
       "tier": "Steam",
       "desc": [
-        "Armed skeletons shoot back with revolvers, Thompsons and the occasional Hand Cannon, and some wear Combat or Scout armor. They are more accurate than zombies, so use cover and keep moving.",
+        "Armed skeletons shoot back with revolvers, Thompsons and the occasional Hand Cannon, and some wear Soldier's or Bandit helmets and boots. They are more accurate than zombies, so use cover and keep moving.",
         "Five kills earns the reward. They drop bones, coal and gunpowder."
       ],
       "pre": [
@@ -406,7 +406,7 @@
       "title": "Army Soldiers",
       "tier": "MV",
       "desc": [
-        "Army Soldiers are disciplined, armored in T2 Combat gear and armed with M4 rifles, Combat Shotguns or bolt-action rifles. They do not wander the countryside. They come out of Military Camps and the Aircraft Carrier, so you have to go to them.",
+        "Army Soldiers are disciplined, armored in T2 Combat gear and armed with M4 rifles, Combat Shotguns or bolt-action rifles. They do not wander the countryside. They come out of Military Camps, the Aircraft Carrier and silo guard posts, so you have to go to them.",
         "Kill five. They drop rifle bullets, shells, iron and heavy cloth."
       ],
       "pre": [
@@ -559,8 +559,8 @@
       "title": "Attack Helicopter",
       "tier": "HV",
       "desc": [
-        "A flying boss with 100 health and its own boss bar, the Attack Helicopter hovers over camps with rockets and rifles. Bring launchers and cover. It drops rifle bullets, rockets, cybernetic parts and iron blocks.",
-        "[note]It is off by default. An admin can turn on the helicopter setting under npcs in the GregGuns config.[/note]"
+        "A flying boss with 100 health and its own boss bar, the Attack Helicopter circles you with machine-gun bursts and rockets. Bring launchers and cover. It drops rifle bullets, rockets, cybernetic parts and iron blocks.",
+        "[note]It is off by default. An admin can turn on the helicopter setting under npcs in the GregGuns config; then breaking a Camp Flag calls one in.[/note]"
       ],
       "pre": [
         "gg.npc.commandos",
@@ -717,7 +717,7 @@
       "title": "Cyberdemon",
       "tier": "EV",
       "desc": [
-        "A late boss armed with the Nether Blaster, the Cyberdemon is off by default and comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.",
+        "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is off by default and comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.",
         "[warn]It hits hard. Bring good armor.[/warn]"
       ],
       "pre": [
@@ -794,7 +794,7 @@
       "title": "Alien Bug",
       "tier": "EV",
       "desc": [
-        "A spider-like boss from the Alien Bug Nest. The nest is off by default, so an admin has to enable it before the bug spawns from the vanilla mob spawner inside.",
+        "A fast, wall-climbing spider-like creature from the Alien Bug Nest. The nest is off by default, so an admin has to enable it before the bug spawns from the vanilla mob spawner inside.",
         "It drops string and spider eyes. Check the nest quest in the site chapter for what else the nest holds."
       ],
       "pre": [

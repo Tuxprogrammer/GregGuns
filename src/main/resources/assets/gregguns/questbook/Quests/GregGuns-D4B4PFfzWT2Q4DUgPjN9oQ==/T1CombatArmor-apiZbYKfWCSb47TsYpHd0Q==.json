@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Steel plate and Heavy Cloth, pressed in the LV Assembler. The Soldier\u0027s set is the first armor that protects better than the hand-made sets: three steel plates in each piece plus cloth, and a full set beats the Steam armor. The Soldier\u0027s Vest is the quest item.\n\nMake Heavy Cloth in bulk (the Steam chapter showed how), because the vest alone eats five. Helmet, vest, pants and boots each use their own circuit number in the Assembler, and NEI shows each one.\n\n[note]Armor value shows on the tooltip. Compare sets before you commit plates.[/note]",
+      "desc:8": "Steel plate and Heavy Cloth, pressed in the LV Assembler. The Soldier\u0027s set is the first armor that protects better than the hand-made sets: three steel plates in every piece but the boots, which take two, plus cloth, and a full set beats the Steam armor. The Soldier\u0027s Vest is the quest item.\n\nMake Heavy Cloth in bulk (the Steam chapter showed how), because the vest alone eats five. Helmet, vest, pants and boots each use their own circuit number in the Assembler, and NEI shows each one.\n\n[note]Armor value shows on the tooltip. Compare sets before you commit plates.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

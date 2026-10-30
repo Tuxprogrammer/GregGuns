@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Fuel Tank is the ammo for two HV weapons, the Flamethrower and the Chainsaw. It holds 1,000 mB of fuel, and a Fluid Canner fills it for you.\n\nBuild four tanks at a time in the HV Assembler from a stainless steel Large Fluid Cell, two stainless steel plates and two rubber plates. The Large Fluid Cell comes from the pack\u0027s own Tier 3 fluid storage line, so check NEI.\n\n[note]Any liquid fuel GT can burn in its fuel recipes works: diesel, gasoline and the other burnables. A full tank is 100 flamethrower rounds or 300 chainsaw rounds.[/note]",
+      "desc:8": "The Fuel Tank is the ammo for two HV weapons, the Flamethrower and the Chainsaw. It holds 1,000 mB of fuel, and a Fluid Canner fills it for you.\n\nBuild four tanks at a time in the HV Assembler from a stainless steel Large Fluid Cell, two stainless steel plates and two rubber plates. The Large Fluid Cell is a GregTech item, so check NEI for it.\n\n[note]It takes diesel, gasoline, biodiesel or ethanol. A full tank is 100 flamethrower rounds or 300 chainsaw rounds.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -124,6 +124,12 @@
           "Count:3": 2,
           "Damage:2": 17306,
           "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 17880,
+          "OreDict:8": "",
           "id:8": "gregtech:gt.metaitem.01"
         }
       },

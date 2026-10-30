@@ -61,7 +61,7 @@
         "Every gun here uses the same three controls. Hold left click to fire (hold it down on automatic guns), press the Reload key (R by default) to put in fresh ammunition, and right-click to zoom on guns that have a scope. Rebind the keys under GregGuns in the Controls menu.",
         "This quest wants any one of the early guns in your inventory: the Hand Cannon from the Steam chapter, or a 9mm Pistol, Revolver, Sawed Off or Bolt Action Rifle from LV. If you have not built one yet, pick a path and come back, or open the Steam chapter and craft the Hand Cannon first.",
         "Reloading puts a short lockout on the gun, and each gun has its own reload time. Press Reload before the fight, not in the middle of it.",
-        "[note]Hold a gun and read its tooltip: damage, clip size, the ammo it takes and its tier are all listed.[/note]"
+        "[note]Hold a gun and read its tooltip: the ammo it takes, the rounds loaded and its damage. Hold Shift for clip size, range and reload time.[/note]"
       ],
       "pre": [
         "gg.start.welcome"
@@ -275,7 +275,7 @@
       "tier": "Steam",
       "desc": [
         "Nothing here appears from thin air. Guns are assembled from parts, and the parts come from the same GregTech materials as everything else you build. Besides crafting, you can find gear in quest loot bags, in chests at ruins and bunkers, and on hostile soldiers. NEI lists every recipe and drop.",
-        "Start with the two simplest parts. A Stone Barrel is stone around a small bronze pipe, worked with a file and a hammer. A Wooden Stock is three logs and a saw. Hold both to finish this quest, and the Hand Cannon is one crafting grid away.",
+        "Start with the two simplest parts. A Stone Barrel is stone around a tiny bronze pipe, worked with a file and a hammer. A Wooden Stock is three logs and a saw. Hold both to finish this quest, and the Hand Cannon is one crafting grid away.",
         "[note]Press R on any item in NEI to see how it is made, or U to see what it is used for.[/note]"
       ],
       "pre": [
@@ -370,7 +370,7 @@
       "title": "Reading a Tier",
       "tier": "Steam",
       "desc": [
-        "Every item has a tier, and the tier tells you what it takes. A tier is a machine voltage plus a gate material: Steam is bronze, LV is steel, MV is aluminum, HV is stainless steel, EV is titanium, IV is tungstensteel, and so on up the GregTech ladder. The tooltip of every GregGuns item shows its tier.",
+        "Every item has a tier, and the tier tells you what it takes. A tier is a machine voltage plus a gate material: Steam is bronze, LV is steel, MV is aluminum, HV is stainless steel, EV is titanium, IV is tungstensteel, and so on up the GregTech ladder. NEI shows the machine and voltage of every recipe, so you can read the tier there.",
         "So an LV recipe needs an LV machine and steel, an MV recipe needs an MV machine and aluminum, and a machine of a lower tier cannot run it at all. Higher machines can run lower recipes, and they run them faster.",
         "Bronze plates are the Steam gate. Hold four to complete this quest and you are ready for the first chapter.",
         "[note]If a recipe in NEI shows a plate you cannot make yet, you are one tier early.[/note]"

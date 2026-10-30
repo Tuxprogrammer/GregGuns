@@ -127,9 +127,15 @@
           "id:8": "gregguns:ammo_9mm_bullet"
         },
         "1:10": {
+          "Count:3": 2,
+          "Damage:2": 29086,
+          "OreDict:8": "foilGold",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
           "Count:3": 1,
-          "Damage:2": 17372,
-          "OreDict:8": "plateHSSG",
+          "Damage:2": 17086,
+          "OreDict:8": "plateGold",
           "id:8": "gregtech:gt.metaitem.01"
         }
       },

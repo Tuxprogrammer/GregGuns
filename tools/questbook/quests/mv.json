@@ -6,7 +6,7 @@
       "title": "Aluminum-Age Arms",
       "tier": "MV",
       "desc": [
-        "MV is where firepower goes automatic. Aluminum unlocks the SMGs, the assault rifles and a combat shotgun, plus grenades, the flashbang, two more armor sets and the Akimbo pistols you can build from your LV sidearms. Everything here is an MV Assembler recipe with aluminum in it.",
+        "MV is where firepower goes automatic. Aluminum unlocks the SMGs, the assault rifles and a combat shotgun, plus grenades, the flashbang, three more armor sets and the akimbo pairs you can make from your LV sidearms. The guns, grenades and armor are MV Assembler recipes with aluminum in them; the akimbo pairs are crafted by hand.",
         "Ammunition changes too. SMGs and assault rifles take their own magazines, which are pressed in an MV Ammo Press, so build one (an MV press also runs every LV recipe, faster). The magazines need aluminum plates and springs.",
         "Hold eight aluminum plates to open the chapter. The thick line runs through the parts, the SMG and the rifles; grenades, armor and the akimbo guns hang off to the side.",
         "[note]You can run LV recipes in an MV machine, so one MV press and one MV assembler cover everything so far.[/note]"
@@ -289,7 +289,7 @@
       "tier": "MV",
       "desc": [
         "A compact automatic SMG with a thirty-two round clip. The Mac10 trades the Thompson's wooden furniture for steel parts: a Hardened Steel Barrel, a Steel Receiver and a polyethylene plate, plus aluminum plates, screws and springs, assembled in an MV Assembler.",
-        "It uses the same SMG magazines as the Thompson. Two Mac10s combine into Akimbo Mac10s at HV, which fire both guns on every pull.",
+        "It uses the same SMG magazines as the Thompson. Two Mac10s combine into Akimbo Mac10s in a crafting grid, and the pair fires both guns on every pull.",
         "[note]The Steel Receiver is an MV part with its own quest. See MV Gun Parts.[/note]"
       ],
       "pre": [
@@ -308,6 +308,11 @@
               "id": "gregguns:part_receiver_steel",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17874
             },
             {
               "id": "gregtech:gt.metaitem.01",
@@ -412,7 +417,7 @@
             },
             {
               "id": "gregtech:gt.metaitem.01",
-              "count": 2,
+              "count": 4,
               "damage": 27019
             },
             {
@@ -607,9 +612,9 @@
       "title": "Combat Shotgun",
       "tier": "MV",
       "desc": [
-        "The big brother of the Sawed Off. Eight shells in the tube, loaded one at a time with the same Shotgun Shells, so your LV shell production keeps it fed. Pellets spread wide, so it is devastating up close and weak at range.",
+        "The big brother of the Sawed Off. Eight shells in the tube, and one reload tops up every empty spot with the same Shotgun Shells, so your LV shell production keeps it fed. Pellets spread wide, so it is devastating up close and weak at range.",
         "It is built in an MV Assembler from a Hardened Steel Barrel, a Steel Receiver, a Plastic Gun Stock, steel rods for the pump tube, and aluminum plates, screws and springs.",
-        "[note]Reload between fights, not during them. It loads one shell at a time.[/note]"
+        "[note]Reload between fights, not during them. A reload takes two and a half seconds.[/note]"
       ],
       "pre": [
         "gg.mv.parts"
@@ -720,7 +725,7 @@
       "desc": [
         "Two guns, one trigger. Akimbo Pistols and Akimbo Revolvers are made by combining two identical sidearms in a crafting grid. No machine is needed, and no offhand slot either: the akimbo gun is a single item that fires with alternating hands. Either one completes this quest.",
         "The pair doubles your clip, and a reload uses two magazines (or two bullets for the revolvers). Put the gun in a crafting grid alone and it splits back into the two originals, ammo included.",
-        "[note]Akimbo Mac10s, available at HV, fire both guns on every pull.[/note]"
+        "[note]Two Mac10s make Akimbo Mac10s the same way, and those fire both guns on every pull.[/note]"
       ],
       "pre": [
         "gg.mv.intro"
@@ -1115,8 +1120,8 @@
       "title": "Aluminum Age Done",
       "tier": "MV",
       "desc": [
-        "You have an SMG, an assault rifle, a combat shotgun, grenades and aluminum armor, and the supply line to feed them. MV is done. Stainless steel is the next gate, and with it come heavy weapons, high-caliber rifles and rockets.",
-        "Stainless steel needs a proper alloy line: chromium, nickel, iron, and an HV power setup. It is a long project, so get comfortable. Everything you built at MV keeps working, and an HV Ammo Press will run MV recipes faster.",
+        "You have an SMG, an assault rifle and aluminum armor, and the supply line to feed them. The combat shotgun and grenades round out the kit if you have not built them yet. MV is done. Stainless steel is the next gate, and with it come heavy weapons, high-caliber rifles and rockets.",
+        "Stainless steel needs a proper alloy line: iron, nickel, manganese and chromium, smelted in the Electric Blast Furnace. It is a long project, so get comfortable. Everything you built at MV keeps working, and an HV Ammo Press will run MV recipes faster.",
         "Hold four stainless steel plates to close the chapter and collect the big loot bag. Stock up on ammo before you go.",
         "[note]The HV chapter opens from the pack's HV quests. You can start it any time.[/note]"
       ],
