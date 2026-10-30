@@ -56,6 +56,8 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 ## Fixed
 
+- Missiles no longer fly into the roof or walls around a Missile Silo, or the hills and trees around a launch pad. A launched missile now climbs straight up from its pad to the top of the world, then arcs over and down onto its target. Range and accuracy are as before; the flight takes a few seconds longer. A short shot from that height comes down at a steadier speed, so air defense can still catch it.
+
 - The Missile Silo no longer starts a mating cycle or a fuel pump without power. With no EU in its Energy Hatch it used to take the body, warhead or fuel, power-fail on the first tick and switch itself back on, over and over. It now takes nothing, shows "No power" in its status line, and starts by itself once the hatch holds enough EU.
 
 - Silo complex lights are always light-emitting blocks. A lit lamp is Chisel light stone or glowstone and is checked to give light when the palette resolves it, and a dead lamp is never a Chisel Technical vent. The vents are a sparse accent in the ceilings of plant rooms, halls, bunkers and granite halls, never a light. The role audit now reports a lit lamp that gives no light.

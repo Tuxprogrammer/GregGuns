@@ -30,7 +30,7 @@ One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns
 - **Generated layout:** a silo in a complex has its four hatches in those two outer columns, two high, and glass everywhere else in the window. Seen by a viewer standing in front of the controller (looking at it, so the controller faces them): left column Input Hatch (controller row) over Maintenance Hatch; right column Energy Hatch (controller row) over Input Bus. The silo missing its Energy Hatch has glass in its place. A player-built silo may use the same layout or any other the structure accepts.
 - **Pad:** the nine blocks accept either the unformed Galacticraft pad blocks (`tile.landingPad`) or the formed pad (`tile.landingPadFull` at the center and `tile.dummyblock` meta 2 on the other eight), found by registry name through `GalacticraftPads` so no Galacticraft class loads. Without Galacticraft the module is off and the silo inert. The launch never removes or damages the pad (D32): a missile does not extend `EntityAutoRocket`.
 - **Counts:** 96 concrete positions (84 needed, the rest may be hatches), 35 glass-ring cells (29 glass-only, 6 window edges) plus the controller, 12 beams, 9 pad blocks.
-- **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out; keep the opening above the rim free of blocks.
+- **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out and on up to the build height before it turns (D287, [flight.md](flight.md#the-climb)), so a roof or a chimney built around the opening is safe; keep the opening itself free of blocks for 12 blocks above the pad plus the body, or the launch is `BLOCKED`.
 
 ## The doors (D89, D90)
 
@@ -90,6 +90,7 @@ Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,3
 - **GGS-ICBM-03-31** From a body and a fitting warhead in a bus and Purple fuel in the hatch, the silo mates, fuels and, fired by the Launch Control, launches a T3 that detonates on target, leaving the silo intact and no chunk ticket. Scenario `icbm.silo.t3_launch`.
 - **GGS-ICBM-03-32** The silo refuses a body with no warhead, a warhead too heavy and an unaccepted fluid, and loses nothing. Scenario `icbm.silo.refusals`.
 - **GGS-ICBM-03-33** An HV hatch launches a T1 and refuses a T3; a LuV hatch launches a T3; the silo's range and scatter factors apply. Scenario `icbm.silo.tiers`.
+- **GGS-ICBM-03-34** A silo under a stone roof with a chimney around its opening launches a missile that stays on the shaft's column up to the build height, breaks no block of the silo, roof or chimney, and hits its target (D287). Scenario `icbm.silo.climb_clear`.
 
 ## Tests
 

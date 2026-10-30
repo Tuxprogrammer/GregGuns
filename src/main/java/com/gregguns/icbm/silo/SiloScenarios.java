@@ -72,6 +72,7 @@ public final class SiloScenarios {
         registry.register(new Refusals());
         registry.register(new T3Launch());
         registry.register(new T3EmpLaunch());
+        registry.register(new SiloClimbScenario());
         registry.register(new Fuels());
         registry.register(new PowerLoss());
         registry.register(new PowerGate());

@@ -587,11 +587,18 @@ public final class MissileScenarios {
             }
             final boolean[] flew = { false };
             final double[] maxY = { 0 };
+            final double[] leftColumnAt = { -1 };
+            final double lpX = m.posX;
+            final double lpZ = m.posZ;
             return ScenarioResult.pending(name(), 900, ticks -> {
                 trace(w, m, ticks);
                 if (!m.isDead) {
                     flew[0] |= m.phase() == FlightPhase.ARC;
                     maxY[0] = Math.max(maxY[0], m.posY);
+                    // D287: the first tick off the pad's column is the first step of the arc, from the build height.
+                    if (leftColumnAt[0] < 0 && Math.hypot(m.posX - lpX, m.posZ - lpZ) > 1e-6) {
+                        leftColumnAt[0] = m.posY;
+                    }
                     if (ticks >= 880) {
                         setTerrain(terrain);
                         return ScenarioResult.fail(
@@ -636,7 +643,12 @@ public final class MissileScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(flew[0], "it reached the arc phase");
-                out.check(maxY[0] > py + 20, "it climbed well above the pad (" + maxY[0] + ")");
+                out.check(maxY[0] >= w.getHeight(), "it climbed to the build height (" + maxY[0] + ")");
+                out.check(
+                    leftColumnAt[0] >= w.getHeight() - ArcPath.MAX_DIVE,
+                    "it climbed straight up from the pad to the build height before it turned (left the column at y "
+                        + leftColumnAt[0]
+                        + ")");
                 out.check(target.removed(w) > 0, "the blast broke blocks on the target platform");
                 out.checkEquals(
                     "no tickets after impact",
