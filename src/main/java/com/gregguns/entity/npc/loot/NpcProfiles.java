@@ -7,6 +7,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import com.gregguns.api.Tier;
+import com.gregguns.armor.logic.ArmorCatalog;
 
 /**
  * The loot and equipment data of every M7 mob that can be built before the M5 energy guns: Zombie Farmer, Miner and
@@ -29,7 +30,8 @@ import com.gregguns.api.Tier;
 public final class NpcProfiles {
 
     private static final String G = "gregguns:";
-    private static final LootDrop HEAVY_CLOTH = LootDrop.one(G + "part_heavy_cloth");
+    /** The pack's Tanned Leather (Backpack mod), in place of Techguns' heavy cloth: the lining our armor takes. */
+    private static final LootDrop TANNED_LEATHER = LootDrop.one(ArmorCatalog.TANNED_LEATHER);
     private static final LootDrop IRON = LootDrop.one("minecraft:iron_ingot");
     private static final LootDrop GUNPOWDER = LootDrop.one("minecraft:gunpowder");
     private static final LootDrop SHELLS = LootDrop.range(G + "ammo_shotgun_shell", 1, 8);
@@ -62,7 +64,7 @@ public final class NpcProfiles {
             NpcProfile.builder("ZombieSoldier", Tier.MV)
                 .table(
                     LootTable.builder()
-                        .slot(HEAVY_CLOTH)
+                        .slot(TANNED_LEATHER)
                         .slot(IRON)
                         .slot(GUNPOWDER)
                         .slot(SHELLS)
@@ -85,7 +87,7 @@ public final class NpcProfiles {
             NpcProfile.builder("ZombieFarmer", Tier.STEAM)
                 .table(
                     LootTable.builder()
-                        .slot(HEAVY_CLOTH)
+                        .slot(TANNED_LEATHER)
                         .slot(LootDrop.range("minecraft:wheat_seeds", 1, 3))
                         .slot(GUNPOWDER)
                         .slot(LootDrop.range("minecraft:wheat", 1, 3))
@@ -110,7 +112,7 @@ public final class NpcProfiles {
             NpcProfile.builder("ZombieMiner", Tier.STEAM)
                 .table(
                     LootTable.builder()
-                        .slot(HEAVY_CLOTH)
+                        .slot(TANNED_LEATHER)
                         .slot(LootDrop.one("minecraft:coal"))
                         .slot(GUNPOWDER)
                         .slot(IRON)
@@ -180,7 +182,7 @@ public final class NpcProfiles {
             NpcProfile.builder("ArmySoldier", Tier.MV)
                 .table(
                     LootTable.builder()
-                        .slot(HEAVY_CLOTH)
+                        .slot(TANNED_LEATHER)
                         .slot(IRON)
                         .slot(GUNPOWDER)
                         .slot(SHELLS)
@@ -202,7 +204,7 @@ public final class NpcProfiles {
             NpcProfile.builder("Bandit", Tier.MV)
                 .table(
                     LootTable.builder()
-                        .slot(HEAVY_CLOTH)
+                        .slot(TANNED_LEATHER)
                         .slot(IRON)
                         .slot(GUNPOWDER)
                         .slot(SHELLS)

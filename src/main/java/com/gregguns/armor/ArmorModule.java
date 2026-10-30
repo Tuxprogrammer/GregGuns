@@ -65,7 +65,6 @@ public final class ArmorModule implements GregGunsModule {
         FMLCommonHandler.instance()
             .bus()
             .register(EVENTS);
-        ArmorParts.addRecipes();
         AmmoSources.register(AmmoPouch.SOURCE);
         EquipmentRecipes.register();
         ArmorRecipes.register();

@@ -86,7 +86,7 @@ Verdicts: **keep** (ours, already built from GT parts or has no pack equivalent)
 | 20 | `part_cybernetic` | Assembler EV: fine wire, EV circuits, polyethylene, redstone, soul sand | feed | **Bio Lab** (HV): `ItemList.PlasmaMembrane` ([L3206][itemlist-bio]), made by Centrifuging E. coli fluid ([L91-L98][centrifuge]) | The one part whose theme is biological. A Plasma Membrane input ties the Bio Lab chain into a second EV product |
 | 21 | `part_power_plating` | Assembler IV | keep | GT tungsten steel, epoxy (already) | Gun-specific |
 | 22 | `part_nuclear_warhead` | Assembly Line ZPM | keep | GT U-235, TNT (already) | Already pack-fed |
-| 23 | `part_heavy_cloth` | crafting grid from wool | keep | none verified | No pack cloth intermediate found at the tier; low value |
+| 23 | `part_heavy_cloth` | crafting grid from wool | **replaced** (2026-10-30) | Backpack `tannedLeather` | The owner chose the pack's Tanned Leather (Stone Age drying rack, LV Chemical Bath); Heavy Cloth is retired |
 | 24 | `part_laser_focus` | moves to Laser Engraver EV (0012) | keep | `laserEngraverRecipes` (0012) | Already moved by 0012 |
 | 25 | `part_anti_gravity_core` | moves to Assembler IV (0012) | keep | `assemblerRecipes` (0012) | Already moved by 0012 |
 | 26 | `part_gas_mask_filter` | Assembler MV | keep | `ActivatedCarbonFilterMesh` (already) | Already pack-fed |

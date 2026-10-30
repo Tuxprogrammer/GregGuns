@@ -99,10 +99,10 @@
           "id:8": "minecraft:coal"
         },
         "2:10": {
-          "Count:3": 4,
+          "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         }
       },
       "ignoreDisabled:1": 0,

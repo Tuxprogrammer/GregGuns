@@ -538,7 +538,7 @@ final class ArmorScenarios {
 
         @Override
         public String description() {
-            return "The 12 steam-age hand recipes and 4 LV Combat Assembler recipes exist; Heavy Cloth has its recipe.";
+            return "The 12 steam-age hand recipes and 4 LV Combat Assembler recipes exist; the pack's Tanned Leather resolves.";
         }
 
         @Override
@@ -551,7 +551,9 @@ final class ArmorScenarios {
                         + row.output()
                             .toUpperCase(Locale.ROOT));
             }
-            out.check(craftingHas(com.gregguns.armor.logic.ArmorCatalog.HEAVY_CLOTH), "Heavy Cloth has no recipe");
+            out.check(
+                com.gregguns.compat.PackItems.find(com.gregguns.armor.logic.ArmorCatalog.TANNED_LEATHER) != null,
+                "Tanned Leather (" + com.gregguns.armor.logic.ArmorCatalog.TANNED_LEATHER + ") is not registered");
             for (com.gregguns.recipe.ProductionTable.Row row : com.gregguns.recipe.ArmorTable.COMBAT) {
                 boolean found = false;
                 for (gregtech.api.util.GTRecipe recipe : gregtech.api.recipe.RecipeMaps.assemblerRecipes

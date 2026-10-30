@@ -11,6 +11,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import com.gregguns.GregGuns;
 import com.gregguns.armor.logic.ArmorCatalog;
+import com.gregguns.compat.PackItems;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
@@ -127,6 +128,9 @@ public final class ArmorRecipes {
         if (token.startsWith("mod:")) {
             ItemStack stack = ProductionRecipes.modStack(token.substring(4), 1);
             return stack;
+        }
+        if (token.startsWith(ProductionTable.Input.EXTERNAL)) {
+            return PackItems.stack(token.substring(ProductionTable.Input.EXTERNAL.length()), 1);
         }
         return null;
     }

@@ -20,7 +20,7 @@ class ArmorTableTest {
 
     @Test
     void combatRowsMatchTheSheet() {
-        // Soldier's Helmet/Vest/Pants/Boots: plate.Steel x3/3/3/2, Heavy Cloth x2/5/4/2, circuit 1-4, 10/16/14/10 s.
+        // Soldier's Helmet/Vest/Pants/Boots: plate.Steel x3/3/3/2, Tanned Leather x2/5/4/2, circuit 1-4, 10/16/14/10 s.
         int[] steel = { 3, 3, 3, 2 };
         int[] cloth = { 2, 5, 4, 2 };
         int[] seconds = { 10, 16, 14, 10 };
@@ -52,10 +52,10 @@ class ArmorTableTest {
                     .get(0)
                     .count());
             assertEquals(
-                "part_heavy_cloth",
+                ProductionTable.Input.EXTERNAL + ArmorCatalog.TANNED_LEATHER,
                 row.inputs()
                     .get(1)
-                    .itemName());
+                    .special());
             assertEquals(
                 cloth[i],
                 row.inputs()
@@ -110,19 +110,19 @@ class ArmorTableTest {
     @Test
     void handGridsAreTheSheetGrids() {
         assertEquals(
-            java.util.Arrays.asList("ccc", "cBc"),
+            java.util.Arrays.asList("LcL", "LBL"),
             ArmorTable.SCOUT.get(0)
                 .pattern());
         assertEquals(
-            java.util.Arrays.asList("cBc", "ccc", "ccc"),
+            java.util.Arrays.asList("LBL", "LcL", "LcL"),
             ArmorTable.SCOUT.get(1)
                 .pattern());
         assertEquals(
-            java.util.Arrays.asList("ccc", "cBc", "c c"),
+            java.util.Arrays.asList("LcL", "LBL", "L L"),
             ArmorTable.SCOUT.get(2)
                 .pattern());
         assertEquals(
-            java.util.Arrays.asList("cBc", "c c"),
+            java.util.Arrays.asList("LBL", "c c"),
             ArmorTable.SCOUT.get(3)
                 .pattern());
         assertEquals(
@@ -212,7 +212,10 @@ class ArmorTableTest {
                 .values()) {
                 String lower = ingredient.toLowerCase();
                 assertFalse(lower.contains("obsidiansteel") || lower.contains("carbon") || lower.contains("techguns"));
-                assertTrue(ingredient.startsWith("ore:") || ingredient.startsWith("mod:"), ingredient);
+                assertTrue(
+                    ingredient.startsWith("ore:") || ingredient.startsWith("mod:")
+                        || ingredient.startsWith(ProductionTable.Input.EXTERNAL),
+                    ingredient);
             }
         }
     }

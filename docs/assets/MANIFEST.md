@@ -4,7 +4,7 @@ Every non-code asset GregGuns needs, derived from the design records ([0001](../
 
 The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-gen/manifest.json), built by `python -I tools/asset-gen/build_manifest.py`. Edit the script, not the generated files.
 
-**Totals:** 821 assets. By kind: icon 177, model 165, block 128, gui 14, particle 31, sound 279, branding 11, infographic 16. By priority: P1 34, P2 313, P3 474.
+**Totals:** 820 assets. By kind: icon 176, model 165, block 128, gui 14, particle 31, sound 279, branding 11, infographic 16. By priority: P1 34, P2 312, P3 474.
 
 ## Conventions
 
@@ -16,7 +16,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 - **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.
 - Provenance for every delivered asset goes in [CREDITS.md](CREDITS.md).
 
-## 2. Item icons (177)
+## 2. Item icons (176)
 
 ### Guns, melee and grenades (49)
 
@@ -72,7 +72,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.nuke_launcher` | `textures/items/nuke_launcher.png` | 16x16 | Nuke Launcher (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive launcher with hazard trefoil. Metal parts take the NaquadahAlloy gate color. | #282828 | textures/guns/nukerocketlauncher.png (model sheet, silhouette reference only) | P3 |
 | `icon.golden_gun` | `textures/items/golden_gun.png` | 16x16 | Golden Gun (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. polished gold 9mm pistol (the pistol's model in gold; GregGuns original). Metal parts take the HSSG gate color. | #999900 | textures/guns/pistol3.png (model sheet, silhouette reference only) | P2 |
 
-### Gun parts, emitters, plating and cloth (29)
+### Gun parts, emitters, plating and cloth (28)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -98,7 +98,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.part_rad_emitter` | `textures/items/part_rad_emitter.png` | 16x16 | Rad Emitter (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. lead-shielded emitter with green glow. | #282828 #46FA46 | `textures/items/radEmitter.png` | P3 |
 | `icon.part_anti_gravity_core` | `textures/items/part_anti_gravity_core.png` | 16x16 | Anti Gravity Core (IV): GT-style 16x16 item icon, soft top-left light, dark outline. cyan core sphere in a steel cage. | #6464A0 | `textures/items/antiGravityCore.png` | P3 |
 | `icon.part_cybernetic` | `textures/items/part_cybernetic.png` | 16x16 | Cybernetic Parts (EV): GT-style 16x16 item icon, soft top-left light, dark outline. wires and plates, warm gray. | #FFFF64 #DCA0F0 | `textures/items/cyberneticParts.png` | P3 |
-| `icon.part_heavy_cloth` | `textures/items/part_heavy_cloth.png` | 16x16 | Heavy Cloth (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. folded brown heavy cloth. | #643200 | `textures/items/heavyCloth.png` | P2 |
 | `icon.part_treated_leather` | `textures/items/part_treated_leather.png` | 16x16 | Treated Leather (LV): GT-style 16x16 item icon, soft top-left light, dark outline. dark green-black treated leather. | #808080 | `textures/items/treatedLeather.png` | P2 |
 | `icon.part_power_plating` | `textures/items/part_power_plating.png` | 16x16 | Power Plating (IV): GT-style 16x16 item icon, soft top-left light, dark outline. slate plate with fiber layer. | #6464A0 #A07010 | `textures/items/powerPlating.png` | P2 |
 | `icon.part_gas_mask_filter` | `textures/items/part_gas_mask_filter.png` | 16x16 | Gas Mask Filter (MV): GT-style 16x16 item icon, soft top-left light, dark outline. round filter canister. | #80C8F0 | `textures/items/gasMaskFilter.png` | P2 |
@@ -160,10 +159,10 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.t1_miner_chestplate` | `textures/items/t1_miner_chestplate.png` | 16x16 | Miner's Jacket (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. blue canvas, yellow helmet with lamp, wrought-iron rivets. Slot: chestplate. | #C8B4B4 | `textures/items/t1_miner_chestplate.png` | P2 |
 | `icon.t1_miner_leggings` | `textures/items/t1_miner_leggings.png` | 16x16 | Miner's Pants (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. blue canvas, yellow helmet with lamp, wrought-iron rivets. Slot: leggings. | #C8B4B4 | `textures/items/t1_miner_leggings.png` | P2 |
 | `icon.t1_miner_boots` | `textures/items/t1_miner_boots.png` | 16x16 | Miner's Boots (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. blue canvas, yellow helmet with lamp, wrought-iron rivets. Slot: boots. | #C8B4B4 | `textures/items/t1_miner_boots.png` | P2 |
-| `icon.t1_combat_helmet` | `textures/items/t1_combat_helmet.png` | 16x16 | Soldier's Helmet (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: helmet. | #808080 | `textures/items/t1_combat_helmet.png` | P2 |
-| `icon.t1_combat_chestplate` | `textures/items/t1_combat_chestplate.png` | 16x16 | Soldier's Vest (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: chestplate. | #808080 | `textures/items/t1_combat_chestplate.png` | P2 |
-| `icon.t1_combat_leggings` | `textures/items/t1_combat_leggings.png` | 16x16 | Soldier's Pants (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: leggings. | #808080 | `textures/items/t1_combat_leggings.png` | P2 |
-| `icon.t1_combat_boots` | `textures/items/t1_combat_boots.png` | 16x16 | Soldier's Boots (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: boots. | #808080 | `textures/items/t1_combat_boots.png` | P2 |
+| `icon.t1_combat_helmet` | `textures/items/t1_combat_helmet.png` | 16x16 | Soldier's Helmet (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: helmet. | #808080 | `textures/items/t1_combat_helmet.png` | P2 |
+| `icon.t1_combat_chestplate` | `textures/items/t1_combat_chestplate.png` | 16x16 | Soldier's Vest (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: chestplate. | #808080 | `textures/items/t1_combat_chestplate.png` | P2 |
+| `icon.t1_combat_leggings` | `textures/items/t1_combat_leggings.png` | 16x16 | Soldier's Pants (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: leggings. | #808080 | `textures/items/t1_combat_leggings.png` | P2 |
+| `icon.t1_combat_boots` | `textures/items/t1_combat_boots.png` | 16x16 | Soldier's Boots (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: boots. | #808080 | `textures/items/t1_combat_boots.png` | P2 |
 | `icon.t2_combat_helmet` | `textures/items/t2_combat_helmet.png` | 16x16 | Combat Helmet (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminum trim. Slot: helmet. | #80C8F0 | `textures/items/t2_combat_helmet.png` | P2 |
 | `icon.t2_combat_chestplate` | `textures/items/t2_combat_chestplate.png` | 16x16 | Combat Vest (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminum trim. Slot: chestplate. | #80C8F0 | `textures/items/t2_combat_chestplate.png` | P2 |
 | `icon.t2_combat_leggings` | `textures/items/t2_combat_leggings.png` | 16x16 | Combat Pants (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminum trim. Slot: leggings. | #80C8F0 | `textures/items/t2_combat_leggings.png` | P2 |

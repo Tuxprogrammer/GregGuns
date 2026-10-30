@@ -83,7 +83,7 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 
 | Registry name | Display name | Techguns (meta) | Tier | Gate | Recipe | Consumed by |
 |---|---|---|---|---|---|---|
-| `part_heavy_cloth` | Heavy Cloth | Heavy Cloth (39) | ULV | none | [RC-21](#part-heavy-cloth) | 05 |
+| ~~`part_heavy_cloth`~~ | Heavy Cloth | Heavy Cloth (39) | ULV | none | Retired 2026-10-30; RC-21 is not reused | 05: the pack's Tanned Leather (`Backpack:tannedLeather`) takes its place |
 | `part_treated_leather` | Treated Leather | Treated Leather (109) | LV | Steel (Bath at LV) | [RC-22](#part-treated-leather) | 05 |
 | ~~`part_steam_armor_plating`~~ | Steam Armor Plating | Steam Armor Plating (67) | EV | Titanium | Retired by [0022](../../design/0022-steam-armor-steam-age.md); RC-23 is not reused | 05 Steam armor (now hand-crafted from bronze plate) |
 | `part_power_plating` | Power Plating | Power Plating (89) | IV | Tungstensteel | [RC-24](#part-power-plating) | 05 Power armor, exo suit |
@@ -215,20 +215,12 @@ Replaces the Fabricator plans ([fabricator.md](../../techguns-spec/08-machines-p
 Replaces [R09, R25, R29](../../techguns-spec/06-items/recipes.md#1-gun-parts-and-components) and the Metal Press, Chem Lab and Fabricator rows for these items.
 
 <a id="part-heavy-cloth"></a>
-**RC-21 · `part_heavy_cloth` ×3** · ULV · shaped crafting · no gate · replaces R09
-
-```
-· W ·
-W L W
-· W ·
-```
-
-`W` = ore name `blockWool` ×4 (any color), `L` = vanilla leather. Unchanged from Techguns.
+**RC-21 · ~~`part_heavy_cloth`~~** · **Retired** (owner request 2026-10-30): the armor recipes and repairs take the pack's Tanned Leather (`Backpack:tannedLeather`, the Backpack mod's item; Bound Leather on a drying rack, or two leather in phosphoric acid in the LV Chemical Bath) instead, so GregGuns no longer has a cloth of its own (GT first: the pack already has the material). The id RC-21 is never reused. It was four `blockWool` around a leather, ×3, from Techguns R09.
 
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
 | RC-22<a id="part-treated-leather"></a> | `part_treated_leather` ×2 | LV | Bath | Vanilla leather ×2; fluid `Materials.SulfuricAcid.getFluid(500)` | `RECIPE_LV`, 10 s | The Bath's own LV voltage. Replaces Chem Lab recipe 15 (leather, slimeball, creeper acid). Creeper acid is dropped ([fluids.md](fluids.md#fluid-mapping)); GT sulfuric acid takes its place and the slimeball is dropped |
-| RC-23<a id="part-steam-armor-plating"></a> | ~~`part_steam_armor_plating`~~ | retired | | | | **Retired** by [0022](../../design/0022-steam-armor-steam-age.md) (2026-10-25): the Steam armor is hand-crafted from bronze plates and Heavy Cloth. The id RC-23 is never reused. History: titanium x2 until [0021](../../design/0021-tier-balance-pass.md), then x1 |
+| RC-23<a id="part-steam-armor-plating"></a> | ~~`part_steam_armor_plating`~~ | retired | | | | **Retired** by [0022](../../design/0022-steam-armor-steam-age.md) (2026-10-25): the Steam armor is hand-crafted from bronze plates and cloth (Tanned Leather since 2026-10-30). The id RC-23 is never reused. History: titanium x2 until [0021](../../design/0021-tier-balance-pass.md), then x1 |
 | RC-24<a id="part-power-plating"></a> | `part_power_plating` ×2 | IV | Asm | `plate.TungstenSteel` ×2, `plate.EpoxidFiberReinforced` ×4, `part_mechanical_3` ×1, `circuit.EV` ×2 | `RECIPE_IV`, 15 s | `TungstenSteel`. Replaces Fabricator plan 3 (2 titanium ingots, 4 basic circuits, T3 parts, 4 carbon plates, ×2) |
 | RC-25<a id="part-gas-mask-filter"></a> | `part_gas_mask_filter` ×1 | MV | Asm | `ItemList.ActivatedCarbonFilterMesh` ×1, `plate.Aluminium` ×1, `ring.Aluminium` ×1 | `RECIPE_MV`, 4 s | `Aluminium`. Replaces R25. The mesh is GT's ([ItemList#L2205](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L2205)); confirm it is obtainable by MV in the pack |
 | RC-26<a id="part-nuclear-warhead"></a> | `part_nuclear_warhead` ×2 | ZPM | AL | `plate.Lead` ×4, `dust.TNT` ×4, `circuit.LuV` ×2, `dust.Uranium235` ×2; fluid `Materials.SolderingAlloy.getMolten(144)` | `RECIPE_ZPM`, 20 s | Research item `ammo_rocket`, `Scanning(1 * MINUTES, RECIPE_EV)`. Replaces R29 (lead plates, circuits, 2 TGX, enriched uranium). TGX becomes `Materials.TNT`; `Materials.TNT` exists ([Materials.java#L389](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java#L389)) |
@@ -443,7 +435,7 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 - **GGS-06-36.** Every machine recipe (RC-61 included) has at least one input of the tier's gate material, except the loose LV ammo `ammo_9mm_bullet` and `ammo_shotgun_shell`, whose gate is the LV machine voltage and the Brass case, and RC-22 `part_treated_leather`, gated by the LV Chemical Bath voltage (a metal input in a bath is artificial). The exemption list is fixed in code and in this requirement.
 - **GGS-06-37.** Loose ammo, magazine and tank recipes use the output counts, circuit numbers and durations in this sheet. Circuit numbers are unique per (map, inputs).
 - **GGS-06-38.** Bullet recipes take slugs and cases from GT `round`, `foil` and `itemCasing`, and powder from `dust.Gunpowder`. GregGuns registers no casing item. Every loose-ammo and magazine recipe is registered to `gregguns.ammoPress` only, not to GT's Assembler, Forming Press or Extruder ([0011](../../design/0011-machine-policy.md)). The Stone Bullet also keeps its shapeless hand recipe.
-- **GGS-06-39.** Crafting-table recipes exist only for the ULV rows (RC-01 to RC-03, RC-21, RC-27, RC-63) and the magazine refill (RC-51). Every other output is made on a GT recipe map.
+- **GGS-06-39.** Crafting-table recipes exist only for the ULV rows (RC-01 to RC-03, RC-27, RC-63) and the magazine refill (RC-51). Every other output is made on a GT recipe map.
 - **GGS-06-40.** `tank_fuel`, `tank_bio` and `tank_air` implement `IFluidContainerItem`, capacity 1,000 mB. A GT Fluid Canner fills an empty tank only from at least 1,000 mB of an accepted fluid.
 - **GGS-06-41.** (withdrawn by [0010](../../design/0010-material-remap-and-tier-additions.md)) There is no `cell_energy` item and no recipe produces one.
 - **GGS-06-42.** `cell_nuclear` is not an `IElectricItem`. `cell_nuclear_depleted` has no crafting recipe, and RC-60 is its only way back to a full cell.

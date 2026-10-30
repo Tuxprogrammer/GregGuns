@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 4022574523981060905,
-      "questIDLow:4": -8370735123790281505
+      "questIDHigh:4": -8809701622927961595,
+      "questIDLow:4": -7060213232097561593
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Miner set trades some of the Scout\u0027s lightness for cast iron plates and a helmet with a yellow band. The Miner\u0027s Jacket is the quest item: six Heavy Cloth above two cast iron plates, crafted by hand. Cast iron comes from the Better Than Iron quests, and its plates are hammered flat from ingots.\n\nAll four pieces are crafted at a table; NEI shows each pattern. The helmet wants yellow dye, and the boots use cast iron nuggets.\n\n[note]Cast iron is the alternative gate for the Steam tier. If you have bronze but no cast iron yet, build the Scout set first.[/note]",
+      "desc:8": "The Miner set trades some of the Scout\u0027s lightness for cast iron plates and a helmet with a yellow band. The Miner\u0027s Jacket is the quest item: six Tanned Leather above two cast iron plates, crafted by hand. Cast iron comes from the Better Than Iron quests, and its plates are hammered flat from ingots.\n\nAll four pieces are crafted at a table; NEI shows each pattern. The helmet wants yellow dye, and the boots use cast iron nuggets.\n\n[note]Cast iron is the alternative gate for the Steam tier. If you have bronze but no cast iron yet, build the Scout set first.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -87,10 +87,10 @@
     "1:10": {
       "choices:9": {
         "0:10": {
-          "Count:3": 8,
+          "Count:3": 4,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         },
         "1:10": {
           "Count:3": 4,
@@ -124,7 +124,7 @@
           "Count:3": 6,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         },
         "1:10": {
           "Count:3": 2,

@@ -25,7 +25,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Before electricity, there is bronze. The Steam chapter builds everything with a crafting table, a hammer and a file: a single-shot Hand Cannon, stone ammunition, and three sets of light armor. No machine is required, although one steam-powered Ammo Press makes bullets for you.\n\nThe gate material here is bronze (cast iron for the Miner set). Hold eight bronze plates to open the chapter; the Hand Cannon eats a plate, and the Steam armor takes fourteen.\n\nThe plan is simple. Build the cannon and some bullets, test them on zombies, then dress for the job: Heavy Cloth is the base of every armor set, and bronze plates armor the parts that matter. When you have all of that and a few steel plates, the LV chapter is next.\n\n[note]This chapter pays the first loot bags and Pam\u0027s snacks. Eat up, then go shoot something.[/note]",
+      "desc:8": "Before electricity, there is bronze. The Steam chapter builds everything with a crafting table, a hammer and a file: a single-shot Hand Cannon, stone ammunition, and three sets of light armor. No machine is required, although one steam-powered Ammo Press makes bullets for you.\n\nThe gate material here is bronze (cast iron for the Miner set). Hold eight bronze plates to open the chapter; the Hand Cannon eats a plate, and the Steam armor takes fourteen.\n\nThe plan is simple. Build the cannon and some bullets, test them on zombies, then dress for the job: Tanned Leather is the base of every armor set, and bronze plates armor the parts that matter. When you have all of that and a few steel plates, the LV chapter is next.\n\n[note]This chapter pays the first loot bags and Pam\u0027s snacks. Eat up, then go shoot something.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -101,10 +101,10 @@
           "id:8": "gregtech:gt.metaitem.01"
         },
         "1:10": {
-          "Count:3": 6,
+          "Count:3": 3,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         },
         "2:10": {
           "Count:3": 32,

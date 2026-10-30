@@ -71,8 +71,6 @@ class ArmorCatalogTest {
                 assertEquals(p.englishName(), lang.getProperty("item.gregguns." + name + ".name"), name);
             }
         }
-        assertEquals("Heavy Cloth", lang.getProperty("item.gregguns.part_heavy_cloth.name"));
-        assertTrue(exists("textures/items/part_heavy_cloth.png"));
     }
 
     @Test

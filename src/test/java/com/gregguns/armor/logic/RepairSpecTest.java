@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 /** The repair cost rule from armor-catalog.md section 3 (getRepairMats). */
 class RepairSpecTest {
 
-    private static final RepairSpec HELMET = new RepairSpec("plate", "Steel", "part_heavy_cloth", 0.5, 2);
-    private static final RepairSpec LEGGINGS = new RepairSpec("plate", "Steel", "part_heavy_cloth", 1.0 / 3.0, 3);
-    private static final RepairSpec CLOTH_ONLY = new RepairSpec(null, null, "part_heavy_cloth", 0.5, 4);
+    private static final RepairSpec HELMET = new RepairSpec("plate", "Steel", "Backpack:tannedLeather", 0.5, 2);
+    private static final RepairSpec LEGGINGS = new RepairSpec("plate", "Steel", "Backpack:tannedLeather", 1.0 / 3.0, 3);
+    private static final RepairSpec CLOTH_ONLY = new RepairSpec(null, null, "Backpack:tannedLeather", 0.5, 4);
 
     @Test
     void anUndamagedPieceCostsNothing() {
@@ -46,7 +46,7 @@ class RepairSpecTest {
     @Test
     void halfWornSplitsLikeTechguns() {
         // Chestplate: 4 mats at half damage = 2; metal ceil(2*0.5) = 1.
-        RepairSpec chest = new RepairSpec("plate", "Steel", "part_heavy_cloth", 0.5, 4);
+        RepairSpec chest = new RepairSpec("plate", "Steel", "Backpack:tannedLeather", 0.5, 4);
         RepairSpec.Cost c = chest.cost(412, 825);
         assertEquals(1, c.metal());
         assertEquals(1, c.cloth());
@@ -61,14 +61,14 @@ class RepairSpecTest {
     }
 
     @Test
-    void everyT1PieceCanBeRepairedWithHeavyCloth() {
+    void everyT1PieceCanBeRepairedWithTannedLeather() {
         for (SetDef set : java.util.Arrays
             .asList(ArmorCatalog.T1_SCOUT, ArmorCatalog.T1_MINER, ArmorCatalog.T1_COMBAT)) {
             for (PieceDef p : set.pieces()
                 .values()) {
                 assertNotNull(p.repair(), set.id() + " " + p.slot());
                 assertEquals(
-                    "part_heavy_cloth",
+                    "Backpack:tannedLeather",
                     p.repair()
                         .clothItem());
             }

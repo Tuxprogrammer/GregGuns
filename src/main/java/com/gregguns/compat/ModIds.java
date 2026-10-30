@@ -8,6 +8,8 @@ public final class ModIds {
 
     /** Galacticraft's core mod id in the GTNH pack (GalacticraftCore, GalacticraftMars; MOD-INDEX.md). */
     public static final String GALACTICRAFT_CORE = "GalacticraftCore";
+    /** The Backpack mod's id (Eydamos' Minecraft-Backpack-Mod, GTNH fork; MOD-INDEX.md), home of Tanned Leather. */
+    public static final String BACKPACK = "Backpack";
     /** OpenComputers' mod id. */
     public static final String OPEN_COMPUTERS = "OpenComputers";
 

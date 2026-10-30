@@ -6,6 +6,13 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - When a client joins a server whose `modules.*` flags differ from the client's own `config/gregguns.cfg`, the player now gets one chat line naming each module that differs, and the log gets one warning. Recipes and NEI follow the client's own config, so set the same values there and restart. Singleplayer is unaffected.
 
+## Tanned Leather replaces Heavy Cloth
+
+- GregGuns armor is now lined with the pack's own **Tanned Leather** (`Backpack:tannedLeather`: Bound Leather on a drying rack, or two leather in phosphoric acid in the LV Chemical Bath) instead of GregGuns' Heavy Cloth, which is removed along with its wool recipe.
+- Tanned Leather takes Heavy Cloth's place one for one in the Miner, Steam, Soldier's (T1 Combat), T2 Combat and Beret recipes, the Night Vision Goggles, the Ammo Pouch and the glider parts, and in every armor repair that used cloth. The light Bandit (Scout) set is mostly plain leather now: six Tanned Leather for the whole set.
+- Zombies, bandits and soldiers drop Tanned Leather where they dropped Heavy Cloth, the Recruit loot bag holds two Tanned Leather, and the Vending Machine no longer sells Heavy Cloth.
+- The Steam chapter's Heavy Cloth quest is replaced by a Tanned Leather quest, and quest rewards that paid Heavy Cloth pay Tanned Leather.
+
 ## Fixed
 
 - Missile Bodies T1 and T2 are now built in the GT Assembler at HV and EV, with no research, instead of on the Assembly Line, which GTNH players only reach at LuV. Same inputs and times: plates, fins, engine, 2 circuits and 250 L of lubricant. The Tier 3 body stays on the LuV Assembly Line.
@@ -14,7 +21,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 ## New: GregGuns Coins and the Vending Machine
 
 - **GregGuns Coin** (`gregguns:coin`), GregGuns' own currency, in five values like the pack's coins: 1, 10, 100, 1000 and 10K (damage 0 to 4). One coin breaks into ten of the next lower value in a crafting grid; ten coins and programmed circuit 10 make one of the next higher value in any GT Assembler.
-- **GregGuns trades in the pack's Vending Machine.** 178 trades with every module on: guns, akimbo pairs, melee tools, loaded magazines, rounds, grenades, gun parts and components, armor, special-slot gear, flight devices, armor parts, turret plates and a spawn egg for every NPC, the Attack Helicopter, Cyberdemon, Alien Bug and Dictator Dave included. All are priced in GregGuns Coins by tier. With the GregGuns quest line installed, each tier's trades open with that tier's intro quest. The trades are added in memory when the server starts; `config/vendingmachine/tradeDatabase.json` is not touched. New key `compat.vendingTrades` (default on).
+- **GregGuns trades in the pack's Vending Machine.** 177 trades with every module on: guns, akimbo pairs, melee tools, loaded magazines, rounds, grenades, gun parts and components, armor, special-slot gear, flight devices, armor parts, turret plates and a spawn egg for every NPC, the Attack Helicopter, Cyberdemon, Alien Bug and Dictator Dave included. All are priced in GregGuns Coins by tier. With the GregGuns quest line installed, each tier's trades open with that tier's intro quest. The trades are added in memory when the server starts; `config/vendingmachine/tradeDatabase.json` is not touched. New key `compat.vendingTrades` (default on).
 
 ### Quest loot bags
 

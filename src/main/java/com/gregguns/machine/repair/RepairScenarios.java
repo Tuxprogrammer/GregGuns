@@ -24,6 +24,7 @@ import com.gregguns.armor.logic.ArmorCatalog;
 import com.gregguns.armor.logic.ArmorSlot;
 import com.gregguns.armor.logic.RepairSpec;
 import com.gregguns.block.GregGunsCasings;
+import com.gregguns.compat.PackItems;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioArea;
 import com.gregguns.core.testing.ScenarioContext;
@@ -33,7 +34,6 @@ import com.gregguns.machine.GregGunsMTEIDs;
 import com.gregguns.network.validation.PacketOutcome;
 import com.mojang.authlib.GameProfile;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -99,8 +99,7 @@ public final class RepairScenarios {
     }
 
     private static ItemStack cloth(int count) {
-        Item item = GameRegistry.findItem(GregGuns.MODID, "part_heavy_cloth");
-        return item == null ? null : new ItemStack(item, count);
+        return PackItems.stack(ArmorCatalog.TANNED_LEATHER, count);
     }
 
     private static ItemStack plate(String material, int count) {

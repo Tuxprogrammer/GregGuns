@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 4022574523981060905,
-      "questIDLow:4": -8370735123790281505
+      "questIDHigh:4": -8809701622927961595,
+      "questIDLow:4": -7060213232097561593
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Bandit set is the lightest armor in the tab: Heavy Cloth held together with a few bronze plates. Each piece adds to your armor value, and none of them needs a machine. The Bandit Vest is the quest item, cloth around a bronze plate laid out in a crafting grid. Check NEI for the pattern of each piece: mask, vest, pants and boots.\n\nTier 1 armor will not stop much damage, but it costs almost nothing and keeps you in the fight until you can afford steel. Each piece comes in several camo patterns, and the Camo Bench cycles them later.\n\n[note]Build a full set if you can: the armor values add up.[/note]",
+      "desc:8": "The Bandit set is the lightest armor in the tab: plain leather with a little Tanned Leather, held together with a few bronze plates. Each piece adds to your armor value, and none of them needs a machine. The Bandit Vest is the quest item: two Tanned Leather, six leather and a bronze plate in a crafting grid. Check NEI for the pattern of each piece: mask, vest, pants and boots.\n\nTier 1 armor will not stop much damage, but it costs little and keeps you in the fight until you can afford steel. Each piece comes in several camo patterns, and the Camo Bench cycles them later.\n\n[note]Build a full set if you can: the armor values add up.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -87,10 +87,10 @@
     "1:10": {
       "choices:9": {
         "0:10": {
-          "Count:3": 8,
+          "Count:3": 4,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         },
         "1:10": {
           "Count:3": 4,
@@ -121,12 +121,18 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 8,
+          "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         },
         "1:10": {
+          "Count:3": 6,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:leather"
+        },
+        "2:10": {
           "Count:3": 1,
           "Damage:2": 17300,
           "OreDict:8": "",

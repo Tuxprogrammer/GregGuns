@@ -962,8 +962,8 @@
       "title": "T1 Combat Armor",
       "tier": "LV",
       "desc": [
-        "Steel plate and Heavy Cloth, pressed in the LV Assembler. The Soldier's set is the first armor that protects better than the hand-made sets: three steel plates in every piece but the boots, which take two, plus cloth, and a full set beats the Steam armor. The Soldier's Vest is the quest item.",
-        "Make Heavy Cloth in bulk (the Steam chapter showed how), because the vest alone eats five. Helmet, vest, pants and boots each use their own circuit number in the Assembler, and NEI shows each one.",
+        "Steel plate and Tanned Leather, pressed in the LV Assembler. The Soldier's set is the first armor that protects better than the hand-made sets: three steel plates in every piece but the boots, which take two, plus cloth, and a full set beats the Steam armor. The Soldier's Vest is the quest item.",
+        "Stock up on Tanned Leather, because the vest alone eats five. Your LV Chemical Bath makes it from two leather in phosphoric acid, with no drying rack to wait on. Helmet, vest, pants and boots each use their own circuit number in the Assembler, and NEI shows each one.",
         "[note]Armor value shows on the tooltip. Compare sets before you commit plates.[/note]"
       ],
       "pre": [
@@ -979,7 +979,7 @@
               "damage": 17305
             },
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 5,
               "damage": 0
             }
@@ -1020,8 +1020,8 @@
           "type": "choice",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {

@@ -14,7 +14,7 @@
         <Loot Identifier="gg_recruit_part_mechanical_1" ItemName="gregguns:part_mechanical_1" Amount="2" NBTTag="" Chance="150" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_recruit_part_stock_wooden" ItemName="gregguns:part_stock_wooden" Amount="2" NBTTag="" Chance="110" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_recruit_part_barrel_stone" ItemName="gregguns:part_barrel_stone" Amount="2" NBTTag="" Chance="110" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
-        <Loot Identifier="gg_recruit_part_heavy_cloth" ItemName="gregguns:part_heavy_cloth" Amount="4" NBTTag="" Chance="125" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_recruit_tanned_leather" ItemName="Backpack:tannedLeather" Amount="2" NBTTag="" Chance="125" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_recruit_t1_scout_helmet" ItemName="gregguns:t1_scout_helmet" Amount="1" NBTTag="" Chance="50" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>
         <Loot Identifier="gg_recruit_t1_scout_chestplate" ItemName="gregguns:t1_scout_chestplate" Amount="1" NBTTag="" Chance="50" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>
         <Loot Identifier="gg_recruit_t1_scout_leggings" ItemName="gregguns:t1_scout_leggings" Amount="1" NBTTag="" Chance="50" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>

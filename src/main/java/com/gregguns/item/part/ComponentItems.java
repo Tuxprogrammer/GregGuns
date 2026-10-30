@@ -15,9 +15,8 @@ import com.gregguns.core.registry.ModuleRegistrar;
  * tier, so the registry and the inventory cannot disagree.
  *
  * <p>
- * Items registered elsewhere keep their registrars ({@link PartItems} for the M1 and M2 parts, {@code ArmorParts}:
- * Heavy Cloth, Gas Mask Filter and the
- * Compressed Air Tank). Names match the texture files.
+ * Items registered elsewhere keep their registrars ({@link PartItems} for the M1 and M2 parts, {@code ArmorParts}: Gas
+ * Mask Filter and the Compressed Air Tank). Names match the texture files.
  *
  * <p>
  * Usage: {@code ComponentItems.get(ComponentItems.RECEIVER_STEEL)}.

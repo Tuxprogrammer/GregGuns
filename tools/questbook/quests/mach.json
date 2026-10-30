@@ -57,8 +57,8 @@
               "ore": "plateSteel"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 4,
+              "id": "Backpack:tannedLeather",
+              "count": 2,
               "damage": 0
             },
             {
@@ -143,8 +143,8 @@
               "ore": "plateAluminium"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {
@@ -171,8 +171,8 @@
       "title": "Mending Armor",
       "tier": "MV",
       "desc": [
-        "Repairs cost parts: a plate of the set's gate material and Heavy Cloth. T1 Combat armor is gated by steel, so a worn Soldier's Vest takes steel plates and cloth, and the more damaged it is, the more parts it takes, up to two plates and two cloth. Bandit (Scout) gear mends with cloth alone.",
-        "Gather a T1 Combat chestplate, two Heavy Cloth and two steel plates, then use the bench's Chest button. The bench accepts any mod's plate of the right material.",
+        "Repairs cost parts: a plate of the set's gate material and Tanned Leather. T1 Combat armor is gated by steel, so a worn Soldier's Vest takes steel plates and cloth, and the more damaged it is, the more parts it takes, up to two plates and two Tanned Leather. Bandit (Scout) gear mends with Tanned Leather alone.",
+        "Gather a T1 Combat chestplate, two Tanned Leather and two steel plates, then use the bench's Chest button. The bench accepts any mod's plate of the right material.",
         "[note]GregTech tools keep their wear in their own data and the bench never touches them.[/note]"
       ],
       "pre": [
@@ -189,7 +189,7 @@
               "ore": "plateSteel"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 2,
               "damage": 0
             }
@@ -204,7 +204,7 @@
               "damage": 0
             },
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 2,
               "damage": 0
             },
@@ -247,8 +247,8 @@
               "ore": "plateAluminium"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {
@@ -325,8 +325,8 @@
               "ore": "plateStainlessSteel"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {

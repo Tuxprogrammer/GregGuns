@@ -7,7 +7,7 @@
       "tier": "LV",
       "desc": [
         "Armor and gear sit in two places. Armor goes in the four armor slots, and so does the Gas Mask, because GregTech's hazard checks only read those slots. Galacticraft's oxygen gear uses Galacticraft's own slots. Everything else, goggles, back devices and the ammo pouch, goes in Baubles slots: head for goggles, wings for packs and gliders, quiver for the ammo pouch.",
-        "Pick up any starter chestplate to begin: Steam, Bandit (Scout) or Soldier's (T1 Combat). The Steam set is crafted by hand from bronze plates and Heavy Cloth, and the T1 Combat set is built in an assembler. Check NEI for the exact pieces.",
+        "Pick up any starter chestplate to begin: Steam, Bandit (Scout) or Soldier's (T1 Combat). The Steam set is crafted by hand from bronze plates and Tanned Leather, and the T1 Combat set is built in an assembler. Check NEI for the exact pieces.",
         "[note]Wear every piece of a set for its full bonus. Items in Baubles slots drop when you die unless you keep your inventory.[/note]"
       ],
       "pre": [
@@ -67,8 +67,8 @@
               "ore": "plateSteel"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {
@@ -172,8 +172,8 @@
               "ore": "plateAluminium"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             }
           ]
@@ -360,8 +360,8 @@
               "ore": "plateAluminium"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {
@@ -389,7 +389,7 @@
       "tier": "MV",
       "desc": [
         "Night Vision Goggles go in the head Baubles slot, not the helmet slot, so you can wear them under a gas mask. They are electric, so charge them before you use them: they come out of the assembler empty.",
-        "They are built in an MV assembler from rubber plates, Heavy Cloth, circuits, an MV Sensor, glass and an aluminum plate. Check NEI for the exact list."
+        "They are built in an MV assembler from rubber plates, Tanned Leather, circuits, an MV Sensor, glass and an aluminum plate. Check NEI for the exact list."
       ],
       "pre": [
         "gg.gear.intro",
@@ -400,7 +400,7 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 1,
               "damage": 0
             },
@@ -458,8 +458,8 @@
               "ore": "plateAluminium"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {
@@ -487,7 +487,7 @@
       "tier": "MV",
       "desc": [
         "The Ammo Pouch lives in the quiver Baubles slot and holds six stacks of ammunition with its own screen. When you reload, your guns look in the pouch before the rest of your inventory, so you stop digging through your bag in a fight.",
-        "It is a cheap MV assembler recipe: three Heavy Cloth, two leather and an aluminum plate."
+        "It is a cheap MV assembler recipe: three Tanned Leather, two leather and an aluminum plate."
       ],
       "pre": [
         "gg.gear.nvg"
@@ -497,7 +497,7 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 3,
               "damage": 0
             },
@@ -792,7 +792,7 @@
       "tier": "HV",
       "desc": [
         "The Glider lets you glide down from heights with no energy at all. It also goes in the wings slot, so choose between it and the Jump Pack.",
-        "It is assembled from a Glider Backpack and two Glider Wings, which come from Heavy Cloth and stainless steel. Check NEI for the exact recipe."
+        "It is assembled from a Glider Backpack and two Glider Wings, which come from Tanned Leather and stainless steel. Check NEI for the exact recipe."
       ],
       "pre": [
         "gg.gear.jump_pack"
@@ -808,7 +808,7 @@
               "ore": "plateStainlessSteel"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 19,
               "damage": 0
             }
@@ -855,8 +855,8 @@
               "ore": "plateStainlessSteel"
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {

@@ -5,10 +5,9 @@ import net.minecraft.item.ItemStack;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.gregguns.GregGuns;
 import com.gregguns.armor.logic.RepairSpec;
+import com.gregguns.compat.PackItems;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GTOreDictUnificator;
@@ -31,7 +30,7 @@ public final class ArmorRepair {
         if (spec == null || candidate == null) {
             return false;
         }
-        Item cloth = GameRegistry.findItem(GregGuns.MODID, spec.clothItem());
+        Item cloth = PackItems.find(spec.clothItem());
         if (cloth != null && candidate.getItem() == cloth) {
             return true;
         }

@@ -957,17 +957,6 @@ def _(c, x):
     c.pix(5, 5, CYAN[HL])
 
 
-@icon("part_heavy_cloth")
-def _(c, x):
-    cl = ramp((128, 88, 52))
-    c.rect(2, 3, 13, 12, cl)
-    c.hline(2, 13, 6, cl[SH]); c.hline(2, 13, 9, cl[SH])
-    c.hline(2, 13, 7, cl[HL]); c.hline(2, 13, 10, cl[LT])
-    c.rect(11, 3, 13, 12, cl[SH], bevel=False)
-    c.vline(11, 3, 12, cl[HL])
-    c.dither([(a, b) for a in range(2, 11) for b in (4, 5)], cl[BS], cl[LT])
-
-
 @icon("part_treated_leather")
 def _(c, x):
     lt = ramp((52, 66, 54))
