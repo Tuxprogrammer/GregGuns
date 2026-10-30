@@ -240,6 +240,9 @@ class LaunchControlTest {
         assertEquals("1,250", LaunchControlFormat.blocks(1250));
         assertEquals("20 - 1,000", LaunchControlFormat.range(20, 1000));
         assertEquals("-", LaunchControlFormat.range(0, 0));
+        assertEquals("1,250", LaunchControlFormat.distance(true, 1250));
+        assertEquals("0", LaunchControlFormat.distance(true, 0));
+        assertEquals("-", LaunchControlFormat.distance(false, 0), "no target: no distance, not 0");
         assertEquals("0", LaunchControlFormat.eu(-4));
         assertEquals("30,720", LaunchControlFormat.eu(30720));
     }

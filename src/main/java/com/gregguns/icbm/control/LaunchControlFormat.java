@@ -26,6 +26,15 @@ public final class LaunchControlFormat {
     }
 
     /**
+     * @param targetSet whether a target is set
+     * @param blocks    the distance to it
+     * @return the distance with thousands separators, or a dash with no target (the block's own spot is not a target)
+     */
+    public static String distance(boolean targetSet, int blocks) {
+        return targetSet ? blocks(blocks) : "-";
+    }
+
+    /**
      * @param min the minimum range
      * @param max the maximum range, 0 when unknown
      * @return {@code 20 - 1,000}, or a dash while the maximum is unknown

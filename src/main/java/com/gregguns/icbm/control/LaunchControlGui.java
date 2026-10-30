@@ -231,9 +231,8 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 () -> AMBER));
         screen.child(
             text(
-                () -> LaunchTarget.NONE.toString()
-                    .equals(state.target) ? tr("gregguns.icbm.control.gui.target_none")
-                        : trf("gregguns.icbm.control.gui.target", state.target),
+                () -> !targetSet() ? tr("gregguns.icbm.control.gui.target_none")
+                    : trf("gregguns.icbm.control.gui.target", state.target),
                 4,
                 3 + 2 * ROW,
                 CONTENT - 8,
@@ -244,7 +243,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             text(
                 () -> trf(
                     "gregguns.icbm.control.gui.range",
-                    LaunchControlFormat.blocks(state.distance),
+                    LaunchControlFormat.distance(targetSet(), state.distance),
                     LaunchControlFormat.range(state.min, state.max)),
                 4,
                 3 + 3 * ROW,
@@ -363,6 +362,12 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
     private boolean launchUnderway() {
         ControlStatus s = ControlStatus.values()[state.status];
         return s == ControlStatus.COUNTDOWN || s == ControlStatus.IGNITED;
+    }
+
+    /** @return whether the synced target is set */
+    private boolean targetSet() {
+        return !LaunchTarget.NONE.toString()
+            .equals(state.target);
     }
 
     private boolean canAbort() {
