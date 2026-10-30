@@ -21,7 +21,7 @@ The layouts then mixed unrelated roles per cell (`factory_wall*3 | concrete*1`, 
 2. **Every role belongs to one family** (concrete, masonry, red brick, steel, rust, hazard, camo, ...), declared in the role table. A layout's weighted entry may draw only from one family, plus air for gaps: weathering is `concrete*3 | concrete_dark*1` or `red_brick*3 | red_brick_worn*1`, never concrete with steel.
 3. **A role key takes its own meta.** `concrete#4` is rejected at load: meta 4 means something else for every block of the chain. A different look is a different role.
 4. **No signs, icons or animated overlays as building material.** Hazard is Chisel's hazard stripe; lights are Chisel's light-stone panel (the same light the ICBM silo complex uses).
-5. **The block a role places in the pack is not one GregTech's stone layers overwrite** (stone, stained clay, cobblestone, GT granites and stones): sandbags are plain hardened clay, containers Chisel's red hempcrete. Ground fill under the train tracks may stay cobblestone.
+5. **The block a role places in the pack is not one GregTech's stone layers overwrite** (stone, stained clay, cobblestone, GT granites and stones): sandbags and containers are Chisel's brown and red hempcrete. Ground fill under the train tracks may stay cobblestone.
 6. **Per structure** (the role tables are in the structure notes and [chisel-palette](../gregguns-spec/11-worldgen/chisel-palette.md#roles-and-families)):
 
 | Structure | Character (Techguns spec) | Palette now |
@@ -30,7 +30,7 @@ The layouts then mixed unrelated roles per cell (`factory_wall*3 | concrete*1`, 
 | Train Station | weathered brick house, light roof with holes | red brick with a sooty share, gray stone-brick roof and slabs with gaps |
 | Gas Station | asphalt forecourt, brick shop, steel canopy | asphalt apron, concrete panels and pillars, gray stone-brick shop, steel canopy with a whole iron-bar railing, hazard-stripe pumps |
 | Medium House | gray stone house, dark red roof | gray stone bricks with a worn share and stone-panel corner posts, nether-brick roof, brown carpets |
-| Big Bunker | gray concrete under an earth berm and camo | concrete with panel and weathered shares, weathered-concrete columns, plain-clay sandbags, leaf camo |
+| Big Bunker | gray concrete under an earth berm and camo | concrete with panel and weathered shares, weathered-concrete columns, brown hempcrete sandbags, leaf camo |
 | Aircraft Carrier | gray steel ship, hazard rims | steel-plate hull and island, plated deck, grate floors, hazard-stripe rims |
 | Submarine | dark steel hull | dark steel hull, steel-plate band, plated interior, grate floors |
 | Military Base parts | concrete, steel, wood, camo, red containers | as the families above; camo by biome (leaves, Chisel desert camo, snow) |

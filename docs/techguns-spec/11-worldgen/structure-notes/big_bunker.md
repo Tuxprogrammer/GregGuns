@@ -43,7 +43,7 @@ Totals: 3 vanilla, 3 reinforced, 8 weapon, 2 spawners. Spawner behavior (5 nearb
 | Interior concrete looks | `concrete` weight 4, `concrete_panel` weight 2, `concrete_dark` weight 1; columns `concrete_dark` | stone brick | interior walls, columns |
 | Light slab | `concrete` | stone brick | hall floor at layer 5, roof slab |
 | Berm soil | `minecraft:dirt#2` (podzol) | same | berm outside |
-| Sandbags | `sandbag` (plain hardened clay; stained clay is overwritten by GT stone layers) | same | berm and pill-boxes |
+| Sandbags | `sandbag` (Chisel brown hempcrete; stained clay is overwritten by GT stone layers) | same | berm and pill-boxes |
 | Camo net | no key yet; `minecraft:leaves#4` (non-decaying) as a stand-in | same | roof cover |
 | Stairs | `minecraft:stone_brick_stairs@stairs`, `minecraft:spruce_stairs@stairs` | same | ramps, rim, pill-box steps |
 | Doors | `minecraft:iron_door` with `@door`, both halves | same | pill-boxes and interior (about 20 doors in all) |

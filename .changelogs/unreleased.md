@@ -9,7 +9,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 ## Structures: calmer palettes
 
 - Newly generated structures are built from one material family each, matching the Techguns originals: the Small Factory is rusted steel on a concrete base, the Train Station weathered red brick under a gray stone roof, the Gas Station an asphalt forecourt with a stone-brick shop under a steel canopy, the Medium House gray stone under its dark red roof, the Big Bunker plain concrete, and the carrier and submarine gray and dark steel. Walls no longer speckle concrete with dark bricks and purple metal, roofs no longer checker gray and sandstone stairs, and no wall or deck repeats Chisel's radiation sign, glowing hex plating or flame lanterns: hazard trim is a hazard stripe and lights are light panels.
-- Military Bases: red containers are Chisel hempcrete, sandbags are plain hardened clay (GregTech's stone layers no longer eat into either), crates are Chisel crates, and desert tents use Chisel's desert camo.
+- Military Bases and the Big Bunker: containers and sandbags are Chisel hempcrete in red and brown (GregTech's stone layers no longer eat into either), crates are Chisel crates, and desert tents use Chisel's desert camo.
 - The Gas Station canopy now carries a whole iron-bar railing; before, only a fence, an iron bar and a fence stood in one corner of its roof.
 
 ## Fixed

@@ -53,7 +53,7 @@
 | Lamps | `lamp` | glowstone |
 | Wood panels, floors, roof | `minecraft:planks` | same |
 | Wood pillars | `minecraft:log@axis` | same |
-| Sandbags | `sandbag` (plain hardened clay) | same |
+| Sandbags | `sandbag` (Chisel brown hempcrete) | brown wool |
 | Camo net wall and roof | `camo_woodland`, `camo_desert`, `camo_snow` by the base's biome | oak leaves, sandstone, snow |
 | Shipping container | `container` (Chisel red hempcrete) | red wool |
 | Crates | `crate` (Chisel spruce crate) | spruce planks |

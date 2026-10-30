@@ -54,7 +54,7 @@ public final class PaletteKeys {
     // steel); stonebricksmooth L3724-L3744 (5 large bricks, 7 chaotic bricks, 12 hard panel); brickCustom L463-L487 (5
     // aged,
     // 13 sooty); glowstone L1563-L1579 (4 sulphur neon panel); glass_pane L1398-L1406 (2 no border); nation and rebel
-    // L2784-L2804 (0 camo); <wood>_planks L4380-L4406 (10 crate); hempcrete L1902-L1917 (wool color order, 14 red).
+    // L2784-L2804 (0 camo); <wood>_planks L4380-L4406 (10 crate); hempcrete L1902-L1917 (wool color order: 12 brown, 14 red).
     // Source: GT concrete metas (0 dark, 8 light, 12 cracked light bricks, 15 smooth light), at 5.09.54.205:
     // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/resources/assets/gregtech/lang/en_US.lang#L9567-L9582
 
@@ -92,7 +92,7 @@ public final class PaletteKeys {
         // Camp: camo nets by biome, sandbags, shipping containers.
         { "camo_woodland", "camo", "minecraft:leaves#4" },
         { "camo_desert", "camo", "chisel:rebel#0", "minecraft:sandstone#0" },
-        { "camo_snow", "camo", "minecraft:snow#0" }, { "sandbag", "sandbag", "minecraft:hardened_clay#0" },
+        { "camo_snow", "camo", "minecraft:snow#0" }, { "sandbag", "sandbag", "chisel:hempcrete#12", "minecraft:wool#12" },
         { "container", "container", "chisel:hempcrete#14", "minecraft:wool#14" },
         // The Medium House's metal storage nook (deliberately the real storage blocks).
         { "lead_block", "metal_storage", "chisel:leadblock#0", "minecraft:iron_block#0" },

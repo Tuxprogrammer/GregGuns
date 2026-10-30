@@ -48,7 +48,7 @@ The role table in `PaletteKeys` ([0025](../../design/0025-structure-palettes.md)
 | glass | `glass_pane` | Chisel glass pane 2 (no border) | glass pane |
 | wood | `crate` | Chisel spruce planks 10 (crate) | spruce planks |
 | camo | `camo_woodland`, `camo_desert`, `camo_snow` | oak leaves; Chisel desert camo (rebel 0); snow | sandstone (desert) |
-| sandbag | `sandbag` | hardened clay | |
+| sandbag | `sandbag` | Chisel hempcrete 12 (brown) | brown wool |
 | container | `container` | Chisel hempcrete 14 (red) | red wool |
 | metal_storage | `lead_block`, `copper_block`, `tin_block`, `gold_plate` | Chisel metal storage blocks | iron, gold, clay |
 | bugnest | `bugnest_wall`, `bugnest_egg`, `bugnest_slime` | GregGuns nest blocks | sandstone, clay, vines |
