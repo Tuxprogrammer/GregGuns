@@ -5,151 +5,1193 @@
       "key": "gg.mv.intro",
       "title": "Aluminum-Age Arms",
       "tier": "MV",
-      "desc": "MV adds automatic weapons, grenades and second-tier armor. Aluminum is the gate.",
-      "pre": ["gg.lv.intro", 1148, 1598],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 472,
+      "desc": [
+        "MV is where firepower goes automatic. Aluminum unlocks the SMGs, the assault rifles and a combat shotgun, plus grenades, the flashbang, two more armor sets and the Akimbo pistols you can build from your LV sidearms. Everything here is an MV Assembler recipe with aluminum in it.",
+        "Ammunition changes too. SMGs and assault rifles take their own magazines, which are pressed in an MV Ammo Press, so build one (an MV press also runs every LV recipe, faster). The magazines need aluminum plates and springs.",
+        "Hold eight aluminum plates to open the chapter. The thick line runs through the parts, the SMG and the rifles; grenades, armor and the akimbo guns hang off to the side.",
+        "[note]You can run LV recipes in an MV machine, so one MV press and one MV assembler cover everything so far.[/note]"
+      ],
+      "pre": [
+        "gg.lv.intro",
+        1148,
+        1598
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "rations",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 10,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019
+            },
+            {
+              "id": "gregguns:mag_smg",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 456,
       "y": 94,
-      "size": 28,
-      "main": false,
-      "icon": {"id": "gregguns:thompson_smg", "count": 1, "damage": 0},
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.metaitem.01",
+        "count": 1,
+        "damage": 17019
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.smg_mags",
       "title": "SMG Magazines",
       "tier": "MV",
-      "desc": "Press an empty magazine in the Ammo Press, then fill it with rounds.",
-      "pre": ["gg.mv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:mag_smg", "count": 1, "damage": 0}]}],
-      "rewards": [],
+      "desc": [
+        "The SMG magazine has its own two-step recipe. In an MV Ammo Press, two aluminum plates, nine small aluminum springs and Mechanical Parts T2 make eight empty magazines. Then four empties and eight 9mm bullets make four loaded ones.",
+        "Note what it eats: the SMG shares the 9mm bullet with the pistol and revolver, so the LV production line you built already feeds it. Each loaded magazine takes two bullets.",
+        "[note]Only an MV or higher press runs MV recipes. The LV press will not start them.[/note]"
+      ],
+      "pre": [
+        "gg.mv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_smg_empty",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_smg",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:toastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_smg_empty",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17019
+            }
+          ]
+        }
+      ],
       "x": 384,
-      "y": 132,
+      "y": 160,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:mag_smg", "count": 1, "damage": 0},
+      "main": true,
+      "icon": {
+        "id": "gregguns:mag_smg",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.thompson",
       "title": "Thompson SMG",
       "tier": "MV",
-      "desc": "Fast, light automatic fire at MV.",
-      "pre": ["gg.mv.smg_mags"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:thompson_smg", "count": 1, "damage": 0}]}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:mag_smg", "count": 1, "damage": 0}]}],
+      "desc": [
+        "Fast, light automatic fire for crowds of anything. The Thompson keeps firing while you hold the trigger and gets through an SMG magazine quickly, so it shines at short range and runs dry if you waste it.",
+        "It is built in an MV Assembler from an Iron Barrel, an Iron Receiver, a Wooden Stock, aluminum plates, screws and springs. It shoots the same 9mm bullets as your pistol, loaded into SMG magazines. If you want a bigger clip, look at the Mac10 next door.",
+        "[note]Fire in short bursts and keep a spare magazine loaded.[/note]"
+      ],
+      "pre": [
+        "gg.mv.smg_mags"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_iron",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_iron",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_wooden",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 27019
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:thompson_smg",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_smg",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:hamburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_smg",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17019
+            }
+          ]
+        }
+      ],
       "x": 384,
-      "y": 168,
+      "y": 196,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:thompson_smg",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.mv.mac10",
+      "title": "Mac10",
+      "tier": "MV",
+      "desc": [
+        "A compact automatic SMG with a thirty-two round clip. The Mac10 trades the Thompson's wooden furniture for steel parts: a Hardened Steel Barrel, a Steel Receiver and a polyethylene plate, plus aluminum plates, screws and springs, assembled in an MV Assembler.",
+        "It uses the same SMG magazines as the Thompson. Two Mac10s combine into Akimbo Mac10s at HV, which fire both guns on every pull.",
+        "[note]The Steel Receiver is an MV part with its own quest. See MV Gun Parts.[/note]"
+      ],
+      "pre": [
+        "gg.mv.smg_mags"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_steel",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 27019
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mac10",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:hotdogItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_smg",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17019
+            }
+          ]
+        }
+      ],
+      "x": 420,
+      "y": 196,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:thompson_smg", "count": 1, "damage": 0},
+      "icon": {
+        "id": "gregguns:mac10",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.mv.parts",
+      "title": "MV Gun Parts",
+      "tier": "MV",
+      "desc": [
+        "MV rifles and shotguns are built around two new parts. The Steel Receiver (three steel plates, Mechanical Parts T2 and two aluminum screws) is a tougher action than the iron one. The Plastic Gun Stock (three polyethylene plates and two aluminum screws) replaces wood.",
+        "Both are MV Assembler recipes, and NEI shows the inputs. Hold one of each to finish this quest. Polyethylene is GregTech's plastic; you will meet it in the oil chapters of the pack.",
+        "[note]The M4, the Combat Shotgun and the Mac10 all use the Steel Receiver.[/note]"
+      ],
+      "pre": [
+        "gg.mv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 27019
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17874
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_receiver_steel",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_plastic",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:beefjerkyItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17019
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 27019
+            }
+          ]
+        }
+      ],
+      "x": 456,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_receiver_steel",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.rifle",
       "title": "M4 or AK47",
       "tier": "MV",
-      "desc": "Assault rifles use their own magazines, not SMG magazines.",
-      "pre": ["gg.mv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:m4", "count": 1, "damage": 0}, {"id": "gregguns:ak47", "count": 1, "damage": 0}], "any": true}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:mag_assault_rifle", "count": 1, "damage": 0}]}],
-      "x": 420,
-      "y": 132,
+      "desc": [
+        "Assault rifles are the backbone of MV. Both the M4 and the AK47 fire automatically from a thirty-round Assault Rifle Magazine, which is not the same as an SMG magazine: each loaded one takes three Rifle Bullets, the same rounds as the bolt rifle. Either rifle completes this quest.",
+        "The M4 has a scope (right-click to zoom) and uses the Steel Receiver and Plastic Gun Stock. The AK47 is cheaper, with an Iron Receiver and a Wooden Stock plus a couple of wooden sticks. Both use a Hardened Steel Barrel. Pick the one you can afford.",
+        "[note]Assault Rifle Magazines have their own empty recipe in the MV press: three aluminum plates, eight springs and Mechanical Parts T2 make eight.[/note]"
+      ],
+      "pre": [
+        "gg.mv.parts"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_steel",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_plastic",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:m4",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ak47",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:trailmixItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17019
+            }
+          ]
+        }
+      ],
+      "x": 456,
+      "y": 196,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:m4", "count": 1, "damage": 0},
+      "main": true,
+      "icon": {
+        "id": "gregguns:m4",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.combat_shotgun",
       "title": "Combat Shotgun",
       "tier": "MV",
-      "desc": "Magazine-fed shotgun. Uses the same shells as the Sawed Off.",
-      "pre": ["gg.mv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:combat_shotgun", "count": 1, "damage": 0}]}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:ammo_shotgun_shell", "count": 16, "damage": 0}]}],
-      "x": 456,
-      "y": 132,
+      "desc": [
+        "The big brother of the Sawed Off. Eight shells in the tube, loaded one at a time with the same Shotgun Shells, so your LV shell production keeps it fed. Pellets spread wide, so it is devastating up close and weak at range.",
+        "It is built in an MV Assembler from a Hardened Steel Barrel, a Steel Receiver, a Plastic Gun Stock, steel rods for the pump tube, and aluminum plates, screws and springs.",
+        "[note]Reload between fights, not during them. It loads one shell at a time.[/note]"
+      ],
+      "pre": [
+        "gg.mv.parts"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_steel",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_plastic",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 23305
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:combat_shotgun",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:cornbreadItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17019
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 6,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 492,
+      "y": 196,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:combat_shotgun", "count": 1, "damage": 0},
+      "icon": {
+        "id": "gregguns:combat_shotgun",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.akimbo",
       "title": "Akimbo",
       "tier": "MV",
-      "desc": "A matching pistol in each hand. Needs the offhand slot.",
-      "pre": ["gg.mv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:akimbo_pistols", "count": 1, "damage": 0}, {"id": "gregguns:akimbo_revolvers", "count": 1, "damage": 0}], "any": true}],
-      "rewards": [],
-      "x": 492,
-      "y": 132,
+      "desc": [
+        "Two guns, one trigger. Akimbo Pistols and Akimbo Revolvers are made by combining two identical sidearms in a crafting grid. No machine is needed, and no offhand slot either: the akimbo gun is a single item that fires with alternating hands. Either one completes this quest.",
+        "The pair doubles your clip, and a reload uses two magazines (or two bullets for the revolvers). Put the gun in a crafting grid alone and it splits back into the two originals, ammo included.",
+        "[note]Akimbo Mac10s, available at HV, fire both guns on every pull.[/note]"
+      ],
+      "pre": [
+        "gg.mv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:pistol_9mm",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:akimbo_pistols",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:akimbo_revolvers",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:grilledcheeseItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 6,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 420,
+      "y": 160,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:akimbo_pistols", "count": 1, "damage": 0},
+      "icon": {
+        "id": "gregguns:akimbo_pistols",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.grenades",
       "title": "Frag Grenade",
       "tier": "MV",
-      "desc": "Explosives need TNT dust from the GT line. Throw from a safe distance.",
-      "pre": ["gg.mv.intro", 762],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:frag_grenade", "count": 1, "damage": 0}]}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:frag_grenade", "count": 4, "damage": 0}]}],
+      "desc": [
+        "The Frag Grenade is a hand grenade that means it. It blasts a radius of six blocks, and afterward sixty-four steel fragments fly out and hit whatever is in line. It is deadly in the open and up close, and a wall or another body shields you.",
+        "Sixteen come out of one MV Assembler run: two aluminum plates, sixteen steel rounds and two TNT blocks. Hold sixteen to finish the quest.",
+        "[warn]The fuse is six seconds, the thrower takes the blast like everyone else, and fragments need clear air. Throw from behind cover. Block damage is off unless the server turns it on.[/warn]"
+      ],
+      "pre": [
+        "gg.mv.intro",
+        762
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 25305
+            },
+            {
+              "id": "minecraft:tnt",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:potatocakesItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:flashbang",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17019
+            }
+          ]
+        }
+      ],
       "x": 528,
-      "y": 132,
+      "y": 160,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:frag_grenade", "count": 1, "damage": 0},
+      "icon": {
+        "id": "gregguns:frag_grenade",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.flashbang",
       "title": "Flashbang",
       "tier": "MV",
-      "desc": "Blinds and stuns instead of killing. Useful for clearing a camp.",
-      "pre": ["gg.mv.grenades"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:flashbang", "count": 1, "damage": 0}]}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:flashbang", "count": 4, "damage": 0}]}],
+      "desc": [
+        "Blinds and stuns instead of killing. Players caught in the flash go blind, then reel; mobs are slowed and weakened and forget who they were hunting. It does no damage and breaks no blocks, which makes it perfect for clearing a camp.",
+        "Sixteen come out of one MV Assembler run of two aluminum plates, four magnesium dust and two gunpowder. The fuse is only two seconds, and a wall between you and the blast blocks the flash entirely.",
+        "[note]Turn your back before it pops. The flash is strongest when you are looking at it. It affects the thrower too.[/note]"
+      ],
+      "pre": [
+        "gg.mv.grenades"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 2018
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:flashbang",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:flashbang",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:chickensandwichItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:flashbang",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 6,
+              "damage": 0
+            }
+          ]
+        }
+      ],
       "x": 528,
-      "y": 168,
+      "y": 196,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:flashbang", "count": 1, "damage": 0},
+      "icon": {
+        "id": "gregguns:flashbang",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.t2_armor",
       "title": "T2 Armor",
       "tier": "MV",
-      "desc": "Combat, Commando or Riot. Pick the set that suits your style.",
-      "pre": ["gg.mv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:t2_combat_chestplate", "count": 1, "damage": 0}, {"id": "gregguns:t2_commando_chestplate", "count": 1, "damage": 0}, {"id": "gregguns:t2_riot_chestplate", "count": 1, "damage": 0}], "any": true}],
-      "rewards": [],
+      "desc": [
+        "Aluminum armor comes in three flavors. Combat is aluminum plates and Heavy Cloth, the all-rounder. Commando is aluminum, rubber and a glass pane, lighter and built to move. The Ranger Veteran set upgrades a Combat piece with lead plates and Treated Leather for the most protection. Any one chestplate completes this quest.",
+        "All three are MV Assembler recipes; NEI shows every piece. Heavy Cloth and rubber are the common inputs.",
+        "[note]Armor value shows on the tooltip. Compare sets before you commit plates.[/note]"
+      ],
+      "pre": [
+        "gg.mv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17019
+            },
+            {
+              "id": "gregguns:part_heavy_cloth",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t2_combat_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t2_commando_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t2_riot_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:pbandjItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_heavy_cloth",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019
+            },
+            {
+              "id": "gregguns:part_treated_leather",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
       "x": 564,
-      "y": 132,
+      "y": 160,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:t2_combat_chestplate", "count": 1, "damage": 0},
+      "icon": {
+        "id": "gregguns:t2_combat_chestplate",
+        "count": 1,
+        "damage": 0
+      },
       "implicit": []
     },
     {
       "key": "gg.mv.summary",
       "title": "Aluminum Age Done",
       "tier": "MV",
-      "desc": "HV brings heavy weapons and stainless steel.",
-      "pre": ["gg.mv.t2_armor", "gg.mv.thompson"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [{"type": "item", "items": [{"id": "enhancedlootbags:lootbag", "count": 1, "damage": 5}]}],
-      "x": 564,
-      "y": 168,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:thompson_smg", "count": 1, "damage": 0},
-      "implicit": ["gg.mv.thompson"]
+      "desc": [
+        "You have an SMG, an assault rifle, a combat shotgun, grenades and aluminum armor, and the supply line to feed them. MV is done. Stainless steel is the next gate, and with it come heavy weapons, high-caliber rifles and rockets.",
+        "Stainless steel needs a proper alloy line: chromium, nickel, iron, and an HV power setup. It is a long project, so get comfortable. Everything you built at MV keeps working, and an HV Ammo Press will run MV recipes faster.",
+        "Hold four stainless steel plates to close the chapter and collect the big loot bag. Stock up on ammo before you go.",
+        "[note]The HV chapter opens from the pack's HV quests. You can start it any time.[/note]"
+      ],
+      "pre": [
+        "gg.mv.rifle",
+        "gg.mv.thompson",
+        "gg.mv.t2_armor"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 3
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:steakandchipsItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17019
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_smg",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 456,
+      "y": 250,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.metaitem.01",
+        "count": 1,
+        "damage": 17306
+      },
+      "implicit": [
+        "gg.mv.thompson",
+        "gg.mv.t2_armor"
+      ]
     }
   ]
 }
