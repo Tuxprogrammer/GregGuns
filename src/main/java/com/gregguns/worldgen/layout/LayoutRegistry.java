@@ -113,6 +113,11 @@ public final class LayoutRegistry {
                 if (!keys.has(c.key)) {
                     throw new LayoutFormatException(id + ": unknown or unresolved palette key '" + c.key + "'");
                 }
+                // A role's candidates are different blocks, so a meta would mean something else for each of them.
+                if (c.key.indexOf(':') < 0 && c.meta != PaletteChoice.KEY_META) {
+                    throw new LayoutFormatException(
+                        id + ": role key '" + c.key + "' takes its own meta; use another role for another look");
+                }
             }
         }
     }

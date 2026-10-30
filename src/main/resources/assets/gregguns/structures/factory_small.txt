@@ -10,11 +10,11 @@ ground: 1
 palette:
 F = factory_floor
 C = concrete
-W = factory_wall*3 | concrete*1
-A = concrete*3 | factory_wall*1
+W = rust_wall
+A = concrete*3 | concrete_dark*1
 B = minecraft:iron_bars
 G = glass_pane
-L = lantern
+L = lamp
 a = air
 D = minecraft:iron_door#1@door
 E = minecraft:iron_door#3@door

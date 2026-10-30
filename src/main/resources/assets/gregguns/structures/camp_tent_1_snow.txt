@@ -7,7 +7,7 @@ ground: 1
 
 palette:
 G = minecraft:gravel
-N = minecraft:snow
+N = camo_snow
 a = air
 
 layers:

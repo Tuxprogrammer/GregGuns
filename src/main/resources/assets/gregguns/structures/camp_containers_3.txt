@@ -8,7 +8,7 @@ ground: 1
 palette:
 C = concrete
 G = minecraft:gravel
-X = minecraft:stained_hardened_clay#14
+X = container
 
 layers:
 layer 0

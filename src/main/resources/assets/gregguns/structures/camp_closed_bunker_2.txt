@@ -8,8 +8,8 @@ ground: 2
 palette:
 C = concrete
 I = minecraft:iron_door#3@door
-L = lantern
-R = minecraft:planks#1
+L = lamp
+R = crate
 Y = minecraft:stone_slab#5
 a = air
 i = minecraft:iron_door#8
