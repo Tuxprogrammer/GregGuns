@@ -18,6 +18,8 @@ public enum ControlStatus {
     SILO_UNFORMED(false),
     /** The block holds less than one shot of EU. */
     NO_POWER(false),
+    /** The block is part of a silo whose Energy Hatches hold less than one shot of EU (D300). */
+    SILO_NO_POWER(false),
     /** The pad holds no missile. */
     NO_MISSILE(false),
     /** A body and warhead are stacked but not armed. */

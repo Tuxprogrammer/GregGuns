@@ -147,7 +147,6 @@ final class SiloGuiShots {
             plan.after(SYNC_TICKS, () -> {
                 out.check(SiloScenarios.formed(ctx), "the silo forms");
                 SiloScenarios.power(ctx);
-                cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
                 // Beside the block, looking at it, the way a player stands to use it.
                 MissileShotsScenario.cam(p, bx - 1.5, by + 1.8, bz + 0.5, bx + 0.5, by + 0.5, bz + 0.5);
             });

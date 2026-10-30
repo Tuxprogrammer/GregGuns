@@ -494,12 +494,42 @@ public final class ComplexLevelScenarios {
             out.checkEquals("operational flooding", 0, op.floodWet);
         }
 
+        /**
+         * The hub's "Silo Complex / Class X" sign and, one under it, "Activity Level:" over the level's code name
+         * (D301), read from the world.
+         */
+        private void hallSigns(ScenarioResult.Builder out, String tag, World world,
+            com.gregguns.icbm.complex.ComplexRaster raster, int ax, int floor, int az, ActivityLevel level,
+            int ceiling) {
+            com.gregguns.icbm.complex.Mark hall = com.gregguns.icbm.complex.gen.ComplexSigns.hallSign(raster.plan());
+            int[] at = hall == null ? null : com.gregguns.icbm.complex.gen.ComplexSigns.resolve(raster, hall);
+            out.check(at != null, tag + ": the hub has its tier sign");
+            if (at == null) return;
+            net.minecraft.tileentity.TileEntity t = world.getTileEntity(ax + at[0], floor + at[1], az + at[2]);
+            out.check(
+                t instanceof net.minecraft.tileentity.TileEntitySign
+                    && "Silo Complex".equals(((net.minecraft.tileentity.TileEntitySign) t).signText[0])
+                    && ("Class " + SiloCeiling.name(ceiling))
+                        .equals(((net.minecraft.tileentity.TileEntitySign) t).signText[1]),
+                tag + ": the tier sign reads Silo Complex, Class " + SiloCeiling.name(ceiling));
+            String want = level == ActivityLevel.ABANDONED ? "Alpha"
+                : level == ActivityLevel.PARTLY_ABANDONED ? "Bravo" : "Charlie";
+            net.minecraft.tileentity.TileEntity a = world.getTileEntity(ax + at[0], floor + at[1] - 1, az + at[2]);
+            out.check(
+                a instanceof net.minecraft.tileentity.TileEntitySign
+                    && world.getBlockMetadata(ax + at[0], floor + at[1] - 1, az + at[2]) == at[3]
+                    && "Activity Level:".equals(((net.minecraft.tileentity.TileEntitySign) a).signText[0])
+                    && want.equals(((net.minecraft.tileentity.TileEntitySign) a).signText[1]),
+                tag + ": the sign under it reads Activity Level: " + want);
+        }
+
         private Tally read(ScenarioResult.Builder out, String tag, World world, StructurePlan plan,
             ComplexPlacer placer, ActivityLevel level, int ceiling) {
             Tally t = new Tally();
             ComplexPlan cp = placer.rasterOf(plan)
                 .plan();
             int ax = plan.anchorX(), az = plan.anchorZ(), floor = floor(world);
+            hallSigns(out, tag, world, placer.rasterOf(plan), ax, floor, az, level, ceiling);
             int[] other = { plan.anchorX() + 64 * 16, plan.anchorZ() };
             List<Placement> placements = ComplexContents.build(cp, level, ceiling, other);
             // Last writer wins per cell; collapses are boxes, tallied on their own.

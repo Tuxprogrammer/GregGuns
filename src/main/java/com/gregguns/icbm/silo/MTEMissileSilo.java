@@ -870,6 +870,37 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
     }
 
+    /**
+     * The EU the silo's own Launch Control may spend on a shot (D300): what the silo's Energy Hatches hold, normal and
+     * exotic.
+     *
+     * @return the EU in all the Energy Hatches the last structure check found
+     */
+    public long launchControlEu() {
+        return storedEu();
+    }
+
+    /**
+     * Pays a shot of the silo's own Launch Control from the silo's Energy Hatches (D300), all or nothing: GT's drain
+     * takes what each hatch holds in turn and is not atomic, so the full amount is checked first.
+     *
+     * @param eu the shot's cost
+     * @return whether it was paid
+     */
+    public boolean payLaunchControl(long eu) {
+        if (eu <= 0) {
+            return true;
+        }
+        if (storedEu() < eu) {
+            return false;
+        }
+        // Source:
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/ExoticEnergyInputHelper.java#L33-L45
+        // Source:
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEMultiBlockBase.java#L4141
+        return gregtech.api.util.ExoticEnergyInputHelper.drainEnergy(eu, getExoticAndNormalEnergyHatchList());
+    }
+
     /** @return the EU in all the Energy Hatches, exotic ones included */
     private long storedEu() {
         long sum = 0;

@@ -25,7 +25,8 @@ public final class ControlMachines {
 
     private static final String[] TOOLTIP = { "gregguns.icbm.control.tooltip", "gregguns.icbm.control.tooltip.target",
         "gregguns.icbm.control.tooltip.reach", "gregguns.icbm.control.tooltip.range",
-        "gregguns.icbm.control.tooltip.eu", "gregguns.icbm.control.tooltip.triggers" };
+        "gregguns.icbm.control.tooltip.eu", "gregguns.icbm.control.tooltip.eu_silo",
+        "gregguns.icbm.control.tooltip.triggers" };
 
     private ControlMachines() {}
 

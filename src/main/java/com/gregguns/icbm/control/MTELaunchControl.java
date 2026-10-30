@@ -457,14 +457,17 @@ public final class MTELaunchControl extends MTETieredMachineBlock
 
     private LaunchSnapshot compute(IGregTechTileEntity base) {
         LaunchTarget t = target();
-        boolean energy = base.getStoredEU() >= EU_PER_SHOT;
+        com.gregguns.icbm.silo.MTEMissileSilo silo = boundSilo();
+        boolean siloPowered = silo != null;
+        boolean energy = shotEu(silo) >= EU_PER_SHOT;
         World w = base.getWorld();
         LaunchSites.Found found = ModuleState.isActive(ModuleId.ICBM)
             ? LaunchSites.find(this, w, base.getXCoord(), base.getYCoord(), base.getZCoord())
             : LaunchSites.Found.NOTHING;
         LaunchSite site = found.site;
         if (site == null) {
-            ControlStatus st = LaunchGate.check(t, false, energy, shots.coolingDown(), false, false, false, 0, 0, 0);
+            ControlStatus st = LaunchGate
+                .check(t, false, energy, siloPowered, shots.coolingDown(), false, false, false, 0, 0, 0);
             ControlStatus siteSt = found.siloUnformed ? ControlStatus.SILO_UNFORMED : ControlStatus.NO_PAD;
             if (st == ControlStatus.NO_PAD) {
                 st = siteSt;
@@ -478,10 +481,20 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             .minRange() : 0;
         int max = ms.present() ? site.maxRange() : 0;
         double dist = t.distanceFrom(site.centerX(), site.centerZ());
-        ControlStatus st = LaunchGate
-            .check(t, true, energy, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled(), dist, min, max);
+        ControlStatus st = LaunchGate.check(
+            t,
+            true,
+            energy,
+            siloPowered,
+            shots.coolingDown(),
+            ms.present(),
+            ms.armed(),
+            ms.fueled(),
+            dist,
+            min,
+            max);
         ControlStatus siteSt = LaunchGate
-            .checkSite(true, energy, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled());
+            .checkSite(true, energy, siloPowered, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled());
         com.gregguns.icbm.missile.LaunchResult hold = site.hold();
         if (hold != com.gregguns.icbm.missile.LaunchResult.OK) {
             ControlStatus held = LaunchGate.fromResult(hold.name());
@@ -519,6 +532,30 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     }
 
     /**
+     * The EU a shot is paid from (D300): a silo's own Launch Control uses the silo's Energy Hatches and ignores its own
+     * buffer while it is bound; a free one uses its own buffer. Server side.
+     *
+     * @return the EU available for a shot
+     */
+    public long shotEu() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (base == null || base.isClientSide()) {
+            return 0;
+        }
+        return shotEu(boundSilo());
+    }
+
+    private long shotEu(com.gregguns.icbm.silo.MTEMissileSilo silo) {
+        return silo != null ? silo.launchControlEu() : getBaseMetaTileEntity().getStoredEU();
+    }
+
+    /** @return whether a shot is paid from a bound silo's Energy Hatches (D300); server side */
+    public boolean siloPowered() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base != null && !base.isClientSide() && boundSilo() != null;
+    }
+
+    /**
      * Fires the missile on the pad at the stored target, when every check passes. The EU is taken only after the pad
      * accepted the launch (ICBM-04-07). Server side.
      *
@@ -547,7 +584,15 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         LaunchResult r = site.launch(t.aimX(), t.aimZ(), source);
         ControlStatus st = LaunchGate.fromResult(r.name());
         if (st == ControlStatus.FIRED) {
-            base.decreaseStoredEnergyUnits(EU_PER_SHOT, true);
+            // A silo's own Launch Control pays from the silo's Energy Hatches (D300). The launch is already accepted:
+            // if the hatches were drained in this same tick since the check, the shot stands and nothing goes below
+            // zero.
+            com.gregguns.icbm.silo.MTEMissileSilo silo = boundSilo();
+            if (silo != null) {
+                silo.payLaunchControl(EU_PER_SHOT);
+            } else {
+                base.decreaseStoredEnergyUnits(EU_PER_SHOT, true);
+            }
             shots.startCooldown(COOLDOWN_TICKS);
             launches++;
         }
@@ -612,6 +657,9 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         m.put("cooldownTicks", COOLDOWN_TICKS);
         m.put("padFound", siteOrNull() != null);
         if (isServerLive()) {
+            // A silo's own Launch Control runs on the silo's EU (D300).
+            m.put("power", siloPowered() ? "silo" : "own");
+            m.put("eu", shotEu());
             SiteLine line = snapshot().site;
             m.put(
                 "site",

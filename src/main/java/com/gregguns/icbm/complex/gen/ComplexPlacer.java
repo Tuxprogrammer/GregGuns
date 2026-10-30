@@ -425,7 +425,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 applier.apply(p);
             }
             if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
-            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
+            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(cp), new QuietSink(sink));
         }
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;

@@ -95,7 +95,6 @@ final class SiloClimbScenario implements Scenario {
                         return finish(ctx, oldCountdown, oldTerrain, ScenarioResult.fail(name(), "no missile stood"));
                     }
                     m[0].fill(m[0].capacityMb(), true);
-                    cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
                     c.setXText(Integer.toString(ctx.originX()));
                     c.setZText(Integer.toString(ctx.originZ() + SiloScenarios.DISTANCE));
                     mark[0] = ticks;

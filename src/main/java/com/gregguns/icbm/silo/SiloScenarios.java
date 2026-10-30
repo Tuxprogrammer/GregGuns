@@ -79,6 +79,7 @@ public final class SiloScenarios {
         registry.register(new Resume());
         registry.register(new UnformedPad());
         registry.register(new OwnControl());
+        registry.register(new LcPower());
         registry.register(new HandStack());
         SiloSequenceScenarios.registerAll(registry);
         registry.register(new ShaftChunkScenario());
@@ -968,7 +969,7 @@ public final class SiloScenarios {
                         blocksBefore[0] = countBlocks(ctx);
                         // The player puts a body and a warhead in the bus and nothing else.
                         putBus(ctx, MissileBodies.body(MissileTier.T3), warhead(used, explosive));
-                        cbase.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        // The silo's own Launch Control runs on the silo's EU (D300): power(ctx) charged it.
                         c.setXText(Integer.toString(ctx.originX()));
                         c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
                         out.checkEquals("nothing to fire yet", ControlStatus.NO_MISSILE, c.fire(null));
@@ -1162,7 +1163,7 @@ public final class SiloScenarios {
                             ((gregtech.api.metatileentity.BaseMetaTileEntity) t).setStoredEU(10_000L);
                         }
                         putBus(ctx, MissileBodies.body(MissileTier.T3), empWarhead());
-                        cbase.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        // The silo's own Launch Control runs on the silo's EU (D300): power(ctx) charged it.
                         c.setXText(Integer.toString(ctx.originX()));
                         c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
                         stage[0] = 1;
@@ -1249,6 +1250,111 @@ public final class SiloScenarios {
                 }
             }
             return n;
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * D300: the silo's own Launch Control checks and pays its shot from the silo's Energy Hatch and ignores its own
+     * buffer while it is bound.
+     */
+    private static final class LcPower implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.lc_power";
+        }
+
+        @Override
+        public String description() {
+            return "A silo's own Launch Control with an empty buffer is ready once the silo's Energy Hatch holds EU, fires, and the 300 EU come out of the silo's hatch while its own buffer stays empty; with the silo's hatch drained and its own buffer full it reports silo_no_power (D300).";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            out.note("build: " + build(ctx, ItemList.Hatch_Energy_LuV));
+            int[] stage = { 0 };
+            EntityMissile[] m = new EntityMissile[1];
+            return ScenarioResult.pending(name(), 600, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                IGregTechTileEntity cb = ownControl(ctx);
+                IGregTechTileEntity energy = part(ctx, DevStructureBuilder.SILO_ENERGY);
+                MTEMissileSilo silo = silo(ctx);
+                if (cb == null || !(cb.getMetaTileEntity() instanceof MTELaunchControl)
+                    || energy == null
+                    || silo == null) {
+                    return ScenarioResult.fail(name(), "the silo, its Energy Hatch or its Launch Control is missing");
+                }
+                MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
+                switch (stage[0]) {
+                    case 0: {
+                        if (!formed(ctx) && ticks < WARMUP + 40) {
+                            return null;
+                        }
+                        out.check(formed(ctx), "the silo forms");
+                        m[0] = stand(ctx, MissileTier.T1);
+                        if (m[0] == null) {
+                            return ScenarioResult.fail(name(), "no missile stood");
+                        }
+                        m[0].fill(m[0].capacityMb(), true);
+                        c.setXText(Integer.toString(ctx.originX()));
+                        c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
+                        cb.decreaseStoredEnergyUnits(cb.getStoredEU(), true);
+                        power(ctx);
+                        stage[0] = 1;
+                        return null;
+                    }
+                    case 1: {
+                        out.checkEquals("the Launch Control's own buffer is empty", 0L, cb.getStoredEU());
+                        out.check(c.siloPowered(), "the bound Launch Control runs on the silo's EU");
+                        out.check(c.shotEu() >= MTELaunchControl.EU_PER_SHOT, "it sees the silo's EU: " + c.shotEu());
+                        out.checkEquals("ready on the silo's EU alone", ControlStatus.READY, c.currentStatus());
+                        long before = energy.getStoredEU();
+                        out.checkEquals("it fires", ControlStatus.FIRED, c.fire(null));
+                        long paid = before - energy.getStoredEU();
+                        out.check(
+                            paid >= MTELaunchControl.EU_PER_SHOT,
+                            "the shot came out of the silo's Energy Hatch: " + paid + " EU");
+                        out.checkEquals("its own buffer is still empty", 0L, cb.getStoredEU());
+                        out.check(
+                            silo.site()
+                                .abort(),
+                            "the countdown aborts");
+                        // No EU in the silo, a full own buffer: the bound block still asks the silo.
+                        energy.decreaseStoredEnergyUnits(energy.getStoredEU(), true);
+                        cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        stage[0] = 2;
+                        return null;
+                    }
+                    default: {
+                        out.checkEquals("the silo's hatch is empty", 0L, energy.getStoredEU());
+                        out.checkEquals(
+                            "its own buffer does not count while it is bound",
+                            ControlStatus.SILO_NO_POWER,
+                            c.currentStatus());
+                        out.check(
+                            net.minecraft.util.StatCollector.canTranslate(ControlStatus.SILO_NO_POWER.langKey()),
+                            "the status has its text");
+                        if (m[0] != null) {
+                            m[0].setDead();
+                        }
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    }
+                }
+            });
         }
     }
 
@@ -1825,9 +1931,12 @@ public final class SiloScenarios {
                         m[0].configure(0, "condensed", 1, 1, null);
                         w.spawnEntityInWorld(m[0]);
                         m[0].fill(m[0].capacityMb(), true);
-                        for (IGregTechTileEntity t : new IGregTechTileEntity[] { ownA, ownB, free }) {
-                            t.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
-                        }
+                        // Each silo's own control runs on its silo's Energy Hatch (D300); the free one on its own
+                        // buffer.
+                        power(ctx);
+                        tile(ctx, B + DevStructureBuilder.SILO_ENERGY[0], DevStructureBuilder.SILO_ENERGY[1], 0)
+                            .increaseStoredEnergyUnits(50_000_000L, true);
+                        free.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
                         for (MTELaunchControl c : new MTELaunchControl[] { a, b, f }) {
                             c.setXText(Integer.toString(x));
                             c.setZText(Integer.toString(z + DISTANCE));

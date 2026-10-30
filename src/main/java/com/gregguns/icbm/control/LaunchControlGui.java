@@ -84,6 +84,8 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
         int countdown = -1;
         int lastStick = -1;
         long eu;
+        /** Whether {@link #eu} is the bound silo's (D300). */
+        boolean siloEu;
         String target = "";
         SiteLine site = SiteLine.NONE;
     }
@@ -161,16 +163,11 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                     : machine.lastStick()
                         .ordinal(),
                 v -> state.lastStick = v));
+        sync.syncValue("st_eu", 0, new LongSyncValue(IcbmSync.guard(machine, machine::shotEu, 0L), v -> state.eu = v));
         sync.syncValue(
-            "st_eu",
+            "st_eu_silo",
             0,
-            new LongSyncValue(
-                IcbmSync.guard(
-                    machine,
-                    () -> machine.getBaseMetaTileEntity()
-                        .getStoredEU(),
-                    0L),
-                v -> state.eu = v));
+            new IntSyncValue(() -> machine.siloPowered() ? 1 : 0, v -> state.siloEu = v != 0));
         sync.syncValue(
             "st_target",
             0,
@@ -265,7 +262,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
         screen.child(
             text(
                 () -> trf(
-                    "gregguns.icbm.control.gui.power",
+                    state.siloEu ? "gregguns.icbm.control.gui.power_silo" : "gregguns.icbm.control.gui.power",
                     LaunchControlFormat.eu(state.eu),
                     MTELaunchControl.EU_PER_SHOT),
                 4,

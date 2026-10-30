@@ -110,7 +110,6 @@ public final class LaunchControlGuiShots implements Scenario {
             ctx.world()
                 .spawnEntityInWorld(m[0]);
             m[0].fill(m[0].capacityMb(), true);
-            cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
             c.setXText(Integer.toString(ctx.originX()));
             c.setZText(Integer.toString(ctx.originZ() + 300));
             // Beside the block, looking at it, the way a player stands to use it.
