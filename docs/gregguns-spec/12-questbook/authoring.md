@@ -116,11 +116,25 @@ Stack item names are registry names. Guns and ammo use damage 0. A stack inside 
 | `bq_standard:questcompletion` | `questID:8` (Base64 ID) | The hidden tier-skip triggers |
 | `bq_standard:command` | `command:8`, `hideCommand:1`, `viaPlayer:1`. `VAR_NAME` and `VAR_UUID` are replaced ([RewardCommand#L54-L70](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/rewards/RewardCommand.java#L54-L70)) | Not used (GGS-12-08). Keys are from source; the pack has no example |
 
-A loot bag is a stack of `enhancedlootbags:lootbag` with the tier group id as `Damage:2`. These are the generic tier groups the `BAGS` table in the builder starts with ([Quest data](#quest-data)):
+A loot bag is a stack of `enhancedlootbags:lootbag` with the group id as `Damage:2`. The quests hand out the GregGuns groups, which GregGuns adds to EnhancedLootBags at startup ([pack-loot.md](../06-items/pack-loot.md#enhancedlootbags)). The `BAGS` table in the builder names them ([Quest data](#quest-data)); "lowest tier" is the lowest quest tier that may pay the bag (GGS-12-07):
 
-| Tier | Steam | LV | MV | HV | EV | IV | LuV | ZPM |
-|---|---|---|---|---|---|---|---|---|
-| `Damage:2` | 2 | 4 | 5 | 6 | 7 | 8 | 41 | 42 |
+| Name | `Damage:2` | Group | Lowest tier |
+|---|---|---|---|
+| `rations` | 1700 | Field Rations (Pam's food) | Steam |
+| `steam` | 1701 | Recruit | Steam |
+| `lv` | 1702 | Rifleman | LV |
+| `mv` | 1703 | Sergeant | MV |
+| `hv` | 1704 | Lieutenant | HV |
+| `ev` | 1705 | Captain | EV |
+| `iv` | 1706 | Major | IV |
+| `luv` | 1707 | Colonel | LuV |
+| `zpm` | 1708 | General | ZPM |
+| `spoils` | 1709 | Spoils of War (boss kills) | HV |
+| `ordnance1` | 1710 | Ordnance I (ICBM) | HV |
+| `ordnance2` | 1711 | Ordnance II (ICBM) | IV |
+| `ordnance3` | 1712 | Ordnance III (ICBM) | LuV |
+
+A hand-written stack of one of the pack's generic tier groups (damage 2, 4, 5, 6, 7, 8, 41, 42) still passes the tier check, with a warning to use a bag name.
 
 ### Line files
 
@@ -362,7 +376,7 @@ Rewards (`type`):
 
 Stacks: `id`, `count` (default 1), `damage` (default 0; `"*"` matches every damage value, written 32767), `ore` (an OreDict name: any item in it matches as well, the way the pack asks for "any steel plate"; keep a real `id` and `damage` for the item the task shows), `tag` (string NBT, with `matchNBT`). A stack `{"bag": "<tier>", "count": N}` is a bag inside any reward list; writers never write the bag item's id. An id other than `gregguns:` must be in `pack_items.txt` (coins such as `dreamcraft:CoinSmith`, Galacticraft parts, GT materials, HarvestCraft food).
 
-**Loot bags.** `BAGS` in `build_quests.py` is the one table that maps a bag name (`steam`, `lv`, `mv`, `hv`, `ev`, `iv`, `luv`, `zpm`; case-insensitive) to an item id, a damage and the quest tier it belongs to. It starts with EnhancedLootBags' generic tier groups (the [table above](#rewards)). Pointing a name at a GregGuns-specific group or a GregGuns bag item, or adding a name, is a change to that table alone.
+**Loot bags.** `BAGS` in `build_quests.py` is the one table that maps a bag name (`rations`, `steam`, `lv`, `mv`, `hv`, `ev`, `iv`, `luv`, `zpm`, `spoils`, `ordnance1`, `ordnance2`, `ordnance3`; case-insensitive) to an item id, a damage and the lowest quest tier that may pay it (the [table above](#rewards)). Pointing a name at another group, or adding a name, is a change to that table alone.
 
 **Retired quests.** To remove a quest, delete it from its chapter file and add its key to that file's `retired` list (or to `_line.json`). The builder writes the uuid5 of every retired key to `index.json` (`retired`, UUID strings), and the installer deletes exactly those quests from an existing database: the definition, everyone's progress on it, its line entries, and its place in other quests' prerequisites. A retired key is never reused (GGS-12-02); the builder and `QuestbookResourcesTest` reject a retired key that is also a quest.
 

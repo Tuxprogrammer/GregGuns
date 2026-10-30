@@ -34,21 +34,35 @@ TIERS = ['Steam', 'LV', 'MV', 'HV', 'EV', 'IV', 'LuV', 'ZPM']
 # as Multiblock Goals colors each title by its quest's tier; so does ours. Hidden triggers keep a plain title.
 TIER_COLORS = {'Steam': '§c', 'LV': '§2', 'MV': '§6', 'HV': '§5', 'EV': '§8', 'IV': '§9', 'LuV': '§d', 'ZPM': '§b'}
 # The one loot bag table. A {"type": "bag", "tier": name} reward and a {"bag": name} stack resolve through it, and the
-# bag-tier check (GGS-12-07) reads each entry's quest tier from it. Names are matched case-insensitively.
-# Seeded with EnhancedLootBags' generic tier groups (GroupMetaID as damage, config/EnhancedLootBags/LootBags.xml in
-# the pack). Pointing a name at a GregGuns group or a GregGuns bag item is a change to this table only.
+# bag-tier check (GGS-12-07) reads each entry's quest tier from it: a bag is never above its quest's tier. Names are
+# matched case-insensitively. Every name is a GregGuns group of EnhancedLootBags' own bag item (GroupMetaID as the
+# damage), which GregGuns adds to ELB's group list at startup from assets/gregguns/lootbags/groups.xml
+# (docs/gregguns-spec/06-items/pack-loot.md). The tier is the lowest quest tier that may hand the bag out.
+LOOTBAG = 'enhancedlootbags:lootbag'
 BAGS = {
-    'steam': {'id': 'enhancedlootbags:lootbag', 'damage': 2, 'tier': 'Steam'},
-    'lv': {'id': 'enhancedlootbags:lootbag', 'damage': 4, 'tier': 'LV'},
-    'mv': {'id': 'enhancedlootbags:lootbag', 'damage': 5, 'tier': 'MV'},
-    'hv': {'id': 'enhancedlootbags:lootbag', 'damage': 6, 'tier': 'HV'},
-    'ev': {'id': 'enhancedlootbags:lootbag', 'damage': 7, 'tier': 'EV'},
-    'iv': {'id': 'enhancedlootbags:lootbag', 'damage': 8, 'tier': 'IV'},
-    'luv': {'id': 'enhancedlootbags:lootbag', 'damage': 41, 'tier': 'LuV'},
-    'zpm': {'id': 'enhancedlootbags:lootbag', 'damage': 42, 'tier': 'ZPM'},
+    'rations': {'id': LOOTBAG, 'damage': 1700, 'tier': 'Steam'},  # Field Rations: Pam's food, intro quests
+    'steam': {'id': LOOTBAG, 'damage': 1701, 'tier': 'Steam'},  # Recruit
+    'lv': {'id': LOOTBAG, 'damage': 1702, 'tier': 'LV'},  # Rifleman
+    'mv': {'id': LOOTBAG, 'damage': 1703, 'tier': 'MV'},  # Sergeant
+    'hv': {'id': LOOTBAG, 'damage': 1704, 'tier': 'HV'},  # Lieutenant
+    'ev': {'id': LOOTBAG, 'damage': 1705, 'tier': 'EV'},  # Captain
+    'iv': {'id': LOOTBAG, 'damage': 1706, 'tier': 'IV'},  # Major
+    'luv': {'id': LOOTBAG, 'damage': 1707, 'tier': 'LuV'},  # Colonel
+    'zpm': {'id': LOOTBAG, 'damage': 1708, 'tier': 'ZPM'},  # General
+    'spoils': {'id': LOOTBAG, 'damage': 1709, 'tier': 'HV'},  # Spoils of War: boss kills
+    'ordnance1': {'id': LOOTBAG, 'damage': 1710, 'tier': 'HV'},  # ICBM HV and EV quests
+    'ordnance2': {'id': LOOTBAG, 'damage': 1711, 'tier': 'IV'},  # ICBM IV and LuV quests
+    'ordnance3': {'id': LOOTBAG, 'damage': 1712, 'tier': 'LuV'},  # ICBM LuV and ZPM quests
+}
+# The pack's own generic tier groups (config/EnhancedLootBags/LootBags.xml), which quests written before the GregGuns
+# bags name by id and damage. Still tier-checked, but each use is a warning: write {"bag": name} instead.
+PACK_BAGS = {
+    (LOOTBAG, 2): 'Steam', (LOOTBAG, 4): 'LV', (LOOTBAG, 5): 'MV', (LOOTBAG, 6): 'HV', (LOOTBAG, 7): 'EV',
+    (LOOTBAG, 8): 'IV', (LOOTBAG, 41): 'LuV', (LOOTBAG, 42): 'ZPM',
 }
 # Any bag stack written out by hand (id and damage) is tier-checked the same way.
-BAG_STACKS = {(b['id'], b['damage']): b['tier'] for b in BAGS.values()}
+BAG_STACKS = dict(PACK_BAGS)
+BAG_STACKS.update({(b['id'], b['damage']): b['tier'] for b in BAGS.values()})
 BAG_IDS = {b['id'] for b in BAGS.values()}
 LINE_FOLDER = 'GregGuns'
 LINE_FILE = '_line.json'
@@ -457,6 +471,9 @@ def check(data, allow_checkboxes=False):
                         problems.append('%s: unknown bag %s damage %s' % (k, s['id'], s.get('damage')))
                     elif TIERS.index(tier) > TIERS.index(q['tier']):
                         problems.append('%s: bag above the quest tier (GGS-12-07)' % k)
+                    if (s['id'], s.get('damage', 0)) in PACK_BAGS:
+                        warnings.append('%s: pack tier bag damage %s; write {"bag": name} instead'
+                                        % (k, s.get('damage')))
         except KeyError:
             pass  # an unknown bag name, reported above
         for tag in sorted(set(re.findall(r'\[/?([a-zA-Z_]+)\]', q['desc']))):
@@ -476,8 +493,12 @@ def check(data, allow_checkboxes=False):
 def build(data_path, out_dir, lang_path=None, allow_checkboxes=False):
     data = load_data(data_path)
     problems, warnings = check(data, allow_checkboxes)
-    if warnings:
-        print('WARNING %d quests still use a checkbox (--allow-checkboxes)' % len(warnings), file=sys.stderr)
+    boxes = [w for w in warnings if 'checkbox task' in w]
+    if boxes:
+        print('WARNING %d quests still use a checkbox (--allow-checkboxes)' % len(boxes), file=sys.stderr)
+    for w in warnings:
+        if w not in boxes:
+            print('WARNING', w, file=sys.stderr)
     if problems:
         for p in problems:
             print('ERROR', p, file=sys.stderr)
