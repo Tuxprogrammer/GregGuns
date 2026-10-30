@@ -47,16 +47,16 @@
 
 | Role | `PaletteKeys` key | Vanilla fallback |
 |---|---|---|
-| Concrete (several shades, called light, dark and floor) | `concrete` | stone brick |
-| Plating, steel | `factory_wall` | iron block |
-| Hazard stripe | `hazard` | yellow hardened clay |
-| Lamps | `lantern` | glowstone |
+| Concrete (several shades, called light, dark and floor) | `concrete`, `concrete_dark`; helipad fill `asphalt` | stone brick |
+| Plating, steel | `factory_wall`, `plating`; factory halls `rust_wall` | smooth stone slab |
+| Hazard stripe | `hazard` | yellow stained clay |
+| Lamps | `lamp` | glowstone |
 | Wood panels, floors, roof | `minecraft:planks` | same |
 | Wood pillars | `minecraft:log@axis` | same |
-| Sandbags | no key yet (future decor block); stand-in `minecraft:stained_hardened_clay#12` | same |
-| Camo net wall and roof | no key yet; stand-in `minecraft:leaves#4` (woodland), `minecraft:snow` (snow), `minecraft:sandstone` (desert) | same |
-| Shipping container | no key yet; stand-in `minecraft:stained_hardened_clay#14` | same |
-| Crates | no key yet; stand-in `minecraft:planks#1` | same |
+| Sandbags | `sandbag` (plain hardened clay) | same |
+| Camo net wall and roof | `camo_woodland`, `camo_desert`, `camo_snow` by the base's biome | oak leaves, sandstone, snow |
+| Shipping container | `container` (Chisel red hempcrete) | red wool |
+| Crates | `crate` (Chisel spruce crate) | spruce planks |
 | Gravel | `minecraft:gravel` | same |
 | Air | `air` | air |
 

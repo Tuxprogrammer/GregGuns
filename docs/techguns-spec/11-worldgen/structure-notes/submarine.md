@@ -45,12 +45,12 @@ None. No spawner, no camp flag, no NPCs.
 
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
-| Hull | `plating` | iron block | outer hull, fins, tower |
-| Aft band and trim | `factory_wall` | iron block | band, bulkheads |
-| Interior walls | `factory_floor` | double stone slab | lower deck walls |
-| Upper deck floor | `brick` | stone brick | grating floor |
+| Hull | `hull_dark` (dark steel) | stone brick | outer hull, fins, tower |
+| Aft band and trim | `factory_wall` | smooth stone slab | band, bulkheads |
+| Interior walls | `plating` | smooth stone slab | lower deck walls |
+| Upper deck floor | `factory_floor` (steel grate) | smooth stone slab | grating floor |
 | Hub block | `hazard` | yellow hardened clay | rudder hub |
-| Lamps | `lantern` | glowstone | interior |
+| Lamps | `lamp` | glowstone | interior |
 | Ladders | `minecraft:ladder@facing` | same | two |
 | Trapdoor | `minecraft:trapdoor@trapdoor` | same | tower top |
 | Doors | `minecraft:iron_door@door` | same | four |

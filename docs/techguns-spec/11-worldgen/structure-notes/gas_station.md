@@ -41,13 +41,14 @@
 
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
-| Apron | `concrete` | stone brick | forecourt |
-| Paving panels, pillars | `brick` | stone brick | inset panels, canopy pillars |
-| Shop walls | `brick` weight 3, `concrete` weight 1 | stone brick | shop |
-| Canopy and shop roof | `plating` | iron block | canopy slab, shop roof |
+| Apron | `asphalt` | smooth stone slab | forecourt |
+| Paving panels, pillars | `concrete_panel` | stone brick | inset panels, canopy pillars |
+| Shop walls | `brick` (gray large stone bricks) | stone brick | shop |
+| Canopy and shop roof | `plating` | smooth stone slab | canopy slab, shop roof |
+| Canopy railing | `minecraft:iron_bars` | same | a whole ring on the canopy edge (fences and bars do not join in 1.7.10, so the railing is bars only) |
 | Storefront glass | `glass_pane` | glass pane | windows |
-| Pump body | `hazard` (lower), `factory_wall` (upper) | stained clay / iron block | two pumps |
-| Lamps | `lantern` | glowstone | canopy, doors |
+| Pump body | `hazard` stripe (lower), `factory_wall` (upper) | stained clay / smooth stone slab | two pumps |
+| Lamps | `lamp` | glowstone | canopy, doors |
 | Shelves | `minecraft:bookshelf` | same | shop walls |
 | Counter | `minecraft:fence`, `minecraft:wooden_pressure_plate`, `minecraft:fence_gate@facing` | same | counter |
 | Doors | `minecraft:wooden_door` with `@door`, both halves | same | south and back doors |

@@ -50,7 +50,7 @@ public final class PaletteKeys {
     // Source: Chisel 2.17.34-GTNH registers each block under its carverHelper name, and its variations by meta:
     // https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java
     // concrete L857-L868 (0 default, 1 block, 4 weathered, 10 asphalt); factoryblock L1171-L1187 (1 rust2, 3 platex,
-    // 6 hazard, 9 metalbox, 13 plating); technical L3805-L3821 (13 grate); laboratoryblock L2185-L2201 (11 large
+    // 6 hazard, 13 plating); technical L3805-L3821 (13 grate); laboratoryblock L2185-L2201 (11 large
     // steel); stonebricksmooth L3724-L3744 (5 large bricks, 7 chaotic bricks); brickCustom L463-L487 (5 aged,
     // 13 sooty); glowstone L1563-L1579 (4 sulphur neon panel); glass_pane L1398-L1406 (2 no border); nation and rebel
     // L2784-L2804 (0 camo); <wood>_planks L4380-L4406 (10 crate); hempcrete L1902-L1917 (wool color order, 14 red).
@@ -83,7 +83,6 @@ public final class PaletteKeys {
         { "factory_floor", "steel", "chisel:technical#13", "minecraft:double_stone_slab#0" },
         { "hull_dark", "steel", "chisel:laboratoryblock#11", "minecraft:stonebrick#0" },
         { "hazard", "hazard", "chisel:factoryblock#6", "minecraft:stained_hardened_clay#4" },
-        { "crate_steel", "steel", "chisel:factoryblock#9", "minecraft:planks#1" },
         // Fittings.
         { "lamp", "lamp", "chisel:glowstone#4", "minecraft:glowstone#0" },
         { "glass_pane", "glass", "chisel:glass_pane#2", "minecraft:glass_pane#0" },
@@ -91,7 +90,7 @@ public final class PaletteKeys {
         // Camp: camo nets by biome, sandbags, shipping containers.
         { "camo_woodland", "camo", "minecraft:leaves#4" },
         { "camo_desert", "camo", "chisel:rebel#0", "minecraft:sandstone#0" },
-        { "camo_snow", "camo", "minecraft:wool#0" }, { "sandbag", "sandbag", "minecraft:hardened_clay#0" },
+        { "camo_snow", "camo", "minecraft:snow#0" }, { "sandbag", "sandbag", "minecraft:hardened_clay#0" },
         { "container", "container", "chisel:hempcrete#14", "minecraft:wool#14" },
         // The Medium House's metal storage nook (deliberately the real storage blocks).
         { "lead_block", "metal_storage", "chisel:leadblock#0", "minecraft:iron_block#0" },
