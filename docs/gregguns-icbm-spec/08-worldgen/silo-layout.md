@@ -162,7 +162,7 @@ The plan is pure geometry and deterministic. It never changes by activity level.
   - The armory takes the closer lamp grid of the furniture-row rooms (`DENSE_GAP`), since the partitions cast shadows.
   - An armory shows at most `MAX_DISPLAYS` (24) guns, so a very large room does not outgrow the old two rows of frames.
   - Walkways of three cells separate the rows; the reachability pass keeps every chest reachable.
-  - The contents pass turns a mark into an ammo chest (`armory_ammo`) and a one-frame `FRAME_WALL` placement. The gun is `SiloFrames.gunFor` of the cell, so frame and chest agree whichever window builds them. A collapsed armory shows no displays; an abandoned complex keeps 30 percent of its display slots (the same share as its other chests).
+  - The contents pass turns a mark into an ammo chest (`armory_ammo`) and a one-frame `FRAME_WALL` placement. The gun is `SiloFrames.gunFor` of the cell, so frame and chest agree whichever window builds them. A collapsed armory shows no displays; an abandoned complex keeps the share of display slots that `ActivityProfile.chestKeepChance()` gives its other chests, so one knob rules both (D289).
   - The chest holds the gun's ammo (`ArmoryDisplay.stockFor`): 4 to 8 loaded magazines and 24 to 64 loose rounds for a magazine gun, 32 to 64 rounds for a loose-round gun, 8 to 24 of the one item a rocket, grenade or fuel-tank gun burns. An energy gun's chest draws the armory table.
   - The damage pass never breaks the wall behind a frame.
 
