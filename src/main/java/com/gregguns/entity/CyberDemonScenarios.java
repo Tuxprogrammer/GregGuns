@@ -190,14 +190,14 @@ final class CyberDemonScenarios {
         @Override
         public String description() {
             return "getCanSpawnHere is false in the Overworld with the flag on and off; the pure rule allows only the"
-                + " Nether with the flag on; the flag defaults to off.";
+                + " Nether with the flag on; the flag defaults to on.";
         }
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             boolean prior = NpcConfig.cyberdemon;
-            out.check(!prior, "the cyberdemon flag should default to off");
+            out.check(prior, "the cyberdemon flag should default to on");
             out.check(CyberDemonRules.canSpawnAt(-1, true), "Nether with the flag on");
             out.check(!CyberDemonRules.canSpawnAt(-1, false), "Nether with the flag off");
             out.check(!CyberDemonRules.canSpawnAt(0, true), "Overworld with the flag on");
