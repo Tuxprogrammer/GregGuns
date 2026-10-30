@@ -402,6 +402,16 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | model.charge.exp_charge | src/main/resources/assets/gregguns/textures/models/charges/exp_charge.png | tools/asset-gen/charge_models.py | 4076177377 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 | model.charge.exp_charge_armed | src/main/resources/assets/gregguns/textures/models/charges/exp_charge_armed.png | tools/asset-gen/charge_models.py | 578581585 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 
+### coins (5)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
+| icon.coin | src/main/resources/assets/gregguns/textures/items/coin.png | tools/asset-gen/coins.py | none | Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention | MIT | 2026-10-29 |
+| icon.coin_10 | src/main/resources/assets/gregguns/textures/items/coin_10.png | tools/asset-gen/coins.py | none | Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention | MIT | 2026-10-29 |
+| icon.coin_100 | src/main/resources/assets/gregguns/textures/items/coin_100.png | tools/asset-gen/coins.py | none | Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention | MIT | 2026-10-29 |
+| icon.coin_1000 | src/main/resources/assets/gregguns/textures/items/coin_1000.png | tools/asset-gen/coins.py | none | Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention | MIT | 2026-10-29 |
+| icon.coin_10000 | src/main/resources/assets/gregguns/textures/items/coin_10000.png | tools/asset-gen/coins.py | none | Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention | MIT | 2026-10-29 |
+
 ### ctm (6)
 
 | asset | path | generator | seed | method | license | date |

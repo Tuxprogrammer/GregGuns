@@ -19,7 +19,8 @@ public final class GunsItemRegistry {
     private GunsItemRegistry() {}
 
     /**
-     * Registers the guns, ammo, magazines, parts, components, melee tools and grenade items, in order. Call once from
+     * Registers the guns, ammo, magazines, parts, components, melee tools, grenade items and the coin, in order. Call
+     * once from
      * {@code GunsModule.preInit}; the dev probe is registered last.
      *
      * @param registrar the guns module's registrar
@@ -52,6 +53,8 @@ public final class GunsItemRegistry {
                     throw new IllegalStateException("unhandled item kind " + slot.kind());
             }
         }
+        // The coin sits after the parts in NeiOrder (COINS), so it registers here, before the dev probe.
+        com.gregguns.item.coin.CoinItems.register(registrar);
         GunItems.registerProbe(registrar);
         GrenadeItems.registerEntities(registrar);
     }

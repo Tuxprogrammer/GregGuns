@@ -1,0 +1,6 @@
+asset,path,generator,seed,method,license,date
+icon.coin,src/main/resources/assets/gregguns/textures/items/coin.png,tools/asset-gen/coins.py,none,"Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention",MIT,2026-10-29
+icon.coin_10,src/main/resources/assets/gregguns/textures/items/coin_10.png,tools/asset-gen/coins.py,none,"Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention",MIT,2026-10-29
+icon.coin_100,src/main/resources/assets/gregguns/textures/items/coin_100.png,tools/asset-gen/coins.py,none,"Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention",MIT,2026-10-29
+icon.coin_1000,src/main/resources/assets/gregguns/textures/items/coin_1000.png,tools/asset-gen/coins.py,none,"Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention",MIT,2026-10-29
+icon.coin_10000,src/main/resources/assets/gregguns/textures/items/coin_10000.png,tools/asset-gen/coins.py,none,"Procedural 16x16 pixel art (pixel.py discs, bevel shading, outline pass); pack coin color convention",MIT,2026-10-29

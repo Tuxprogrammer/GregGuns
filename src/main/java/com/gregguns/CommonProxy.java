@@ -33,6 +33,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -61,6 +62,8 @@ public class CommonProxy {
             .register(this);
         // Existing items of a module that is off do nothing; also on a client whose server has other flags.
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(ModuleGate.INSTANCE);
+        // Re-merges the GregGuns vending trades after /vending reload; nothing without the Vending Machine.
+        com.gregguns.compat.VendingMachineCompat.init();
         if (DevEnvironment.testHooksEnabled()) {
             // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
             ScenarioChunks.registerCallback();
@@ -120,6 +123,14 @@ public class CommonProxy {
     }
 
     /**
+     * Runs once the server has started, after every mod's server-starting handler: merges the GregGuns trades into the
+     * Vending Machine, which loads its own trade file while starting.
+     */
+    public void serverStarted(FMLServerStartedEvent event) {
+        com.gregguns.compat.VendingMachineCompat.onServerStarted();
+    }
+
+    /**
      * Registers the dev-only {@code /gregguns} command (with its {@code test} subcommand) and the built-in scenarios.
      * Does nothing outside the dev environment unless {@code -Dgregguns.testHooks=true} is set.
      */
@@ -139,6 +150,7 @@ public class CommonProxy {
         HarnessScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.fx.FxScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.machine.BuildScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        com.gregguns.compat.VendingScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         GregGunsCommand command = new GregGunsCommand();
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         command.register(new com.gregguns.core.command.BuildSubCommand());

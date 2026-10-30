@@ -22,6 +22,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | [hazards-and-tooltips.md](hazards-and-tooltips.md) | dreamcraft hazards, tooltips and fuels; GT radiation for nuclear items |
 | [nei-visibility.md](nei-visibility.md) | NEI hiding and collapsing of ammo variants, spawn eggs and technical items |
 | [nei-order.md](nei-order.md) | The one NEI and creative-tab order of every GregGuns item and block, and how NEI applies it in existing worlds |
+| [coins-and-vending.md](coins-and-vending.md) | The GregGuns Coin (five values, change and exchange recipes) and the GregGuns trades in the pack's Vending Machine: prices by tier and kind, spawn eggs, quest gates, the runtime merge, recommended quest payouts |
 | [thaumcraft-aspects.md](thaumcraft-aspects.md) | Aspects for items through GT's Thaumcraft bridge; mob aspects contract |
 
 ## Integration map
@@ -32,6 +33,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | Structure chest categories | Registered `gregguns:*` categories | Forge `ChestGenHooks`, TooMuchLoot | [pack-loot.md](pack-loot.md#gregguns-loot-categories) |
 | Minigame rewards | Follow `chest1..4` ADD files | LootGames 2.2.14 | [pack-loot.md](pack-loot.md#lootgames) |
 | Dungeon chests | Pack JSON loot rules | Roguelike-Dungeons 1.6.6-GTNH | [pack-loot.md](pack-loot.md#roguelike-dungeons) |
+| None (no currency in Techguns) | GregGuns Coin; trades merged into the Vending Machine at server start | VendingMachine 0.4.101, BetterQuesting 3.8.89-GTNH | [coins-and-vending.md](coins-and-vending.md) |
 | Quest rewards | Entries in the tier groups | EnhancedLootBags 1.3.5 | [pack-loot.md](pack-loot.md#enhancedlootbags) |
 | NPC drops | Infernal drop lists, or a soft-dependency handler | Infernal-Mobs 1.10.7-GTNH | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | Fixed per-mob drops | Optional `CustomDrop` entries | dreamcraft CustomDrops | [pack-loot.md](pack-loot.md#gtnh-customdrops) |

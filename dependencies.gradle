@@ -64,6 +64,11 @@ dependencies {
         runtimeOnlyNonPublishable("com.github.GTNewHorizons:OpenComputers:1.12.64-GTNH:dev")
     }
 
+    // The pack's Vending Machine, so dev runs and the compat.vending scenarios have the trade database that the GregGuns
+    // trades are merged into (com.gregguns.compat.VendingMachineCompat). Runtime only: GregGuns reaches it by reflection.
+    // Version is the pack's (MOD-INDEX.md).
+    runtimeOnlyNonPublishable("com.cubefury.vendingmachine:VendingMachine:0.4.101:dev") { transitive = false }
+
     // Dev-client CTM (design record 0023): Angelica 2.2.28 bundles MCPatcherForge, which renders our connected-texture
     // data. Opt in with -Pgg.devAngelica=true (or env GG_DEV_ANGELICA=1); off by default, so builds, tests, runServer and the
     // headless suite are unchanged. Runtime only, client side (Angelica is a CLIENT mod). Version is the pack's.
