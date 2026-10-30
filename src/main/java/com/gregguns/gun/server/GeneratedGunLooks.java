@@ -19,6 +19,7 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
+import com.gregguns.gun.logic.AdsSupport;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.gun.ItemGun;
 
@@ -26,7 +27,7 @@ import com.gregguns.item.gun.ItemGun;
  * One generated visual scenario per gun in {@link GunDefinitions#ALL}, named {@code mp.look.<gunId>}, plus the group
  * {@code mp.look.all} that runs them back to back in one session. Each gives the gun to the first connected player
  * and signals screenshots named {@code look-<id>-<pose>}: {@code first-person-idle}, {@code first-person-fire} (one
- * shot, then a screenshot), {@code first-person-aim} (only when the gun has a scope) and {@code third-person-front}.
+ * shot, then a screenshot), {@code first-person-aim} (only when the gun has a scope or can aim down its sights) and {@code third-person-front}.
  * Akimbo guns and guns that still render as flat icons are included automatically. None is part of {@code test all}
  * because they need a connected client. Dev environment only, server side.
  */
@@ -98,8 +99,9 @@ public final class GeneratedGunLooks {
     /** One gun's timeline step at local tick {@code t} (0 to {@link #SEGMENT_TICKS}). */
     private static void step(int t, EntityPlayerMP a, GunDefinition def) {
         String p = "look-" + def.name();
+        // A scoped gun zooms; a gun on the ADS list lines its sights up. Either way the pose is the "aim" shot.
         boolean aims = def.stats()
-            .hasScope();
+            .hasScope() || AdsSupport.supports(def.name());
         switch (t) {
             case 10 -> signal(a, "view", "0");
             case 25 -> signal(a, "shot", p + "-first-person-idle");
