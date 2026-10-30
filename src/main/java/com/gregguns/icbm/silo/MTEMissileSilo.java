@@ -12,7 +12,6 @@ import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
@@ -32,17 +31,19 @@ import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
-import com.gregguns.icbm.explosive.ExplosiveTier;
 import com.gregguns.icbm.missile.BlockMissileBody;
 import com.gregguns.icbm.missile.EntityMissile;
 import com.gregguns.icbm.missile.FlightPhase;
 import com.gregguns.icbm.missile.LaunchResult;
 import com.gregguns.icbm.missile.LaunchSite;
 import com.gregguns.icbm.missile.MissileBodies;
+import com.gregguns.icbm.missile.MissileStacks;
 import com.gregguns.icbm.missile.MissileStatus;
 import com.gregguns.icbm.missile.MissileTier;
 import com.gregguns.icbm.missile.PadMissiles;
+import com.gregguns.icbm.missile.TileMissileBody;
 import com.gregguns.icbm.warhead.BlockWarhead;
+import com.gregguns.icbm.warhead.TileWarhead;
 import com.gregguns.icbm.warhead.WarheadCasing;
 import com.gregguns.icbm.warhead.WarheadData;
 import com.gregguns.icbm.warhead.WarheadStacks;
@@ -99,6 +100,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
 
     private static final String PIECE = "silo";
     private static final String OVERLAY_DIR = "machines/thirdparty/ntm/missile_silo/";
+    private static final String K_STAGE = "sequenceStage";
     private static final String K_PENDING = "pendingTier";
     private static final String K_P_GUIDANCE = "pendingGuidance";
     private static final String K_P_EXPLOSIVE = "pendingExplosive";
@@ -129,13 +131,22 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private long pushedStart;
 
     private int casingCount;
-    /** The mating in progress, saved so a reload mid-cycle does not eat the items; 0 for none, else the tier number. */
+    /** The silo's own assembly in the shaft (D285); the parts themselves stand in the shaft as blocks. */
+    private SiloSequence.Stage stage = SiloSequence.Stage.NONE;
+    /** What the last look into the shaft saw; a change asks GT for a check. Not saved. */
+    private SiloSequence.Shaft lastShaft;
+    /** Ticks between looks into the shaft while the silo is formed. */
+    private static final int SHAFT_WATCH_TICKS = 20;
+    /**
+     * Parts an earlier build took out of the bus into a single mating cycle and holds in the controller: 0 for none,
+     * else the body's tier number. Read from old saves only; the next check stands them in the shaft.
+     */
     private int pendingTier;
     private int pendingGuidance;
     private String pendingExplosive = WarheadData.DEFAULT_EXPLOSIVE;
     private int pendingFill = 1;
     private int pendingCasing = 1;
-    /** The mating cycle finished but the missile could not be placed yet (the shaft chunks were unloaded). */
+    /** Read from old saves with {@link #pendingTier}: that cycle had finished. */
     private boolean pendingReady;
     /** The last recipe check refused because the shaft's chunks were not loaded; retry when they are. */
     private boolean waitingForChunks;
@@ -246,9 +257,12 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
     }
 
-    /**
-     * @return the tier number of the body and warhead taken out of the buses and not yet standing in the shaft, or 0
-     */
+    /** @return the silo's own assembly stage (for the scenarios) */
+    SiloSequence.Stage stage() {
+        return stage;
+    }
+
+    /** @return the tier number of parts an old save held in the controller and not yet stood in the shaft, or 0 */
     int pendingTier() {
         return pendingTier;
     }
@@ -408,6 +422,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         if (tick % 20 == 0) {
             ensureDoorEntity(w);
             retryWhenChunksLoaded();
+        }
+        if (tick % SHAFT_WATCH_TICKS == 0) {
+            watchShaft(w);
         }
     }
 
@@ -813,40 +830,226 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             return waitForChunks();
         }
         if (pendingTier != 0) {
-            CheckRecipeResult resumed = resumePending(volts);
-            if (resumed != null) {
-                return resumed;
+            standLegacyParts();
+        }
+        SiloSequence.Shaft shaft = seeShaft();
+        lastShaft = shaft;
+        stage = SiloSequence.reconcile(stage, shaft);
+        MissileTier standing = shaftBodyTier();
+        BusScan bus = scanBus(standing);
+        boolean warhead = stage == SiloSequence.Stage.NONE ? bus.anyWarhead : bus.warhead != null;
+        switch (SiloSequence.next(stage, shaft, bus.anyBody, warhead)) {
+            case PUMP:
+                EntityMissile m = missile();
+                return m == null ? failure("gregguns_silo_no_body") : pump(m, volts);
+            case PLACE_BODY:
+                return placeBody(bus, volts);
+            case RUN_BODY:
+                return runCycle(standing, volts, SiloRules.BODY_TICKS, "gregguns_silo_body_cycle");
+            case PLACE_WARHEAD:
+                return placeWarhead(standing, bus.warhead, volts);
+            case RUN_WARHEAD:
+                stage = SiloSequence.Stage.WARHEAD;
+                return runCycle(standing, volts, SiloRules.WARHEAD_TICKS, "gregguns_silo_warhead_cycle");
+            case WAIT_BODY:
+                return failure("gregguns_silo_waiting_body");
+            case WAIT_WARHEAD:
+                return failure(
+                    bus.anyWarhead ? "gregguns_silo_wrong_warhead"
+                        : bus.anyInert ? "gregguns_silo_inert_warhead" : "gregguns_silo_no_warhead");
+            case BAD_WARHEAD:
+                return failure("gregguns_silo_bad_nose");
+            case BLOCKED:
+                return failure("gregguns_silo_blocked");
+            case NO_BODY:
+            default:
+                return failure("gregguns_silo_no_body");
+        }
+    }
+
+    // --- the shaft --------------------------------------------------------------------------------------------------
+
+    /** @return X of the pad's center block, where the silo stands a body */
+    private int baseX() {
+        return (int) Math.floor(shaftX());
+    }
+
+    /** @return Z of the pad's center block */
+    private int baseZ() {
+        return (int) Math.floor(shaftZ());
+    }
+
+    /** @return what stands in the shaft; the caller checks that the shaft is loaded */
+    private SiloSequence.Shaft seeShaft() {
+        World w = getBaseMetaTileEntity().getWorld();
+        if (missile() != null) {
+            return SiloSequence.Shaft.MISSILE;
+        }
+        Block b = w.getBlock(baseX(), floorY(), baseZ());
+        if (b instanceof BlockMissileBody) {
+            MissileTier tier = ((BlockMissileBody) b).missileTier();
+            int noseY = floorY() + tier.heightBlocks();
+            Block nose = w.getBlock(baseX(), noseY, baseZ());
+            if (!(nose instanceof BlockWarhead)) {
+                return SiloSequence.Shaft.BODY;
             }
+            net.minecraft.tileentity.TileEntity t = w.getTileEntity(baseX(), noseY, baseZ());
+            boolean fits = t instanceof TileWarhead && !((TileWarhead) t).armed()
+                && tier.carries(
+                    ((BlockWarhead) nose).casing()
+                        .tier());
+            return fits ? SiloSequence.Shaft.STACK : SiloSequence.Shaft.BAD_STACK;
         }
-        EntityMissile m = missile();
-        if (m != null) {
-            return pump(m, volts);
-        }
-        if (stackedBody() != null) {
-            return failure("gregguns_silo_hand_stacked");
-        }
-        return startMating(volts);
+        // A body anywhere else in the shaft is not on the pad's center: the silo leaves it to the player.
+        return stackedBody() != null ? SiloSequence.Shaft.OTHER : SiloSequence.Shaft.EMPTY;
+    }
+
+    /** @return the tier of the body block on the pad's center, or null */
+    private MissileTier shaftBodyTier() {
+        Block b = getBaseMetaTileEntity().getWorld()
+            .getBlock(baseX(), floorY(), baseZ());
+        return b instanceof BlockMissileBody ? ((BlockMissileBody) b).missileTier() : null;
     }
 
     /**
-     * A mating cycle was cut short (power loss, a broken structure, no repair) or its missile could not be placed: the
-     * parts are already out of the bus, so finish with them instead of taking new ones.
-     *
-     * @return the cycle result, or null when the shaft now holds the missile and the normal flow continues
+     * Looks into the shaft once a second. The world wins (D285): a body or warhead taken away ends or steps back the
+     * sequence, a running cycle whose part is gone stops at once, and a warhead the silo seated on a body that is gone
+     * comes down as its item, once, through its own block. Any change asks GT for a check, since GT's checks are pushed
+     * by hatch events only and a part placed or taken by hand is none of those.
      */
-    private CheckRecipeResult resumePending(int volts) {
-        MissileTier tier = MissileTier.byNumber(pendingTier);
+    private void watchShaft(World w) {
+        if (w == null || !shaftLoaded()) {
+            return;
+        }
+        SiloSequence.Shaft shaft = seeShaft();
+        SiloSequence.Stage before = stage;
+        SiloSequence.Stage after = SiloSequence.reconcile(before, shaft);
+        boolean running = mMaxProgresstime > 0;
+        boolean partGone = after == SiloSequence.Stage.NONE && before != SiloSequence.Stage.NONE
+            || before == SiloSequence.Stage.WARHEAD && after == SiloSequence.Stage.BODY_DONE;
+        if (before == SiloSequence.Stage.WARHEAD && after == SiloSequence.Stage.NONE
+            && shaft != SiloSequence.Shaft.MISSILE) {
+            dropLooseWarheads(w);
+            shaft = seeShaft();
+        }
+        if (running && partGone) {
+            cancelCycle();
+        }
+        if (!running || partGone) {
+            stage = after;
+        }
+        if (shaft != lastShaft || stage != before) {
+            lastShaft = shaft;
+            if (!running || partGone) {
+                scheduleRecipeCheckImmediate();
+            }
+        }
+    }
+
+    /**
+     * Breaks every warhead left standing in the shaft's center column without a body under it; each block drops its own
+     * item ({@link BlockWarhead#breakBlock}), so it comes back exactly once.
+     */
+    private void dropLooseWarheads(World w) {
+        for (int y = floorY(); y < rimTop(); y++) {
+            if (w.getBlock(baseX(), y, baseZ()) instanceof BlockWarhead) {
+                w.setBlockToAir(baseX(), y, baseZ());
+            }
+        }
+    }
+
+    /** Stops a cycle whose part was taken away: no progress, no draw, and no end-of-cycle step. */
+    private void cancelCycle() {
+        mMaxProgresstime = 0;
+        mProgresstime = 0;
+        lEUt = 0;
+        mEfficiencyIncrease = 0;
+    }
+
+    // --- the steps -------------------------------------------------------------------------------------------------
+
+    /** What the Input Buses hold, for one look. */
+    private static final class BusScan {
+
+        /** The first body the Energy Hatch can handle, or null. */
+        ItemStack body;
+        MissileTier bodyTier;
+        /** Any body at all, also one too heavy for the hatch. */
+        boolean anyBody;
+        /** The heaviest voltage index a body in the bus would need, for the "insufficient tier" message. */
+        int lowVoltageIndex;
+        /** The first warhead the standing body carries, or null. */
+        ItemStack warhead;
+        boolean anyWarhead;
+        boolean anyInert;
+    }
+
+    /**
+     * @param standing the tier of the body in the shaft, or null; picks the fitting warhead
+     */
+    private BusScan scanBus(MissileTier standing) {
+        BusScan scan = new BusScan();
+        int volts = hatchVoltage();
+        for (MTEHatchInputBus bus : validMTEList(mInputBusses)) {
+            for (int i = 0; i < bus.getSizeInventory(); i++) {
+                ItemStack s = bus.getStackInSlot(i);
+                if (s == null || s.stackSize <= 0) {
+                    continue;
+                }
+                MissileTier t = MissileBodies.tierOf(s);
+                if (t != null) {
+                    scan.anyBody = true;
+                    if (scan.body == null && volts >= SiloRules.requiredVoltageIndex(t)) {
+                        scan.body = s;
+                        scan.bodyTier = t;
+                    } else if (scan.body == null) {
+                        scan.lowVoltageIndex = Math.max(scan.lowVoltageIndex, SiloRules.requiredVoltageIndex(t));
+                    }
+                } else if (isWarhead(s)) {
+                    scan.anyWarhead = true;
+                    if (scan.warhead == null && standing != null && standing.carries(casingOf(s).tier())) {
+                        scan.warhead = s;
+                    }
+                } else if (com.gregguns.icbm.warhead.InertWarheads.is(s)) {
+                    // D282: an inert warhead has no charges; the silo never takes it, but says why.
+                    scan.anyInert = true;
+                }
+            }
+        }
+        return scan;
+    }
+
+    /** Takes a body out of the bus, stands it on the pad's center and starts its cycle (D285). */
+    private CheckRecipeResult placeBody(BusScan bus, int volts) {
+        if (bus.body == null) {
+            return CheckRecipeResultRegistry.insufficientMachineTier(bus.lowVoltageIndex);
+        }
+        MissileTier tier = bus.bodyTier;
+        CheckRecipeResult dark = noPower(tier);
+        if (dark != null) {
+            return dark;
+        }
         World w = getBaseMetaTileEntity().getWorld();
-        if (tier == null || w == null) {
-            pendingTier = 0;
-            return null;
+        if (!MissileStacks.canPlaceBody(w, baseX(), floorY(), baseZ(), tier)) {
+            return failure("gregguns_silo_blocked");
         }
-        if (missile() != null || stackedBody() != null) {
-            dropParts(tier, w); // the shaft was taken meanwhile; keeps the parts when the drop fails
-            return failure("gregguns_silo_hand_stacked");
+        TileMissileBody tile = MissileStacks
+            .placeBody(w, baseX(), floorY(), baseZ(), tier, MissileBodies.guidanceOf(bus.body), true);
+        if (tile == null) {
+            return failure("gregguns_silo_blocked");
         }
-        if (pendingReady) {
-            return spawnPending(tier, w) ? null : waitForChunks();
+        tile.setOwner(getBaseMetaTileEntity().getOwnerUuid(), getBaseMetaTileEntity().getOwnerName());
+        takeOne(bus.body);
+        stage = SiloSequence.Stage.BODY;
+        lastShaft = SiloSequence.Shaft.BODY;
+        begin(SiloRules.BODY_TICKS, volts, tier);
+        return SimpleCheckRecipeResult.ofSuccess("gregguns_silo_body_cycle");
+    }
+
+    /** Takes a fitting warhead out of the bus, seats it on the standing body's nose and starts the mating cycle. */
+    private CheckRecipeResult placeWarhead(MissileTier tier, ItemStack warhead, int volts) {
+        if (tier == null || warhead == null) {
+            return failure("gregguns_silo_no_warhead");
         }
         if (volts < SiloRules.requiredVoltageIndex(tier)) {
             return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
@@ -855,8 +1058,46 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         if (dark != null) {
             return dark;
         }
-        begin(SiloRules.MATE_TICKS, volts, tier);
-        return CheckRecipeResultRegistry.SUCCESSFUL;
+        World w = getBaseMetaTileEntity().getWorld();
+        if (!MissileStacks.placeWarhead(
+            w,
+            baseX(),
+            floorY() + tier.heightBlocks(),
+            baseZ(),
+            warhead,
+            getBaseMetaTileEntity().getOwnerUuid(),
+            getBaseMetaTileEntity().getOwnerName())) {
+            return failure("gregguns_silo_blocked");
+        }
+        takeOne(warhead);
+        stage = SiloSequence.Stage.WARHEAD;
+        lastShaft = SiloSequence.Shaft.STACK;
+        begin(SiloRules.WARHEAD_TICKS, volts, tier);
+        return SimpleCheckRecipeResult.ofSuccess("gregguns_silo_warhead_cycle");
+    }
+
+    /** Runs a cycle on a part that already stands in the shaft: first run of an adopted part, or after a stop. */
+    private CheckRecipeResult runCycle(MissileTier tier, int volts, int ticks, String key) {
+        if (tier == null) {
+            return failure("gregguns_silo_no_body");
+        }
+        if (volts < SiloRules.requiredVoltageIndex(tier)) {
+            return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
+        }
+        CheckRecipeResult dark = noPower(tier);
+        if (dark != null) {
+            return dark;
+        }
+        begin(ticks, volts, tier);
+        return SimpleCheckRecipeResult.ofSuccess(key);
+    }
+
+    private void takeOne(ItemStack stack) {
+        stack.stackSize--;
+        if (stack.stackSize <= 0) {
+            removeFromBuses(stack);
+        }
+        updateSlots();
     }
 
     /** Pumps one portion of fuel into the missile in the shaft. */
@@ -895,95 +1136,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         m.fill(mb, true);
         begin(SiloRules.PUMP_TICKS, volts, m.tier());
-        return CheckRecipeResultRegistry.SUCCESSFUL;
-    }
-
-    /** Takes a body and a fitting warhead out of the buses and starts the mating cycle. */
-    private CheckRecipeResult startMating(int volts) {
-        ItemStack bodyStack = null;
-        ItemStack warheadStack = null;
-        MissileTier tier = null;
-        boolean anyWarhead = false;
-        boolean anyInert = false;
-        boolean lowVoltageBody = false;
-        int lowVoltageIndex = 0;
-        for (MTEHatchInputBus bus : validMTEList(mInputBusses)) {
-            for (int i = 0; i < bus.getSizeInventory(); i++) {
-                ItemStack s = bus.getStackInSlot(i);
-                if (s == null || s.stackSize <= 0) {
-                    continue;
-                }
-                MissileTier t = MissileBodies.tierOf(s);
-                if (t != null && bodyStack == null && volts >= SiloRules.requiredVoltageIndex(t)) {
-                    bodyStack = s;
-                    tier = t;
-                } else if (t != null && bodyStack == null) {
-                    // A body this hatch cannot handle: keep looking, but remember it for the message.
-                    lowVoltageBody = true;
-                    lowVoltageIndex = Math.max(lowVoltageIndex, SiloRules.requiredVoltageIndex(t));
-                } else if (isWarhead(s)) {
-                    anyWarhead = true;
-                } else if (com.gregguns.icbm.warhead.InertWarheads.is(s)) {
-                    // D282: an inert warhead has no charges; the silo never takes it, but says why.
-                    anyInert = true;
-                }
-            }
-        }
-        if (bodyStack == null) {
-            return lowVoltageBody ? CheckRecipeResultRegistry.insufficientMachineTier(lowVoltageIndex)
-                : failure("gregguns_silo_no_body");
-        }
-        for (MTEHatchInputBus bus : validMTEList(mInputBusses)) {
-            for (int i = 0; i < bus.getSizeInventory(); i++) {
-                ItemStack s = bus.getStackInSlot(i);
-                if (s != null && s.stackSize > 0 && isWarhead(s) && tier.carries(casingOf(s).tier())) {
-                    warheadStack = s;
-                    break;
-                }
-            }
-            if (warheadStack != null) {
-                break;
-            }
-        }
-        ExplosiveTier warheadTier = warheadStack == null ? null : casingOf(warheadStack).tier();
-        SiloRules.Mate verdict = SiloRules.mate(tier, warheadTier, volts);
-        switch (verdict) {
-            case NO_BODY:
-                return failure("gregguns_silo_no_body");
-            case NO_WARHEAD:
-                return failure(
-                    anyWarhead ? "gregguns_silo_wrong_warhead"
-                        : anyInert ? "gregguns_silo_inert_warhead" : "gregguns_silo_no_warhead");
-            case WRONG_WARHEAD:
-                return failure("gregguns_silo_wrong_warhead");
-            case LOW_VOLTAGE:
-                return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
-            default:
-                break;
-        }
-        CheckRecipeResult dark = noPower(tier);
-        if (dark != null) {
-            return dark;
-        }
-        WarheadCasing casing = casingOf(warheadStack);
-        WarheadData data = WarheadStacks.read(casing, warheadStack);
-        pendingTier = tier.number();
-        pendingGuidance = MissileBodies.guidanceOf(bodyStack);
-        pendingExplosive = data.explosive();
-        pendingFill = data.fill();
-        pendingCasing = casing.number();
-        pendingReady = false;
-        bodyStack.stackSize--;
-        if (bodyStack.stackSize <= 0) {
-            removeFromBuses(bodyStack);
-        }
-        warheadStack.stackSize--;
-        if (warheadStack.stackSize <= 0) {
-            removeFromBuses(warheadStack);
-        }
-        updateSlots();
-        begin(SiloRules.MATE_TICKS, volts, tier);
-        return CheckRecipeResultRegistry.SUCCESSFUL;
+        return SimpleCheckRecipeResult.ofSuccess("gregguns_silo_fueling");
     }
 
     private void removeFromBuses(ItemStack empty) {
@@ -1012,53 +1165,86 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         return ((BlockWarhead) Block.getBlockFromItem(s.getItem())).casing();
     }
 
-    /** The mating cycle ended: the armed missile stands in the shaft. */
+    /**
+     * A cycle ended. A body cycle leaves the body ready for its warhead; a mating cycle arms the stack into the missile
+     * entity (no drops: the blocks become the missile), which the fuel cycles then fill. GT asks for the next check
+     * right after this, so the sequence runs on by itself.
+     */
     @Override
     protected void outputAfterRecipe() {
-        if (pendingTier == 0) {
+        World w = getBaseMetaTileEntity().getWorld();
+        if (w == null || w.isRemote || stage == SiloSequence.Stage.NONE) {
             return;
         }
+        if (!shaftLoaded()) {
+            // The shaft went away mid-cycle: keep the stage; the cycle runs again once it is back.
+            return;
+        }
+        SiloSequence.Shaft shaft = seeShaft();
+        SiloSequence.Stage now = SiloSequence.reconcile(stage, shaft);
+        if (now != stage) {
+            stage = now; // a part went missing at the last moment; the next check sorts it out
+            return;
+        }
+        if (stage == SiloSequence.Stage.WARHEAD) {
+            if (shaft != SiloSequence.Shaft.STACK) {
+                return; // a lit or wrong warhead: the next check says so
+            }
+            MissileStacks.Armed armed = MissileStacks.armIntoEntity(w, baseX(), floorY(), baseZ(), null);
+            if (armed.result != MissileStacks.ArmResult.OK) {
+                return; // an incomplete body mends itself on its next update; the cycle runs again
+            }
+            lastShaft = SiloSequence.Shaft.MISSILE;
+        }
+        stage = SiloSequence.afterCycle(stage);
+    }
+
+    /**
+     * An earlier build held the body and warhead of a mating cycle inside the controller. Stand them in the shaft as
+     * this sequence would have, body and warhead, so the mating cycle runs again on them; if the shaft is taken, they
+     * drop as items. Nothing is lost either way.
+     */
+    private void standLegacyParts() {
         MissileTier tier = MissileTier.byNumber(pendingTier);
         World w = getBaseMetaTileEntity().getWorld();
         if (tier == null || w == null) {
             pendingTier = 0;
             return;
         }
-        if (w.isRemote) {
-            return;
-        }
-        pendingReady = true;
-        if (shaftLoaded() && (missile() != null || stackedBody() != null)) {
-            // The shaft was taken while the cycle ran: give the parts back rather than lose them.
+        if (seeShaft() != SiloSequence.Shaft.EMPTY
+            || !MissileStacks.canPlaceBody(w, baseX(), floorY(), baseZ(), tier)) {
             dropParts(tier, w);
             return;
         }
-        // On failure (shaft chunks unloaded) pendingTier stays and checkProcessing retries.
-        spawnPending(tier, w);
-    }
-
-    /** @return whether the missile stands in the shaft now; false keeps the pending parts for a retry */
-    private boolean spawnPending(MissileTier tier, World w) {
-        if (!shaftLoaded()) {
-            return false;
+        TileMissileBody body = MissileStacks.placeBody(w, baseX(), floorY(), baseZ(), tier, pendingGuidance, true);
+        if (body == null) {
+            dropParts(tier, w);
+            return;
         }
-        EntityMissile missile = EntityMissile.create(tier, w);
-        // The missile stands on the pad's top face, as on an open pad.
-        missile.setLocationAndAngles(shaftX(), padY() + EntityMissile.PAD_SURFACE, shaftZ(), 0.0F, 0.0F);
-        missile.configure(pendingGuidance, pendingExplosive, pendingFill, pendingCasing, null);
-        UUID owner = getBaseMetaTileEntity().getOwnerUuid();
-        if (owner != null) {
-            missile.setOwner(owner, getBaseMetaTileEntity().getOwnerName());
+        body.setOwner(getBaseMetaTileEntity().getOwnerUuid(), getBaseMetaTileEntity().getOwnerName());
+        WarheadCasing c = com.gregguns.icbm.missile.MissileCasings.byNumber(pendingCasing);
+        ItemStack warhead = WarheadStacks.make(
+            net.minecraft.item.Item.getItemFromBlock(com.gregguns.icbm.warhead.WarheadBlocks.of(c)),
+            c,
+            pendingExplosive,
+            pendingFill);
+        boolean seated = MissileStacks.placeWarhead(
+            w,
+            baseX(),
+            floorY() + tier.heightBlocks(),
+            baseZ(),
+            warhead,
+            getBaseMetaTileEntity().getOwnerUuid(),
+            getBaseMetaTileEntity().getOwnerName());
+        if (!seated) {
+            w.spawnEntityInWorld(new EntityItem(w, shaftX(), floorY() + 1.0, shaftZ(), warhead));
         }
-        if (!w.spawnEntityInWorld(missile)) {
-            return false;
-        }
+        stage = seated ? SiloSequence.Stage.WARHEAD : SiloSequence.Stage.BODY_DONE;
         pendingTier = 0;
         pendingReady = false;
-        return true;
     }
 
-    /** Puts the pending body and warhead into the world; keeps them pending when the shaft's chunks are not loaded. */
+    /** Puts the old save's held body and warhead into the world; keeps them held when the shaft is not loaded. */
     private void dropParts(MissileTier tier, World w) {
         if (!shaftLoaded()) {
             return;
@@ -1083,6 +1269,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public void saveNBTData(NBTTagCompound tag) {
         super.saveNBTData(tag);
+        tag.setString(K_STAGE, stage.name());
         tag.setInteger(K_PENDING, pendingTier);
         tag.setInteger(K_P_GUIDANCE, pendingGuidance);
         tag.setString(K_P_EXPLOSIVE, pendingExplosive);
@@ -1102,6 +1289,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public void loadNBTData(NBTTagCompound tag) {
         super.loadNBTData(tag);
+        stage = SiloSequence.parse(tag.getString(K_STAGE));
         pendingTier = tag.getInteger(K_PENDING);
         pendingGuidance = tag.getInteger(K_P_GUIDANCE);
         pendingExplosive = tag.hasKey(K_P_EXPLOSIVE) ? tag.getString(K_P_EXPLOSIVE) : WarheadData.DEFAULT_EXPLOSIVE;

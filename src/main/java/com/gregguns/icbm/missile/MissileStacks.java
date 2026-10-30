@@ -49,6 +49,97 @@ public final class MissileStacks {
     private MissileStacks() {}
 
     /**
+     * @param world the world
+     * @param x     X of the base cell
+     * @param y     Y of the base cell
+     * @param z     Z of the base cell
+     * @param tier  the body tier
+     * @return whether the base cell, the filler cells above it and one cell for the warhead are free
+     */
+    public static boolean canPlaceBody(World world, int x, int y, int z, MissileTier tier) {
+        for (int i = 0; i < tier.heightBlocks() + 1; i++) {
+            if (y + i > 255) {
+                return false;
+            }
+            Block b = world.getBlock(x, y + i, z);
+            if (!b.isReplaceable(world, x, y + i, z) && !b.isAir(world, x, y + i, z)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Stands a body block with its filler cells at a base cell, as the body item does (the player's hand) and the silo
+     * does from its Input Bus (D285). The caller checks {@link #canPlaceBody} and sets the owner. Server side.
+     *
+     * @param world    the server world
+     * @param x        X of the base cell
+     * @param y        Y of the base cell
+     * @param z        Z of the base cell
+     * @param tier     the body tier
+     * @param guidance guidance tiers above the body's own
+     * @param onPad    whether the body stands on a Galacticraft pad (its model is lowered onto the pad's surface)
+     * @return the body's tile, or null when the block did not take
+     */
+    public static TileMissileBody placeBody(World world, int x, int y, int z, MissileTier tier, int guidance,
+        boolean onPad) {
+        if (!world.setBlock(x, y, z, MissileBlocks.body(tier), 0, 3)) {
+            return null;
+        }
+        TileEntity t = world.getTileEntity(x, y, z);
+        if (!(t instanceof TileMissileBody)) {
+            return null;
+        }
+        ((TileMissileBody) t).init(guidance, onPad, null);
+        for (int i = 1; i < tier.heightBlocks(); i++) {
+            world.setBlock(x, y + i, z, MissileBlocks.filler(), 0, 2);
+            TileEntity f = world.getTileEntity(x, y + i, z);
+            if (f instanceof TileWarheadFiller) {
+                ((TileWarheadFiller) f).setOffset(0, -i, 0);
+            }
+        }
+        return (TileMissileBody) t;
+    }
+
+    /**
+     * Seats a warhead block on a body's nose from a warhead item, as a player's placement does, without a player: the
+     * silo's mating step (D285). Server side.
+     *
+     * @param world     the server world
+     * @param x         X of the nose cell (the cell above the body's top filler)
+     * @param y         Y of the nose cell
+     * @param z         Z of the nose cell
+     * @param stack     the warhead item, read for its explosive and fill; not changed
+     * @param ownerId   the owner, may be null
+     * @param ownerName the owner's name, may be null
+     * @return whether the warhead now sits there; false when a cell it needs is taken
+     */
+    public static boolean placeWarhead(World world, int x, int y, int z, net.minecraft.item.ItemStack stack,
+        java.util.UUID ownerId, String ownerName) {
+        Block block = Block.getBlockFromItem(stack.getItem());
+        if (!(block instanceof BlockWarhead) || y > 255) {
+            return false;
+        }
+        com.gregguns.icbm.warhead.WarheadCasing casing = ((BlockWarhead) block).casing();
+        Block here = world.getBlock(x, y, z);
+        if (!here.isReplaceable(world, x, y, z) && !here.isAir(world, x, y, z)
+            || !com.gregguns.icbm.warhead.WarheadFillers.canPlace(world, x, y, z, casing.heightBlocks())) {
+            return false;
+        }
+        if (!world.setBlock(x, y, z, block, 0, 3) || !(world.getTileEntity(x, y, z) instanceof TileWarhead)) {
+            return false;
+        }
+        TileWarhead tile = (TileWarhead) world.getTileEntity(x, y, z);
+        tile.init(casing, stack.getTagCompound(), null);
+        if (ownerId != null) {
+            tile.setOwner(ownerId, ownerName);
+        }
+        com.gregguns.icbm.warhead.WarheadFillers.place(world, x, y, z, casing.heightBlocks());
+        return true;
+    }
+
+    /**
      * Finds the base cell of the body that a cell belongs to.
      *
      * @return {x, y, z} of the base block, or null when the cell is not part of a body

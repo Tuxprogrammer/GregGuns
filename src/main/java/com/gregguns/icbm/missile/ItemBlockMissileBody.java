@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
 import com.gregguns.icbm.IcbmAvailability;
-import com.gregguns.icbm.warhead.TileWarheadFiller;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -86,8 +85,11 @@ public final class ItemBlockMissileBody extends ItemBlock {
             return false;
         }
         if (!world.isRemote) {
-            world.setBlock(bx, by, bz, field_150939_a, 0, 3);
-            TileEntityHolder.place(world, bx, by, bz, tier, MissileBodies.guidanceOf(stack), pad != null, player);
+            MissileStacks.placeBody(world, bx, by, bz, tier, MissileBodies.guidanceOf(stack), pad != null);
+            net.minecraft.tileentity.TileEntity t = world.getTileEntity(bx, by, bz);
+            if (t instanceof TileMissileBody) {
+                ((TileMissileBody) t).setOwner(player.getUniqueID(), player.getCommandSenderName());
+            }
             if (!player.capabilities.isCreativeMode) {
                 stack.stackSize--;
             }
@@ -97,35 +99,7 @@ public final class ItemBlockMissileBody extends ItemBlock {
     }
 
     private boolean canPlace(World world, int bx, int by, int bz) {
-        for (int i = 0; i < tier.heightBlocks() + 1; i++) {
-            if (by + i > 255) {
-                return false;
-            }
-            Block b = world.getBlock(bx, by + i, bz);
-            if (!b.isReplaceable(world, bx, by + i, bz) && !b.isAir(world, bx, by + i, bz)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /** Tile setup kept apart so the placement method stays short. */
-    private static final class TileEntityHolder {
-
-        static void place(World world, int bx, int by, int bz, MissileTier tier, int guidance, boolean pad,
-            EntityPlayer owner) {
-            net.minecraft.tileentity.TileEntity t = world.getTileEntity(bx, by, bz);
-            if (t instanceof TileMissileBody) {
-                ((TileMissileBody) t).init(guidance, pad, owner);
-            }
-            for (int i = 1; i < tier.heightBlocks(); i++) {
-                world.setBlock(bx, by + i, bz, MissileBlocks.filler(), 0, 2);
-                net.minecraft.tileentity.TileEntity f = world.getTileEntity(bx, by + i, bz);
-                if (f instanceof TileWarheadFiller) {
-                    ((TileWarheadFiller) f).setOffset(0, -i, 0);
-                }
-            }
-        }
+        return MissileStacks.canPlaceBody(world, bx, by, bz, tier);
     }
 
     @Override

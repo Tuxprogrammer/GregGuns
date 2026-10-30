@@ -6,10 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.icbm.explosive.ExplosiveTier;
 import com.gregguns.icbm.missile.MissileTier;
 
-/** The silo's mating and fueling rules (D70). */
+/** The silo's voltage, cycle and fueling rules (D70, D285). */
 class SiloRulesTest {
 
     @Test
@@ -20,18 +19,10 @@ class SiloRulesTest {
     }
 
     @Test
-    void matingChecksTheFirstProblemFirst() {
-        assertEquals(SiloRules.Mate.NO_BODY, SiloRules.mate(null, ExplosiveTier.T1, 9));
-        assertEquals(SiloRules.Mate.NO_WARHEAD, SiloRules.mate(MissileTier.T3, null, 9));
-        assertEquals(SiloRules.Mate.WRONG_WARHEAD, SiloRules.mate(MissileTier.T2, ExplosiveTier.T3, 9));
-        assertEquals(SiloRules.Mate.LOW_VOLTAGE, SiloRules.mate(MissileTier.T3, ExplosiveTier.T3, 5));
-        assertEquals(SiloRules.Mate.OK, SiloRules.mate(MissileTier.T3, ExplosiveTier.T3, 6));
-    }
-
-    @Test
-    void lighterWarheadsFitHeavierBodies() {
-        assertEquals(SiloRules.Mate.OK, SiloRules.mate(MissileTier.T3, ExplosiveTier.T1, 6));
-        assertEquals(SiloRules.Mate.OK, SiloRules.mate(MissileTier.T1, ExplosiveTier.T1, 3));
+    void theTwoAssemblyCyclesKeepTheOldMatingTime() {
+        // D285 split the 20-second mating into a body cycle and a warhead cycle of 10 seconds each.
+        assertEquals(400, SiloRules.BODY_TICKS + SiloRules.WARHEAD_TICKS);
+        assertTrue(SiloRules.BODY_TICKS > 0 && SiloRules.WARHEAD_TICKS > 0);
     }
 
     @Test

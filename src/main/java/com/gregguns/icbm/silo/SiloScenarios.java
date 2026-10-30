@@ -76,6 +76,7 @@ public final class SiloScenarios {
         registry.register(new Resume());
         registry.register(new UnformedPad());
         registry.register(new HandStack());
+        SiloSequenceScenarios.registerAll(registry);
         registry.register(new ShaftChunkScenario());
         LaunchSequenceScenarios.registerAll(registry);
         registry.register(new LaunchSequenceMpScenario());
@@ -143,7 +144,7 @@ public final class SiloScenarios {
     }
 
     /** @return how much the fuel hatch still holds, mB */
-    private static int hatchMb(ScenarioContext ctx) {
+    static int hatchMb(ScenarioContext ctx) {
         IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
         if (hatch == null || !(hatch.getMetaTileEntity() instanceof MTEHatchInput)) {
             return 0;
@@ -152,7 +153,7 @@ public final class SiloScenarios {
         return fs == null ? 0 : fs.amount;
     }
 
-    private static void putBus(ScenarioContext ctx, ItemStack... stacks) {
+    static void putBus(ScenarioContext ctx, ItemStack... stacks) {
         IGregTechTileEntity bus = tile(ctx, -1, 0, 0);
         for (int i = 0; i < stacks.length; i++) {
             bus.setInventorySlotContents(i, stacks[i]);
@@ -160,7 +161,7 @@ public final class SiloScenarios {
     }
 
     /** @return how many stacks the input bus holds, wherever the bus keeps them */
-    private static int busItems(ScenarioContext ctx) {
+    static int busItems(ScenarioContext ctx) {
         IGregTechTileEntity bus = tile(ctx, -1, 0, 0);
         int n = 0;
         for (int i = 0; i < bus.getSizeInventory(); i++) {
@@ -171,7 +172,7 @@ public final class SiloScenarios {
         return n;
     }
 
-    private static ItemStack warhead(WarheadCasing c, String explosive) {
+    static ItemStack warhead(WarheadCasing c, String explosive) {
         return WarheadStacks.make(net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(c)), c, explosive, 1);
     }
 
@@ -456,7 +457,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "The silo does not mate a body without a warhead, with an inert warhead, a damaged (salvage) body, or a body with a warhead too heavy for it, keeps the items in the bus, and does not pump a fluid the missile does not accept.";
+            return "The silo stands a body on the pad but does not seat a warhead too heavy for it or an inert warhead, which stay in the bus with their status; a damaged (salvage) body is never taken and its warhead waits for a body; a fluid the missile does not accept is not pumped.";
         }
 
         @Override
@@ -482,36 +483,32 @@ public final class SiloScenarios {
                     case 0:
                         out.check(formed(ctx), "the silo forms");
                         power(ctx);
-                        putBus(ctx, MissileBodies.body(MissileTier.T3));
+                        // A T1 body with a T2 warhead: the body goes up (D285), the warhead is too heavy for it.
+                        putBus(ctx, MissileBodies.body(MissileTier.T1), warhead(WarheadCasing.T2, "thermobaric"));
                         mark[0] = ticks;
                         stage[0] = 1;
                         return null;
                     case 1:
                         power(ctx);
-                        if (ticks < mark[0] + 100) {
-                            return null;
+                        if (silo(ctx).stage() != SiloSequence.Stage.BODY_DONE) {
+                            return ticks > mark[0] + SiloRules.BODY_TICKS + 200
+                                ? ScenarioResult.fail(name(), "the body never finished its cycle")
+                                : null;
                         }
-                        out.check(silo(ctx).missile() == null, "no warhead, no mating");
-                        out.check(tile(ctx, -1, 0, 0).getStackInSlot(0) != null, "the body stays in the bus");
-                        // A T1 body with a T2 warhead.
-                        putBus(ctx, MissileBodies.body(MissileTier.T1), warhead(WarheadCasing.T2, "thermobaric"));
-                        mark[0] = ticks;
-                        stage[0] = 2;
-                        return null;
-                    case 2:
-                        power(ctx);
-                        if (ticks < mark[0] + 100) {
-                            return null;
+                        if (ticks < mark[0] + SiloRules.BODY_TICKS + 100) {
+                            return null; // give the silo time to (wrongly) take the warhead
                         }
                         out.check(silo(ctx).missile() == null, "a warhead heavier than the body is not mated");
+                        out.check(SiloSequenceScenarios.bodyStands(ctx), "the body stands on the pad");
+                        out.check(!SiloSequenceScenarios.warheadSeated(ctx), "no warhead sits on its nose");
+                        out.check(tile(ctx, -1, 0, 0).getStackInSlot(1) != null, "the heavy warhead stays in the bus");
                         out.check(
-                            tile(ctx, -1, 0, 0).getStackInSlot(0) != null
-                                && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
-                            "both items stay in the bus");
+                            SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_wrong_warhead"),
+                            "the silo says the warhead is too heavy");
                         // D282: an inert warhead (a payload, no charges) is not a warhead to the silo.
                         putBus(
                             ctx,
-                            MissileBodies.body(MissileTier.T1),
+                            (ItemStack) null,
                             com.gregguns.icbm.warhead.InertWarheads.stack(WarheadCasing.T1, "shrapnel"));
                         mark[0] = ticks;
                         stage[0] = 6;
@@ -522,10 +519,13 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(silo(ctx).missile() == null, "an inert warhead is not mated (D282)");
+                        out.check(!SiloSequenceScenarios.warheadSeated(ctx), "nothing is seated on the nose");
+                        out.check(tile(ctx, -1, 0, 0).getStackInSlot(1) != null, "the inert warhead stays in the bus");
                         out.check(
-                            tile(ctx, -1, 0, 0).getStackInSlot(0) != null
-                                && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
-                            "the body and the inert warhead stay in the bus");
+                            SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_inert_warhead"),
+                            "the silo says the warhead is inert");
+                        // Take the body away (no drop: the scenario is done with it) for the salvage check.
+                        SiloSequenceScenarios.removeBody(ctx);
                         // A damaged body (a silo complex's salvage) with a fitting warhead: not a body.
                         ItemStack damaged = MissileBodies.body(MissileTier.T1);
                         damaged.setItemDamage(com.gregguns.icbm.missile.ItemBlockMissileBody.SALVAGE_DAMAGE);
@@ -539,10 +539,14 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(silo(ctx).missile() == null, "a damaged body is salvage, never mated (D17)");
+                        out.check(!SiloSequenceScenarios.bodyStands(ctx), "no body is stood on the pad");
                         out.check(
                             tile(ctx, -1, 0, 0).getStackInSlot(0) != null
                                 && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
                             "the damaged body and the warhead stay in the bus");
+                        out.check(
+                            SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_waiting_body"),
+                            "the warhead waits for a body");
                         putBus(ctx, (ItemStack) null, (ItemStack) null);
                         // Wrong fuel into a T3 standing in the shaft.
                         m[0] = stand(ctx, MissileTier.T3);
@@ -1100,7 +1104,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "Cutting the power during a mating cycle keeps the body and warhead pending; when the power and the machine are back the same parts finish as a missile and the next parts in the bus are untouched.";
+            return "Cutting the power during the warhead's mating cycle keeps the body and warhead standing in the shaft; when the power and the machine are back the same parts finish as a missile and the next parts in the bus are untouched.";
         }
 
         @Override
@@ -1132,11 +1136,12 @@ public final class SiloScenarios {
                         return null;
                     case 1:
                         power(ctx);
-                        if (s.pendingTier() == 0) {
-                            return ticks > 400 ? ScenarioResult.fail(name(), "the cycle never started") : null;
+                        if (s.stage() != SiloSequence.Stage.WARHEAD) {
+                            return ticks > 800 ? ScenarioResult.fail(name(), "the mating cycle never started") : null;
                         }
-                        out.checkEquals("the cycle took the body", null, tile(ctx, -1, 0, 0).getStackInSlot(0));
-                        out.checkEquals("the cycle took the warhead", null, tile(ctx, -1, 0, 0).getStackInSlot(1));
+                        out.checkEquals("the silo took the body", null, tile(ctx, -1, 0, 0).getStackInSlot(0));
+                        out.checkEquals("the silo took the warhead", null, tile(ctx, -1, 0, 0).getStackInSlot(1));
+                        out.check(SiloSequenceScenarios.warheadSeated(ctx), "the warhead sits on the body's nose");
                         // The next parts wait in the bus; they must still be there at the end.
                         putBus(
                             ctx,
@@ -1153,7 +1158,10 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(s.missile() == null, "no missile while the power is out");
-                        out.checkEquals("the parts stay pending", MissileTier.T1.number(), s.pendingTier());
+                        out.checkEquals("the mating stays pending", SiloSequence.Stage.WARHEAD, s.stage());
+                        out.check(
+                            SiloSequenceScenarios.bodyStands(ctx) && SiloSequenceScenarios.warheadSeated(ctx),
+                            "the body and warhead still stand in the shaft");
                         out.check(
                             !s.getBaseMetaTileEntity()
                                 .isActive(),
@@ -1174,7 +1182,10 @@ public final class SiloScenarios {
                             MissileTier.T1,
                             s.missile()
                                 .tier());
-                        out.checkEquals("nothing is pending any more", 0, s.pendingTier());
+                        out.checkEquals("nothing is pending any more", SiloSequence.Stage.NONE, s.stage());
+                        out.check(
+                            !SiloSequenceScenarios.bodyStands(ctx) && !SiloSequenceScenarios.warheadSeated(ctx),
+                            "the blocks became the missile");
                         out.checkEquals("the resume took no new parts from the bus", 2, busItems(ctx));
                         s.missile()
                             .setDead();
@@ -1238,7 +1249,8 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.checkEquals("no power: the body and warhead stay in the bus", 2, busItems(ctx));
-                        out.checkEquals("no power: no mating cycle is pending", 0, s.pendingTier());
+                        out.checkEquals("no power: no part went into the shaft", SiloSequence.Stage.NONE, s.stage());
+                        out.check(!SiloSequenceScenarios.bodyStands(ctx), "no power: no body stands on the pad");
                         out.checkEquals("no power: the silo never power-failed", 0, s.powerStops());
                         out.check(s.waitingForPower(), "no power: the silo reports that it waits for power");
                         out.check(
@@ -1254,11 +1266,11 @@ public final class SiloScenarios {
                         return null;
                     case 2:
                         power(ctx);
-                        if (s.pendingTier() == 0 && s.missile() == null) {
+                        if (s.stage() == SiloSequence.Stage.NONE && s.missile() == null) {
                             return ticks > mark[0] + 200 ? ScenarioResult.fail(name(), "powering never started it")
                                 : null;
                         }
-                        out.checkEquals("powered: the cycle took the body and warhead", 0, busItems(ctx));
+                        out.checkEquals("powered: the body went up first; the warhead waits for it", 1, busItems(ctx));
                         stage[0] = 3;
                         return null;
                     case 3:

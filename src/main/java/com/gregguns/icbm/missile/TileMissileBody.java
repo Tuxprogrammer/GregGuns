@@ -45,6 +45,18 @@ public final class TileMissileBody extends TileEntity {
         }
     }
 
+    /**
+     * Sets the owner without a player: a silo stands the body on its pad for the silo's owner (D285).
+     *
+     * @param id   the owner's UUID, may be null
+     * @param name the owner's name, may be null
+     */
+    public void setOwner(UUID id, String name) {
+        this.ownerId = id;
+        this.ownerName = name == null ? "" : name;
+        markDirty();
+    }
+
     /** @return guidance tiers above the body's own */
     public int guidance() {
         return guidance;
