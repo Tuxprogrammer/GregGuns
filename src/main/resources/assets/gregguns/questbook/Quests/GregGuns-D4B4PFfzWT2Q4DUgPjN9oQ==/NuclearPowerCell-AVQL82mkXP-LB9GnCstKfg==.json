@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A sealed uranium cell, the power core of the Nuclear Death Ray. One cell goes into the Death Ray\u0027s recipe; the gun itself runs on stored energy and never burns cells as ammo. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nTwo cells come from four Naquadah alloy plates, four lead plates, eight enriched uranium dust, four redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating.\n\n[note]The cell is safe to carry. Keep the second cell of each craft for your next Death Ray.[/note]",
+      "desc:8": "A sealed uranium cell, the power core of the Nuclear Death Ray. One cell goes into the Death Ray\u0027s recipe; the gun itself runs on stored energy and never burns cells as ammo. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nOne cell comes from two Naquadah alloy plates, two lead plates, four enriched uranium dust, two redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating.\n\n[warn]The cell is radioactive. Carry it only in full radiation hazmat, or keep it in a chest until the Death Ray craft.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The warhead is the payload of a tactical nuke rocket. It is a lead-shielded block of uranium and TNT wired to a proximity fuze.\n\nCraft two at a time in a ZPM Assembly Line from lead plates, TNT, LuV circuits, enriched uranium dust and one Naquadah alloy plate, with soldering alloy. NEI lists the research item and the rest.\n\n[note]The lead keeps the warhead safe to carry. The tactical nuke rocket you build from it is radioactive.[/note]",
+      "desc:8": "The warhead is the payload of a tactical nuke rocket. It is a lead-shielded block of uranium and TNT wired to a proximity fuze.\n\nCraft two at a time in a ZPM Assembly Line from lead plates, TNT, LuV circuits, enriched uranium dust and one Naquadah alloy plate, with soldering alloy. NEI lists the research item and the rest.\n\n[warn]The warhead is radioactive, and so is the tactical nuke rocket you build from it. Carry them only in full radiation hazmat.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

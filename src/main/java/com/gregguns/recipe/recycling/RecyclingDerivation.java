@@ -168,6 +168,7 @@ public final class RecyclingDerivation {
                 continue;
             }
             ItemData data = itemData(result.composition(), materials);
+            data = withRadiationMarker(key, data);
             GTOreDictUnificator.addItemData(stack, data);
             REPORT.put(key, new Entry(Status.DERIVED, result.source() + ": " + describe(data)));
             attached++;
@@ -452,6 +453,29 @@ public final class RecyclingDerivation {
             stacks.get(0),
             stacks.subList(1, stacks.size())
                 .toArray(new MaterialStack[0]));
+    }
+
+    /**
+     * For a {@link RadiationMarker} stack, the same data with a Uranium-235 entry of {@link RadiationMarker#amount} as
+     * the main material, so GT irradiates the holder (GGS-06-23); the composition becomes the by-products, unchanged,
+     * and still comes back. Any other stack's data is returned as it is. Used by this pass and by the component
+     * recycling data ({@code ComponentRecipes}), which attaches the nuclear components' data before this pass runs.
+     *
+     * @param key  the stack's {@link RecyclingCatalog} key (a bare registry name for a component)
+     * @param data the recycling data
+     * @return the data to attach
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/objects/ItemData.java#L33-L53
+    // (the explicit constructor keeps the given main material first; it does not sort)
+    public static ItemData withRadiationMarker(String key, ItemData data) {
+        if (!RadiationMarker.marks(key)) {
+            return data;
+        }
+        MaterialStack[] byProducts = new MaterialStack[data.mByProducts.length + 1];
+        byProducts[0] = data.mMaterial;
+        System.arraycopy(data.mByProducts, 0, byProducts, 1, data.mByProducts.length);
+        return new ItemData(new MaterialStack(Materials.Uranium235, RadiationMarker.amount(GTValues.M)), byProducts);
     }
 
     private static boolean hasRecyclingRecipe(ItemStack stack) {

@@ -185,6 +185,16 @@ class ComponentTableTest {
             Tier.ZPM,
             spec("RC-59").row()
                 .tier());
+        assertEquals(
+            1,
+            spec("RC-59").row()
+                .outputCount(),
+            "one Nuclear Power Cell per run, one per Death Ray");
+        assertEquals(
+            144,
+            spec("RC-59").fluids()
+                .get(0)
+                .amount());
         assertTrue(
             ComponentTable.rows()
                 .stream()

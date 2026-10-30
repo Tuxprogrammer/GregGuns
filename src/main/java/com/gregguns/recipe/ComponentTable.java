@@ -399,19 +399,20 @@ public final class ComponentTable {
         // RC-59: Assembly Line. Deviation: the research item is our own Power Plating (IV), not the Lapotronic Orb
         // that stood in for the withdrawn cell_energy: GT already scans the orb for its own research, and one scanned
         // item unlocks only one recipe (found by tools/recipe-clash).
+        // One cell per run (D293 follow-up): the sheet's inputs halved where they divide, the ZPM circuit kept.
         list.add(
             line(
                 "RC-59",
                 ComponentItems.CELL_NUCLEAR,
-                2,
+                1,
                 Tier.ZPM,
                 30,
                 new Research(Input.mod(ComponentItems.POWER_PLATING, 1), 60, Tier.EV),
-                solder(288),
-                Input.gt("plate", "NaquadahAlloy", 4),
-                Input.gt("plate", "Lead", 4),
-                Input.gt("dust", "Uranium235", 8),
-                Input.gt("dust", "Redstone", 4),
+                solder(144),
+                Input.gt("plate", "NaquadahAlloy", 2),
+                Input.gt("plate", "Lead", 2),
+                Input.gt("dust", "Uranium235", 4),
+                Input.gt("dust", "Redstone", 2),
                 Input.gt("circuit", "Ultimate", 1)));
         list.add(
             asm(

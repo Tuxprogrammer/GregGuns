@@ -29,6 +29,7 @@ Every GregGuns item, block and machine that is built from GT materials gives tho
 2. **Per item, rounded down**, as `setItemData` divides.
 3. **Filter (GregGuns' own):** radioactive materials and explosives never come back (GGS-06-46: no uranium from recycling; the hand-written ammo data already lets powder burn away), and a material GT can return in no form is dropped so it does not take a Macerator slot.
 4. **The cheapest recipe wins** (least material in total), so recycling never pays more than a craft costs.
+5. **Radiation marker** (also on the component data `ComponentRecipes` attaches): the Nuclear Power Cell, Small Nuclear Warhead and Rad Emitter get a Uranium-235 entry of 1/200 unit as their main material, ahead of the derived composition, so GT irradiates the holder (GGS-06-23). It is too small for any recycler to return ([hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items)).
 
 A machine recipe that makes anything besides the stack, or makes it by chance, is not used: its inputs would be split between products. Items built from other items being derived wait for them; a conversion cycle settles its cheapest member first.
 

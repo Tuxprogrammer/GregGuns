@@ -21,6 +21,8 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - GregGuns' **Treated Leather** is removed with its Chemical Bath recipe. The Ranger Veteran (Riot) set and its repairs take the pack's **Tanned Leather** at the same counts, like every other set. The Rifleman loot bag holds four Tanned Leather in its place.
 - The **Nuclear Death Ray** recipe now takes one **Nuclear Power Cell** as its power core. The gun still runs on stored EU.
+- The Nuclear Power Cell recipe makes one cell from half the materials.
+- The Nuclear Power Cell, the Small Nuclear Warhead and the Rad Emitter are radioactive, like the tactical nuke rocket: carrying one without full radiation hazmat irradiates you. They still recycle into their plates, never into uranium.
 - The **Depleted Nuclear Power Cell** and its refill recipe are removed: nothing reloads from a cell.
 
 ## Changed: quests
