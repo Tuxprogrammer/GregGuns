@@ -2,8 +2,6 @@ package com.gregguns.icbm.control;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -147,33 +145,6 @@ class LaunchControlTest {
         assertFalse(t.coolingDown());
         t.restoreCooldown(-5);
         assertFalse(t.coolingDown());
-    }
-
-    // --- PadSearch ---
-
-    @Test
-    void thePadSearchFindsTheNearestCenterAndNothingOutOfReach() {
-        assertNull(PadSearch.nearest((dx, dy, dz) -> false));
-        int[] near = PadSearch.nearest((dx, dy, dz) -> (dx == 2 && dz == 0 && dy == 0) || (dx == -4 && dz == 4));
-        assertNotNull(near);
-        assertEquals(2, near[0]);
-        // out of reach in every axis
-        assertNull(PadSearch.nearest((dx, dy, dz) -> Math.abs(dx) > PadSearch.REACH));
-        assertNull(PadSearch.nearest((dx, dy, dz) -> Math.abs(dy) > PadSearch.BAND));
-    }
-
-    @Test
-    void thePadSearchOnlyAsksInsideItsBox() {
-        int[] max = { 0, 0, 0 };
-        PadSearch.nearest((dx, dy, dz) -> {
-            max[0] = Math.max(max[0], Math.abs(dx));
-            max[1] = Math.max(max[1], Math.abs(dy));
-            max[2] = Math.max(max[2], Math.abs(dz));
-            return false;
-        });
-        assertEquals(PadSearch.REACH, max[0]);
-        assertEquals(PadSearch.BAND, max[1]);
-        assertEquals(PadSearch.REACH, max[2]);
     }
 
     // --- TargetStick ---

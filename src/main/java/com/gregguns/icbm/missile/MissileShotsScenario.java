@@ -180,8 +180,9 @@ public final class MissileShotsScenario implements Scenario {
                 ctx.setBlock(t2x + a, 0, b, GCBlocks.landingPad, 0);
             }
         }
-        final int cdx = 3;
-        final int cdz = -2;
+        // Against the pad's east edge, level with it: a free Launch Control fires a pad it touches (D285).
+        final int cdx = 2;
+        final int cdz = -1;
         int id = GregGunsMTEIDs.LAUNCH_CONTROL;
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
         ctx.setBlock(cdx, 0, cdz, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());

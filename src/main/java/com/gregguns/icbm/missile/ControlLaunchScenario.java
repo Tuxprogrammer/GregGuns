@@ -89,9 +89,9 @@ public final class ControlLaunchScenario implements Scenario {
         }
         int id = GregGunsMTEIDs.LAUNCH_CONTROL;
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
-        ctx.setBlock(3, 0, 0, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());
+        ctx.setBlock(2, 0, 0, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());
         TileEntity tile = ctx.world()
-            .getTileEntity(ctx.originX() + 3, ctx.originY(), ctx.originZ());
+            .getTileEntity(ctx.originX() + 2, ctx.originY(), ctx.originZ());
         if (tile instanceof IGregTechTileEntity) {
             IGregTechTileEntity base = (IGregTechTileEntity) tile;
             base.setInitialValuesAsNBT(null, (short) id);
@@ -105,7 +105,7 @@ public final class ControlLaunchScenario implements Scenario {
         final FakePlayer player = new FakePlayer(
             (WorldServer) w,
             new GameProfile(UUID.nameUUIDFromBytes("gg-launch".getBytes(StandardCharsets.UTF_8)), "[GGLaunch]"));
-        player.setPosition(ctx.originX() + 3.5, ctx.originY() + 1, ctx.originZ() + 2.5);
+        player.setPosition(ctx.originX() + 2.5, ctx.originY() + 1, ctx.originZ() + 2.5);
         final MissileScenarios.Target first = new MissileScenarios.Target(ctx, 0, DISTANCE, PLATFORM_RADIUS);
         final MissileScenarios.Target second = new MissileScenarios.Target(ctx, 0, -DISTANCE, PLATFORM_RADIUS);
         final ScenarioResult.Builder out = ScenarioResult.builder(name());
@@ -327,7 +327,7 @@ public final class ControlLaunchScenario implements Scenario {
 
     private static IGregTechTileEntity control(ScenarioContext ctx) {
         TileEntity tile = ctx.world()
-            .getTileEntity(ctx.originX() + 3, ctx.originY(), ctx.originZ());
+            .getTileEntity(ctx.originX() + 2, ctx.originY(), ctx.originZ());
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
     }
 

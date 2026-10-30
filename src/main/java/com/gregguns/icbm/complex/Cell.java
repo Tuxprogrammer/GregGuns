@@ -47,8 +47,15 @@ public final class Cell {
     public static final byte FURN_SHELF = 24;
     /** A basin of standing water sunk into the floor layer (water treatment). */
     public static final byte BASIN = 25;
+    /** The silo's own Launch Control, a GT machine in the silo's face (D285). */
+    public static final byte SILO_LAUNCH_CONTROL = 26;
 
     private Cell() {}
+
+    /** @return whether the cell is a GT machine of a silo: the controller, a hatch or its Launch Control */
+    public static boolean siloMachine(byte c) {
+        return c >= CONTROLLER && c <= HATCH_POWER || c == SILO_LAUNCH_CONTROL;
+    }
 
     /** @return whether a player walks through the cell at foot or head height */
     public static boolean open(byte c) {

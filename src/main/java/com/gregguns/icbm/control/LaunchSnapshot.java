@@ -13,6 +13,8 @@ final class LaunchSnapshot {
     final int tier;
     /** Ticks left on a running countdown (D88), -1 when none. */
     final int countdown;
+    /** The silo or pad the block is bound to, for the screen's site line (D285). */
+    final SiteLine site;
 
     LaunchSnapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
         int tier) {
@@ -21,6 +23,12 @@ final class LaunchSnapshot {
 
     LaunchSnapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
         int tier, int countdown) {
+        this(status, padFound, minRange, maxRange, distance, radiusTenths, tier, countdown, SiteLine.NONE);
+    }
+
+    private LaunchSnapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance,
+        int radiusTenths, int tier, int countdown, SiteLine site) {
+        this.site = site == null ? SiteLine.NONE : site;
         this.countdown = countdown;
         this.status = status;
         this.padFound = padFound;
@@ -29,6 +37,14 @@ final class LaunchSnapshot {
         this.distance = distance;
         this.radiusTenths = radiusTenths;
         this.tier = tier;
+    }
+
+    /**
+     * @param line the site line
+     * @return this snapshot naming that site
+     */
+    LaunchSnapshot at(SiteLine line) {
+        return new LaunchSnapshot(status, padFound, minRange, maxRange, distance, radiusTenths, tier, countdown, line);
     }
 
     /**

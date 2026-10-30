@@ -75,6 +75,7 @@ public final class SiloScenarios {
         registry.register(new PowerGate());
         registry.register(new Resume());
         registry.register(new UnformedPad());
+        registry.register(new OwnControl());
         registry.register(new HandStack());
         registry.register(new ShaftChunkScenario());
         LaunchSequenceScenarios.registerAll(registry);
@@ -613,20 +614,7 @@ public final class SiloScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
             out.note("build: " + built);
-            // The Launch Control, in the silo's reach.
-            int id = GregGunsMTEIDs.LAUNCH_CONTROL;
-            ctx.setBlock(
-                5,
-                CY,
-                -2,
-                GregTechAPI.sBlockMachines,
-                GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
-            IGregTechTileEntity cb = (IGregTechTileEntity) ctx.world()
-                .getTileEntity(ctx.originX() + 5, ctx.originY() + CY, ctx.originZ() - 2);
-            cb.setInitialValuesAsNBT(null, (short) id);
-            cb.setFrontFacing(ForgeDirection.NORTH);
-            cb.setOwnerName("gregguns-test");
-            cb.setOwnerUuid(UUID.nameUUIDFromBytes("gregguns-test".getBytes(StandardCharsets.UTF_8)));
+            // The Launch Control is the silo's own: the builder puts it in the window's top row (D285).
             WarheadCasing casing = WarheadCasing.T1;
             for (WarheadCasing c : WarheadCasing.values()) {
                 if (c.tier()
@@ -655,7 +643,7 @@ public final class SiloScenarios {
                 if (ticks < WARMUP) {
                     return null;
                 }
-                IGregTechTileEntity cbase = tile(ctx, 5, 0, -2);
+                IGregTechTileEntity cbase = ownControl(ctx);
                 MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
                 power(ctx);
                 if (stage[0] < 3) {
@@ -797,7 +785,7 @@ public final class SiloScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
             out.note("build: " + built);
-            IGregTechTileEntity cb = launchControl(ctx, 5, -2);
+            IGregTechTileEntity cb = ownControl(ctx);
             final net.minecraft.world.World w = ctx.world();
             final int tx = ctx.originX();
             final int ty = ctx.originY();
@@ -840,7 +828,7 @@ public final class SiloScenarios {
                 if (ticks < WARMUP) {
                     return null;
                 }
-                IGregTechTileEntity cbase = tile(ctx, 5, 0, -2);
+                IGregTechTileEntity cbase = ownControl(ctx);
                 MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
                 power(ctx);
                 if (stage[0] < 3) {
@@ -950,11 +938,33 @@ public final class SiloScenarios {
 
     // ------------------------------------------------------------------------------------------------------------
 
+    /**
+     * @return the silo's own Launch Control, which {@link #build} puts in the window's top row (D285)
+     */
+    static IGregTechTileEntity ownControl(ScenarioContext ctx) {
+        return tile(ctx, -1, SiloShape.LAUNCH_CONTROL_RISE, 0);
+    }
+
+    /**
+     * Places a free-standing Launch Control (part of no silo) at the controller's level.
+     *
+     * @return its tile
+     */
     static IGregTechTileEntity launchControl(ScenarioContext ctx, int dx, int dz) {
+        return launchControl(ctx, dx, 0, dz);
+    }
+
+    /** As {@link #launchControl(ScenarioContext, int, int)}, {@code dy} above the controller's level. */
+    static IGregTechTileEntity launchControl(ScenarioContext ctx, int dx, int dy, int dz) {
         int id = GregGunsMTEIDs.LAUNCH_CONTROL;
-        ctx.setBlock(dx, CY, dz, GregTechAPI.sBlockMachines, GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
+        ctx.setBlock(
+            dx,
+            CY + dy,
+            dz,
+            GregTechAPI.sBlockMachines,
+            GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
         IGregTechTileEntity cb = (IGregTechTileEntity) ctx.world()
-            .getTileEntity(ctx.originX() + dx, ctx.originY() + CY, ctx.originZ() + dz);
+            .getTileEntity(ctx.originX() + dx, ctx.originY() + CY + dy, ctx.originZ() + dz);
         cb.setInitialValuesAsNBT(null, (short) id);
         cb.setFrontFacing(ForgeDirection.NORTH);
         cb.setOwnerName("gregguns-test");
@@ -1323,7 +1333,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "With a T3 standing in a silo whose structure is broken, the Launch Control and the pad API both refuse with the silo-only status and the missile stays; a T1 on the same floor still fires from the pad.";
+            return "With a T3 standing in a silo whose structure is broken, the silo's own Launch Control refuses because its silo is not formed; a free Launch Control set against the floor pad's edge and the pad API both refuse with the silo-only status, and the missile stays.";
         }
 
         @Override
@@ -1338,9 +1348,9 @@ public final class SiloScenarios {
             }
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             build(ctx, ItemList.Hatch_Energy_LuV);
-            // Beside the shaft floor pad (pad reach 4), outside the silo.
-            IGregTechTileEntity cb = launchControl(ctx, 3, 0);
+            IGregTechTileEntity own = ownControl(ctx);
             int[] stage = { 0 };
+            IGregTechTileEntity[] free = new IGregTechTileEntity[1];
             EntityMissile[] m = new EntityMissile[1];
             return ScenarioResult.pending(name(), 800, ticks -> {
                 if (ticks < WARMUP) {
@@ -1350,7 +1360,6 @@ public final class SiloScenarios {
                 int x = ctx.originX();
                 int y = ctx.originY() + CY;
                 int z = ctx.originZ();
-                MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
                 switch (stage[0]) {
                     case 0: {
                         out.check(formed(ctx), "the silo forms");
@@ -1361,6 +1370,9 @@ public final class SiloScenarios {
                         w.setBlock(x - 1, y + 9, z, GregTechAPI.sBlockMachines, hatchId, 3);
                         ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 9, z))
                             .setInitialValuesAsNBT(null, (short) hatchId);
+                        // A free Launch Control in the floor ring, against the east edge of the floor pad, level with
+                        // it.
+                        free[0] = launchControl(ctx, 2, -2, 2);
                         stage[0] = 1;
                         return null;
                     }
@@ -1369,9 +1381,19 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(!formed(ctx), "the silo no longer forms");
-                        cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
-                        c.setXText(Integer.toString(x));
-                        c.setZText(Integer.toString(z + DISTANCE));
+                        MTELaunchControl mine = (MTELaunchControl) own.getMetaTileEntity();
+                        MTELaunchControl c = (MTELaunchControl) free[0].getMetaTileEntity();
+                        for (IGregTechTileEntity b : new IGregTechTileEntity[] { own, free[0] }) {
+                            b.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        }
+                        for (MTELaunchControl lc : new MTELaunchControl[] { mine, c }) {
+                            lc.setXText(Integer.toString(x));
+                            lc.setZText(Integer.toString(z + DISTANCE));
+                        }
+                        out.checkEquals(
+                            "the silo's own Launch Control waits for its silo",
+                            ControlStatus.SILO_UNFORMED,
+                            mine.fire(null));
                         out.checkEquals(
                             "the pad API refuses a silo-only missile",
                             LaunchResult.SILO_ONLY,
@@ -1382,6 +1404,134 @@ public final class SiloScenarios {
                             ControlStatus.SILO_ONLY,
                             c.fire(null));
                         out.check(m[0].onPad() && !m[0].isDead, "the T3 still stands on the floor");
+                        m[0].setDead();
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    }
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
+
+    /**
+     * The owner's report (D285): a Launch Control between two silos said "no missile". Now each silo fires through the
+     * Launch Control built into its own structure, and a Launch Control standing free between them belongs to neither.
+     */
+    private static final class OwnControl implements Scenario {
+
+        /** Silo B's controller, east of silo A's. */
+        private static final int B = 8;
+
+        @Override
+        public String name() {
+            return "icbm.silo.own_control";
+        }
+
+        @Override
+        public String description() {
+            return "Two silos side by side, each with a Launch Control in its window and a fueled missile in silo B only: B's control names B and fires it, A's names A and says no missile without touching B's, and a free Launch Control between them is bound to neither (no pad adjacent).";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            World w = ctx.world();
+            int x = ctx.originX();
+            int y = ctx.originY() + CY;
+            int z = ctx.originZ();
+            ctx.setBlock(
+                B,
+                CY,
+                0,
+                GregTechAPI.sBlockMachines,
+                GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.MISSILE_SILO].getTileEntityBaseType());
+            ((IGregTechTileEntity) w.getTileEntity(x + B, y, z))
+                .setInitialValuesAsNBT(null, (short) GregGunsMTEIDs.MISSILE_SILO);
+            out.note("silo B: " + DevStructureBuilder.buildSilo(w, x + B, y, z, ItemList.Hatch_Energy_LuV));
+            // Halfway between the two controllers, where the old search tied and took the western silo.
+            IGregTechTileEntity free = launchControl(ctx, B / 2, 0);
+            int[] stage = { 0 };
+            EntityMissile[] m = new EntityMissile[1];
+            return ScenarioResult.pending(name(), 600, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                IGregTechTileEntity ownA = ownControl(ctx);
+                IGregTechTileEntity ownB = tile(ctx, B - 1, SiloShape.LAUNCH_CONTROL_RISE, 0);
+                if (ownA == null || ownB == null
+                    || !(ownA.getMetaTileEntity() instanceof MTELaunchControl)
+                    || !(ownB.getMetaTileEntity() instanceof MTELaunchControl)) {
+                    return ScenarioResult.fail(name(), "a silo's own Launch Control is missing");
+                }
+                MTELaunchControl a = (MTELaunchControl) ownA.getMetaTileEntity();
+                MTELaunchControl b = (MTELaunchControl) ownB.getMetaTileEntity();
+                MTELaunchControl f = (MTELaunchControl) free.getMetaTileEntity();
+                MTEMissileSilo siloA = silo(ctx);
+                IGregTechTileEntity bTile = tile(ctx, B, 0, 0);
+                MTEMissileSilo siloB = (MTEMissileSilo) bTile.getMetaTileEntity();
+                switch (stage[0]) {
+                    case 0: {
+                        out.check(siloA.isFormed() && siloB.isFormed(), "both silos form");
+                        out.check(siloA.launchControl() == a, "silo A knows its Launch Control");
+                        out.check(siloB.launchControl() == b, "silo B knows its Launch Control");
+                        m[0] = EntityMissile.create(MissileTier.T1, w);
+                        m[0].setLocationAndAngles(x + B + 0.5, y - 2 + EntityMissile.PAD_SURFACE, z + 2.5, 0.0F, 0.0F);
+                        m[0].configure(0, "condensed", 1, 1, null);
+                        w.spawnEntityInWorld(m[0]);
+                        m[0].fill(m[0].capacityMb(), true);
+                        for (IGregTechTileEntity t : new IGregTechTileEntity[] { ownA, ownB, free }) {
+                            t.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        }
+                        for (MTELaunchControl c : new MTELaunchControl[] { a, b, f }) {
+                            c.setXText(Integer.toString(x));
+                            c.setZText(Integer.toString(z + DISTANCE));
+                        }
+                        stage[0] = 1;
+                        return null;
+                    }
+                    case 1: {
+                        com.gregguns.icbm.control.SiteLine la = a.siteLine();
+                        com.gregguns.icbm.control.SiteLine lb = b.siteLine();
+                        out.checkEquals(
+                            "A's control is bound to a silo",
+                            com.gregguns.icbm.control.SiteLine.Kind.SILO,
+                            la.kind());
+                        out.checkEquals("A's control names silo A's shaft", x, la.x());
+                        out.checkEquals("B's control names silo B's shaft", x + B, lb.x());
+                        out.checkEquals("the shaft's Z", z + 2, lb.z());
+                        out.checkEquals(
+                            "A's control: its own silo is empty",
+                            ControlStatus.NO_MISSILE,
+                            a.currentStatus());
+                        out.checkEquals("B's control: its missile is ready", ControlStatus.READY, b.currentStatus());
+                        out.checkEquals(
+                            "the free control between them belongs to neither silo",
+                            ControlStatus.NO_PAD,
+                            f.currentStatus());
+                        out.checkEquals("and names no site", com.gregguns.icbm.control.SiteLine.NONE, f.siteLine());
+                        out.checkEquals(
+                            "A's control does not fire B's missile",
+                            ControlStatus.NO_MISSILE,
+                            a.fire(null));
+                        out.check(m[0].onPad() && !m[0].isDead, "B's missile still stands after A's refusal");
+                        out.checkEquals("B's control fires silo B", ControlStatus.FIRED, b.fire(null));
+                        out.checkEquals("the countdown runs in silo B", ControlStatus.COUNTDOWN, b.currentStatus());
+                        out.checkEquals("A's control still sees nothing", ControlStatus.NO_MISSILE, a.currentStatus());
+                        out.check(
+                            siloB.site()
+                                .abort(),
+                            "the countdown aborts");
                         m[0].setDead();
                         ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
