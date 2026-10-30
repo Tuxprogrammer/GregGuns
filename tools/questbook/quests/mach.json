@@ -1,110 +1,615 @@
 {
-  "chapter": "mach",
-  "quests": [
+ "chapter": "mach",
+ "quests": [
+  {
+   "key": "gg.mach.intro",
+   "title": "GregGuns Machines",
+   "tier": "LV",
+   "desc": [
+    "Almost everything you build in GregGuns runs on plain GregTech machines: assemblers, presses, benches. Only a handful of machines are GregGuns' own, and they are GregTech machines too, so they take EU and follow GT's voltage rules.",
+    "The Repair Bench and the Armory Gantry mend gear. The Turret and the Rampart defend your base. The Camo Bench cycles the camouflage of guns, armor and camo nets. The Ammo Press and the Ammunition Works make ammunition, which the ammo chapter covers.",
+    "Start with the cheapest and most fun one: build a Camo Bench. It is an LV machine, so you can build it right now. Check NEI for the recipe.",
+    "[note]Single blocks come in tiers. A bench or turret must be at least as high a tier as the item it works on.[/note]"
+   ],
+   "pre": [
+    "gg.lv.ammo_press",
+    97
+   ],
+   "tasks": [
     {
-      "key": "gg.mach.intro",
-      "title": "GregGuns Machines",
-      "tier": "LV",
-      "desc": "Most machines are plain GT. Only the Repair Bench and the Turret are GregGuns' own.",
-      "pre": ["gg.lv.ammo_press", 97],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 562,
-      "y": 337,
-      "size": 28,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20109},
-      "implicit": ["gg.lv.ammo_press"]
-    },
-    {
-      "key": "gg.mach.repair_bench",
-      "title": "Repair Bench",
-      "tier": "MV",
-      "desc": "Mends guns and armor using the item's gate material. Tier is provisional (MV) until area 09 settles it.",
-      "pre": ["gg.mach.intro", 1148],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20110}]}],
-      "rewards": [],
-      "x": 600,
-      "y": 312,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20110},
-      "implicit": []
-    },
-    {
-      "key": "gg.mach.repair",
-      "title": "Mending a Weapon",
-      "tier": "MV",
-      "desc": "Put a damaged gun and its gate material in the bench.",
-      "pre": ["gg.mach.repair_bench"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 636,
-      "y": 312,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20109},
-      "implicit": []
-    },
-    {
-      "key": "gg.mach.turret",
-      "title": "Turret",
-      "tier": "HV",
-      "desc": "Automatic defense. Tier is provisional (HV) until area 09 settles it.",
-      "pre": ["gg.mach.intro", 160],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20117}]}],
-      "rewards": [],
-      "x": 600,
-      "y": 366,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20117},
-      "implicit": []
-    },
-    {
-      "key": "gg.mach.turret_team",
-      "title": "Friend or Foe",
-      "tier": "HV",
-      "desc": "Turrets spare you and your allies on a GTNHLib team, and shoot hostiles.",
-      "pre": ["gg.mach.turret"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 636,
-      "y": 348,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20109},
-      "implicit": []
-    },
-    {
-      "key": "gg.mach.turret_power",
-      "title": "Powering the Turret",
-      "tier": "HV",
-      "desc": "The turret takes EU at its tier. Overvoltage damages it.",
-      "pre": ["gg.mach.turret"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 636,
-      "y": 384,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20109},
-      "implicit": []
-    },
-    {
-      "key": "gg.mach.gantry",
-      "title": "Armory Gantry",
-      "tier": "HV",
-      "desc": "The Gantry is a multiblock repair hall with a row of bays, for armor and guns in bulk. Its controller is HV and it needs an interior lamp.",
-      "pre": ["gg.mach.repair", 160],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20114}]}],
-      "rewards": [],
-      "x": 672,
-      "y": 312,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20114},
-      "implicit": []
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.blockmachines",
+       "count": 1,
+       "damage": 20115
+      }
+     ]
     }
-  ]
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "rations",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivor",
+       "count": 30,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 30,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 8,
+       "damage": 17305,
+       "ore": "plateSteel"
+      },
+      {
+       "id": "gregguns:part_heavy_cloth",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:bandages",
+       "count": 4,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 562,
+   "y": 324,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregtech:gt.blockmachines",
+    "count": 1,
+    "damage": 20115
+   },
+   "implicit": [
+    "gg.lv.ammo_press"
+   ]
+  },
+  {
+   "key": "gg.mach.repair_bench",
+   "title": "Repair Bench",
+   "tier": "MV",
+   "desc": [
+    "Armor wears down in a fight, and the Repair Bench puts it right. Put worn armor and the repair parts in its nine slots, press Head, Chest, Legs, Feet or Held, and the bench restores the piece to full if it holds enough parts. A repair is all or nothing: if you are short, nothing is consumed.",
+    "The bench is a GregTech machine and draws EU for each job. A repair takes two seconds plus up to eight more depending on the damage, at half the recipe voltage of the bench's tier. Build the LV bench for LV gear and the MV bench for MV gear. A bench can only mend items of its own tier or lower.",
+    "Check NEI for the recipe."
+   ],
+   "pre": [
+    "gg.mach.intro",
+    1148
+   ],
+   "tasks": [
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.blockmachines",
+       "count": 1,
+       "damage": 20109
+      },
+      {
+       "id": "gregtech:gt.blockmachines",
+       "count": 1,
+       "damage": 20110
+      }
+     ],
+     "any": true
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "mv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivor",
+       "count": 50,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 50,
+       "damage": 0
+      },
+      {
+       "id": "harvestcraft:honeysandwichItem",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 8,
+       "damage": 17019,
+       "ore": "plateAluminium"
+      },
+      {
+       "id": "gregguns:part_heavy_cloth",
+       "count": 8,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:medkit",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 622,
+   "y": 324,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregtech:gt.blockmachines",
+    "count": 1,
+    "damage": 20110
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.mach.repair",
+   "title": "Mending Armor",
+   "tier": "MV",
+   "desc": [
+    "Repairs cost parts: a plate of the set's gate material and Heavy Cloth. T1 Combat armor is gated by steel, so a worn Soldier's Vest takes steel plates and cloth, and the more damaged it is, the more parts it takes. Scout and Miner gear mends with cloth alone.",
+    "Gather a T1 Combat chestplate, four Heavy Cloth and four steel plates, then use the bench's Chest button. The bench accepts any mod's plate of the right material.",
+    "[note]GregTech tools keep their wear in their own data and the bench never touches them.[/note]"
+   ],
+   "pre": [
+    "gg.mach.repair_bench"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 4,
+       "damage": 17305,
+       "ore": "plateSteel"
+      },
+      {
+       "id": "gregguns:part_heavy_cloth",
+       "count": 4,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:t1_combat_chestplate",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_heavy_cloth",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 4,
+       "damage": 17305,
+       "ore": "plateSteel"
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "mv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivor",
+       "count": 25,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 25,
+       "damage": 0
+      },
+      {
+       "id": "harvestcraft:chickennoodlesoupItem",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 8,
+       "damage": 17019,
+       "ore": "plateAluminium"
+      },
+      {
+       "id": "gregguns:part_heavy_cloth",
+       "count": 8,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:medkit",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 682,
+   "y": 336,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:t1_combat_chestplate",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.mach.gantry",
+   "title": "Armory Gantry",
+   "tier": "HV",
+   "desc": [
+    "When one bench is too slow, build the Armory Gantry: a hall of two to eight bays, each a portal frame with a hoist on its beam and a repair cradle on its floor, so each cycle mends up to one item per bay. Armor goes in an Input Bus, parts alongside, and repaired items come out of an Output Bus.",
+    "The controller is HV, and the hatches go up to ZPM, which sets the highest tier of item it repairs. It needs Input and Output Buses, an Energy Hatch and a Maintenance Hatch, Gantry Casings, glass of any tier and the interior parts: gearbox, motors, frame box hooks, floor rails, pipe runs and a lamp in every bay.",
+    "[note]Use the controller's structure hints to see what is missing.[/note]"
+   ],
+   "pre": [
+    "gg.mach.repair",
+    160
+   ],
+   "tasks": [
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.blockmachines",
+       "count": 1,
+       "damage": 20114
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 10,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 10,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 8,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:part_heavy_cloth",
+       "count": 8,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:medkit",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 670,
+   "y": 384,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregtech:gt.blockmachines",
+    "count": 1,
+    "damage": 20114
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.mach.turret",
+   "title": "Turret",
+   "tier": "HV",
+   "desc": [
+    "A Turret holds one gun from your own loadout on a platform, shoots with the real ammo you feed it, and comes with a 30-health mounted turret that heals when powered and respawns after it dies. It guards your base with the same guns you carry.",
+    "It runs on EU at its tier voltage. Its tier must be at least that of its gun, so an MV turret fires MV guns and an HV turret HV guns. You load the gun, magazines or rounds, and an armor plate in its slots. Build an MV or HV turret.",
+    "[note]The Rampart is the multiblock version: up to ten mounts on one ammo and power feed. Check NEI.[/note]"
+   ],
+   "pre": [
+    "gg.mach.intro",
+    160
+   ],
+   "tasks": [
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.blockmachines",
+       "count": 1,
+       "damage": 20116
+      },
+      {
+       "id": "gregtech:gt.blockmachines",
+       "count": 1,
+       "damage": 20117
+      }
+     ],
+     "any": true
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 10,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 10,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 8,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:ammo_rifle_bullet",
+       "count": 64,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:medkit",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 562,
+   "y": 384,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregtech:gt.blockmachines",
+    "count": 1,
+    "damage": 20117
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.mach.turret_team",
+   "title": "Friend or Foe",
+   "tier": "HV",
+   "desc": [
+    "A turret shoots every hostile mob. What it does to players depends on its Security button: set above public it shoots any player who is not you or your friend, where a friend is an ally or better on your ServerUtilities team. Without ServerUtilities only the owner is a friend. Target Animals makes it shoot passive creatures too.",
+    "Put a gun and magazines in the turret and set its security. A Thompson with two magazines will do.",
+    "[warn]A turret fires on players it does not know, including a visiting friend who has not joined your team.[/warn]"
+   ],
+   "pre": [
+    "gg.mach.turret"
+   ],
+   "tasks": [
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:thompson_smg",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:mag_smg",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:mag_smg",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:ammo_rifle_bullet",
+       "count": 64,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:medkit",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 550,
+   "y": 456,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregtech:gt.blockmachines",
+    "count": 1,
+    "damage": 20117
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.mach.turret_power",
+   "title": "Powering the Turret",
+   "tier": "HV",
+   "desc": [
+    "The turret takes EU at its tier. Feed it from a battery buffer or generator through a cable of the right voltage. GregTech's usual overvoltage rules apply, so a cable carrying too much power for it will damage it.",
+    "Its screen shows its state (On guard, No gun, No power) and its stored EU. Build a plate of armor for it: steel plates are LV, aluminum MV.",
+    "[note]A powered turret heals its mount, so keep a buffer in reserve.[/note]"
+   ],
+   "pre": [
+    "gg.mach.turret"
+   ],
+   "tasks": [
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:turret_armor_steel",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:turret_armor_aluminum",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:turret_armor_carbon",
+       "count": 1,
+       "damage": 0
+      }
+     ],
+     "any": true
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 8,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:ammo_rifle_bullet",
+       "count": 64,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:medkit",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 610,
+   "y": 456,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregtech:gt.blockmachines",
+    "count": 1,
+    "damage": 20117
+   },
+   "implicit": []
+  }
+ ]
 }
