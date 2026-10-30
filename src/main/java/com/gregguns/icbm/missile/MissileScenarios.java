@@ -47,6 +47,7 @@ public final class MissileScenarios {
         registry.register(new TargetHeight());
         registry.register(new ShotDown());
         registry.register(new PadSurvives());
+        registry.register(new PadBreak());
         registry.register(new MissileShotsScenario());
         registry.register(new MissileShotsScenario(true));
         registry.register(new MissileMpScenario());
@@ -1190,6 +1191,31 @@ public final class MissileScenarios {
                 return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
             }
             return new MissileGcScenarios.PadSurvives().run(ctx);
+        }
+    }
+
+    /** Wrapper like {@link PadSurvives}: no Galacticraft types here. */
+    private static final class PadBreak extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.pad.break";
+        }
+
+        @Override
+        public String description() {
+            return "Breaking an armed missile on a pad drops body and warhead once and awards no GT achievement.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            if (!IcbmAvailability.galacticraftPresent()) {
+                return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
+            }
+            return new MissileGcScenarios.PadBreakNoAchievement().run(ctx);
         }
     }
 }

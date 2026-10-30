@@ -1,8 +1,24 @@
 package com.gregguns.icbm.missile;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.stats.Achievement;
+import net.minecraft.stats.AchievementList;
+import net.minecraft.stats.StatBase;
+import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.AchievementPage;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -14,7 +30,9 @@ import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.IcbmAvailability;
 import com.gregguns.icbm.warhead.WarheadCasing;
+import com.mojang.authlib.GameProfile;
 
+import gregtech.GTMod;
 import micdoodle8.mods.galacticraft.api.entity.IFuelable;
 import micdoodle8.mods.galacticraft.api.tile.IFuelDock;
 import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
@@ -265,6 +283,116 @@ public final class MissileGcScenarios {
         private ScenarioResult finish(ScenarioResult.Builder out, boolean terrain) {
             IcbmConfig.terrainDamageT1 = terrain;
             return out.build();
+        }
+    }
+
+    /**
+     * Breaking an armed missile on a pad (a sneaking hit) must drop the body and the warhead once each, and picking
+     * them up must award no achievement. GT makes one achievement per Assembly Line output, named after the output's
+     * unlocalized name, and awards it on pickup; for a GregGuns item that is an untranslated {@code achievement.tile.*}
+     * line, so {@code GtAchievementFilter} removes them (a T3 body is a LuV Assembly Line output).
+     */
+    static final class PadBreakNoAchievement implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.pad.break";
+        }
+
+        @Override
+        public String description() {
+            return "Breaking an armed missile on a pad drops body and warhead once and awards no GT achievement.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (MissileScenarios.moduleOff()) {
+                return ScenarioResult.fail(name(), "the missile content is not registered");
+            }
+            if (!IcbmAvailability.galacticraftPresent()) {
+                return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
+            }
+            ctx.clearArea(8, 20);
+            MissileScenarios.floor(ctx, 6);
+            for (int a = -1; a <= 1; a++) {
+                for (int b = -1; b <= 1; b++) {
+                    ctx.setBlock(a, 0, b, GCBlocks.landingPad, 0);
+                }
+            }
+            World w = ctx.world();
+            int cx = ctx.originX();
+            int cy = ctx.originY();
+            int cz = ctx.originZ();
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final int[] phase = { 0 };
+            return ScenarioResult.pending(name(), 400, ticks -> {
+                if (w.getBlock(cx, cy, cz) != GCBlocks.landingPadFull) {
+                    return ticks > 100 ? ScenarioResult.fail(name(), "the 3x3 pad never formed") : null;
+                }
+                if (phase[0] != 0) {
+                    return null;
+                }
+                phase[0] = 1;
+                int[] base = MissileScenarios
+                    .buildStack(ctx, MissileTier.T3, WarheadCasing.T3, "thermobaric", 3, 0, 1, 0, true, 3);
+                MissileStacks.arm(w, base[0], base[1], base[2], null);
+                EntityMissile m = PadMissiles.find(w, cx, cy, cz);
+                if (m == null) {
+                    out.check(false, "the pad API finds the armed missile");
+                    return out.build();
+                }
+                EntityPlayerMP p = FakePlayerFactory.get(
+                    (WorldServer) w,
+                    new GameProfile(UUID.fromString("5d2f3c1e-0000-4000-8000-00000000a11e"), "[gg-pad]"));
+                p.setSneaking(true);
+                out.check(m.attackEntityFrom(DamageSource.causePlayerDamage(p), 1.0F), "the sneaking hit is taken");
+                out.check(m.isDead, "the missile is gone");
+                @SuppressWarnings("unchecked")
+                List<EntityItem> drops = new ArrayList<EntityItem>(
+                    w.getEntitiesWithinAABB(
+                        EntityItem.class,
+                        AxisAlignedBB.getBoundingBox(cx - 3, cy - 1, cz - 3, cx + 4, cy + 6, cz + 4)));
+                out.checkEquals("exactly body and warhead drop", 2, drops.size());
+                int bodies = 0;
+                for (EntityItem e : drops) {
+                    if (e.getEntityItem()
+                        .getItem() == MissileBodies.item(MissileTier.T3)) {
+                        bodies++;
+                    }
+                    if (GTMod.achievements != null) {
+                        GTMod.achievements.onItemPickup(new EntityItemPickupEvent(p, e));
+                    }
+                }
+                out.checkEquals("one T3 body dropped", 1, bodies);
+                int ours = 0;
+                for (StatBase st : new ArrayList<StatBase>(StatList.allStats)) {
+                    if (st instanceof Achievement
+                        && com.gregguns.compat.GtAchievementFilter.isGregGuns((Achievement) st)) {
+                        ours++;
+                        out.check(
+                            !p.func_147099_x()
+                                .hasAchievementUnlocked((Achievement) st),
+                            "no GregGuns achievement unlocked: " + st.statId);
+                    }
+                }
+                // The stats stay registered (saved player stats keep parsing); the lookups GT and the GUI use do not.
+                out.check(
+                    GTMod.achievements == null || GTMod.achievements.achievementList.keySet()
+                        .stream()
+                        .noneMatch(k -> k.contains("gregguns.")),
+                    "GT's achievement table holds no GregGuns entry");
+                boolean listed = false;
+                for (Object a : AchievementList.achievementList) {
+                    listed |= com.gregguns.compat.GtAchievementFilter.isGregGuns((Achievement) a);
+                }
+                for (AchievementPage page : AchievementPage.getAchievementPages()) {
+                    for (Achievement a : page.getAchievements()) {
+                        listed |= com.gregguns.compat.GtAchievementFilter.isGregGuns(a);
+                    }
+                }
+                out.check(!listed, "no GregGuns achievement is listed on any page (" + ours + " stay registered)");
+                return out.build();
+            });
         }
     }
 }
