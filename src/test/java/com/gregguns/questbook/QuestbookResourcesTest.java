@@ -44,7 +44,7 @@ import com.gregguns.machine.GregGunsMTEIDs;
  * {@code tools/questbook/build_quests.py}) with plain JSON parsing: nothing here loads BetterQuesting. A broken
  * resource would otherwise only show up when a server owner turns the install on.
  */
-// Spec: docs/gregguns-spec/12-questbook/index.md (GGS-12-02, 05, 06, 08, 10, 15, 16)
+// Spec: docs/gregguns-spec/12-questbook/index.md (GGS-12-02, 05, 06, 08, 10, 15, 16, 19)
 public class QuestbookResourcesTest {
 
     private static final String ROOT = "assets/gregguns/questbook/";
@@ -613,6 +613,121 @@ public class QuestbookResourcesTest {
                     }
         }
         return n;
+    }
+
+    /** Tier names in order; a quest's tier is its index. */
+    private static final List<String> TIERS = java.util.Arrays
+        .asList("Steam", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV");
+    /** The tier of each loot bag group by GroupMetaID (GregGuns 1701 to 1714, then the pack's generic groups). */
+    private static final Map<Integer, String> BAG_TIERS = new HashMap<>();
+    /** Reward items that carry a tier (mirrors {@code ITEM_TIERS} in build_quests.py): key is {@code id@damage}. */
+    private static final Map<String, String> ITEM_TIERS = new HashMap<>();
+
+    static {
+        int[] gg = { 1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1713, 1714 };
+        String[] ggTier = { "Steam", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "HV", "HV", "IV", "LuV", "UV", "UHV" };
+        for (int i = 0; i < gg.length; i++) {
+            BAG_TIERS.put(gg[i], ggTier[i]);
+        }
+        int[] pack = { 2, 4, 5, 6, 7, 8, 41, 42 };
+        String[] packTier = { "Steam", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM" };
+        for (int i = 0; i < pack.length; i++) {
+            BAG_TIERS.put(pack[i], packTier[i]);
+        }
+        String m1 = "gregtech:gt.metaitem.01@";
+        String[][] items = { { "gregguns:part_mechanical_3@0", "EV" }, { "gregguns:part_receiver_carbon@0", "EV" },
+            { "gregguns:ammo_rocket@0", "HV" }, { "gregguns:fuze_assembly_mk3@0", "LuV" },
+            { "gregguns:part_rad_emitter@0", "ZPM" }, { "gregguns:part_nuclear_warhead@0", "ZPM" },
+            { "gregguns:cell_nuclear@0", "ZPM" }, { "gregguns:ammo_rocket_nuke@0", "ZPM" },
+            { "gregguns:inert_warhead_t4@0", "UV" }, { "gregguns:inert_warhead_t5@0", "UHV" }, { m1 + "32706", "LuV" },
+            { m1 + "17372", "LuV" }, { m1 + "17325", "ZPM" }, { "gregtech:gt.metaitem.03@32088", "ZPM" },
+            { m1 + "32607", "ZPM" }, { m1 + "32686", "ZPM" }, { m1 + "17327", "UV" }, { m1 + "11101", "UV" },
+            { m1 + "32677", "UV" }, { m1 + "32724", "UV" }, { m1 + "17129", "UHV" }, { m1 + "32678", "UHV" },
+            { m1 + "32688", "UHV" } };
+        for (String[] e : items) {
+            ITEM_TIERS.put(e[0], e[1]);
+        }
+    }
+
+    /**
+     * GGS-12-19: the problems with a quest's built rewards. A listed reward item, or a loot bag by its group's tier,
+     * is never above the quest's tier; a UV or UHV quest pays no bag below its own tier.
+     */
+    static List<String> rewardTierProblems(String title, String questTier, JsonElement rewards) {
+        List<String> problems = new ArrayList<>();
+        List<JsonObject> stacks = new ArrayList<>();
+        collectIds(rewards, stacks);
+        int max = TIERS.indexOf(questTier);
+        for (JsonObject s : stacks) {
+            String id = s.get("id:8")
+                .getAsString();
+            int damage = s.get("Damage:2")
+                .getAsInt();
+            String tier = id.equals(LootBagGroups.BAG_ITEM) ? BAG_TIERS.get(damage)
+                : ITEM_TIERS.get(id + "@" + (id.startsWith("gregguns:") ? 0 : damage));
+            if (tier == null) {
+                continue;
+            }
+            if (TIERS.indexOf(tier) > max) {
+                problems.add(title + ": " + id + ":" + damage + " is " + tier + ", above the quest tier " + questTier);
+            }
+            if (id.equals(LootBagGroups.BAG_ITEM) && max >= TIERS.indexOf("UV") && !tier.equals(questTier)) {
+                problems.add(title + ": " + questTier + " quest pays a " + tier + " bag, not its own");
+            }
+        }
+        return problems;
+    }
+
+    private static JsonElement rewardsOf(String tier, int bagGroup, int plateDamage) {
+        String json = "{\"0:10\":{\"rewards:9\":{\"0:10\":{\"id:8\":\"enhancedlootbags:lootbag\",\"Damage:2\":"
+            + bagGroup
+            + "}}},\"1:10\":{\"choices:9\":{\"0:10\":{\"id:8\":\"gregtech:gt.metaitem.01\",\"Damage:2\":"
+            + plateDamage
+            + "}}}}";
+        return new JsonParser().parse(json);
+    }
+
+    /**
+     * The rule itself fails on bad fixtures: a bag above the tier, an item above it, and a UV quest paying a LuV bag.
+     */
+    @Test
+    void rewardTierRuleCatchesBadRewards() {
+        assertEquals(new ArrayList<String>(), rewardTierProblems("ok", "UV", rewardsOf("UV", 1713, 17327)));
+        assertEquals(1, rewardTierProblems("high bag", "ZPM", rewardsOf("ZPM", 1713, 17325)).size());
+        assertEquals(1, rewardTierProblems("high item", "ZPM", rewardsOf("ZPM", 1708, 17327)).size());
+        assertEquals(1, rewardTierProblems("low bag", "UV", rewardsOf("UV", 1712, 17327)).size());
+        assertEquals(1, rewardTierProblems("low bag", "UHV", rewardsOf("UHV", 1713, 17129)).size());
+    }
+
+    /** GGS-12-19 against the shipped quests: tiers come from the data, rewards from the built resources. */
+    @Test
+    void noRewardIsAboveItsQuestTierAndUvAndUhvPayTheirOwnCrate() throws Exception {
+        Map<String, String> tierById = new HashMap<>();
+        for (JsonElement e : dataQuests()) {
+            JsonObject d = e.getAsJsonObject();
+            UUID id = uuid5(
+                NAMESPACE,
+                d.get("key")
+                    .getAsString());
+            tierById.put(
+                id.getMostSignificantBits() + "/" + id.getLeastSignificantBits(),
+                d.get("tier")
+                    .getAsString());
+        }
+        List<String> problems = new ArrayList<>();
+        int uvOrUhvBags = 0;
+        for (Quest q : QUESTS) {
+            String tier = tierById.get(q.high + "/" + q.low);
+            assertNotNull(tier, q.title + " has no data tier");
+            problems.addAll(rewardTierProblems(q.title, tier, q.json.get("rewards:9")));
+            if (TIERS.indexOf(tier) >= TIERS.indexOf("UV") && q.json.get("rewards:9")
+                .toString()
+                .contains("enhancedlootbags:lootbag")) {
+                uvOrUhvBags++;
+            }
+        }
+        assertEquals(new ArrayList<String>(), problems);
+        assertTrue(uvOrUhvBags >= 2, "the Antimatter and Red Matter quests pay a crate");
     }
 
     /** The Fuel Tanks quest counts only full tanks: an NBT match on the fluid amount at the tank's capacity. */
