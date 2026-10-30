@@ -161,7 +161,10 @@ final class ShaftChunkScenario implements Scenario {
                     out.check(busItems(ctx, ox, oz) == 2, "the parts stay in the bus");
                     out.check(missiles(world) == 0, "no missile spawned");
                     out.checkEquals("no fuel pumped", full[0], hatchMb(ctx, ox, oz));
-                    out.checkEquals("no parts taken out of the bus into a pending cycle", 0, silo.pendingTier());
+                    out.checkEquals(
+                        "no part taken out of the bus into the shaft",
+                        SiloSequence.Stage.NONE,
+                        silo.stage());
                     reload(world, shaftCx, shaftCz);
                     mark[0] = ticks;
                     stage[0] = 2;
@@ -261,8 +264,8 @@ final class ShaftChunkScenario implements Scenario {
                 .getDisplayString()
             + " energy="
             + tile(ctx, ox, -1, oz).getStoredEU()
-            + " pending="
-            + silo.pendingTier();
+            + " stage="
+            + silo.stage();
     }
 
     private static IGregTechTileEntity tile(ScenarioContext ctx, int dx, int dy, int dz) {

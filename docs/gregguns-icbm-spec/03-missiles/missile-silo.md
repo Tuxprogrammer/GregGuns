@@ -2,14 +2,14 @@
 
 - **ICBM baseline:** [launcher platform](../../icbm-spec/03-missiles/index.md) (ICBM launches from a launcher block; GregGuns builds a multiblock)
 - **Design records:** [0018 §8](../../design/0018-icbm-program.md), [0011](../../design/0011-machine-policy.md)
-- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D19](../DECISIONS.md), [D22](../DECISIONS.md), [D32](../DECISIONS.md), [D70 to D75](../DECISIONS.md)
+- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D19](../DECISIONS.md), [D22](../DECISIONS.md), [D32](../DECISIONS.md), [D70 to D75](../DECISIONS.md), [D286](../DECISIONS.md)
 - **Pack mods:** GT5-Unofficial (`5.09.54.205`): multiblock base, StructureLib, hatches; Galacticraft (`3.4.34-GTNH`): the pad block, `RocketFuels`; NewHorizonsCoreMod (`2.9.84`): the Tier 3 rocket parts
 - **Roadmap:** [I3](../../ROADMAP-ICBM.md#i3--the-silo-and-heavy-warheads-t3-nuclear)
 - **MTE id:** 20141 (`GregGunsMTEIDs.MISSILE_SILO`)
 
 ## What changes from ICBM
 
-ICBM's launchers are single blocks that take a missile item. GregGuns' T3 missile does not fit the 3x3 pad plate, so it launches from a GT multiblock, the **Missile Silo**: a 5x5 tower dug into the ground, with an open 3x3 shaft. The player puts a body and a warhead in an Input Bus and fuel in an Input Hatch; the silo mates them into an armed missile in the shaft and fuels it. The player never touches the missile. The Launch Control fires it.
+ICBM's launchers are single blocks that take a missile item. GregGuns' T3 missile does not fit the 3x3 pad plate, so it launches from a GT multiblock, the **Missile Silo**: a 5x5 tower dug into the ground, with an open 3x3 shaft. The player puts a body and a warhead in an Input Bus and fuel in an Input Hatch; the silo stands the body on the pad, seats the warhead on it, arms the stack and fuels it, each step in view (D286). The player never touches the missile. The Launch Control fires it.
 
 ## Structure
 
@@ -41,15 +41,27 @@ Two hinged panels lie across the 3x3 opening at the rim, each 1.5 x 3 blocks and
 - **Abort:** doors turn around from the angle they are at and take only the way back.
 - **Unformed mid-sequence:** a gap of 200 ticks aborts a launch still in its warm-up, resets the doors and removes the carrier; after ignition the missile flies on. A T3 also stands down by itself when no formed silo stands under it for 300 ticks.
 
-## Mating (0018 §8)
+## The assembly sequence (D286)
 
-Each cycle the controller does the next job (`checkProcessing`):
+The silo builds the missile in the shaft where the player can watch it, one part at a time, and **each part stands in the shaft before its working cycle starts**. The order is always body, warhead, fuel. The stage machine is `SiloSequence` (pure data, unit-tested); the controller saves only its stage (`NONE`, `BODY`, `BODY_DONE`, `WARHEAD`). The parts are blocks in the world, never items inside the controller.
 
-1. **A missile stands in the shaft:** pump fuel (below).
-2. **A hand-stacked body block stands in the shaft:** the controller waits ("arm it by hand, or take it apart"). A body placed on the pad by hand, a warhead on its nose and a sneak right-click arm it exactly as on an open pad.
-3. **The shaft is empty:** look in the Input Buses for a missile body and a warhead block item whose casing tier the body carries (a body carries its own tier or lighter, D60). Take one of each, run `MATE_TICKS` = 400 (20 s) and, when the cycle ends, spawn an armed missile entity on the pad with the body's guidance and the warhead's explosive, fill and casing. If something took the shaft meanwhile, the parts drop as items. A pending mating is saved in the controller's NBT.
+| Step | What the player sees | Cycle | Status line |
+|---|---|---|---|
+| 1. Body | A missile body from the Input Bus stands on the pad's center as a body block (the block a player places by hand, D31), unfueled, no warhead | `SiloRules.BODY_TICKS` = 200 (10 s) | "Setting up the missile body on the pad" |
+| Wait | The body stands; no warhead the body carries is in the bus | none | "The body stands on the pad: waiting for a warhead in the Input Bus", or the warhead is too heavy, or inert |
+| 2. Warhead | A warhead the body carries (D60) is seated on the nose as a warhead block | `WARHEAD_TICKS` = 200 (10 s); its end arms the stack into the missile entity (`MissileStacks.armIntoEntity`, as a sneak right-click does; no drops) | "Mating the warhead to the missile body" |
+| 3. Fuel | The armed missile stands in the shaft throughout | `PUMP_TICKS` per portion (below) | "Fueling the missile", then "The missile is fueled and ready" |
 
-Refusals show on the controller as the cycle result: no body, no warhead, a warhead too heavy, a hatch too weak.
+- **Any order:** parts may arrive in any order or together. A warhead with no body waits in the bus ("Waiting for a missile body"); fuel waits in the hatch until a missile stands. A body alone goes up, runs its cycle and waits. The warhead stays in the bus for the whole body cycle.
+- **Power and tier:** every step keeps the power gate (below) and the hatch tier rule (D70): no part leaves the bus, and no cycle starts, without both. A body too heavy for the Energy Hatch stays in the bus with GT's "insufficient machine tier".
+- **The world wins:** the controller looks into the shaft every second (`watchShaft`). A body that is gone ends the sequence; a warhead taken off the nose steps back to waiting for one; a running cycle whose part is gone stops at once. Any change in the shaft asks GT for a check, because GT only checks on hatch events.
+- **Nothing dupes or vanishes:** breaking the silo mid-sequence leaves the body and warhead standing; each drops its own item once when broken (or the player arms the stack by hand). A body broken under a seated warhead stops the mating cycle, and the silo breaks the loose warhead so it drops as one item. Arming happens only when the stack is complete and fits.
+- **Adoption:** a body found on the pad with no sequence of the silo's (stacked by hand, or left by a controller that was broken and rebuilt) gets the body cycle and the sequence continues; a warhead seated on it by hand is mated like the silo's own. Arming by hand works at any point. A warhead on the nose that is too heavy or lit is not mated ("take it off"); a body off the pad's center, a loose warhead or a block in the column above the pad stops the silo ("Something in the shaft is in the way").
+- **The Launch Control** sees a standing body or stack as present but not armed (`NOT_ARMED`), as on an open pad.
+- **Old saves:** a controller saved by an earlier build mid-mating held the body and warhead inside itself. On its first check it stands them in the shaft (body, then warhead on the nose, stage `WARHEAD`) and runs the mating cycle again; if the shaft is taken, they drop as items.
+- No fuel gauge is drawn: the missile model and WAILA have none.
+
+Refusals show on the controller as the cycle result: no body, a warhead waiting for a body, no warhead, a warhead too heavy, an inert warhead, a hatch too weak, something in the way.
 
 ## Fuel (D22)
 
@@ -88,13 +100,14 @@ Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,3
 
 - **GGS-ICBM-03-30** The silo forms from clear glass rings (other glass is refused), the pad floor and hatches in the glass or the floor ring, and not with a hatch above the glass or without the pad. Scenario `icbm.silo.structure`.
 - **GGS-ICBM-03-31** From a body and a fitting warhead in a bus and Purple fuel in the hatch, the silo mates, fuels and, fired by the Launch Control, launches a T3 that detonates on target, leaving the silo intact and no chunk ticket. Scenario `icbm.silo.t3_launch`.
-- **GGS-ICBM-03-32** The silo refuses a body with no warhead, a warhead too heavy and an unaccepted fluid, and loses nothing. Scenario `icbm.silo.refusals`.
+- **GGS-ICBM-03-32** The silo stands a body but does not seat a warhead too heavy or inert, never takes a salvage body, does not pump an unaccepted fluid, and loses nothing. Scenario `icbm.silo.refusals`.
+- **GGS-ICBM-03-34** Each part stands in the shaft before its cycle, in the order body, warhead, fuel, whatever order the parts arrive in; no part moves without power; breaking a part or the silo mid-sequence drops each part exactly once. Scenarios `icbm.silo.sequence`, `icbm.silo.sequence_any_order`, `icbm.silo.sequence_break`, `icbm.silo.power_gate`.
 - **GGS-ICBM-03-33** An HV hatch launches a T1 and refuses a T3; a LuV hatch launches a T3; the silo's range and scatter factors apply. Scenario `icbm.silo.tiers`.
 - **GGS-ICBM-03-34** A silo under a stone roof with a chimney around its opening launches a missile that stays on the shaft's column up to the build height, breaks no block of the silo, roof or chimney, and hits its target (D287). Scenario `icbm.silo.climb_clear`.
 
 ## Tests
 
-`SiloDoorsTest`, `SiloShapeTest`, `SiloRulesTest`, `SiloSearchTest`, `MissileTierTest`, `ScatterTest`; scenarios above.
+`SiloDoorsTest`, `SiloShapeTest`, `SiloRulesTest`, `SiloSequenceTest`, `SiloSearchTest`, `MissileTierTest`, `ScatterTest`; scenarios above.
 
 ## Open questions
 
@@ -102,18 +115,18 @@ None.
 
 ## Unloaded shaft chunks (I4 carry-over)
 
-Mating, pumping and spawning wait for every chunk of the shaft to be loaded, and the parts stay in the bus. The refusal is remembered; once the shaft loads, the controller asks GT for an immediate recheck (GT's multiblock checks are event-driven, so without it the silo would stay idle). Scenario: `icbm.silo.shaft_chunk_guard` ([D123](../DECISIONS.md)).
+Every step (placing a part, a cycle, arming, pumping) waits for every chunk of the shaft to be loaded, and the parts stay in the bus. The refusal is remembered; once the shaft loads, the controller asks GT for an immediate recheck (GT's multiblock checks are event-driven, so without it the silo would stay idle). Scenario: `icbm.silo.shaft_chunk_guard` ([D123](../DECISIONS.md)).
 
 ## Power gate
 
-The silo draws the body tier's voltage for every mating cycle and pump cycle (HV T1, EV T2, LuV T3). GT stops a
+The silo draws the body tier's voltage for every body, mating and pump cycle (HV T1, EV T2, LuV T3). GT stops a
 multiblock for good ("power loss") on the first tick it cannot pay, so the silo checks before it takes anything:
 
-- A step (a mating cycle, a pump cycle, finishing a pending cycle) starts only when the Energy Hatches hold at least
-  `SiloRules.MIN_BUFFER_TICKS` (2) ticks of its draw. Otherwise the silo takes no body, warhead or fuel, shows the
+- A step (placing a body or warhead, a body or mating cycle, a pump cycle) starts only when the Energy Hatches hold at least
+  `SiloRules.MIN_BUFFER_TICKS` (2) ticks of its draw. Otherwise the silo moves no body, warhead or fuel, shows the
   `gregguns_silo_no_power` status ("No power") and stays idle. It is not switched off and no power-fail is recorded.
 - While it waits, the silo looks at the hatches every 10 ticks and asks GT for a recipe check as soon as they hold
   enough, so it starts on its own when power arrives. No machine-side packet, sound or state change happens meanwhile.
-- Power that runs out mid-cycle still stops the machine as GT does (the pending parts are kept and the silo switches
-  itself back on); the resumed cycle is gated the same way. The doors and the launch draw no EU.
+- Power that runs out mid-cycle still stops the machine as GT does (the parts stay standing in the shaft and the silo
+  switches itself back on); the cycle then runs again, gated the same way. The doors and the launch draw no EU.
 - Tests: `SiloRulesTest` (the gate rule), scenario `icbm.silo.power_gate`.
