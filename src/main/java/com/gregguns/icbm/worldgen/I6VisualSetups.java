@@ -254,6 +254,14 @@ public final class I6VisualSetups {
         logRoom(ax, az, floor, cp.hall(), "HALL");
         for (Room r : cp.rooms()) {
             logRoom(ax, az, floor, r, "ROOM");
+            // The wall block at the room's low corner tells which style set drew it.
+            Box rb = r.bounds();
+            GregGuns.LOG.info(
+                "I6C wallblock id={} block={} meta={}",
+                r.id(),
+                net.minecraft.block.Block.blockRegistry
+                    .getNameForObject(world.getBlock(ax + rb.minX, floor + 1, az + rb.minZ)),
+                world.getBlockMetadata(ax + rb.minX, floor + 1, az + rb.minZ));
         }
         int i = 0;
         for (SiloSlot s : cp.silos()) {
