@@ -245,7 +245,8 @@ public final class ComplexContentScenarios {
                     for (Placement p : ComplexContents.build(plan, level, ceiling, new int[] { 100, 200 })) {
                         if (p.kind() == Placement.Kind.MACHINE) {
                             out.check(p.tier() <= ceiling, dim + " machine tier " + p.tier() + " > " + ceiling);
-                            MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead());
+                            MachinePicker.Pick pick = MachinePicker
+                                .pick(p.role(), Math.max(1, p.tier()), p.dead(), p.variant());
                             if (pick != null && p.role() != MachineRole.NASA_WORKBENCH
                                 && p.role() != MachineRole.LAUNCH_CONTROL
                                 && p.role() != MachineRole.MAGAZINE_CASING) {

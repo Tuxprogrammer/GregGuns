@@ -34,6 +34,17 @@ public final class MachinePicker {
                 return new String[] { "Machine_{T}_Assembler", "Hull_{T}" };
             case PUMP:
                 return new String[] { "Pump_{T}", "Hull_{T}" };
+            case CHEM_REACTOR:
+                return new String[] { "Machine_{T}_ChemicalReactor", "Hull_{T}" };
+            case LAB:
+                return new String[] { "Machine_{T}_Centrifuge", "Machine_{T}_Electrolyzer", "Machine_{T}_Mixer",
+                    "Machine_{T}_Distillery", "Machine_{T}_ChemicalBath", "Machine_{T}_Brewery", "Hull_{T}" };
+            case RECYCLER:
+                return new String[] { "Machine_{T}_Recycler", "Machine_{T}_E_Furnace", "Machine_{T}_ArcFurnace",
+                    "Hull_{T}" };
+            case MACHINE_TOOL:
+                return new String[] { "Machine_{T}_Lathe", "Machine_{T}_Bender", "Machine_{T}_Press",
+                    "Machine_{T}_Wiremill", "Machine_{T}_Cutter", "Hull_{T}" };
             default:
                 return new String[] { "Hull_{T}" };
         }
@@ -46,13 +57,23 @@ public final class MachinePicker {
      * @return the stack and the voltage index it really is at, or null when nothing resolves
      */
     public static Pick pick(MachineRole role, int tier, boolean dead) {
-        String key = role.name() + '/' + tier + '/' + dead;
+        return pick(role, tier, dead, 0);
+    }
+
+    /**
+     * As {@link #pick(MachineRole, int, boolean)}, starting from a role's {@code variant}-th machine (modulo the role's
+     * machines), so a room of one role shows several kinds of machine (a lab: centrifuges beside mixers).
+     *
+     * @param variant a hash of the cell; 0 is the role's first machine
+     */
+    public static Pick pick(MachineRole role, int tier, boolean dead, int variant) {
+        String[] patterns = dead ? new String[] { "Hull_{T}" } : rotated(patterns(role), variant);
+        String key = role.name() + '/' + tier + '/' + dead + '/' + patterns[0];
         Resolved cached = PICKS.get(key);
         if (cached != null) {
             ItemStack s = cached.item.get(1);
             return s == null ? null : new Pick(s, cached.tier, cached.hull);
         }
-        String[] patterns = dead ? new String[] { "Hull_{T}" } : patterns(role);
         // Real machines first, at the highest tier that has one (never above the ask); the hull only when no
         // machine of the role exists at or below the tier.
         for (int pass = 0; pass < 2; pass++) {
@@ -76,6 +97,22 @@ public final class MachinePicker {
             }
         }
         return null;
+    }
+
+    /**
+     * @param patterns a role's patterns, the hull last
+     * @param variant  any int
+     * @return the machine patterns turned so the {@code variant}-th comes first (the order of the rest kept), the hull
+     *         still last
+     */
+    static String[] rotated(String[] patterns, int variant) {
+        int machines = 0;
+        while (machines < patterns.length && !patterns[machines].startsWith("Hull_")) machines++;
+        if (machines < 2) return patterns;
+        int start = Math.floorMod(variant, machines);
+        String[] out = patterns.clone();
+        for (int i = 0; i < machines; i++) out[i] = patterns[(start + i) % machines];
+        return out;
     }
 
     /** Answers by role, tier and deadness; a pick is resolved once, since the GT item list is fixed after load. */

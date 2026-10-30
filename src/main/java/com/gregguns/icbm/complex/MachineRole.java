@@ -12,5 +12,13 @@ public enum MachineRole {
     WORKBENCH,
     RADAR,
     COMMS,
-    MAGAZINE_CASING
+    MAGAZINE_CASING,
+    /** A GT single-block Chemical Reactor (chem lab, D307). */
+    CHEM_REACTOR,
+    /** A lab machine: centrifuge, electrolyzer, mixer, distillery, chemical bath or brewery. */
+    LAB,
+    /** A recycler, electric furnace or arc furnace (incinerator). */
+    RECYCLER,
+    /** A machine tool: lathe, bender, forming press, wiremill or cutter (workshop). */
+    MACHINE_TOOL
 }

@@ -39,7 +39,13 @@ public final class Placement {
         /** A lit light fixture. */
         LIGHT,
         /** A cave-in: fill part of {@link #box()} with rubble. */
-        COLLAPSE
+        COLLAPSE,
+        /**
+         * One block by registry name, {@link #block()} at {@link #meta()}: a room's look at its activity level (D309),
+         * written over what the marks pass put there (a cold furnace, a crop, coarse dirt, a metal prop, a rubble
+         * pile). A name that does not resolve this run tries {@link #fallback()}, then writes nothing.
+         */
+        BLOCK
     }
 
     /** Extra things a chest may hold beyond its table (D17, D36, D128). */
@@ -78,6 +84,10 @@ public final class Placement {
     private final Box box;
     private final int facing;
     private final int extent;
+    private final int variant;
+    private final String block;
+    private final int meta;
+    private final String fallback;
 
     private Placement(Builder b) {
         this.kind = b.kind;
@@ -97,6 +107,10 @@ public final class Placement {
         this.box = b.box;
         this.facing = b.facing;
         this.extent = b.extent;
+        this.variant = b.variant;
+        this.block = b.block;
+        this.meta = b.meta;
+        this.fallback = b.fallback;
     }
 
     static Builder at(Kind kind, int x, int y, int z) {
@@ -141,6 +155,29 @@ public final class Placement {
     /** @return the GT voltage index of a machine, never above the ceiling; 0 for the rest */
     public int tier() {
         return tier;
+    }
+
+    /**
+     * @return for a machine, which of its role's machines comes first
+     *         ({@link MachinePicker#pick(MachineRole, int, boolean, int)})
+     */
+    public int variant() {
+        return variant;
+    }
+
+    /** @return the registry name ({@code mod:name}) of a {@link Kind#BLOCK}, else null */
+    public String block() {
+        return block;
+    }
+
+    /** @return the metadata of a {@link Kind#BLOCK} */
+    public int meta() {
+        return meta;
+    }
+
+    /** @return the registry name a {@link Kind#BLOCK} falls back to (at meta 0) when its own is absent, or null */
+    public String fallback() {
+        return fallback;
     }
 
     /** @return true for a machine that is a dead husk */
@@ -220,7 +257,8 @@ public final class Placement {
             + z
             + (category != null ? " " + category : "")
             + (spawner != null ? " " + spawner : "")
-            + (role != null ? " " + role + "/" + tier + (dead ? " dead" : "") : "");
+            + (role != null ? " " + role + "/" + tier + (dead ? " dead" : "") : "")
+            + (block != null ? " " + block + ":" + meta : "");
     }
 
     /** Builds a placement. */
@@ -243,6 +281,10 @@ public final class Placement {
         private Box box;
         private int facing;
         private int extent = 1;
+        private int variant;
+        private String block;
+        private int meta;
+        private String fallback;
 
         private Builder(Kind kind, int x, int y, int z) {
             this.kind = kind;
@@ -297,6 +339,18 @@ public final class Placement {
 
         Builder front(int compassIndex) {
             facing = compassIndex;
+            return this;
+        }
+
+        Builder variant(int v) {
+            variant = v;
+            return this;
+        }
+
+        Builder block(String ref, int m, String fallbackRef) {
+            block = ref;
+            meta = m;
+            fallback = fallbackRef;
             return this;
         }
 

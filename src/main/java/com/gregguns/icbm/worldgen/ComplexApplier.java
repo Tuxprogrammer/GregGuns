@@ -130,6 +130,9 @@ public final class ComplexApplier {
             case FRAME_WALL:
                 frameWall(p);
                 break;
+            case BLOCK:
+                block(p, x, y, z);
+                break;
             default:
                 break;
         }
@@ -220,7 +223,7 @@ public final class ComplexApplier {
             placeCasing(x, y, z);
             return;
         } else {
-            MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead());
+            MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead(), p.variant());
             if (pick == null) {
                 GregGuns.LOG.warn("No GT machine for {} at tier {}", role, p.tier());
                 return;
@@ -269,7 +272,55 @@ public final class ComplexApplier {
 
     /** @return one machine item for a placement, for scenarios that check what would be placed */
     public static ItemStack stackFor(Placement p) {
-        MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead());
+        MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead(), p.variant());
         return pick == null ? null : pick.stack();
+    }
+
+    /**
+     * A {@link Placement.Kind#BLOCK}: the named block at its meta, else its fallback at meta 0, else nothing (logged
+     * once per name). A lit furnace gets a tile that burns for a long while with coal in the fuel slot and sand to
+     * smelt, so it is still lit when a player walks in (D309). A furnace re-aims itself by its neighbors when placed,
+     * so its meta is written again afterwards, inside the window only.
+     */
+    private void block(Placement p, int x, int y, int z) {
+        Block b = resolve(p.block());
+        int meta = p.meta();
+        if (b == null) {
+            b = resolve(p.fallback());
+            meta = 0;
+        }
+        if (b == null) {
+            if (MISSING.add(p.block())) {
+                GregGuns.LOG.info("Complex block {} is absent this run; left as built", p.block());
+            }
+            return;
+        }
+        if (!sink.setBlock(x, y, z, b, meta)) {
+            return;
+        }
+        if (b == Blocks.lit_furnace) {
+            net.minecraft.tileentity.TileEntityFurnace f = new net.minecraft.tileentity.TileEntityFurnace();
+            f.furnaceBurnTime = LIT_BURN_TICKS;
+            f.currentItemBurnTime = LIT_BURN_TICKS;
+            f.setInventorySlotContents(0, new ItemStack(Blocks.sand, 64));
+            f.setInventorySlotContents(1, new ItemStack(net.minecraft.init.Items.coal, 32));
+            sink.setTile(x, y, z, f);
+        }
+        if ((b == Blocks.lit_furnace || b == Blocks.furnace) && world != null
+            && sink.window()
+                .contains(x, z)) {
+            world.setBlockMetadataWithNotify(x, y, z, meta, 2);
+        }
+    }
+
+    /** Ticks a placed lit furnace burns before it needs its fuel slot (the most a furnace saves: a short). */
+    static final int LIT_BURN_TICKS = Short.MAX_VALUE;
+
+    private static final java.util.Set<String> MISSING = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static Block resolve(String name) {
+        if (name == null) return null;
+        Block b = Block.getBlockFromName(name);
+        return b == null || b == Blocks.air && !"minecraft:air".equals(name) ? null : b;
     }
 }

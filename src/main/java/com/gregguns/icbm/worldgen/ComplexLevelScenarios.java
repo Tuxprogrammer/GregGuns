@@ -782,7 +782,7 @@ public final class ComplexLevelScenarios {
                     .getItemDamage();
                 tier = 0;
             } else {
-                MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead());
+                MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead(), p.variant());
                 if (pick == null) {
                     t.machinesSkipped++;
                     return;

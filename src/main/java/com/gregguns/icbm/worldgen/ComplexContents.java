@@ -33,7 +33,7 @@ public final class ComplexContents {
     /** Salts, one per roll family, so two rolls on one cell are independent. */
     private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_SPAWN = 0x59A, S_ELITE = 0xE11,
         S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_CHEST = 0xC4E,
-        S_ABSENT = 0xAB5, S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_DISPLAY = 0xD15;
+        S_ABSENT = 0xAB5, S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_DISPLAY = 0xD15, S_VARIANT = 0x7A2;
 
     private ComplexContents() {}
 
@@ -68,7 +68,20 @@ public final class ComplexContents {
             mark(r, r.bounds(), collapsed, p, seed, ceiling, hall, out, chests, chestCounter, level);
         }
         for (Tunnel t : plan.tunnels()) {
-            marks(t.marks(), t.bounds(), "tunnel", false, p, seed, ceiling, hall, out, chests, chestCounter, level);
+            marks(
+                t.marks(),
+                roomState(seed, t.id(), level),
+                t.bounds(),
+                "tunnel",
+                false,
+                p,
+                seed,
+                ceiling,
+                hall,
+                out,
+                chests,
+                chestCounter,
+                level);
         }
         if (level == ActivityLevel.ABANDONED) {
             holdouts(plan, seed, collapsedRooms, out);
@@ -151,6 +164,7 @@ public final class ComplexContents {
         List<Placement> out, List<Placement> chests, int[] counter, ActivityLevel level) {
         marks(
             r.marks(),
+            roomState(seed, r.id(), level),
             bounds,
             r.kind() == null ? ""
                 : r.kind()
@@ -166,8 +180,8 @@ public final class ComplexContents {
             level);
     }
 
-    private static void marks(List<Mark> marks, Box bounds, String owner, boolean collapsed, ActivityProfile p,
-        long seed, int ceiling, Box hall, List<Placement> out, List<Placement> chests, int[] counter,
+    private static void marks(List<Mark> marks, RoomState state, Box bounds, String owner, boolean collapsed,
+        ActivityProfile p, long seed, int ceiling, Box hall, List<Placement> out, List<Placement> chests, int[] counter,
         ActivityLevel level) {
         int band = depthBand(bounds, hall);
         boolean controlRoom = "LAUNCH_CONTROL".equals(owner);
@@ -246,7 +260,7 @@ public final class ComplexContents {
                     spawner(m, band, controlRoom, p, seed, ceiling, out);
                     break;
                 case MACHINE:
-                    machine(m, p, seed, ceiling, out);
+                    machine(m, state, p, seed, ceiling, out);
                     break;
                 case FURNITURE:
                     FurnitureWear.wear(m, collapsed, level, seed, out);
@@ -398,21 +412,75 @@ public final class ComplexContents {
         }
     }
 
-    private static void machine(Mark m, ActivityProfile p, long seed, int ceiling, List<Placement> out) {
+    /**
+     * How lived-in a section is (D309). An operational complex is staffed throughout and an abandoned one gutted. In a
+     * partly abandoned complex a section is in service when its lamps burn, by the very roll that lights them (D231's
+     * whole-section roll), and mothballed when they are dark: a lit room is a staffed room and a dark one is shut, so
+     * its lamps, machines, wear, crops and chests all agree. Pure; the same in every populate window.
+     *
+     * @param seed  the plan seed
+     * @param room  a room (the hub included)
+     * @param level the complex's level
+     * @return the room's state
+     */
+    public static RoomState roomState(long seed, Room room, ActivityLevel level) {
+        return roomState(seed, room.id(), level);
+    }
+
+    /** As {@link #roomState(long, Room, ActivityLevel)}, by section id (a room, the hub or a tunnel). */
+    public static RoomState roomState(long seed, int section, ActivityLevel level) {
+        switch (level) {
+            case OPERATIONAL:
+                return RoomState.STAFFED;
+            case PARTLY_ABANDONED:
+                return Mix.unit(Mix.of(seed, S_LIGHT, section, -1)) < ActivityProfile.of(level)
+                    .litChance() ? RoomState.IN_SERVICE : RoomState.MOTHBALLED;
+            default:
+                return RoomState.GUTTED;
+        }
+    }
+
+    /** Share of machines that are husks in a room in service (D309). */
+    static final double IN_SERVICE_DEAD = 0.10;
+    /** Share of machines that are husks in a mothballed room (D309). */
+    static final double MOTHBALLED_DEAD = 0.90;
+
+    /**
+     * @return the chance a machine of a room in this state is a husk: none staffed, 10% in service, 90% mothballed, and
+     *         the level's (D284) when gutted
+     */
+    static double deadChance(RoomState state, ActivityProfile p) {
+        switch (state) {
+            case STAFFED:
+                return 0;
+            case IN_SERVICE:
+                return IN_SERVICE_DEAD;
+            case MOTHBALLED:
+                return MOTHBALLED_DEAD;
+            default:
+                return p.deadMachineChance();
+        }
+    }
+
+    private static void machine(Mark m, RoomState state, ActivityProfile p, long seed, int ceiling,
+        List<Placement> out) {
         MachineRole role;
         try {
             role = MachineRole.valueOf(m.key());
         } catch (IllegalArgumentException e) {
             return; // an unknown role is left empty rather than guessed
         }
-        long h = Mix.of(seed, S_MACHINE, m.x() * 4096L + m.z(), m.y());
-        if (Mix.unit(Mix.of(seed, S_ABSENT, m.x() * 4096L + m.z(), m.y())) < p.absentMachineChance()) {
-            return; // stripped to the floor: nothing left to place
+        long cell = m.x() * 4096L + m.z();
+        long h = Mix.of(seed, S_MACHINE, cell, m.y());
+        // Only a gutted room has machines stripped to the floor (D284); a mothballed one keeps its hulls.
+        if (state == RoomState.GUTTED && Mix.unit(Mix.of(seed, S_ABSENT, cell, m.y())) < p.absentMachineChance()) {
+            return;
         }
-        boolean dead = Mix.unit(Mix.of(seed, S_DEAD, m.x() * 4096L + m.z(), m.y())) < p.deadMachineChance();
+        boolean dead = Mix.unit(Mix.of(seed, S_DEAD, cell, m.y())) < deadChance(state, p);
         out.add(
             Placement.at(Kind.MACHINE, m.x(), m.y(), m.z())
                 .machine(role, machineTier(role, ceiling, h), dead)
+                .variant((int) (Mix.of(seed, S_VARIANT, cell, m.y()) >>> 33))
                 .front(m.facing())
                 .build());
     }
