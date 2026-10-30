@@ -11,10 +11,10 @@ package com.gregguns.icbm.defense;
 public final class SamRules {
 
     /**
-     * SAM flight speed, blocks per tick (D126). Above the steepest dive any missile makes: the end of an arc moves at
-     * {@code speed * (80 / flat + 1.2)} (see {@code ArcPath.terminalSpeed}), which is 8.1 for a T3 on a level 20-block
-     * flight, the shortest a missile may go; a unit test holds this above that for every tier. A fried missile falls
-     * at 3 at most.
+     * SAM flight speed, blocks per tick (D126). Above the steepest dive any missile makes: the arc starts at the build
+     * height (D285) and its last step falls at most {@code ArcPath.MAX_DIVE} (6) blocks per tick while moving at most
+     * the tier's speed sideways, so no missile ends its arc faster than about 6.2 (see {@code ArcPath.terminalSpeed});
+     * a unit test holds this above that for every tier, distance and drop. A fried missile falls at 3 at most.
      */
     public static final double SPEED = 9.0;
     /** Ticks a SAM's range to its target may fail to fall before the battery stops counting it as a defense. */

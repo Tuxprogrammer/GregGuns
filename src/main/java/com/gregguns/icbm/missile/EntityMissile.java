@@ -45,10 +45,6 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     /** Checks (10 ticks apart) without a formed silo before a silo-only body stands down: 300 ticks, past a reload. */
     private static final int STRAY_CHECKS = 30;
-    /** Blocks the missile climbs straight up before it turns onto the arc. */
-    public static final double CLIMB_HEIGHT = 12.0;
-    /** Climb acceleration, blocks per tick per tick. */
-    private static final double CLIMB_ACCEL = 0.08;
     /** Height of the pad surface above the pad block's Y. */
     public static final double PAD_SURFACE = 0.2;
 
@@ -62,6 +58,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     private final MissileTickets tickets = new MissileTickets();
     private ArcPath path;
+    /** The climb and the arc from launch point to target (D285); rebuilt from the saved fields when null. */
+    private FlightPath flight;
     private Object landingPad;
 
     private FlightPhase phase = FlightPhase.PAD;
@@ -89,6 +87,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private double launchX;
     private double launchY;
     private double launchZ;
+    /** Top of the vertical climb (the build height above the launch point, D285); set at launch. */
+    private double waypointY;
     private double arcX;
     private double arcY;
     private double arcZ;
@@ -510,6 +510,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         this.launchX = posX;
         this.launchY = posY;
         this.launchZ = posZ;
+        this.waypointY = FlightPath.waypointY(posY, worldObj.getHeight());
+        this.flight = null;
         if (source != null) {
             this.ownerId = source.getUniqueID();
             this.ownerName = source.getCommandSenderName();
@@ -520,8 +522,9 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     }
 
     /**
-     * @return true when nothing solid stands in the column the missile climbs through: from the pad to the top of the
-     *         body at the end of the climb (ICBM-04-26)
+     * @return true when nothing solid stands in the column right above the pad: from the pad to the top of the body
+     *         {@link FlightPath#MIN_CLIMB} blocks up (ICBM-04-26). The climb goes on to the build height through
+     *         whatever stands higher, colliding with nothing and breaking nothing (D285).
      */
     private boolean climbColumnClear() {
         int x0 = net.minecraft.util.MathHelper.floor_double(posX - width / 2.0);
@@ -529,7 +532,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         int z0 = net.minecraft.util.MathHelper.floor_double(posZ - width / 2.0);
         int z1 = net.minecraft.util.MathHelper.floor_double(posZ + width / 2.0);
         int y0 = net.minecraft.util.MathHelper.floor_double(posY) + 1;
-        int y1 = net.minecraft.util.MathHelper.floor_double(posY + CLIMB_HEIGHT + tier().heightBlocks());
+        int y1 = net.minecraft.util.MathHelper.floor_double(posY + FlightPath.MIN_CLIMB + tier().heightBlocks());
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 for (int y = y0; y <= y1; y++) {
@@ -621,20 +624,43 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         }
     }
 
+    /**
+     * One tick of the climb: straight up the launch point's column, never sideways, so the missile leaves a silo shaft
+     * through its open doors and passes nothing on the way up; it does not collide in the climb (GGS-ICBM-03-52). At
+     * the waypoint (the build height) it turns onto the arc (D285).
+     */
     private void climbTick() {
         phaseTick++;
-        double climbed = 0.5 * CLIMB_ACCEL * phaseTick * phaseTick;
-        double y = launchY + climbed;
-        if (climbed >= CLIMB_HEIGHT) {
+        FlightPath f = flight();
+        if (phaseTick >= f.climbTicks()) {
             arcX = launchX;
-            arcY = launchY + CLIMB_HEIGHT;
+            arcY = f.waypointY();
             arcZ = launchZ;
-            path = new ArcPath(arcX, arcY, arcZ, targetX, targetY, targetZ, tier().speed());
+            path = f.arc();
             phaseTick = 0;
             setPhase(FlightPhase.ARC);
-            y = arcY;
+            moveTo(arcX, arcY, arcZ);
+            return;
         }
-        moveTo(launchX, y, launchZ);
+        double[] p = f.position(phaseTick);
+        moveTo(p[0], p[1], p[2]);
+    }
+
+    /** @return the flight from the saved launch point, waypoint and target; built once per load */
+    private FlightPath flight() {
+        if (flight == null) {
+            if (!(waypointY > launchY)) {
+                // No waypoint saved (a save from before the climb, or a phase set from outside): the build height.
+                waypointY = FlightPath.waypointY(launchY, worldObj.getHeight());
+            }
+            flight = new FlightPath(launchX, launchY, launchZ, waypointY, targetX, targetY, targetZ, tier().speed());
+        }
+        return flight;
+    }
+
+    /** @return the top of the climb, the arc's start (D285); 0 before launch */
+    public double waypointY() {
+        return waypointY;
     }
 
     private void arcTick() {
@@ -1006,6 +1032,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         tag.setDouble("launchX", launchX);
         tag.setDouble("launchY", launchY);
         tag.setDouble("launchZ", launchZ);
+        tag.setDouble("waypointY", waypointY);
         tag.setDouble("arcX", arcX);
         tag.setDouble("arcY", arcY);
         tag.setDouble("arcZ", arcZ);
@@ -1055,6 +1082,9 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         launchX = tag.getDouble("launchX");
         launchY = tag.getDouble("launchY");
         launchZ = tag.getDouble("launchZ");
+        waypointY = tag.getDouble("waypointY");
+        flight = null;
+        path = null;
         arcX = tag.getDouble("arcX");
         arcY = tag.getDouble("arcY");
         arcZ = tag.getDouble("arcZ");

@@ -27,13 +27,18 @@ class SamRulesTest {
         assertTrue(SamRules.SPEED > 1.6);
     }
 
-    /** D126: the SAM beats the steepest dive any tier makes on its shortest flight, from the arc itself. */
+    /**
+     * D126: the SAM beats the steepest dive any tier makes, from the arc itself: every distance, and every drop from
+     * the build height where the arc starts (D285) down to a target at the bottom of the world.
+     */
     @Test
     void aSamOutrunsTheSteepestDiveOfEveryTierAtItsShortestRange() {
         for (com.gregguns.icbm.missile.MissileTier t : com.gregguns.icbm.missile.MissileTier.values()) {
             double worst = 0.0;
             for (int flat = t.minRange(); flat <= Math.min(t.baseMaxRange(), 3000); flat++) {
-                worst = Math.max(worst, com.gregguns.icbm.missile.ArcPath.terminalSpeed(t.speed(), flat));
+                for (int drop = 0; drop <= 256; drop += 32) {
+                    worst = Math.max(worst, com.gregguns.icbm.missile.ArcPath.terminalSpeed(t.speed(), flat, drop));
+                }
             }
             assertTrue(SamRules.SPEED > worst, t + " dives at " + worst + ", SAM flies " + SamRules.SPEED);
         }
