@@ -9,7 +9,7 @@ palette:
 C = concrete
 D = minecraft:iron_door#1@door
 E = minecraft:iron_door#0@door
-F = factory_wall
+F = concrete_dark
 L = minecraft:dirt#2
 M = concrete*4 | concrete_panel*2 | concrete_dark*1
 Q = minecraft:leaves#4*3 | minecraft:leaves#5*1

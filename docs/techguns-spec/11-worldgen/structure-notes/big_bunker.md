@@ -40,7 +40,7 @@ Totals: 3 vanilla, 3 reinforced, 8 weapon, 2 spawners. Spawner behavior (5 nearb
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
 | Main concrete (blockhouse, vault walls) | `concrete` | stone brick | the bulk of the solid shell |
-| Interior concrete looks | `concrete` weight 4, `concrete_panel` weight 2, `concrete_dark` weight 1; `factory_wall` only as deliberate steel-frame accents, never in a mix | stone brick / smooth stone slab | interior walls, columns |
+| Interior concrete looks | `concrete` weight 4, `concrete_panel` weight 2, `concrete_dark` weight 1; columns `concrete_dark` | stone brick | interior walls, columns |
 | Light slab | `concrete` | stone brick | hall floor at layer 5, roof slab |
 | Berm soil | `minecraft:dirt#2` (podzol) | same | berm outside |
 | Sandbags | `sandbag` (plain hardened clay; stained clay is overwritten by GT stone layers) | same | berm and pill-boxes |

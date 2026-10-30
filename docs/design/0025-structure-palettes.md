@@ -30,7 +30,7 @@ The layouts then mixed unrelated roles per cell (`factory_wall*3 | concrete*1`, 
 | Train Station | weathered brick house, light roof with holes | red brick with a sooty share, gray stone-brick roof and slabs with gaps |
 | Gas Station | asphalt forecourt, brick shop, steel canopy | asphalt apron, concrete panels and pillars, gray stone-brick shop, steel canopy with a whole iron-bar railing, hazard-stripe pumps |
 | Medium House | gray stone house, dark red roof | gray stone bricks with a worn share and stone-panel corner posts, nether-brick roof, brown carpets |
-| Big Bunker | gray concrete under an earth berm and camo | concrete with panel and weathered shares, plain-clay sandbags, leaf camo |
+| Big Bunker | gray concrete under an earth berm and camo | concrete with panel and weathered shares, weathered-concrete columns, plain-clay sandbags, leaf camo |
 | Aircraft Carrier | gray steel ship, hazard rims | steel-plate hull and island, plated deck, grate floors, hazard-stripe rims |
 | Submarine | dark steel hull | dark steel hull, steel-plate band, plated interior, grate floors |
 | Military Base parts | concrete, steel, wood, camo, red containers | as the families above; camo by biome (leaves, Chisel desert camo, snow) |
