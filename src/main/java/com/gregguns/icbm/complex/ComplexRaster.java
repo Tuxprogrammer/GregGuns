@@ -104,6 +104,8 @@ public final class ComplexRaster {
         FurniturePiece piece = FurniturePiece.of(key);
         if (piece != null) return piece.fallbackRole();
         switch (key) {
+            case RoomFurniture.PARTITION:
+                return Cell.WALL; // an armory display wall: the room's wall block
             case "TABLE":
                 return Cell.FURN_TABLE;
             case "CONSOLE":

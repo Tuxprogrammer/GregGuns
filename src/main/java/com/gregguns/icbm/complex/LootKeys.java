@@ -8,6 +8,8 @@ public final class LootKeys {
     public static final String SAFE = "safe";
     public static final String COMMS = "comms";
     public static final String ARMORY = "armory";
+    /** The ammo chest under an armory display gun; it holds the ammo of that gun, not a table draw. */
+    public static final String ARMORY_AMMO = "armory_ammo";
     public static final String WORKSHOP = "workshop";
     public static final String MEDICAL = "medical";
     public static final String GALLEY = "galley";

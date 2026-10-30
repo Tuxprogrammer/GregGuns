@@ -295,6 +295,54 @@ class ComplexContentsTest {
         assertTrue(frames > 50, "armories exist: " + frames);
     }
 
+    /** Each display chest sits right under its gun's frame and holds ammo that gun takes. */
+    @Test
+    void everyDisplayChestHoldsAmmoForTheGunAboveIt() {
+        int pairs = 0;
+        for (long s = 0; s < 40; s++) {
+            ComplexPlan plan = ComplexLayout.generate(s, 5, 6);
+            for (int ceiling : new int[] { 4, 5, 7, 10 }) {
+                List<Placement> ps = ComplexContents.build(plan, ActivityLevel.OPERATIONAL, ceiling, null);
+                for (Placement c : ps) {
+                    if (c.kind() != Kind.CHEST || !"armory_ammo".equals(c.key())) continue;
+                    Placement frame = null;
+                    for (Placement f : ps) {
+                        if (f.kind() == Kind.FRAME_WALL && f.x() == c.x() && f.z() == c.z()) frame = f;
+                    }
+                    assertNotNull(frame, "a gun hangs above the ammo chest");
+                    assertEquals(c.y() + 1, frame.y(), "directly above");
+                    String gun = ArmoryDisplay.gunAt(ceiling, 12345L, c.x(), c.z());
+                    assertNotNull(gun);
+                    List<String> items = ArmoryDisplay.itemsFor(gun);
+                    com.gregguns.item.ammo.AmmoCompatibility ac = com.gregguns.item.ammo.AmmoCompatibility.DEFAULT;
+                    String bare = gun.substring(gun.indexOf(':') + 1);
+                    if (!com.gregguns.gun.def.GunDefinitions.byName(bare)
+                        .stats()
+                        .isEnergy()) {
+                        assertFalse(items.isEmpty(), gun + " has ammo");
+                        for (String item : items) {
+                            boolean direct = ac.gunsTaking(item)
+                                .contains(bare);
+                            boolean viaMag = false;
+                            for (String mag : ac.magazinesFilledWith(item)) viaMag |= ac.gunsTaking(mag)
+                                .contains(bare);
+                            assertTrue(direct || viaMag, item + " fits " + gun);
+                        }
+                    }
+                    pairs++;
+                }
+            }
+        }
+        assertTrue(pairs > 300, "display pairs: " + pairs);
+    }
+
+    @Test
+    void abandonedArmoriesKeepFewerDisplays() {
+        assertEquals(1.0, ComplexContents.displayKeep(ActivityLevel.OPERATIONAL));
+        assertEquals(1.0, ComplexContents.displayKeep(ActivityLevel.PARTLY_ABANDONED));
+        assertTrue(ComplexContents.displayKeep(ActivityLevel.ABANDONED) < 0.5);
+    }
+
     @Test
     void guardChancesGrowByAtMostHalfFromEvToUmv() {
         assertEquals(1.0, ComplexContents.guardScale(SiloCeiling.EV));
