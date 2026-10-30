@@ -31,7 +31,8 @@ final class ComplexGrower {
     static final class Node {
 
         final int id, type;
-        final RoomKind kind;
+        /** Set once; the deck may hand a just-placed room to an earlier card that fits it (D307). */
+        RoomKind kind;
         int x0, z0, x1, z1, h;
         final int parent;
         /** The side of the parent this node hangs off (its outward direction), -1 for the hub. */
@@ -744,7 +745,18 @@ final class ComplexGrower {
             s.done = false;
             Node r = place(s, k, len, dep);
             if (r != null) {
-                deck.deal(k);
+                // The slot goes to the first card, in deck order, that fits the room as placed: a card that missed
+                // this slot only by its scaled size still comes before a repeat.
+                RoomKind first = k;
+                for (RoomKind c : deck.candidates()) {
+                    if (c == k) break;
+                    if ((c == RoomKind.VEHICLE_BAY) == (k == RoomKind.VEHICLE_BAY) && c.fits(lateralOf(r), depthOf(r))) {
+                        first = c;
+                        break;
+                    }
+                }
+                r.kind = first;
+                deck.deal(first);
                 return r;
             }
             failed.add(new int[] { len, dep, Math.max(12, k.minLateral), Math.max(10, k.minDepth) });
@@ -935,6 +947,11 @@ final class ComplexGrower {
         // Rooms stay rooms, not corridors: neither side grows past twice the other.
         int other = (side & 1) == 0 ? n.x1 - n.x0 : n.z1 - n.z0;
         return along < cap && along < 2 * other;
+    }
+
+    /** @return a room's size along its door wall */
+    private static int lateralOf(Node n) {
+        return (n.dir & 1) == 0 ? n.x1 - n.x0 : n.z1 - n.z0;
     }
 
     /** @return a room's size away from its door wall */
