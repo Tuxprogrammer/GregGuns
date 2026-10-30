@@ -143,7 +143,7 @@ def first_missile() -> str:
                "A closer target burns less, and <b>whatever fuel is left makes the blast bigger</b>, up to 25 percent.")
     s6 = _step(7, "Aim and fire",
                f"{lc}{arrow}<span class='pill'>X and Z</span><span class='pill'>Data stick</span><span class='pill'>Launch</span>",
-               f"Put a <b>Launch Control</b> block (HV) within 4 blocks of the pad. Type the target <b>X and Z</b>, or load them from a <b>Data Stick</b>, and press <b>Launch</b>. The screen shows the range and the blast radius to expect. "
+               f"Set a <b>Launch Control</b> block (HV) against an edge of the pad, level with it (a corner does not count). Type the target <b>X and Z</b>, or load them from a <b>Data Stick</b>, and press <b>Launch</b>. The screen shows the range and the blast radius to expect. "
                f"The target must be at least <b>{MIN_RANGE} blocks</b> away. A <b>redstone pulse</b> or a machine-controller cover fires it too. One shot costs 300 EU.")
     flight = f"""<div class="card" style="margin-top:22px"><h2>Launch, flight and impact</h2>
 <div class="tl"><div><div class="k">1 &middot; Warm-up</div><div class="v">Two seconds of countdown with the engines lit. Keep clear of the pad.</div></div>

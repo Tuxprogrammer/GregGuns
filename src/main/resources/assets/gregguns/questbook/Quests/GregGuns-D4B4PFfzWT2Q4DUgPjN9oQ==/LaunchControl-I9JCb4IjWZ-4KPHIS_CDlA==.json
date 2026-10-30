@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Launch Control is the button. It\u0027s a GregTech single block at HV, made in the Assembler from an HV machine hull, an HV sensor, an HV emitter, an empty data stick and 2 Advanced circuits. Check NEI.\n\nPlace it within 4 blocks of the pad (2 up or down) and power it at HV. Type the target X and Z, press Use My Position, or load a target from a data stick (Save and Load target buttons). The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect.",
+      "desc:8": "The Launch Control is the button. It\u0027s a GregTech single block at HV, made in the Assembler from an HV machine hull, an HV sensor, an HV emitter, an empty data stick and 2 Advanced circuits. Check NEI.\n\nSet it against one edge of the pad, level with it (corners don\u0027t count, the way Galacticraft\u0027s own launch controller attaches), and power it at HV. Type the target X and Z, press Use My Position, or load a target from a data stick (Save and Load target buttons). The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

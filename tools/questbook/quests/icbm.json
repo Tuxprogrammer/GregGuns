@@ -1493,7 +1493,7 @@
       "tier": "HV",
       "desc": [
         "The Launch Control is the button. It's a GregTech single block at HV, made in the Assembler from an HV machine hull, an HV sensor, an HV emitter, an empty data stick and 2 Advanced circuits. Check NEI.",
-        "Place it within 4 blocks of the pad (2 up or down) and power it at HV. Type the target X and Z, press Use My Position, or load a target from a data stick (Save and Load target buttons). The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect."
+        "Set it against one edge of the pad, level with it (corners don't count, the way Galacticraft's own launch controller attaches), and power it at HV. Type the target X and Z, press Use My Position, or load a target from a data stick (Save and Load target buttons). The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect."
       ],
       "pre": [
         "gg.icbm.fuel"
@@ -2505,7 +2505,7 @@
       "desc": [
         "The Missile Silo is a GregTech multiblock that loads, fuels and fires missiles for you. A silo shot flies 25 percent farther and scatters half as much as a pad shot.",
         "Build a 5 by 5 tower around an open 3 by 3 shaft: a Galacticraft launch pad for the shaft floor in a ring of Light or Dark Concrete, three rings of clear glass (Tinkers' Construct or EnderIO), seven rings of concrete (any finish but cobblestone) and a rim of 12 Gantry Beams. The HV controller sits in the middle glass ring. Fit an Input Bus, an Input Hatch for fuel, an Energy Hatch and a Maintenance Hatch in place of wall, glass or floor-ring blocks. Check the controller's hologram.",
-        "The Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. Feed the bus a body and a warhead and it stands the missile in the shaft. A Launch Control within 6 blocks fires it."
+        "The Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. Feed the bus a body and a warhead and it stands the missile in the shaft. Build a Launch Control into the silo in place of any wall, glass or floor-ring block, one per silo: it fires that silo and no other, and its screen names the silo."
       ],
       "pre": [
         "gg.icbm.t2_missile"
@@ -2687,7 +2687,7 @@
       "tier": "EV",
       "desc": [
         "Every silo in a complex is a real Missile Silo with its hatches in place, missing exactly one part: a concrete block where the controller goes, or a glass block under it where the Energy Hatch goes.",
-        "Look for the part in the Safe, Stockpile, Workshop and Control chests, or craft it. Put it in and the silo forms. A found Energy Hatch is EV, which launches up to Tier 2; swap in a LuV hatch for Tier 3. Power it, add a Launch Control, and the complex's silo is yours. Bring back the part you found.",
+        "Look for the part in the Safe, Stockpile, Workshop and Control chests, or craft it. Put it in and the silo forms. A found Energy Hatch is EV, which launches up to Tier 2; swap in a LuV hatch for Tier 3. Power it and fire it from its own Launch Control, in the top row of the silo's window: the complex's silo is yours. Bring back the part you found.",
         "[warn]Clear the guard posts before you start working on the silo.[/warn]"
       ],
       "pre": [
