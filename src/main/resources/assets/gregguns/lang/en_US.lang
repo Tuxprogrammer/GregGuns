@@ -16,6 +16,7 @@ gregguns.test.summary=[GregGuns] Scenarios: %s passed, %s failed%s
 
 # Module switches (core): shown on items and in chat when the server turned their module off; %s is the config key
 gregguns.module.disabled=Disabled by the server's GregGuns config (%s)
+gregguns.module.mismatch=GregGuns: this client's module flags differ from the server's (%s). The NEI recipe list and client-side behavior follow this client's own config. Set the same values in config/gregguns.cfg and restart.
 
 # Machine names (GT metatileentities). GT builds the key gt.blockmachines.<internal name>.name; if the lang system already has it,
 # GT uses that instead of its own GregTech.lang. The English in the Java constructors must match these lines.
