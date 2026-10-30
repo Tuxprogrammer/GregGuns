@@ -120,7 +120,6 @@ A loot bag is a stack of `enhancedlootbags:lootbag` with the group id as `Damage
 
 | Name | `Damage:2` | Group | Lowest tier |
 |---|---|---|---|
-| `rations` | 1700 | Field Rations (Pam's food) | Steam |
 | `steam` | 1701 | Recruit | Steam |
 | `lv` | 1702 | Rifleman | LV |
 | `mv` | 1703 | Sergeant | MV |
@@ -134,7 +133,7 @@ A loot bag is a stack of `enhancedlootbags:lootbag` with the group id as `Damage
 | `ordnance2` | 1711 | Ordnance II (ICBM) | IV |
 | `ordnance3` | 1712 | Ordnance III (ICBM) | LuV |
 
-A hand-written stack of one of the pack's generic tier groups (damage 2, 4, 5, 6, 7, 8, 41, 42) still passes the tier check, with a warning to use a bag name.
+Group 1700 is reserved and unused. Bags hold GregGuns items and the precursors GregGuns recipes consume; food is a separate `item` reward (Pam's HarvestCraft), never in a bag. A hand-written stack of one of the pack's generic tier groups (damage 2, 4, 5, 6, 7, 8, 41, 42) still passes the tier check, with a warning to use a bag name.
 
 ### Line files
 
@@ -376,7 +375,7 @@ Rewards (`type`):
 
 Stacks: `id`, `count` (default 1), `damage` (default 0; `"*"` matches every damage value, written 32767), `ore` (an OreDict name: any item in it matches as well, the way the pack asks for "any steel plate"; keep a real `id` and `damage` for the item the task shows), `tag` (string NBT, with `matchNBT`). A stack `{"bag": "<tier>", "count": N}` is a bag inside any reward list; writers never write the bag item's id. An id other than `gregguns:` must be in `pack_items.txt` (coins such as `dreamcraft:CoinSmith`, Galacticraft parts, GT materials, HarvestCraft food).
 
-**Loot bags.** `BAGS` in `build_quests.py` is the one table that maps a bag name (`rations`, `steam`, `lv`, `mv`, `hv`, `ev`, `iv`, `luv`, `zpm`, `spoils`, `ordnance1`, `ordnance2`, `ordnance3`; case-insensitive) to an item id, a damage and the lowest quest tier that may pay it (the [table above](#rewards)). Pointing a name at another group, or adding a name, is a change to that table alone.
+**Loot bags.** `BAGS` in `build_quests.py` is the one table that maps a bag name (`steam`, `lv`, `mv`, `hv`, `ev`, `iv`, `luv`, `zpm`, `spoils`, `ordnance1`, `ordnance2`, `ordnance3`; case-insensitive) to an item id, a damage and the lowest quest tier that may pay it (the [table above](#rewards)). Pointing a name at another group, or adding a name, is a change to that table alone.
 
 **Retired quests.** To remove a quest, delete it from its chapter file and add its key to that file's `retired` list (or to `_line.json`). The builder writes the uuid5 of every retired key to `index.json` (`retired`, UUID strings), and the installer deletes exactly those quests from an existing database: the definition, everyone's progress on it, its line entries, and its place in other quests' prerequisites. A retired key is never reused (GGS-12-02); the builder and `QuestbookResourcesTest` reject a retired key that is also a quest.
 
