@@ -205,6 +205,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                         .casingIndex(casingIndex)
                         .hint(2)
                         .buildAndChain(SiloGlass.element()))
+                // TODO(integration): the Launch Control agent adds SiloLaunchControl.ELEMENT to this atLeast list
+                // too; its canonical cell is the front aisle, shape row 8, WINDOW_COLUMN_LOW (the viewer's right, one
+                // above the controller), which the generated and the dev layouts leave free.
                 // The window edges of the controller's face (the columns either side of the controller): glass, the
                 // wall's concrete or a hatch, so hatches can stand in the outer columns with the glass in the middle.
                 .addElement(
