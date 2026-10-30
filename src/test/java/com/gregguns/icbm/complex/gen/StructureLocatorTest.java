@@ -84,7 +84,7 @@ class StructureLocatorTest {
     }
 
     @Test
-    void dimensionsAndSeedsRollDifferentCells() {
+    void dimensionsAndSeedsPlaceTheSitesDifferently() {
         Set<String> a = cells(SEED, 0), b = cells(SEED, 7), c = cells(SEED + 1, 0);
         assertNotEquals(a, b);
         assertNotEquals(a, c);
@@ -93,7 +93,7 @@ class StructureLocatorTest {
     private static Set<String> cells(long seed, int dim) {
         Set<String> s = new HashSet<>();
         for (StructureLocator.Candidate c : StructureLocator.nearest(seed, dim, 100, 0, 0, 8, null)) {
-            s.add(c.cellX() + "," + c.cellZ());
+            s.add(c.plan.anchorX() + "," + c.plan.anchorZ());
         }
         return s;
     }
