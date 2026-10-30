@@ -6,10 +6,10 @@ import java.util.List;
 
 /**
  * The metal block props of a complex (D308): one real storage block per prop, drawn from a tier ladder that never
- * passes the complex's ceiling. Lower metals are common and the ceiling's own metal is a find: a rung weighs 4 at
- * LV and MV, 2 up to two rungs under the ceiling, and 1 at the top two rungs. Where Chisel has a crate face for a metal the
- * prop uses it; the rest are GT storage blocks. Every prop falls back to a vanilla iron block, so a pack without Chisel
- * or GT still reads. Pure: block names and metas only.
+ * passes the complex's ceiling. Lower metals are common and the ceiling's own metal is a find: a rung weighs 4 at LV
+ * and MV, 2 up to two rungs under the ceiling, and 1 at the top two rungs. Where Chisel has a crate face for a metal
+ * the prop uses it; the rest are GT storage blocks. Every prop falls back to a vanilla iron block, so a pack without
+ * Chisel or GT still reads. Pure: block names and metas only.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/palette.md (Props); D308
 public final class MetalProps {

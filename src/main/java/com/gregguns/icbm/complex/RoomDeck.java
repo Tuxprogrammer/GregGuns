@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * The room kinds a complex is dealt, like cards from a deck (D307). Round 1 holds every mandatory kind and
- * every optional kind once, shuffled together. Each later round holds every optional kind once more, freshly shuffled. A slot takes
- * the first card that fits it, in deck order: the undealt cards of the oldest open round, then those of the round after
- * it. So no optional kind is dealt twice while another one that fits the slot has not been dealt at all, and a kind no
- * slot can hold (a farm with no big slot left) never stops the rest.
+ * The room kinds a complex is dealt, like cards from a deck (D307). Round 1 holds every mandatory kind and every
+ * optional kind once, shuffled together. Each later round holds every optional kind once more, freshly shuffled. A slot
+ * takes the first card that fits it, in deck order: the undealt cards of the oldest open round, then those of the round
+ * after it. So no optional kind is dealt twice while another one that fits the slot has not been dealt at all, and a
+ * kind no slot can hold (a farm with no big slot left) never stops the rest.
  *
  * <p>
  * The mandatory kinds always get a slot: once the slots left are as many as the mandatory kinds still undealt, only
- * those are offered. Launch Control, the missile assembly floor, the airlock and the guard posts are placed by
- * their own code and are not in the deck. Pure and deterministic (one {@link Random}, lists only).
+ * those are offered. Launch Control, the missile assembly floor, the airlock and the guard posts are placed by their
+ * own code and are not in the deck. Pure and deterministic (one {@link Random}, lists only).
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Rooms, The deck)
 final class RoomDeck {
