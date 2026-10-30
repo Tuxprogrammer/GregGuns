@@ -63,6 +63,8 @@ _RECIPES = (_JAVA / "WarheadRecipes.java").read_text(encoding="utf-8")
 _SPEC = (_JAVA / "WarheadRecipeSpec.java").read_text(encoding="utf-8")
 _PARTS = (K.REPO / "src/main/java/com/gregguns/icbm/recipe/IcbmPart.java").read_text(encoding="utf-8")
 _EFFECTS = (_JAVA / "effects/Effects.java").read_text(encoding="utf-8")
+_INERT = (_JAVA / "InertWarheadSpec.java").read_text(encoding="utf-8")
+_CHARGING = (_JAVA / "WarheadCharging.java").read_text(encoding="utf-8")
 
 
 def _verify_sources() -> None:
@@ -70,12 +72,14 @@ def _verify_sources() -> None:
     here, so a change to the recipe or the effect fails the build and the sheet is fixed with it."""
     need = [
         (_RECIPES, "RecipeMaps.assemblerRecipes"), (_RECIPES, "T1_PLATES = 4"), (_RECIPES, "T2_PLATES = 8"),
-        (_SPEC, "plates(Tier.HV, 4), Ing.tnt(8), Ing.dynamite(2), pe(3)"), (_SPEC, "plates(Tier.HV, 2), Ing.tnt(2), fuze1()"),
-        (_SPEC, "Ing.tnt(6), pe(2)"), (_SPEC, 'Ing.gt("plate", "Lead", 12'), (_SPEC, "Ing.part(IcbmPart.NAPALM_CANISTER, 2), pe(3)"),
+        (_RECIPES, ".nbtSensitive()"), (_INERT, "CIRCUIT = 2"), (_INERT, "Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)"),
+        (_CHARGING, "MAX_PER_CRAFT = 8"), (_SPEC, "CONDENSED(WarheadBlast.CONDENSED, 1)"),
+        (_SPEC, "Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_STEEL, 1)"), (_SPEC, 'Ing.gt("plate", "Lead", 12'),
+        (_SPEC, "INCENDIARY(WarheadBlast.INCENDIARY, 5, Ing.part(IcbmPart.NAPALM_CANISTER, 2))"),
         (_SPEC, 'Ing.gas("NitrousOxide", 2000'), (_SPEC, 'Ing.gas("Ammonia", 2000'), (_SPEC, 'Ing.optionalMod("harvestcraft:mustardseedsItem", 4)'),
         (_SPEC, 'Ing.gt("dust", "Coal", 8'), (_SPEC, 'Ing.fluid("Creosote", 2000'), (_SPEC, 'Ing.gtItem("Field_Generator_HV", 1'),
-        (_SPEC, 'Ing.gt("stick", "SteelMagnetic", 4'), (_SPEC, "Ing.industrialTnt(10), pe(4)"), (_SPEC, "Ing.kerosene(4000)"),
-        (_SPEC, "Ing.industrialTnt(6), pe(2)"), (_SPEC, 'Ing.gtItem("Emitter_EV", 2'), (_SPEC, "Ing.industrialTnt(10), pe(3)"),
+        (_SPEC, 'Ing.gt("stick", "SteelMagnetic", 4'), (_SPEC, "Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_TITANIUM, 1)"),
+        (_SPEC, "Ing.kerosene(4000)"), (_SPEC, 'Ing.gtItem("Emitter_EV", 2'), (_SPEC, "Ing.part(IcbmPart.SHAPED_CHARGE_LINER_CONE, 2)"),
         (_SPEC, 'Ing.gt("stick", "Titanium", 6'), (_SPEC, "Ing.bioDish(4)"), (_SPEC, 'Ing.fluid("Biomass", 2000'),
         (_PARTS, "Ing.gt(\"plate\", \"Polytetrafluoroethylene\", 2"), (_PARTS, "Ing.industrialTnt(2)"), (_PARTS, "PLASTIC_EXPLOSIVE(\"plastic_explosive\", Tier.HV, 1.1, 4"),
         (_PARTS, 'Ing.fluid("Gasoline", 1000'),
@@ -111,19 +115,20 @@ def _n(v: float) -> str:
     return f"{v:.0f}" if abs(v - round(v)) < 1e-6 else f"{v:.1f}"
 
 
-# What each type is made of besides its casing, a Fuze and (where shown) Plastic Explosive (WarheadRecipeSpec). In player words.
+# The payload each type fits to an inert warhead (WarheadRecipeSpec, D282). The explosive is always the Plastic
+# Explosive charges. In player words.
 PAYLOAD = {
-    "condensed": "8 TNT, 2 dynamite, 3 Plastic Explosive", "shrapnel": "6 TNT, 2 Plastic Explosive, a steel Fragmentation Sleeve",
-    "anvil": "6 TNT, 2 Plastic Explosive, 12 lead plates", "repulsive": "2 Plastic Explosive, an HV Field Generator",
-    "attractive": "2 Plastic Explosive, an HV Field Generator, 4 magnetic steel rods", "incendiary": "2 Napalm Canisters, 3 Plastic Explosive",
-    "debilitation": "2 Dispersal Canisters, 3 Plastic Explosive, 2,000 L nitrous oxide",
-    "chemical": "2 Dispersal Canisters, 3 Plastic Explosive, 2,000 L ammonia gas, and a few mustard seeds if HarvestCraft is installed",
-    "smoke": "2 Dispersal Canisters, 1 Plastic Explosive, 8 coal dust, 2,000 L creosote",
-    "fragmentation": "10 Industrial TNT, 4 Plastic Explosive, a titanium Fragmentation Sleeve",
-    "sonic": "6 Industrial TNT, 2 Plastic Explosive, 2 EV Emitters",
-    "breaching": "10 Industrial TNT, 3 Plastic Explosive, 2 Shaped-Charge Liner Cones, 6 titanium rods",
-    "thermobaric": "10 Industrial TNT, 4 Plastic Explosive, 2 Dispersal Canisters, 4,000 L kerosene",
-    "contagious": "6 Industrial TNT, 2 Plastic Explosive, 4 Bio Lab culture dishes, 2,000 L biomass",
+    "condensed": "none: Plastic Explosive alone", "shrapnel": "a steel Fragmentation Sleeve",
+    "anvil": "12 lead plates", "repulsive": "an HV Field Generator",
+    "attractive": "an HV Field Generator, 4 magnetic steel rods", "incendiary": "2 Napalm Canisters",
+    "debilitation": "2 Dispersal Canisters, 2,000 L nitrous oxide",
+    "chemical": "2 Dispersal Canisters, 2,000 L ammonia gas, and a few mustard seeds if HarvestCraft is installed",
+    "smoke": "2 Dispersal Canisters, 8 coal dust, 2,000 L creosote",
+    "fragmentation": "a titanium Fragmentation Sleeve",
+    "sonic": "2 EV Emitters",
+    "breaching": "2 Shaped-Charge Liner Cones, 6 titanium rods",
+    "thermobaric": "2 Dispersal Canisters, 4,000 L kerosene",
+    "contagious": "4 Bio Lab culture dishes, 2,000 L biomass",
 }
 
 # (name, id, kind, what it does in player words), in the order the sheet lists them. Durations come from the effects
@@ -284,6 +289,7 @@ def warheads() -> str:
 <div class="muted" style="font-size:16px;margin-top:12px">On a missile body the same warhead flies instead; the blast is the same.</div></div>"""
 
     asm_ico = img(S.machine_block("assembler", "HV", greg=True), h=104)
+    pe_ico = slot(K.icon(K.ASSETS / "textures/items/thirdparty/ntm/plastic_explosive.png", 64), 72, "Plastic Explosive")
     ss, ti = gti("plate", "StainlessSteel", 28), gti("plate", "Titanium", 28)
     tp = K.ASSETS / "textures/items/thirdparty/ntm"
     parts_icons = "".join(slot(K.icon(f, 64), 36, t) for f, t in [
@@ -293,10 +299,11 @@ def warheads() -> str:
         (tp / "fragmentation_sleeve_titanium.png", "Fragmentation Sleeve (titanium)"),
         (K.ASSETS / "textures/items/shaped_charge_liner_cone.png", "Shaped-Charge Liner Cone")])
     make = f"""<div class="card"><h2>How warheads are made</h2>
-<div class="muted" style="font-size:18px;margin:6px 0 12px">Every warhead is one Assembler recipe at its casing's voltage. A recipe makes a full-casing warhead; one cheap starter recipe makes a fill of 1.</div>
+<div class="muted" style="font-size:18px;margin:6px 0 12px">Three steps: an inert casing, a payload, then Plastic Explosive charges. One charge is one unit of fill. The casing and the payload are Assembler recipes at the casing's voltage.</div>
 <div style="display:flex;flex-direction:column;gap:12px">
-<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{asm_ico}</div><div><h3>Assembler {chip("HV")} {chip("EV")}</h3><div class="muted" style="font-size:17px">HV (Tier 1): {ss} 4 stainless steel plates, a Fuze Assembly Mk I, and the blast type's own parts (see each card). EV (Tier 2): {ti} 8 titanium plates, a Fuze Assembly Mk II and the type's parts. The starter charge (fill 1) is just 2 plates, {tnt} 2 TNT and a Fuze Mk I.</div></div></div>
-<div class="mrow"><div class="spot" style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;max-width:240px">{parts_icons}</div><div><h3>The parts, each an Assembler recipe too</h3><div class="muted" style="font-size:17px"><b>Plastic Explosive</b>: PTFE plates and Industrial TNT, in every warhead. <b>Fuze Assembly</b> Mk I (HV, Advanced circuit) and Mk II (EV, Data circuit). <b>Dispersal Canister</b> holds a fluid fill; the <b>Napalm Canister</b> is one filled with gasoline. <b>Fragmentation Sleeve</b> (steel or titanium) and <b>Shaped-Charge Liner Cone</b> (copper).</div></div></div></div></div>"""
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{asm_ico}</div><div><h3>1. Inert warhead &middot; 2. Payload {chip("HV")} {chip("EV")}</h3><div class="muted" style="font-size:17px">The Assembler makes the <b>Inert T1 Warhead</b> from {ss} 4 stainless steel plates and a Fuze Assembly Mk I, and the <b>Inert T2 Warhead</b> from {ti} 8 titanium plates and a Mk II. An inert warhead cannot be placed, launched or set off. Then it fits a <b>payload</b>, the blast type's own parts (see each card), to the inert warhead. Condensed needs none.</div></div></div>
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{pe_ico}</div><div><h3>3. Charges</h3><div class="muted" style="font-size:17px">Put the inert warhead and 1 to 8 <b>Plastic Explosive</b> in a crafting grid. It comes out as a live warhead with that many charges, up to the cap ({CAP[1]} for Tier 1, {CAP[2]} for Tier 2), and topping up works the same way. Or the Assembler fills a whole casing at once. Charges alone in a Tier 1 casing make Condensed. A Tier 2 casing needs a payload first.</div></div></div>
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;max-width:240px">{parts_icons}</div><div><h3>The parts, each an Assembler recipe too</h3><div class="muted" style="font-size:17px"><b>Plastic Explosive</b>: PTFE plates and Industrial TNT, the charge of every warhead. <b>Fuze Assembly</b> Mk I (HV, Advanced circuit) and Mk II (EV, Data circuit). <b>Dispersal Canister</b> holds a fluid fill; the <b>Napalm Canister</b> is one filled with gasoline. <b>Fragmentation Sleeve</b> (steel or titanium) and <b>Shaped-Charge Liner Cone</b> (copper).</div></div></div></div></div>"""
 
     ladder = "".join(
         f'<span>{chip(t) if t in K.TIERS else _hi_chip(t)}</span>'
