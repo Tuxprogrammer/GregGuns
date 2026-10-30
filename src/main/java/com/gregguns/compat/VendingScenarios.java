@@ -110,7 +110,7 @@ public final class VendingScenarios {
         @Override
         public String description() {
             return "The Vending Machine holds one GregGuns group per registered catalog offer; the machine parsed the"
-                + " 9mm Pistol (3 x Coin 10 -> 1 pistol) and the Cyberdemon egg (2 x Coin 1000); merging again adds no"
+                + " 9mm Pistol (6 x Coin 10 -> 1 pistol) and the Cyberdemon egg (2 x Coin 1000); merging again adds no"
                 + " duplicates and keeps the database version; compat.vendingTrades=false removes them all.";
         }
 
@@ -131,7 +131,7 @@ public final class VendingScenarios {
                     ItemStack goods = firstStack(pistol, "toItems");
                     out.check(price.getItem() == CoinItems.coin(), "the pistol is paid in GregGuns Coins: " + price);
                     out.checkEquals("pistol price denomination", CoinDenomination.TEN.meta(), price.getItemDamage());
-                    out.checkEquals("pistol price coins", 3, price.stackSize);
+                    out.checkEquals("pistol price coins", 6, price.stackSize);
                     out.checkEquals("pistols per trade", 1, goods.stackSize);
                 }
                 Object demon = parsedGroup("egg:" + NpcMob.CYBER_DEMON.registryName());
