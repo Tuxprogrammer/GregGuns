@@ -17,6 +17,11 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Zombies, bandits and soldiers drop Tanned Leather where they dropped Heavy Cloth, the Recruit loot bag holds two Tanned Leather, and the Vending Machine no longer sells Heavy Cloth.
 - The Steam chapter's Heavy Cloth quest is replaced by a Tanned Leather quest, and quest rewards that paid Heavy Cloth pay Tanned Leather.
 
+## Silo hatches moved to the outer columns
+
+- A generated silo's four hatches now stand in the two outer columns of the controller's face, two high, and the rest of the glass window is clear glass, so the missile shows through the middle. From the gallery: the Input Hatch over the Maintenance Hatch on the left, the Energy Hatch over the Input Bus on the right.
+- A Missile Silo you build accepts the same layout: the cells either side of the controller in the three front glass rings take clear glass, a hatch or the wall's concrete.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.

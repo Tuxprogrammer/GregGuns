@@ -2,6 +2,7 @@ package com.gregguns.icbm.silo;
 
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.lazy;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
 import static gregtech.api.enums.HatchElement.Energy;
 import static gregtech.api.enums.HatchElement.InputBus;
@@ -204,6 +205,15 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                         .casingIndex(casingIndex)
                         .hint(2)
                         .buildAndChain(SiloGlass.element()))
+                // The window edges of the controller's face (the columns either side of the controller): glass, the
+                // wall's concrete or a hatch, so hatches can stand in the outer columns with the glass in the middle.
+                .addElement(
+                    'W',
+                    buildHatchAdder(MTEMissileSilo.class)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .casingIndex(casingIndex)
+                        .hint(2)
+                        .buildAndChain(ofChain(SiloGlass.element(), SiloConcrete.element())))
                 .addElement('P', com.gregguns.icbm.compat.GalacticraftPads.element())
                 .addElement('B', casing(GregGunsCasings.GANTRY_BEAM))
                 .build();
@@ -1082,7 +1092,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             .addInputHatch(lang("structure.hatch"), 1)
             .addEnergyHatch(lang("structure.hatch"), 1)
             .addMaintenanceHatch(lang("structure.hatch"), 1)
-            .addCasing(Integer.toString(SiloShape.count("G")), lang("structure.glass"), false)
+            .addCasing(Integer.toString(SiloShape.count("G") + SiloShape.count("W")), lang("structure.glass"), false)
             .addCasing(Integer.toString(SiloShape.count("B")), lang("structure.rim"), false)
             .addAir(lang("structure.shaft"))
             .addStructureInfo(lang("structure.footer"))

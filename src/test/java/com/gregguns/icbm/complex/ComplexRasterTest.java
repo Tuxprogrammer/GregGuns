@@ -53,6 +53,37 @@ class ComplexRasterTest {
         }
     }
 
+    /**
+     * The owner's layout, checked against the viewer in front of the controller (not the shape's columns): Energy
+     * Hatch and Input Bus on the right, Input Hatch and Maintenance Hatch on the left, glass in every other window
+     * cell.
+     */
+    @Test
+    void hatchesStandInTheOuterColumnsAndTheRestOfTheWindowIsGlass() {
+        int[] rightX = { -1, 0, 1, 0 }, rightZ = { 0, -1, 0, 1 }; // viewer's right, by facing 0 north..3 west
+        for (long s = 0; s < 40; s++) {
+            ComplexPlan p = ComplexLayout.generate(s, 5, 1);
+            ComplexRaster r = new ComplexRaster(p);
+            for (SiloSlot silo : p.silos()) {
+                int rx = rightX[silo.facing()], rz = rightZ[silo.facing()];
+                int cx = silo.controllerX(), cz = silo.controllerZ();
+                String at = "seed " + s + " facing " + silo.facing();
+                if (silo.missing() != MissingPart.ENERGY_HATCH) {
+                    assertEquals(Cell.HATCH_ENERGY, r.at(cx + rx, 2, cz + rz), at + " energy on the right");
+                } else {
+                    assertEquals(Cell.SILO_GLASS, r.at(cx + rx, 2, cz + rz), at + " missing energy hatch is glass");
+                }
+                assertEquals(Cell.HATCH_BUS, r.at(cx + rx, 1, cz + rz), at + " bus under it");
+                assertEquals(Cell.HATCH_POWER, r.at(cx - rx, 2, cz - rz), at + " input hatch on the left");
+                assertEquals(Cell.HATCH_MAINTENANCE, r.at(cx - rx, 1, cz - rz), at + " maintenance under it");
+                assertEquals(Cell.SILO_GLASS, r.at(cx, 1, cz), at + " glass under the controller");
+                assertEquals(Cell.SILO_GLASS, r.at(cx, 3, cz), at + " glass over the controller");
+                assertEquals(Cell.SILO_GLASS, r.at(cx + rx, 3, cz + rz), at + " glass over the right column");
+                assertEquals(Cell.SILO_GLASS, r.at(cx - rx, 3, cz - rz), at + " glass over the left column");
+            }
+        }
+    }
+
     @Test
     void eachSiloIsMissingExactlyOnePart() {
         for (long s = 0; s < 60; s++) {
@@ -60,7 +91,8 @@ class ComplexRasterTest {
             ComplexRaster r = new ComplexRaster(p);
             for (SiloSlot silo : p.silos()) {
                 boolean controller = r.at(silo.controllerX(), 2, silo.controllerZ()) == Cell.CONTROLLER;
-                boolean energy = r.at(silo.controllerX(), 1, silo.controllerZ()) == Cell.HATCH_ENERGY;
+                int[] e = silo.hatchCell(Cell.HATCH_ENERGY);
+                boolean energy = r.at(e[0], e[1], e[2]) == Cell.HATCH_ENERGY;
                 assertEquals(silo.missing() == MissingPart.CONTROLLER, !controller);
                 assertEquals(silo.missing() == MissingPart.ENERGY_HATCH, !energy);
                 assertEquals(Cell.SILO_PAD, r.at(silo.shaftX(), 0, silo.shaftZ()));

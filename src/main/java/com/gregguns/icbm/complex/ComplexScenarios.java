@@ -90,6 +90,56 @@ public final class ComplexScenarios {
         return h;
     }
 
+    /**
+     * The owner's layout: the hatches stand in the window's outer columns (Energy Hatch and Input Bus on the viewer's
+     * right, Input Hatch and Maintenance Hatch on the left), and every other window cell is clear glass, so the missile
+     * shows. The left and right of the viewer in front of the controller are computed from the facing here, not from
+     * the shape's columns.
+     */
+    private static void siloHatchLayout(World world, SiloSlot s, int ax, int az, int floor,
+        ScenarioResult.Builder out) {
+        // A viewer in front of the controller faces opposite to it: facing 0 (north) looks south, so their right is
+        // west; 1 (east) looks west, right is north; 2 looks north, right is east; 3 looks east, right is south.
+        int rx = new int[] { -1, 0, 1, 0 }[s.facing()];
+        int rz = new int[] { 0, -1, 0, 1 }[s.facing()];
+        int cx = ax + s.controllerX(), cz = az + s.controllerZ();
+        int y = floor + 2;
+        boolean energyThere = s.missing() != MissingPart.ENERGY_HATCH;
+        out.check(
+            hatchIs(world, cx + rx, y, cz + rz, 'E') == energyThere,
+            "Energy Hatch beside the controller on the viewer's right (" + s.missing() + ")");
+        out.check(hatchIs(world, cx + rx, y - 1, cz + rz, 'B'), "Input Bus under it");
+        out.check(hatchIs(world, cx - rx, y, cz - rz, 'H'), "Input Hatch beside the controller on the viewer's left");
+        out.check(hatchIs(world, cx - rx, y - 1, cz - rz, 'M'), "Maintenance Hatch under it");
+        // Clear glass in every other window cell: the row above, under the controller, and (with the Energy Hatch
+        // missing) where it would stand.
+        int[][] glass = { { 0, 1, 0 }, { 1, 1, 0 }, { -1, 1, 0 }, { 0, -1, 0 }, { 1, 0, energyThere ? 1 : 0 } };
+        for (int[] g : glass) {
+            if (g[2] == 1) continue;
+            int gx = cx + g[0] * rx, gz = cz + g[0] * rz, gy = y + g[1];
+            out.check(
+                com.gregguns.icbm.silo.SiloGlass
+                    .accepts(world.getBlock(gx, gy, gz), world.getBlockMetadata(gx, gy, gz)),
+                "clear glass at window cell (" + g[0] + ", " + g[1] + ") of a silo facing " + s.facing());
+        }
+    }
+
+    private static boolean hatchIs(World world, int x, int y, int z, char kind) {
+        TileEntity t = world.getTileEntity(x, y, z);
+        if (!(t instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity)) return false;
+        Object m = ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) t).getMetaTileEntity();
+        switch (kind) {
+            case 'E':
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchEnergy;
+            case 'B':
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchInputBus;
+            case 'H':
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchInput;
+            default:
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance;
+        }
+    }
+
     /** Our facing index (0 north, 1 east, 2 south, 3 west) as a ForgeDirection ordinal. */
     private static final int[] FACING_TO_FORGE = { 2, 5, 3, 4 };
 
@@ -245,6 +295,7 @@ public final class ComplexScenarios {
                 out.check(
                     hasController == (s.missing() != MissingPart.CONTROLLER),
                     "controller present exactly when it is not the missing part (" + s.missing() + ")");
+                siloHatchLayout(world, s, plan.anchorX(), plan.anchorZ(), floor, out);
                 boolean complete = com.gregguns.machine.DevStructureBuilder.check(world, cx, floor + 2, cz);
                 out.check(!complete, "a silo missing a part must not be formed");
                 // Add the part the way a player would, with the item the chests hold: the silo then forms.
@@ -255,12 +306,13 @@ public final class ComplexScenarios {
                     null);
                 out.check(part != null, "the chest item for " + s.missing() + " resolves");
                 if (part != null) {
+                    int[] energy = s.hatchCell(Cell.HATCH_ENERGY);
                     GtMachineHook.placeMte(
                         world,
                         part.getItemDamage(),
-                        cx,
-                        floor + (noController ? 2 : 1),
-                        cz,
+                        noController ? cx : plan.anchorX() + energy[0],
+                        floor + (noController ? 2 : energy[1]),
+                        noController ? cz : plan.anchorZ() + energy[2],
                         net.minecraftforge.common.util.ForgeDirection.values()[FACING_TO_FORGE[s.facing()]]);
                     // A formed silo registers with GT's power-failure tracker, which needs an owner.
                     TileEntity ctl = world.getTileEntity(cx, floor + 2, cz);

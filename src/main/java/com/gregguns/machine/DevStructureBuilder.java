@@ -206,6 +206,33 @@ public final class DevStructureBuilder {
     }
 
     /**
+     * Rearranges a built silo's hatches into the owner's layout (controller facing north, so the viewer's right is
+     * west): the Energy Hatch and the Input Bus in the outer column on the viewer's right (controller row and the row
+     * under it), the Input Hatch and the Maintenance Hatch in the outer column on the left, and clear glass in every
+     * other window cell, so the missile shows through the middle. The glass is the one {@link #buildSilo} placed.
+     *
+     * @param world  the world
+     * @param x      controller x
+     * @param y      controller y
+     * @param z      controller z
+     * @param energy the Energy Hatch to place
+     * @return the outcome of the structure check
+     */
+    public static Outcome arrangeSiloHatches(World world, int x, int y, int z, ItemList energy) {
+        Block glass = world.getBlock(x, y + 1, z);
+        int glassMeta = world.getBlockMetadata(x, y + 1, z);
+        int[][] old = { { x - 1, y }, { x + 1, y }, { x, y - 1 }, { x + 1, y - 1 } };
+        for (int[] c : old) {
+            world.setBlock(c[0], c[1], z, glass, glassMeta, 2);
+        }
+        hatch(world, x - 1, y, z, energy, ForgeDirection.NORTH);
+        hatch(world, x - 1, y - 1, z, ItemList.Hatch_Input_Bus_HV, ForgeDirection.NORTH);
+        hatch(world, x + 1, y, z, ItemList.Hatch_Input_HV, ForgeDirection.NORTH);
+        hatch(world, x + 1, y - 1, z, ItemList.Hatch_Maintenance, ForgeDirection.NORTH);
+        return finish(world, x, y, z, "Missile Silo, hatches in the outer columns");
+    }
+
+    /**
      * Builds the Radar Tower around the controller at the position, with the Energy Hatch and the maintenance hatch in
      * the bottom ring under the controller.
      *
