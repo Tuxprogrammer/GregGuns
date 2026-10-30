@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The battery holds 4 stacks of 16 SAMs and a Data Stick. Put a stick that carries a radar\u0027s link in its slot and it fires by itself at the nearest threat that radar reports, within 256 blocks: one SAM a second at most, 400 EU each. A SAM does 40 damage, so Tier 1 and Tier 2 missiles fall to one and a Tier 3 missile takes two. The warhead goes off where the missile is hit, so shoot early. Make a battery and a SAM.",
+      "desc:8": "A radar tells you a missile is coming; the Air-Defense Battery does something about it. It holds 4 stacks of 16 SAMs and a data stick.\n\nPut a stick that carries a radar\u0027s link in its slot and it fires by itself at the nearest threat that radar reports within 256 blocks: one SAM a second at most, 400 EU each. A SAM does 40 damage, so Tier 1 and Tier 2 missiles fall to one and a Tier 3 missile takes two. Check NEI for both recipes. Make a battery and a SAM.\n\n[warn]The warhead goes off where the missile is hit, so shoot early, well away from your base.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": -8714470493268190476,
   "questIDLow:4": -5832135832674557470,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:baconcheeseburgerItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sam"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:antidote"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

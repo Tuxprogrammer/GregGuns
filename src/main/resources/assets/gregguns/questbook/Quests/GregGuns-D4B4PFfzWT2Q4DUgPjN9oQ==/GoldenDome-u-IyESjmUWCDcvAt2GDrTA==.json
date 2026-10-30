@@ -2,8 +2,7 @@
   "preRequisites:9": {
     "0:10": {
       "questIDHigh:4": -8714470493268190476,
-      "questIDLow:4": -5832135832674557470,
-      "type:1": 1
+      "questIDLow:4": -5832135832674557470
     }
   },
   "properties:10": {
@@ -18,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Golden Dome is a yellow OpenComputers floppy with ready-made programs, made in the Assembler at HV from a blank floppy and a Good circuit. Put it in a computer\u0027s disk drive, and link your machines through an Adapter. The launch program fires a missile (it always asks first), radarwatch lists radar contacts with an alarm, autodefense fires your batteries at incoming missiles, and emp runs the EMP tower. Insert it in a computer and run radarwatch.",
+      "desc:8": "Prefer a computer at the controls? The Golden Dome is a yellow OpenComputers floppy with ready-made programs, made in the Assembler at HV from a blank floppy and a Good circuit. Check NEI.\n\nPut it in a computer\u0027s disk drive and link your machines through an OpenComputers Adapter. The launch program fires a missile (it always asks first), radarwatch lists radar contacts with an alarm, autodefense fires your batteries at incoming missiles, and emp runs the EMP tower. Build an Adapter to wire it up.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -59,11 +58,82 @@
   },
   "questIDHigh:4": -4908305594598403744,
   "questIDLow:4": -8974847027701552308,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:ploughmanslunchItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sam"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:antidote"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "OpenComputers:adapter"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Press an empty magazine in the Ammo Press, then fill it with rounds.",
+      "desc:8": "The SMG magazine has its own two-step recipe. In an MV Ammo Press, two aluminum plates, nine small aluminum springs and Mechanical Parts T2 make eight empty magazines. Then four empties and eight 9mm bullets make four loaded ones.\n\nNote what it eats: the SMG shares the 9mm bullet with the pistol and revolver, so the LV production line you built already feeds it. Each loaded magazine takes two bullets.\n\n[note]Only an MV or higher press runs MV recipes. The LV press will not start them.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,7 +26,7 @@
         "id:8": "gregguns:mag_smg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§6§lSMG Magazines",
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": 4584493927784667657,
   "questIDLow:4": -9193959028307162274,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1703,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:toastItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_smg_empty"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 17019,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -70,7 +121,31 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 1,
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_smg_empty"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:mag_smg"

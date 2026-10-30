@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Automatic defense. Tier is provisional (HV) until area 09 settles it.",
+      "desc:8": "A Turret holds one gun from your own loadout on a platform, shoots with the real ammo you feed it, and comes with a 30-health mounted turret that heals when powered and respawns after it dies. It guards your base with the same guns you carry.\n\nIt runs on EU at its tier voltage. Its tier must be at least that of its gun, so an MV turret fires MV guns and an HV turret HV guns. You load the gun, magazines or rounds, and an armor plate in its slots. Build an MV or HV turret.\n\n[note]The Rampart is the multiblock version: up to ten mounts on one ammo and power feed. Check NEI.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -30,7 +30,7 @@
         "id:8": "gregtech:gt.blockmachines"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§5§lTurret",
@@ -62,7 +62,58 @@
   },
   "questIDHigh:4": 1693834491050942389,
   "questIDLow:4": -8564123938948755844,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1704,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:baconcheeseburgerItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:medkit"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -71,9 +122,15 @@
       "ignoreNBT:1": 1,
       "index:3": 0,
       "partialMatch:1": 1,
-      "requireOnlyOneItem:1": 0,
+      "requireOnlyOneItem:1": 1,
       "requiredItems:9": {
         "0:10": {
+          "Count:3": 1,
+          "Damage:2": 20116,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.blockmachines"
+        },
+        "1:10": {
           "Count:3": 1,
           "Damage:2": 20117,
           "OreDict:8": "",

@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -3932084639685190522,
-      "questIDLow:4": -8621084850355824541
+      "questIDHigh:4": -7081223269604567611,
+      "questIDLow:4": -7527148864666866538
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Full powered suit. Charge it at an IV buffer.",
+      "desc:8": "The heaviest suit in the mod: very high resistance across damage types, extra health on the chestplate, and boots with step assist and fall reduction. Its bonuses and its hazard protection only work while the chestplate holds a charge.\n\nEach piece is an IV Assembler recipe of Power Plating, IV circuits, IV electric motors and tungstensteel plates, with a programmed circuit for the piece. The chestplate is the electric part. Charge it at an IV charger or battery buffer. The quest checks the chestplate, but you want all four pieces.\n\n[note]The suit gives heat, cold and electrical protection while charged. Check NEI for the circuit number of each piece.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,7 +26,7 @@
         "id:8": "gregguns:t3_power_chestplate"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§9§lPower Armor",
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": 1978121859357299656,
   "questIDLow:4": -4626955924831022287,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1706,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:heartybreakfastItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_power_plating"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t3_power_boots"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +117,30 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 5,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_power_plating"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

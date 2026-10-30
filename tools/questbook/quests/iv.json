@@ -33,19 +33,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 2,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:heartybreakfastItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
             }
           ]
         },
@@ -137,19 +132,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 2,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:beefwellingtonItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
             }
           ]
         },
@@ -241,19 +231,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 5,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:delightedmealItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
             }
           ]
         },
@@ -351,19 +336,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 5,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:heartybreakfastItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
             }
           ]
         },
@@ -451,19 +431,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 5,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:beefwellingtonItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
             }
           ]
         },
@@ -545,19 +520,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 2,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:delightedmealItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
             }
           ]
         },
@@ -639,19 +609,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 2,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:heartybreakfastItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
             }
           ]
         },
@@ -738,19 +703,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 5,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:beefwellingtonItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
             }
           ]
         },
@@ -816,19 +776,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 5,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:delightedmealItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
             }
           ]
         },
@@ -921,19 +876,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 5,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:heartybreakfastItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
             }
           ]
         },
@@ -1009,19 +959,14 @@
               "count": 3
             },
             {
-              "id": "dreamcraft:CoinSurvivorIII",
-              "count": 2,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureIII",
-              "count": 1,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:beefwellingtonItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 3
             }
           ]
         },

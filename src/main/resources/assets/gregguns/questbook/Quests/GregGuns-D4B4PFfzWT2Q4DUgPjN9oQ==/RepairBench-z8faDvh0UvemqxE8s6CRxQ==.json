@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Mends guns and armor using the item\u0027s gate material. Tier is provisional (MV) until area 09 settles it.",
+      "desc:8": "Armor wears down in a fight, and the Repair Bench puts it right. Put worn armor and the repair parts in its nine slots, press Head, Chest, Legs, Feet or Held, and the bench restores the piece to full if it holds enough parts. A repair is all or nothing: if you are short, nothing is consumed.\n\nThe bench is a GregTech machine and draws EU for each job. A repair takes two seconds plus up to eight more depending on the damage, at half the recipe voltage of the bench\u0027s tier. Build the LV bench for LV gear and the MV bench for MV gear. A bench can only mend items of its own tier or lower.\n\nCheck NEI for the recipe.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -30,7 +30,7 @@
         "id:8": "gregtech:gt.blockmachines"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§6§lRepair Bench",
@@ -62,7 +62,58 @@
   },
   "questIDHigh:4": -3474568829660278025,
   "questIDLow:4": -6437032289986637371,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1703,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:honeysandwichItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17019,
+          "OreDict:8": "plateAluminium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_heavy_cloth"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:medkit"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -71,9 +122,15 @@
       "ignoreNBT:1": 1,
       "index:3": 0,
       "partialMatch:1": 1,
-      "requireOnlyOneItem:1": 0,
+      "requireOnlyOneItem:1": 1,
       "requiredItems:9": {
         "0:10": {
+          "Count:3": 1,
+          "Damage:2": 20109,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.blockmachines"
+        },
+        "1:10": {
           "Count:3": 1,
           "Damage:2": 20110,
           "OreDict:8": "",

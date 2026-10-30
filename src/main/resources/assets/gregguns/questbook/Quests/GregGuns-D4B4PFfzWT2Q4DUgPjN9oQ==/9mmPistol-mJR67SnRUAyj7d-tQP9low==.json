@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Your first real sidearm. Magazine-fed.",
+      "desc:8": "Your first real sidearm. The 9mm Pistol is semi-automatic and fed from an eighteen-round magazine, so a reload is one key press instead of the Hand Cannon\u0027s slow single shot.\n\nIt is an LV Assembler recipe. The inputs are a Hardened Steel Barrel, Mechanical Parts T2, steel plates, rubber plates, steel screws and a spring: the parts from the last quest plus a little rubber, standing in for a plastic grip. NEI has the exact list.\n\nThe pistol takes 9mm Pistol Magazines, filled from three bullets each; see the Magazines quest next.\n\n[note]Press Reload with a loaded magazine in your inventory. Sneak and right-click a magazine to empty it back into loose rounds.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,7 +26,7 @@
         "id:8": "gregguns:pistol_9mm"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§2§l9mm Pistol",
@@ -66,11 +66,54 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
+          "Damage:2": 1702,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:mag_9mm_pistol"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:beefjerkyItem"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 3,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_9mm_pistol"
+        },
+        "1:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:bandages"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
@@ -80,6 +123,48 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_barrel_hardened"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_2"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 17305,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 17880,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "4:10": {
+          "Count:3": 4,
+          "Damage:2": 27305,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

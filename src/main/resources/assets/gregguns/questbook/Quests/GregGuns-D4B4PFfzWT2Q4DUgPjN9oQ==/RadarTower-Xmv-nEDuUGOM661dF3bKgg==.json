@@ -3,6 +3,10 @@
     "0:10": {
       "questIDHigh:4": -1205570934230854142,
       "questIDLow:4": -7087537369700747018
+    },
+    "1:10": {
+      "questIDHigh:4": 0,
+      "questIDLow:4": 213
     }
   },
   "properties:10": {
@@ -17,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Radar Tower is a 3 by 3 tower of Radar Casing, 7 blocks tall, with a Gantry Beam mast up the middle. The casing is the same as the small radar\u0027s, and a dish turns on top of the mast. Its range comes from its weakest Energy Hatch: 512 blocks at IV, 768 at LuV, 1,024 at ZPM, 1,280 at UV and 1,536 at UHV. Put an Energy Hatch and a Maintenance Hatch in the bottom ring, and set the protected radius from the R button on the controller screen. Build the controller.",
+      "desc:8": "When 256 blocks isn\u0027t enough warning, build the Radar Tower: a 3 by 3 tower of Radar Casing, 7 blocks tall, with a Gantry Beam mast up the middle and a dish turning on top.\n\nIts range comes from its weakest Energy Hatch: 512 blocks at IV, 768 at LuV, 1,024 at ZPM, 1,280 at UV and 1,536 at UHV. Put an Energy Hatch and a Maintenance Hatch in the bottom ring, and set the protected radius from the R button on the controller screen. Build the controller; check NEI.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,7 +62,64 @@
   },
   "questIDHigh:4": 6803811609130979427,
   "questIDLow:4": -8292343673535411582,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1711,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:heartybreakfastItem"
+        },
+        "2:10": {
+          "Count:3": 5,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:guidance_computer_mk3"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 32705,
+          "OreDict:8": "circuitElite",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:remote_detonator_iv"
+        },
+        "3:10": {
+          "Count:3": 8,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

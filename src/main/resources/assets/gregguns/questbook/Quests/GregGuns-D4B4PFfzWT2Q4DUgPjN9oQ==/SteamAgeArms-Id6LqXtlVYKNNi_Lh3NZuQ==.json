@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 8779518680911599317,
-      "questIDLow:4": -5631120852580350469
+      "questIDHigh:4": 3849761338665030451,
+      "questIDLow:4": -8373020060428661314
     },
     "1:10": {
       "questIDHigh:4": 0,
@@ -25,16 +25,16 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Bronze and wrought iron are enough for a first firearm. No electricity needed.",
+      "desc:8": "Before electricity, there is bronze. The Steam chapter builds everything with a crafting table, a hammer and a file: a single-shot Hand Cannon, stone ammunition, and three sets of light armor. No machine is required, although one steam-powered Ammo Press makes bullets for you.\n\nThe gate material here is bronze (wrought iron for the Miner set). Hold eight bronze plates to open the chapter; the Hand Cannon eats a plate, and the Steam armor takes fourteen.\n\nThe plan is simple. Build the cannon and some bullets, test them on zombies, then dress for the job: Heavy Cloth is the base of every armor set, and bronze plates armor the parts that matter. When you have all of that and a few steel plates, the LV chapter is next.\n\n[note]This chapter pays the first loot bags and Pam\u0027s snacks. Eat up, then go shoot something.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 17300,
         "OreDict:8": "",
-        "id:8": "gregguns:handcannon"
+        "id:8": "gregtech:gt.metaitem.01"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§c§lSteam-Age Arms",
@@ -66,11 +66,76 @@
   },
   "questIDHigh:4": 2440541608117360002,
   "questIDLow:4": -8271371114421986887,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:meatystewItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 6,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_heavy_cloth"
+        },
+        "2:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_stone_bullet"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17300,
+          "OreDict:8": "plateBronze",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

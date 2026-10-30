@@ -17,19 +17,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Elite soldiers. Armor up first.",
+      "desc:8": "Commandos are Army elite in T2 Commando armor with M4 rifles. They drop explosive charges, steel ingots and rubber plates. Find them at Aircraft Carriers and silo guard posts.\n\nArmor up and kill three.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 75,
         "OreDict:8": "",
         "id:8": "gregguns:npc_egg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "§6§lCommandos and Stormtroopers",
+      "name:8": "§6§lCommandos",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -66,11 +66,54 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 5,
+          "Damage:2": 1703,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:pbandjItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_assault_rifle"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17019,
+          "OreDict:8": "plateAluminium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:medkit"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
@@ -78,19 +121,9 @@
       "damageType:8": "",
       "ignoreNBT:1": 1,
       "index:3": 0,
-      "required:3": 2,
+      "required:3": 3,
       "subtypes:1": 0,
       "target:8": "gregguns.Commando",
-      "targetNBT:10": {},
-      "taskID:8": "bq_standard:hunt"
-    },
-    "1:10": {
-      "damageType:8": "",
-      "ignoreNBT:1": 1,
-      "index:3": 1,
-      "required:3": 2,
-      "subtypes:1": 0,
-      "target:8": "gregguns.Stormtrooper",
       "targetNBT:10": {},
       "taskID:8": "bq_standard:hunt"
     }

@@ -3,6 +3,10 @@
     "0:10": {
       "questIDHigh:4": -7947321100052310065,
       "questIDLow:4": -6529549663801326179
+    },
+    "1:10": {
+      "questIDHigh:4": 0,
+      "questIDLow:4": 1412
     }
   },
   "properties:10": {
@@ -17,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Scan one hand-built body into a Data Stick in the Scanner, then the Assembly Line builds the basic body from plates, fins, an engine, 2 circuits (Advanced for Tier 1, Data for Tier 2) and 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2. A better Guidance Computer is fitted afterwards in the Assembler: put the body and the computer in, and the same body comes out with that guidance.",
+      "desc:8": "Once you own an Assembly Line, bodies stop being handwork. Scan a hand-built Missile Body T1 onto a data stick in the Scanner (60 seconds at HV) to unlock the recipe.\n\nThe line builds the body from the same plates, fins and engine, plus 2 circuits (Advanced for Tier 1, Data for Tier 2) in place of the guidance computer and 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2. A body from the line has no guidance steps. To fit a better computer, put the body and the computer in the Assembler and the same body comes out guided. Build four bodies.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,11 +62,124 @@
   },
   "questIDHigh:4": -8179994434230854157,
   "questIDLow:4": -8587587125046267567,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:mcpamItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk2"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:guidance_computer_mk2"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fragmentation_sleeve_titanium"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 32708,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 3,
+          "Damage:2": 9,
+          "OreDict:8": "compressedSteel",
+          "id:8": "GalacticraftCore:item.basicItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.rocketFins"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.engine"
+        },
+        "4:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:missile_body_t1"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

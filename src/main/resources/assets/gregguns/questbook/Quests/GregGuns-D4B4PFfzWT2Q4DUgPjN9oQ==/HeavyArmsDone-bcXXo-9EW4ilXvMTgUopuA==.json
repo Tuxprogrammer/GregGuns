@@ -1,12 +1,27 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 2322548269772791129,
-      "questIDLow:4": -7908820928685152072
+      "questIDHigh:4": -8227110340971701215,
+      "questIDLow:4": -7798227361211909983
     },
     "1:10": {
-      "questIDHigh:4": -8227110340971701215,
-      "questIDLow:4": -7798227361211909983,
+      "questIDHigh:4": -6969068846270882833,
+      "questIDLow:4": -7157504713200806702,
+      "type:1": 1
+    },
+    "2:10": {
+      "questIDHigh:4": -2658745303664009983,
+      "questIDLow:4": -5070622337581301700,
+      "type:1": 1
+    },
+    "3:10": {
+      "questIDHigh:4": 6956410698808711824,
+      "questIDLow:4": -8010770147368179241,
+      "type:1": 1
+    },
+    "4:10": {
+      "questIDHigh:4": 2322548269772791129,
+      "questIDLow:4": -7908820928685152072,
       "type:1": 1
     }
   },
@@ -22,7 +37,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "EV brings energy weapons.",
+      "desc:8": "That is the heavy tier. You hold a belt-fed LMG, a sniper that takes things apart at range, and a launcher that can level a room. With these three you can walk into most of the pack\u0027s HV hazards and come out the other side.\n\nThe next step is energy. EV swaps brass and powder for batteries and lenses: laser rifles, pulse rifles and electric armor, all built from titanium. The EV Assembler runs at 1,920 EU/t, and those guns only charge at an EV charger or battery buffer, so plan your power before you start.\n\nThis quest pays double, so spend the coins at the Vending Machine and open the bag when you are ready.\n\n[note]Bring your Hardened Receivers forward. The Laser Rifle and the Minigun use them too.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -31,7 +46,7 @@
         "id:8": "gregguns:lmg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§5§lHeavy Arms Done",
@@ -70,18 +85,87 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 1,
-          "Damage:2": 6,
+          "Count:3": 3,
+          "Damage:2": 1704,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:baconcheeseburgerItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_lmg"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rocket"
+        },
+        "2:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_high_caliber_round"
+        },
+        "3:10": {
+          "Count:3": 32,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:lmg"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:as50"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:rocket_launcher"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

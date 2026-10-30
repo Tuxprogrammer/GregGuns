@@ -25,7 +25,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "ZPM weapons use nuclear cells. Naquadah is the gate.",
+      "desc:8": "The top of the GregGuns tree. ZPM brings the Nuclear Death Ray, the Nuke Launcher and the components behind them, and every one is an Assembly Line build. Naquadah alloy is the gate, so the first thing you need is a supply of its plates.\n\nZPM weapons run at 122,880 EU/t recipes with lead shielding, ZPM circuits, soldering alloy and lubricant, and research items you scanned yourself. The Death Ray is a tier 7 electric item that charges only in a ZPM charger or battery buffer. The Nuke Launcher is ammo-fed.\n\nThis tier handles uranium. The tactical nuke rocket and the depleted Nuclear Power Cell are radioactive, and GT irradiates anyone who carries them without full radiation hazmat. Plan your storage before you build.\n\n[note]Press R over any item in NEI for its recipe. Quests only check what you carry and never take it.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -34,7 +34,7 @@
         "id:8": "gregguns:nuclear_death_ray"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§b§lNuclear Arms",
@@ -66,11 +66,76 @@
   },
   "questIDHigh:4": 1921471855786809249,
   "questIDLow:4": -7057958108206124141,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1708,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sausageinbreadItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 17325,
+          "OreDict:8": "plateNaquadahAlloy",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_rad_emitter"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17325,
+          "OreDict:8": "plateNaquadahAlloy",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

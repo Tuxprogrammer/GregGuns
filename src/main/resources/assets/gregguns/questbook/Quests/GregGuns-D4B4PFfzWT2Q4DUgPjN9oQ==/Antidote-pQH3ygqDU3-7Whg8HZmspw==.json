@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Antidote is a syringe made in the Assembler at HV: 1 rubber plate, 1 stainless steel plate and 2 charcoal dust make 2. Hold use for 1.6 seconds and it cures poison, hunger, weakness, slowness, nausea, mining fatigue and radiation at once, then guards you against them for 3 minutes. Armor still keeps the cause off, and it does nothing against fire or explosions. Make one.",
+      "desc:8": "The Antidote is a syringe for the bad days. The Assembler makes 2 at HV from a rubber plate, a stainless steel plate and 2 charcoal dust. Check NEI.\n\nHold use for 1.6 seconds and it cures poison, hunger, weakness, slowness, nausea, mining fatigue and radiation at once, then guards you against them for 3 minutes. Armor still has to keep the cause off, and it does nothing against fire or explosions. Make one.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": -6556687135342898305,
   "questIDLow:4": -4946614594239353689,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sundayroastItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sam"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:antidote"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

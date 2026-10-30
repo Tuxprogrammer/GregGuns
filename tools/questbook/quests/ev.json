@@ -33,19 +33,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 8,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 4,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:extremechiliItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 2
             }
           ]
         },
@@ -137,19 +132,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 8,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 4,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 2
             }
           ]
         },
@@ -230,19 +220,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:extremechiliItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -341,19 +326,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -447,19 +427,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:extremechiliItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -557,19 +532,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -646,19 +616,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:extremechiliItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -750,19 +715,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -839,19 +799,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:extremechiliItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -928,19 +883,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -1006,19 +956,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:extremechiliItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -1095,19 +1040,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -1199,19 +1139,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 4,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:extremechiliItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -1286,19 +1221,14 @@
               "count": 3
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 8,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureII",
-              "count": 4,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 8,
+              "damage": 2
             }
           ]
         },

@@ -1,8 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
+      "questIDHigh:4": -3193400174596367568,
+      "questIDLow:4": -8766741844578036800
+    },
+    "1:10": {
       "questIDHigh:4": 1978121859357299656,
-      "questIDLow:4": -4626955924831022287
+      "questIDLow:4": -4626955924831022287,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -17,7 +22,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Back device for flight. Needs the wings slot.",
+      "desc:8": "A back device for flight. It sits in the wings slot and moves you by motion instead of switching on creative flight, so it will not fight with other flight mods.\n\nBuild it in the IV Assembler from two tungstensteel plates, an IV field generator, two IV circuits, the Anti Gravity Core, two Mechanical Parts T3 and a Glider Backpack. It is a tier 5 electric item: charge it in an IV charger or battery buffer.\n\n[note]There is one wings slot, so a jump pack, glider or anti-gravity device are alternatives, not a stack.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,7 +63,58 @@
   },
   "questIDHigh:4": 3934826126687819866,
   "questIDLow:4": -7770130209774094114,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1706,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:heartybreakfastItem"
+        },
+        "2:10": {
+          "Count:3": 5,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_anti_gravity_core"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_glider_backpack"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +122,42 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_anti_gravity_core"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_glider_backpack"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

@@ -1,17 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -7833593291424247331,
-      "questIDLow:4": -6764881646376655048,
-      "type:1": 1
-    },
-    "1:10": {
-      "questIDHigh:4": 0,
-      "questIDLow:4": 160
-    },
-    "2:10": {
-      "questIDHigh:4": 0,
-      "questIDLow:4": 753
+      "questIDHigh:4": -3846270064191317513,
+      "questIDLow:4": -5296237746598317479
     }
   },
   "properties:10": {
@@ -26,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A warhead is a GregTech-built charge: a stainless steel casing around TNT and a payload. The starter recipe in the Assembler makes a Condensed warhead with a fill of 1 from 2 stainless steel plates, 2 TNT and a Fuze Assembly Mk I. Make one and keep it.",
+      "desc:8": "The warhead is the part that does the talking. It\u0027s a GregTech-built charge: a stainless steel casing around explosives and a fuze. A Tier 1 casing holds up to 5 charges, and more charges make a wider, harder blast.\n\nThe cheap starter recipe in the Assembler at HV makes a Condensed warhead with a fill of 1 from 2 stainless steel plates, 2 TNT and a Fuze Assembly Mk I. The full Condensed recipe (fill 5) takes 4 stainless plates, 8 TNT, 2 dynamite, 3 Plastic Explosive and a fuze. Every other Tier 1 blast type has its own Assembler recipe: check NEI and read the tooltips for radius and damage.\n\n[warn]A warhead is a live explosive block. Fire, redstone and nearby explosions all set it off.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -35,7 +26,7 @@
         "id:8": "gregguns:warhead_t1"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§5§lYour First Warhead",
@@ -67,7 +58,64 @@
   },
   "questIDHigh:4": -8151944262151283839,
   "questIDLow:4": -8148277917547242669,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:ploughmanslunchItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "IC2:blockITNT"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:launcher_warhead_he"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -75,6 +123,36 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:tnt"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk1"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

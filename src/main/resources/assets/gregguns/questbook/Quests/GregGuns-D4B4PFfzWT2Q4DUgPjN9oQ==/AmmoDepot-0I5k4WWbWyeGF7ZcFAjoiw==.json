@@ -17,10 +17,10 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Stock 256 rounds in a chest: your own supply.",
+      "desc:8": "A stockpile is the sign of a working line. Fill a chest with two hundred and fifty-six 9mm bullets and sixty-four shotgun shells, so a fight never ends with an empty gun.\n\nKeep the stock in chests next to the press or in the Ammo Pouch from the Gear chapter. Guns look for ammo in the pouch first, then in your main inventory.\n\n[note]Sneak and right-click a loaded magazine to turn it back into loose stock.[/note]",
       "globalShare:1": 1,
       "icon:10": {
-        "Count:3": 256,
+        "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
         "id:8": "gregguns:ammo_9mm_bullet"
@@ -65,12 +65,55 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1702,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
           "Count:3": 64,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:trailmixItem"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_9mm_pistol"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17305,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
@@ -88,6 +131,12 @@
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_shotgun_shell"
         }
       },
       "taskID:8": "bq_standard:retrieval"

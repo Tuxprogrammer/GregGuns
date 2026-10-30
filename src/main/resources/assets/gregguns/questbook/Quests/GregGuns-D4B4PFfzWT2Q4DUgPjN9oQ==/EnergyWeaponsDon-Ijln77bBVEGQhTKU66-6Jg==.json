@@ -1,12 +1,27 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -5687326612368501049,
-      "questIDLow:4": -8204837251929846127
+      "questIDHigh:4": -5393247064471938411,
+      "questIDLow:4": -6089169438695193032
     },
     "1:10": {
-      "questIDHigh:4": -5393247064471938411,
-      "questIDLow:4": -6089169438695193032,
+      "questIDHigh:4": -3427038075429037749,
+      "questIDLow:4": -6714630607062549572,
+      "type:1": 1
+    },
+    "2:10": {
+      "questIDHigh:4": -2899879376276859816,
+      "questIDLow:4": -6928547336360440993,
+      "type:1": 1
+    },
+    "3:10": {
+      "questIDHigh:4": 1107168964050835898,
+      "questIDLow:4": -7627272576595652785,
+      "type:1": 1
+    },
+    "4:10": {
+      "questIDHigh:4": -5026024056737475513,
+      "questIDLow:4": -8445276582264349281,
       "type:1": 1
     }
   },
@@ -22,7 +37,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "IV brings blasters and power armor.",
+      "desc:8": "You made it through the electric age. A Laser Rifle in your hands and a Hazardous Environment suit on your back put you ahead of most of what EV can throw at you, including pollution gas, radiation and the occasional unfriendly creature.\n\nKeep your charger and your battery buffer close. Everything in this tier that uses energy needs a charger of exactly the right tier, and a flat laser is just an expensive club.\n\nIV is next, with tungstensteel, blasters, power armor and the anti-gravity device. The IV Assembler runs at 7,680 EU/t and the energy guns take a Lapotronic Orb for a battery, so start planning your power and your orbs.\n\n[note]This quest pays double, and the bag is the second reward. Spend the coins at the Vending Machine.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -31,7 +46,7 @@
         "id:8": "gregguns:laser_rifle"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§8§lEnergy Weapons Done",
@@ -70,18 +85,81 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 1,
-          "Damage:2": 7,
+          "Count:3": 3,
+          "Damage:2": 1705,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:mcpamItem"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 64,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_advanced"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:tank_bio"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:laser_rifle"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t3_hev_chestplate"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

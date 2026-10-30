@@ -1,12 +1,17 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 7681057860102346788,
-      "questIDLow:4": -7213723250758394415
+      "questIDHigh:4": 6859169067545418117,
+      "questIDLow:4": -4949371790043863155
     },
     "1:10": {
       "questIDHigh:4": -7452196324363907060,
       "questIDLow:4": -6634400740834056797,
+      "type:1": 1
+    },
+    "2:10": {
+      "questIDHigh:4": 7681057860102346788,
+      "questIDLow:4": -7213723250758394415,
       "type:1": 1
     }
   },
@@ -22,16 +27,16 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "MV needs aluminum and a bigger power setup. Move on when your GT line gets there.",
+      "desc:8": "You have a press, a pistol, a revolver, a shotgun, a rifle and steel armor. LV is done. The next gate is aluminum, and with it come automatic weapons, grenades with real fragments, and the first serious armor.\n\nAluminum is a GregTech project in its own right: bauxite, electrolysis, and an MV power setup. Take your time. Everything you built here keeps working at MV, and a higher-tier machine runs lower-tier recipes faster.\n\nHold four aluminum plates to close the chapter and take the big loot bag. Spend some of the winnings on ammo, because MV guns burn through it.\n\n[note]The MV chapter opens from the pack\u0027s MV quests, not from this one. You can start it any time.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 17019,
         "OreDict:8": "",
-        "id:8": "gregguns:pistol_9mm"
+        "id:8": "gregtech:gt.metaitem.01"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§2§lSteel Age Done",
@@ -70,18 +75,75 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 1,
-          "Damage:2": 4,
+          "Count:3": 3,
+          "Damage:2": 1702,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:bltItem"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 16,
+          "Damage:2": 17305,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
+        },
+        "2:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_shotgun_shell"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_9mm_pistol"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17019,
+          "OreDict:8": "plateAluminium",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

@@ -47,14 +47,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 6,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:toastItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
             }
           ]
         },
@@ -135,14 +135,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 3,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:toastItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
             }
           ]
         },
@@ -246,14 +246,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 6,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:hamburgerItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
             }
           ]
         },
@@ -342,14 +342,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 3,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:hotdogItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
             }
           ]
         },
@@ -434,14 +434,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 3,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:beefjerkyItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
             }
           ]
         },
@@ -515,11 +515,6 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 3,
-              "damage": 0
-            },
-            {
               "id": "gregguns:ammo_9mm_bullet",
               "count": 64,
               "damage": 0
@@ -528,6 +523,11 @@
               "id": "harvestcraft:trailmixItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
             }
           ]
         },
@@ -618,14 +618,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 5,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:cornbreadItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
             }
           ]
         },
@@ -701,14 +701,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinAdventureII",
+              "id": "harvestcraft:ploughmanslunchItem",
               "count": 1,
               "damage": 0
             },
             {
-              "id": "harvestcraft:ploughmanslunchItem",
+              "id": "gregguns:coin",
               "count": 1,
-              "damage": 0
+              "damage": 2
             }
           ]
         },
@@ -786,14 +786,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
+              "id": "harvestcraft:baconcheeseburgerItem",
               "count": 1,
               "damage": 0
             },
             {
-              "id": "harvestcraft:baconcheeseburgerItem",
+              "id": "gregguns:coin",
               "count": 1,
-              "damage": 0
+              "damage": 2
             }
           ]
         },
@@ -864,14 +864,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
+              "id": "harvestcraft:sundayroastItem",
               "count": 1,
               "damage": 0
             },
             {
-              "id": "harvestcraft:sundayroastItem",
+              "id": "gregguns:coin",
               "count": 1,
-              "damage": 0
+              "damage": 2
             }
           ]
         },
@@ -947,14 +947,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -1039,14 +1039,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
-              "count": 2,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:ploughmanslunchItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },
@@ -1121,14 +1121,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorII",
+              "id": "harvestcraft:baconcheeseburgerItem",
               "count": 1,
               "damage": 0
             },
             {
-              "id": "harvestcraft:baconcheeseburgerItem",
+              "id": "gregguns:coin",
               "count": 1,
-              "damage": 0
+              "damage": 2
             }
           ]
         },

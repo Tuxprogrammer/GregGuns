@@ -1,12 +1,22 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -136691143113879462,
-      "questIDLow:4": -4920031919402685321
+      "questIDHigh:4": 5323368566832648908,
+      "questIDLow:4": -6048962205943536984
     },
     "1:10": {
-      "questIDHigh:4": 5323368566832648908,
-      "questIDLow:4": -6048962205943536984,
+      "questIDHigh:4": 1844482211910342379,
+      "questIDLow:4": -5478344108478778738,
+      "type:1": 1
+    },
+    "2:10": {
+      "questIDHigh:4": -4476560848245338102,
+      "questIDLow:4": -6901912054190943186,
+      "type:1": 1
+    },
+    "3:10": {
+      "questIDHigh:4": -136691143113879462,
+      "questIDLow:4": -4920031919402685321,
       "type:1": 1
     }
   },
@@ -22,7 +32,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "ZPM is the top of the GregGuns tree.",
+      "desc:8": "Alien Blaster in one hand and a four-barrel Grim Reaper in the other. That is the Assembly Line paying off, and it is a long way from the bronze steam armor you started in.\n\nZPM is the top of the tree. Naquadah alloy is the gate, the Nuclear Death Ray is its crown, and the Nuke Launcher is its loudest voice. Both are Assembly Line builds with research items you have already made: the Death Ray scans an Alien Blaster, and the Nuke Launcher scans a Grim Reaper.\n\nSo keep a spare of each. A scanned weapon is matched whatever its charge or wear, so a used one works.\n\n[note]This capstone pays double, with an extra bag. Spend the coins at the Vending Machine.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -31,7 +41,7 @@
         "id:8": "gregguns:alien_blaster"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§d§lLuV Arms Done",
@@ -70,18 +80,81 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 1,
-          "Damage:2": 41,
+          "Count:3": 3,
+          "Damage:2": 1707,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:epicbaconItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 64,
+          "Damage:2": 17372,
+          "OreDict:8": "plateHSSG",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rocket"
+        },
+        "2:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_nether_charge"
+        },
+        "3:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:golden_round"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:alien_blaster"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:grim_reaper"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Tents, barracks and a flag. Many soldiers.",
+      "desc:8": "A Military Camp is a ring of tents, barracks, bunkers and a flag post, and soldiers pour out of the flag as long as you stay near. Barracks hold T1 and T2 Combat armor, and the crates hold MV weapons.\n\nKill four Army Soldiers and bring back a piece of T2 Combat armor from the barracks. You can also craft it, but the barracks are free.\n\n[note]The flag drops a single iron ingot when broken; the guns are in the crates.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -66,17 +66,102 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 5,
+          "Damage:2": 1703,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:eggsaladItem"
+        },
+        "2:10": {
+          "Count:3": 5,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_assault_rifle"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17019,
+          "OreDict:8": "plateAluminium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:medkit"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "damageType:8": "",
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "required:3": 4,
+      "subtypes:1": 0,
+      "target:8": "gregguns.ArmySoldier",
+      "targetNBT:10": {},
+      "taskID:8": "bq_standard:hunt"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 1,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t2_combat_helmet"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t2_combat_chestplate"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t2_combat_leggings"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t2_combat_boots"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

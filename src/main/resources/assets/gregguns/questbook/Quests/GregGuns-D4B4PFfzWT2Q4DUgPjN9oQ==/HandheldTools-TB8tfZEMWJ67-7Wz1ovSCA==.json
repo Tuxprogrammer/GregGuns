@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV). The Defuser puts a lit fuse out, or takes a missile on its pad apart before the engines light; it lasts 32 uses. Make all three.",
+      "desc:8": "Three tools for the field. The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it in. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV).\n\nThe Defuser puts a lit fuse out, or takes a missile on its pad apart before the engines light; it lasts 32 uses. Check NEI for the recipes. Make all three.\n\n[warn]A lit fuse doesn\u0027t wait for you. Defuse fast or run.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": 5485152888488220830,
   "questIDLow:4": -4901123985459391992,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sundayroastItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sam"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:antidote"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

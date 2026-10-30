@@ -3,6 +3,22 @@
     "0:10": {
       "questIDHigh:4": 8276161777893466018,
       "questIDLow:4": -6333627611064242781
+    },
+    "1:10": {
+      "questIDHigh:4": 5014154587047812974,
+      "questIDLow:4": -5568770777430195995
+    },
+    "2:10": {
+      "questIDHigh:4": -8253946381796878420,
+      "questIDLow:4": -8708500737468141141
+    },
+    "3:10": {
+      "questIDHigh:4": -2656548509754500033,
+      "questIDLow:4": -5996042476965468601
+    },
+    "4:10": {
+      "questIDHigh:4": -319075084756036568,
+      "questIDLow:4": -9072335055729185480
     }
   },
   "properties:10": {
@@ -17,7 +33,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "On the NASA Workbench page, build a Missile Body T1: three compressed steel plates in one column, four Galacticraft Tier 1 rocket fins, a Galacticraft Tier 1 engine and a Guidance Computer Mk I. Compressed plates come from the Implosion Compressor. There is no warhead slot; the warhead goes on at the pad. A better Guidance Computer makes the missile land closer.",
+      "desc:8": "Time to put the airframe together. With the Missile Schematic T1 slotted, the NASA Workbench\u0027s missile page shows the slots on a rocket outline: three compressed steel plates down the middle, four fins at the bottom, the engine at the base and the guidance computer beside the nose.\n\nFill every slot and take the Missile Body T1 from the result slot. It uses one item from each slot. There is no warhead slot: the warhead goes on the body later, on the launch pad. A Tier 1 body flies 20 to 1,000 blocks and needs 2,000 mB of fuel.\n\nHand-building comes first for a reason. Later, a hand-built body is the research item that unlocks the Assembly Line recipe for more of them.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,7 +42,7 @@
         "id:8": "gregguns:missile_body_t1"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§5§lMissile Body",
@@ -58,7 +74,64 @@
   },
   "questIDHigh:4": -7947321100052310065,
   "questIDLow:4": -6529549663801326179,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sundayroastItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk1"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:guidance_computer_mk1"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +139,42 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 3,
+          "Damage:2": 9,
+          "OreDict:8": "compressedSteel",
+          "id:8": "GalacticraftCore:item.basicItem"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.rocketFins"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.engine"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:guidance_computer_mk1"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

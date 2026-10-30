@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The other exotic Tier 3 warhead is built at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, 2 LuV Field Generators, 4 Nether Stars and a Fuze Assembly Mk III. For 30 seconds it lifts up to 512 plain blocks within 20 blocks off the ground, top layer first, and floats the living things there. Machines and chests stay put, and every lifted block lands again or drops as an item. Make one.",
+      "desc:8": "The other exotic Tier 3 warhead is built in the Assembler at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, 2 LuV Field Generators, 4 Nether Stars and a Fuze Assembly Mk III. Check NEI.\n\nFor 30 seconds it lifts up to 512 plain blocks within 20 blocks off the ground, top layer first, and floats the living things there. Machines and chests stay put, and every lifted block lands again or drops as an item. Make one.\n\n[warn]What goes up comes down. Anything floating when the effect ends falls.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,14 +58,101 @@
   },
   "questIDHigh:4": -3044985115662985616,
   "questIDLow:4": -8978580094125315673,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1711,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:meatfeastpizzaItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk3"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 32706,
+          "OreDict:8": "circuitMaster",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:launcher_warhead_emp"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
       "consume:1": 0,
       "groupDetect:1": 0,
-      "ignoreNBT:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:nether_star"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk3"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 0,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

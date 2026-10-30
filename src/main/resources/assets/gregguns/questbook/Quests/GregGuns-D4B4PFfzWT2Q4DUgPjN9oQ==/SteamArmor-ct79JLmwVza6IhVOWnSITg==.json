@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 2440541608117360002,
-      "questIDLow:4": -8271371114421986887
+      "questIDHigh:4": 4022574523981060905,
+      "questIDLow:4": -8370735123790281505
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Bronze plate and cloth around a coal-fired chestplate. Burn Coal or Charcoal for speed and strength.",
+      "desc:8": "The Steam set is the best protection you can build without a single circuit: bronze plates over Heavy Cloth, fourteen plates in all for the full set. The chestplate is the quest item (five plates and three cloth), and it is more than armor: it is a small steam engine.\n\nCarry coal or charcoal in your inventory and the chestplate burns it to power the set. Powered, the full set makes you faster, a little tougher and a better jumper. Without fuel it is still armor.\n\n[note]One piece of coal or charcoal refuels a quarter of a full charge. The chestplate only burns one when it has room for all of it, so nothing is wasted.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,16 +58,91 @@
   },
   "questIDHigh:4": 8277331499329541942,
   "questIDLow:4": -5034438007177574322,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:potatocakesItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:coal"
+        },
+        "2:10": {
+          "Count:3": 6,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_heavy_cloth"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
-      "allowAnvil:1": 0,
-      "allowCraft:1": 1,
-      "allowCraftedFromStatistics:1": 0,
-      "allowSmelt:1": 1,
-      "ignoreNBT:1": 0,
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
       "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 5,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 3,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_heavy_cloth"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
           "Count:3": 1,
@@ -76,7 +151,7 @@
           "id:8": "gregguns:steam_chestplate"
         }
       },
-      "taskID:8": "bq_standard:crafting"
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

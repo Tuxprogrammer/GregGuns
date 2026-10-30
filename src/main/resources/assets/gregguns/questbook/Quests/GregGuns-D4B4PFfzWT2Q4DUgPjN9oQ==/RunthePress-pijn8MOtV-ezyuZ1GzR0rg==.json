@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 3967564605092679913,
-      "questIDLow:4": -5117488074224762473
+      "questIDHigh:4": -1145027373150741722,
+      "questIDLow:4": -4688131984660017877
     }
   },
   "properties:10": {
@@ -17,16 +17,16 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Ammo Press makes rounds in bulk. Feed it GT parts and powder, and take the shells from its output.",
+      "desc:8": "The LV Ammo Press makes three loose calibers, each from its own recipe: 9mm bullets (16 brass foil, 16 lead rounds and 2 gunpowder make 16), Shotgun Shells (8 brass foil, 24 lead rounds and 4 gunpowder make 8) and Rifle Bullets (16 brass foil, 16 steel rounds and 4 gunpowder make 16). The press picks the recipe from what you load, so no circuit is needed.\n\nRun one batch of each and hold all three. Ammo is slow by design, so scale up with more presses, higher tiers, or the Works later. 9mm feeds the pistol, revolver and SMGs, shells feed the shotguns, and rifle bullets feed the bolt rifle and the assault rifle and LMG magazines.\n\n[note]Every recipe shows in the press\u0027s NEI tab with its exact inputs.[/note]",
       "globalShare:1": 1,
       "icon:10": {
-        "Count:3": 16,
-        "Damage:2": 0,
+        "Count:3": 1,
+        "Damage:2": 20101,
         "OreDict:8": "",
-        "id:8": "gregguns:ammo_shotgun_shell"
+        "id:8": "gregtech:gt.blockmachines"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§2§lRun the Press",
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": -6473669443084003353,
   "questIDLow:4": -5491323404982913874,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1702,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:hamburgerItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_shotgun_shell"
+        },
+        "2:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -70,10 +121,58 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
+          "Count:3": 40,
+          "Damage:2": 29301,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 40,
+          "Damage:2": 25089,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 25305,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 10,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
           "Count:3": 16,
           "Damage:2": 0,
           "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
           "id:8": "gregguns:ammo_shotgun_shell"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
         }
       },
       "taskID:8": "bq_standard:retrieval"

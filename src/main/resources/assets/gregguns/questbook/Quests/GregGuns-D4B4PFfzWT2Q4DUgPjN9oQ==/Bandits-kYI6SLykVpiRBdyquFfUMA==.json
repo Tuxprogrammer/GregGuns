@@ -21,19 +21,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Raiders carry LV gear. Expect 9mm drops.",
+      "desc:8": "Bandits are the first enemies that carry real LV firepower: 9mm pistols, revolvers, sawed-offs, bolt-action rifles and now and then an AK-47 or Thompson. They wear Scout gear.\n\nThey drop 9mm rounds, shells and rifle bullets, so they are a free ammo supply. Kill four.\n\n[note]Outcasts, their heavily armed cousins, appear only from spawn eggs.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 69,
         "OreDict:8": "",
         "id:8": "gregguns:npc_egg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "§2§lBandits and Outcasts",
+      "name:8": "§2§lBandits",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -70,11 +70,54 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 4,
+          "Damage:2": 1702,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:grilledcheeseItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_shotgun_shell"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17305,
+          "OreDict:8": "plateSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:bandages"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
@@ -82,19 +125,9 @@
       "damageType:8": "",
       "ignoreNBT:1": 1,
       "index:3": 0,
-      "required:3": 3,
+      "required:3": 4,
       "subtypes:1": 0,
       "target:8": "gregguns.Bandit",
-      "targetNBT:10": {},
-      "taskID:8": "bq_standard:hunt"
-    },
-    "1:10": {
-      "damageType:8": "",
-      "ignoreNBT:1": 1,
-      "index:3": 1,
-      "required:3": 3,
-      "subtypes:1": 0,
-      "target:8": "gregguns.Outcast",
       "targetNBT:10": {},
       "taskID:8": "bq_standard:hunt"
     }

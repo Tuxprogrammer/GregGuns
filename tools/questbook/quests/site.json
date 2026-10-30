@@ -41,19 +41,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivor",
-              "count": 20,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventure",
-              "count": 20,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:grilledcheeseItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
             }
           ]
         },
@@ -151,19 +146,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivor",
-              "count": 30,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventure",
-              "count": 30,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:meatystewItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
             }
           ]
         },
@@ -265,19 +255,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivor",
-              "count": 15,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventure",
-              "count": 15,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:vegetablesoupItem",
               "count": 2,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
             }
           ]
         },
@@ -374,19 +359,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivor",
-              "count": 50,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventure",
-              "count": 50,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:omeletItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
             }
           ]
         },
@@ -482,19 +462,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivor",
-              "count": 25,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventure",
-              "count": 25,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:eggsaladItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
             }
           ]
         },
@@ -595,19 +570,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivor",
-              "count": 25,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventure",
-              "count": 25,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:porksausageItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
             }
           ]
         },
@@ -687,19 +657,14 @@
               "count": 1
             },
             {
-              "id": "dreamcraft:CoinSurvivorI",
-              "count": 10,
-              "damage": 0
-            },
-            {
-              "id": "dreamcraft:CoinAdventureI",
-              "count": 10,
-              "damage": 0
-            },
-            {
               "id": "harvestcraft:mcpamItem",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
             }
           ]
         },

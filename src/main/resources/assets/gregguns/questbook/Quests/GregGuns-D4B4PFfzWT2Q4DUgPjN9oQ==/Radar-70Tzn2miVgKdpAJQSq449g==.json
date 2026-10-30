@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A radar watches the missiles in flight and flags the ones that will land inside its protected radius, which you set on its screen (64 blocks to begin with). The radar is a small 3 by 3 build of Radar Casing, two high, with one casing on top for the dish, which turns while the radar scans. Make the casing four at a time in the Assembler at HV from 6 stainless steel plates. The HV controller sees 128 blocks and the EV controller 256, flat, at any height; put an Energy Hatch of its tier and a Maintenance Hatch in the base. A missile that only passes over is tracked but not a threat. The redstone it puts out on every side is the number of incoming missiles, up to 15. Right-click the controller with a Data Stick to save its link for a battery. Build a radar and power it.",
+      "desc:8": "Other people have missiles too. A radar watches every missile in flight and flags the ones that will land inside its protected radius, which you set on its screen (64 blocks to begin with).\n\nThe radar is a small 3 by 3 build of Radar Casing, two high, with one casing on top for the dish. The Assembler makes the casing four at a time at HV from 6 stainless steel plates. The HV controller sees 128 blocks and the EV controller 256, at any height; put an Energy Hatch of its tier and a Maintenance Hatch in the base. Its redstone output on every side is the number of incoming missiles, up to 15. Right-click the controller with a data stick to save its link for a battery. Build a radar.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": -1205570934230854142,
   "questIDLow:4": -7087537369700747018,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:ploughmanslunchItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sam"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:antidote"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

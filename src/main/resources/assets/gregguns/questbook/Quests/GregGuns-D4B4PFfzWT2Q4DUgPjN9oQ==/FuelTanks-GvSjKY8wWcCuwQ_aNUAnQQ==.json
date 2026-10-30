@@ -25,13 +25,13 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Fuel tanks hold GT fuel. Diesel from the oil line works.",
+      "desc:8": "Fuel Tanks hold GregTech fuel for the Flamethrower and the Chainsaw. A GregTech Fluid Canner fills an empty tank with a thousand millibuckets of an accepted liquid fuel; Diesel from the oil line works. A full tank is worth a hundred rounds for the Flamethrower and three hundred for the Chainsaw.\n\nHold two filled tanks to finish this quest. A half-used tank counts as filled, but the Canner cannot top it up, so empty and refill it.\n\n[note]The tank itself is an HV Assembler recipe from stainless steel.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:ammo_9mm_bullet"
+        "id:8": "gregguns:tank_fuel"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
@@ -66,11 +66,76 @@
   },
   "questIDHigh:4": 1942356738194823616,
   "questIDLow:4": -5854380610734250175,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1704,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sundayroastItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:tank_fuel"
+        },
+        "1:10": {
+          "Count:3": 6,
+          "Damage:2": 17306,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rocket"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:tank_fuel"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

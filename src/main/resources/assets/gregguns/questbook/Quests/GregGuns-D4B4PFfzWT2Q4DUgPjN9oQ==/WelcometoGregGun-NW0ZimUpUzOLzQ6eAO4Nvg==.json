@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Guns here follow GregTech progression: each weapon needs a machine tier and a gate material. This tab walks you up the tiers.",
+      "desc:8": "GregGuns is a gun and armor line that grows with your GregTech progression instead of sitting beside it. Every weapon here is built in the machines you already know, from a hand-crafted bronze Hand Cannon at the start to missiles that cross the map at the end.\n\nThe chapters climb the tiers in order: Steam, LV, MV, HV, EV, IV, LuV and ZPM. Each one opens with the gate material of its tier (bronze, steel, aluminum, stainless steel, titanium, tungstensteel and onward), adds a few guns and a set of armor, and asks you to build the ammunition for them. Side chapters cover ammo production, machines, gear, structures, mobs and the ICBM module, so you can wander off the main path whenever you like.\n\nYou do not have to read everything. Start with the four quests next to this one: they cover controls, ammo, parts and tiers, and each asks you to hold something real. Then follow the thick lines into the Steam chapter and build your first gun.\n\n[note]This is the only quest that asks you to check a box. Everything after it wants something you built, found or killed.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -30,7 +30,7 @@
         "id:8": "gregguns:pistol_9mm"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§c§lWelcome to GregGuns",
@@ -62,7 +62,33 @@
   },
   "questIDHigh:4": 3849761338665030451,
   "questIDLow:4": -8373020060428661314,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:potatocakesItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    }
+  },
   "tasks:9": {
     "0:10": {
       "index:3": 0,

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A single-shot bronze and wrought-iron cannon. Slow and loud.",
+      "desc:8": "A bronze and wood muzzle-loader for people who do not own a single wire yet. The Hand Cannon fires one Stone Bullet per shot and must be reloaded after every one, so it is slow and loud, but it needs no power and no machine.\n\nIt is crafted at a crafting table from a Stone Barrel, a Wooden Stock, flint and steel and a bronze plate, with a hard hammer in the grid. The Gear quest on the start page covered the barrel and stock; check NEI for the exact layout.\n\n[note]The ball falls in a slight arc over distance, so aim a little high at long range. A reload takes about a second and a half.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,7 +26,7 @@
         "id:8": "gregguns:handcannon"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "§c§lHand Cannon",
@@ -65,23 +65,96 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 16,
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:toastItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 48,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:ammo_stone_bullet"
+        },
+        "1:10": {
+          "Count:3": 6,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
         }
-      }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
-      "allowAnvil:1": 0,
-      "allowCraft:1": 1,
-      "allowCraftedFromStatistics:1": 0,
-      "allowSmelt:1": 1,
-      "ignoreNBT:1": 0,
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
       "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_barrel_stone"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_stock_wooden"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:flint_and_steel"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
           "Count:3": 1,
@@ -90,7 +163,7 @@
           "id:8": "gregguns:handcannon"
         }
       },
-      "taskID:8": "bq_standard:crafting"
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }
