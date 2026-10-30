@@ -54,6 +54,7 @@ final class SiloSequenceScenarios {
         registry.register(new InOrder());
         registry.register(new AnyOrder());
         registry.register(new BreakMidway());
+        registry.register(new Shots());
     }
 
     // --- helpers ---------------------------------------------------------------------------------------------------
@@ -571,6 +572,111 @@ final class SiloSequenceScenarios {
                         return null;
                 }
             });
+        }
+    }
+
+    /**
+     * {@code testing.icbm_silo_sequence_shots}: photographs the shaft at each stage for one connected client, from
+     * outside through the side glass and from a corner of the shaft looking down (the warhead sits above the glass
+     * rings). Labels {@code silo-seq-*}. Not part of {@code test all}: it needs a connected client.
+     */
+    private static final class Shots implements Scenario {
+
+        private static final int GAP = 90;
+
+        @Override
+        public String name() {
+            return "testing.icbm_silo_sequence_shots";
+        }
+
+        @Override
+        public String description() {
+            return "Photographs the silo shaft empty, with the body placed, waiting, with the warhead seated, armed and fueling, for a connected client. Needs 1 client; not part of test all.";
+        }
+
+        @Override
+        public boolean includedInAll() {
+            return false;
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            java.util.List<net.minecraft.entity.player.EntityPlayerMP> players = com.gregguns.icbm.missile.I5ClientSetups
+                .players();
+            if (players.isEmpty()) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            final net.minecraft.entity.player.EntityPlayerMP p = players.get(0);
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            p.setGameType(net.minecraft.world.WorldSettings.GameType.CREATIVE);
+            p.inventory.clearInventory(null, -1);
+            ctx.world()
+                .setWorldTime(6000L);
+            ctx.world()
+                .getGameRules()
+                .setOrCreateGameRule("doDaylightCycle", "false");
+            final double sx = bx(ctx) + 0.5;
+            final double sz = bz(ctx) + 0.5;
+            final double floor = by(ctx);
+            final com.gregguns.icbm.missile.MissileShotsScenario.Plan plan = new com.gregguns.icbm.missile.MissileShotsScenario.Plan();
+            Runnable outside = () -> com.gregguns.icbm.missile.MissileShotsScenario
+                .cam(p, sx + 6.5, floor + 1.8, sz + 0.2, sx, floor + 1.4, sz);
+            Runnable inside = () -> com.gregguns.icbm.missile.MissileShotsScenario
+                .cam(p, sx + 1.1, floor + 7.5, sz + 1.1, sx, floor + 2.5, sz);
+            plan.after(5, () -> com.gregguns.icbm.missile.MissileShotsScenario.signal(p, "hud", "off"));
+            plan.after(150, () -> {
+                out.check(formed(ctx), "the silo forms");
+                outside.run();
+            });
+            plan.after(GAP, () -> shot(p, "silo-seq-0-empty-outside"));
+            plan.after(10, () -> putBus(ctx, MissileBodies.body(MissileTier.T1)));
+            plan.after(60, () -> {
+                out.check(bodyStands(ctx), "1: the body stands on the pad");
+                out.checkEquals("1: the body cycle runs", SiloSequence.Stage.BODY, silo(ctx).stage());
+            });
+            plan.after(GAP - 60, () -> shot(p, "silo-seq-1-body-placed-outside"));
+            plan.after(10, inside);
+            plan.after(GAP, () -> shot(p, "silo-seq-1-body-placed-inside"));
+            plan.after(120, () -> {
+                out.checkEquals("2: the body waits", SiloSequence.Stage.BODY_DONE, silo(ctx).stage());
+                putBus(ctx, warhead(WarheadCasing.T1, "condensed"));
+            });
+            plan.after(60, () -> {
+                out.check(onTheNose(ctx), "3: the warhead sits on the nose");
+                out.checkEquals("3: the mating cycle runs", SiloSequence.Stage.WARHEAD, silo(ctx).stage());
+                out.check(silo(ctx).missile() == null, "3: not armed yet");
+            });
+            plan.after(GAP - 60, () -> shot(p, "silo-seq-3-warhead-seated-inside"));
+            plan.after(SiloRules.WARHEAD_TICKS, () -> {
+                out.check(silo(ctx).missile() != null, "4: the missile is armed");
+                fuel(ctx, out, "nitrofuel");
+            });
+            plan.after(GAP, () -> shot(p, "silo-seq-4-armed-fueling-inside"));
+            plan.after(10, outside);
+            plan.after(GAP, () -> shot(p, "silo-seq-4-armed-fueling-outside"));
+            plan.after(10, () -> {
+                EntityMissile m = silo(ctx).missile();
+                out.check(m != null && m.fuelMb() > 0, "5: fuel is going in");
+            });
+            plan.after(20, () -> com.gregguns.icbm.missile.MissileShotsScenario.signal(p, "hud", "on"));
+            return ScenarioResult.pending(name(), 3000, t -> {
+                power(ctx);
+                plan.run(t);
+                return plan.idle() ? finish(ctx, out.note("read the silo-seq-*.png shots")) : null;
+            });
+        }
+
+        private static void shot(net.minecraft.entity.player.EntityPlayerMP p, String label) {
+            com.gregguns.icbm.missile.MissileShotsScenario.signal(p, "shot", label);
         }
     }
 }

@@ -29,6 +29,13 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Missile Bodies T1 and T2 are now built in the GT Assembler at HV and EV, with no research, instead of on the Assembly Line, which GTNH players only reach at LuV. Same inputs and times: plates, fins, engine, 2 circuits and 250 L of lubricant. The Tier 3 body stays on the LuV Assembly Line.
 - Missiles now sound like Galacticraft rockets: the engine loop starts with the countdown, rises in pitch toward ignition, follows the missile through the climb and arc, and stops on impact, interception or abort.
 
+## Changed: the Missile Silo builds the missile in front of you
+
+- The Missile Silo now assembles the missile in its shaft one part at a time, each part appearing before its working cycle starts. A missile body in the Input Bus is stood on the launch pad, then its cycle runs; a warhead is then seated on the body's nose and mated in a second cycle, which ends with the armed missile; fuel from the Input Hatch goes in last. The two cycles take 10 seconds each, the same 20 seconds as before.
+- Parts can arrive in any order or all at once: a warhead with no body waits in the bus ("Waiting for a missile body"), and fuel waits in the hatch. A body alone goes up and waits for its warhead.
+- The parts stand in the shaft as blocks, never inside the controller. Breaking the silo mid-sequence leaves them standing; breaking a body under a seated warhead stops the cycle and drops each part once.
+- A body stacked in the shaft by hand is now taken over by the silo, which mates a warhead from the bus onto it. Arming by hand still works.
+
 ## Changed: building an ICBM warhead
 
 - A warhead is now built in steps. First the Assembler makes an **Inert Warhead** of its casing tier from the casing plates and the Fuze Assembly. The Assembler then fits a **payload** (shrapnel sleeve, napalm, gas canisters, field generators, a fissile core and so on). Last, **Plastic Explosive charges** go in, one charge per unit of fill. Load 1 to 8 at a time in a crafting grid (top-ups work), or fill the whole casing in the Assembler. Charges alone in a T1 casing make a Condensed warhead.
