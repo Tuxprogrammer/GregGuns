@@ -360,8 +360,13 @@ class ComplexContentsTest {
     @Test
     void armoryDisplaysKeepTheChestKeepChanceOfTheirLevel() {
         // One knob: a display slot survives with the same chance as any other chest of its level (ActivityProfile).
-        assertEquals(1.0, ActivityProfile.of(ActivityLevel.OPERATIONAL).chestKeepChance());
-        assertTrue(ActivityProfile.of(ActivityLevel.ABANDONED).chestKeepChance() < 1.0);
+        assertEquals(
+            1.0,
+            ActivityProfile.of(ActivityLevel.OPERATIONAL)
+                .chestKeepChance());
+        assertTrue(
+            ActivityProfile.of(ActivityLevel.ABANDONED)
+                .chestKeepChance() < 1.0);
     }
 
     @Test
