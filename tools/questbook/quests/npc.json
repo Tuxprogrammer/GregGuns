@@ -1,5 +1,6 @@
 {
   "chapter": "npc",
+  "retired": ["gg.npc.elite", "gg.npc.ultra", "gg.npc.infernal"],
   "quests": [
     {
       "key": "gg.npc.intro",
@@ -116,51 +117,6 @@
       "rewards": [{"type": "item", "items": [{"id": "enhancedlootbags:lootbag", "count": 1, "damage": 6}]}],
       "x": 240,
       "y": 384,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:npc_egg", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.npc.elite",
-      "title": "Elite Variants",
-      "tier": "LV",
-      "desc": "Kill one elite Infernal mob: up to five modifiers, glowing name. Tick the box when you have.",
-      "pre": ["gg.npc.bandits"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [{"type": "item", "items": [{"id": "enhancedlootbags:lootbag", "count": 1, "damage": 4}]}],
-      "x": 168,
-      "y": 456,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:npc_egg", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.npc.ultra",
-      "title": "Ultra Variants",
-      "tier": "MV",
-      "desc": "Kill one ultra Infernal mob. Ultra drops are MV.",
-      "pre": ["gg.npc.elite", 1148],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [{"type": "item", "items": [{"id": "enhancedlootbags:lootbag", "count": 1, "damage": 5}]}],
-      "x": 204,
-      "y": 456,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:npc_egg", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.npc.infernal",
-      "title": "Infernal Variants",
-      "tier": "HV",
-      "desc": "Kill one infernal-rank mob. It can drop rare HV items.",
-      "pre": ["gg.npc.ultra", 160],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [{"type": "item", "items": [{"id": "enhancedlootbags:lootbag", "count": 1, "damage": 6}]}],
-      "x": 240,
-      "y": 456,
       "size": 24,
       "main": false,
       "icon": {"id": "gregguns:npc_egg", "count": 1, "damage": 0},

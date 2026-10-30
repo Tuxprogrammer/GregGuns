@@ -86,6 +86,19 @@ public final class BetterQuestingTarget implements QuestbookTarget {
     }
 
     @Override
+    public void removeQuest(UUID id) {
+        // What BetterQuesting's own quest delete does on the server, without its packet: the install runs while the
+        // server starts, and sync() resends the database to anyone already connected.
+        // Source:
+        // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/network/handlers/NetQuestEdit.java#L203-L208
+        // QuestDatabase.remove also drops the id from every other quest's prerequisites:
+        // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/questing/QuestDatabase.java#L41-L54
+        // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/questing/QuestLineDatabase.java#L63-L66
+        QuestDatabase.INSTANCE.remove(id);
+        QuestLineDatabase.INSTANCE.removeQuest(id);
+    }
+
+    @Override
     public void putLine(UUID id, JsonObject definition, Map<UUID, JsonObject> positions) {
         // Source:
         // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L392-L414

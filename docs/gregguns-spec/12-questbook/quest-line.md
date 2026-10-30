@@ -46,9 +46,9 @@ Item names are the registry names (`gregguns:<name>`, as `NeiOrder` lists them).
 | Tier | Group id (`Damage`) | Bags | Quests |
 |---|---|---|---|
 | Steam | 2 | 2 | `gg.steam.summary`, `gg.npc.zombies` |
-| LV | 4 | 6 | `gg.lv.summary`, `gg.npc.bandits`, `gg.npc.steve`, `gg.npc.elite`, `gg.site.surface`, `gg.site.dungeon` |
-| MV | 5 | 7 | `gg.mv.summary`, `gg.npc.army`, `gg.npc.commandos`, `gg.npc.ultra`, `gg.site.bunker`, `gg.site.camp`, `gg.site.ships` |
-| HV | 6 | 3 | `gg.hv.summary`, `gg.npc.helicopter`, `gg.npc.infernal` |
+| LV | 4 | 6 | `gg.lv.summary`, `gg.npc.bandits`, `gg.npc.steve`, `gg.site.surface`, `gg.site.dungeon` |
+| MV | 5 | 7 | `gg.mv.summary`, `gg.npc.army`, `gg.npc.commandos`, `gg.site.bunker`, `gg.site.camp`, `gg.site.ships` |
+| HV | 6 | 3 | `gg.hv.summary`, `gg.npc.helicopter` |
 | EV | 7 | 3 | `gg.ev.summary`, `gg.npc.cyberdemon`, `gg.npc.alien_bug` |
 | IV | 8 | 2 | `gg.iv.summary`, `gg.npc.dave` |
 | LuV | 41 | 1 | `gg.luv.summary` |
@@ -222,7 +222,7 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 - **Gate:** pack 11 and `gg.start.welcome`, then each rank by tier quest. Rewards follow the NPC's tier band ([0005](../../design/0005-world-presence.md), [0007](../../design/0007-pack-loot-and-infernal-mobs.md)).
 - **Teaches:** which factions exist, what they carry, and what Infernal ranks mean.
 - **Hunt targets** are the `gregguns.<Name>` entity names from [registry-and-pack-hooks.md](../10-entities-npcs/registry-and-pack-hooks.md), with `subtypes` off so a subclass does not count. A hunt counts only a kill by a player ([`TaskHunt.onKilledByPlayer`](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskHunt.java#L119-L137)). Projectiles from a GregGuns weapon use an indirect damage source with the player as the attacker ([0009](../../design/0009-gtnh-integration-defaults.md) item 3), so those kills count.
-- **Infernal variants.** Infernal Mobs stores the modifier list as one string in the entity's persistent data under `InfernalMobsMod` ([EntityEventHandler#L72-L73](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/events/EntityEventHandler.java#L72-L73), [InfernalMobsCore#L125-L127](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L125-L127)). A hunt task can only compare NBT for an exact match, so it cannot say "any infernal mob". The three rank quests are checkboxes ([GGS-12-11](index.md#requirements)).
+- **Infernal variants.** Infernal Mobs stores the modifier list as one string in the entity's persistent data under `InfernalMobsMod` ([EntityEventHandler#L72-L73](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/events/EntityEventHandler.java#L72-L73), [InfernalMobsCore#L125-L127](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L125-L127)). A hunt task cannot say "any infernal mob", so no quest hunts an Infernal rank ([GGS-12-11](index.md#requirements)); the NPC hunt quests explain the ranks in their text. The keys `gg.npc.elite`, `gg.npc.ultra` and `gg.npc.infernal` are retired.
 - **The three secret quests** (Dictator Dave, Cyberdemon, Alien Bug) are bosses that do not spawn naturally ([0009](../../design/0009-gtnh-integration-defaults.md) item 5, GGS-11-15). They are `SECRET` so that a pack with those spawns off never shows a quest nobody can finish.
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
@@ -235,9 +235,6 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 | `gg.npc.army` | Army Soldiers | MV | Disciplined and well armed. They carry MV ammunition. | hunt `gregguns.ArmySoldier` x5 | bag `enhancedlootbags:lootbag:5` (MV) | `gg.npc.bandits`, pack 1148 | 168, 384 (24) |
 | `gg.npc.commandos` | Commandos and Stormtroopers | MV | Elite soldiers. Armor up first. | hunt `gregguns.Commando` x2; hunt `gregguns.Stormtrooper` x2 (all) | bag `enhancedlootbags:lootbag:5` (MV) | `gg.npc.army` | 204, 384 (24) |
 | `gg.npc.helicopter` | Attack Helicopter | HV | A flying boss with its own health bar. Bring launchers. | hunt `gregguns.AttackHelicopter` x1 | bag `enhancedlootbags:lootbag:6` (HV) | `gg.npc.commandos`, pack 160 | 240, 384 (24) |
-| `gg.npc.elite` | Elite Variants | LV | Kill one elite Infernal mob: up to five modifiers, glowing name. Tick the box when you have. | checkbox | bag `enhancedlootbags:lootbag:4` (LV) | `gg.npc.bandits` | 168, 456 (24) |
-| `gg.npc.ultra` | Ultra Variants | MV | Kill one ultra Infernal mob. Ultra drops are MV. | checkbox | bag `enhancedlootbags:lootbag:5` (MV) | `gg.npc.elite`, pack 1148 | 204, 456 (24) |
-| `gg.npc.infernal` | Infernal Variants | HV | Kill one infernal-rank mob. It can drop rare HV items. | checkbox | bag `enhancedlootbags:lootbag:6` (HV) | `gg.npc.ultra`, pack 160 | 240, 456 (24) |
 | `gg.npc.dave` | Dictator Dave SECRET | IV | A secret mini-boss with a Golden Revolver. Appears only from spawn eggs or the pack's own spawner setup. | hunt `gregguns.DictatorDave` x1 | bag `enhancedlootbags:lootbag:8` (IV) | `gg.npc.helicopter`, pack 213 | 276, 348 (24) |
 | `gg.npc.cyberdemon` | Cyberdemon SECRET | EV | A config-gated late boss. No natural spawn. | hunt `gregguns.CyberDemon` x1 | bag `enhancedlootbags:lootbag:7` (EV) | `gg.npc.helicopter`, pack 176 | 276, 384 (24) |
 | `gg.npc.alien_bug` | Alien Bug SECRET | EV | A config-gated boss from the bug nest. | hunt `gregguns.AlienBug` x1 | bag `enhancedlootbags:lootbag:7` (EV) | `gg.npc.helicopter`, pack 176 | 276, 420 (24) |
@@ -370,7 +367,7 @@ Where each mechanic is taught.
 | Baubles slots | `gg.gear.intro`, `gg.gear.nvg`, `gg.gear.pouch`, `gg.gear.jump_pack` |
 | Hazard protection | `gg.gear.gas_mask`, `gg.gear.hazards`, `gg.gear.oxygen` |
 | Hostile factions and bosses | `gg.npc.zombies`, `gg.npc.bandits`, `gg.npc.army`, `gg.npc.steve`, `gg.npc.helicopter` |
-| Infernal ranks | `gg.npc.elite`, `gg.npc.ultra`, `gg.npc.infernal` |
+| Infernal ranks | `gg.npc.intro` and the NPC hunt quests (text) |
 | Structures and their loot | `gg.site.surface`, `gg.site.bunker`, `gg.site.camp`, `gg.site.ships`, `gg.site.dungeon` |
 | Turret | `gg.mach.turret`, `gg.mach.turret_team`, `gg.mach.turret_power` |
 | Assembly Line recipes | `gg.luv.intro` |
