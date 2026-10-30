@@ -55,6 +55,8 @@ BAGS = {
     'ordnance1': {'id': LOOTBAG, 'damage': 1710, 'tier': 'HV'},  # ICBM HV and EV quests
     'ordnance2': {'id': LOOTBAG, 'damage': 1711, 'tier': 'IV'},  # ICBM IV and LuV quests
     'ordnance3': {'id': LOOTBAG, 'damage': 1712, 'tier': 'LuV'},  # ICBM LuV and ZPM quests
+    'ordnance4': {'id': LOOTBAG, 'damage': 1713, 'tier': 'UV'},  # ICBM UV quests
+    'ordnance5': {'id': LOOTBAG, 'damage': 1714, 'tier': 'UHV'},  # ICBM UHV quests
 }
 # The pack's own generic tier groups (config/EnhancedLootBags/LootBags.xml), which quests written before the GregGuns
 # bags name by id and damage. Still tier-checked, but each use is a warning: write {"bag": name} instead.
@@ -65,6 +67,28 @@ PACK_BAGS = {
 # Any bag stack written out by hand (id and damage) is tier-checked the same way.
 BAG_STACKS = dict(PACK_BAGS)
 BAG_STACKS.update({(b['id'], b['damage']): b['tier'] for b in BAGS.values()})
+# What tier an item belongs to, for the reward-tier rule (GGS-12-19): the GregGuns parts and ammo that gate a tier, and the
+# GT parts and materials its recipes consume. Only items worth checking are listed; an unlisted item is never checked.
+# Keys are (id, damage) for pack items and the bare id for GregGuns items.
+ITEM_TIERS = {
+    'gregguns:part_mechanical_3': 'EV', 'gregguns:part_receiver_carbon': 'EV', 'gregguns:part_stock_carbon': 'EV',
+    'gregguns:part_power_plating': 'IV', 'gregguns:ammo_rocket': 'HV', 'gregguns:fuze_assembly_mk3': 'LuV',
+    'gregguns:part_rad_emitter': 'ZPM', 'gregguns:part_nuclear_warhead': 'ZPM', 'gregguns:cell_nuclear': 'ZPM',
+    'gregguns:ammo_rocket_nuke': 'ZPM', 'gregguns:inert_warhead_t3': 'LuV', 'gregguns:inert_warhead_t4': 'UV',
+    'gregguns:inert_warhead_t5': 'UHV',
+    ('gregtech:gt.metaitem.01', 32706): 'LuV',  # Master circuit
+    ('gregtech:gt.metaitem.01', 17372): 'LuV',  # HSS-G plate
+    ('gregtech:gt.metaitem.01', 17325): 'ZPM',  # Naquadah alloy plate
+    ('gregtech:gt.metaitem.03', 32088): 'ZPM',  # Quantum Mainframe (circuitUltimate)
+    ('gregtech:gt.metaitem.01', 32607): 'ZPM',  # ZPM Electric Motor
+    ('gregtech:gt.metaitem.01', 32686): 'ZPM',  # ZPM Emitter
+    ('gregtech:gt.metaitem.01', 11097): 'ZPM', ('gregtech:gt.metaitem.01', 11100): 'ZPM',  # U-235, plutonium
+    ('gregtech:gt.metaitem.01', 17327): 'UV',  # Naquadria plate
+    ('gregtech:gt.metaitem.01', 11101): 'UV',  # Plutonium-241 ingot
+    ('gregtech:gt.metaitem.01', 32677): 'UV', ('gregtech:gt.metaitem.01', 32724): 'UV',  # UV Field Gen, Quantum Eye
+    ('gregtech:gt.metaitem.01', 17129): 'UHV',  # Neutronium plate
+    ('gregtech:gt.metaitem.01', 32678): 'UHV', ('gregtech:gt.metaitem.01', 32688): 'UHV',  # UHV Field Gen, Emitter
+}
 BAG_IDS = {b['id'] for b in BAGS.values()}
 LINE_FOLDER = 'GregGuns'
 LINE_FILE = '_line.json'
@@ -514,6 +538,19 @@ def check(data):
                                         % (k, s.get('damage')))
         except KeyError:
             pass  # an unknown bag name, reported above
+        if TIERS.index(q['tier']) >= TIERS.index('ZPM'):
+            for r in q['rewards']:
+                for s in (r.get('items', []) if r.get('type') in ('item', 'choice') else []):
+                    item = ITEM_TIERS.get(s.get('id')) if str(s.get('id', '')).startswith('gregguns:') \
+                        else ITEM_TIERS.get((s.get('id'), s.get('damage')))
+                    if item is None:
+                        continue
+                    if TIERS.index(item) > TIERS.index(q['tier']):
+                        problems.append('%s: reward %s is %s, above the quest tier (GGS-12-19)'
+                                        % (k, s['id'], item))
+                    elif TIERS.index(item) < TIERS.index(q['tier']):
+                        warnings.append('%s: reward %s is %s, below the quest tier %s (GGS-12-19)'
+                                        % (k, s['id'], item, q['tier']))
         for tag in sorted(set(re.findall(r'\[/?([a-zA-Z_]+)\]', q['desc']))):
             if tag not in TEXT_TAGS:
                 problems.append('%s: [%s] is not one of the pack tags %s (GGS-12-14)' % (k, tag, sorted(TEXT_TAGS)))

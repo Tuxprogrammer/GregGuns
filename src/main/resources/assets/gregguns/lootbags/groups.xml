@@ -324,4 +324,25 @@
         <Loot Identifier="gg_ordnance_3_gt_metaitem_01_17372" ItemName="gregtech:gt.metaitem.01:17372" Amount="16" NBTTag="" Chance="625" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_gt_metaitem_01_17325" ItemName="gregtech:gt.metaitem.01:17325" Amount="8" NBTTag="" Chance="550" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
     </LootGroup>
+    <LootGroup GroupMetaID="1713" GroupName="gregguns.lootbag.group.ordnance_4" Rarity="3" MinItems="4" MaxItems="4" CombineTrashGroup="false" TrashGroup="0" LootbagIcon="gregguns:lootbag/ordnance_4">
+        <Loot Identifier="gg_ordnance_4_gt_metaitem_01_17327" ItemName="gregtech:gt.metaitem.01:17327" Amount="16" NBTTag="" Chance="900" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_inert_warhead_t4" ItemName="gregguns:inert_warhead_t4" Amount="1" NBTTag="" Chance="600" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_gt_metaitem_01_32677" ItemName="gregtech:gt.metaitem.01:32677" Amount="1" NBTTag="" Chance="450" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_gt_metaitem_01_32724" ItemName="gregtech:gt.metaitem.01:32724" Amount="1" NBTTag="" Chance="300" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_gt_metaitem_01_11101" ItemName="gregtech:gt.metaitem.01:11101" Amount="4" NBTTag="" Chance="600" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_plastic_explosive" ItemName="gregguns:plastic_explosive" Amount="32" NBTTag="" Chance="800" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_fuze_assembly_mk3" ItemName="gregguns:fuze_assembly_mk3" Amount="2" NBTTag="" Chance="600" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_missile_body_t3" ItemName="gregguns:missile_body_t3" Amount="1" NBTTag="" Chance="300" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_4_antidote" ItemName="gregguns:antidote" Amount="16" NBTTag="" Chance="400" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+    </LootGroup>
+    <LootGroup GroupMetaID="1714" GroupName="gregguns.lootbag.group.ordnance_5" Rarity="3" MinItems="4" MaxItems="4" CombineTrashGroup="false" TrashGroup="0" LootbagIcon="gregguns:lootbag/ordnance_5">
+        <Loot Identifier="gg_ordnance_5_gt_metaitem_01_17129" ItemName="gregtech:gt.metaitem.01:17129" Amount="8" NBTTag="" Chance="800" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_5_inert_warhead_t5" ItemName="gregguns:inert_warhead_t5" Amount="1" NBTTag="" Chance="600" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_5_gt_metaitem_01_32678" ItemName="gregtech:gt.metaitem.01:32678" Amount="2" NBTTag="" Chance="450" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_5_gt_metaitem_01_32688" ItemName="gregtech:gt.metaitem.01:32688" Amount="2" NBTTag="" Chance="450" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_5_gt_metaitem_01_32724" ItemName="gregtech:gt.metaitem.01:32724" Amount="2" NBTTag="" Chance="300" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_5_plastic_explosive" ItemName="gregguns:plastic_explosive" Amount="32" NBTTag="" Chance="800" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_5_fuze_assembly_mk3" ItemName="gregguns:fuze_assembly_mk3" Amount="2" NBTTag="" Chance="600" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_ordnance_5_antidote" ItemName="gregguns:antidote" Amount="16" NBTTag="" Chance="400" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+    </LootGroup>
 </LootGroups>

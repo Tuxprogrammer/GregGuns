@@ -35,7 +35,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | Minigame rewards | Follow `chest1..4` ADD files | LootGames 2.2.14 | [pack-loot.md](pack-loot.md#lootgames) |
 | Dungeon chests | Pack JSON loot rules | Roguelike-Dungeons 1.6.6-GTNH | [pack-loot.md](pack-loot.md#roguelike-dungeons) |
 | None (no currency in Techguns) | GregGuns Coin; trades merged into the Vending Machine at server start | VendingMachine 0.4.101, BetterQuesting 3.8.89-GTNH | [coins-and-vending.md](coins-and-vending.md) |
-| Quest rewards | GregGuns bag groups 1701 to 1712, added at startup from the jar | EnhancedLootBags 1.3.5 | [pack-loot.md](pack-loot.md#enhancedlootbags) |
+| Quest rewards | GregGuns bag groups 1701 to 1714, added at startup from the jar | EnhancedLootBags 1.3.5 | [pack-loot.md](pack-loot.md#enhancedlootbags) |
 | NPC drops | Infernal drop lists, or a soft-dependency handler | Infernal-Mobs 1.10.7-GTNH | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | Fixed per-mob drops | Optional `CustomDrop` entries | dreamcraft CustomDrops | [pack-loot.md](pack-loot.md#gtnh-customdrops) |
 | Metals, plates, wires, circuits, plastic, rubber | Not registered; GT parts through the unificator | GT5-Unofficial 5.09.54.205 | [components-and-materials.md](components-and-materials.md#gregtech-parts-through-the-unificator) |

@@ -61,7 +61,7 @@ Tiers are the D1 tiers: Steam/ULV, LV, MV, HV, EV and up. D5 says surface struct
 | `gregguns:weaponchest_t4` to `_t7`, `reinforcedchest_t4` to `_t7`, `supplychest_t4` to `_t7` | EV / IV / LuV / ZPM | Ross128b and Ross128ba only, by a structure's rolled ceiling (design record 0019) |
 | Roguelike dungeon levels 0 to 4 | Level 0-1 LV, 2-3 MV, 4 rare HV | Dungeon level rises with depth |
 | Elite / ultra / infernal drops | LV-MV / MV / MV, rare HV | See [Infernal Mobs](#infernal-mobs) |
-| GregGuns loot bags (EnhancedLootBags 1701 to 1712) | The bag's own tier | The bag name is the tier; quests never pay a bag above their tier (GGS-12-07) |
+| GregGuns loot bags (EnhancedLootBags 1701 to 1714) | The bag's own tier | The bag name is the tier; quests never pay a bag above their tier (GGS-12-07) |
 
 ## Integration points
 
@@ -370,6 +370,8 @@ EnhancedLootBags (ELB) gives quest rewards as bags. A bag is the one item `enhan
 | 1710 | `ordnance_1` | GregGuns Ordnance I | HV (ICBM) | 3 | 1704 |
 | 1711 | `ordnance_2` | GregGuns Ordnance II | IV (ICBM) | 4 | 1710 |
 | 1712 | `ordnance_3` | GregGuns Ordnance III | LuV (ICBM) | 5 | 1711 |
+| 1713 | `ordnance_4` | GregGuns Ordnance IV | UV (ICBM) | 4 | none: holds only Tier 4 casing precursors (naquadria plates, UV Field Generators, Quantum Eyes, plutonium-241) and the Inert T4 Warhead |
+| 1714 | `ordnance_5` | GregGuns Ordnance V | UHV (ICBM) | 4 | none: holds only Tier 5 casing precursors (neutronium plates, UHV Field Generators and Emitters) and the Inert T5 Warhead |
 
 - **Contents:** a bag holds GregGuns items (ammunition, magazines, parts, guns, armor and gear) and the precursors that GregGuns' own recipes consume at that tier (GT plates, circuits, motors, the EV battery, gunpowder). There is no food and no generic tier loot: food is a separate quest reward. `MinItems` equals `MaxItems`, so the count is fixed. Guns and armor pieces are limited to two per player (`LimitedDropCount`), and every group keeps unlimited drops so a bag always opens. `LootBagGroupsTest` holds the allowed precursors, each with the GregGuns recipe that consumes it.
 - **Quests** name bags through the `BAGS` table in `tools/questbook/build_quests.py` ([authoring.md](../12-questbook/authoring.md#rewards)).

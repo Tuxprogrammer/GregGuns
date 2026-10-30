@@ -1,10 +1,10 @@
-"""Draw the 16x16 icons of the GregGuns loot bags (EnhancedLootBags groups 1701-1712, LootbagIcon gregguns:lootbag/<key>).
+"""Draw the 16x16 icons of the GregGuns loot bags (EnhancedLootBags groups 1701-1714, LootbagIcon gregguns:lootbag/<key>).
 
     python -I -X utf8 tools/asset-gen/lootbag_icons.py [--sheet]
 
 An olive ammo crate with a band in the GregTech tier color (GTValues.TIER_COLORS: LV dark green, MV gold, HV yellow,
-EV dark gray, IV blue, LuV light purple, ZPM aqua; Steam bronze). Spoils of War is a gunmetal crate with a gold band and a
-red star; the Ordnance crates add a hazard-striped lid and one to three white pips. Procedural and deterministic; no
+EV dark gray, IV blue, LuV light purple, ZPM aqua, UV dark aqua, UHV dark red; Steam bronze). Spoils of War is a gunmetal crate with a gold band and a
+red star; the Ordnance crates add a hazard-striped lid and one to five white pips. Procedural and deterministic; no
 reference art. Output: src/main/resources/assets/gregguns/textures/items/lootbag/<key>.png, credit rows in
 tools/asset-gen/credits/lootbag_icons.csv, contact sheet docs/assets/previews/lootbag_icons.png with --sheet.
 """
@@ -34,7 +34,8 @@ TIERS = {
     'colonel': (255, 85, 255),     # LuV: light purple
     'general': (85, 255, 255),     # ZPM: aqua
 }
-ORDNANCE = {'ordnance_1': ((255, 255, 85), 1), 'ordnance_2': ((85, 85, 255), 2), 'ordnance_3': ((255, 85, 255), 3)}
+ORDNANCE = {'ordnance_1': ((255, 255, 85), 1), 'ordnance_2': ((85, 85, 255), 2), 'ordnance_3': ((255, 85, 255), 3),
+            'ordnance_4': ((0, 170, 170), 4), 'ordnance_5': ((170, 0, 0), 5)}
 
 
 def crate(body, band):

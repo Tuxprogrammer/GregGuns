@@ -665,6 +665,8 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.lootbag.ordnance_1 | src/main/resources/assets/gregguns/textures/items/lootbag/ordnance_1.png | tools/asset-gen/lootbag_icons.py | 0 | Procedural 16x16 pixel art (pixel.py crate, GT tier color band, outline pass) | MIT | 2026-10-29 |
 | icon.lootbag.ordnance_2 | src/main/resources/assets/gregguns/textures/items/lootbag/ordnance_2.png | tools/asset-gen/lootbag_icons.py | 0 | Procedural 16x16 pixel art (pixel.py crate, GT tier color band, outline pass) | MIT | 2026-10-29 |
 | icon.lootbag.ordnance_3 | src/main/resources/assets/gregguns/textures/items/lootbag/ordnance_3.png | tools/asset-gen/lootbag_icons.py | 0 | Procedural 16x16 pixel art (pixel.py crate, GT tier color band, outline pass) | MIT | 2026-10-29 |
+| icon.lootbag.ordnance_4 | src/main/resources/assets/gregguns/textures/items/lootbag/ordnance_4.png | tools/asset-gen/lootbag_icons.py | 0 | Procedural 16x16 pixel art (pixel.py crate, GT tier color band, outline pass) | MIT | 2026-10-29 |
+| icon.lootbag.ordnance_5 | src/main/resources/assets/gregguns/textures/items/lootbag/ordnance_5.png | tools/asset-gen/lootbag_icons.py | 0 | Procedural 16x16 pixel art (pixel.py crate, GT tier color band, outline pass) | MIT | 2026-10-29 |
 
 ### models (129)
 

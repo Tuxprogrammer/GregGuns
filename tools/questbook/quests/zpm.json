@@ -54,14 +54,14 @@
               "ore": "plateNaquadahAlloy"
             },
             {
-              "id": "gregguns:part_mechanical_3",
-              "count": 8,
-              "damage": 0
-            },
-            {
               "id": "gregguns:part_rad_emitter",
               "count": 1,
               "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 32607
             }
           ]
         }
@@ -242,9 +242,9 @@
               "ore": "plateNaquadahAlloy"
             },
             {
-              "id": "gregguns:part_mechanical_3",
-              "count": 8,
-              "damage": 0
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 32686
             }
           ]
         }
@@ -347,8 +347,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:part_receiver_carbon",
-              "count": 4,
+              "id": "gregguns:cell_nuclear",
+              "count": 1,
               "damage": 0
             }
           ]
@@ -433,9 +433,10 @@
               "ore": "plateNaquadahAlloy"
             },
             {
-              "id": "gregguns:ammo_rocket",
-              "count": 16,
-              "damage": 0
+              "id": "gregtech:gt.metaitem.03",
+              "count": 4,
+              "damage": 32088,
+              "ore": "circuitUltimate"
             }
           ]
         }
@@ -527,9 +528,10 @@
               "ore": "plateNaquadahAlloy"
             },
             {
-              "id": "gregguns:ammo_rocket",
-              "count": 32,
-              "damage": 0
+              "id": "gregtech:gt.metaitem.03",
+              "count": 4,
+              "damage": 32088,
+              "ore": "circuitUltimate"
             }
           ]
         }
@@ -621,9 +623,9 @@
               "damage": 0
             },
             {
-              "id": "gregguns:part_receiver_carbon",
+              "id": "gregtech:gt.metaitem.01",
               "count": 4,
-              "damage": 0
+              "damage": 32607
             }
           ]
         }
