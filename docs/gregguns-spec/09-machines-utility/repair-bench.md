@@ -9,7 +9,7 @@
 
 | Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
-| Armor asks for a metal stack and a cloth stack, each a Techguns item | The repair list is made of GT stacks looked up by ore prefix and material, for example plate of the item's gate material | GT first; unification means any mod's plate counts |
+| Armor asks for a metal stack and a cloth stack, each a Techguns item | The repair list is made of GT stacks looked up by ore prefix and material, for example plate of the item's gate material, plus a soft part: the pack's Tanned Leather (`Backpack:tannedLeather`) for most sets | GT first; unification means any mod's plate counts |
 | Matching is by item and damage value | Matching uses `GTOreDictUnificator.isInputStackEqual`, so unified equivalents match | Players should not need one specific mod's plate |
 | Armor only, and only worn armor | Worn armor **and** guns, as [0002](../../design/0002-machine-deconfliction.md) says | Guns have durability too |
 | Unpowered | Registered as a GT MetaTileEntity ([08](../08-machines-production/)). Whether it draws EU is an open question | [0002](../../design/0002-machine-deconfliction.md) rebuilds kept machines as MTEs |

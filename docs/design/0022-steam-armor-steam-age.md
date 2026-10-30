@@ -12,7 +12,7 @@ The Steam armor (Techguns "Steam Armor") was an EV set: 24 Steam Armor Plating (
 ## Decision
 
 1. **Tier.** `ArmorCatalog.STEAM` is `Tier.STEAM`. It is hand-crafted like the Scout and Miner sets. The 0001 tier map moves it from the EV row to the Steam / ULV row.
-2. **Recipe.** Four shaped recipes (`ArmorTable.STEAM`, rows AR-34 to AR-37, which once named the EV Assembler rows). `B` is `ore:plateBronze`, `c` is Heavy Cloth:
+2. **Recipe.** Four shaped recipes (`ArmorTable.STEAM`, rows AR-34 to AR-37, which once named the EV Assembler rows). `B` is `ore:plateBronze`, `c` is the cloth (Heavy Cloth when this record was written; the pack's Tanned Leather, `Backpack:tannedLeather`, since 2026-10-30):
 
    | Piece | Grid | Bronze plates |
    |---|---|---|
@@ -23,7 +23,7 @@ The Steam armor (Techguns "Steam Armor") was an EV set: 24 Steam Armor Plating (
 
    The set is 14 plates and 8 cloth, against 24 titanium, 24 bronze and 24 steel plates before. Mechanical Parts T1 (RC-03) were considered and left out: they live in the guns module's `ComponentItems`, and the armor module must build without it. Every grid differs from the Scout and Miner grids (`ArmorTableTest` pins that no two hand grids repeat), and none uses a machine.
 3. **Steam Armor Plating is removed.** The item (`part_steam_armor_plating`), `ArmorCatalog.STEAM_ARMOR_PLATING`, its `ArmorParts` registration, `PartCatalog` entry, `ArmorTable.STEAM_PLATING`, the lang line and the RC-23 recipe are gone. **RC-23 is retired and never reused.** The texture file `part_steam_armor_plating.png` is left in place (the owner said to leave art alone); it is an orphan. Plating held in an existing world disappears (FML drops the unknown item).
-4. **Repair** is `plate.Bronze` plus Heavy Cloth, the same pattern as the other sets (`repairFor(slot, "plate", "Bronze", HEAVY_CLOTH)`). Recycling reads the hand row: each piece returns its bronze plates.
+4. **Repair** is `plate.Bronze` plus the cloth, the same pattern as the other sets (`repairFor(slot, "plate", "Bronze", TANNED_LEATHER)`; Heavy Cloth until 2026-10-30). Recycling reads the hand row: each piece returns its bronze plates.
 5. **Protection and perks** sit between the Scout and Miner (13) and the T1 Combat set (15):
 
    | Number | Old (EV) | New (Steam) |

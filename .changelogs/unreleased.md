@@ -10,6 +10,13 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - Ops get `/gregguns locate <kind> [radius_cells] [generate]` (permission level 2) for every GregGuns structure: `complex` (silo complexes), `military_base`, `big_bunker`, `factory_small`, `train_station`, `gas_station`, `house_medium`, `alien_bug_nest`, `aircraft_carrier`, `submarine` or `any`. It lists the sites near you in this dimension, nearest first, each as built, skipped (with the reason, such as ground too steep) or not generated yet. `generate` makes the nearest five undecided sites decide now, a chunk per tick, and reports which were built. A click on a built site's line teleports you to it. The log now names every structure's placed or skipped verdict.
 
+## Tanned Leather replaces Heavy Cloth
+
+- GregGuns armor is now lined with the pack's own **Tanned Leather** (`Backpack:tannedLeather`: Bound Leather on a drying rack, or two leather in phosphoric acid in the LV Chemical Bath) instead of GregGuns' Heavy Cloth, which is removed along with its wool recipe.
+- Tanned Leather takes Heavy Cloth's place one for one in the Miner, Steam, Soldier's (T1 Combat), T2 Combat and Beret recipes, the Night Vision Goggles, the Ammo Pouch and the glider parts, and in every armor repair that used cloth. The light Bandit (Scout) set is mostly plain leather now: six Tanned Leather for the whole set.
+- Zombies, bandits and soldiers drop Tanned Leather where they dropped Heavy Cloth, the Recruit loot bag holds two Tanned Leather, and the Vending Machine no longer sells Heavy Cloth.
+- The Steam chapter's Heavy Cloth quest is replaced by a Tanned Leather quest, and quest rewards that paid Heavy Cloth pay Tanned Leather.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.
@@ -31,7 +38,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 ## New: GregGuns Coins and the Vending Machine
 
 - **GregGuns Coin** (`gregguns:coin`), GregGuns' own currency, in five values like the pack's coins: 1, 10, 100, 1000 and 10K (damage 0 to 4). One coin breaks into ten of the next lower value in a crafting grid; ten coins and programmed circuit 10 make one of the next higher value in any GT Assembler.
-- **GregGuns trades in the pack's Vending Machine.** 178 trades with every module on: guns, akimbo pairs, melee tools, loaded magazines, rounds, grenades, gun parts and components, armor, special-slot gear, flight devices, armor parts, turret plates and a spawn egg for every NPC, the Attack Helicopter, Cyberdemon, Alien Bug and Dictator Dave included. All are priced in GregGuns Coins by tier. With the GregGuns quest line installed, each tier's trades open with that tier's intro quest. The trades are added in memory when the server starts; `config/vendingmachine/tradeDatabase.json` is not touched. New key `compat.vendingTrades` (default on).
+- **GregGuns trades in the pack's Vending Machine.** 177 trades with every module on: guns, akimbo pairs, melee tools, loaded magazines, rounds, grenades, gun parts and components, armor, special-slot gear, flight devices, armor parts, turret plates and a spawn egg for every NPC, the Attack Helicopter, Cyberdemon, Alien Bug and Dictator Dave included. All are priced in GregGuns Coins by tier. With the GregGuns quest line installed, each tier's trades open with that tier's intro quest. The trades are added in memory when the server starts; `config/vendingmachine/tradeDatabase.json` is not touched. New key `compat.vendingTrades` (default on).
 
 ### Quest loot bags
 

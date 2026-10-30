@@ -60,7 +60,7 @@ public final class ArmorTable {
 
         /**
          * @return grid symbol to ingredient: {@code ore:<name>} for an ore dictionary entry, {@code mod:<name>} for a
-         *         GregGuns item
+         *         GregGuns item, {@code item:<modid>:<name>} for another mod's item
          */
         public Map<Character, String> keys() {
             return keys;
@@ -79,8 +79,10 @@ public final class ArmorTable {
     public static final String NUGGET_CAST_IRON = "ore:nuggetCastIron";
     /** Ore name of yellow dye. */
     public static final String DYE_YELLOW = "ore:dyeYellow";
-    /** Heavy Cloth, the cloth every T1 set is made of. */
-    public static final String CLOTH = "mod:" + ArmorCatalog.HEAVY_CLOTH;
+    /** The pack's Tanned Leather, the lining of every steam-age set. */
+    public static final String CLOTH = ProductionTable.Input.EXTERNAL + ArmorCatalog.TANNED_LEATHER;
+    /** Plain vanilla leather, which fills out the light Scout set around its Tanned Leather. */
+    public static final String LEATHER = ProductionTable.Input.EXTERNAL + "minecraft:leather";
 
     private static Map<Character, String> keys(Object... pairs) {
         Map<Character, String> m = new LinkedHashMap<>();
@@ -94,33 +96,36 @@ public final class ArmorTable {
         return set.pieceName(slot);
     }
 
-    /** Scout (gate: bronze plate). Techguns' empty center cells now hold the gate plate. */
+    /**
+     * Scout (gate: bronze plate). Techguns' empty center cells now hold the gate plate. The lightest set: plain leather
+     * with a little Tanned Leather (six for the set), where the heavier sets line every cloth cell with it.
+     */
     public static final List<HandRow> SCOUT = Collections.unmodifiableList(
         Arrays.asList(
             new HandRow(
                 "AR-01",
                 name(ArmorCatalog.T1_SCOUT, ArmorSlot.HELMET),
                 Tier.STEAM,
-                Arrays.asList("ccc", "cBc"),
-                keys('c', CLOTH, 'B', PLATE_BRONZE)),
+                Arrays.asList("LcL", "LBL"),
+                keys('L', LEATHER, 'c', CLOTH, 'B', PLATE_BRONZE)),
             new HandRow(
                 "AR-02",
                 name(ArmorCatalog.T1_SCOUT, ArmorSlot.CHESTPLATE),
                 Tier.STEAM,
-                Arrays.asList("cBc", "ccc", "ccc"),
-                keys('c', CLOTH, 'B', PLATE_BRONZE)),
+                Arrays.asList("LBL", "LcL", "LcL"),
+                keys('L', LEATHER, 'c', CLOTH, 'B', PLATE_BRONZE)),
             new HandRow(
                 "AR-03",
                 name(ArmorCatalog.T1_SCOUT, ArmorSlot.LEGGINGS),
                 Tier.STEAM,
-                Arrays.asList("ccc", "cBc", "c c"),
-                keys('c', CLOTH, 'B', PLATE_BRONZE)),
+                Arrays.asList("LcL", "LBL", "L L"),
+                keys('L', LEATHER, 'c', CLOTH, 'B', PLATE_BRONZE)),
             new HandRow(
                 "AR-04",
                 name(ArmorCatalog.T1_SCOUT, ArmorSlot.BOOTS),
                 Tier.STEAM,
-                Arrays.asList("cBc", "c c"),
-                keys('c', CLOTH, 'B', PLATE_BRONZE))));
+                Arrays.asList("LBL", "c c"),
+                keys('L', LEATHER, 'c', CLOTH, 'B', PLATE_BRONZE))));
 
     /** Miner (gate: cast iron plate, GT's "wrought iron"). The Techguns grids with iron ingots as plates. */
     public static final List<HandRow> MINER = Collections.unmodifiableList(
@@ -151,7 +156,7 @@ public final class ArmorTable {
                 keys('c', CLOTH, 'n', NUGGET_CAST_IRON))));
 
     /**
-     * Steam armor (gate: bronze plate; design record 0022). Bronze plates in the hard places, Heavy Cloth in the
+     * Steam armor (gate: bronze plate; design record 0022). Bronze plates in the hard places, Tanned Leather in the
      * rest: 3, 5, 4 and 2 plates. No GregGuns part but the cloth, so the set also builds when the guns module is
      * absent. The row ids AR-34 to AR-37 once named the EV Assembler rows; those are retired.
      */
@@ -206,7 +211,7 @@ public final class ArmorTable {
                 COMBAT_SECONDS[i],
                 i + 1,
                 ProductionTable.Input.gt("plate", "Steel", COMBAT_STEEL[i]),
-                ProductionTable.Input.mod(ArmorCatalog.HEAVY_CLOTH, COMBAT_CLOTH[i]));
+                ProductionTable.Input.external(ArmorCatalog.TANNED_LEATHER, COMBAT_CLOTH[i]));
         }
         return Arrays.asList(rows);
     }
@@ -214,10 +219,6 @@ public final class ArmorTable {
     // ---- M3 wave B: MV, and EV armor on the Assembler ------------------------------------------------------
 
     private static final int[] SECONDS_STANDARD = { 10, 16, 14, 10 };
-
-    private static String heavyCloth() {
-        return ArmorCatalog.HEAVY_CLOTH;
-    }
 
     /** Four rows for one set: row ids {@code AR-<first>} to {@code AR-<first+3>}, circuit 1 to 4 helmet to boots. */
     private static List<ProductionTable.Row> fourPiece(int first, SetDef set, int[] seconds, Input[]... perSlot) {
@@ -248,14 +249,14 @@ public final class ArmorTable {
     }
 
     private static Input cloth(int n) {
-        return Input.mod(heavyCloth(), n);
+        return Input.external(ArmorCatalog.TANNED_LEATHER, n);
     }
 
     private static Input[] in(Input... inputs) {
         return inputs;
     }
 
-    /** T2 Combat: MV, Aluminum plates and Heavy Cloth. */
+    /** T2 Combat: MV, Aluminum plates and Tanned Leather. */
     public static final List<ProductionTable.Row> T2_COMBAT = fourPiece(
         13,
         ArmorCatalog.T2_COMBAT,
@@ -297,7 +298,7 @@ public final class ArmorTable {
             Input.gt("plate", "Lead", 2),
             Input.mod(ArmorCatalog.TREATED_LEATHER, 2)));
 
-    /** The Beret: MV, Heavy Cloth, leather and an Aluminum ring as the badge. */
+    /** The Beret: MV, Tanned Leather, leather and an Aluminum ring as the badge. */
     public static final ProductionTable.Row BERET = new ProductionTable.Row(
         "AR-25",
         ArmorCatalog.T2_BERET.pieceName(ArmorSlot.HELMET),

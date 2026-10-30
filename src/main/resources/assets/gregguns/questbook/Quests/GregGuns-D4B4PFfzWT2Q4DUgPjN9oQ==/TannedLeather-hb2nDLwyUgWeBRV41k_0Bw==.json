@@ -17,19 +17,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Heavy Cloth is the lining of almost every armor set in GregGuns, from the Steam age to the late game. Four wool blocks of any color around a piece of leather make three of it at a crafting table.\n\nYou need plenty: the Steam armor alone takes eleven pieces on top of its bronze plates. Hold nine to finish this quest, which is three crafts of wool and leather.\n\n[note]Any wool color works, and any mix of colors.[/note]",
+      "desc:8": "Tanned Leather is the lining of almost every armor set in GregGuns, from the Steam age to the late game. It is the pack\u0027s own material, the same one your first backpack takes. Bind four leather with four string and a Woven Cotton into Bound Leather, then hang it on a Tinkers\u0027 drying rack for about ten minutes.\n\nYou need plenty: the Steam armor alone takes eleven, so keep a few racks busy. Hold four to finish this quest. Once you have an LV Chemical Bath, two leather in phosphoric acid make one with no wait. NEI shows both recipes.\n\n[note]The Stone Age quest of the same name walks you through the drying rack.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:part_heavy_cloth"
+        "id:8": "Backpack:tannedLeather"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "§c§lHeavy Cloth",
+      "name:8": "§c§lTanned Leather",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -56,8 +56,8 @@
       "visibility:8": "NORMAL"
     }
   },
-  "questIDHigh:4": 4022574523981060905,
-  "questIDLow:4": -8370735123790281505,
+  "questIDHigh:4": -8809701622927961595,
+  "questIDLow:4": -7060213232097561593,
   "rewards:9": {
     "0:10": {
       "ignoreDisabled:1": 0,
@@ -87,10 +87,10 @@
     "1:10": {
       "choices:9": {
         "0:10": {
-          "Count:3": 9,
+          "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         },
         "1:10": {
           "Count:3": 4,
@@ -99,10 +99,16 @@
           "id:8": "gregtech:gt.metaitem.01"
         },
         "2:10": {
-          "Count:3": 4,
+          "Count:3": 8,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "minecraft:leather"
+        },
+        "3:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:string"
         }
       },
       "ignoreDisabled:1": 0,
@@ -121,16 +127,22 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 4,
-          "Damage:2": 32767,
-          "OreDict:8": "",
-          "id:8": "minecraft:wool"
-        },
-        "1:10": {
           "Count:3": 1,
           "Damage:2": 0,
           "OreDict:8": "",
+          "id:8": "Backpack:boundLeather"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
           "id:8": "minecraft:leather"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:string"
         }
       },
       "taskID:8": "bq_standard:optional_retrieval"
@@ -145,10 +157,10 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 9,
+          "Count:3": 4,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:part_heavy_cloth"
+          "id:8": "Backpack:tannedLeather"
         }
       },
       "taskID:8": "bq_standard:retrieval"

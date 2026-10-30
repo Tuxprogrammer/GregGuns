@@ -23,9 +23,9 @@ class PartCatalogTest {
             "part_receiver_iron", "part_receiver_steel", "part_receiver_hardened", "part_receiver_carbon",
             "part_mechanical_1", "part_mechanical_2", "part_mechanical_3", "part_laser_focus", "part_uv_emitter",
             "part_sonic_emitter", "part_rad_emitter", "part_anti_gravity_core", "part_cybernetic",
-            "part_glider_backpack", "part_glider_wing", "part_heavy_cloth", "part_treated_leather",
-            "part_power_plating", "part_gas_mask_filter", "part_nuclear_warhead", "tank_fuel", "tank_bio", "tank_air",
-            "cell_nuclear", "cell_nuclear_depleted", "bandages", "medkit" };
+            "part_glider_backpack", "part_glider_wing", "part_treated_leather", "part_power_plating",
+            "part_gas_mask_filter", "part_nuclear_warhead", "tank_fuel", "tank_bio", "tank_air", "cell_nuclear",
+            "cell_nuclear_depleted", "bandages", "medkit" };
         for (String name : index) {
             assertNotNull(PartCatalog.get(name), name);
         }

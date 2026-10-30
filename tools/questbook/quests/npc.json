@@ -66,8 +66,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 4,
+              "id": "Backpack:tannedLeather",
+              "count": 2,
               "damage": 0
             },
             {
@@ -102,7 +102,7 @@
       "tier": "Steam",
       "desc": [
         "Three kinds of zombie carry guns instead of just groaning. Farmers and miners are the common ones and carry hoes, picks and the odd Hand Cannon. Soldiers are rarer, tougher and often wear Soldier's armor.",
-        "Kill three of each. They drop heavy cloth and gunpowder, plus food, coal, iron or ammo depending on the kind, which feeds your armor and ammo crafting."
+        "Kill three of each. They drop Tanned Leather and gunpowder, plus food, coal, iron or ammo depending on the kind, which feeds your armor and ammo crafting."
       ],
       "pre": [
         "gg.npc.intro"
@@ -153,8 +153,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 6,
+              "id": "Backpack:tannedLeather",
+              "count": 3,
               "damage": 0
             },
             {
@@ -407,7 +407,7 @@
       "tier": "MV",
       "desc": [
         "Army Soldiers are disciplined, armored in T2 Combat gear and armed with M4 rifles, Combat Shotguns or bolt-action rifles. They do not wander the countryside. They come out of Military Camps, the Aircraft Carrier and silo guard posts, so you have to go to them.",
-        "Kill five. They drop rifle bullets, shells, iron and heavy cloth."
+        "Kill five. They drop rifle bullets, shells, iron and Tanned Leather."
       ],
       "pre": [
         "gg.npc.bandits",

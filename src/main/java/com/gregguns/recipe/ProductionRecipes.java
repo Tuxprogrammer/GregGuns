@@ -10,6 +10,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
+import com.gregguns.compat.PackItems;
 import com.gregguns.item.ammo.def.AmmoDefinition;
 import com.gregguns.item.ammo.def.AmmoDefinitions;
 import com.gregguns.item.part.PartDefinition;
@@ -214,6 +215,9 @@ public final class ProductionRecipes {
 
     private static ItemStack specialStack(ProductionTable.Input input) {
         String spec = input.special();
+        if (spec.startsWith(ProductionTable.Input.EXTERNAL)) {
+            return PackItems.stack(spec.substring(ProductionTable.Input.EXTERNAL.length()), input.count());
+        }
         String name = spec.substring(3);
         if (spec.startsWith("mc:")) {
             Item item = GameRegistry.findItem("minecraft", name);

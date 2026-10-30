@@ -208,7 +208,6 @@ class ArmorCompositionTest {
             materials.addAll(composition.keySet());
         }
         assertFalse(materials.contains("Leather"));
-        assertFalse(all().containsKey(ArmorCatalog.HEAVY_CLOTH));
         assertFalse(all().containsKey(ArmorCatalog.TREATED_LEATHER));
     }
 

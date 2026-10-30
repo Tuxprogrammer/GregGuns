@@ -325,14 +325,14 @@ class ArmorTiersTest {
                 .get(ArmorSlot.BOOTS)
                 .repair()
                 .clothItem());
-        // Steam armor is repaired with Bronze plate and Heavy Cloth like the other bronze-age sets (record 0022).
+        // Steam armor is repaired with Bronze plate and Tanned Leather like the other bronze-age sets (record 0022).
         RepairSpec steam = ArmorCatalog.STEAM.pieces()
             .get(ArmorSlot.CHESTPLATE)
             .repair();
         assertEquals(4, steam.totalMats());
         assertEquals("plate", steam.metalPrefix());
         assertEquals("Bronze", steam.metalMaterial());
-        assertEquals("part_heavy_cloth", steam.clothItem());
+        assertEquals(ArmorCatalog.TANNED_LEATHER, steam.clothItem());
     }
 
     @Test

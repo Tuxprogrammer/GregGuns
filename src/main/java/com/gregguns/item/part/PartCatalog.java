@@ -169,14 +169,6 @@ public final class PartCatalog {
         list.add(new Entry("medkit", Tier.MV, Kind.CONSUMABLE, Owner.COMPONENT_ITEMS, "RC-62 ComponentTable", null));
         // Registered by other classes; reused, never re-added. Their recipes are written by their owners.
         list.add(
-            new Entry(
-                "part_heavy_cloth",
-                Tier.STEAM,
-                Kind.PART,
-                Owner.ARMOR_PARTS,
-                "RC-21 ArmorParts (crafting table)",
-                null));
-        list.add(
             new Entry("part_gas_mask_filter", Tier.MV, Kind.PART, Owner.ARMOR_PARTS, "RC-25 EquipmentTable", null));
         list.add(new Entry("tank_air", Tier.HV, Kind.TANK, Owner.ARMOR_PARTS, "RC-54 EquipmentTable", null));
         // Registered by ArmorParts on the m3 branches (armor-t2-t3, flight-gear), with their own recipes.

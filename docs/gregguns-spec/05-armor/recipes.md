@@ -54,17 +54,17 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 - **EU/t.** `TierEU.RECIPE_<tier>` of the set. No recipe in this sheet uses a lower voltage.
 - **Time.** 2 seconds per input item, at least 10 seconds. The programmed circuit is not counted.
 - **Programmed circuit** (`.circuit(n)`): helmet 1, chestplate 2, leggings 3, boots 4 in every set, except the Hazardous Environment boots, which use 5 (the Combat boots on circuit 4 are a subset of their inputs). Single items say their own number. The number keeps the four pieces of one set apart when a player loads a bus.
-- **Notation.** `HC` is Heavy Cloth, `TL` is Treated Leather, `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank. All are [assumed components](#assumed-components). `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
+- **Notation.** `TAN` is the pack's Tanned Leather (`Backpack:tannedLeather`), `TL` is Treated Leather, `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank. All are [assumed components](#assumed-components); Tanned Leather is the one from the pack. `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
 - **Fresh output.** Every output of this sheet has camo index 0 and no stored charge, as Techguns' `onCreated` does for crafted multi-camo and powered armor.
 - **Gate.** The input that cannot be had below the tier, plus the machine voltage.
 
 ## Steam / ULV (hand-crafted)
 
-Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze, wrought iron. Method: Hand. The Techguns recipe is [§ 1](../../techguns-spec/05-armor/recipes.md#1-armor), "T1 Scout" and "T1 Miner". The Steam armor joined this tier in [0022](../../design/0022-steam-armor-steam-age.md). Notation in the grids: `c` Heavy Cloth, `B` `plate.Bronze`, `i` `plate.WroughtIron`, `y` yellow dye (`Dyes.dyeYellow`), `n` `nugget.WroughtIron`. Techguns' empty center cells of the Scout grids now hold the gate plate.
+Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze, wrought iron. Method: Hand. The Techguns recipe is [§ 1](../../techguns-spec/05-armor/recipes.md#1-armor), "T1 Scout" and "T1 Miner". The Steam armor joined this tier in [0022](../../design/0022-steam-armor-steam-age.md). Notation in the grids: `c` Tanned Leather (`Backpack:tannedLeather`), `L` vanilla leather, `B` `plate.Bronze`, `i` `plate.WroughtIron`, `y` yellow dye (`Dyes.dyeYellow`), `n` `nugget.WroughtIron`. Techguns' empty center cells of the Scout grids now hold the gate plate.
 
 ### Steam armor (4 recipes, gate: `plate.Bronze`)
 
-Design record [0022](../../design/0022-steam-armor-steam-age.md) (owner request 2026-10-25): the Steam set is a Steam-age hand-crafted set. Bronze plates in the hard places, Heavy Cloth in the rest, no other metal. Row ids AR-34 to AR-37 (once the EV Assembler rows). Steam Armor Plating (RC-23) is retired.
+Design record [0022](../../design/0022-steam-armor-steam-age.md) (owner request 2026-10-25): the Steam set is a Steam-age hand-crafted set. Bronze plates in the hard places, Tanned Leather in the rest, no other metal. Row ids AR-34 to AR-37 (once the EV Assembler rows). Steam Armor Plating (RC-23) is retired.
 
 | Output | Grid | Bronze plates |
 |---|---|---|
@@ -77,10 +77,12 @@ Design record [0022](../../design/0022-steam-armor-steam-age.md) (owner request 
 
 | Output | Grid |
 |---|---|
-| Bandit Mask | `ccc` / `cBc` |
-| Bandit Vest | `cBc` / `ccc` / `ccc` |
-| Bandit Pants | `ccc` / `cBc` / `c_c` |
-| Bandit Boots | `cBc` / `c_c` |
+| Bandit Mask | `LcL` / `LBL` |
+| Bandit Vest | `LBL` / `LcL` / `LcL` |
+| Bandit Pants | `LcL` / `LBL` / `L_L` |
+| Bandit Boots | `LBL` / `c_c` |
+
+The Scout is the lightest set, so only six of its cells are Tanned Leather and the rest are plain leather; the Miner and Steam grids line every cloth cell with Tanned Leather. Owner request 2026-10-30: the pack's Tanned Leather replaces the retired Heavy Cloth (RC-21) in every recipe and repair.
 
 ### T1 Miner (4 recipes, gate: `plate.WroughtIron`, built as `plate.CastIron`)
 
@@ -101,10 +103,10 @@ Tier: LV. Method: Assembler, `TierEU.RECIPE_LV`. Gate: `plate.Steel` (Steel is t
 
 | Output | Inputs | Circuit | Time |
 |---|---|---|---|
-| Soldier's Helmet | `plate.Steel` ×3, HC ×2 | 1 | 10 s |
-| Soldier's Vest | `plate.Steel` ×3, HC ×5 | 2 | 16 s |
-| Soldier's Pants | `plate.Steel` ×3, HC ×4 | 3 | 14 s |
-| Soldier's Boots | `plate.Steel` ×2, HC ×2 | 4 | 10 s |
+| Soldier's Helmet | `plate.Steel` ×3, TAN ×2 | 1 | 10 s |
+| Soldier's Vest | `plate.Steel` ×3, TAN ×5 | 2 | 16 s |
+| Soldier's Pants | `plate.Steel` ×3, TAN ×4 | 3 | 14 s |
+| Soldier's Boots | `plate.Steel` ×2, TAN ×2 | 4 | 10 s |
 
 ## MV: T2 sets, Beret and the MV equipment
 
@@ -116,10 +118,10 @@ Techguns: "T2 Combat" (`i` was `ingotObsidianSteel`). Gate: `plate.Aluminium`.
 
 | Output | Inputs | Circuit | Time |
 |---|---|---|---|
-| Combat Helmet | `plate.Aluminium` ×3, HC ×2 | 1 | 10 s |
-| Combat Vest | `plate.Aluminium` ×6, HC ×2 | 2 | 16 s |
-| Combat Pants | `plate.Aluminium` ×4, HC ×3 | 3 | 14 s |
-| Combat Boots | `plate.Aluminium` ×2, HC ×2 | 4 | 10 s |
+| Combat Helmet | `plate.Aluminium` ×3, TAN ×2 | 1 | 10 s |
+| Combat Vest | `plate.Aluminium` ×6, TAN ×2 | 2 | 16 s |
+| Combat Pants | `plate.Aluminium` ×4, TAN ×3 | 3 | 14 s |
+| Combat Boots | `plate.Aluminium` ×2, TAN ×2 | 4 | 10 s |
 
 ### T2 Commando (4 recipes)
 
@@ -149,7 +151,7 @@ Techguns: "Beret" (`cc_` / `l_l`). Not in [0001](../../design/0001-tier-map.md);
 
 | Output | Inputs | Circuit | Time |
 |---|---|---|---|
-| Beret | HC ×2, leather ×2, `ring.Aluminium` ×1 | 1 | 10 s |
+| Beret | TAN ×2, leather ×2, `ring.Aluminium` ×1 | 1 | 10 s |
 
 ### Gas Mask, refilter and Night Vision Goggles (3 recipes)
 
@@ -157,7 +159,7 @@ Techguns: "Beret" (`cc_` / `l_l`). Not in [0001](../../design/0001-tier-map.md);
 |---|---|---|---|---|
 | Gas Mask | `plate.Rubber` ×5, glass pane ×2, `plate.Aluminium` ×1, Gas Mask Filter ×1 | 1 | 18 s | Helmet-slot item ([hazard-protection.md](hazard-protection.md)). Techguns `grg` / `rrr` / `rfr` with one rubber plate swapped for the gate plate |
 | Gas Mask (refilter) | Gas Mask (any damage) + Gas Mask Filter, shapeless, **Hand** | n/a | n/a | Same as Techguns: the output is the mask at damage 0. It only refills a mask that was already made at MV |
-| Night Vision Goggles | `plate.Rubber` ×2, HC ×1, `circuit.MV` ×2, `ItemList.Sensor_MV` ×1, glass ×2 (`Blocks.glass`), `plate.Aluminium` ×1 | 2 | 18 s | Baubles `head` item ([baubles-slots.md](baubles-slots.md)). IC2 electric item, tier MV. `Sensor_MV` replaces the Techguns Energy Cell as the working part; the item comes out empty |
+| Night Vision Goggles | `plate.Rubber` ×2, TAN ×1, `circuit.MV` ×2, `ItemList.Sensor_MV` ×1, glass ×2 (`Blocks.glass`), `plate.Aluminium` ×1 | 2 | 18 s | Baubles `head` item ([baubles-slots.md](baubles-slots.md)). IC2 electric item, tier MV. `Sensor_MV` replaces the Techguns Energy Cell as the working part; the item comes out empty |
 
 ## HV: Oxygen gear, Glider, Jump Pack, Tactical Mask
 
@@ -167,8 +169,8 @@ Tier: HV. Method: Assembler, `TierEU.RECIPE_HV`. Gate material: `plate.Stainless
 |---|---|---|---|---|
 | Oxygen Mask | `plate.Polyethylene` ×2, `plate.Rubber` ×2, `plate.StainlessSteel` ×1 | 1 | 10 s | Subclass of Galacticraft `ItemOxygenMask` ([oxygen-gear.md](oxygen-gear.md)). Techguns `_p_` / `rpr` |
 | Oxygen Tanks | `plate.Polyethylene` ×4, CAT ×2, `plate.StainlessSteel` ×2 | 1 | 16 s | Subclass of `ItemOxygenTank`. Techguns `p_p` / `aia` / `p_p`. Comes out empty and is refilled with compressed air |
-| Glider Backpack | HC ×7, `plate.StainlessSteel` ×2 | 1 | 18 s | Part. Techguns "Glider Backback" (sic) |
-| Glider Wing | HC ×6, `stick.StainlessSteel` ×3 | 2 | 18 s | Part. Techguns "Glider Wing" |
+| Glider Backpack | TAN ×7, `plate.StainlessSteel` ×2 | 1 | 18 s | Part. Techguns "Glider Backback" (sic) |
+| Glider Wing | TAN ×6, `stick.StainlessSteel` ×3 | 2 | 18 s | Part. Techguns "Glider Wing" |
 | Glider | Glider Backpack ×1, Glider Wing ×2 | 3 | 10 s | Techguns made this shapeless in the table; GregGuns does it in the Assembler. `wings` bauble, no energy |
 | Jump Pack | `plate.StainlessSteel` ×2, `screw.StainlessSteel` ×2, Glider Backpack ×1, CAT ×2, `ItemList.Electric_Piston_HV` ×1, `circuit.HV` ×1 | 1 | 18 s | `wings` bauble. IC2 electric item, tier HV. Techguns `n_n` / `pbp` / `c_c`; the piston and circuit are the electric drive. See [Open questions](#open-questions) for the air tanks |
 | Tactical Mask | `plate.Polyethylene` ×4, `circuit.HV` ×2, Night Vision Goggles ×1, Gas Mask ×1, Oxygen Mask ×1 | 1 | 18 s | Helmet-slot item. Techguns `pnp` / `cgc` / `pop`. HV per [0010](../../design/0010-material-remap-and-tier-additions.md) decision 5, and because it consumes the HV Oxygen Mask |
@@ -275,11 +277,11 @@ Numbering continues from [powered-flight.md](powered-flight.md). GGS-05-29 to GG
 
 ## Assumed components
 
-GregGuns components that these recipes consume. All except where noted are defined by area 06 ([components-and-materials.md](../06-items/components-and-materials.md), [fluids.md](../06-items/fluids.md)); this sheet does not define their recipes.
+GregGuns components that these recipes consume, and the one pack item that takes a component's place. All except where noted are defined by area 06 ([components-and-materials.md](../06-items/components-and-materials.md), [fluids.md](../06-items/fluids.md)); this sheet does not define their recipes.
 
 | Component | Used in | Source in area 06 |
 |---|---|---|
-| Heavy Cloth (`HC`, `part_heavy_cloth`) | Scout, Miner, T1 Combat, T2 Combat, Beret, NVG, Glider parts | components-and-materials.md: "Heavy Cloth ... Keep" |
+| Tanned Leather (`TAN`, `Backpack:tannedLeather`) | Scout, Miner, Steam, T1 Combat, T2 Combat, Beret, NVG, Ammo Pouch, Glider parts; the repair of every set but Riot and Power Armor | The pack's item, not ours: Tanned Leather is the pack's `Backpack:tannedLeather` (damage 0, no ore-dictionary name): Bound Leather dried on a Tinkers' drying rack (Stone Age), or two leather in phosphoric acid in the LV Chemical Bath. Replaces Heavy Cloth (RC-21, retired 2026-10-30) |
 | Treated Leather (`TL`, `part_treated_leather`) | Riot | same row |
 | Mechanical Parts T3 (`MP3`, `part_mechanical_3`) | Exo Suit, Anti Gravity Device | "Mechanical Parts T1, T2, T3 ... Keep" |
 | Power Plating (`PP`, `part_power_plating`) | Power Armor | "Cybernetic Parts, Power Plating, Anti Gravity Core ... Keep" |

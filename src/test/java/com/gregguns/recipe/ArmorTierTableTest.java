@@ -38,6 +38,15 @@ class ArmorTierTableTest {
         return 0;
     }
 
+    private static int countExternal(ProductionTable.Row row, String id) {
+        for (ProductionTable.Input in : row.inputs()) {
+            if ((ProductionTable.Input.EXTERNAL + id).equals(in.special())) {
+                return in.count();
+            }
+        }
+        return 0;
+    }
+
     private static void assertSheetRows(List<ProductionTable.Row> rows, SetDef set, Tier tier, int[] seconds) {
         assertEquals(4, rows.size());
         for (int i = 0; i < 4; i++) {
@@ -60,7 +69,7 @@ class ArmorTierTableTest {
         for (int i = 0; i < 4; i++) {
             ProductionTable.Row row = ArmorTable.T2_COMBAT.get(i);
             assertEquals(al[i], count(row, "plate", "Aluminium"));
-            assertEquals(hc[i], countMod(row, "part_heavy_cloth"));
+            assertEquals(hc[i], countExternal(row, ArmorCatalog.TANNED_LEATHER));
         }
     }
 
@@ -106,7 +115,7 @@ class ArmorTierTableTest {
         assertEquals(Tier.MV, row.tier());
         assertEquals(10, row.seconds());
         assertEquals(1, row.circuit());
-        assertEquals(2, countMod(row, "part_heavy_cloth"));
+        assertEquals(2, countExternal(row, ArmorCatalog.TANNED_LEATHER));
         assertEquals(1, count(row, "ring", "Aluminium"));
     }
 

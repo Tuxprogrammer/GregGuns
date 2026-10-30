@@ -2,11 +2,13 @@ package com.gregguns.armor.logic;
 
 /**
  * What it takes to repair a piece: a metal part named by GT ore prefix and material (or none), a cloth part named by
- * GregGuns registry name, how the total is split, and how many parts a fully worn piece costs. Plain Java, both sides.
+ * {@code modid:name} item id or bare GregGuns registry name, how the total is split, and how many parts a fully worn
+ * piece costs. Plain Java, both
+ * sides.
  *
  * <p>
- * Deviation: Techguns names its own iron ingot and heavy cloth; GregGuns names a GT part (GGS-09-20), and the metal is
- * the set's gate material rather than iron.
+ * Deviation: Techguns names its own iron ingot and heavy cloth; GregGuns names a GT part (GGS-09-20), the metal is the
+ * set's gate material rather than iron, and the cloth is the pack's Tanned Leather.
  */
 // Spec: docs/techguns-spec/05-armor/armor-catalog.md section 3 (getRepairMats);
 // docs/gregguns-spec/09-machines-utility/repair-bench.md
@@ -43,7 +45,8 @@ public final class RepairSpec {
     /**
      * @param metalPrefix   GT ore prefix of the metal part, for example {@code "plate"}; null for none
      * @param metalMaterial GT material name, for example {@code "Steel"}; null for none
-     * @param clothItem     registry name of the cloth part (for example {@code "part_heavy_cloth"})
+     * @param clothItem     {@code modid:name} id of the cloth part (for example {@code "Backpack:tannedLeather"}), or
+     *                      a bare GregGuns registry name (for example {@code "part_treated_leather"})
      * @param metalRatio    share of the parts that is metal, 0..1; ignored when there is no metal
      * @param totalMats     parts needed to repair a piece with one durability point left
      */
@@ -65,7 +68,7 @@ public final class RepairSpec {
         return metalMaterial;
     }
 
-    /** @return registry name of the cloth part */
+    /** @return {@code modid:name} id or bare GregGuns registry name of the cloth part */
     public String clothItem() {
         return clothItem;
     }

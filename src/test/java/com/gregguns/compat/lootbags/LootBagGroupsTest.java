@@ -60,7 +60,8 @@ class LootBagGroupsTest {
             "gregtech:gt.metaitem.01:32705", // IV circuit: anti-gravity device and others
             "gregtech:gt.metaitem.01:32706", // LuV circuit: alien blaster, missile fuzes
             "gregtech:gt.metaitem.03:32088", // ZPM circuit: nuclear rocket, nuclear cell
-            "minecraft:gunpowder")); // the Ammo Press
+            "minecraft:gunpowder", // the Ammo Press
+            "Backpack:tannedLeather")); // the pack's Tanned Leather: the lining of the armor sets
 
     private static List<LootBagGroups.Group> groups;
 

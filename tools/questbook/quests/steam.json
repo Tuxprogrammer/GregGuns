@@ -1,5 +1,8 @@
 {
   "chapter": "steam",
+  "retired": [
+    "gg.steam.heavy_cloth"
+  ],
   "quests": [
     {
       "key": "gg.steam.intro",
@@ -8,7 +11,7 @@
       "desc": [
         "Before electricity, there is bronze. The Steam chapter builds everything with a crafting table, a hammer and a file: a single-shot Hand Cannon, stone ammunition, and three sets of light armor. No machine is required, although one steam-powered Ammo Press makes bullets for you.",
         "The gate material here is bronze (cast iron for the Miner set). Hold eight bronze plates to open the chapter; the Hand Cannon eats a plate, and the Steam armor takes fourteen.",
-        "The plan is simple. Build the cannon and some bullets, test them on zombies, then dress for the job: Heavy Cloth is the base of every armor set, and bronze plates armor the parts that matter. When you have all of that and a few steel plates, the LV chapter is next.",
+        "The plan is simple. Build the cannon and some bullets, test them on zombies, then dress for the job: Tanned Leather is the base of every armor set, and bronze plates armor the parts that matter. When you have all of that and a few steel plates, the LV chapter is next.",
         "[note]This chapter pays the first loot bags and Pam's snacks. Eat up, then go shoot something.[/note]"
       ],
       "pre": [
@@ -58,8 +61,8 @@
               "damage": 17300
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 6,
+              "id": "Backpack:tannedLeather",
+              "count": 3,
               "damage": 0
             },
             {
@@ -421,13 +424,13 @@
       "implicit": []
     },
     {
-      "key": "gg.steam.heavy_cloth",
-      "title": "Heavy Cloth",
+      "key": "gg.steam.tanned_leather",
+      "title": "Tanned Leather",
       "tier": "Steam",
       "desc": [
-        "Heavy Cloth is the lining of almost every armor set in GregGuns, from the Steam age to the late game. Four wool blocks of any color around a piece of leather make three of it at a crafting table.",
-        "You need plenty: the Steam armor alone takes eleven pieces on top of its bronze plates. Hold nine to finish this quest, which is three crafts of wool and leather.",
-        "[note]Any wool color works, and any mix of colors.[/note]"
+        "Tanned Leather is the lining of almost every armor set in GregGuns, from the Steam age to the late game. It is the pack's own material, the same one your first backpack takes. Bind four leather with four string and a Woven Cotton into Bound Leather, then hang it on a Tinkers' drying rack for about ten minutes.",
+        "You need plenty: the Steam armor alone takes eleven, so keep a few racks busy. Hold four to finish this quest. Once you have an LV Chemical Bath, two leather in phosphoric acid make one with no wait. NEI shows both recipes.",
+        "[note]The Stone Age quest of the same name walks you through the drying rack.[/note]"
       ],
       "pre": [
         "gg.steam.intro"
@@ -437,13 +440,18 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "minecraft:wool",
-              "count": 4,
-              "damage": 32767
+              "id": "Backpack:boundLeather",
+              "count": 1,
+              "damage": 0
             },
             {
               "id": "minecraft:leather",
-              "count": 1,
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:string",
+              "count": 4,
               "damage": 0
             }
           ]
@@ -452,8 +460,8 @@
           "type": "retrieval",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 9,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             }
           ]
@@ -483,8 +491,8 @@
           "type": "choice",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 9,
+              "id": "Backpack:tannedLeather",
+              "count": 2,
               "damage": 0
             },
             {
@@ -494,7 +502,12 @@
             },
             {
               "id": "minecraft:leather",
-              "count": 4,
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:string",
+              "count": 8,
               "damage": 0
             }
           ]
@@ -505,7 +518,7 @@
       "size": 24,
       "main": false,
       "icon": {
-        "id": "gregguns:part_heavy_cloth",
+        "id": "Backpack:tannedLeather",
         "count": 1,
         "damage": 0
       },
@@ -516,20 +529,25 @@
       "title": "T1 Scout Armor",
       "tier": "Steam",
       "desc": [
-        "The Bandit set is the lightest armor in the tab: Heavy Cloth held together with a few bronze plates. Each piece adds to your armor value, and none of them needs a machine. The Bandit Vest is the quest item, cloth around a bronze plate laid out in a crafting grid. Check NEI for the pattern of each piece: mask, vest, pants and boots.",
-        "Tier 1 armor will not stop much damage, but it costs almost nothing and keeps you in the fight until you can afford steel. Each piece comes in several camo patterns, and the Camo Bench cycles them later.",
+        "The Bandit set is the lightest armor in the tab: plain leather with a little Tanned Leather, held together with a few bronze plates. Each piece adds to your armor value, and none of them needs a machine. The Bandit Vest is the quest item: two Tanned Leather, six leather and a bronze plate in a crafting grid. Check NEI for the pattern of each piece: mask, vest, pants and boots.",
+        "Tier 1 armor will not stop much damage, but it costs little and keeps you in the fight until you can afford steel. Each piece comes in several camo patterns, and the Camo Bench cycles them later.",
         "[note]Build a full set if you can: the armor values add up.[/note]"
       ],
       "pre": [
-        "gg.steam.heavy_cloth"
+        "gg.steam.tanned_leather"
       ],
       "tasks": [
         {
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:leather",
+              "count": 6,
               "damage": 0
             },
             {
@@ -574,8 +592,8 @@
           "type": "choice",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {
@@ -607,19 +625,19 @@
       "title": "T1 Miner Armor",
       "tier": "Steam",
       "desc": [
-        "The Miner set trades some of the Scout's lightness for cast iron plates and a helmet with a yellow band. The Miner's Jacket is the quest item: six Heavy Cloth above two cast iron plates, crafted by hand. Cast iron comes from the Better Than Iron quests, and its plates are hammered flat from ingots.",
+        "The Miner set trades some of the Scout's lightness for cast iron plates and a helmet with a yellow band. The Miner's Jacket is the quest item: six Tanned Leather above two cast iron plates, crafted by hand. Cast iron comes from the Better Than Iron quests, and its plates are hammered flat from ingots.",
         "All four pieces are crafted at a table; NEI shows each pattern. The helmet wants yellow dye, and the boots use cast iron nuggets.",
         "[note]Cast iron is the alternative gate for the Steam tier. If you have bronze but no cast iron yet, build the Scout set first.[/note]"
       ],
       "pre": [
-        "gg.steam.heavy_cloth"
+        "gg.steam.tanned_leather"
       ],
       "tasks": [
         {
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 6,
               "damage": 0
             },
@@ -665,8 +683,8 @@
           "type": "choice",
           "items": [
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             },
             {
@@ -698,12 +716,12 @@
       "title": "Steam Armor",
       "tier": "Steam",
       "desc": [
-        "The Steam set is the best protection you can build without a single circuit: bronze plates over Heavy Cloth, fourteen plates in all for the full set. The chestplate is the quest item (five plates and three cloth), and it is more than armor: it is a small steam engine.",
+        "The Steam set is the best protection you can build without a single circuit: bronze plates over Tanned Leather, fourteen plates in all for the full set. The chestplate is the quest item (five plates and three Tanned Leather), and it is more than armor: it is a small steam engine.",
         "Carry coal or charcoal in your inventory and the chestplate burns it to power the set. Powered, the full set makes you faster, a little tougher and a better jumper. Without fuel it is still armor.",
         "[note]One piece of coal or charcoal refuels a quarter of a full charge. The chestplate only burns one when it has room for all of it, so nothing is wasted.[/note]"
       ],
       "pre": [
-        "gg.steam.heavy_cloth"
+        "gg.steam.tanned_leather"
       ],
       "tasks": [
         {
@@ -715,7 +733,7 @@
               "damage": 17300
             },
             {
-              "id": "gregguns:part_heavy_cloth",
+              "id": "Backpack:tannedLeather",
               "count": 3,
               "damage": 0
             }
@@ -766,8 +784,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 6,
+              "id": "Backpack:tannedLeather",
+              "count": 3,
               "damage": 0
             }
           ]
@@ -845,8 +863,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:part_heavy_cloth",
-              "count": 8,
+              "id": "Backpack:tannedLeather",
+              "count": 4,
               "damage": 0
             }
           ]

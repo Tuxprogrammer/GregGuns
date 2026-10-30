@@ -74,7 +74,7 @@ Every registered NPC except the camp turret has an egg (`gregguns:npc_egg`, dama
 | Cyberdemon, Alien Bug | EV | 2,000 |
 | Dictator Dave | IV | 5,000 |
 
-With every module on there are 178 trades: 139 on the Misc tab and 39 on the Components tab.
+With every module on there are 177 trades: 139 on the Misc tab and 38 on the Components tab.
 
 ## Gates
 

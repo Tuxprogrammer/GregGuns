@@ -216,7 +216,6 @@ PARTS = [
     ("part_rad_emitter", "Rad Emitter", "ZPM", ["NaquadahAlloy", "Uranium235"], "radEmitter", "P3", "lead-shielded emitter with green glow"),
     ("part_anti_gravity_core", "Anti Gravity Core", "IV", ["TungstenSteel"], "antiGravityCore", "P3", "cyan core sphere in a steel cage"),
     ("part_cybernetic", "Cybernetic Parts", "EV", ["Electrum", "Titanium"], "cyberneticParts", "P3", "wires and plates, warm gray"),
-    ("part_heavy_cloth", "Heavy Cloth", "ULV", ["Wood"], "heavyCloth", "P2", "folded brown heavy cloth"),
     ("part_treated_leather", "Treated Leather", "LV", ["Steel"], "treatedLeather", "P2", "dark green-black treated leather"),
     ("part_power_plating", "Power Plating", "IV", ["TungstenSteel", "EpoxidFiberReinforced"], "powerPlating", "P2", "slate plate with fiber layer"),
     ("part_gas_mask_filter", "Gas Mask Filter", "MV", ["Aluminium"], "gasMaskFilter", "P2", "round filter canister"),
@@ -310,7 +309,7 @@ PIECES = (("helmet", "Helmet"), ("chestplate", "Chestplate"), ("leggings", "Legg
 SETS = [
     ("t1_scout", "Bandit", "ULV", ["Bronze"], ("Mask", "Vest", "Pants", "Boots"), "t1_scout", "rough cloth with bronze studs"),
     ("t1_miner", "Miner's", "ULV", ["WroughtIron"], ("Helmet", "Jacket", "Pants", "Boots"), "t1_miner", "blue canvas, yellow helmet with lamp, wrought-iron rivets"),
-    ("t1_combat", "Soldier's", "LV", ["Steel"], ("Helmet", "Vest", "Pants", "Boots"), "t1_combat", "steel plates on heavy cloth"),
+    ("t1_combat", "Soldier's", "LV", ["Steel"], ("Helmet", "Vest", "Pants", "Boots"), "t1_combat", "steel plates on leather"),
     ("t2_combat", "Combat", "MV", ["Aluminium"], ("Helmet", "Vest", "Pants", "Boots"), "t2_combat", "dark olive plates with aluminum trim"),
     ("t2_commando", "Commando", "MV", ["Aluminium"], ("Helmet", "Vest", "Pants", "Boots"), "t2_commando", "near-black tactical gear"),
     ("t2_riot", "Riot", "MV", ["Aluminium"], ("Helmet", "Coat", "Pants", "Boots"), "t2_riot", "brown long coat, visor helmet, aluminum shield plates"),
