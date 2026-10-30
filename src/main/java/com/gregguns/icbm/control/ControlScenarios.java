@@ -200,6 +200,11 @@ public final class ControlScenarios {
                 if (stage[0] == 0) {
                     base.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 3L, true);
                     out.checkEquals("unset target", ControlStatus.NO_TARGET, c.currentStatus());
+                    // The target line says the target is missing, so the status line reports the site instead.
+                    out.checkEquals(
+                        "no target: the status line names the pad",
+                        ControlStatus.NO_PAD,
+                        c.currentSiteStatus());
                     out.check(
                         !c.target()
                             .isSet(),
@@ -233,6 +238,22 @@ public final class ControlScenarios {
                 ControlStatus st = c.fire(null);
                 out.checkEquals("pad found, no missile", ControlStatus.NO_MISSILE, st);
                 out.checkEquals("nothing was charged", MTELaunchControl.EU_PER_SHOT * 3L, base.getStoredEU());
+                // With the target cleared the status line reports the pad's own problem, then that the missile is
+                // ready, and never repeats the target line's "no target".
+                c.setXText("");
+                out.checkEquals("cleared target", ControlStatus.NO_TARGET, c.currentStatus());
+                out.checkEquals(
+                    "no target: the status line says no missile",
+                    ControlStatus.NO_MISSILE,
+                    c.currentSiteStatus());
+                com.gregguns.icbm.missile.EntityMissile ready = missileOn(ctx, 0, -2);
+                out.checkEquals("no target, missile ready", ControlStatus.READY, c.currentSiteStatus());
+                out.checkEquals(
+                    "the status line then reads armed and fueled",
+                    LaunchGate.SITE_READY_KEY,
+                    LaunchGate.statusLineKey(c.currentStatus(), c.currentSiteStatus()));
+                ready.setDead();
+                c.setXText("500");
                 // Without power the block says so before it looks at the missile.
                 base.decreaseStoredEnergyUnits(base.getStoredEU(), true);
                 out.checkEquals("no power", ControlStatus.NO_POWER, c.fire(null));

@@ -392,6 +392,15 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         return snapshot().status;
     }
 
+    /**
+     * @return the pre-check without the target right now, recomputed: what the screen's status line reports while no
+     *         target is set ({@link LaunchGate#statusLineKey}); server side
+     */
+    public ControlStatus currentSiteStatus() {
+        snapshot = null;
+        return snapshot().siteStatus;
+    }
+
     /** @return the silo or pad the block is bound to right now, recomputed (tests, the GUI line); server side */
     public SiteLine siteLine() {
         snapshot = null;
@@ -456,10 +465,12 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         LaunchSite site = found.site;
         if (site == null) {
             ControlStatus st = LaunchGate.check(t, false, energy, shots.coolingDown(), false, false, false, 0, 0, 0);
-            if (st == ControlStatus.NO_PAD && found.siloUnformed) {
-                st = ControlStatus.SILO_UNFORMED;
+            ControlStatus siteSt = found.siloUnformed ? ControlStatus.SILO_UNFORMED : ControlStatus.NO_PAD;
+            if (st == ControlStatus.NO_PAD) {
+                st = siteSt;
             }
-            return new LaunchSnapshot(st, false, 0, 0, 0, 0, 0).at(found.line);
+            return new LaunchSnapshot(st, false, 0, 0, 0, 0, 0).at(found.line)
+                .withSiteStatus(siteSt);
         }
         int cd = site.countdownTicks();
         MissileStatus ms = site.status();
@@ -469,10 +480,17 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         double dist = t.distanceFrom(site.centerX(), site.centerZ());
         ControlStatus st = LaunchGate
             .check(t, true, energy, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled(), dist, min, max);
-        if (st == ControlStatus.READY && site.hold() != com.gregguns.icbm.missile.LaunchResult.OK) {
-            st = LaunchGate.fromResult(
-                site.hold()
-                    .name());
+        ControlStatus siteSt = LaunchGate
+            .checkSite(true, energy, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled());
+        com.gregguns.icbm.missile.LaunchResult hold = site.hold();
+        if (hold != com.gregguns.icbm.missile.LaunchResult.OK) {
+            ControlStatus held = LaunchGate.fromResult(hold.name());
+            if (st == ControlStatus.READY) {
+                st = held;
+            }
+            if (siteSt == ControlStatus.READY) {
+                siteSt = held;
+            }
         }
         int radius = t.isSet() && ms.present() ? (int) Math.round(site.expectedRadius(t.aimX(), t.aimZ()) * 10.0) : 0;
         if (cd >= 0 || site.ignited()) {
@@ -496,7 +514,8 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             (int) Math.round(dist),
             radius,
             ms.present() ? ms.tier()
-                .number() : 0).at(found.line);
+                .number() : 0).at(found.line)
+                    .withSiteStatus(siteSt);
     }
 
     /**

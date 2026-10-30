@@ -33,7 +33,8 @@ import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseG
 
 /**
  * The Launch Control panel: a dark status screen (state, the silo or pad it is bound to, target, distance and range,
- * expected blast radius, EU), the X and Z fields, "Use my position", the target slot (Radar Gun) with Load and Save,
+ * expected blast radius, EU; with no target set the state line reports the silo or pad, since the target line already
+ * says the target is missing), the X and Z fields, "Use my position", the target slot (Radar Gun) with Load and Save,
  * and the Launch button. Every button is an
  * {@link InteractionSyncHandler} whose action runs on the server and re-checks the pressing player; the fields write
  * through string sync values the server parses and clamps ({@link MTELaunchControl#setXText}). The Launch button is
@@ -73,6 +74,8 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
     private static final class State {
 
         int status = ControlStatus.NO_TARGET.ordinal();
+        /** The verdict without the target, which the status line shows while no target is set. */
+        int siteStatus = ControlStatus.NO_PAD.ordinal();
         int min;
         int max;
         int distance;
@@ -134,6 +137,10 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
         sync.syncValue("field_z", 0, IcbmSync.editableText(machine::zText, machine::setZText));
         // Status: the getters run on the server, the setters fill the state the screen reads.
         sync.syncValue("st_status", 0, new IntSyncValue(() -> snap().status.ordinal(), v -> state.status = v));
+        sync.syncValue(
+            "st_site_status",
+            0,
+            new IntSyncValue(() -> snap().siteStatus.ordinal(), v -> state.siteStatus = v));
         sync.syncValue("st_min", 0, new IntSyncValue(() -> snap().minRange, v -> state.min = v));
         sync.syncValue("st_max", 0, new IntSyncValue(() -> snap().maxRange, v -> state.max = v));
         sync.syncValue("st_dist", 0, new IntSyncValue(() -> snap().distance, v -> state.distance = v));
@@ -384,11 +391,23 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             && ControlStatus.values()[state.status] != ControlStatus.READY) {
             return tr(ControlStatus.FIRED.langKey());
         }
-        return tr(ControlStatus.values()[state.status].langKey());
+        return tr(LaunchGate.statusLineKey(ControlStatus.values()[state.status], siteStatus()));
+    }
+
+    /** @return the verdict without the target, as synced; NO_PAD for a value out of range */
+    private ControlStatus siteStatus() {
+        return state.siteStatus >= 0 && state.siteStatus < ControlStatus.values().length
+            ? ControlStatus.values()[state.siteStatus]
+            : ControlStatus.NO_PAD;
     }
 
     private int statusColor() {
         ControlStatus s = ControlStatus.values()[state.status];
+        if (s == ControlStatus.NO_TARGET) {
+            // The target line says what is missing; the status line reports the silo or pad: amber when only the
+            // target is missing, red when the site has a problem of its own.
+            return siteStatus() == ControlStatus.READY ? AMBER : ALARM;
+        }
         return s.isGood() ? GOOD : ALARM;
     }
 

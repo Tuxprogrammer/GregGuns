@@ -2,6 +2,7 @@ package com.gregguns.icbm.control;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -82,6 +83,51 @@ class LaunchControlTest {
         assertEquals(ControlStatus.OUT_OF_RANGE, check(t, true, true, false, true, true, true, 1000.1));
         assertEquals(ControlStatus.READY, check(t, true, true, false, true, true, true, 20.0));
         assertEquals(ControlStatus.READY, check(t, true, true, false, true, true, true, 1000.0));
+    }
+
+    @Test
+    void theSiteCheckIsTheGateWithoutTheTarget() {
+        LaunchTarget t = LaunchTarget.of(100, 100);
+        boolean[] f = { false, true };
+        for (boolean pad : f) {
+            for (boolean energy : f) {
+                for (boolean cool : f) {
+                    for (boolean present : f) {
+                        for (boolean armed : f) {
+                            for (boolean fueled : f) {
+                                ControlStatus site = LaunchGate.checkSite(pad, energy, cool, present, armed, fueled);
+                                // In range, the full gate says exactly what the site check says.
+                                assertEquals(site, check(t, pad, energy, cool, present, armed, fueled, 100));
+                                assertEquals(
+                                    ControlStatus.NO_TARGET,
+                                    check(LaunchTarget.NONE, pad, energy, cool, present, armed, fueled, 100));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void withNoTargetTheStatusLineReportsTheSiteNotTheTarget() {
+        // The target line already reads "No target: use a Radar Gun"; the status line must not repeat it.
+        assertEquals(
+            ControlStatus.NO_MISSILE.langKey(),
+            LaunchGate.statusLineKey(ControlStatus.NO_TARGET, ControlStatus.NO_MISSILE));
+        assertEquals(
+            ControlStatus.SILO_UNFORMED.langKey(),
+            LaunchGate.statusLineKey(ControlStatus.NO_TARGET, ControlStatus.SILO_UNFORMED));
+        assertEquals(LaunchGate.SITE_READY_KEY, LaunchGate.statusLineKey(ControlStatus.NO_TARGET, ControlStatus.READY));
+        for (ControlStatus s : ControlStatus.values()) {
+            if (s != ControlStatus.NO_TARGET) {
+                assertEquals(s.langKey(), LaunchGate.statusLineKey(s, ControlStatus.READY), "a set target: " + s);
+                assertNotEquals(
+                    ControlStatus.NO_TARGET.langKey(),
+                    LaunchGate.statusLineKey(ControlStatus.NO_TARGET, s),
+                    "never the duplicate line, site " + s);
+            }
+        }
     }
 
     @Test

@@ -119,6 +119,28 @@ class InHandFitTest {
     }
 
     @Test
+    void theGrimReaperSitsInTheLowerRightNotOverTheScreen() {
+        // Owner review (ADS survey, hip poses): the notes' hold left the launcher's rear behind the eye, a slab over
+        // the lower right third of the screen reaching the top of the frame. Every corner of every box must now be in
+        // front of the near plane, below the eye line and right of the screen centre, like the Rocket Launcher.
+        ClientGunDefinition d = ClientGunDefinitions.byName("grim_reaper");
+        float s = d.modelScale();
+        for (BoxSpec b : d.boxes()) {
+            for (double x : new double[] { b.x(), b.x() + b.w() }) {
+                for (double y : new double[] { b.y(), b.y() + b.h() }) {
+                    for (double z : new double[] { b.z(), b.z() + b.d() }) {
+                        double[] c = fpCamera(d, new double[] { x * s, y * s, z * s });
+                        String where = b.name() + " corner " + c[0] + ", " + c[1] + ", " + c[2];
+                        assertTrue(c[2] > 0.1, "in front of the eye: " + where);
+                        assertTrue(c[1] < -0.2, "below the crosshair: " + where);
+                        assertTrue(c[0] > 0.2, "right of the centre: " + where);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     void longGunButtsReachTheCameraPlaneAndHandgunsStayVisible() {
         for (ClientGunDefinition d : ClientGunDefinitions.ALL) {
             InHandTargets.Target t = InHandTargets.of(d.gunName());

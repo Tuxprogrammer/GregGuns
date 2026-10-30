@@ -956,6 +956,7 @@ gregguns.icbm.control.stick.wrong_dimension=The stored target is in another dime
 gregguns.icbm.control.stick.no_target=Nothing to save: set a target first
 gregguns.icbm.control.gui.target=Target: %s
 gregguns.icbm.control.gui.target_none=No target: use a Radar Gun
+gregguns.icbm.control.gui.status.site_ready=Missile armed and fueled
 gregguns.icbm.control.gui.slot.hint=Radar Gun goes here
 gregguns.icbm.control.gui.slot.tip=Drop a Radar Gun here and press Load target, or right-click this block with one in hand
 gregguns.icbm.control.gui.range=Dist: %s Range: %s
