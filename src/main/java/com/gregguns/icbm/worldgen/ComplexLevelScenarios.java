@@ -285,6 +285,7 @@ public final class ComplexLevelScenarios {
                         .toString();
                     List<String> allowed = ArmoryDisplay.itemsFor(gunName);
                     boolean any = false;
+                    boolean energy = allowed.isEmpty(); // an energy gun's chest draws the armory table
                     TileEntityChest chest = (TileEntityChest) t;
                     for (int i = 0; i < chest.getSizeInventory(); i++) {
                         ItemStack s = chest.getStackInSlot(i);
@@ -292,7 +293,10 @@ public final class ComplexLevelScenarios {
                         any = true;
                         String n = net.minecraft.item.Item.itemRegistry.getNameForObject(s.getItem())
                             .toString();
-                        if (!allowed.contains(n.substring(n.indexOf(':') + 1))) wrongAmmo++;
+                        if (!energy && !allowed.contains(n.substring(n.indexOf(':') + 1))) {
+                            if (wrongAmmo++ < 3)
+                                out.note("gun " + gunName + " chest holds " + n + ", allowed " + allowed);
+                        }
                     }
                     if (!any) noChest++;
                 }
