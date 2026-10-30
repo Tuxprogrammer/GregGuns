@@ -868,6 +868,8 @@ final class ComplexFurnisher {
     static final int DISPLAY_ROWS = 2, PARTITION_HEIGHT = 2;
     /** Lateral cells between two guns on one face of a partition. */
     static final int DISPLAY_STRIDE = 5;
+    /** Most guns one armory shows, however large the room: it keeps the total near the old two rows of frames. */
+    static final int MAX_DISPLAYS = 24;
     private static final String PARTITION = RoomFurniture.PARTITION;
 
     /**
@@ -882,6 +884,7 @@ final class ComplexFurnisher {
         ComplexLayout.Frame f = fit.f;
         int L = fit.L, D = fit.D;
         if (L < 10) return;
+        int shown = 0;
         String[] layers = new String[PARTITION_HEIGHT];
         java.util.Arrays.fill(layers, PARTITION);
         for (int i = 0; i < DISPLAY_ROWS; i++) {
@@ -892,7 +895,8 @@ final class ComplexFurnisher {
                 int facing = face > 0 ? f.backFacing() : (f.backFacing() + 2) & 3;
                 for (int a = face > 0 ? 3 : 5; a <= L - 4; a += DISPLAY_STRIDE) {
                     int d = dw + face;
-                    if (!PARTITION.equals(fit.pieceAt(a, dw)) || !fit.free(a, d)) continue;
+                    if (shown >= MAX_DISPLAYS || !PARTITION.equals(fit.pieceAt(a, dw)) || !fit.free(a, d)) continue;
+                    shown++;
                     fit.occ[a * D + d] = SOLID;
                     fit.r.add(MarkKind.GUN_DISPLAY, f.x(a, d), 1, f.z(a, d), LootKeys.ARMORY, facing, 1);
                 }

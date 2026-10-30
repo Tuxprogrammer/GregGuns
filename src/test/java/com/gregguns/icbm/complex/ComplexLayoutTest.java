@@ -320,7 +320,7 @@ class ComplexLayoutTest {
                 if (r.kind() == RoomKind.ARMORY) {
                     armories++;
                     displays += here;
-                    assertTrue(here >= 1 && here <= 40, "an armory shows about sixteen guns: " + here);
+                    assertTrue(here >= 1 && here <= 24, "an armory shows about sixteen guns: " + here);
                 }
             }
         }
