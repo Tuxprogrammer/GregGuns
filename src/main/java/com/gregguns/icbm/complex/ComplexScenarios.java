@@ -240,6 +240,20 @@ public final class ComplexScenarios {
                 out.check(
                     world.isAirBlock(plan.anchorX() + s.frontX(), floor + 2, plan.anchorZ() + s.frontZ()),
                     "the walkway in front of the controller is open");
+                // "Silo N" hangs one above the controller, on the silo's face, facing the hall (D-signs).
+                int[] sg = com.gregguns.icbm.complex.gen.ComplexSigns.siloSignAt(s);
+                int number = com.gregguns.icbm.complex.gen.ComplexSigns.siloOrder(cp)
+                    .indexOf(s) + 1;
+                TileEntity st = world.getTileEntity(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2]);
+                out.check(
+                    world.getBlock(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2]) == Blocks.wall_sign
+                        && world.getBlockMetadata(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2])
+                            == sg[3],
+                    "silo " + number + " has its wall sign above the controller, facing the hall");
+                out.check(
+                    st instanceof net.minecraft.tileentity.TileEntitySign
+                        && ("Silo " + number).equals(((net.minecraft.tileentity.TileEntitySign) st).signText[1]),
+                    "the sign reads Silo " + number);
                 TileEntity t = world.getTileEntity(cx, floor + 2, cz);
                 boolean hasController = t instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity;
                 out.check(

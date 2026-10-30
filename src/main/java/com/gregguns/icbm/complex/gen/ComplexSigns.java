@@ -1,5 +1,9 @@
 package com.gregguns.icbm.complex.gen;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntitySign;
 
@@ -8,6 +12,7 @@ import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
+import com.gregguns.icbm.complex.SiloSlot;
 import com.gregguns.icbm.worldgen.ComplexText;
 import com.gregguns.icbm.worldgen.SiloCeiling;
 import com.gregguns.worldgen.WindowedSink;
@@ -124,6 +129,62 @@ public final class ComplexSigns {
             if (sink.setBlock(x, y, z, Blocks.wall_sign, at[3])) {
                 TileEntitySign sign = new TileEntitySign();
                 System.arraycopy(text, 0, sign.signText, 0, 4);
+                sink.setTile(x, y, z, sign);
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Level-floor-relative height of a silo's sign: the cell above the controller's, so the controller stays clickable.
+     */
+    public static final int SILO_SIGN_Y = 3;
+
+    /** Wall-sign data values by the controller's facing (0 north, 1 east, 2 south, 3 west): the text faces the hall. */
+    private static final int[] SILO_META = { 2, 5, 3, 4 };
+
+    /**
+     * @param plan the layout
+     * @return the silos in sign order: north to south, then west to east, by shaft; "Silo 1" is the first
+     */
+    public static List<SiloSlot> siloOrder(ComplexPlan plan) {
+        List<SiloSlot> order = new ArrayList<>(plan.silos());
+        order.sort(
+            Comparator.comparingInt(SiloSlot::shaftZ)
+                .thenComparingInt(SiloSlot::shaftX));
+        return order;
+    }
+
+    /**
+     * @param s a silo
+     * @return {x, y, z, meta} in complex-local coordinates: a wall sign in the walkway cell straight in front of the
+     *         silo's face, one above the controller, hanging on the silo's wall and facing the hall. A wall sign
+     *         on the controller's own face would sit in front of the click point (a sign's box takes the click), so
+     *         the sign goes above it, in the same column
+     */
+    public static int[] siloSignAt(SiloSlot s) {
+        return new int[] { s.frontX(), SILO_SIGN_Y, s.frontZ(), SILO_META[s.facing()] };
+    }
+
+    /**
+     * Writes "Silo N" on every silo whose sign cell lies in the sink's window. Present or missing controller alike.
+     *
+     * @return how many signs were written
+     */
+    public static int writeSilos(ComplexPlan plan, int ox, int oy, int oz, WindowedSink sink) {
+        int n = 0;
+        List<SiloSlot> order = siloOrder(plan);
+        for (int i = 0; i < order.size(); i++) {
+            int[] at = siloSignAt(order.get(i));
+            int x = ox + at[0], y = oy + at[1], z = oz + at[2];
+            if (!sink.window()
+                .contains(x, z)) {
+                continue;
+            }
+            if (sink.setBlock(x, y, z, Blocks.wall_sign, at[3])) {
+                TileEntitySign sign = new TileEntitySign();
+                sign.signText[1] = "Silo " + (i + 1);
                 sink.setTile(x, y, z, sign);
                 n++;
             }
