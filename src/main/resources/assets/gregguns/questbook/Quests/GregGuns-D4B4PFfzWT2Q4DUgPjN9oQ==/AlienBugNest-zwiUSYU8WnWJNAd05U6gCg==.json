@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Alien Bug Nest is a hive of hard resin walls and soft egg clusters, with a climbable slime trail down its entrance shaft and a vanilla mob spawner for the Alien Bug at its heart. Nothing else generates resin or eggs, so mining some is proof you were there.\n\nBring back four resin and two egg clusters. Resin is hard to mine; eggs are soft.\n\n[note]The nest is off by default. An admin can place it by enabling the Alien Bug Nest in the worldgen section of the GregGuns config.[/note]",
+      "desc:8": "The Alien Bug Nest is a hive of hard resin walls and soft egg clusters, with a climbable slime trail down its entrance shaft and a vanilla mob spawner for the Alien Bug at its heart. Nothing else generates resin or eggs, so mining some is proof you were there.\n\nBring back four resin and two egg clusters. Resin is hard to mine; eggs are soft.\n\n[note]An admin can stop nests from generating with the Alien Bug Nest setting in the worldgen section of the GregGuns config.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

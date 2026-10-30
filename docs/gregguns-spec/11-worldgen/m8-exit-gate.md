@@ -86,7 +86,7 @@ Client checks still owed for M8. None can be judged headless.
 - [ ] Chisel palette: with Chisel present, each palette key resolves to the intended variant and reads well; with Chisel absent, the vanilla fallbacks look acceptable (GGS-11-25 to 27).
 - [ ] GT ore pass over structures (Q4, answered: GT's ore pass replaces `minecraft:stone`). Confirm in game that ore veins appear inside structure stone, and decide whether the layouts need non-stone walls. Palette keys avoid raw stone and cobblestone until this is checked.
 - [ ] Weapon and reinforced chests in structures show the GregGuns chest model, face the right way, and fill when opened.
-- [ ] Alien Bug Nest (enable `worldgen.enabledAlienBugNest`): fly into a sandy biome nest, screenshot the shaft mouth, the slime climb, the main chamber pillar and a Bug Hole chamber with egg piles; confirm the climb works and the Bug Holes spawn Alien Bugs when `alienBug` is on.
+- [ ] Alien Bug Nest (`worldgen.enabledAlienBugNest`, on by default): fly into a sandy biome nest, screenshot the shaft mouth, the slime climb, the main chamber pillar and a Bug Hole chamber with egg piles; confirm the climb works and the Bug Holes spawn Alien Bugs when `alienBug` is on.
 - [ ] Optional evidence: a pack that carries ArchaicFix with `logCascadingWorldgen=true`, flying or teleporting across a few thousand blocks of fresh terrain, with no log line naming `gregguns`.
 
 ## Open items found while building the harness
@@ -111,7 +111,7 @@ Fixed on `m8/polish`: `worldgen.generator_test_layout` now compares only the cel
 
 ## Alien Bug Nest and its blocks (S5)
 
-Status: done. Default off (Q2, GGS-11-15): enabled only by `worldgen.enabledAlienBugNest`.
+Status: done. On by default (GGS-11-15); `worldgen.enabledAlienBugNest` switches it off.
 
 | Rule | Evidence | Status |
 |---|---|---|

@@ -4,7 +4,7 @@
 
 This area has **no Techguns counterpart**. Techguns has no questbook, so there is no baseline to compare against and no matching folder in the [Techguns spec](../../techguns-spec/README.md). The area exists because the GTNH pack hands progression to players through BetterQuesting, and the owner wants a GregGuns tab that steers a player into the mod.
 
-The quest line **ships inside the GregGuns jar** ([design record 0015](../../design/0015-m9-self-contained-polish.md)), not in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)). The jar carries 135 quests in 15 chapters, plus 7 hidden tier-skip triggers (see [quest-line.md](quest-line.md#hidden-tier-skip-triggers)) as resource files in BetterQuesting's own format, and a hidden config key installs them into the server's BetterQuesting database. This area specifies the quest data, how the quests unlock, and how the resources are built and checked.
+The quest line **ships inside the GregGuns jar** ([design record 0015](../../design/0015-m9-self-contained-polish.md)), not in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)). The jar carries 135 quests in 15 chapters, plus 7 hidden tier-skip triggers (see [quest-line.md](quest-line.md#hidden-tier-skip-triggers)) as resource files in BetterQuesting's own format, and a config key (on by default, switchable off) installs them into the server's BetterQuesting database. This area specifies the quest data, how the quests unlock, and how the resources are built and checked.
 
 Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/`) and BetterQuesting 3.8.89-GTNH source:
 
@@ -24,7 +24,7 @@ Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquest
 | [quest-line.md](quest-line.md) | All 135 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
 | [authoring.md](authoring.md) | The pack's file format, ID derivation, one fully worked quest, the builder and validator in `tools/questbook/`, how to rebuild and test, checklist |
 
-The code for this area is the quest data and tools in `tools/questbook/` (`quests/`, `build_quests.py`, `validate_quests.py`), the generated resources in `src/main/resources/assets/gregguns/questbook/`, and `QuestbookResourcesTest`. The installer is a separate piece, built behind the hidden config key.
+The code for this area is the quest data and tools in `tools/questbook/` (`quests/`, `build_quests.py`, `validate_quests.py`), the generated resources in `src/main/resources/assets/gregguns/questbook/`, and `QuestbookResourcesTest`. The installer is a separate piece, built behind the `questbook.install` config key.
 
 ## Tab placement
 
@@ -123,7 +123,7 @@ Per [0015](../../design/0015-m9-self-contained-polish.md) nothing here is a chan
 
 How the install behaves:
 
-- **Hidden config key.** The installer, `compat/BetterQuestingInstall`, is built behind a hidden config key that is off by default and absent from the in-game config GUI. With it off nothing is installed and BetterQuesting is never touched.
+- **Config key.** The installer, `compat/BetterQuestingInstall`, is built behind the `questbook.install` config key, which is on by default and shown in the in-game config GUI. With it off nothing is installed and BetterQuesting is never touched.
 - **Repeatable.** Quest and line IDs are stable UUIDs derived from the keys ([GGS-12-02](#requirements)), so installing twice, or after an update, replaces the same quests rather than adding copies. Retired quests are deleted from the database, with their line entries and progress.
 - **No pack edits.** No `QuestSettings.json` bump, no `QuestLinesOrder.txt` edit, no `LootBags.xml` change. Quests hand out the GregGuns bags, whose groups the jar adds to EnhancedLootBags in memory ([pack-loot.md](../06-items/pack-loot.md#enhancedlootbags)).
 - **Optional transition.** A one-quest cross link from the Kill All the Things line is left to a pack maintainer who wants it ([quest-line.md](quest-line.md#relation-to-the-packs-lines)).
@@ -144,12 +144,12 @@ How the install behaves:
 - **GGS-12-10** Hunt tasks use `gregguns.<Name>` entity names with `subtypes` off, and every name is registered by GregGuns.
 - **GGS-12-11** Only `gg.start.welcome` uses a checkbox. Every other quest has a task the game checks: an item, a craft or a kill. A hunt cannot match an Infernal rank, so no quest hunts one.
 - **GGS-12-12** A structure quest asks for something the player brings back from it ([11-worldgen](../11-worldgen/index.md)). No `location` task names a GregGuns structure.
-- **GGS-12-13** Only the three config-gated boss quests (Dictator Dave, Cyberdemon, Alien Bug) are `SECRET`.
+- **GGS-12-13** Only the Dictator Dave quest is `SECRET`: he never spawns on his own. The Cyberdemon, Alien Bug and Attack Helicopter spawn by default, so their quests are `NORMAL`.
 - **GGS-12-14** Quest text is inline (`name:8`, `desc:8`) and mirrored in the generated `en_US.lang` block, reads as prose in paragraphs the way the pack's quests do, and uses only the pack's `[warn]`, `[note]`, `[quest]`, `[url]` and `[questlink]` tags; a `[questlink]` names a quest key, which the builder turns into its id. Each title carries its tier's color and bold, as the pack's tier tabs do (Steam `§c`, LV `§2`, MV `§6`, HV `§5`, EV `§8`, IV `§9`, LuV `§d`, ZPM `§b`); the builder adds it. Each quest teaches one mechanic.
 - **GGS-12-15** No two position boxes in the line overlap. A box is 24 units; a main quest (`main: true`, the spine a player must follow, drawn with thick incoming lines) or a chapter head may be 48, a tier milestone 72, and the older chapter heads are 28.
 - **GGS-12-16** Every `gregguns:` item id and `gregguns.<Name>` entity name in the files is a name the mod registers, and every GregGuns machine is a `gregtech:gt.blockmachines` stack with one of the reserved MTE ids. `QuestbookResourcesTest` checks them against `NeiOrder`, `NpcMob` and `GregGunsMTEIDs`. Every other item id (coins, Galacticraft parts, GT materials, food, loot bags) is one the pack itself uses: it is in `tools/questbook/pack_items.txt`, built by `pack_items.py` from the pack's `DefaultQuests`, `LootBags.xml` and the HarvestCraft foods. A GT machine is ours or one the pack's quests name. No placeholder name is left.
 - **GGS-12-17** The Repair Bench and Turret quests carry a provisional tier and are revisited when [09](../09-machines-utility/index.md) settles them.
-- **GGS-12-18** The quest line ships in the GregGuns jar and is installed only when the hidden config key is on, so a pack without GregGuns, or with the key off, has no GregGuns tab and no dangling quests. The line and its quests have fixed IDs, so the installer can remove exactly them: on every install it deletes the retired ids that the database still holds (GGS-12-02) and touches no other quest.
+- **GGS-12-18** The quest line ships in the GregGuns jar and is installed only when the `questbook.install` key is on (the default), so a pack without GregGuns, or with the key off, has no GregGuns tab and no dangling quests. The line and its quests have fixed IDs, so the installer can remove exactly them: on every install it deletes the retired ids that the database still holds (GGS-12-02) and touches no other quest.
 
 ## Tests
 

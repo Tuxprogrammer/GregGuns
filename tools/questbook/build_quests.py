@@ -492,9 +492,8 @@ def check(data):
         for ref in QUESTLINK.findall(q['desc']):
             if not ref.isdigit() and ref not in keys:
                 problems.append('%s: [questlink] to unknown quest key %s' % (k, ref))
-        if q.get('visibility') == 'SECRET' and not (q['chapter'] == 'npc' and k in (
-                'gg.npc.dave', 'gg.npc.cyberdemon', 'gg.npc.alien_bug')):
-            problems.append('%s: SECRET outside the three boss quests (GGS-12-13)' % k)
+        if q.get('visibility') == 'SECRET' and not (q['chapter'] == 'npc' and k == 'gg.npc.dave'):
+            problems.append('%s: SECRET outside the Dictator Dave quest (GGS-12-13)' % k)
         if q.get('logic', 'AND') not in ('AND', 'OR'):
             problems.append('%s: logic must be AND or OR' % k)
     return problems, warnings

@@ -144,8 +144,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierBigBunker = 1;
 
-    @Config.Comment({ "Place the Alien Bug Nest. Default: false." })
-    public static boolean enabledAlienBugNest = false;
+    @Config.Comment({ "Place the Alien Bug Nest. Default: true." })
+    public static boolean enabledAlienBugNest = true;
 
     @Config.Comment({ "BiomeDictionary type names (for example SNOWY) in which the Alien Bug Nest is never placed.",
         "Default: none." })

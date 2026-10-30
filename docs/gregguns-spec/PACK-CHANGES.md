@@ -60,7 +60,7 @@ Every change GregGuns once needed outside this repo, collected from the area ind
 
 ### Questbook ([12-questbook](12-questbook/index.md))
 
-**Done in jar.** The 121 quests ship inside the GregGuns jar, and the hidden key `questbook.install` installs them into the server's BetterQuesting database ([design record 0015](../design/0015-m9-self-contained-polish.md), [index.md](12-questbook/index.md#delivered-from-the-jar)). The one optional owner step is a position file that cross-links `gg.npc.intro` into `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` ([quest-line.md](12-questbook/quest-line.md#relation-to-the-packs-lines)).
+**Done in jar.** The 121 quests ship inside the GregGuns jar, and the config key `questbook.install` (on by default) installs them into the server's BetterQuesting database ([design record 0015](../design/0015-m9-self-contained-polish.md), [index.md](12-questbook/index.md#delivered-from-the-jar)). The one optional owner step is a position file that cross-links `gg.npc.intro` into `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` ([quest-line.md](12-questbook/quest-line.md#relation-to-the-packs-lines)).
 
 ### Recipe-chain notes (no file change; Status: Not applicable)
 
