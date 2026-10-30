@@ -52,8 +52,27 @@ class ComplexContentsTest {
     }
 
     @Test
-    void abandonedHasNoGuardsAndOperationalHasMany() {
-        assertEquals(0, sum(ActivityLevel.ABANDONED, 4, Kind.SPAWNER)[0]);
+    void abandonedHasOneOrTwoHoldoutsAndOperationalHasMany() {
+        boolean one = false;
+        boolean two = false;
+        for (long s = 0; s < 60; s++) {
+            ComplexPlan plan = ComplexLayout.generate(s, 1, 2);
+            List<Placement> ps = ComplexContents.build(plan, ActivityLevel.ABANDONED, 4, null);
+            long n = count(ps, Kind.SPAWNER);
+            assertTrue(n >= 1 && n <= 2, "seed " + s + " has " + n + " spawners");
+            one |= n == 1;
+            two |= n == 2;
+            for (Placement p : ps) {
+                if (p.kind() == Kind.SPAWNER) {
+                    assertEquals(SpawnerKind.SILO_GUARD, p.spawner(), "holdouts are the weaker guards");
+                }
+            }
+            assertEquals(
+                ps.toString(),
+                ComplexContents.build(plan, ActivityLevel.ABANDONED, 4, null)
+                    .toString());
+        }
+        assertTrue(one && two, "both counts occur");
         long partly = sum(ActivityLevel.PARTLY_ABANDONED, 4, Kind.SPAWNER)[0];
         long op = sum(ActivityLevel.OPERATIONAL, 4, Kind.SPAWNER)[0];
         assertTrue(partly > 0, "partly abandoned has some guards");
@@ -317,6 +336,29 @@ class ComplexContentsTest {
         }
         assertTrue(high > low, "guards " + low + " at EV, " + high + " at UMV");
         assertTrue(high <= low * 1.5 + 1, "no more than half again: " + low + " vs " + high);
+    }
+
+    private static long[] machinesAndChests(ActivityLevel level) {
+        long working = 0;
+        long chests = 0;
+        for (long s = 0; s < 60; s++) {
+            for (Placement p : ComplexContents.build(ComplexLayout.generate(s, 1, 2), level, 4, null)) {
+                if (p.kind() == Kind.MACHINE && !p.dead()) working++;
+                if (p.kind() == Kind.CHEST) chests++;
+            }
+        }
+        return new long[] { working, chests };
+    }
+
+    @Test
+    void abandonedComplexesHoldFarFewerWorkingMachinesAndChests() {
+        long[] ab = machinesAndChests(ActivityLevel.ABANDONED);
+        long[] pa = machinesAndChests(ActivityLevel.PARTLY_ABANDONED);
+        long[] op = machinesAndChests(ActivityLevel.OPERATIONAL);
+        assertTrue(op[0] > 0 && ab[0] * 8 < pa[0], "working machines " + ab[0] + " vs " + pa[0]);
+        assertTrue(ab[0] * 20 < op[0], "working machines " + ab[0] + " vs " + op[0]);
+        assertTrue(ab[1] * 2 < op[1], "chests " + ab[1] + " vs " + op[1]);
+        assertTrue(ab[1] > 0, "a few chests remain");
     }
 
     private static int spawners(java.util.List<Placement> placements) {

@@ -39,10 +39,17 @@ class ActivityLevelTest {
         assertTrue(a.litChance() < p.litChance() && p.litChance() < o.litChance());
         assertTrue(a.richness() < p.richness() && p.richness() < o.richness());
         for (int band = 0; band <= 3; band++) {
-            assertEquals(0.0, a.spawnerChance(band), "abandoned has no guards");
+            assertEquals(0.0, a.spawnerChance(band), "abandoned guards come only from the holdout pick (D284)");
             assertTrue(o.spawnerChance(band) >= p.spawnerChance(band));
         }
         assertTrue(p.spawnerChance(3) > p.spawnerChance(0), "partly abandoned guards the deeper sections");
+        assertEquals(0.30, a.chestKeepChance(), 1e-9);
+        assertEquals(0.20, a.absentMachineChance(), 1e-9);
+        assertEquals(0.90, a.deadMachineChance(), 1e-9);
+        assertEquals(1.0, p.chestKeepChance(), 1e-9);
+        assertEquals(1.0, o.chestKeepChance(), 1e-9);
+        assertEquals(0.0, p.absentMachineChance(), 1e-9);
+        assertEquals(0.0, o.absentMachineChance(), 1e-9);
         assertTrue(a.flooded() && p.flooded() && !o.flooded());
     }
 

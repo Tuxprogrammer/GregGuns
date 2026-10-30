@@ -31,7 +31,8 @@ public final class ComplexContents {
 
     /** Salts, one per roll family, so two rolls on one cell are independent. */
     private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_SPAWN = 0x59A, S_ELITE = 0xE11,
-        S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1;
+        S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_CHEST = 0xC4E,
+        S_ABSENT = 0xAB5, S_HOLD = 0x401D, S_HOLD_N = 0x401E;
 
     private ComplexContents() {}
 
@@ -49,6 +50,7 @@ public final class ComplexContents {
         List<Placement> out = new ArrayList<>();
         int[] chestCounter = { 0 };
         List<Placement> chests = new ArrayList<>();
+        java.util.Set<Integer> collapsedRooms = new java.util.HashSet<>();
         Box hall = plan.hall()
             .bounds();
 
@@ -56,6 +58,7 @@ public final class ComplexContents {
         for (Room r : plan.rooms()) {
             boolean collapsed = mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p);
             if (collapsed) {
+                collapsedRooms.add(r.id());
                 collapses.add(
                     Placement.at(Kind.COLLAPSE, r.bounds().minX, r.bounds().minY, r.bounds().minZ)
                         .box(r.bounds())
@@ -65,6 +68,9 @@ public final class ComplexContents {
         }
         for (Tunnel t : plan.tunnels()) {
             marks(t.marks(), t.bounds(), "tunnel", false, p, seed, ceiling, hall, out, chests, chestCounter, level);
+        }
+        if (level == ActivityLevel.ABANDONED) {
+            holdouts(plan, seed, collapsedRooms, out);
         }
         bonuses(plan, p, seed, other, ceiling, chests);
         List<Placement> all = new ArrayList<>(collapses);
@@ -169,6 +175,9 @@ public final class ComplexContents {
             double u = Mix.unit(h);
             switch (m.kind()) {
                 case LOOT_CHEST: {
+                    if (Mix.unit(Mix.of(seed, S_CHEST, m.x() * 4096L + m.z(), m.y())) >= p.chestKeepChance()) {
+                        break; // a ruin's chest was emptied and carried off long ago (D284)
+                    }
                     int index = counter[0]++;
                     Placement c = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
                         .category(SiloLootTables.categoryName(m.key(), ceiling))
@@ -180,6 +189,9 @@ public final class ComplexContents {
                     break;
                 }
                 case ITEM_FRAME_WALL:
+                    if (Mix.unit(Mix.of(seed, S_CHEST, m.x() * 4096L + m.z(), m.y())) >= p.chestKeepChance()) {
+                        break;
+                    }
                     out.add(
                         Placement.at(Kind.FRAME_WALL, m.x(), m.y(), m.z())
                             .category(SiloLootTables.categoryName(m.key(), ceiling))
@@ -327,6 +339,46 @@ public final class ComplexContents {
                 .build());
     }
 
+    /**
+     * The abandoned level's few holdouts (D284): one or two guard spawners at hashed "post" marks (guard posts and
+     * corridor junctions), never in a collapsed room, so a ruin still bites a little. Every other spawner mark is
+     * silent at this level. The pick is a hash of the plan's seed and each mark's cell, so it is the same in every
+     * populate window.
+     */
+    private static void holdouts(ComplexPlan plan, long seed, java.util.Set<Integer> collapsed, List<Placement> out) {
+        List<Mark> pool = new ArrayList<>();
+        addPosts(
+            plan.hall()
+                .marks(),
+            pool);
+        for (Room r : plan.rooms()) {
+            if (!collapsed.contains(r.id())) {
+                addPosts(r.marks(), pool);
+            }
+        }
+        for (Tunnel t : plan.tunnels()) {
+            addPosts(t.marks(), pool);
+        }
+        pool.sort(
+            java.util.Comparator.comparingDouble(m -> Mix.unit(Mix.of(seed, S_HOLD, m.x() * 4096L + m.z(), m.y()))));
+        int n = Math.min(pool.size(), 1 + (int) (Mix.of(seed, S_HOLD_N, 0, 0) & 1L));
+        for (int i = 0; i < n; i++) {
+            Mark m = pool.get(i);
+            out.add(
+                Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
+                    .spawner(SpawnerKind.SILO_GUARD)
+                    .build());
+        }
+    }
+
+    private static void addPosts(List<Mark> marks, List<Mark> pool) {
+        for (Mark m : marks) {
+            if (m.kind() == com.gregguns.icbm.complex.MarkKind.SPAWNER && "post".equals(m.key())) {
+                pool.add(m);
+            }
+        }
+    }
+
     private static void machine(Mark m, ActivityProfile p, long seed, int ceiling, List<Placement> out) {
         MachineRole role;
         try {
@@ -335,6 +387,9 @@ public final class ComplexContents {
             return; // an unknown role is left empty rather than guessed
         }
         long h = Mix.of(seed, S_MACHINE, m.x() * 4096L + m.z(), m.y());
+        if (Mix.unit(Mix.of(seed, S_ABSENT, m.x() * 4096L + m.z(), m.y())) < p.absentMachineChance()) {
+            return; // stripped to the floor: nothing left to place
+        }
         boolean dead = Mix.unit(Mix.of(seed, S_DEAD, m.x() * 4096L + m.z(), m.y())) < p.deadMachineChance();
         out.add(
             Placement.at(Kind.MACHINE, m.x(), m.y(), m.z())

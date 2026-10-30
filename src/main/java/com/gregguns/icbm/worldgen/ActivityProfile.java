@@ -19,13 +19,15 @@ public final class ActivityProfile {
         0.12,
         0.05,
         0.18,
-        0.35,
+        0.90,
         true,
         new double[] { 0, 0, 0, 0 },
         0.0,
         0,
         0.08,
-        0.25);
+        0.25,
+        0.30,
+        0.20);
     private static final ActivityProfile PARTLY = new ActivityProfile(
         ActivityLevel.PARTLY_ABANDONED,
         0.10,
@@ -40,7 +42,9 @@ public final class ActivityProfile {
         0.0,
         1,
         0.10,
-        0.40);
+        0.40,
+        1.0,
+        0.0);
     private static final ActivityProfile OPERATIONAL = new ActivityProfile(
         ActivityLevel.OPERATIONAL,
         0.0,
@@ -55,7 +59,9 @@ public final class ActivityProfile {
         1.0,
         2,
         0.25,
-        0.60);
+        0.60,
+        1.0,
+        0.0);
 
     private final ActivityLevel level;
     private final double collapseChance;
@@ -71,10 +77,12 @@ public final class ActivityProfile {
     private final int richness;
     private final double chipChance;
     private final double siloPartChance;
+    private final double chestKeepChance;
+    private final double absentMachineChance;
 
     private ActivityProfile(ActivityLevel level, double collapse, double breach, double rubble, double hole, double lit,
         double brokenCasing, double deadMachine, boolean flooded, double[] spawnerByDepth, double shaftSpawner,
-        int richness, double chip, double siloPart) {
+        int richness, double chip, double siloPart, double chestKeep, double absentMachine) {
         this.level = level;
         this.collapseChance = collapse;
         this.breachChance = breach;
@@ -89,6 +97,8 @@ public final class ActivityProfile {
         this.richness = richness;
         this.chipChance = chip;
         this.siloPartChance = siloPart;
+        this.chestKeepChance = chestKeep;
+        this.absentMachineChance = absentMachine;
     }
 
     /**
@@ -179,5 +189,18 @@ public final class ActivityProfile {
     /** @return chance the silo's missing part is lying in a chest of the complex */
     public double siloPartChance() {
         return siloPartChance;
+    }
+
+    /**
+     * @return per chest or loot frame mark, the chance it is placed at all (D284: a ruin was looted long ago, so most
+     *         of its chests are gone)
+     */
+    public double chestKeepChance() {
+        return chestKeepChance;
+    }
+
+    /** @return per machine slot, the chance it holds nothing (stripped), checked before the husk roll (D284) */
+    public double absentMachineChance() {
+        return absentMachineChance;
     }
 }

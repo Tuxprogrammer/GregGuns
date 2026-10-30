@@ -118,7 +118,7 @@ def _profiles() -> list[dict]:
         out.append(dict(
             name=m.group(1), collapse=float(args[1]), breach=float(args[2]), rubble=float(args[3]), hole=float(args[4]),
             lit=float(args[5]), broken=float(args[6]), dead=float(args[7]), flooded=args[8] == "true", spawn=arr,
-            shaft=float(args[10]), richness=int(args[11]), chip=float(args[12]), part=float(args[13])))
+            shaft=float(args[10]), richness=int(args[11]), chip=float(args[12]), part=float(args[13]), keep=float(args[14]), absent=float(args[15])))
     names = [p["name"] for p in out]
     if names != ["ABANDONED", "PARTLY", "OPERATIONAL"]:
         raise SystemExit(f"ActivityProfile constants changed: {names}")
@@ -583,7 +583,7 @@ def _meter(frac: float, color: str, label: str | None = None) -> str:
 
 
 FLAVOR = [
-    "Dark and ruined: a few lit lamp lines, rubble, fallen rooms, breached walls, nothing on guard.",
+    "Dark and ruined: a few lit lamp lines, rubble, fallen rooms, breached walls, picked clean of chests and machines, one or two guard posts left.",
     "Half dead: whole rooms and halls lit or dark, some rooms fallen in, guards hold the deeper rooms.",
     "Lit and running: every lamp burns, walls intact, a dry pump room, guards at the posts and the silo walkways.",
 ]
@@ -604,7 +604,9 @@ def activity_table() -> str:
         row("Floor holes", [M_("hole", i) for i in range(3)], "per damaged floor cell"),
         row("Rubble", [M_("rubble", i) for i in range(3)], "per wall or floor cell"),
         row("Lamps lit", [M_("lit", i) for i in range(3)], "by lamp line, by section, all"),
-        row("Dead machines", [M_("dead", i) for i in range(3)], "a dead machine is a bare hull"),
+        row("Machine slots left empty", [M_("absent", i) for i in range(3)], "stripped to the floor"),
+        row("Dead machines", [M_("dead", i) for i in range(3)], "of the rest; a dead machine is a bare hull"),
+        row("Chests that are still there", [M_("keep", i) for i in range(3)], "per chest or wall frame"),
         row("Pump room flooded", ["Yes" if p["flooded"] else "No" for p in P]),
         row("Chest richness", [f"{p['richness']} of 2" for p in P], "more picks, heavier top-metal lines"),
         row("Guard posts at the hall", [_meter(p["spawn"][0], LEVEL_COLOR[i]) for i, p in enumerate(P)], "chance per post, EV planet"),
@@ -773,7 +775,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <li>At most <b>5</b> of each guard type near it, up to <b>3</b> at a time, every <b>5 to 6 seconds</b>.</li>
 <li><b>Break the spawner and it is gone</b> for good. It drops nothing. By hand it is slow, as every spawner in the pack is; a missile warhead destroys it outright.</li>
 <li>Guards are armed to match the planet: danger <b>3</b> up to IV, <b>4</b> at LuV and ZPM, <b>5</b> from UV up.</li>
-<li>An abandoned complex has no posts at all.</li></ul></div></div></div>
+<li>An abandoned complex keeps one or two guard posts, at a hall branch or a guard post room.</li></ul></div></div></div>
 
 <div class="sec"><h2>Loot by planet</h2>
 <div class="pt" style="margin-bottom:10px">Nothing in a complex, chest or machine, goes above its planet's <b>ceiling</b>. The Overworld and the Moon sit at EV, and each rocket tier above the Moon lifts the ceiling by one voltage tier, to UMV for Tier 9. Chests fill with a ladder of GregTech metals, and the top rung at the ceiling is the most common. Guns come from the weapon tables and stop at ZPM, so above UHV the loot is GregTech material only.</div>
@@ -786,7 +788,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="sec"><h2>Real machines, real salvage</h2>
 <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
 <div><div class="pt">The machines in the rooms are <b>real GregTech machines</b>: generators, Battery Buffers, Assemblers and pumps at the ceiling's tier or one or two below it (never under HV), plus a
-<b>Launch Control</b> and Galacticraft's <b>NASA Workbench</b>. Air handlers, fuel tanks and consoles are machine hulls. You can pick up what you find, though a dead machine, about a third to a half of them in a ruined complex, is only the bare hull.</div>
+<b>Launch Control</b> and Galacticraft's <b>NASA Workbench</b>. Air handlers, fuel tanks and consoles are machine hulls. You can pick up what you find, though a dead machine is only the bare hull: nearly all of them in a ruined complex, about half in a partly abandoned one. Most machine slots and chests in a ruin are simply gone, so a working machine there is a rare find.</div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:8px">{hulls}</div></div>
 <div><div class="pt"><b>Nothing live is left behind.</b> The magazine holds stainless steel frame boxes and four plates, never a warhead. Chests hold a <b>damaged missile body</b> (too broken to stand; it recycles for its plates),
 <b>rocket fuel cells</b> in the fuel depot, and now and then a <b>schematic chip</b>. The <b>Silo Complex Wall</b> mines to itself: a handsome plated block for your own base, though no machine takes it.</div>
