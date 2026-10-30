@@ -106,11 +106,17 @@ class StructureCatalogTest {
     @Test
     void bugNestJoinsTheMediumPoolOnlyWhenEnabledAndWanted() {
         LayoutRegistry none = registry();
-        // default: the nest is disabled, so no entry even with the placer present (Q2, GGS-11-15)
+        // disabled by an admin: no entry even with the placer present (GGS-11-15)
         assertTrue(
-            StructureCatalog.pools(none, s -> s.enabledByDefault(), false, true)
+            StructureCatalog.pools(none, s -> s != StructureId.ALIEN_BUG_NEST, false, true)
                 .get(SizeClass.MEDIUM)
                 .isEmpty());
+        // the default (on): the nest is in the pool
+        assertEquals(
+            1,
+            StructureCatalog.pools(none, s -> s.enabledByDefault(), false, true)
+                .get(SizeClass.MEDIUM)
+                .size());
         // enabled, placer present: one MEDIUM entry with the fixed nest box
         List<PoolEntry> on = StructureCatalog.pools(none, s -> s == StructureId.ALIEN_BUG_NEST, false, true)
             .get(SizeClass.MEDIUM);
@@ -140,8 +146,8 @@ class StructureCatalogTest {
 
     @Test
     void idsToLoadSkipsDisabled() {
-        List<String> ids = StructureCatalog.idsToLoad(s -> s.enabledByDefault());
-        assertFalse(ids.contains("alien_bug_nest"));
-        assertTrue(ids.contains("big_bunker"));
+        List<String> ids = StructureCatalog.idsToLoad(s -> s != StructureId.BIG_BUNKER);
+        assertFalse(ids.contains("big_bunker"));
+        assertTrue(ids.contains("gas_station"));
     }
 }

@@ -98,7 +98,7 @@
 - **GGS-11-13** The terrain check runs on the rotated footprint. A ship needs water at its sampled columns, at least as deep as its hull.
 - **GGS-11-14** A footprint that contains village-style blocks not placed by GregGuns is skipped.
 - **GGS-11-12a** On Ross128b and Ross128ba the dimension gate is the BartWorks IDs plus `structureRoss128`; no code compares them with a literal.
-- **GGS-11-15** Each structure has its own `enabled` flag, default `true`, except the Alien Bug Nest, which defaults to `false` (0005: gated content).
+- **GGS-11-15** Each structure has its own `enabled` flag, default `true`, the Alien Bug Nest included.
 
 ### Generator wiring (M8 G9)
 
