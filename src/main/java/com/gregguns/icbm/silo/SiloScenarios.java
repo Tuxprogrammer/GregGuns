@@ -72,6 +72,7 @@ public final class SiloScenarios {
         registry.register(new T3EmpLaunch());
         registry.register(new Fuels());
         registry.register(new PowerLoss());
+        registry.register(new PowerGate());
         registry.register(new Resume());
         registry.register(new UnformedPad());
         registry.register(new HandStack());
@@ -1175,6 +1176,132 @@ public final class SiloScenarios {
                                 .tier());
                         out.checkEquals("nothing is pending any more", 0, s.pendingTier());
                         out.checkEquals("the resume took no new parts from the bus", 2, busItems(ctx));
+                        s.missile()
+                            .setDead();
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
+
+    /** An unpowered silo refuses to start work, stays quiet, and starts on its own once power arrives. */
+    private static final class PowerGate implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.power_gate";
+        }
+
+        @Override
+        public String description() {
+            return "A formed silo with no EU in its hatch, given a body and warhead, takes nothing, never power-fails and does not churn recipe checks; the same for fuel pumped into a missile in the shaft; both start by themselves once the hatch is charged.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            int[] checks = { 0 };
+            return ScenarioResult.pending(name(), 4000, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                MTEMissileSilo s = silo(ctx);
+                IGregTechTileEntity energy = tile(ctx, 0, -1, 0);
+                switch (stage[0]) {
+                    case 0:
+                        out.check(formed(ctx), "the silo forms");
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        putBus(ctx, MissileBodies.body(MissileTier.T1), warhead(WarheadCasing.T1, "condensed"));
+                        mark[0] = ticks;
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        if (ticks < mark[0] + 5) {
+                            checks[0] = s.checks();
+                        }
+                        if (ticks < mark[0] + 200) {
+                            return null;
+                        }
+                        out.checkEquals("no power: the body and warhead stay in the bus", 2, busItems(ctx));
+                        out.checkEquals("no power: no mating cycle is pending", 0, s.pendingTier());
+                        out.checkEquals("no power: the silo never power-failed", 0, s.powerStops());
+                        out.check(s.waitingForPower(), "no power: the silo reports that it waits for power");
+                        out.check(
+                            s.getBaseMetaTileEntity()
+                                .isAllowedToWork(),
+                            "no power: the silo is not switched off");
+                        out.check(
+                            s.checks() - checks[0] <= 3,
+                            "no power: the silo did not churn recipe checks (" + (s.checks() - checks[0]) + ")");
+                        power(ctx);
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        power(ctx);
+                        if (s.pendingTier() == 0 && s.missile() == null) {
+                            return ticks > mark[0] + 200 ? ScenarioResult.fail(name(), "powering never started it")
+                                : null;
+                        }
+                        out.checkEquals("powered: the cycle took the body and warhead", 0, busItems(ctx));
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        power(ctx);
+                        if (s.missile() == null) {
+                            return ticks > mark[0] + 1500 ? ScenarioResult.fail(name(), "the missile never stood")
+                                : null;
+                        }
+                        // Now the fuel: cut the power, offer fuel, and nothing may move.
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        fuel(ctx, out, "nitrofuel");
+                        mark[0] = ticks;
+                        checks[0] = s.checks();
+                        stage[0] = 4;
+                        return null;
+                    case 4:
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        if (ticks < mark[0] + 200) {
+                            return null;
+                        }
+                        out.checkEquals("no power: the fuel stays in the hatch", 16000, hatchMb(ctx));
+                        out.checkEquals(
+                            "no power: the missile took no fuel",
+                            0,
+                            s.missile()
+                                .fuelMb());
+                        out.checkEquals("no power: still no power failure", 0, s.powerStops());
+                        out.check(
+                            s.checks() - checks[0] <= 3,
+                            "no power: the pump did not churn recipe checks (" + (s.checks() - checks[0]) + ")");
+                        power(ctx);
+                        mark[0] = ticks;
+                        stage[0] = 5;
+                        return null;
+                    case 5:
+                        power(ctx);
+                        if (s.missile()
+                            .fuelMb() <= 0) {
+                            return ticks > mark[0] + 400 ? ScenarioResult.fail(name(), "powering never pumped fuel")
+                                : null;
+                        }
+                        out.check(hatchMb(ctx) < 16000, "powered: the pump drew fuel from the hatch");
+                        out.checkEquals("powered: still no power failure", 0, s.powerStops());
                         s.missile()
                             .setDead();
                         ctx.clearArea(14, CLEAR_HEIGHT);

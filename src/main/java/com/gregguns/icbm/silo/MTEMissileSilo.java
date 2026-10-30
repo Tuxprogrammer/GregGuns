@@ -139,6 +139,17 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private boolean pendingReady;
     /** The last recipe check refused because the shaft's chunks were not loaded; retry when they are. */
     private boolean waitingForChunks;
+    /** Set while a step is refused for want of EU; the silo then looks for power every {@link #POWER_POLL_TICKS}. */
+    private boolean waitingForPower;
+    /**
+     * How often GT asked this silo to look for work, and how often it stopped for want of power (for the scenarios).
+     */
+    private int checks;
+    private int powerStops;
+    /** The lowest EU the silo wanted when it last waited for power, for the poll. */
+    private long powerWanted;
+    /** Ticks between looks at the hatches while the silo waits for power. */
+    private static final int POWER_POLL_TICKS = 10;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -387,6 +398,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         unformedTicks = 0;
         resumeIfFormed(base);
+        if (waitingForPower && tick % POWER_POLL_TICKS == 0) {
+            retryWhenPowered();
+        }
         if (tick % DOOR_SCAN_TICKS == 0 || doors.state() == SiloDoors.State.OPENING
             || doors.state() == SiloDoors.State.CLOSING) {
             updateDoors(w);
@@ -406,6 +420,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public void stopMachine(@Nonnull gregtech.api.util.shutdown.ShutDownReason reason) {
         super.stopMachine(reason);
+        if (reason == gregtech.api.util.shutdown.ShutDownReasonRegistry.POWER_LOSS) {
+            powerStops++;
+        }
         if (reason == gregtech.api.util.shutdown.ShutDownReasonRegistry.POWER_LOSS
             || reason == gregtech.api.util.shutdown.ShutDownReasonRegistry.STRUCTURE_INCOMPLETE
             || reason == gregtech.api.util.shutdown.ShutDownReasonRegistry.NO_REPAIR) {
@@ -726,12 +743,65 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
     }
 
+    /** @return the EU in all the Energy Hatches, exotic ones included */
+    private long storedEu() {
+        long sum = 0;
+        for (MTEHatch hatch : validMTEList(mEnergyHatches)) {
+            sum += hatch.getBaseMetaTileEntity()
+                .getStoredEU();
+        }
+        for (MTEHatch hatch : validMTEList(mExoticEnergyHatches)) {
+            sum += hatch.getBaseMetaTileEntity()
+                .getStoredEU();
+        }
+        return sum;
+    }
+
+    /**
+     * Checked before a step takes any item or fluid: GT power-fails a step it cannot pay on its first tick, which
+     * would lose the parts (mating) or the fuel (pump) and, with the silo switching itself back on, loop every tick.
+     *
+     * @return the "no power" refusal, or null when the hatches hold enough for the first ticks of the tier's draw
+     */
+    private CheckRecipeResult noPower(MissileTier tier) {
+        long draw = GTValues.V[Math.max(SiloRules.requiredVoltageIndex(tier), 0)];
+        if (SiloRules.canStart(storedEu(), draw)) {
+            waitingForPower = false;
+            return null;
+        }
+        waitingForPower = true;
+        powerWanted = draw * SiloRules.MIN_BUFFER_TICKS;
+        return failure("gregguns_silo_no_power");
+    }
+
+    /** While the silo waits for EU, asks GT for a new check once the hatches hold enough (GT's checks are pushed). */
+    private void retryWhenPowered() {
+        if (waitingForPower && storedEu() >= powerWanted) {
+            waitingForPower = false;
+            scheduleRecipeCheckImmediate();
+        }
+    }
+
+    int checks() {
+        return checks;
+    }
+
+    int powerStops() {
+        return powerStops;
+    }
+
+    /** @return whether the silo is refusing steps for want of power (for the scenarios) */
+    boolean waitingForPower() {
+        return waitingForPower;
+    }
+
     private static CheckRecipeResult failure(String key) {
         return SimpleCheckRecipeResult.ofFailure(key);
     }
 
     @Override
     public @Nonnull CheckRecipeResult checkProcessing() {
+        checks++;
         if (!ModuleState.isActive(ModuleId.ICBM)) {
             return CheckRecipeResultRegistry.NO_RECIPE; // the module is off: registered but inert
         }
@@ -781,6 +851,10 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         if (volts < SiloRules.requiredVoltageIndex(tier)) {
             return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
         }
+        CheckRecipeResult dark = noPower(tier);
+        if (dark != null) {
+            return dark;
+        }
         begin(SiloRules.MATE_TICKS, volts, tier);
         return CheckRecipeResultRegistry.SUCCESSFUL;
     }
@@ -792,6 +866,10 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         if (volts < SiloRules.requiredVoltageIndex(m.tier())) {
             return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(m.tier()));
+        }
+        CheckRecipeResult dark = noPower(m.tier());
+        if (dark != null) {
+            return dark;
         }
         FluidStack offered = null;
         boolean sawFluid = false;
@@ -882,6 +960,10 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                 return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
             default:
                 break;
+        }
+        CheckRecipeResult dark = noPower(tier);
+        if (dark != null) {
+            return dark;
         }
         WarheadCasing casing = casingOf(warheadStack);
         WarheadData data = WarheadStacks.read(casing, warheadStack);

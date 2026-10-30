@@ -100,3 +100,17 @@ None.
 ## Unloaded shaft chunks (I4 carry-over)
 
 Mating, pumping and spawning wait for every chunk of the shaft to be loaded, and the parts stay in the bus. The refusal is remembered; once the shaft loads, the controller asks GT for an immediate recheck (GT's multiblock checks are event-driven, so without it the silo would stay idle). Scenario: `icbm.silo.shaft_chunk_guard` ([D123](../DECISIONS.md)).
+
+## Power gate
+
+The silo draws the body tier's voltage for every mating cycle and pump cycle (HV T1, EV T2, LuV T3). GT stops a
+multiblock for good ("power loss") on the first tick it cannot pay, so the silo checks before it takes anything:
+
+- A step (a mating cycle, a pump cycle, finishing a pending cycle) starts only when the Energy Hatches hold at least
+  `SiloRules.MIN_BUFFER_TICKS` (2) ticks of its draw. Otherwise the silo takes no body, warhead or fuel, shows the
+  `gregguns_silo_no_power` status ("No power") and stays idle. It is not switched off and no power-fail is recorded.
+- While it waits, the silo looks at the hatches every 10 ticks and asks GT for a recipe check as soon as they hold
+  enough, so it starts on its own when power arrives. No machine-side packet, sound or state change happens meanwhile.
+- Power that runs out mid-cycle still stops the machine as GT does (the pending parts are kept and the silo switches
+  itself back on); the resumed cycle is gated the same way. The doors and the launch draw no EU.
+- Tests: `SiloRulesTest` (the gate rule), scenario `icbm.silo.power_gate`.

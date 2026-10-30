@@ -228,6 +228,7 @@ GT5U.gui.text.recipe_result.gregguns_silo_no_fuel=§fWaiting for fuel in the Inp
 GT5U.gui.text.recipe_result.gregguns_silo_wrong_fuel=§fThe fluid in the Input Hatch is not a fuel this missile accepts
 GT5U.gui.text.recipe_result.gregguns_silo_full=§aThe missile is fueled and ready
 GT5U.gui.text.recipe_result.gregguns_silo_hand_stacked=§fA body stands in the shaft: arm it by hand, or take it apart
+GT5U.gui.text.recipe_result.gregguns_silo_no_power=§cNo power: the Energy Hatch holds too little EU to start; waiting for power
 GT5U.gui.text.recipe_result.gregguns_silo_chunks=§fThe shaft is in an unloaded chunk: waiting for it to load
 gt.blockmachines.gregguns.icbm.missilesilo.name=Missile Silo
 gregguns.machine.ammo_works.type=Ammo Press, Ammunition Works
