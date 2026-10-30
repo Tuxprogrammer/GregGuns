@@ -169,7 +169,7 @@ class Mob:
 
     def pose(self, part, when, x=None, y=None, z=None, mode="add", follow_yaw=0.0, follow_pitch=0.0, blend=None,
              window=None):
-        """Angles that apply while `when` is aiming, attacking, holding or dying (weight = death progress).
+        """Angles that apply while `when` is aiming, attacking, holding, carrying or dying (weight = death progress).
         mode='add' adds them, mode='set' replaces the axes given (blended by the weight).
         follow_yaw / follow_pitch add that share of the head yaw / pitch to Y / X.
         blend (attacking only): step, cosine or sine; window: [from, to] attack progress."""

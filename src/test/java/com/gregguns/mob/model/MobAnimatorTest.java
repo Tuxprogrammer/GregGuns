@@ -34,6 +34,13 @@ class MobAnimatorTest {
         return out[def.indexOf("p")];
     }
 
+    private static float[] eval(MobModelDef def, AnimInput in, String part) {
+        float[][] out = new float[def.parts()
+            .size()][3];
+        MobAnimator.evaluate(def, in, out);
+        return out[def.indexOf(part)];
+    }
+
     private static float rad(double deg) {
         return (float) Math.toRadians(deg);
     }
@@ -131,6 +138,40 @@ class MobAnimatorTest {
         assertEquals(rad(50), eval(def, in)[0], EPS); // not aiming: the swing stands
         in.aiming = true;
         assertEquals(rad(-90 + 12), eval(def, in)[0], EPS); // aiming: replaced, plus the head pitch
+    }
+
+    @Test
+    void carryingPoseReplacesTheSwingUnlessAiming() {
+        MobModelDef def = model(
+            "[0,0,0]",
+            "{\"type\":\"swing\",\"part\":\"p\",\"axis\":\"x\",\"amplitude\":50}",
+            "{\"type\":\"pose\",\"part\":\"p\",\"when\":\"carrying\",\"mode\":\"set\",\"angles\":{\"x\":-25}}",
+            "{\"type\":\"pose\",\"part\":\"p\",\"when\":\"aiming\",\"mode\":\"set\",\"angles\":{\"x\":-90}}");
+        AnimInput in = new AnimInput();
+        in.limbSwingAmount = 1.0F;
+        assertEquals(rad(50), eval(def, in)[0], EPS); // no gun: the swing stands
+        in.carrying = true;
+        assertEquals(rad(-25), eval(def, in)[0], EPS); // hip carry: the swing is gone
+        in.limbSwing = 1.3F;
+        assertEquals(rad(-25), eval(def, in)[0], EPS); // and stays gone while walking
+        in.aiming = true;
+        assertEquals(rad(-90), eval(def, in)[0], EPS); // aiming: the aim pose alone
+    }
+
+    @Test
+    void shippedBipedFilesCarryTheGunOnTheHip() {
+        for (String name : new String[] { "biped", "skeleton_soldier", "super_mutant" }) {
+            MobModelDef def = MobModels.load(name);
+            AnimInput in = new AnimInput();
+            in.holding = true;
+            in.carrying = true;
+            in.limbSwing = 0.7F;
+            in.limbSwingAmount = 1.0F;
+            float[] arm = eval(def, in, "rightArm");
+            assertEquals(rad(-25), arm[0], EPS, name + " arm x");
+            in.aiming = true;
+            assertEquals(rad(-90), eval(def, in, "rightArm")[0], EPS, name + " aim x");
+        }
     }
 
     @Test
