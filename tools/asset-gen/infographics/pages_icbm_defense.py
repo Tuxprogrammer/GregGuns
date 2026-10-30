@@ -423,7 +423,7 @@ def sheet() -> str:
     # ---- handheld
     hand = f"""<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:18px">
 <div class="card"><div style="display:flex;align-items:center;gap:12px">{item_icon("radar_gun", 56, "Radar Gun")}<h2>Radar Gun</h2>{chip("HV")}</div>
-<div class="pt" style="margin-top:8px">Right-click to aim at a spot up to <b>{GUN_RANGE} blocks</b> away. It stores that spot&#39;s X and Z, the same target a Data Stick carries. Right-click a <b>Launch Control</b> to copy the target there. Sneak and right-click to clear it.</div></div>
+<div class="pt" style="margin-top:8px">Right-click to aim at a spot up to <b>{GUN_RANGE} blocks</b> away. It stores that spot&#39;s X and Z. Right-click a <b>Launch Control</b> to copy the target there, or drop the gun in the Launch Control&#39;s slot and press <b>Load target</b>. Sneak and right-click to clear it.</div></div>
 <div class="card"><div style="display:flex;align-items:center;gap:12px">{item_icon("remote_detonator", 56, "Remote Detonator")}<h2>Remote Detonator</h2>{chip("HV")}{chip("EV")}{chip("IV")}</div>
 <div class="pt" style="margin-top:8px"><b>Sneak-click a placed warhead</b> to link it; sneak-click the air to clear. A plain right-click <b>lights its fuse</b> from a distance, and the warhead counts down and beeps as if lit by hand. Reach: <b>{n(RANGE_RD)}</b> (HV), <b>{n(RANGE_RE)}</b> (EV), <b>{n(RANGE_RI)}</b> (IV) blocks, same dimension, loaded chunk only. Only the warhead&#39;s owner can link or fire it.</div></div>
 <div class="card"><div style="display:flex;align-items:center;gap:12px">{item_icon("defuser", 56, "Defuser")}<h2>Defuser</h2>{chip("HV")}</div>

@@ -50,6 +50,7 @@ public final class ControlScenarios {
                 (m, sync) -> new LaunchControlGui((MTELaunchControl) m).registerSyncValues(sync)));
         registry.register(new PadAndGate());
         registry.register(new Stick());
+        registry.register(new GunInSlot());
         registry.register(new Redstone());
         registry.register(new com.gregguns.icbm.missile.ControlLaunchScenario());
     }
@@ -302,6 +303,69 @@ public final class ControlScenarios {
                     ctx.originX(),
                     c.target()
                         .x());
+                empty(base);
+                return out.build();
+            });
+        }
+    }
+
+    /** A Radar Gun in the target slot sets the target like a data stick does, and stays in the slot. */
+    private static final class GunInSlot extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.control.radar_gun_slot";
+        }
+
+        @Override
+        public String description() {
+            return "The target slot takes a Radar Gun: a gun holding a target loads it, an empty gun gives a message and changes nothing, a foreign-dimension target is refused, and the gun stays in the slot.";
+        }
+
+        @Override
+        ScenarioResult go(ScenarioContext ctx) {
+            ctx.clearArea(10, 4);
+            place(ctx, 0, 0, 0);
+            TestPlayer near = new TestPlayer((WorldServer) ctx.world(), "[GGLaunchGun]");
+            near.setPosition(ctx.originX() + 0.5, ctx.originY() + 1, ctx.originZ() + 2.5);
+            return afterWarmup(name(), () -> {
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                IGregTechTileEntity base = live(ctx, 0, 0, 0);
+                MTELaunchControl c = mte(base);
+                if (c == null) {
+                    return ScenarioResult.fail(name(), "the Launch Control is gone after the warm-up");
+                }
+                net.minecraft.item.Item gunItem = com.gregguns.icbm.defense.DefenseMachines.radarGunItem();
+                ItemStack gun = new ItemStack(gunItem);
+                out.check(c.isItemValidForSlot(MTELaunchControl.SLOT_STICK, gun), "the slot accepts a Radar Gun");
+                out.check(
+                    c.isItemValidForSlot(MTELaunchControl.SLOT_STICK, ItemList.Tool_DataStick.get(1)),
+                    "the slot still accepts a data stick");
+                out.check(
+                    !c.isItemValidForSlot(MTELaunchControl.SLOT_STICK, new ItemStack(net.minecraft.init.Items.apple)),
+                    "the slot refuses other items");
+                base.setInventorySlotContents(MTELaunchControl.SLOT_STICK, gun);
+                // A gun with no target: a message, no crash, no target.
+                c.loadFromStick(near);
+                out.checkEquals("untargeted gun", TargetStick.Outcome.EMPTY_STICK, c.lastStick());
+                out.check(
+                    !c.target()
+                        .isSet(),
+                    "an untargeted gun sets no target");
+                // A targeted gun.
+                com.gregguns.icbm.defense.ItemRadarGun.store(gun, ctx.world(), 321, -654);
+                c.loadFromStick(near);
+                out.checkEquals("targeted gun", TargetStick.Outcome.LOADED, c.lastStick());
+                out.checkEquals("target after load", LaunchTarget.of(321, -654), c.target());
+                out.check(
+                    base.getStackInSlot(MTELaunchControl.SLOT_STICK) == gun,
+                    "the gun stays in the slot after loading");
+                // A target from another dimension is refused and leaves the target alone.
+                int dim = ctx.world().provider.dimensionId;
+                TargetStick.write(gun.getTagCompound(), LaunchTarget.of(9, 9), dim + 7);
+                c.loadFromStick(near);
+                out.checkEquals("foreign dimension", TargetStick.Outcome.WRONG_DIMENSION, c.lastStick());
+                out.checkEquals("target unchanged", LaunchTarget.of(321, -654), c.target());
                 empty(base);
                 return out.build();
             });

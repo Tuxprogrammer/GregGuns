@@ -200,12 +200,12 @@ public final class MTELaunchControl extends MTETieredMachineBlock
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index == SLOT_STICK && isStick(stack);
+        return index == SLOT_STICK && isTargetCarrier(stack);
     }
 
     @Override
     public boolean allowPutStack(IGregTechTileEntity base, int index, ForgeDirection side, ItemStack stack) {
-        return index == SLOT_STICK && isStick(stack);
+        return index == SLOT_STICK && isTargetCarrier(stack);
     }
 
     @Override
@@ -213,9 +213,25 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         return false;
     }
 
-    /** @return true for a GT data stick */
+    /** @return true for a GT data stick (accepted quietly, for admins and automation) */
     static boolean isStick(ItemStack stack) {
         return stack != null && ItemList.Tool_DataStick.isStackEqual(stack, false, true);
+    }
+
+    /** @return true for a Radar Gun, the handheld that captures targets */
+    static boolean isRadarGun(ItemStack stack) {
+        return stack != null && stack.getItem() instanceof com.gregguns.icbm.defense.ItemRadarGun;
+    }
+
+    /**
+     * What the target slot takes: a Radar Gun, or a data stick. Both keep the target in the same tag
+     * ({@link TargetStick}); the item stays in the slot, so the player can take it back.
+     *
+     * @param stack any stack
+     * @return true for a Radar Gun or a GT data stick
+     */
+    static boolean isTargetCarrier(ItemStack stack) {
+        return isRadarGun(stack) || isStick(stack);
     }
 
     // --- target ---------------------------------------------------------------------------------------------------
@@ -299,7 +315,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             return;
         }
         ItemStack stick = getStackInSlot(SLOT_STICK);
-        if (!isStick(stick)) {
+        if (!isTargetCarrier(stick)) {
             lastStick = TargetStick.Outcome.NO_STICK;
             return;
         }
@@ -335,7 +351,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     /** Copies the target on the stick in the slot to this block; the outcome is also kept for the GUI line. */
     private TargetStick.Outcome loadStick() {
         ItemStack stick = getStackInSlot(SLOT_STICK);
-        if (!isStick(stick)) {
+        if (!isTargetCarrier(stick)) {
             lastStick = TargetStick.Outcome.NO_STICK;
             return lastStick;
         }

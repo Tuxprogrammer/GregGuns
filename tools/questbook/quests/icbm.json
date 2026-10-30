@@ -1493,7 +1493,7 @@
       "tier": "HV",
       "desc": [
         "The Launch Control is the button. It's a GregTech single block at HV, made in the Assembler from an HV machine hull, an HV sensor, an HV emitter, an empty data stick and 2 Advanced circuits. Check NEI.",
-        "Place it within 4 blocks of the pad (2 up or down) and power it at HV. Type the target X and Z, press Use My Position, or load a target from a data stick (Save and Load target buttons). The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect."
+        "Place it within 4 blocks of the pad (2 up or down) and power it at HV. Get a target with a Radar Gun: aim it at the spot, then right-click the Launch Control with it, or drop the gun in the slot and press Load target. You can also type the target X and Z or press Use My Position. The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect."
       ],
       "pre": [
         "gg.icbm.fuel"
@@ -3878,7 +3878,7 @@
       "title": "Handheld Tools",
       "tier": "HV",
       "desc": [
-        "Three tools for the field. The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it in. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV).",
+        "Three tools for the field. The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it in, or drop the gun in the Launch Control's slot and press Load target. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV).",
         "The Defuse Kit puts a lit fuse out (right-click), or takes apart a missile standing on a pad or in a silo (left-click) before its countdown starts; it lasts 32 uses. Check NEI for the recipes. Make all three.",
         "[warn]A lit fuse doesn't wait for you. Defuse fast or run.[/warn]"
       ],

@@ -19,7 +19,7 @@ class ControlStatusTextTest {
     private static final int ROW_PX = 176 - 14 - 8;
 
     /** Advance widths of Minecraft's default font, including the 1 px gap; 6 for every letter not listed. */
-    private static int px(char c) {
+    static int px(char c) {
         switch (c) {
             case 'i':
             case '.':
