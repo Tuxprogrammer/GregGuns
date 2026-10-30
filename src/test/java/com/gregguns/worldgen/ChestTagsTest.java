@@ -27,7 +27,9 @@ class ChestTagsTest {
         assertEquals(LootCategoryDefs.BARRACKS, ChestTags.category("barracks", true, 3));
         assertEquals(LootCategoryDefs.WEAPONCHEST_T2, ChestTags.category("weapon", true, 3));
         assertEquals(LootCategoryDefs.REINFORCEDCHEST_T2, ChestTags.category("reinforced", true, 2));
-        assertEquals(LootCategoryDefs.WEAPONCHEST_T1, ChestTags.category("vanilla", true, 3));
+        assertEquals(LootCategoryDefs.SUPPLYCHEST_T1, ChestTags.category("vanilla", true, 3));
+        // A structure's plain vanilla chests hold the general supply mix, not the weapon table (GGS-11-26).
+        assertEquals(LootCategoryDefs.SUPPLYCHEST_T2, ChestTags.category("vanilla", false, 2));
         assertEquals(LootCategoryDefs.WEAPONCHEST_T3, ChestTags.category("weapon", false, 3));
         assertNull(ChestTags.category("mystery", false, 1));
     }
@@ -36,7 +38,7 @@ class ChestTagsTest {
     void rolledTiersReachTheRoss128Tables() {
         assertEquals("gregguns:weaponchest_t4", ChestTags.category("weapon", false, 4, true));
         assertEquals("gregguns:reinforcedchest_t6", ChestTags.category("reinforced", false, 6, true));
-        assertEquals("gregguns:weaponchest_t7", ChestTags.category("vanilla", false, 7, true));
+        assertEquals("gregguns:supplychest_t7", ChestTags.category("vanilla", false, 7, true));
         // UV and UHV have no tables of their own
         assertEquals("gregguns:weaponchest_t7", ChestTags.category("weapon", false, 9, true));
         assertEquals("gregguns:reinforcedchest_t7", ChestTags.category("reinforced", false, 8, true));
@@ -44,7 +46,7 @@ class ChestTagsTest {
         // do not
         assertEquals("gregguns:weaponchest_t5", ChestTags.category("weapon", true, 5, true));
         assertEquals(LootCategoryDefs.BARRACKS, ChestTags.category("barracks", true, 9, true));
-        assertEquals(LootCategoryDefs.WEAPONCHEST_T1, ChestTags.category("vanilla", true, 9, true));
+        assertEquals(LootCategoryDefs.SUPPLYCHEST_T1, ChestTags.category("vanilla", true, 9, true));
         // unrolled: still clamped to 3
         assertEquals(LootCategoryDefs.WEAPONCHEST_T3, ChestTags.category("weapon", false, 9));
     }
