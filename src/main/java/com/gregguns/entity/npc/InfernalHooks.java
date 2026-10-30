@@ -26,6 +26,7 @@ public final class InfernalHooks {
     private static boolean resolved;
     private static Method getMobModifiers;
     private static Method getModSize;
+    private static Method removeEntFromElites;
     private static String nbtKey;
 
     private InfernalHooks() {}
@@ -46,6 +47,7 @@ public final class InfernalHooks {
                 getMobModifiers = core.getMethod("getMobModifiers", EntityLivingBase.class);
                 getModSize = Class.forName(MODIFIER)
                     .getMethod("getModSize");
+                removeEntFromElites = core.getMethod("removeEntFromElites", EntityLivingBase.class);
                 nbtKey = (String) core.getMethod("getNBTTag")
                     .invoke(null);
             } catch (ReflectiveOperationException | RuntimeException e) {
@@ -74,7 +76,28 @@ public final class InfernalHooks {
     }
 
     /**
-     * Marks an NPC placed by a spawner block so Infernal Mobs does not roll it, unless the config allows spawner NPCs.
+     * Drops an entity from Infernal Mobs' map of modified mobs. Scenarios call it for the throwaway NPCs they spawn,
+     * because the core keeps modified entities in a strong map.
+     *
+     * @param entity a living entity, infernal or not
+     */
+    public static void forget(EntityLivingBase entity) {
+        if (!available()) {
+            return;
+        }
+        try {
+            // Source:
+            // https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L631
+            removeEntFromElites.invoke(null, entity);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            GregGuns.LOG.warn("Infernal Mobs forget failed", e);
+        }
+    }
+
+    /**
+     * Marks an NPC placed by a spawner block so Infernal Mobs does not roll it, only when {@code infernalSpawnerOptOut}
+     * is on
+     * (off by default: spawner NPCs roll as infernal like the rest).
      * Call before the entity joins the world. Writes one key of the entity's persistent data and never replaces the
      * compound (GGS-10-14).
      *
@@ -82,7 +105,7 @@ public final class InfernalHooks {
      * @return true when the marker was written
      */
     public static boolean markSpawnerNpc(EntityLivingBase npc) {
-        if (!InfernalOptOut.shouldOptOut(true, NpcConfig.infernalAllowSpawnerNpcs) || !available()) {
+        if (!InfernalOptOut.shouldOptOut(true, NpcConfig.infernalSpawnerOptOut) || !available()) {
             return false;
         }
         // Source:

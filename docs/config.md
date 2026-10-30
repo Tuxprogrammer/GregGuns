@@ -101,7 +101,7 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 | `npcs.perPlayerCap` | int | `8` | 0 to 1024 | no | Most NPCs around one player before natural spawning stops. |
 | `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
 | `npcs.infernalTieredLoot` | boolean | `true` | n/a | no | Elite, ultra and infernal GregGuns NPCs add tiered GregGuns drops (needs Infernal Mobs). |
-| `npcs.infernalAllowSpawnerNpcs` | boolean | `false` | n/a | no | NPCs from spawner blocks may roll as infernal mobs. |
+| `npcs.infernalSpawnerOptOut` | boolean | `false` | n/a | no | NPCs from spawner blocks never roll as infernal mobs when true (farm guard). Off, they roll at Infernal Mobs' own rates like every other NPC. |
 
 ## Worldgen (`worldgen`)
 
