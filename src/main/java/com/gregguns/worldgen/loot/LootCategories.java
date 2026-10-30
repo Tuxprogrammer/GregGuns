@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -142,7 +143,7 @@ public final class LootCategories {
     /**
      * Fills an inventory from a category. Same seed, same contents. Richness changes only the pick count and the
      * weight of the category's top-tier lines (GGS-11-23); a content added by someone else (a TML file) keeps its
-     * own weight. A gun brings its ammo in the same pick (GGS-11-26).
+     * own weight. A gun brings its ammo in the same pick (GGS-11-26). No stack overwrites another.
      *
      * @param inv      the chest
      * @param category a {@code gregguns:*} name
@@ -174,7 +175,95 @@ public final class LootCategories {
                     companion);
         }
         int n = LootDraw.pickCount(info.getMin(), info.getMax(), richness, rand);
-        WeightedRandomChestContent.generateChestContents(rand, scaled, inv, n);
+        // Forge drops each stack into a random slot and overwrites whatever is there, which loses picks and can
+        // separate a gun from its ammo; the wrapper moves such a stack to the next empty slot instead.
+        WeightedRandomChestContent.generateChestContents(rand, scaled, new NoOverwrite(inv), n);
+    }
+
+    /**
+     * An inventory view whose {@link #setInventorySlotContents} never overwrites: a stack aimed at an occupied slot
+     * goes to the next empty one (wrapping around), and is dropped only when the chest is full. Deterministic, so the
+     * same seed still gives the same chest. Everything else passes through.
+     */
+    static final class NoOverwrite implements IInventory {
+
+        private final IInventory inv;
+
+        NoOverwrite(IInventory inv) {
+            this.inv = inv;
+        }
+
+        @Override
+        public void setInventorySlotContents(int slot, ItemStack stack) {
+            int size = inv.getSizeInventory();
+            for (int i = 0; i < size; i++) {
+                int s = (slot + i) % size;
+                if (inv.getStackInSlot(s) == null) {
+                    inv.setInventorySlotContents(s, stack);
+                    return;
+                }
+            }
+        }
+
+        @Override
+        public int getSizeInventory() {
+            return inv.getSizeInventory();
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return inv.getStackInSlot(slot);
+        }
+
+        @Override
+        public ItemStack decrStackSize(int slot, int count) {
+            return inv.decrStackSize(slot, count);
+        }
+
+        @Override
+        public ItemStack getStackInSlotOnClosing(int slot) {
+            return inv.getStackInSlotOnClosing(slot);
+        }
+
+        @Override
+        public String getInventoryName() {
+            return inv.getInventoryName();
+        }
+
+        @Override
+        public boolean hasCustomInventoryName() {
+            return inv.hasCustomInventoryName();
+        }
+
+        @Override
+        public int getInventoryStackLimit() {
+            return inv.getInventoryStackLimit();
+        }
+
+        @Override
+        public void markDirty() {
+            inv.markDirty();
+        }
+
+        @Override
+        public boolean isUseableByPlayer(EntityPlayer player) {
+            return inv.isUseableByPlayer(player);
+        }
+
+        @Override
+        public void openInventory() {
+            inv.openInventory();
+        }
+
+        @Override
+        public void closeInventory() {
+            inv.closeInventory();
+        }
+
+        @Override
+        public boolean isItemValidForSlot(int slot, ItemStack stack) {
+            return inv.isItemValidForSlot(slot, stack);
+        }
     }
 
     /** A chest content that adds its companion stack (a gun's ammo) to whatever it generates. */
