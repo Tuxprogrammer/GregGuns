@@ -6,6 +6,13 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - When a client joins a server whose `modules.*` flags differ from the client's own `config/gregguns.cfg`, the player now gets one chat line naming each module that differs, and the log gets one warning. Recipes and NEI follow the client's own config, so set the same values there and restart. Singleplayer is unaffected.
 
+## Structure loot
+
+- Chests in GregGuns structures now hold a range of pack loot as well as GregGuns gear, modeled on the top floors of Roguelike Dungeons: food (HarvestCraft meals included), torches, string and other everyday materials, ores and GT ingots, tools and Forestry bags, potions and bandages, bows, swords and TConstruct parts, armor and trinkets, books and enchanted books. Plain chests are mostly this general loot with a little GregGuns ammo and gear; weapon crates lean toward weapons; reinforced crates toward GT materials; barracks toward armor, food and ammo.
+- Guns are rarer and ammo is common. A weapon crate holds ammo almost every time and a gun about one time in four, a plain chest a gun about one time in eight, and a gun always comes with some of its own ammo. Richer structures give more ammo and gear, not more guns.
+- Fuel and Bio Tanks found in chests are full.
+- Items from a mod the pack does not have are left out of the chests.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.

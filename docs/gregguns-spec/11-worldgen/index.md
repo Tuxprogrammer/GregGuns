@@ -31,7 +31,7 @@ The pack makes four things matter: it forces the RWG world generator, it ships A
 | Structures reaching into ungenerated chunks (WGEN-04) | Writes limited to the populate window; seeded plans | ArchaicFix cascade detector, Hodgepodge throttle | [structure-placement.md](structure-placement.md) |
 | Hard-coded dimension 0 (WGEN-28) | Config allow-list, default `[0]` | TwilightForest, PersonalSpace, Galacticraft, GalaxySpace | [structure-placement.md](structure-placement.md) |
 | Grid at chunk multiples (a BIG structure at spawn) | Seeded offset inside each grid cell | Roguelike-Dungeons (same idea) | [structure-placement.md](structure-placement.md) |
-| Chest fill from `DUNGEON_CHEST` plus TG tables | GregGuns categories with a tier ceiling per structure | TooMuchLoot | [structure-loot.md](structure-loot.md) |
+| Chest fill from `DUNGEON_CHEST` plus TG tables | GregGuns categories with a tier ceiling per structure, each a mix of pack loot (after Roguelike Dungeons' top floors) and GregGuns gear, guns rare and ammo common | TooMuchLoot, Roguelike Dungeons (as the model) | [structure-loot.md](structure-loot.md) |
 | Chisel blocks in palettes (WGEN-24) | Palette keys with fallback | Chisel | [chisel-palette.md](chisel-palette.md) |
 | Titanium and uranium veins, ore clusters | Not built | GT ore generation | [ore-and-oil.md](ore-and-oil.md) |
 | Oil holes | Not built | dreamcraft oil generator | [ore-and-oil.md](ore-and-oil.md) |

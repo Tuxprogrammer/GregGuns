@@ -14,6 +14,7 @@
 | `lootTier` 0/1/2 picks a T1/T2/T3 table for `tgchest` and `tgchest_weapon` | `lootTier` still picks richness (item count and weights). A separate **tier ceiling** caps the item tier | 0005: loot never exceeds the tier the location implies. Techguns T3 holds flamethrowers and rocket launchers, which 0001 puts at HV |
 | Tables hold raw tin, copper, lead, silver and steel ingots | GT materials of the same names (06 decides the exact items) | GT first |
 | Chest contents roll from an unseeded `Random` (WGEN-25) | Chest contents roll from the structure's seeded `Random` | Same seed, same structure (see GGS-11-10) |
+| `tgchest` and `tgchest_weapon` hold only Techguns items and raw metals | Every chest mixes the pack's loot (modeled on the top floors of Roguelike Dungeons: food, materials, ores, tools, potions, melee, armor, enchanting) with GregGuns gear; vanilla chests draw a general `supplychest` mix, weapon crates lean weapons. Guns are rare, ammo common, and a gun brings its ammo | Owner, 2026-10-30: GregGuns-only chests do little for a GTNH player; too many guns, too little ammo ([pack-loot § Structure chest mix](../06-items/pack-loot.md#structure-chest-mix)) |
 
 ### Ceiling per structure
 
@@ -35,7 +36,7 @@ The default ceiling is **LV to MV for surface structures** (0005). Ships are sur
 
 On the two Ross128 dimensions every structure rolls its own ceiling from MV (2) to UHV (9), as a GT voltage index, from its plan's seed (`RolledCeiling`, GGS-11-10 holds). The weights are the config `worldgen.ross128CeilingWeights` for MV, HV, EV, IV, LuV, ZPM, UV and UHV; the default is 40, 28, 14, 8, 4, 3, 2, 1, so about 40 % of structures stay at MV and 1 % reach UHV. The structure's own `lootTierCeiling` is a floor. The ICBM silos (D38) have no code on master yet; when they land they should call `RolledCeiling`.
 
-- **Tables:** the rolled ceiling picks `weaponchest_t<n>` and `reinforcedchest_t<n>`. M9 adds tiers 4 to 7 (EV, IV, LuV, ZPM), built from the GregGuns guns of those tiers in [0001](../../design/0001-tier-map.md) and the tier's GT alloys. GregGuns has no loot above ZPM, so UV and UHV draw from the ZPM tables. A Military Base's weapon and reinforced crates follow the roll there; its barracks and factory chests stay fixed.
+- **Tables:** the rolled ceiling picks `weaponchest_t<n>`, `reinforcedchest_t<n>` and `supplychest_t<n>`. M9 adds tiers 4 to 7 (EV, IV, LuV, ZPM), built from the GregGuns guns of those tiers in [0001](../../design/0001-tier-map.md) and the tier's GT alloys. GregGuns has no loot above ZPM, so UV and UHV draw from the ZPM tables. A Military Base's weapon and reinforced crates follow the roll there; its barracks and factory chests stay fixed. Each table's pack mix scales with it: the ore pool adds that tier's GT metal, and the gun, ammo and part pools are that tier's.
 - **Defenders and spawners:** a spawner stamped by a rolled structure carries the ceiling's danger in its spawn data (`GGSpawner.MinDanger`, [structure-placement § Spawner marks](structure-placement.md#spawner-marks)). Its NPCs start at no less than danger 1 (MV), 2 (HV), 3 (EV, IV), 4 (LuV, ZPM) or 5 (UV, UHV), which raises their equipment tier (M7). Counts and caps are unchanged.
 - **Deviation:** the spec said spawners "scale with the tier"; only equipment danger scales, not the number of spawners.
 
@@ -49,7 +50,7 @@ An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The 
 - **Source:** [`LootLoadingMode`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/LootLoadingMode.java) defines `OVERRIDE`, `ADD` and `REMOVE`. [`ChestLootLoader`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/chest/ChestLootLoader.java) applies them, and the hook is [`TooMuchLoot.java#L71-L104`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/TooMuchLoot.java#L71-L104). An `OVERRIDE` replaces the vanilla category, so any `ChestGenHooks.addItem(DUNGEON_CHEST, …)` made earlier by GregGuns is lost. The loader also writes every registered category, ours included, to `loot/generated/`.
 - **GregGuns does:**
   - registers its own categories with `ChestGenHooks` in `postInit` (names and contents: [pack-loot.md](../06-items/pack-loot.md));
-  - fills every chest it places, vanilla `chest` blocks included, with `WeightedRandomChestContent.generateChestContents` from that category and the structure's seeded `Random`;
+  - fills every chest it places, vanilla `chest` blocks included, with `WeightedRandomChestContent.generateChestContents` from that category and the structure's seeded `Random`: `chest.weapon` from `weaponchest_t<n>`, `chest.reinforced` from `reinforcedchest_t<n>`, `chest.vanilla` from `supplychest_t<n>` (a camp's factory from `supplychest_t1`), `chest.barracks` from `barracks`;
   - never reads or writes `DUNGEON_CHEST`.
 - **Pack-side change:** none for structures. Putting GregGuns items into vanilla dungeons, mineshafts and villages is a separate `ADD` XML, owned by 06-items.
 
@@ -62,12 +63,14 @@ An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The 
 - **GGS-11-22** The default ceiling of every structure in the table above is the tier shown. No default category used by a surface structure holds an item above MV.
 - **GGS-11-23** `lootTier` (0 to 2) changes only the count and weights of a draw. It never adds items above the ceiling.
 - **GGS-11-24** The Alien Bug Nest places no chest.
+- **GGS-11-26** Every structure chest holds pack loot as well as GregGuns gear, and guns stay rare next to their ammo (GGS-06-10, GGS-06-11): a vanilla chest draws `supplychest_t<n>`, a gun drawn into a chest brings its own ammo, and richness never raises a gun line's weight.
 
 ## Tests
 
 - GGS-11-19, 20: unit test with a stub world that records which category each placed chest was filled from.
 - GGS-11-21, 22, 23: the tier self-check from 0001, run over every category: it fails if an item's declared tier is above the category ceiling. One test per structure draws 1000 chests and asserts the same.
 - GGS-11-24: unit test of the nest placement.
+- GGS-11-26: `ChestTagsTest` (vanilla to supply), `StructurePopulatorTest` (`assertTables`), `ArsenalTest`, `LootMixTest`, `LootResolveTest`; scenarios `worldgen.loot_mix` (200 chests of every category a structure uses) and `worldgen.loot_pack_items`.
 
 - GGS-11-25: `RolledCeilingTest`, `ChestTagsTest`, `StructurePopulatorTest` (rolled categories), `LootCategoriesTest` (tier 4 to 7 tables); scenarios `worldgen.ross128b_structures` and `worldgen.ross128ba_structures` (chest category equals the table of the plan's rolled ceiling), `worldgen.loot_tier_ceiling` (1000 chests per table, including 4 to 7).
 

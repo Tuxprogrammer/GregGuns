@@ -115,8 +115,8 @@ Structure placement, gating and loot tuning (M8). Read only while `modules.world
 | `worldgen.structureWorldTypes` | string list | `default`, `RWG`, `largeBiomes`, `amplified` | any | no | World type names that allow structures (case-insensitive). Flat and unknown types are out. |
 | `worldgen.enabled<Id>` | boolean | `true` (`false` for `AlienBugNest`) | n/a | no | Place that structure. |
 | `worldgen.biomeBlacklist<Id>` | string list | none | any | no | BiomeDictionary type names in which that structure is never placed. |
-| `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot category. |
-| `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; scales counts and weights only. |
+| `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot table of each chest kind (supply, weapon, reinforced), and with it the tier of the guns, ammo, parts and GT metals in it. |
+| `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; adds picks to every chest and weight to the table's top-tier lines. Guns keep their weight, so a richer chest holds more ammo and gear, not more guns. |
 
 ## Damage factors (`damagefactors`)
 

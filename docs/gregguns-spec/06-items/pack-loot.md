@@ -20,6 +20,7 @@ How GregGuns items get into GTNH loot. This sheet is cross-cutting: [10-entities
 |---|---|
 | Put GregGuns items in vanilla or pack chests | [TooMuchLoot](#toomuchloot) |
 | Register chest categories for GregGuns structures | [GregGuns loot categories](#gregguns-loot-categories) |
+| What a structure chest holds (pack mix, guns and ammo) | [Structure chest mix](#structure-chest-mix) |
 | Tier bands per chest | [Tier bands](#tier-bands) |
 | Draft `ADD` XML per category | [Draft ADD files](#draft-add-files) |
 | Minigame (LootGames) rewards | [LootGames](#lootgames) |
@@ -56,8 +57,8 @@ Tiers are the D1 tiers: Steam/ULV, LV, MV, HV, EV and up. D5 says surface struct
 | `pyramidDesertyChest`, `pyramidJungleChest` | LV to MV | Mid-game temples |
 | `strongholdCorridor`, `strongholdCrossing` | MV, rare HV | Deep structures |
 | `strongholdLibrary`, `naturalistChest`, `railcraft:workshop`, `pyramidJungleDispenser` | None | Wrong theme, or not a chest |
-| `gregguns:weaponchest_t1` / `_t2` / `_t3` | LV / MV / HV | T3 only where a structure's config allows it |
-| `gregguns:weaponchest_t4` to `_t7`, `gregguns:reinforcedchest_t4` to `_t7` | EV / IV / LuV / ZPM | Ross128b and Ross128ba only, by a structure's rolled ceiling (design record 0019) |
+| `gregguns:weaponchest_t1` / `_t2` / `_t3`, and the same for `reinforcedchest` and `supplychest` | LV / MV / HV | T3 only where a structure's config allows it |
+| `gregguns:weaponchest_t4` to `_t7`, `reinforcedchest_t4` to `_t7`, `supplychest_t4` to `_t7` | EV / IV / LuV / ZPM | Ross128b and Ross128ba only, by a structure's rolled ceiling (design record 0019) |
 | Roguelike dungeon levels 0 to 4 | Level 0-1 LV, 2-3 MV, 4 rare HV | Dungeon level rises with depth |
 | Elite / ultra / infernal drops | LV-MV / MV / MV, rare HV | See [Infernal Mobs](#infernal-mobs) |
 | GregGuns loot bags (EnhancedLootBags 1701 to 1712) | The bag's own tier | The bag name is the tier; quests never pay a bag above their tier (GGS-12-07) |
@@ -221,24 +222,77 @@ Not drafted: `strongholdLibrary`, `naturalistChest`, `railcraft:workshop` and `p
 
 GregGuns registers its own categories for its structures, so no pack file is needed for them.
 
-- **Categories:**
+- **Categories (22):**
 
-| Category | Replaces (Techguns) | Band | Min / max items |
+| Category | Used by | Band | Min / max items |
 |---|---|---|---|
-| `gregguns:weaponchest_t1` | `techgunsWeaponchestT1` | LV | 2 / 8 |
-| `gregguns:weaponchest_t2` | `techgunsWeaponchestT2` | MV | 4 / 8 |
-| `gregguns:weaponchest_t3` | `techgunsWeaponchestT3` | HV | 5 / 10 |
-| `gregguns:reinforcedchest_t1` | `techgunsReinforcedchestT1` | LV parts | 3 / 6 |
-| `gregguns:reinforcedchest_t2` | `techgunsReinforcedchestT2` | MV parts | 4 / 8 |
-| `gregguns:reinforcedchest_t3` | `techgunsReinforcedchestT3` | HV parts | 5 / 9 |
-| `gregguns:barracks` | `techgunsMilBaseBarracks` | LV to MV gear | 1 / 4 |
+| `gregguns:supplychest_t1` / `_t2` / `_t3` | a structure's plain vanilla chests (`chest.vanilla`) | LV / MV / HV | 4/8, 5/9, 5/10 |
+| `gregguns:weaponchest_t1` / `_t2` / `_t3` | weapon crates (`chest.weapon`) | LV / MV / HV | 4/8, 4/9, 5/10 |
+| `gregguns:reinforcedchest_t1` / `_t2` / `_t3` | reinforced crates (`chest.reinforced`) | LV / MV / HV | 4/7, 4/8, 5/9 |
+| `..._t4` to `..._t7` of all three | Ross128 structures only (0019) | EV / IV / LuV / ZPM | as `_t3` |
+| `gregguns:barracks` | Military Base barracks chests | LV to MV gear | 2 / 5 |
 
-  The min and max values and the slot counts are the Techguns values ([loot.md](../../techguns-spec/06-items/loot.md)); retune in M8.
+  Richness (`worldgen.lootTier<Id>`, 0 to 2) adds to both ends. The counts are about half a Roguelike top-floor chest (about 15 stacks), up from the Techguns 2 to 8, so the pack mix has room. What each category holds is in [Structure chest mix](#structure-chest-mix).
 - **Pack config:** none ships these categories. The TML loader copies the whole table at server start ([TooMuchLoot.java#L71-L104](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/TooMuchLoot.java#L71-L104)), so a category registered in code is kept unless an `OVERRIDE` file names it. A pack author can then retune ours with an `OVERRIDE` file named after the category. TML turns a category name into a file name by replacing every character outside `[a-zA-Z0-9._]` with `_` ([`generateFiles`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/chest/ChestLootLoader.java#L79-L115)), for example `gregguns_weaponchest_t1.xml`. The pack's own `railcraft_workshop.xml` (category `railcraft:workshop`) is the precedent for a namespaced category.
 - **GregGuns does:**
-  - At init, `ChestGenHooks.getInfo(name)` sets min and max, then `addItem(new WeightedRandomChestContent(stack, min, max, weight))` adds each entry. Do this after GT has registered its items (post-init or later).
-  - Material entries in reinforced chests use `GTOreDictUnificator.get(OrePrefixes.ingot, Materials.Steel, 1)` and similar. They are never raw Techguns OreDict lookups, so they stay valid ([ITEM-02](../../techguns-spec/06-items/index.md#suspected-bugs)).
+  - In postInit, `ChestGenHooks.getInfo(name)` sets min and max, then `addItem(new WeightedRandomChestContent(stack, min, max, weight))` adds each line whose item is in the pack (`LootCategories.register`). A line of a mod the pack does not have is skipped and counted in one log line; a gun whose ammo is missing keeps its line without the ammo.
+  - Material entries use `GTOreDictUnificator.get(OrePrefixes.ingot, Materials.Steel, 1)` and similar. They are never raw Techguns OreDict lookups, so they stay valid ([ITEM-02](../../techguns-spec/06-items/index.md#suspected-bugs)).
 - **Pack-side change:** none required. Optional retuning files go in `config/TooMuchLoot/loot/`.
+
+### Structure chest mix
+
+The owner's report (2026-10-30): structure chests held almost only GregGuns items, which does little for a new GTNH player who wants a range of weapons, food and loot, and they held too many guns and too little ammo. The chests now follow the top floors (levels 0 and 1) of the pack's Roguelike Dungeons, with GregGuns gear on top, and guns are rare while ammo is common.
+
+- **Roguelike top floors as the pack ships them** ([Roguelike Dungeons](#roguelike-dungeons) has the file layout): a generic room's chest is WEAPONS, ARMOUR or TOOLS with equal odds, and every chest also gets six junk picks. An average level 0 chest holds about 15 stacks: junk 40 %, ores and ingots 9 % (Copper, iron, Tin, coal, Cast Iron, Zinc, gold, Bronze, Silver, Steel, diamond, emerald; level 1 adds Damascus and Vanadium Steel), weapons and TConstruct weapon parts 11 %, armor and trinkets 7 %, potions 7 %, theme food 7 % (HarvestCraft meals by biome), tools and TConstruct tool parts 9 %, decor blocks 4.5 %, enchanting 4.5 %. The rule semantics come from [`LootRuleManager`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/treasure/loot/LootRuleManager.java) and [`Treasure.getChestType`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/treasure/Treasure.java).
+- **Pools** (`LootPools`, `Arsenal`). A category gives each pool a share of its picks; inside a pool the lines keep their own weights; lines above the category's ceiling drop out, so one set of shares serves every tier (`LootMix`). A reference in two pools (arrows are junk and melee) is one line.
+
+| Pool | Holds |
+|---|---|
+| food | bread, steak, pork, chicken, fish, baked potatoes, apples, a rare golden apple; HarvestCraft jerky, trail mix, cooked mutton and venison, baked ham and beans, burgers, sandwiches, yogurt, donuts, coffee, energy drinks |
+| junk | torches, string, bone, leather, gunpowder, arrows, coal, flint, paper, redstone, clay, tanned leather, Thaumcraft loot bags, name tags |
+| ore | the Roguelike level 0 and 1 metals and gems as GT ingots and gems; from MV one GT metal per tier: Aluminium, Stainless Steel, Titanium, Tungstensteel, HSS-G, Naquadah |
+| tools | IC2 treetap, lead, bucket, flint and steel, shears, fishing rod, clock, iron pickaxe and shovel, Forestry scoop and bags, HarvestCraft cookware, Spice of Life lunch bag, backpack, TConstruct iron tool parts |
+| potions | healing I and II, regeneration II, swiftness I and II, fire resistance, invisibility II, strength, splash regeneration II; GregGuns bandages (LV) and medkits (MV) |
+| melee | bow, arrows, iron, stone and gold swords, iron axe, Natura and Thaumcraft bows, TConstruct iron weapon parts and fletching, GregGuns combat knife and crowbar; diamond sword from MV |
+| armor | leather, chainmail, gold and iron armor, HarvestCraft hardened leather, bauble blanks, charm of keeping, flippers, glove; diamond armor from HV |
+| enchanting | books, random enchanted books, lapis, redstone |
+| materials | the reinforced chests' GT parts: coal, iron, stone, logs, gunpowder, Tin, Copper, Lead, Gold, rubber, Silver, Steel, plastic from MV, then the tier metals |
+| combat armor | GregGuns T1 (LV) and T2 (MV) combat sets (barracks) |
+| guns | the table's guns (list below), rare |
+| ammo | the ammo the table's guns fire, derived from each gun's definition and weighted by how many of the table's guns use it |
+| grenades | Stielhandgranate; frag grenade and flashbang from MV |
+| parts | GregGuns gun parts at or below the table's tier, the table's own tier weighted most |
+
+- **Shares** (points of 100 per pick):
+
+| Kind | Pack mix | GregGuns |
+|---|---|---|
+| Supply chest (vanilla chests) | food 20, junk 16, ore 12, tools 9, potions 8, melee 6, armor 6, enchanting 5 | ammo 10, grenades 3, parts 3, guns 2 |
+| Weapon chest | melee 12, food 12, armor 8, potions 8, junk 6, ore 6 | ammo 30, grenades 8, parts 5, guns 5 |
+| Reinforced chest | materials 45, ore 10, tools 10, junk 8, food 7 | parts 10, ammo 8, grenades 2 |
+| Barracks | combat armor 25, food 25, armor 10, potions 10, junk 10, melee 5 | ammo 15 (MV table) |
+
+- **Guns per table** (each table keeps the tier below, thinned): LV Revolver, Sawed Off, 9mm Pistol, Bolt Action Rifle, Hand Cannon; MV Thompson, Mac10, AK47, M4, Combat Shotgun; HV Flamethrower, Rocket Launcher, Grenade Launcher, AUG, SCAR, Vector, LMG, AS50, Infiltrator; EV PDW, Laser Rifle, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun; IV Blaster Rifle, Deatomizer Pistol, Scatter Laser Rifle, Golden Revolver; LuV Nether Blaster, Alien Blaster, Grim Reaper; ZPM Nuclear Death Ray, Nuke Launcher. Akimbo pairs, the power tools and the Golden Gun are not loot.
+- **Guns rare, ammo common.** Three rules together:
+  1. the ammo pool's share is five to six times the gun pool's;
+  2. every gun line carries its own ammo as a companion stack, which lands in the same chest whenever the gun does (a magazine or two, a handful of rounds, a filled Fuel or Bio Tank);
+  3. a gun line keeps its base weight at every richness, so a richer chest gets more picks and more ammo, not more guns.
+
+  Odds per chest at the default richness 1 (exact, from the weights):
+
+| Table | Weapon chest: gun / ammo in | Ammo stacks per gun | Supply chest: gun / ammo in |
+|---|---|---|---|
+| LV | 22 % / 97 % | 12 | 11 % / 73 % |
+| MV | 26 % / 97 % | 11 | 14 % / 75 % |
+| HV | 32 % / 98 % | 9 | 15 % / 72 % |
+| EV | 30 % / 99 % | 10 | 15 % / 76 % |
+| IV | 35 % / 95 % | 6 | 16 % / 61 % |
+| LuV | 33 % / 97 % | 8 | 15 % / 69 % |
+| ZPM | 33 % / 97 % | 8 | 15 % / 68 % |
+
+  The IV table is the lowest because most of its guns are energy guns, which run on EU and bring no ammo. Before this change a weapon chest held a gun about two times in three, with roughly two ammo stacks per gun.
+- **Not carried over from Roguelike:** GT tools and named enchanted weapons (they need NBT, and a line has none), decor blocks and music discs. Fluid tanks are filled when they are generated.
+- **ICBM silos** use the GregGuns-only part of a table (`LootCategoryDefs.arms`: guns, four times their weight in ammo, grenades) for their armory, safe and control-room lines, and the armory frames pick their guns from it.
 
 ### LootGames
 
@@ -387,13 +441,15 @@ The pack has its own per-entity drop file.
 - **GGS-06-07.** GregGuns hostile NPC classes implement `IMob`, do not implement `IEntityOwnable`, and have simple class names that are unique in the pack (no `EntityAlienBug`).
 - **GGS-06-08.** The Infernal Mobs drop handler is inert when `InfernalMobs` is not loaded, and runs at `EventPriority.HIGH`.
 - **GGS-06-09.** The Infernal Mobs drop handler can be switched off in config, and tier tables are config.
+- **GGS-06-10.** Every structure chest kind mixes pack loot (the [Structure chest mix](#structure-chest-mix) pools) with GregGuns gear; a structure's vanilla chests draw the supply mix. A line whose mod is not in the pack is skipped, never an error.
+- **GGS-06-11.** In every weapon and supply chest, at every table and richness, guns are rare and ammo common: the expected ammo stacks are at least six (weapon) or five (supply) times the expected guns, a weapon chest holds a gun less than 40 % of the time and ammo more than 90 %, and every drawn gun comes with its own ammo.
 
 ## Tests
 
 | ID | Verified by |
 |---|---|
 | GGS-06-01 | Unit test: after init, every vanilla category's item count is unchanged from the baseline table |
-| GGS-06-02 | Unit test: the fifteen category names exist in `ChestGenHooks` after init |
+| GGS-06-02 | Unit test: the 22 category names exist in `ChestGenHooks` after init |
 | GGS-06-03 | Unit test with GT absent from the lookup: no `null` stack is added |
 | GGS-06-04 | Dev self-check: each loot entry's D1 tier is at or below its surface's band |
 | GGS-06-05 | Unit test on the draft files (kept under `src/test/resources`) |
@@ -401,6 +457,8 @@ The pack has its own per-entity drop file.
 | GGS-06-07 | Unit test over the entity registry |
 | GGS-06-08 | `runServer` boot with and without Infernal Mobs; manual kill of an infernal NPC with `/loot`-style debug logging |
 | GGS-06-09 | Unit test on config defaults |
+| GGS-06-10 | `LootMixTest` (every pack pool in supply and weapon chests, shares, supply chests mostly pack loot), `LootResolveTest` (missing mods skipped, weights kept); scenarios `worldgen.loot_mix` and `worldgen.loot_pack_items` (run on the real pack: every id resolves) |
+| GGS-06-11 | `ArsenalTest` (`gunsAreRareAndAmmoIsCommon`, companions, richness never raises gun weight); scenario `worldgen.loot_mix` |
 | Draft files | Manual: copy into `config/TooMuchLoot/loot/`, run `/loot reload`, then `/loot spawnDebugChest <category>` |
 
 ## Open questions

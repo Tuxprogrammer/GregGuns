@@ -11,7 +11,7 @@ A ceiling is a GT voltage index (EV 4 ... UMV 12). Keyed by the dimension's key 
 
 ## Tables (`SiloLootTables`)
 
-One table per loot key (`LootKeys`) and ceiling, registered as `gregguns:silo_<key>_<ceiling>`. Each line carries the voltage of its contents; lines above the ceiling are never built. The plate, ingot, rod, screw and gear **ladder** runs HV Stainless Steel, EV Titanium, IV Tungstensteel, LuV HSS-G, ZPM Naquadah Alloy, UV Neutronium, UHV Cosmic Neutronium, UEV Infinity, UIV Transcendent Metal, UMV Space-Time; the top rung at the ceiling weighs most. Guns come from the existing `weaponchest_tN` tables with N = min(ceiling, 7): GregGuns stops at ZPM, so above UHV the loot is GT material only (D38). Richness (0 to 2) comes from the activity level.
+One table per loot key (`LootKeys`) and ceiling, registered as `gregguns:silo_<key>_<ceiling>`. Each line carries the voltage of its contents; lines above the ceiling are never built. The plate, ingot, rod, screw and gear **ladder** runs HV Stainless Steel, EV Titanium, IV Tungstensteel, LuV HSS-G, ZPM Naquadah Alloy, UV Neutronium, UHV Cosmic Neutronium, UEV Infinity, UIV Transcendent Metal, UMV Space-Time; the top rung at the ceiling weighs most. Guns, their ammo (four times the guns' weight) and grenades come from the GregGuns part of table N = min(ceiling, 7) (`LootCategoryDefs.arms`, [pack-loot § Structure chest mix](../../gregguns-spec/06-items/pack-loot.md#structure-chest-mix)), and the armory frames pick their guns from it: GregGuns stops at ZPM, so above UHV the loot is GT material only (D38). Richness (0 to 2) comes from the activity level.
 
 ## Machines (D129)
 
