@@ -168,6 +168,8 @@ public final class ShowcaseScenarios {
                 for (int cx = Math.floorDiv(plan.anchorX() - 24, 16); cx <= Math.floorDiv(plan.maxX() + 8, 16); cx++) {
                     for (int cz = Math.floorDiv(plan.anchorZ() - 24, 16); cz
                         <= Math.floorDiv(plan.maxZ() + 8, 16); cz++) {
+                        // As the real grid: only windows the plan's box (and apron) touches visit it.
+                        if (!plan.overlapsWindow(cx, cz)) continue;
                         PopulateWindow window = new PopulateWindow(cx, cz);
                         ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
                         populator.populatePlans(
