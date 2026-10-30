@@ -80,6 +80,7 @@ public final class GunsModule implements GregGunsModule {
         MeleeRecipes.register();
         com.gregguns.explosion.nuclear.FalloutRegistration.init();
         GrenadeRecipes.register();
+        com.gregguns.item.coin.CoinRecipes.register();
         if (DevEnvironment.testHooksEnabled()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ScenarioRegistry.SCENARIOS.register(new com.gregguns.core.module.IcbmContentGateScenario());

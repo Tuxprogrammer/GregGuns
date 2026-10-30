@@ -499,6 +499,8 @@ item.gregguns.t2_beret.camoname.2=Green
 gregguns.armor.bonus.speed_water=Speed in water and lava
 gregguns.armor.tooltip.power_air=Steam charge: %s / %s
 gregguns.armor.tooltip.needs_power=Powered bonuses need a charged chestplate of the same set
+# GregGuns Coin (area 06): the name is followed by the value (1, 10, 100, 1000, 10K), as the pack names its coins
+item.gregguns.coin.name=GregGuns Coin
 # Components (area 06)
 item.gregguns.part_barrel_carbon.name=Carbon Barrel
 item.gregguns.part_barrel_laser.name=Laser Barrel

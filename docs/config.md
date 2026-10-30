@@ -46,6 +46,7 @@ In-memory pack-fit hooks ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md)). Eac
 | `compat.thaumcraftMobAspects` | boolean | `true` | n/a | no | Registers Thaumcraft scan aspects for the GregGuns NPCs. |
 | `compat.listHooks` | boolean | `true` | n/a | no | Adds `gregguns.` to AngerMod's `butcherItems` and `gregguns.SimpleTurret` to Mobs Info's `MobBlacklist`. |
 | `compat.enderioSpawnerBlacklist` | boolean | `true` | n/a | no | Puts every GregGuns NPC on EnderIO's Powered Spawner blacklist by IMC: a broken GregGuns spawner drops no Broken Spawner and releases no burst, and GregGuns NPCs stay out of the Powered Spawner. |
+| `compat.vendingTrades` | boolean | `true` | n/a | no | Server only. Adds the GregGuns trades (178 with every module on: guns, ammo, magazines, parts, armor, gear and NPC spawn eggs, priced in GregGuns Coins) to the Vending Machine in memory once the server has started; `tradeDatabase.json` is never written. With the GregGuns quest line installed, each tier's trades open with that tier's intro quest. Off removes them at the next start. Needs the Vending Machine; ignored without it. See [coins-and-vending.md](gregguns-spec/06-items/coins-and-vending.md). |
 
 ## Debug (`debug`)
 

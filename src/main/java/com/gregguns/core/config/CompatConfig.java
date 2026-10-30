@@ -31,4 +31,11 @@ public class CompatConfig {
         "GregGuns structure spawner drops no Broken Spawner and releases no burst of extra mobs, and GregGuns NPCs",
         "cannot be farmed in a Powered Spawner. Needs EnderIO; ignored without it. Default: true." })
     public static boolean enderioSpawnerBlacklist = true;
+
+    @Config.Comment({ "Server only. Adds the GregGuns trades (guns, ammo, magazines, parts, armor, gear and NPC spawn",
+        "eggs, priced in GregGuns Coins) to the pack's Vending Machine when the server starts, in memory; its",
+        "tradeDatabase.json is never written. With the GregGuns quest line installed, each tier's trades open with",
+        "the tier's intro quest. Needs the Vending Machine mod; ignored without it. Off removes them at the next",
+        "start. Default: true." })
+    public static boolean vendingTrades = true;
 }
