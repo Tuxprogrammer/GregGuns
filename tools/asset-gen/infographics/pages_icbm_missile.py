@@ -114,6 +114,7 @@ def first_missile() -> str:
     ca = img(block_icon("ca", "HV", "circuitassembler"), h=92)
     le = img(block_icon("le", "HV", "laser_engraver"), h=92)
     lc = img(block_icon("lc", "HV", None), h=92)
+    asm = img(block_icon("as", "HV", "assembler"), h=92)
     s1 = _step(1, "Make a missile chip",
                f"{ca}{arrow}<span class='pill'>Missile Chip T1 &middot; HV</span><span class='pill'>Missile Chip T2 &middot; EV</span>",
                "The chip comes from the GregTech <b>Circuit Assembler</b>, at the voltage of its tier: a circuit board, 2 circuits and fine wire. "
@@ -127,10 +128,10 @@ def first_missile() -> str:
                "On the NASA Workbench page: <b>compressed plates</b> in one column (T1 three steel, T2 four titanium), <b>four Galacticraft rocket fins</b> and a <b>Galacticraft rocket engine</b> of the same tier, and a "
                "<b>Guidance Computer</b>. Make compressed plates from a plate in the Implosion Compressor. A better computer than the body asks for makes the missile land closer. There is no warhead slot: a warhead goes on at the pad.")
     s3b = _step(4, "Or automate it",
-                f"<span class='pill'>Scan a body</span>{arrow}<span class='pill'>Data Stick</span>{arrow}<span class='pill'>Assembly Line</span>{arrow}<span class='pill'>Body</span>{plus}<span class='pill'>Computer</span>{arrow}<span class='pill'>Assembler</span>",
-                "Scan one hand-built body into a <b>Data Stick</b> in the Scanner (T1 takes a minute at HV, T2 two minutes at EV). The <b>Assembly Line</b> then builds that body "
-                "from plates, fins, an engine, 2 circuits (Advanced for T1, Data for T2) and 250 L of lubricant, in 30 seconds (T1) or 45 seconds (T2). It makes the basic body; "
-                "a better <b>Guidance Computer</b> goes in afterwards in the <b>Assembler</b> (15 seconds, at the body's voltage).")
+                f"<span class='pill'>Body parts</span>{plus}<span class='pill'>2 circuits</span>{plus}<span class='pill'>Lubricant</span>{arrow}{asm}{arrow}<span class='pill'>Missile Body</span>",
+                "The GregTech <b>Assembler</b> builds the body too, with no research: the same plates, fins and engine, 2 circuits (Advanced for T1, Data for T2) in place of the computer "
+                "and 250 L of lubricant, in 30 seconds at HV (T1) or 45 seconds at EV (T2). It makes the basic body; "
+                "a better <b>Guidance Computer</b> goes in afterwards in the <b>Assembler</b> again (15 seconds, at the body's voltage).")
     s4 = _step(5, "Stack it on the launch pad",
                f"{img(missile_on_pad(1, 100), h=150)}{img(missile_on_pad(2, 100), h=150)}",
                "Place the <b>Missile Body</b> on the middle of a Galacticraft <b>Launch Pad</b>, then set a <b>warhead</b> on its nose. It seats flush. "

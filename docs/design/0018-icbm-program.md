@@ -20,7 +20,7 @@ Two facts from the pack shaped the decisions:
 4. `modules.icbm` **defaults to off until the ICBM beta gate**, so `0.3.x-beta` fixes can keep shipping from master while ICBM is built.
 
 ### Balance
-5. **Cost: an automatable arsenal.** At its own tier, a missile costs about what one of that tier's Galacticraft rocket launches costs in plates, circuits and fuel. The Assembly Line can automate it, so a player at the tier can stock dozens. The warhead is the expensive part, and cost rises steeply by tier. Missiles are never as cheap as in ICBM, and never so rare that a player launches only one or two.
+5. **Cost: an automatable arsenal.** At its own tier, a missile costs about what one of that tier's Galacticraft rocket launches costs in plates, circuits and fuel. GT machines can automate it (the Assembler below LuV, the Assembly Line from LuV; ICBM D281), so a player at the tier can stock dozens. The warhead is the expensive part, and cost rises steeply by tier. Missiles are never as cheap as in ICBM, and never so rare that a player launches only one or two.
 6. **Damage: missiles matter against GTNH mobs.** Center damage targets for conventional warheads, before armor, falling off to zero at the blast edge:
 
    | Missile tier | Center damage, at least | Benchmark |
@@ -33,7 +33,7 @@ Two facts from the pack shaped the decisions:
 7. **Nuclear and every warhead above it annihilates.** Inside the kill zone of a nuclear (ZPM), antimatter (UV) or red matter (UHV) warhead, **every living entity dies, bosses included**. The kill is absolute: it bypasses armor and hurt-resistance frames, as the Nuke Launcher's does ([0016](0016-damage-balance-pass.md)). Players are subject only to the server's damage settings. The Nuke Launcher keeps its own rule (bosses lose half their health). Both use one implementation, with a flag for bosses.
 
 ### The missile in the world
-8. **Missiles are stacked on the pad.** The NASA Workbench, or the Assembly Line, makes the missile body. The player places the body on the Galacticraft pad (T1–T2) or in the silo (T3 and up), then places a warhead block on its nose. Arming fuses the stack into a live missile. Warheads and bodies are real 3D models sized by tier, never textured cubes, with the same model in flight (D31 in detail). In the silo, the body and warhead can also arrive through GT input buses and mate automatically. A warhead block placed on its own is a demolition charge, as ICBM's explosive blocks are. This amends D8.
+8. **Missiles are stacked on the pad.** The NASA Workbench, or a GT machine (the Assembler below LuV, the Assembly Line from LuV), makes the missile body. The player places the body on the Galacticraft pad (T1–T2) or in the silo (T3 and up), then places a warhead block on its nose. Arming fuses the stack into a live missile. Warheads and bodies are real 3D models sized by tier, never textured cubes, with the same model in flight (D31 in detail). In the silo, the body and warhead can also arrive through GT input buses and mate automatically. A warhead block placed on its own is a demolition charge, as ICBM's explosive blocks are. This amends D8.
 9. **The Galacticraft pad is never removed or damaged** by a GregGuns missile. The missile implements Galacticraft's docking and fuel interfaces without extending `EntityAutoRocket`, and GregGuns also denies `EventLandingPadRemoval` for a pad that holds one of its missiles. A scenario proves the pad survives a launch.
 
 ### Assets
@@ -65,4 +65,4 @@ Two facts from the pack shaped the decisions:
 - **Keep ICBM after 1.0 or on the adopter list.** Rejected by the owner: ICBM is the next work.
 - **Strategic pricing (a few missiles per session).** Rejected: the owner wants missiles used, not hoarded.
 - **The Nuke Launcher's boss rule for missiles.** Rejected: at missile scale the owner wants no living entity left in the kill zone.
-- **Building missiles entirely as items, or entirely as placed blocks.** Rejected: stacking on the pad gives the hands-on build without losing GT gating and Assembly Line automation.
+- **Building missiles entirely as items, or entirely as placed blocks.** Rejected: stacking on the pad gives the hands-on build without losing GT gating and machine automation.

@@ -27,11 +27,11 @@ In short:
 - Tiers run HV to UHV; red matter is the UHV missile.
 - Built next, on [ROADMAP-ICBM](../ROADMAP-ICBM.md), as a module in the GregGuns jar behind `modules.icbm` (off by default until the ICBM beta).
 - Nuclear and every warhead above it kill every living entity in the kill zone, bosses included. Conventional missiles have center-damage targets sized against Infernal Mobs health pools.
-- Missiles are an automatable arsenal: about one of their tier's rocket launches in cost, and Assembly Line-automatable.
+- Missiles are an automatable arsenal: about one of their tier's rocket launches in cost, and automatable in GT machines (the Assembler below LuV, the Assembly Line from LuV, D281).
 - The player stacks the missile body and a warhead block on the pad; the Galacticraft pad is never removed.
 - Assets are human-made and properly licensed first; generation is a last resort.
 - Abandoned Missile Silos come in activity levels, from a guard-free ruin to an operational silo full of spawners to clear and take over. They generate on the Overworld (EV loot) and on every planet, with loot rising one tier per rocket tier.
-- Missile bodies are built in the Galacticraft NASA Workbench from GT-gated schematics, or on the Assembly Line. T1–T2 launch from the GC pad and T3 and up from a GregGuns silo multiblock.
+- Missile bodies are built in the Galacticraft NASA Workbench from GT-gated schematics, or by machine: in the Assembler below LuV and on the Assembly Line from LuV (D281). T1–T2 launch from the GC pad and T3 and up from a GregGuns silo multiblock.
 - Galacticraft is required by the ICBM module only.
 
 ## Standing constraints from existing records

@@ -2,15 +2,15 @@
 
 - **ICBM baseline:** [missile-item](../../icbm-spec/03-missiles/index.md) (ICBM crafts a missile from one recipe; nothing here is ported)
 - **Design records:** [0018 §8](../../design/0018-icbm-program.md)
-- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D27](../DECISIONS.md), [D31](../DECISIONS.md#d31-in-detail), [D34](../DECISIONS.md), [D41](../DECISIONS.md), [D44](../DECISIONS.md), [D57](../DECISIONS.md)
-- **Pack mods:** GregTech (Circuit Assembler, Laser Engraver, Assembly Line, Assembler), Galacticraft `3.4.34-GTNH` (`SchematicRegistry`, NASA Workbench)
+- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D27](../DECISIONS.md), [D31](../DECISIONS.md#d31-in-detail), [D34](../DECISIONS.md), [D41](../DECISIONS.md), [D44](../DECISIONS.md), [D57](../DECISIONS.md), [D64](../DECISIONS.md), [D281](../DECISIONS.md)
+- **Pack mods:** GregTech (Circuit Assembler, Laser Engraver, Assembler, Assembly Line from LuV), Galacticraft `3.4.34-GTNH` (`SchematicRegistry`, NASA Workbench)
 - **Roadmap:** [I2](../../ROADMAP-ICBM.md#i2--missiles-and-the-galacticraft-pad-t1t2)
 
 ## What changes from ICBM
 
 | ICBM behavior | GregGuns behavior | Why |
 |---|---|---|
-| One shaped recipe makes a missile | A chip, a schematic, then the body: by hand in the NASA Workbench, or on the Assembly Line | D8, D27: the path every GTNH rocket takes |
+| One shaped recipe makes a missile | A chip, a schematic, then the body: by hand in the NASA Workbench, or by machine (the Assembler below LuV, the Assembly Line from LuV) | D8, D27, D281: the path every GTNH rocket takes, on machines the player has at the tier |
 | The warhead is crafted into the missile item | The body is its own item; the warhead is a block stacked on its nose on the pad | D31, 0018 §8. **Amends D8's slot list: there is no warhead slot** |
 | Guidance is a separate missile family | The guidance computer sets a "guidance" tag on the body (0 to 3 steps above the body's own tier) | D24 |
 
@@ -19,7 +19,9 @@
 1. **Missile Chip Tn**, in the GT **Circuit Assembler**, at the tier's voltage.
 2. **Missile Schematic Tn**, in the GT **Laser Engraver**, from the chip and a non-consumed lens, at the tier's voltage.
 3. The schematic goes into a Galacticraft **NASA Workbench**'s schematic slot and unlocks a page (`SchematicRegistry`, one `ISchematicPage` per tier). The page builds the body by hand.
-4. Or, for automation, **one Assembly Line recipe per tier** behind a research data stick. It makes the guidance-0 body (plates, fins, engine, two circuits and lubricant; no computer, and GT's line needs four item inputs). The research item is the hand-built T-n body: a player scans one into a GT Data Stick in the Scanner, so hand building comes first and the line opens once the player owns an Assembly Line (D27). Each tier has its own research item because GT's scanner keeps only the first recipe that matches a research item.
+4. Or, for automation, **one machine recipe per tier** for the guidance-0 body (plates, fins, engine, two circuits and 250 L lubricant; no computer). The machine depends on the tier (D281): GT's Assembly Line and its scanner research arrive at LuV in GTNH (pack quest 1412), so
+   - **below LuV (T1, T2)** the body is an **Assembler** recipe at the tier's voltage, with no research and no programmed circuit (the HV and EV single-block Assemblers have the 9 item slots and the fluid tank it needs);
+   - **from LuV (T3)** it is an **Assembly Line** recipe behind a research data stick. The research item is the hand-built body of that tier: a player scans one into a GT Data Stick in the Scanner. Each line tier has its own research item because GT's scanner keeps only the first recipe that matches a research item.
 5. A guidance computer is fitted by an **Assembler** recipe: body + computer -> the body with that guidance (one recipe per computer that gives at least one step; 15 s at the body's voltage, programmed circuit 1 for T1 and 2 for T2).
 
 ### Numbers (`MissileBuildSpec`, unit tested)
@@ -32,8 +34,7 @@
 | Fins (4 slots, one each, D69) | Galacticraft Tier 1 rocket fins (`GalacticraftCore:item.rocketFins`) | Galacticraft Tier 2 rocket fins (`GalacticraftMars:item.itemBasicAsteroids` damage 2) |
 | Engine (D69) | Galacticraft Tier 1 engine (`GalacticraftCore:item.engine` damage 0) | Galacticraft Tier 2 engine (`GalacticraftMars:item.itemBasicAsteroids` damage 1) |
 | Guidance computers accepted | Mk I (0 steps), Mk II (1), Mk III (2) | Mk II (0), Mk III (1) |
-| Research (Assembly Line) | scan 60 s at HV | scan 120 s at EV |
-| Assembly Line recipe (guidance-0 body) | HV, 30 s, 250 L lubricant, plates + fins + engine + 2 Advanced circuits | EV, 45 s, 250 L lubricant, plates + fins + engine + 2 Data circuits |
+| Machine body (guidance 0, D281) | Assembler, HV, 30 s, no research: plates + fins + engine + 2 Advanced circuits, 250 L lubricant | Assembler, EV, 45 s, no research: plates + fins + engine + 2 Data circuits, 250 L lubricant |
 | Guidance fit (Assembler) | HV, 15 s, circuit 1: body + Mk II (1 step) or Mk III (2 steps) | EV, 15 s, circuit 2: body + Mk III (1 step) |
 | Body cost, cheapest computer (D34 plate equivalents, D69) | 161 (test band 150 to 175) | 490 (band 460 to 520) |
 
@@ -61,11 +62,11 @@ Three more `IcbmPart`s (the two engines were retired in D69: bodies take Galacti
 
 ### The T3 row (I3, D74)
 
-LuV chip (Multifiberglass board, 2 Master circuits, 8 platinum fine wire), a yellow-lens schematic, four compressed titanium plates, four Heavy Duty Rocket Fins Tier 3 and a Heavy Duty Rocket Engine Tier 3 (NewHorizonsCoreMod). The only guidance computer is Mk III, below the body's tier, so a T3 body has no guidance steps. See [missile-silo](missile-silo.md).
+LuV chip (Multifiberglass board, 2 Master circuits, 8 platinum fine wire), a yellow-lens schematic, four compressed titanium plates, four Heavy Duty Rocket Fins Tier 3 and a Heavy Duty Rocket Engine Tier 3 (NewHorizonsCoreMod). The machine body is the one **Assembly Line** recipe of the missile chain: LuV, 60 s, the same parts plus 2 Master circuits and 250 L lubricant, behind a 180 s research scan of a hand-built T3 body at LuV. The only guidance computer is Mk III, below the body's tier, so a T3 body has no guidance steps. See [missile-silo](missile-silo.md).
 
 ## Cost (D34, D63, D69)
 
-The target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". D69 builds the body from Galacticraft's own rocket parts, so the body is priced from the GTNH recipes for those parts (plate equivalents, an estimate): a compressed plate is 2 (plate plus implosion charge); a Tier 1 fin is 28 (2 compressed steel and 4 heavy-duty plates); the Tier 1 engine 38 (2 SDHD120 plates, 4 heavy-duty plates, a canister, a firebox casing, a detector); a Tier 2 fin 68; the Tier 2 engine 200 (2 Tier 1 engines, 2 boosters, 5 asteroid plates). **T1 body: 6 + 112 + 38 + 5 (Mk I computer) = 161. T2 body: 10 + 272 + 200 + 8 = 490.** A Galacticraft launch of the same tier needs the same engine, four of the same fins and a nose cone, so body plus fuel is about one launch (fuel adds a little, the cone is not in our body). The warhead stays the expensive part (D34). The Assembly Line pays the same parts and adds 250 L of lubricant, so automation gives no discount. If the full-pack review finds it dear, trim the fins first (D63).
+The target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". D69 builds the body from Galacticraft's own rocket parts, so the body is priced from the GTNH recipes for those parts (plate equivalents, an estimate): a compressed plate is 2 (plate plus implosion charge); a Tier 1 fin is 28 (2 compressed steel and 4 heavy-duty plates); the Tier 1 engine 38 (2 SDHD120 plates, 4 heavy-duty plates, a canister, a firebox casing, a detector); a Tier 2 fin 68; the Tier 2 engine 200 (2 Tier 1 engines, 2 boosters, 5 asteroid plates). **T1 body: 6 + 112 + 38 + 5 (Mk I computer) = 161. T2 body: 10 + 272 + 200 + 8 = 490.** A Galacticraft launch of the same tier needs the same engine, four of the same fins and a nose cone, so body plus fuel is about one launch (fuel adds a little, the cone is not in our body). The warhead stays the expensive part (D34). The machine body (Assembler or Assembly Line) pays the same parts, two circuits in place of the computer and 250 L of lubricant, so automation gives no discount. If the full-pack review finds it dear, trim the fins first (D63).
 
 ## Recycling (D44)
 
@@ -73,19 +74,20 @@ Each body returns its compressed plates as metal (`MissileRecipes.recycle`; the 
 
 ## NEI
 
-- Chip: Circuit Assembler tab. Schematic: Laser Engraver tab. Body: Assembly Line tab (research shown by GT) and **NASA Workbench (Missile)** tab: one page per body and computer (the by-hand build, guidance 0 included), drawn like Galacticraft's own rocket workbench pages. The slots sit in the shape of the missile on a rocket silhouette (warhead seat at the nose, plates down the middle, fins either side at the bottom, engine at the base, the guidance computer beside the nose). The rows come from a display-only GregGuns recipe map (`IcbmRecipeMaps`, no GT tab of its own) and the page is the client's `MissileWorkbenchHandler`. The in-game page uses the same layout (`MissileBenchLayout`, unit tested for overlap and symmetry) and the same plain-rectangle art (`MissileBenchArt`), so nothing is copied from Galacticraft's jar. Parts: Assembler tab. Launch Control: Assembler tab.
+- Chip: Circuit Assembler tab. Schematic: Laser Engraver tab. Body: Assembler tab (T1, T2), Assembly Line tab (T3, research shown by GT) and **NASA Workbench (Missile)** tab: one page per body and computer (the by-hand build, guidance 0 included), drawn like Galacticraft's own rocket workbench pages. The slots sit in the shape of the missile on a rocket silhouette (warhead seat at the nose, plates down the middle, fins either side at the bottom, engine at the base, the guidance computer beside the nose). The rows come from a display-only GregGuns recipe map (`IcbmRecipeMaps`, no GT tab of its own) and the page is the client's `MissileWorkbenchHandler`. The in-game page uses the same layout (`MissileBenchLayout`, unit tested for overlap and symmetry) and the same plain-rectangle art (`MissileBenchArt`), so nothing is copied from Galacticraft's jar. Parts: Assembler tab. Launch Control: Assembler tab.
 
 ## Requirements
 
 - **GGS-I2-01** Every chip, schematic, part and body has a recipe in a map NEI shows.
-- **GGS-I2-02** The Assembly Line (guidance-0 body, needs the research) and the Assembler guidance fit are the only automatic route to a body; each Assembly Line recipe has its own research item that GT's scanner resolves.
+- **GGS-I2-02** The machine body recipe (guidance 0) and the Assembler guidance fit are the only automatic route to a body. Below LuV the body recipe is in the Assembler with no research, and GT's lookup on its inputs finds it; from LuV it is on the Assembly Line, and each line recipe has its own research item that GT's scanner resolves.
+- **GGS-I2-06** (D281) No GregGuns Assembly Line recipe runs below LuV: `AssemblyLineTierTest` for the tables and bodies, `icbm.production.recipes` for the live map.
 - **GGS-I2-03** A bench slot refuses an item of the wrong kind; the result is the body of that tier with the computer's guidance and nothing from an incomplete set.
 - **GGS-I2-04** Each recipe runs at its tier's voltage and every input is at or below that tier.
 - **GGS-I2-05** (D69) No ICBM recipe runs below HV: `MissileBuildSpecTest.noIcbmRecipeRunsBelowHv` fails for any part, body or warhead recipe under HV.
 
 ## Tests
 
-`MissileBuildSpecTest` (tiers, machine fit, cost bands, guidance mapping, the bench rule). Scenarios `icbm.production.recipes` (all the recipes in the live GT maps at the right voltage; one Assembly Line recipe per tier that GT's scanner reaches from its research item; the Assembler fits) and `icbm.production.bench` (the registered pages, the unlock, the container).
+`MissileBuildSpecTest` (tiers, machine fit, which body uses which machine, cost bands, guidance mapping, the bench rule) and `AssemblyLineTierTest`. Scenarios `icbm.production.recipes` (all the recipes in the live GT maps at the right voltage; one Assembler body recipe per tier below LuV that GT's lookup finds from its inputs, and no line recipe; one Assembly Line recipe per tier from LuV that GT's scanner reaches from its research item; no GregGuns line recipe below LuV; the Assembler fits) and `icbm.production.bench` (the registered pages, the unlock, the container).
 
 ## Open questions
 
