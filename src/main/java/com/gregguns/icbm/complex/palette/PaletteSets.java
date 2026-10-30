@@ -445,7 +445,7 @@ final class PaletteSets {
                     StyleGroup.WORKSHOP)
                 .walls(tk1, tk3, tk5)
                 .floors(plain(lv0), checker(lv0, lv1, 4), borderField(lv1, lv0, 2), centerStrip(lv0, lv1, 4))
-                .ceilings(plain(zvc0), grid(zvc0, tc7, 5))
+                .ceilings(plain(zvc0), sparse(plain(zvc0), tc7, 6))
                 .lamp(litLamp(8), tk5)
                 .accent(lv1)
                 .worn(wornConcrete)
@@ -500,7 +500,7 @@ final class PaletteSets {
                     borderField(nd5, nd7, 2),
                     centerStrip(nd7, nd5, 3),
                     bands(nd7, nd3, 5, true))
-                .ceilings(plain(tc9), grid(tc9, tc7, 5), plain(tc7))
+                .ceilings(plain(tc9), sparse(plain(tc9), tc7, 6), sparse(grid(tc9, tc3, 6), tc7, 8))
                 .lamp(litLamp(15), lab(9, 15))
                 .accent(factory(6))
                 .furniture(Furniture.TABLE, STONE_TABLE)

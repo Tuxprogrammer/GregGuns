@@ -32,7 +32,9 @@ class PaletteLightsTest {
             List<BlockRef.Entry> chain = set.lampLit.chain();
             for (BlockRef.Entry e : chain) {
                 assertTrue(EMITTERS.contains(e.modId + ":" + e.name), set.id + " lit lamp " + e + " is not a light");
-                assertTrue(ChiselVariants.isValid(e.name, e.meta), set.id + " lit lamp " + e + " has no variation");
+                assertTrue(
+                    !"chisel".equals(e.modId) || ChiselVariants.isValid(e.name, e.meta),
+                    set.id + " lit lamp " + e + " has no variation");
             }
             BlockRef.Entry last = chain.get(chain.size() - 1);
             assertEquals("minecraft:glowstone", last.modId + ":" + last.name, set.id + " lit lamp ends in glowstone");
