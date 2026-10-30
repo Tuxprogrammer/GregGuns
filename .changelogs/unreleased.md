@@ -73,6 +73,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - GT machines in generated silo complexes (pumps, generators, battery buffers, workbenches and the rest) now face the room's door side instead of straight down, and a pump's output side is its back, so the machines read and plug in like ones you placed yourself.
 - Aiming down the sights now lines up on the screen center for the Golden Gun, the 9mm Pistol and the Mac10 (they sat well left of it at every field of view), and the LMG now aims through its red dot instead of through its muzzle sight, which put the view on the buttstock.
+- The Thompson and the Combat Shotgun now aim through their front blade sight, with the muzzle tipped up a few degrees so the tall rear sight drops out of the line of sight, instead of filling the middle of the screen. Any gun can carry such a tilt in its aim data (`AdsTable`).
 - The Minigun's barrels now whine as they wind up before the first shot and wind down after the last, with real CC0 recordings that follow the shooter and stop cleanly when you let go, switch away, reload or die.
 - GregGuns NPCs from structure spawners (silo and bunker guards, room guards) can now spawn as Elite, Ultra or Infernal mobs, like every other GregGuns NPC. Spawner NPCs were skipped by default; the new `npcs.infernalSpawnerOptOut` (default off) restores that as a farm guard, and replaces `npcs.infernalAllowSpawnerNpcs`.
 

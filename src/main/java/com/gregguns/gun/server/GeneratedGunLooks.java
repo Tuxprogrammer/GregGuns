@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S09PacketHeldItemChange;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 
 import com.gregguns.core.testing.AutotestSignal;
@@ -91,6 +92,15 @@ public final class GeneratedGunLooks {
         if (ammo != null) {
             a.inventory.mainInventory[1] = new ItemStack(ammo, 8);
         }
+        // Same light and weather for every gun, so the shots compare (a session that runs into the evening is dark).
+        WorldServer world = MinecraftServer.getServer().worldServers[0];
+        world.getGameRules()
+            .setOrCreateGameRule("doDaylightCycle", "false");
+        world.setWorldTime(6000L);
+        world.getWorldInfo()
+            .setRaining(false);
+        world.getWorldInfo()
+            .setThundering(false);
         a.inventory.currentItem = 0;
         a.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(0));
         a.playerNetServerHandler.setPlayerLocation(ox, oy, oz, -90.0f, 0.0f);
@@ -106,10 +116,12 @@ public final class GeneratedGunLooks {
         boolean scoped = def.stats()
             .hasScope();
         boolean sights = !scoped && AdsSupport.supports(def.name());
-        int fireAt = sights ? 55 : 30;
-        int aimOn = sights ? 32 : 70;
-        int aimShot = sights ? 45 : 90;
-        int aimOff = sights ? 50 : 95;
+        // The sights shot waits 57 ticks after the toggle: the client's aim blend has to finish (a shot taken 13
+        // ticks in can catch the gun still at the hip when the client is slow).
+        int fireAt = sights ? 96 : 30;
+        int aimOn = sights ? 28 : 70;
+        int aimShot = sights ? 85 : 90;
+        int aimOff = sights ? 90 : 95;
         boolean aims = scoped || sights;
         if (t == fireAt) {
             signal(a, "arm", "shot", p + "-first-person-fire", "1");
