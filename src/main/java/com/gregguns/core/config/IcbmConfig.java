@@ -198,6 +198,13 @@ public class IcbmConfig {
     @Config.Sync(false)
     public static int siloComplexChancePercent = 25;
 
+    @Config.Comment({ "How many loot chests a whole silo complex holds, in the order abandoned, partly abandoned,",
+        "operational (D315); the same on every planet. Every chest holds loot, and a chest spot left over becomes an",
+        "empty wooden crate. Armory display chests come on top. Three whole numbers, 0 or more; other lists keep the",
+        "default. Default: 100, 200, 300." })
+    @Config.Sync(false)
+    public static int[] siloComplexChestTargets = { 100, 200, 300 };
+
     @Config.Comment({ "Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all.",
         "Default: dry and temperate land types." })
     @Config.Sync(false)
