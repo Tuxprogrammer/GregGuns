@@ -141,7 +141,7 @@ How the install behaves:
 - **GGS-12-09** A quest asks for the thing it teaches. Items made in a GT machine are `retrieval` tasks with `consume` off: "one of this family" is one retrieval with `requireOnlyOneItem`, "all these parts" is one retrieval listing every part, and alternative sets are several tasks with `taskLogic` `OR`. Recipe inputs may be shown in an `optional_retrieval` beside the required task. An OreDict entry may stand for a material. `crafting` tasks are for items made in the crafting grid, furnace or anvil only, since BetterQuesting counts nothing else.
 - **GGS-12-10** Hunt tasks use `gregguns.<Name>` entity names with `subtypes` off, and every name is registered by GregGuns.
 - **GGS-12-11** Only `gg.start.welcome` uses a checkbox. Every other quest has a task the game checks: an item, a craft or a kill. A hunt cannot match an Infernal rank, so no quest hunts one.
-- **GGS-12-12** A structure quest asks for something the player brings back from it (GGS-11). No `location` task names a GregGuns structure.
+- **GGS-12-12** A structure quest asks for something the player brings back from it ([11-worldgen](../11-worldgen/index.md)). No `location` task names a GregGuns structure.
 - **GGS-12-13** Only the three config-gated boss quests (Dictator Dave, Cyberdemon, Alien Bug) are `SECRET`.
 - **GGS-12-14** Quest text is inline (`name:8`, `desc:8`) and mirrored in the generated `en_US.lang` block, reads as prose in paragraphs the way the pack's quests do, and uses only the pack's `[warn]`, `[note]`, `[quest]`, `[url]` and `[questlink]` tags; a `[questlink]` names a quest key, which the builder turns into its id. Each title carries its tier's color and bold, as the pack's tier tabs do (Steam `§c`, LV `§2`, MV `§6`, HV `§5`, EV `§8`, IV `§9`, LuV `§d`, ZPM `§b`); the builder adds it. Each quest teaches one mechanic.
 - **GGS-12-15** No two position boxes in the line overlap. A box is 24 units; a main quest (`main: true`, the spine a player must follow, drawn with thick incoming lines) or a chapter head may be 48, a tier milestone 72, and the older chapter heads are 28.
@@ -173,11 +173,11 @@ How the install behaves:
 
 ## Open questions
 
-1. **Infernal hunts.** A hunt cannot match "any infernal mob", so the three rank quests are honor-system checkboxes. A small GregGuns-registered BetterQuesting task (soft dependency on Infernal Mobs, reading `getIsRareEntity` and `getModSize`) would make them real. Needs a decision before M7.
-2. **Structure visits.** Checkbox quests stand in for a visit check. If GregGuns registers its structures with a map-gen structure id, `location` tasks could name them. Needs the M8 structure design.
+1. **Infernal hunts.** A hunt cannot match "any infernal mob", so the rank quests are retired and the NPC hunt quests explain the ranks. A small GregGuns-registered BetterQuesting task (soft dependency on Infernal Mobs, reading `getIsRareEntity` and `getModSize`) would make rank quests possible again, under new keys.
+2. **Structure visits.** Structure quests ask for what the structure holds. If GregGuns registers its structures with a map-gen structure id, `location` tasks could name them. Needs the M8 structure design.
 3. **Repair Bench and Turret tier.** The quests assume MV and HV. Settled by area 09 and a record on machines.
-4. **Reward balance.** 26 bags may be too many or too few. The M9 balance pass decides.
-5. **Bag content.** Bags draw random items from the whole tier group. Whether to add a GregGuns-only bag group is a server-owner step; it needs a new `LootBags.xml` group.
+4. **Reward balance.** A bag on nearly every quest, plus coins, follows the pack's habit; the balance pass after the rewrite checks the totals.
+5. **Bag content.** Bags draw random items from the whole tier group. A GregGuns-only bag group or bag item is a change to the builder's `BAGS` table plus the bag itself.
 6. **Hunting with GregGuns damage.** `damageType` can require a damage source name. Whether GregGuns kills should be required (for example "kill with a bullet") depends on the names fixed in [0004](../../design/0004-damage-model.md).
 7. **Translation.** The pack ships English inline. Resolved in M9: `en_US.lang` carries a generated `betterquesting.*` block (`build_quests.py --lang`), checked by `LangFilesTest`; see [translating.md](../../translating.md).
 8. **Aluminum gate.** No pack quest is solely about aluminum. The MV gate relies on 1148 depending on 103. A direct prerequisite on 103 is optional.
