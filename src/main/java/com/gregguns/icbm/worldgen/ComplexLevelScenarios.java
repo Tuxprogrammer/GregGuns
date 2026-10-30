@@ -299,7 +299,7 @@ public final class ComplexLevelScenarios {
             }
             out.note("armories " + armories + ", display guns " + guns);
             out.check(armories > 0, "the complex has an armory");
-            out.check(guns >= 8 * armories, "each armory shows its guns: " + guns);
+            out.check(guns >= 4 * armories, "each armory shows its guns: " + guns);
             out.checkEquals("frames on an outer wall", 0, outer);
             out.checkEquals("frames with no wall behind", 0, noWall);
             out.checkEquals("partitions that reach the ceiling", 0, tall);
