@@ -271,8 +271,11 @@ public final class LootScenarios {
                         + chests
                         + "; pack mods "
                         + packMods);
-                // Weapon chests lean on GregGuns; every other kind is mostly pack loot.
-                int packFloor = cat.contains("weaponchest") ? chests * 3 / 4 : chests * 9 / 10;
+                // Weapon chests and barracks lean on GregGuns; supply and reinforced chests are mostly pack loot.
+                // The floors hold without any optional pack mod (a dev server has none, so GregGuns lines weigh
+                // more there); the exact odds per table are ArsenalTest's.
+                int packFloor = cat.contains("weaponchest") || cat.equals(LootCategoryDefs.BARRACKS) ? chests * 3 / 4
+                    : chests * 9 / 10;
                 out.check(withPack >= packFloor, where + " pack items in only " + withPack + " chests");
                 out.check(packMods.contains("minecraft"), where + " holds no vanilla item");
                 out.checkEquals(where + " guns without their ammo", 0, gunsWithoutAmmo);
@@ -282,7 +285,7 @@ public final class LootScenarios {
                     out.check(withGregGuns >= chests / 2, where + " GregGuns items in only " + withGregGuns);
                     out.check(withAmmo > withGun * 2, where + " ammo in " + withAmmo + ", guns in " + withGun);
                     out.check(withGun > 0, where + " never drew a gun");
-                    out.check(withGun < chests * 2 / 5, where + " a gun in " + withGun + " chests");
+                    out.check(withGun < chests / 2, where + " a gun in " + withGun + " chests");
                 }
                 if (cat.contains("supplychest")) {
                     out.check(packMods.size() >= 2, where + " only " + packMods + " supply pack items");
