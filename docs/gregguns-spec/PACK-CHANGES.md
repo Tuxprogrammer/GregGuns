@@ -24,6 +24,12 @@ Every change GregGuns once needed outside this repo, collected from the area ind
 | `config/InfernalMobs.cfg` `droppedItemIDsElite` / `Ultra` / `Infernal` | Append ammunition, magazines, grenades and consumables only (no guns, no armor) | **Not applicable by default; optional owner step for route A.** Route B below (our own handler) is in the jar and on by default. Add to the lists only if the pack also wants GregGuns drops from vanilla mobs, and then set `npcs.infernalTieredLoot=false` or the NPCs drop twice | [pack-loot.md](06-items/pack-loot.md#infernal-mobs) |
 | `config/GTNewHorizons/CustomDrops.xml` | `CustomDrop` entries for boss NPCs (full class name; player kills only) | **Optional server-owner step.** Fixed boss rewards are a pack choice | [pack-loot.md](06-items/pack-loot.md#gtnh-customdrops), [mob-drops-nei.md](10-entities-npcs/mob-drops-nei.md) |
 
+### GregTech achievements
+
+| File | Change | Status | Sheet |
+|---|---|---|---|
+| GT5-Unofficial's auto-generated Assembly Line achievements (one per recipe output, awarded on pickup, no lang entry for our items) | None in files. GregGuns removes its own items' achievements from GT's lookup table, GT's page and the vanilla list at load-complete (`GtAchievementFilter`); GT's NEI unlock on pickup is untouched | **Done in jar.** Nothing for an adopter to do | n/a |
+
 ### Mobs
 
 | File | Change | Status | Sheet |

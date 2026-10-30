@@ -202,6 +202,7 @@ public class CommonProxy {
      * {@link SelfCheckRunner}.
      */
     public void loadComplete(FMLLoadCompleteEvent event) {
+        com.gregguns.compat.GtAchievementFilter.apply();
         if (DevEnvironment.isActive()) {
             SelfCheckRunner.run();
         }
