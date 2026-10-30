@@ -93,8 +93,10 @@ class WarheadDearmingTest {
             }
         }
         for (InertWarheadSpec spec : InertWarheadSpec.values()) {
-            assertTrue(WarheadDearming.casingReturns(spec)
-                .size() <= WarheadDearming.CUTTER_ITEM_OUTPUTS, spec + " scrap outputs");
+            assertTrue(
+                WarheadDearming.casingReturns(spec)
+                    .size() <= WarheadDearming.CUTTER_ITEM_OUTPUTS,
+                spec + " scrap outputs");
         }
     }
 
@@ -115,10 +117,14 @@ class WarheadDearmingTest {
                 assertTrue(in.isFluid(), spec + " loses only fluid");
             }
         }
-        assertEquals(1, WarheadDearming.payloadReturns(WarheadRecipeSpec.SHRAPNEL)
-            .size());
-        assertEquals(1, WarheadDearming.payloadLosses(WarheadRecipeSpec.THERMOBARIC)
-            .size());
+        assertEquals(
+            1,
+            WarheadDearming.payloadReturns(WarheadRecipeSpec.SHRAPNEL)
+                .size());
+        assertEquals(
+            1,
+            WarheadDearming.payloadLosses(WarheadRecipeSpec.THERMOBARIC)
+                .size());
     }
 
     /** Adds a recipe's item ingredients to a ledger: positive for what the build took, negative for what came back. */
@@ -170,8 +176,11 @@ class WarheadDearmingTest {
             }
             Map<String, Integer> net = roundTrip(spec, loads);
             for (Map.Entry<String, Integer> e : net.entrySet()) {
-                assertEquals(0, e.getValue()
-                    .intValue(), spec + ": " + e.getKey() + " nets to nothing");
+                assertEquals(
+                    0,
+                    e.getValue()
+                        .intValue(),
+                    spec + ": " + e.getKey() + " nets to nothing");
             }
         }
     }
@@ -188,8 +197,11 @@ class WarheadDearmingTest {
             Map<String, Integer> net = roundTrip(spec, loads);
             for (Map.Entry<String, Integer> e : net.entrySet()) {
                 assertTrue(e.getValue() >= 0, spec + " " + Arrays.toString(loads) + ": " + e.getKey() + " duped");
-                assertEquals(0, e.getValue()
-                    .intValue(), spec + " " + Arrays.toString(loads) + ": " + e.getKey() + " lost");
+                assertEquals(
+                    0,
+                    e.getValue()
+                        .intValue(),
+                    spec + " " + Arrays.toString(loads) + ": " + e.getKey() + " lost");
             }
         }
     }

@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * Pure layout of the inert warhead's name and tooltip (D41, D282): the payload, the tier, the empty charge count and
- * the inert line, then the next step and the way back (D283) behind Shift. It takes already localized templates, so it has no Minecraft types
+ * the inert line, then the next step and the way back (D283) behind Shift. It takes already localized templates, so it
+ * has no Minecraft types
  * and is unit tested.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (The inert warhead)

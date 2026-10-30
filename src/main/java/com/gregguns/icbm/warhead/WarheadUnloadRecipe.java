@@ -84,7 +84,8 @@ public final class WarheadUnloadRecipe implements IRecipe {
             return null;
         }
         NBTTagCompound tag = warhead.getTagCompound();
-        if (tag == null || !tag.hasKey(WarheadStacks.K_EXPLOSIVE) || !tag.hasKey(WarheadStacks.K_FILL)
+        if (tag == null || !tag.hasKey(WarheadStacks.K_EXPLOSIVE)
+            || !tag.hasKey(WarheadStacks.K_FILL)
             || tag.getInteger(WarheadStacks.K_FILL) < 1) {
             return null;
         }

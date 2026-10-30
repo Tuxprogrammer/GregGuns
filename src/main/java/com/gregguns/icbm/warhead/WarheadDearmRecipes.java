@@ -80,7 +80,8 @@ public final class WarheadDearmRecipes {
                     // The payload recipe left it out too, so there is nothing to give back.
                     continue;
                 }
-                GregGuns.LOG.error("Skipping the {} payload removal: {} is missing", spec, IcbmIngredients.describe(in));
+                GregGuns.LOG
+                    .error("Skipping the {} payload removal: {} is missing", spec, IcbmIngredients.describe(in));
                 return;
             }
             outputs.add(stack);

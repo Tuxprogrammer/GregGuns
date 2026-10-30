@@ -365,8 +365,8 @@ public final class SelfCheckRunner {
             return false;
         }
         for (ItemStack stack : stacks) {
-            if (com.gregguns.icbm.warhead.InertWarheads.is(stack) || stack != null
-                && stack.getItem() instanceof com.gregguns.icbm.warhead.ItemBlockWarhead) {
+            if (com.gregguns.icbm.warhead.InertWarheads.is(stack)
+                || stack != null && stack.getItem() instanceof com.gregguns.icbm.warhead.ItemBlockWarhead) {
                 return true;
             }
         }

@@ -206,19 +206,16 @@ public final class WarheadDearmScenarios {
                 WarheadUnloadRecipe.result(grid(live(WarheadCasing.T1, "shrapnel", 5))) == null,
                 "no kit, no unload");
             out.check(
-                WarheadUnloadRecipe.result(grid(InertWarheads.stack(WarheadCasing.T1, "shrapnel"), kit.copy()))
-                    == null,
+                WarheadUnloadRecipe.result(grid(InertWarheads.stack(WarheadCasing.T1, "shrapnel"), kit.copy())) == null,
                 "an inert warhead has no charges to unload");
             out.check(
-                WarheadUnloadRecipe.result(grid(live(WarheadCasing.T1, "shrapnel", 5), kit.copy(), charges(1)))
-                    == null
+                WarheadUnloadRecipe.result(grid(live(WarheadCasing.T1, "shrapnel", 5), kit.copy(), charges(1))) == null
                     && WarheadChargeRecipe.result(grid(live(WarheadCasing.T1, "shrapnel", 4), kit.copy(), charges(1)))
                         == null,
                 "a kit and a charge together make neither an unload nor a load");
             out.check(
                 WarheadUnloadRecipe
-                    .result(grid(live(WarheadCasing.T1, "shrapnel", 5), kit.copy(), new ItemStack(Blocks.tnt)))
-                    == null,
+                    .result(grid(live(WarheadCasing.T1, "shrapnel", 5), kit.copy(), new ItemStack(Blocks.tnt))) == null,
                 "anything else in the grid makes no recipe");
             out.check(
                 WarheadUnloadRecipe.result(
@@ -226,8 +223,7 @@ public final class WarheadDearmScenarios {
                     == null,
                 "two warheads make no recipe");
             out.check(
-                WarheadUnloadRecipe.result(grid(live(WarheadCasing.T1, "shrapnel", 5), kit.copy(), kit.copy()))
-                    == null,
+                WarheadUnloadRecipe.result(grid(live(WarheadCasing.T1, "shrapnel", 5), kit.copy(), kit.copy())) == null,
                 "two kits make no recipe");
             ItemStack tagless = new ItemStack(Item.getItemFromBlock(WarheadBlocks.of(WarheadCasing.T1)));
             out.check(

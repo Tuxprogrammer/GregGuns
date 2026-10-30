@@ -131,8 +131,7 @@ public final class WarheadDearming {
     public static int unloadOutputs(WarheadRecipeSpec spec) {
         return 1 + chargeStacks(
             spec.blast()
-                .fillCap())
-            .size();
+                .fillCap()).size();
     }
 
     /**
