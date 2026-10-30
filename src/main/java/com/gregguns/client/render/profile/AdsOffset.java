@@ -136,4 +136,65 @@ public final class AdsOffset {
         double[] to = inverse.apply(wanted);
         return new double[] { to[0] - from[0], to[1] - from[1], to[2] - from[2] };
     }
+
+    /** Length of a pose array without a pitch: just the shift. */
+    public static final int SHIFT_ONLY = 3;
+    /** Length of a pose array with a pitch: shift, angle, axis, pivot. */
+    public static final int WITH_PITCH = 10;
+
+    /**
+     * The whole aimed pose in the item frame: {@code {sx, sy, sz}} when the gun's barrel stays level, or
+     * {@code {sx, sy, sz, angle, ax, ay, az, px, py, pz}} when the spec tips it. The renderer, at blend b, does
+     * translate(s * b), translate(p), rotate(angle * b about a), translate(-p). The pivot p is the sight point as it
+     * is in the normal hold, so the sights end at the screen center whatever the angle; the axis a is the eye's
+     * horizontal axis (screen right) expressed in the item frame, so the tip is a pitch as the player sees it. The
+     * angle is in GL's sense: negative of the spec's muzzle-down pitch.
+     *
+     * @see #itemShift
+     */
+    public static double[] itemPose(GunTransforms t, BoxSpec[] boxes, float modelScale, AdsSpec spec, boolean xFamily) {
+        double[] shift = itemShift(t, boxes, modelScale, spec, xFamily);
+        if (spec.pitchDegrees() == 0.0) {
+            return shift;
+        }
+        double[] eye = eyeOf(t, sightPart(boxes, spec), sightPoint(boxes, modelScale, spec), xFamily);
+        InHandFit.Affine inverse = InHandFit.firstPersonItemFrame()
+            .invert();
+        double[] from = inverse.apply(eye);
+        double[] origin = inverse.apply(new double[] { 0.0, 0.0, 0.0 });
+        double[] right = inverse.apply(new double[] { 1.0, 0.0, 0.0 });
+        double[] axis = { right[0] - origin[0], right[1] - origin[1], right[2] - origin[2] };
+        double len = Math.sqrt(axis[0] * axis[0] + axis[1] * axis[1] + axis[2] * axis[2]);
+        return new double[] { shift[0], shift[1], shift[2], -spec.pitchDegrees(), axis[0] / len, axis[1] / len,
+            axis[2] / len, from[0], from[1], from[2] };
+    }
+
+    /**
+     * What the renderer's GL calls do to one point, as arithmetic, so a test can check the pose.
+     *
+     * @param pose  from {@link #itemPose}
+     * @param point a point in the item frame
+     * @param blend 0 (normal hold) to 1 (fully aimed)
+     * @return the point after the aimed pose, in the item frame
+     */
+    public static double[] applyPose(double[] pose, double[] point, double blend) {
+        double[] q = point.clone();
+        if (pose.length >= WITH_PITCH) {
+            double a = Math.toRadians(pose[3] * blend);
+            double c = Math.cos(a);
+            double s = Math.sin(a);
+            double[] k = { pose[4], pose[5], pose[6] };
+            double[] v = { q[0] - pose[7], q[1] - pose[8], q[2] - pose[9] };
+            double dot = k[0] * v[0] + k[1] * v[1] + k[2] * v[2];
+            double[] cross = { k[1] * v[2] - k[2] * v[1], k[2] * v[0] - k[0] * v[2], k[0] * v[1] - k[1] * v[0] };
+            for (int i = 0; i < 3; i++) {
+                // Rodrigues' rotation about the unit axis k, as glRotated turns (right-handed).
+                q[i] = pose[7 + i] + v[i] * c + cross[i] * s + k[i] * dot * (1 - c);
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            q[i] += pose[i] * blend;
+        }
+        return q;
+    }
 }

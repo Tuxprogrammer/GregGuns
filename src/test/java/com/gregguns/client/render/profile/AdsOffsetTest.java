@@ -129,4 +129,53 @@ class AdsOffsetTest {
         double[] eye = AdsOffset.eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point, def.xFamily());
         assertTrue(eye[2] > -1.5, "the sight is close enough that the stock stays behind the camera: " + eye[2]);
     }
+
+    @Test
+    void theThompsonAndTheCombatShotgunAimThroughTheirFrontBladeWithTheMuzzleTippedDown() {
+        for (String gun : new String[] { "thompson_smg", "combat_shotgun" }) {
+            AdsSpec spec = AdsTable.of(gun);
+            assertEquals(1, spec.sightBoxes().length, gun + " aims through one box");
+            assertEquals("front_sight", spec.sightBoxes()[0]);
+            assertTrue(spec.pitchDegrees() != 0.0 && Math.abs(spec.pitchDegrees()) <= 6.0, gun + " pitch is slight");
+        }
+    }
+
+    @Test
+    void aTippedGunKeepsItsFrontBladeOnTheScreenCenterAndPitchesAboutIt() {
+        InHandFit.Affine item = InHandFit.firstPersonItemFrame();
+        for (String gun : new String[] { "thompson_smg", "combat_shotgun" }) {
+            ClientGunDefinition def = ClientGunDefinitions.byName(gun);
+            AdsSpec spec = AdsTable.of(gun);
+            double[] pose = AdsTable.shiftOf(def);
+            assertEquals(AdsOffset.WITH_PITCH, pose.length, gun);
+            assertEquals(-spec.pitchDegrees(), pose[3], 1e-12, gun + " GL angle is the negated muzzle-down pitch");
+            double[] point = AdsOffset.sightPoint(def.boxes(), def.modelScale(), spec);
+            double[] eye = AdsOffset
+                .eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point, def.xFamily());
+            double[] blade = item.invert()
+                .apply(eye);
+            double[] landed = item.apply(AdsOffset.applyPose(pose, blade, 1.0));
+            assertEquals(0.0, landed[0], 1e-9, gun + " blade x");
+            assertEquals(0.0, landed[1], 1e-9, gun + " blade y");
+            assertEquals(eye[2], landed[2], 1e-9, gun + " blade depth");
+            // Not aimed: nothing moves.
+            double[] rest = AdsOffset.applyPose(pose, blade, 0.0);
+            for (int i = 0; i < 3; i++) {
+                assertEquals(blade[i], rest[i], 1e-12, gun + " at blend 0");
+            }
+            // A point one block nearer the camera than the blade moves vertically by the pitch: up when the muzzle
+            // tips down (the rear comes up), down when it tips up. Screen-up is eye y.
+            double[] nearEye = { eye[0], eye[1], eye[2] + 1.0 };
+            double[] near = item.invert()
+                .apply(nearEye);
+            double[] nearAfter = item.apply(AdsOffset.applyPose(pose, near, 1.0));
+            double expectedUp = Math.sin(Math.toRadians(spec.pitchDegrees()));
+            assertEquals(expectedUp, nearAfter[1], 1e-6, gun + " the rear end swings by the pitch");
+        }
+    }
+
+    @Test
+    void aGunWithNoPitchKeepsAThreeNumberShift() {
+        assertEquals(AdsOffset.SHIFT_ONLY, AdsTable.shiftOf(ClientGunDefinitions.byName("m4")).length);
+    }
 }

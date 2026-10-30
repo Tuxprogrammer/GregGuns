@@ -59,6 +59,8 @@ Per-gun data is in `AdsTable`: the names of the model boxes that form the sights
 - the muzzle flash, drawn in the same frame, moves with the gun;
 - it changes no GL state, so a shader pack sees nothing new (the shader GL-state fix, branch `fix/shader-gl-state`, is already on master; the code here only calls `glTranslated` between the renderer's own `glPushMatrix` and `glPopMatrix`).
 
+A gun can also carry an **aimed pitch** (`AdsSpec.pitchDegrees`, degrees, positive tips the muzzle down). `AdsOffset.itemPose` then adds a rotation about the sight point, about the screen's horizontal axis (so the sight stays on the center and the tip reads as a pitch to the player), and `GunItemRenderer` applies it scaled by the blend after the shift. The Thompson and the Combat Shotgun use it: they aim through their front blade, and tip the muzzle up 4 degrees (pitch -4) so the tall rear sight and receiver, which sit between the eye and the blade, swing down out of the line of sight. Tipping the other way raises the rear end into view and makes the picture worse.
+
 The sight point and offsets are computed from the model, not hand-tuned. A gun that sits a little off after a client check is fixed by its nudge in `AdsTable`, not in the renderer.
 
 ## Config
