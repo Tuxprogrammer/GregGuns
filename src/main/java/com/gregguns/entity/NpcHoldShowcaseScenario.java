@@ -36,7 +36,7 @@ final class NpcHoldShowcaseScenario implements Scenario {
     private static final int STEP = 30;
     private static final NpcMob[] MOBS = { NpcMob.ZOMBIE_SOLDIER, NpcMob.SKELETON_SOLDIER, NpcMob.BANDIT,
         NpcMob.ARMY_SOLDIER, NpcMob.COMMANDO, NpcMob.OUTCAST };
-    private static final String[] GUNS = { "pistol", "assault_rifle", "minigun", "rocket_launcher" };
+    private static final String[] GUNS = { "pistol_9mm", "ak47", "minigun", "rocket_launcher" };
 
     static void register(ScenarioRegistry registry) {
         registry.register(new NpcHoldShowcaseScenario());
@@ -99,6 +99,11 @@ final class NpcHoldShowcaseScenario implements Scenario {
             return ScenarioResult.fail(NAME, "needs a connected player");
         }
         EntityPlayerMP player = players.get(0);
+        for (String gun : GUNS) {
+            if (GunItems.get(gun) == null) {
+                return ScenarioResult.fail(NAME, "no gun named " + gun);
+            }
+        }
         List<Shot> shots = new ArrayList<>();
         for (NpcMob mob : MOBS) {
             for (String gun : GUNS) {
