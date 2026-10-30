@@ -85,6 +85,7 @@ public final class SiloScenarios {
         LaunchSequenceScenarios.registerAll(registry);
         registry.register(new LaunchSequenceMpScenario());
         registry.register(new LaunchControlGuiShots());
+        SiloGuiShots.registerAll(registry);
         registry.register(new I4SiloSetup());
     }
 

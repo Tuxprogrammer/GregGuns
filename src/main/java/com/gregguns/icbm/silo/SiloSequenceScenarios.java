@@ -177,7 +177,7 @@ final class SiloSequenceScenarios {
      * Pours fuel into the Input Hatch through its tank's {@code fill}, as a pipe or a player does, so the hatch tells
      * the controller (GT pushes a recipe check on a hatch's own change only).
      */
-    private static void pour(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
+    static void pour(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
         IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
         net.minecraftforge.fluids.Fluid f = net.minecraftforge.fluids.FluidRegistry.getFluid(fluid);
         out.check(f != null, "the test fluid " + fluid + " is registered");
