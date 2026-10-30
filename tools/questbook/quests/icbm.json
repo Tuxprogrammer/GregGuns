@@ -2494,7 +2494,7 @@
       "desc": [
         "Old missile bases lie buried in the Overworld and on every planet with solid ground. A complex is about 240 by 240 blocks and 24 blocks down: a hub, wide halls, 35 to 40 rooms and a gallery of four to ten real silos. On the surface you see only concrete shafts, sometimes a small radar hut, and an escape-ladder trapdoor.",
         "Nothing in a complex is better than its planet's ceiling: EV in the Overworld and on the Moon, one voltage tier more for each rocket tier above. Bring back proof: a block of Silo Complex Wall, or a damaged missile body from a salvage chest. The damaged body can't be placed or flown, but it recycles for its plates.",
-        "[warn]Partly abandoned and operational complexes have guards at their posts, and a post you break stays broken.[/warn]"
+        "[warn]Every complex has guards at its posts: a couple in an abandoned one, many in an operational one. A post you break stays broken.[/warn]"
       ],
       "pre": [
         "gg.icbm.silo"

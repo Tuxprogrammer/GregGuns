@@ -216,6 +216,8 @@ public final class ComplexLevelScenarios {
         int chestsEmpty;
         int overCeiling;
         int machinesWanted;
+        /** Machine placements that are not husks: the working machines a player could take (D284). */
+        int machinesWorking;
         int machinesRight;
         int machinesSkipped;
         int casings;
@@ -303,6 +305,8 @@ public final class ComplexLevelScenarios {
                             + t.floodMarks
                             + ", chests "
                             + t.chests
+                            + ", working machines "
+                            + t.machinesWorking
                             + ", machines "
                             + t.machinesRight
                             + "/"
@@ -328,7 +332,19 @@ public final class ComplexLevelScenarios {
             if (ab == null || pa == null || op == null) {
                 return;
             }
-            out.checkEquals("abandoned spawners", 0, ab.spawners);
+            out.check(
+                ab.spawners >= 1 && ab.spawners <= 2,
+                "an abandoned complex holds one or two guard spawners (D284): " + ab.spawners);
+            out.checkEquals("abandoned elite spawners", 0, ab.elite);
+            out.check(
+                ab.machinesWorking * 4 <= op.machinesWorking && ab.chests * 2 <= op.chests,
+                "an abandoned complex has far fewer working machines and chests (D284): machines " + ab.machinesWorking
+                    + " vs "
+                    + op.machinesWorking
+                    + ", chests "
+                    + ab.chests
+                    + " vs "
+                    + op.chests);
             out.check(pa.spawners > 0, "a partly abandoned complex has some guards");
             out.check(
                 op.spawners > pa.spawners,
@@ -593,6 +609,7 @@ public final class ComplexLevelScenarios {
         private void machine(Tally t, World world, Placement p, int x, int y, int z) {
             MachineRole role = p.role();
             t.machinesWanted++;
+            if (!p.dead()) t.machinesWorking++;
             Block b = world.getBlock(x, y, z);
             TileEntity te = world.getTileEntity(x, y, z);
             if (role == MachineRole.MAGAZINE_CASING) {

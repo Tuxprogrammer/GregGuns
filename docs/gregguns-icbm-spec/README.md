@@ -30,7 +30,7 @@ In short:
 - Missiles are an automatable arsenal: about one of their tier's rocket launches in cost, and automatable in GT machines (the Assembler below LuV, the Assembly Line from LuV, D281).
 - The player stacks the missile body and a warhead block on the pad; the Galacticraft pad is never removed.
 - Assets are human-made and properly licensed first; generation is a last resort.
-- Abandoned Missile Silos come in activity levels, from a guard-free ruin to an operational silo full of spawners to clear and take over. They generate on the Overworld (EV loot) and on every planet, with loot rising one tier per rocket tier.
+- Abandoned Missile Silos come in activity levels, from a picked-over ruin with one or two guard posts to an operational silo full of spawners to clear and take over. They generate on the Overworld (EV loot) and on every planet, with loot rising one tier per rocket tier.
 - Missile bodies are built in the Galacticraft NASA Workbench from GT-gated schematics, or by machine: in the Assembler below LuV and on the Assembly Line from LuV (D281). T1–T2 launch from the GC pad and T3 and up from a GregGuns silo multiblock.
 - Galacticraft is required by the ICBM module only.
 

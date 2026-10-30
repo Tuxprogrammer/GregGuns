@@ -22,6 +22,11 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Five switches are on by default: `npcs.helicopter`, `npcs.alienBug`, `npcs.cyberdemon`, `worldgen.enabledAlienBugNest` and `utility.bioBlobSparesPlayers`. Camps can send the Attack Helicopter and a Camp Flag break calls one in, Alien Bugs and the Cyberdemon (Nether) may spawn, Alien Bug Nests generate in sandy biomes, and Bio Blob poison spares players (other creatures are still poisoned). Set any of them to `false` to turn it off.
 - `questbook.install` is on by default and shows in the in-game config GUI: a server with BetterQuesting gets the GregGuns quest line on start. Set it to `false` to skip the install. The Cyberdemon and Alien Bug quests are visible from the start.
 
+## Changed: abandoned silo complexes
+
+- Abandoned complexes now keep one or two guard spawners (Army Soldiers and Commandos) at a hall branch or a guard post room, so a ruin is no longer empty of danger.
+- Abandoned complexes are picked clean: about 7 in 10 chests and wall frames are gone, one machine slot in five is empty, and nine in ten of the machines that remain are bare hulls. Finding a working machine in a ruin is a rare treat. Partly abandoned and operational complexes are unchanged.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.
