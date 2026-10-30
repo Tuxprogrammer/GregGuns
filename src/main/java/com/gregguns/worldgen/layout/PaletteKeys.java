@@ -51,7 +51,7 @@ public final class PaletteKeys {
     // https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java
     // concrete L857-L868 (0 default, 1 block, 4 weathered, 10 asphalt); factoryblock L1171-L1187 (1 rust2, 3 platex,
     // 6 hazard, 13 plating); technical L3805-L3821 (13 grate); laboratoryblock L2185-L2201 (11 large
-    // steel); stonebricksmooth L3724-L3744 (5 large bricks, 7 chaotic bricks); brickCustom L463-L487 (5 aged,
+    // steel); stonebricksmooth L3724-L3744 (5 large bricks, 7 chaotic bricks, 12 hard panel); brickCustom L463-L487 (5 aged,
     // 13 sooty); glowstone L1563-L1579 (4 sulphur neon panel); glass_pane L1398-L1406 (2 no border); nation and rebel
     // L2784-L2804 (0 camo); <wood>_planks L4380-L4406 (10 crate); hempcrete L1902-L1917 (wool color order, 14 red).
     // Source: GT concrete metas (0 dark, 8 light, 12 cracked light bricks, 15 smooth light), at 5.09.54.205:
@@ -73,6 +73,7 @@ public final class PaletteKeys {
         // Masonry: gray stone bricks; red brick for the railway house.
         { "brick", "masonry", "chisel:stonebricksmooth#5", "minecraft:stonebrick#0" },
         { "brick_worn", "masonry", "chisel:stonebricksmooth#7", "minecraft:stonebrick#2" },
+        { "brick_trim", "masonry", "chisel:stonebricksmooth#12", "minecraft:stonebrick#3" },
         { "red_brick", "red_brick", "chisel:brickCustom#5", "minecraft:brick_block#0" },
         { "red_brick_worn", "red_brick", "chisel:brickCustom#13", "minecraft:brick_block#0" },
         // Steel: gray plate walls and decks, rusted plate, grate floors, dark hull steel, hazard stripes.
@@ -96,7 +97,6 @@ public final class PaletteKeys {
         { "lead_block", "metal_storage", "chisel:leadblock#0", "minecraft:iron_block#0" },
         { "copper_block", "metal_storage", "chisel:copperblock#0", "minecraft:stained_hardened_clay#1" },
         { "tin_block", "metal_storage", "chisel:tinblock#0", "minecraft:iron_block#0" },
-        { "iron_plate", "metal_storage", "chisel:iron_block#0", "minecraft:iron_block#0" },
         { "gold_plate", "metal_storage", "chisel:gold_block#1", "minecraft:gold_block#0" },
         // GregGuns' own nest blocks; the vanilla stand-in keeps a nest climbable with the worldgen module off.
         // Spec: docs/techguns-spec/11-worldgen/structure-notes/alien_bug_nest.md (block roles).

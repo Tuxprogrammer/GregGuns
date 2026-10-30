@@ -29,7 +29,7 @@ The layouts then mixed unrelated roles per cell (`factory_wall*3 | concrete*1`, 
 | Small Factory (and its camp copy) | rusty steel shed on a concrete base | rust walls, concrete base with a weathered band, steel grate floors |
 | Train Station | weathered brick house, light roof with holes | red brick with a sooty share, gray stone-brick roof and slabs with gaps |
 | Gas Station | asphalt forecourt, brick shop, steel canopy | asphalt apron, concrete panels and pillars, gray stone-brick shop, steel canopy with a whole iron-bar railing, hazard-stripe pumps |
-| Medium House | gray stone house, dark red roof | gray stone bricks with a worn share, nether-brick roof, brown carpets |
+| Medium House | gray stone house, dark red roof | gray stone bricks with a worn share and stone-panel corner posts, nether-brick roof, brown carpets |
 | Big Bunker | gray concrete under an earth berm and camo | concrete with panel and weathered shares, plain-clay sandbags, leaf camo |
 | Aircraft Carrier | gray steel ship, hazard rims | steel-plate hull and island, plated deck, grate floors, hazard-stripe rims |
 | Submarine | dark steel hull | dark steel hull, steel-plate band, plated interior, grate floors |
@@ -39,7 +39,7 @@ The ICBM silo complex keeps its own palette code ([palette.md](../gregguns-icbm-
 
 ## Consequences
 
-- `PaletteKeys` is a role table with families; `lantern` is now `lamp`; new roles `concrete_panel`, `concrete_dark`, `asphalt`, `brick_worn`, `red_brick`, `red_brick_worn`, `rust_wall`, `hull_dark`, `crate`, `camo_woodland`, `camo_desert`, `camo_snow`, `sandbag`, `container`; `lab_wall` is gone (no layout used it).
+- `PaletteKeys` is a role table with families; `lantern` is now `lamp`; new roles `concrete_panel`, `concrete_dark`, `asphalt`, `brick_worn`, `red_brick`, `red_brick_worn`, `rust_wall`, `hull_dark`, `crate`, `camo_woodland`, `camo_desert`, `camo_snow`, `sandbag`, `container`, `brick_trim`; `lab_wall` and `iron_plate` are gone (the house corner posts were Chisel iron storage blocks: pink-gray, and each mined into iron).
 - `LayoutRegistry` rejects a role key with a meta. `StructurePaletteRulesTest` checks every shipped layout and role against items 2 to 5.
 - Steel stand-ins are smooth stone slabs, not iron blocks, so a stripped install does not hand out iron.
 - Structures look the same in shape; only blocks change. Existing worlds keep what they generated.

@@ -36,7 +36,7 @@ The role table in `PaletteKeys` ([0025](../../design/0025-structure-palettes.md)
 | concrete | `concrete_panel` | Chisel concrete 1 (block) | GT smooth light concrete (15), stone bricks |
 | concrete | `concrete_dark` | Chisel concrete 4 (weathered) | GT cracked light concrete bricks (12), cracked stone bricks |
 | concrete | `asphalt` | Chisel concrete 10 (asphalt) | GT dark concrete (0), smooth stone slab |
-| masonry | `brick`, `brick_worn` | Chisel stone bricks 5 (large), 7 (chaotic) | stone bricks, cracked stone bricks |
+| masonry | `brick`, `brick_worn`, `brick_trim` | Chisel stone bricks 5 (large), 7 (chaotic), 12 (hard panel) | stone bricks, cracked stone bricks, chiseled stone bricks |
 | red_brick | `red_brick`, `red_brick_worn` | Chisel bricks 5 (aged), 13 (sooty) | vanilla bricks |
 | steel | `factory_wall` | Chisel factory 3 (plate) | smooth stone slab |
 | steel | `plating` | Chisel factory 13 (plating) | smooth stone slab |
@@ -50,7 +50,7 @@ The role table in `PaletteKeys` ([0025](../../design/0025-structure-palettes.md)
 | camo | `camo_woodland`, `camo_desert`, `camo_snow` | oak leaves; Chisel desert camo (rebel 0); snow | sandstone (desert) |
 | sandbag | `sandbag` | hardened clay | |
 | container | `container` | Chisel hempcrete 14 (red) | red wool |
-| metal_storage | `lead_block`, `copper_block`, `tin_block`, `iron_plate`, `gold_plate` | Chisel metal storage blocks | iron, gold, clay |
+| metal_storage | `lead_block`, `copper_block`, `tin_block`, `gold_plate` | Chisel metal storage blocks | iron, gold, clay |
 | bugnest | `bugnest_wall`, `bugnest_egg`, `bugnest_slime` | GregGuns nest blocks | sandstone, clay, vines |
 
 Rules, checked by `StructurePaletteRulesTest` and at load:
