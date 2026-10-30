@@ -693,8 +693,9 @@ public final class MTELaunchControl extends MTETieredMachineBlock
 
     /**
      * The silo this block belongs to. The binding holds while the controller stands there and is either unformed (it
-     * may re-form with this block) or formed with this block as its Launch Control; a silo that formed without it, or
-     * a controller that is gone, releases it and the block stands free. Server side.
+     * may re-form with this block) or formed with a Launch Control at this block's position; a silo that formed
+     * without it, or a controller that is gone, releases it and the block stands free. Both sides keep positions, not
+     * references, so a reload of one chunk does not break the pairing. Server side.
      *
      * @return the silo, or null when the block is not part of one or the silo's chunk is not loaded
      */
@@ -708,7 +709,8 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             return null; // keep the binding until the silo's chunk is back
         }
         com.gregguns.icbm.silo.MTEMissileSilo silo = LaunchSites.siloAt(w, siloX, siloY, siloZ);
-        if (silo == null || silo.isFormed() && silo.launchControl() != this) {
+        if (silo == null
+            || silo.isFormed() && !silo.hasLaunchControlAt(base.getXCoord(), base.getYCoord(), base.getZCoord())) {
             unbindSilo();
             return null;
         }
@@ -741,7 +743,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
                         continue;
                     }
                     com.gregguns.icbm.silo.MTEMissileSilo silo = LaunchSites.siloAt(w, x + dx, y + dy, z + dz);
-                    if (silo != null && silo.isFormed() && silo.launchControl() == null) {
+                    if (silo != null && silo.isFormed() && !silo.hasLaunchControl()) {
                         silo.onMachineBlockUpdate();
                     }
                 }

@@ -42,7 +42,7 @@ public enum SiloLaunchControl implements IHatchElement<MTEMissileSilo> {
 
     @Override
     public long count(MTEMissileSilo silo) {
-        return silo.launchControl() == null ? 0 : 1;
+        return silo.hasLaunchControl() ? 1 : 0;
     }
 
     /** Our own lang key, so GT writes nothing into its GregTech.lang (D65). */

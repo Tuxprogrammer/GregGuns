@@ -225,8 +225,14 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         casingCount++;
     }
 
-    /** The Launch Control in this silo's structure (D285), found by the last structure check; null for none. */
-    private com.gregguns.icbm.control.MTELaunchControl launchControl;
+    /**
+     * Where the Launch Control in this silo's structure stands (D285), found by the last structure check. Kept as a
+     * position, not a reference, so a reload of the Launch Control's chunk alone does not break the pairing.
+     */
+    private boolean hasLaunchControl;
+    private int lcX;
+    private int lcY;
+    private int lcZ;
 
     /**
      * The structure check found a Launch Control in a hatch position: it becomes this silo's, unless the silo already
@@ -237,18 +243,45 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
      */
     boolean addLaunchControl(IGregTechTileEntity tile) {
         if (tile == null || !(tile.getMetaTileEntity() instanceof com.gregguns.icbm.control.MTELaunchControl)
-            || launchControl != null) {
+            || hasLaunchControl) {
             return false;
         }
-        launchControl = (com.gregguns.icbm.control.MTELaunchControl) tile.getMetaTileEntity();
+        hasLaunchControl = true;
+        lcX = tile.getXCoord();
+        lcY = tile.getYCoord();
+        lcZ = tile.getZCoord();
         IGregTechTileEntity b = getBaseMetaTileEntity();
-        launchControl.bindSilo(b.getXCoord(), b.getYCoord(), b.getZCoord());
+        ((com.gregguns.icbm.control.MTELaunchControl) tile.getMetaTileEntity())
+            .bindSilo(b.getXCoord(), b.getYCoord(), b.getZCoord());
         return true;
     }
 
-    /** @return the Launch Control the last structure check found in this silo, or null */
+    /** @return whether the last structure check found a Launch Control in this silo */
+    public boolean hasLaunchControl() {
+        return hasLaunchControl;
+    }
+
+    /**
+     * @param x X
+     * @param y Y
+     * @param z Z
+     * @return whether the last structure check found this silo's Launch Control at that position
+     */
+    public boolean hasLaunchControlAt(int x, int y, int z) {
+        return hasLaunchControl && lcX == x && lcY == y && lcZ == z;
+    }
+
+    /** @return the Launch Control the last structure check found in this silo, as the world holds it now, or null */
     public com.gregguns.icbm.control.MTELaunchControl launchControl() {
-        return launchControl;
+        World w = getBaseMetaTileEntity().getWorld();
+        if (!hasLaunchControl || w == null || !w.blockExists(lcX, lcY, lcZ)) {
+            return null;
+        }
+        net.minecraft.tileentity.TileEntity t = w.getTileEntity(lcX, lcY, lcZ);
+        return t instanceof IGregTechTileEntity
+            && ((IGregTechTileEntity) t).getMetaTileEntity() instanceof com.gregguns.icbm.control.MTELaunchControl
+                ? (com.gregguns.icbm.control.MTELaunchControl) ((IGregTechTileEntity) t).getMetaTileEntity()
+                : null;
     }
 
     /**
@@ -288,7 +321,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public void checkMachine(IGregTechTileEntity baseMetaTileEntity, ItemStack stack, List<StructureError> errors) {
         casingCount = 0;
-        launchControl = null;
+        hasLaunchControl = false;
         if (!checkPiece(PIECE, SiloShape.CONTROLLER_COLUMN, SiloShape.CONTROLLER_ROW, 0, errors)) {
             return;
         }
