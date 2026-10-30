@@ -1,6 +1,7 @@
 package com.gregguns;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 
 import com.gregguns.armor.ArmorModule;
 import com.gregguns.core.DevEnvironment;
@@ -77,10 +78,17 @@ public class CommonProxy {
     /** @param event a player logging in; tells their client which modules are active on the server */
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.player instanceof EntityPlayerMP) {
+        if (event.player instanceof EntityPlayerMP && !isIntegratedHost((EntityPlayerMP) event.player)) {
             GregGunsNetwork.channel()
                 .sendTo(new PacketModuleSync(enabledModuleMask()), (EntityPlayerMP) event.player);
         }
+    }
+
+    /** @return whether the player is the one playing on this integrated server: same config, nothing to compare */
+    private static boolean isIntegratedHost(EntityPlayerMP player) {
+        MinecraftServer server = player.mcServer;
+        return server.isSinglePlayer() && player.getCommandSenderName()
+            .equals(server.getServerOwner());
     }
 
     public void postInit(FMLPostInitializationEvent event) {

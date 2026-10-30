@@ -49,6 +49,17 @@ public final class ModuleMismatch {
         return out;
     }
 
+    /** Lang key of the chat line shown on a mismatch; its one {@code %s} is {@link #summary}. */
+    public static final String CHAT_KEY = "gregguns.module.mismatch";
+
+    /**
+     * @param differences the lines from {@link #differences}
+     * @return them as one string for the chat message's argument
+     */
+    public static String summary(List<String> differences) {
+        return String.join("; ", differences);
+    }
+
     private static String onOff(boolean value) {
         return value ? "on" : "off";
     }
