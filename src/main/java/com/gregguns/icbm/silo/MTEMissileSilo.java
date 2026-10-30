@@ -826,6 +826,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         ItemStack warheadStack = null;
         MissileTier tier = null;
         boolean anyWarhead = false;
+        boolean anyInert = false;
         boolean lowVoltageBody = false;
         int lowVoltageIndex = 0;
         for (MTEHatchInputBus bus : validMTEList(mInputBusses)) {
@@ -844,6 +845,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                     lowVoltageIndex = Math.max(lowVoltageIndex, SiloRules.requiredVoltageIndex(t));
                 } else if (isWarhead(s)) {
                     anyWarhead = true;
+                } else if (com.gregguns.icbm.warhead.InertWarheads.is(s)) {
+                    // D282: an inert warhead has no charges; the silo never takes it, but says why.
+                    anyInert = true;
                 }
             }
         }
@@ -869,7 +873,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             case NO_BODY:
                 return failure("gregguns_silo_no_body");
             case NO_WARHEAD:
-                return failure(anyWarhead ? "gregguns_silo_wrong_warhead" : "gregguns_silo_no_warhead");
+                return failure(
+                    anyWarhead ? "gregguns_silo_wrong_warhead"
+                        : anyInert ? "gregguns_silo_inert_warhead" : "gregguns_silo_no_warhead");
             case WRONG_WARHEAD:
                 return failure("gregguns_silo_wrong_warhead");
             case LOW_VOLTAGE:

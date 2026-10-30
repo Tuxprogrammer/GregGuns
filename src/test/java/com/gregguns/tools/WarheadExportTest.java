@@ -96,7 +96,7 @@ class WarheadExportTest {
             ExplosiveDef def = WarheadBlasts.define(b);
             WarheadRecipeSpec spec = null;
             for (WarheadRecipeSpec s : WarheadRecipeSpec.values()) {
-                if (s.blast() == b && !s.isStarter()) {
+                if (s.blast() == b) {
                     spec = s;
                 }
             }

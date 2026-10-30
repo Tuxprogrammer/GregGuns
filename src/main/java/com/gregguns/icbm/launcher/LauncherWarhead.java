@@ -35,11 +35,11 @@ public enum LauncherWarhead {
         Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_STEEL, 1), Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
     /** A shaped charge that bores down (EV). */
     DEMOLITION("demolition", "breaching", LauncherKind.ROCKET, Tier.EV, 10,
-        Ing.gt("plate", "Titanium", 2, Tier.EV, 1.0), Ing.industrialTnt(2), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2),
+        Ing.gt("plate", "Titanium", 2, Tier.EV, 1.0), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 4),
         Ing.part(IcbmPart.SHAPED_CHARGE_LINER_CONE, 1), Ing.part(IcbmPart.FUZE_ASSEMBLY_MK2, 1)),
     /** The EMP pulse for the Nuke Launcher (LuV). */
     EMP("emp", "emp", LauncherKind.NUKE, Tier.LUV, 11, Ing.gt("plate", "TungstenSteel", 2, Tier.LUV, 1.5),
-        Ing.industrialTnt(1), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 1), Ing.gtItem("Emitter_LuV", 1, Tier.LUV, 10.0),
+        Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2), Ing.gtItem("Emitter_LuV", 1, Tier.LUV, 10.0),
         Ing.part(IcbmPart.FUZE_ASSEMBLY_MK3, 1)),
     /** High explosive for the Grenade Launcher. */
     GRENADE_HE("grenade_he", "condensed", LauncherKind.GRENADE, Tier.HV, 12,
@@ -47,7 +47,7 @@ public enum LauncherWarhead {
         Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
     /** A fragmentation grenade charge for the Grenade Launcher (EV). */
     GRENADE_CLUSTER("grenade_cluster", "fragmentation", LauncherKind.GRENADE, Tier.EV, 13,
-        Ing.gt("plate", "Titanium", 1, Tier.EV, 1.0), Ing.industrialTnt(2), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2),
+        Ing.gt("plate", "Titanium", 1, Tier.EV, 1.0), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 4),
         Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_TITANIUM, 1), Ing.part(IcbmPart.FUZE_ASSEMBLY_MK2, 1));
 
     private final String key;
