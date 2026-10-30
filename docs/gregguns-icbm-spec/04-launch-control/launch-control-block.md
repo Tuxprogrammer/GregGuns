@@ -38,12 +38,13 @@ The block scans a box of plus or minus 4 horizontally and plus or minus 2 vertic
 
 1. **Coordinates.** X and Z number fields in the GUI. Either field empty means no target. The server parses with `LaunchTarget.parseCoordinate`: integers up to plus or minus 30,000,000, nine characters at most; anything else is ignored.
 2. **Use my position.** Sets the target to the pressing player's block.
-3. **Data stick.** Save copies the target onto the stick as `gregguns_icbm_target {x, z, dim}`; Load copies it back. A stick from another dimension, an empty stick, and no stick each give their own message. (`TargetStick`, unit tested.)
+3. **Radar Gun in the slot (D284).** The target slot takes a Radar Gun: Load copies its target in, Save writes the block's target onto it, and the gun stays in the slot. A gun with no target, no item, or a target from another dimension each give their own message. Right-clicking the block with a targeted gun in hand copies the target without opening the screen (D93). The screen reads "No target: use a Radar Gun" when empty.
+   *Also accepts (admins and automation, unadvertised in game): a GT data stick.* Save copies the target onto the stick as `gregguns_icbm_target {x, z, dim}`; Load copies it back. A stick from another dimension, an empty stick, and no stick each give their own message. (`TargetStick`, unit tested.)
 4. **Redstone and covers**, below, use the stored target.
 
 ## The GUI (ModularUI2)
 
-A dark status screen (state, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the data stick slot with **Load target** and **Save target**, **Launch** and **Abort** (D88). Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray without a stick and say so. **Abort** sits beside Launch: it is live while a countdown runs (the screen reads "Countdown: N s"), gray when none runs, and gray with "Ignition: no abort" once the engines have lit. Status numbers reach the client as read-only sync values; no client code reads the world.
+A dark status screen (state, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the target slot (a Radar Gun, with a faint gun icon when empty; data sticks are accepted without a mention) with **Load target** and **Save target**, **Launch** and **Abort** (D88). Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray with nothing in the slot and say so. **Abort** sits beside Launch: it is live while a countdown runs (the screen reads "Countdown: N s"), gray when none runs, and gray with "Ignition: no abort" once the engines have lit. Status numbers reach the client as read-only sync values; no client code reads the world.
 
 ## Triggers
 

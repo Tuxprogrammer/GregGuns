@@ -33,7 +33,8 @@ import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseG
 
 /**
  * The Launch Control panel: a dark status screen (state, target, distance and range, expected blast radius, EU), the X
- * and Z fields, "Use my position", the data stick slot with Load and Save, and the Launch button. Every button is an
+ * and Z fields, "Use my position", the target slot (Radar Gun) with Load and Save, and the Launch button. Every button
+ * is an
  * {@link InteractionSyncHandler} whose action runs on the server and re-checks the pressing player; the fields write
  * through string sync values the server parses and clamps ({@link MTELaunchControl#setXText}). The Launch button is
  * locked, gray, with the reason as the tooltip, until the pre-check passes. The status numbers come to the client as
@@ -204,7 +205,9 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
         screen.child(text(this::statusText, 4, 3, CONTENT - 8, 9, Alignment.CenterLeft, this::statusColor));
         screen.child(
             text(
-                () -> trf("gregguns.icbm.control.gui.target", state.target),
+                () -> LaunchTarget.NONE.toString()
+                    .equals(state.target) ? tr("gregguns.icbm.control.gui.target_none")
+                        : trf("gregguns.icbm.control.gui.target", state.target),
                 4,
                 12,
                 CONTENT - 8,
@@ -268,12 +271,18 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 () -> "gregguns.icbm.control.gui.mypos.tip",
                 null));
 
-        // Data stick.
+        // Target slot: a Radar Gun (a GT data stick is accepted too, without a mention).
         content.child(
             new ItemSlot()
                 .slot(
                     new ModularSlot(machine.inventoryHandler, MTELaunchControl.SLOT_STICK)
-                        .filter(MTELaunchControl::isStick))
+                        .filter(MTELaunchControl::isTargetCarrier))
+                .overlay(gunGhost())
+                .tooltipDynamic(tip -> {
+                    if (!hasStick()) {
+                        tip.addLine(IKey.lang("gregguns.icbm.control.gui.slot.tip"));
+                    }
+                })
                 .pos(0, 84));
         content.child(
             control(
@@ -340,7 +349,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
 
     private boolean hasStick() {
         ItemStack s = machine.getStackInSlot(MTELaunchControl.SLOT_STICK);
-        return MTELaunchControl.isStick(s);
+        return MTELaunchControl.isTargetCarrier(s);
     }
 
     // --- text -------------------------------------------------------------------------------------------------
@@ -366,7 +375,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
 
     private String stickText() {
         if (state.lastStick < 0 || state.lastStick >= TargetStick.Outcome.values().length) {
-            return "";
+            return hasStick() ? "" : tr("gregguns.icbm.control.gui.slot.hint");
         }
         return tr(TargetStick.Outcome.values()[state.lastStick].langKey());
     }
@@ -402,6 +411,21 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             .setMaxLength(9)
             .size(66, 14)
             .pos(x, y);
+    }
+
+    /** The Radar Gun drawn faintly in the empty target slot, so the slot shows what goes in it. */
+    private IDrawable gunGhost() {
+        return (ctx, x, y, w, h, theme) -> {
+            if (hasStick()) {
+                return;
+            }
+            net.minecraft.item.Item gun = com.gregguns.icbm.defense.DefenseMachines.radarGunItem();
+            if (gun == null) {
+                return;
+            }
+            new com.cleanroommc.modularui.drawable.ItemDrawable(gun).draw(ctx, x + 1, y + 1, 16, 16, theme);
+            GuiDraw.drawRect(x + 1, y + 1, 16, 16, 0xAA8B8B8B);
+        };
     }
 
     private static IDrawable screenDrawable() {
