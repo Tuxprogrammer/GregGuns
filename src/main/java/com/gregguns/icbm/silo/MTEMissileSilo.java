@@ -964,6 +964,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         mProgresstime = 0;
         lEUt = 0;
         mEfficiencyIncrease = 0;
+        getBaseMetaTileEntity().setActive(false);
     }
 
     // --- the steps -------------------------------------------------------------------------------------------------

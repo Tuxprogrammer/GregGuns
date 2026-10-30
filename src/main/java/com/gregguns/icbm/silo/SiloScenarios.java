@@ -501,7 +501,7 @@ public final class SiloScenarios {
                         out.check(silo(ctx).missile() == null, "a warhead heavier than the body is not mated");
                         out.check(SiloSequenceScenarios.bodyStands(ctx), "the body stands on the pad");
                         out.check(!SiloSequenceScenarios.warheadSeated(ctx), "no warhead sits on its nose");
-                        out.check(tile(ctx, -1, 0, 0).getStackInSlot(1) != null, "the heavy warhead stays in the bus");
+                        out.checkEquals("the heavy warhead stays in the bus", 1, busItems(ctx));
                         out.check(
                             SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_wrong_warhead"),
                             "the silo says the warhead is too heavy");
@@ -520,7 +520,7 @@ public final class SiloScenarios {
                         }
                         out.check(silo(ctx).missile() == null, "an inert warhead is not mated (D282)");
                         out.check(!SiloSequenceScenarios.warheadSeated(ctx), "nothing is seated on the nose");
-                        out.check(tile(ctx, -1, 0, 0).getStackInSlot(1) != null, "the inert warhead stays in the bus");
+                        out.checkEquals("the inert warhead stays in the bus", 1, busItems(ctx));
                         out.check(
                             SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_inert_warhead"),
                             "the silo says the warhead is inert");
@@ -540,10 +540,7 @@ public final class SiloScenarios {
                         }
                         out.check(silo(ctx).missile() == null, "a damaged body is salvage, never mated (D17)");
                         out.check(!SiloSequenceScenarios.bodyStands(ctx), "no body is stood on the pad");
-                        out.check(
-                            tile(ctx, -1, 0, 0).getStackInSlot(0) != null
-                                && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
-                            "the damaged body and the warhead stay in the bus");
+                        out.checkEquals("the damaged body and the warhead stay in the bus", 2, busItems(ctx));
                         out.check(
                             SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_waiting_body"),
                             "the warhead waits for a body");
