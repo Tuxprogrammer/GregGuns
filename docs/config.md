@@ -188,6 +188,8 @@ Every key is synced except the `icbm.siloComplex*` keys, which only the server r
 | `icbm.enderMaxTeleports` | int | `64` | 1 to 1024 | yes | Most entities one ender warhead teleports (D80); the rest are only pulled. |
 | `icbm.antigravMaxBlocks` | int | `512` | 0 to 4096 | yes | Most blocks one anti-gravitational warhead lifts into flying blocks (D80), top layer first. |
 
+**Finding structures.** Ops (permission level 2, and the console) can list them with `/gregguns locate <kind> [radius_cells] [generate]`, where the kind is `complex` (silo complexes), `military_base`, `big_bunker`, `factory_small`, `train_station`, `gas_station`, `house_medium`, `alien_bug_nest`, `aircraft_carrier`, `submarine` or `any`. It prints the sites within the radius (1 to 16 cells of 1,024 blocks, default 3) that the seed and the spacing, pool and chance settings select, nearest first, each as built, skipped (with the reason) or not generated yet. Add `generate` to make the nearest five undecided sites decide now, one chunk per tick, with a progress line per site. Click a built site's line to land on the surface at it. It works in the dimension you stand in, and only where that dimension generates the kind.
+
 ## Equipment (`equipment`)
 
 All keys are synced. Used by the special-slot equipment of the armor module ([baubles-slots.md](gregguns-spec/05-armor/baubles-slots.md), [oxygen-gear.md](gregguns-spec/05-armor/oxygen-gear.md)).

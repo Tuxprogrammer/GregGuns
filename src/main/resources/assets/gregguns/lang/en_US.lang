@@ -3,6 +3,46 @@
 
 # Dev command: /gregguns and /gregguns test (core)
 gregguns.command.usage=Usage: /gregguns <%s>
+gregguns.locate.usage=Usage: /gregguns locate <complex|military_base|big_bunker|factory_small|train_station|gas_station|house_medium|alien_bug_nest|aircraft_carrier|submarine|any> [radius_cells] [generate]
+gregguns.locate.badradius=The radius is a whole number of cells from 1 to %s.
+gregguns.locate.disabled=That structure does not generate in this dimension.
+gregguns.locate.none=No site of that kind is within %s cells of here.
+gregguns.locate.header=Structure sites near here: %s of %s within %s cells, nearest first.
+gregguns.locate.row=%s. %s, cell %s,%s, center x=%s z=%s, %s blocks away: %s
+gregguns.locate.hover=Click to teleport to the site
+gregguns.locate.status.generated=built, arrive at %s %s %s (click to teleport)
+gregguns.locate.status.skipped=skipped (%s)
+gregguns.locate.status.unknown=not generated yet, terrain unknown
+gregguns.locate.status.undecided=its chunks did not populate, so it is still undecided
+gregguns.locate.reason.biome=the biome is not allowed
+gregguns.locate.reason.low=the ground is too low
+gregguns.locate.reason.liquid_or_no_ground=water or no ground under the site
+gregguns.locate.reason.too_steep=the ground is too steep
+gregguns.locate.reason.no_samples=the terrain could not be sampled
+gregguns.locate.reason.village=a village is in the way
+gregguns.locate.reason.not_water=no water surface under the hull
+gregguns.locate.reason.too_shallow=the water is too shallow
+gregguns.locate.reason.size=the footprint is too small
+gregguns.locate.reason.layout=no layout could be grown
+gregguns.locate.kind.silo_complex=Silo complex
+gregguns.locate.kind.factory_small=Small factory
+gregguns.locate.kind.train_station=Train station
+gregguns.locate.kind.gas_station=Gas station
+gregguns.locate.kind.house_medium=Medium house
+gregguns.locate.kind.big_bunker=Big bunker
+gregguns.locate.kind.alien_bug_nest=Alien bug nest
+gregguns.locate.kind.military_base=Military base
+gregguns.locate.kind.aircraft_carrier=Aircraft carrier
+gregguns.locate.kind.submarine=Submarine
+gregguns.locate.reason.unknown=no reason recorded
+gregguns.locate.generate.start=Generating %s cells, one chunk per tick. Progress follows.
+gregguns.locate.generate.none=Every cell in range already has a record. Nothing to generate.
+gregguns.locate.busy=A generation run is already in progress.
+gregguns.locate.progress=(%s of %s) %s, cell %s,%s: %s
+gregguns.locate.generate.done=Done: %s built, %s skipped, %s undecided.
+gregguns.locate.tp.ok=Teleported to cell %s,%s.
+gregguns.locate.tp.none=Cell %s,%s has no built site of that kind.
+gregguns.locate.tp.player=Only a player can teleport.
 gregguns.test.usage=Usage: /gregguns test <scenario|all|list>
 gregguns.test.unknown=Unknown scenario: %s (try /gregguns test list)
 gregguns.test.busy=A scenario run is still waiting for server ticks; try again when its summary prints.

@@ -55,6 +55,22 @@ public final class StructureGenerator implements IWorldGenerator {
         complexWriter = writer;
     }
 
+    /** @return the grid of the ordinary structures now in force, or null before postInit (the locate command) */
+    public static StructureGrid ordinaryGrid() {
+        StructurePopulator p = override != null ? override : real;
+        return p == null ? null : p.grid();
+    }
+
+    /** @return whether ordinary structures generate in this world (dimension list and world type, GGS-11-12) */
+    public static boolean placementAllowed(World world) {
+        return allowed(world);
+    }
+
+    /** @return the complex writer, or null when the ICBM module is off (the locate command reads its settings) */
+    public static ComplexWriter complexWriter() {
+        return complexWriter;
+    }
+
     /** @return whether the silo complex is on in this non-Overworld world (its chunk provider then needs the hook) */
     static boolean complexWanted(World world) {
         ComplexWriter c = complexWriter;

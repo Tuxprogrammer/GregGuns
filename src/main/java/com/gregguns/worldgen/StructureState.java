@@ -40,7 +40,15 @@ public class StructureState extends WorldSavedData {
 
     /** See {@link PlanLedger#decideOnce}; marks the data dirty when a new decision is recorded. */
     public Decision decideOnce(String planKey, Supplier<Decision> decider) {
+        int before = ledger.revision();
         Decision d = ledger.decideOnce(planKey, decider);
+        // Complexes log their own skips (ComplexPlacer); every other structure's verdict is logged here.
+        if (ledger.revision() != before && !planKey.startsWith(ComplexWriter.ID + ":")) {
+            com.gregguns.GregGuns.LOG.info(
+                "Structure {}: {}",
+                planKey,
+                d.isPlaced() ? "placed, ground y=" + d.groundY() : "skipped, " + d.reason());
+        }
         syncDirty();
         return d;
     }
