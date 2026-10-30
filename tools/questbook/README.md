@@ -14,7 +14,7 @@ python -I tools/questbook/build_quests.py --out src/main/resources/assets/greggu
 python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook --data tools/questbook/quests
 ```
 
-Until every chapter is rewritten, the old checkbox quests need `--allow-checkboxes` (it turns that error into a warning). After editing a chapter file, rebuild, update the tables in `quest-line.md` and the quest count, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
+After editing a chapter file, rebuild, update the tables in `quest-line.md` and the quest count, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
 
 ## Layout and prerequisites
 

@@ -51,8 +51,8 @@ class QuestbookResourcesTest {
     private static final String DATA = "tools/questbook/quests";
     private static final UUID NAMESPACE = UUID.fromString("6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8");
     private static final String GT_MACHINES = "gregtech:gt.blockmachines";
-    /** Hidden tier-skip triggers (LV to ZPM): in no line, so they have no position file. */
-    private static final int SKIP_TRIGGERS = 7;
+    /** Hidden skip triggers (the LV to ZPM tier skips and the missile body skip): in no line, so no position file. */
+    private static final int SKIP_TRIGGERS = 8;
     /**
      * Pack item ids the quests may name besides ours: every id the pack's own DefaultQuests and LootBags.xml use, and
      * the HarvestCraft foods (coins, Galacticraft parts, GT materials, food, loot bags). GT machines are listed as
@@ -179,7 +179,7 @@ class QuestbookResourcesTest {
     @Test
     void questCountMatchesTheSpec() {
         assertEquals(
-            148 + SKIP_TRIGGERS,
+            179 + SKIP_TRIGGERS,
             QUESTS.size(),
             "update docs/gregguns-spec/12-questbook when the count changes");
     }
@@ -427,6 +427,10 @@ class QuestbookResourcesTest {
             names.add(w.itemName());
         }
         names.add("trinitite_shard");
+        // The ICBM hardware parts the missile and warhead quests ask for (guidance computers, fuzes, plastic explosive).
+        for (com.gregguns.icbm.recipe.IcbmPart part : com.gregguns.icbm.recipe.IcbmPart.values()) {
+            names.add(part.registryName());
+        }
         // The silo-complex quest's icon: the complex wall block.
         names.add(com.gregguns.icbm.complex.wall.BlockComplexWall.NAME);
         Set<Integer> machines = registeredMachineIds();

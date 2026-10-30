@@ -1,6 +1,6 @@
 """Build the GregGuns BetterQuesting quest line (BQ 3.8.89-GTNH file format) from the quests/ folder.
 
-usage: python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook [--lang src/main/resources/assets/gregguns/lang/en_US.lang] [--data tools/questbook/quests] [--allow-checkboxes]
+usage: python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook [--lang src/main/resources/assets/gregguns/lang/en_US.lang] [--data tools/questbook/quests]
 
 The data folder holds _line.json (format, namespace, line, retired) and one <chapter>.json per chapter
 ({"chapter": name, "retired": [...], "quests": [...]}), so writers working on different chapters never touch the
@@ -14,8 +14,6 @@ Writes, under --out:
 The output is a pure function of the data folder: ids are uuid5 of the keys, keys are sorted, no timestamps. Two builds
 give byte-identical files (GGS-12-02). Python 3, standard library only.
 
---allow-checkboxes turns the "checkbox only on gg.start.welcome" error (GGS-12-11) into a warning. It exists only so
-the data from before the quest rewrite still builds; finished chapters never need it.
 Spec: docs/gregguns-spec/12-questbook/authoring.md
 """
 import argparse
@@ -371,7 +369,7 @@ def check_stack(k, where, s, known):
     return problems
 
 
-def check(data, allow_checkboxes=False):
+def check(data):
     """Build-time checks for the requirements that the file shape cannot show. Returns (errors, warnings)."""
     problems, warnings = [], []
     known = pack_items()
@@ -423,8 +421,7 @@ def check(data, allow_checkboxes=False):
             if bad:
                 problems.append('%s: %s task has unknown fields %s' % (k, kind, bad))
             if kind == 'checkbox' and k != WELCOME:
-                msg = '%s: checkbox task; only %s may use one (GGS-12-11)' % (k, WELCOME)
-                (warnings if allow_checkboxes else problems).append(msg)
+                problems.append('%s: checkbox task; only %s may use one (GGS-12-11)' % (k, WELCOME))
             if kind == 'fluid' and not (t.get('fluids') and all(
                     isinstance(f.get('name'), str) and isinstance(f.get('amount'), int) and f['amount'] > 0
                     for f in t['fluids'])):
@@ -490,12 +487,9 @@ def check(data, allow_checkboxes=False):
     return problems, warnings
 
 
-def build(data_path, out_dir, lang_path=None, allow_checkboxes=False):
+def build(data_path, out_dir, lang_path=None):
     data = load_data(data_path)
-    problems, warnings = check(data, allow_checkboxes)
-    boxes = [w for w in warnings if 'checkbox task' in w]
-    if boxes:
-        print('WARNING %d quests still use a checkbox (--allow-checkboxes)' % len(boxes), file=sys.stderr)
+    problems, warnings = check(data)
     for w in warnings:
         if w not in boxes:
             print('WARNING', w, file=sys.stderr)
@@ -548,7 +542,5 @@ if __name__ == '__main__':
     ap.add_argument('--out', required=True, help='questbook resource root')
     ap.add_argument('--data', default=os.path.join(here, 'quests'), help='quest data folder')
     ap.add_argument('--lang', help='en_US.lang to refresh the generated betterquesting.* block in')
-    ap.add_argument('--allow-checkboxes', action='store_true',
-                    help='only for the data from before the quest rewrite: checkbox quests warn instead of failing')
     args = ap.parse_args()
-    sys.exit(build(args.data, args.out, args.lang, args.allow_checkboxes))
+    sys.exit(build(args.data, args.out, args.lang))
