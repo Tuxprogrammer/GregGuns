@@ -17,6 +17,9 @@ public final class SiloRules {
     /** The most fuel one pump cycle moves, mB. */
     public static final int PUMP_MB = 2000;
 
+    /** How many ticks of a step's draw the hatches must already hold before the silo starts it. */
+    public static final int MIN_BUFFER_TICKS = 2;
+
     /** What a mating attempt came to. */
     public enum Mate {
         /** Body and warhead fit and the energy hatch is strong enough. */
@@ -73,5 +76,17 @@ public final class SiloRules {
      */
     public static int pumpAmount(int capacityMb, int storedMb, int offeredMb) {
         return Math.max(0, Math.min(PUMP_MB, Math.min(capacityMb - storedMb, offeredMb)));
+    }
+
+    /**
+     * Whether the silo may start a step. GT stops a machine for good ("power loss") the first tick it cannot pay, so a
+     * step that takes its parts must not begin without EU on hand: it waits, idle, and starts when the power arrives.
+     *
+     * @param storedEu  the EU in all the energy hatches
+     * @param euPerTick what the step draws each tick
+     * @return whether the hatches hold at least {@link #MIN_BUFFER_TICKS} ticks of the draw
+     */
+    public static boolean canStart(long storedEu, long euPerTick) {
+        return euPerTick > 0 && storedEu >= euPerTick * MIN_BUFFER_TICKS;
     }
 }
