@@ -115,7 +115,7 @@ public final class PaletteKeys {
     }
 
     /** @return every role key with its candidates, best first, for tests and docs */
-    static Map<String, List<String>> table() {
+    public static Map<String, List<String>> table() {
         Map<String, List<String>> out = new LinkedHashMap<>();
         for (String[] row : TABLE) {
             out.put(

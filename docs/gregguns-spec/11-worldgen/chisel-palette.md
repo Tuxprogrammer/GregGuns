@@ -76,7 +76,7 @@ Rules, checked by `StructurePaletteRulesTest` and at load:
 
 - GGS-11-25: source scan test.
 - GGS-11-26, 27: unit test of the resolver with Chisel absent and with a null Chisel block (`PaletteKeysTest`).
-- Roles and families: `StructurePaletteRulesTest`, `ChiselVariantsTest` (every Chisel candidate names a defined variation).
+- Roles and families: `StructurePaletteRulesTest`, `ChiselVariantsTest` (every Chisel candidate names a defined variation); in the pack, scenario `worldgen.palette_roles` (every Chisel role got its Chisel block).
 - GGS-11-28: unit test with a missing and a truncated structure file.
 
 ## Open questions

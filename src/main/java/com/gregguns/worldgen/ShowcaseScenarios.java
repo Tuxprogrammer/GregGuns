@@ -6,7 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -17,6 +19,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.BiomeDictionary.Type;
+
+import cpw.mods.fml.common.Loader;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.config.UtilityConfig;
@@ -33,6 +37,7 @@ import com.gregguns.worldgen.camp.PartLayouts;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.PaletteKeys;
+import com.gregguns.worldgen.layout.ResolvedBlock;
 import com.gregguns.worldgen.layout.Stamper;
 
 /**
@@ -64,6 +69,7 @@ public final class ShowcaseScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Showcase());
         registry.register(new Cam());
+        registry.register(new Roles());
     }
 
     /** One lot: a structure, its water mode and, for the base, the camo biome. */
@@ -141,7 +147,7 @@ public final class ShowcaseScenarios {
             out.check(errors.isEmpty(), "layouts load: " + errors);
             Block flag = WorldBlockRegistration.campFlag();
             StructurePopulator populator = new StructurePopulator(
-                new StructureGrid(16, 32, 64, new java.util.EnumMap<>(SizeClass.class)),
+                new StructureGrid(16, 32, 64, new EnumMap<>(SizeClass.class)),
                 layouts,
                 new Stamper(keys),
                 Blocks.dirt,
@@ -360,6 +366,48 @@ public final class ShowcaseScenarios {
             }
             return ScenarioResult.builder(name())
                 .build();
+        }
+    }
+
+    /**
+     * The roles resolve in this install: no warning, every role present, and with Chisel loaded every role whose first
+     * candidate is a Chisel block got that block (so the pack shows the designed look, not a stand-in).
+     */
+    private static final class Roles implements Scenario {
+
+        @Override
+        public String name() {
+            return "worldgen.palette_roles";
+        }
+
+        @Override
+        public String description() {
+            return "Resolves the structure palette roles as postInit does: no warning, every role present, and with"
+                + " Chisel loaded every role whose first candidate is Chisel resolved to it (design record 0025).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            List<String> warnings = new ArrayList<>();
+            PaletteKeys keys = PaletteKeys.resolveForPack(warnings::add);
+            out.checkEquals("resolve warnings " + warnings, 0, warnings.size());
+            boolean chisel = Loader.isModLoaded("chisel");
+            int chiselRoles = 0;
+            for (Map.Entry<String, List<String>> e : PaletteKeys.table()
+                .entrySet()) {
+                ResolvedBlock r = keys.get(e.getKey());
+                out.check(r != null, "role " + e.getKey() + " resolved");
+                if (r == null || !chisel) continue;
+                String first = e.getValue()
+                    .get(0);
+                if (first.startsWith("chisel:")) {
+                    chiselRoles++;
+                    out.check(!r.fallback, "role " + e.getKey() + " uses " + first + " in this pack");
+                }
+            }
+            out.note("Chisel loaded: " + chisel + ", Chisel roles checked: " + chiselRoles);
+            return out.build();
         }
     }
 }
