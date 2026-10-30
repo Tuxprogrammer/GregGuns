@@ -20,6 +20,7 @@ import com.gregguns.client.render.profile.AkimboLayout;
 import com.gregguns.client.render.profile.GunTransforms;
 import com.gregguns.client.render.profile.MuzzleFlashSpec;
 import com.gregguns.client.render.profile.TransformProgram;
+import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.item.gun.ItemGun;
 
@@ -235,7 +236,7 @@ final class GunItemRenderer implements IItemRenderer {
                 }
                 break;
             case EQUIPPED:
-                if (holder instanceof EntityPlayer) {
+                if (AimedHold.applies(holder instanceof EntityPlayer, holder instanceof NpcEntity)) {
                     t.applyAimed(GL_SINK);
                 }
                 t.tpBase()
