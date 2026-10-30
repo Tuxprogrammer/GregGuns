@@ -69,6 +69,16 @@ public final class AdsOffset {
      * @return that point in eye space (x right, y up, negative z forward) in the normal idle hold
      */
     public static double[] eyeOf(GunTransforms t, int part, double[] point) {
+        return eyeOf(t, part, point, true);
+    }
+
+    /**
+     * As {@link #eyeOf(GunTransforms, int, double[])}, for either model family: a Z-family model is drawn turned a
+     * quarter turn about Y after its rows ({@code BoxGunModel#render}), which moves the sights.
+     *
+     * @param xFamily true if the model is drawn as authored (the muzzle toward +X)
+     */
+    public static double[] eyeOf(GunTransforms t, int part, double[] point, boolean xFamily) {
         final InHandFit.Affine[] frame = { InHandFit.firstPersonItemFrame() };
         TransformProgram.OpSink sink = new TransformProgram.OpSink() {
 
@@ -99,6 +109,9 @@ public final class AdsOffset {
             .apply(0.0, part, sink);
         t.fpIdle()
             .apply(0.0, part, sink);
+        if (!xFamily) {
+            frame[0] = frame[0].rotY(90);
+        }
         return frame[0].apply(point);
     }
 
@@ -110,10 +123,12 @@ public final class AdsOffset {
      * @param boxes      the model boxes
      * @param modelScale GL units per texel
      * @param spec       the gun's ADS data
+     * @param xFamily    true if the model is drawn as authored (the muzzle toward +X)
      * @return {@code {x, y, z}} to pass to {@code glTranslated} scaled by the blend
      */
-    public static double[] itemShift(GunTransforms t, BoxSpec[] boxes, float modelScale, AdsSpec spec) {
-        double[] eye = eyeOf(t, sightPart(boxes, spec), sightPoint(boxes, modelScale, spec));
+    public static double[] itemShift(GunTransforms t, BoxSpec[] boxes, float modelScale, AdsSpec spec,
+        boolean xFamily) {
+        double[] eye = eyeOf(t, sightPart(boxes, spec), sightPoint(boxes, modelScale, spec), xFamily);
         double[] wanted = { 0.0, 0.0, eye[2] };
         InHandFit.Affine inverse = InHandFit.firstPersonItemFrame()
             .invert();

@@ -19,6 +19,7 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
+import com.gregguns.gun.logic.AdsSupport;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.gun.ItemGun;
 
@@ -26,7 +27,8 @@ import com.gregguns.item.gun.ItemGun;
  * One generated visual scenario per gun in {@link GunDefinitions#ALL}, named {@code mp.look.<gunId>}, plus the group
  * {@code mp.look.all} that runs them back to back in one session. Each gives the gun to the first connected player
  * and signals screenshots named {@code look-<id>-<pose>}: {@code first-person-idle}, {@code first-person-fire} (one
- * shot, then a screenshot), {@code first-person-aim} (only when the gun has a scope) and {@code third-person-front}.
+ * shot, then a screenshot), {@code first-person-aim} (only when the gun has a scope or can aim down its sights) and
+ * {@code third-person-front}.
  * Akimbo guns and guns that still render as flat icons are included automatically. None is part of {@code test all}
  * because they need a connected client. Dev environment only, server side.
  */
@@ -98,28 +100,29 @@ public final class GeneratedGunLooks {
     /** One gun's timeline step at local tick {@code t} (0 to {@link #SEGMENT_TICKS}). */
     private static void step(int t, EntityPlayerMP a, GunDefinition def) {
         String p = "look-" + def.name();
-        boolean aims = def.stats()
+        // A scoped gun zooms after it has fired; a gun on the ADS list lines its sights up. A gun that fires its
+        // whole magazine in the "fire" step (the Golden Gun) is aimed before it fires, so the aim shot is not
+        // taken mid-reload (a reload ends the aim).
+        boolean scoped = def.stats()
             .hasScope();
+        boolean sights = !scoped && AdsSupport.supports(def.name());
+        int fireAt = sights ? 55 : 30;
+        int aimOn = sights ? 32 : 70;
+        int aimShot = sights ? 45 : 90;
+        int aimOff = sights ? 50 : 95;
+        boolean aims = scoped || sights;
+        if (t == fireAt) {
+            signal(a, "arm", "shot", p + "-first-person-fire", "1");
+        } else if (t == fireAt + 2) {
+            signal(a, "fire", "1");
+        } else if (aims && t == aimOn || aims && t == aimOff) {
+            ServerGunHandler.onZoomToggle(a);
+        } else if (aims && t == aimShot) {
+            signal(a, "shot", p + "-first-person-aim");
+        }
         switch (t) {
             case 10 -> signal(a, "view", "0");
             case 25 -> signal(a, "shot", p + "-first-person-idle");
-            case 30 -> signal(a, "arm", "shot", p + "-first-person-fire", "1");
-            case 32 -> signal(a, "fire", "1");
-            case 70 -> {
-                if (aims) {
-                    ServerGunHandler.onZoomToggle(a);
-                }
-            }
-            case 90 -> {
-                if (aims) {
-                    signal(a, "shot", p + "-first-person-aim");
-                }
-            }
-            case 95 -> {
-                if (aims) {
-                    ServerGunHandler.onZoomToggle(a);
-                }
-            }
             case 105 -> signal(a, "view", "2");
             case 115 -> signal(a, "shot", p + "-third-person-front");
             case 125 -> signal(a, "view", "0");

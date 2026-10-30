@@ -53,7 +53,7 @@ class AdsOffsetTest {
             BoxSpec[] boxes = def.boxes();
             double[] point = AdsOffset.sightPoint(boxes, def.modelScale(), spec);
             int part = AdsOffset.sightPart(boxes, spec);
-            double[] before = AdsOffset.eyeOf(def.transforms(), part, point);
+            double[] before = AdsOffset.eyeOf(def.transforms(), part, point, def.xFamily());
             // What the renderer does: translate in the item frame first, then the gun's rows.
             InHandFit.Affine item = InHandFit.firstPersonItemFrame();
             double[] inItem = item.invert()
@@ -71,7 +71,8 @@ class AdsOffsetTest {
         for (AdsSpec spec : AdsTable.ALL) {
             ClientGunDefinition def = ClientGunDefinitions.byName(spec.gunName());
             double[] point = AdsOffset.sightPoint(def.boxes(), def.modelScale(), spec);
-            double[] eye = AdsOffset.eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point);
+            double[] eye = AdsOffset
+                .eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point, def.xFamily());
             assertTrue(eye[2] < -0.1, spec.gunName() + " sights are ahead of the camera, z=" + eye[2]);
             // The gun starts in the lower right; it must not need to travel more than a screen's worth.
             assertTrue(Math.hypot(eye[0], eye[1]) < 1.5, spec.gunName() + " offset " + eye[0] + "," + eye[1]);
@@ -102,5 +103,30 @@ class AdsOffsetTest {
         assertNull(AdsTable.of("bolt_action_rifle"));
         assertNull(AdsTable.shiftOf(ClientGunDefinitions.byName("bolt_action_rifle")));
         assertNull(AdsTable.shiftOf(ClientGunDefinitions.byName("akimbo_pistols")));
+    }
+
+    @Test
+    void theQuarterTurnOfAZFamilyModelIsPartOfTheSightPosition() {
+        // Regression: the Golden Gun (and the 9mm Pistol and Mac10) sat left of center because the sights were placed
+        // in the model's authored axes while the renderer turns a Z-family model a quarter turn about Y.
+        ClientGunDefinition def = ClientGunDefinitions.byName("golden_gun");
+        assertTrue(!def.xFamily());
+        AdsSpec spec = AdsTable.of("golden_gun");
+        double[] point = AdsOffset.sightPoint(def.boxes(), def.modelScale(), spec);
+        int part = AdsOffset.sightPart(def.boxes(), spec);
+        double[] turned = AdsOffset.eyeOf(def.transforms(), part, point, false);
+        double[] authored = AdsOffset.eyeOf(def.transforms(), part, point, true);
+        assertTrue(Math.abs(turned[0] - authored[0]) + Math.abs(turned[2] - authored[2]) > 0.05);
+    }
+
+    @Test
+    void theLmgAimsThroughItsRedDotNotItsMuzzleSight() {
+        // Regression: aiming through the front sight at the muzzle end put the eye at the buttstock. The red dot sits
+        // about a third of the way along, so the eye ends up well in front of the stock.
+        ClientGunDefinition def = ClientGunDefinitions.byName("lmg");
+        AdsSpec spec = AdsTable.of("lmg");
+        double[] point = AdsOffset.sightPoint(def.boxes(), def.modelScale(), spec);
+        double[] eye = AdsOffset.eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point, def.xFamily());
+        assertTrue(eye[2] > -1.5, "the sight is close enough that the stock stays behind the camera: " + eye[2]);
     }
 }
