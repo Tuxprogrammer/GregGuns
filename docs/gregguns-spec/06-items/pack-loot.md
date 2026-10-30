@@ -291,6 +291,7 @@ The owner's report (2026-10-30): structure chests held almost only GregGuns item
 | ZPM | 33 % / 97 % | 8 | 15 % / 68 % |
 
   The IV table is the lowest because most of its guns are energy guns, which run on EU and bring no ammo. Before this change a weapon chest held a gun about two times in three, with roughly two ammo stacks per gun.
+- **No stack overwrites another.** Forge's `generateChestContents` puts each stack in a random slot and replaces what is there; `LootCategories.fill` hands it a view that moves such a stack to the next empty slot, so every pick lands and a gun's ammo stays with it.
 - **Not carried over from Roguelike:** GT tools and named enchanted weapons (they need NBT, and a line has none), decor blocks and music discs. Fluid tanks are filled when they are generated.
 - **ICBM silos** use the GregGuns-only part of a table (`LootCategoryDefs.arms`: guns, four times their weight in ammo, grenades) for their armory, safe and control-room lines, and the armory frames pick their guns from it.
 
