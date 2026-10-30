@@ -23,6 +23,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | [nei-visibility.md](nei-visibility.md) | NEI hiding and collapsing of ammo variants, spawn eggs and technical items |
 | [nei-order.md](nei-order.md) | The one NEI and creative-tab order of every GregGuns item and block, and how NEI applies it in existing worlds |
 | [coins-and-vending.md](coins-and-vending.md) | The GregGuns Coin (five values, change and exchange recipes) and the GregGuns trades in the pack's Vending Machine: prices by tier and kind, spawn eggs, quest gates, the runtime merge, recommended quest payouts |
+| [recycling.md](recycling.md) | GT recycling: the material data of every GregGuns item, block and machine, how the rest is derived from recipes the way GT derives its own machines', and the exclusion list |
 | [thaumcraft-aspects.md](thaumcraft-aspects.md) | Aspects for items through GT's Thaumcraft bridge; mob aspects contract |
 
 ## Integration map
@@ -46,6 +47,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | Chem Lab tank fill | GT Fluid Canner fills `IFluidContainerItem` tanks | GT `cannerRecipes` | [recipes.md](recipes.md#filling-tanks) |
 | Energy Cell | Dropped: energy weapons are their own IC2 batteries ([0010](../../design/0010-material-remap-and-tier-additions.md)) | IC2 `IElectricItem`, GT chargers | [recipes.md](recipes.md#energy-cell-note) |
 | Bullets from nuggets | Built from GT `round` parts; `bulletGt*` prefixes unused by GT | GT `OrePrefixes` | [ammo.md](ammo.md#gregtech-bullet-prefixes-and-round) |
+| None (no recycling in Techguns) | GT `ItemData` on every stack; GT writes the Macerator, Arc Furnace and other recycling recipes | GT5-Unofficial recycling | [recycling.md](recycling.md) |
 | Nuclear Power Cell and warhead | Radioactive through GT `ItemData` | GT radiation, hazard protection | [hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items) |
 | Item hazards, tooltips, fuels | No entries needed | dreamcraft modules | [hazards-and-tooltips.md](hazards-and-tooltips.md) |
 | Creative-tab listing of 110 metas | Hide technical items, collapse variants | NEI 2.8.155-GTNH | [nei-visibility.md](nei-visibility.md) |

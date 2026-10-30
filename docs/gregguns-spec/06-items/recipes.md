@@ -442,7 +442,7 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 - **GGS-06-43.** Every LuV and ZPM craft (RC-19, RC-26, RC-35, RC-36, RC-59) is an Assembly Line recipe with both `RESEARCH_ITEM` and `SCANNING` metadata. RC-60 is the stated exception.
 - **GGS-06-44.** Dropped items (the last table) have no registry entry, and no recipe in any area names them.
 - **GGS-06-45.** Magazine refill and sneak-empty use the bullet counts in the Magazines table. The bulk Assembler recipes use four times those counts.
-- **GGS-06-46.** Every kept item made from GT materials carries `ItemData` ([GGS-06-12](components-and-materials.md#requirements)) so GT recycling returns its metals.
+- **GGS-06-46.** Every kept item made from GT materials carries `ItemData` ([GGS-06-12](components-and-materials.md#requirements)) so GT recycling returns its metals. Items without hand-written data get it derived from their recipes ([recycling.md](recycling.md)).
 - **GGS-06-47.** The registry names in the component index are reserved. Renaming one needs a design record, because areas 02, 05 and 07 to 09 and [pack-loot.md](pack-loot.md) reference them.
 - **GGS-06-48.** Recipes in areas 02, 05 and 07 to 09 name GregGuns components only by a registry name from the component index.
 

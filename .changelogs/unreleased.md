@@ -27,6 +27,11 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Abandoned complexes now keep one or two guard spawners (Army Soldiers and Commandos) at a hall branch or a guard post room, so a ruin is no longer empty of danger.
 - Abandoned complexes are picked clean: about 7 in 10 chests and wall frames are gone, one machine slot in five is empty, and nine in ten of the machines that remain are bare hulls. Finding a working machine in a ruin is a rare treat. Partly abandoned and operational complexes are unchanged.
 
+## GT recycling for every GregGuns item
+
+- Nearly every GregGuns item, block and machine now recycles in GregTech's Macerator and Arc Furnace (and the other GT recyclers), returning the materials of the cheapest recipe that makes it, the way GT recycles its own machines. This adds most guns (the Assembly Line guns too), the Gun Mount Hatches, every casing and Bastion Plating, turret armor plates, explosive charges, grenades, the LMG, AS50 and Minigun magazines, rockets, shotgun shells and the other press ammo, the chainsaw and power hammers. Circuits, gunpowder and other explosives, and radioactive materials do not come back.
+- Not recyclable on purpose: coins, spawn eggs, fallout, silo complex walls, world blocks from structures, cloth, leather and wooden parts (GT gives those materials no recycling value), the antidote, launcher warheads and guidance chips.
+
 ## Fixed
 
 - The Missile Silo no longer starts a mating cycle or a fuel pump without power. With no EU in its Energy Hatch it used to take the body, warhead or fuel, power-fail on the first tick and switch itself back on, over and over. It now takes nothing, shows "No power" in its status line, and starts by itself once the hatch holds enough EU.
