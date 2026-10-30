@@ -200,6 +200,11 @@ public final class Placement {
         return facing;
     }
 
+    /** @return the side a machine's front prefers: 0 north, 1 east, 2 south, 3 west (the machine's room door side) */
+    public int front() {
+        return facing;
+    }
+
     /** @return the frame count of a frame wall, one every second cell along it (+X or +Z), else 1 */
     public int extent() {
         return extent;
@@ -287,6 +292,11 @@ public final class Placement {
         Builder frames(int facingDir, int count) {
             facing = facingDir;
             extent = count;
+            return this;
+        }
+
+        Builder front(int compassIndex) {
+            facing = compassIndex;
             return this;
         }
 
