@@ -199,6 +199,15 @@ public final class StructurePopulator {
                 new PoolEntry(ComplexWriter.ID, 1, 1, new Footprint(ComplexWriter.SIZE, 12, ComplexWriter.SIZE)))));
 
     /**
+     * The grid's plan of one complex cell before the chance roll: empty only where the box would touch the spawn
+     * exclusion zone. A plan the ledger placed under an earlier, higher chance still builds, so the locator lists it.
+     */
+    public static java.util.Optional<StructurePlan> complexGridPlanAt(long worldSeed, int dimension, int cellX,
+        int cellZ) {
+        return COMPLEX_GRID.planAt(worldSeed ^ COMPLEX_SALT, dimension, SizeClass.BIG, cellX, cellZ);
+    }
+
+    /**
      * The silo complex of one grid cell, from the seed alone: no world, no chunk. Whether terrain later rejects it is
      * not known here.
      *
@@ -206,8 +215,7 @@ public final class StructurePopulator {
      */
     public static java.util.Optional<StructurePlan> complexPlanAt(long worldSeed, int dimension, int cellX, int cellZ,
         int chancePercent) {
-        java.util.Optional<StructurePlan> p = COMPLEX_GRID
-            .planAt(worldSeed ^ COMPLEX_SALT, dimension, SizeClass.BIG, cellX, cellZ);
+        java.util.Optional<StructurePlan> p = complexGridPlanAt(worldSeed, dimension, cellX, cellZ);
         if (p.isPresent() && Math.floorMod(
             StructureGrid.mix(
                 p.get()

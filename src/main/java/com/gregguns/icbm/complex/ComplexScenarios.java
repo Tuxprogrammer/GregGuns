@@ -48,6 +48,7 @@ public final class ComplexScenarios {
         registry.register(new Places());
         registry.register(new Skips());
         ComplexDimScenarios.registerAll(registry);
+        com.gregguns.icbm.complex.gen.LocateScenarios.registerAll(registry);
     }
 
     private static StructurePlan plan(World world) {

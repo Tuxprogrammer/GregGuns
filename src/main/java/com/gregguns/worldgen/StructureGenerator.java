@@ -55,6 +55,11 @@ public final class StructureGenerator implements IWorldGenerator {
         complexWriter = writer;
     }
 
+    /** @return the complex writer, or null when the ICBM module is off (the locate command reads its settings) */
+    public static ComplexWriter complexWriter() {
+        return complexWriter;
+    }
+
     /** @return whether the silo complex is on in this non-Overworld world (its chunk provider then needs the hook) */
     static boolean complexWanted(World world) {
         ComplexWriter c = complexWriter;

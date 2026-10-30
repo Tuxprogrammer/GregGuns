@@ -6,6 +6,10 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - When a client joins a server whose `modules.*` flags differ from the client's own `config/gregguns.cfg`, the player now gets one chat line naming each module that differs, and the log gets one warning. Recipes and NEI follow the client's own config, so set the same values there and restart. Singleplayer is unaffected.
 
+## New: locate silo complexes
+
+- Ops get `/gregguns locate complex [radius_cells] [generate]` (permission level 2): the silo complex cells near you in this dimension, nearest first, each as built (with its escape ladder position), skipped (with the reason, such as ground too steep) or not generated yet. `generate` makes the nearest five undecided cells decide now, a chunk per tick, and reports which built a complex. A click on a built cell's line teleports you to its escape ladder (`/gregguns locate complex tp <cellX> <cellZ>`).
+
 ## Fixed
 
 - Missile Bodies T1 and T2 are now built in the GT Assembler at HV and EV, with no research, instead of on the Assembly Line, which GTNH players only reach at LuV. Same inputs and times: plates, fins, engine, 2 circuits and 250 L of lubricant. The Tier 3 body stays on the LuV Assembly Line.

@@ -144,19 +144,29 @@ public class CommonProxy {
     }
 
     /**
-     * Registers the dev-only {@code /gregguns} command (with its {@code test} subcommand) and the built-in scenarios.
-     * Does nothing outside the dev environment unless {@code -Dgregguns.testHooks=true} is set.
+     * Registers {@code /gregguns}: the op-only {@code locate} subcommand whenever the ICBM module is active, and in the
+     * dev environment (or with {@code -Dgregguns.testHooks=true}) also {@code test} and the built-in scenarios.
      */
     public void serverStarting(FMLServerStartingEvent event) {
         // Optional quest line install; runs after BetterQuesting has loaded its database (GregGuns declares
         // after:betterquesting).
         com.gregguns.compat.BetterQuestingInstall.onServerStarting();
+        // Silo complex locator: an op tool for real servers too, so it registers whenever the ICBM module is active.
+        GregGunsCommand command = new GregGunsCommand();
+        boolean any = false;
+        if (com.gregguns.worldgen.StructureGenerator.complexWriter() != null) {
+            command.register(new com.gregguns.icbm.complex.gen.LocateSubCommand());
+            com.gregguns.icbm.complex.gen.LocateGeneration.ensureRegistered();
+            any = true;
+        }
         if (!DevEnvironment.testHooksEnabled()) {
             if (com.gregguns.core.config.DebugConfig.recipeDump) {
-                GregGunsCommand dump = new GregGunsCommand();
-                dump.register(new com.gregguns.core.command.DumpRecipesSubCommand());
-                event.registerServerCommand(dump);
+                command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
+                any = true;
                 GregGuns.LOG.warn("debug.recipeDump is on: /gregguns dumprecipes is available to ops");
+            }
+            if (any) {
+                event.registerServerCommand(command);
             }
             return;
         }
@@ -165,7 +175,6 @@ public class CommonProxy {
         com.gregguns.machine.BuildScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.compat.VendingScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.compat.lootbags.LootBagScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-        GregGunsCommand command = new GregGunsCommand();
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         command.register(new com.gregguns.core.command.BuildSubCommand());
         command.register(new com.gregguns.core.command.DumpRecipesSubCommand());

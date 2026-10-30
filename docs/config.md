@@ -188,6 +188,8 @@ Every key is synced except the `icbm.siloComplex*` keys, which only the server r
 | `icbm.enderMaxTeleports` | int | `64` | 1 to 1024 | yes | Most entities one ender warhead teleports (D80); the rest are only pulled. |
 | `icbm.antigravMaxBlocks` | int | `512` | 0 to 4096 | yes | Most blocks one anti-gravitational warhead lifts into flying blocks (D80), top layer first. |
 
+**Finding silo complexes.** Ops (permission level 2, and the console) can list them with `/gregguns locate complex [radius_cells] [generate]`. It prints the cells within the radius (1 to 16 cells of 1,024 blocks, default 3) that `icbm.siloComplexChancePercent` selects, nearest first, each as built, skipped (with the reason) or not generated yet. Add `generate` to make the nearest five undecided cells decide now, one chunk per tick, with a progress line per cell. Click a built cell's line, or run `/gregguns locate complex tp <cellX> <cellZ>`, to land on the surface at its escape ladder. It works in the dimension you stand in, and only where the dimension generates complexes.
+
 ## Equipment (`equipment`)
 
 All keys are synced. Used by the special-slot equipment of the armor module ([baubles-slots.md](gregguns-spec/05-armor/baubles-slots.md), [oxygen-gear.md](gregguns-spec/05-armor/oxygen-gear.md)).
