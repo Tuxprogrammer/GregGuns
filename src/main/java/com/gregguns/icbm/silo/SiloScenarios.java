@@ -493,9 +493,47 @@ public final class SiloScenarios {
                         }
                         out.check(dummies == 8, "dummy blocks on the other eight: " + dummies);
                         out.check(formed(ctx), "the silo forms with the formed Galacticraft pad");
-                        stage[0] = 2;
+                        // As a player finds it: the pad forms while the silo is unformed (a pane out), the pane goes
+                        // back, and the silo forms by itself with no update-structure click.
+                        stage[0] = 4;
                         since[0] = ticks;
                         return null;
+                    case 4:
+                        // Unform the silo, rebuild the pad from nine blocks and put the missing pane back after GC
+                        // has formed it: only the silo's own recheck can notice.
+                        w.setBlock(x + 1, y + 4, z - 2, Blocks.stone, 0, 2);
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlockToAir(x + dx, y, z + dz);
+                            }
+                        }
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 3);
+                            }
+                        }
+                        stage[0] = 5;
+                        since[0] = ticks;
+                        return null;
+                    case 5:
+                        if (w.getBlock(x, y, z) != full && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(w.getBlock(x, y, z) == full, "Galacticraft formed the pad again");
+                        out.check(!formed(ctx), "the silo is unformed with a stone block in the wall");
+                        w.setBlock(x + 1, y + 4, z - 2, GregTechAPI.sBlockConcretes, 8, 2);
+                        stage[0] = 6;
+                        since[0] = ticks;
+                        return null;
+                    case 6: {
+                        boolean controller = silo(ctx) != null && silo(ctx).isFormed();
+                        if (!controller && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(controller, "the silo's controller reports formed by itself within 200 ticks");
+                        stage[0] = 2;
+                        return null;
+                    }
                     case 2:
                         // The unformed state: a lone block of the pad in each cell, no Galacticraft forming.
                         w.setBlockToAir(x, y, z);

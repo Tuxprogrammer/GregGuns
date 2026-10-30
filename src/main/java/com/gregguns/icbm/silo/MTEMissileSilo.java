@@ -381,6 +381,9 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
 
     // --- the doors (D89) ---------------------------------------------------------------------------------------------
 
+    /** How often an unformed silo asks GT to check its structure again, ticks. */
+    private static final int STRUCTURE_RECHECK_TICKS = 40;
+
     @Override
     public void onPostTick(IGregTechTileEntity base, long tick) {
         super.onPostTick(base, tick);
@@ -389,6 +392,14 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         World w = base.getWorld();
         if (!mMachine) {
+            // GT never hears of a block changing inside the shaft floor, and Galacticraft turns nine pad blocks into
+            // its formed pad (a Full block and dummy blocks) without a neighbor update the controller sees, so an
+            // unformed silo rechecks itself on a slow timer: the next tick runs GT's own structure check.
+            // Source: MTEMultiBlockBase#onPostTick runs checkStructure when --mUpdate reaches 0:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEMultiBlockBase.java#L619-L631
+            if (tick % STRUCTURE_RECHECK_TICKS == 0 && mUpdate <= 0) {
+                mUpdate = 1;
+            }
             // A freshly loaded silo is unformed until its first structure check; only a lasting gap counts (D90).
             if (++unformedTicks >= UNFORMED_GRACE_TICKS) {
                 comeApart(w);
