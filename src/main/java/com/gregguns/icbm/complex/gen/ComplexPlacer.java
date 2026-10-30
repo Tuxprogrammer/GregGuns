@@ -397,6 +397,8 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
         if (tagSink != null) tagSink.as(RoleAudit.SIGNS);
+        // The silo numbers belong to the silo, so the shell pass writes them (shell-only runs read them back too).
+        ComplexSigns.writeSilos(cp, ax, floorY, az, new QuietSink(sink));
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(under),
@@ -410,7 +412,6 @@ public final class ComplexPlacer implements ComplexWriter {
                 ceilingOf(plan)).withLamps(st::litLamp);
             for (Placement p : contentsOf(plan, cp)) applier.apply(p);
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
-            ComplexSigns.writeSilos(cp, ax, floorY, az, new QuietSink(sink));
         }
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;
