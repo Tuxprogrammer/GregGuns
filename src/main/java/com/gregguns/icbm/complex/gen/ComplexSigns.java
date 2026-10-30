@@ -137,9 +137,10 @@ public final class ComplexSigns {
     }
 
     /**
-     * Level-floor-relative height of a silo's sign: the cell above the controller's, so the controller stays clickable.
+     * Level-floor-relative height of a silo's sign: {@link com.gregguns.icbm.silo.SiloShape#NAME_SIGN_RISE} above the
+     * controller (at y 2), on the silo's concrete over the glass window, where the silo reads its name (D299).
      */
-    public static final int SILO_SIGN_Y = 3;
+    public static final int SILO_SIGN_Y = 2 + com.gregguns.icbm.silo.SiloShape.NAME_SIGN_RISE;
 
     /** Wall-sign data values by the controller's facing (0 north, 1 east, 2 south, 3 west): the text faces the hall. */
     private static final int[] SILO_META = { 2, 5, 3, 4 };
@@ -159,9 +160,9 @@ public final class ComplexSigns {
     /**
      * @param s a silo
      * @return {x, y, z, meta} in complex-local coordinates: a wall sign in the walkway cell straight in front of the
-     *         silo's face, one above the controller, hanging on the silo's wall and facing the hall. A wall sign
-     *         on the controller's own face would sit in front of the click point (a sign's box takes the click), so
-     *         the sign goes above it, in the same column
+     *         silo's face, in the controller's column on the concrete over the glass window, facing the hall. A wall
+     *         sign on the controller's own face would sit in front of the click point (a sign's box takes the click),
+     *         and one on the window would hide the missile, so the sign goes over the window
      */
     public static int[] siloSignAt(SiloSlot s) {
         return new int[] { s.frontX(), SILO_SIGN_Y, s.frontZ(), SILO_META[s.facing()] };

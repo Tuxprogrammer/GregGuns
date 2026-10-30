@@ -749,7 +749,7 @@ public final class I6VisualSetups {
         ItemStack part = partFor(s);
         int cx = lastPlan.anchorX() + s.controllerX(), cz = lastPlan.anchorZ() + s.controllerZ();
         boolean noController = s.missing() == MissingPart.CONTROLLER;
-        // A missing Energy Hatch goes where the complex leaves its gap: the window's right column (D290).
+        // A missing Energy Hatch goes where the complex leaves its concrete: the foot of the right hatch column (D299).
         int[] at = noController ? new int[] { s.controllerX(), 2, s.controllerZ() }
             : s.hatchCell(com.gregguns.icbm.complex.Cell.HATCH_ENERGY);
         GtMachineHook.placeMte(

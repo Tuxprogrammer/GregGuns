@@ -10,7 +10,6 @@ import static com.gregguns.icbm.silo.SiloScenarios.hatchMb;
 import static com.gregguns.icbm.silo.SiloScenarios.power;
 import static com.gregguns.icbm.silo.SiloScenarios.putBus;
 import static com.gregguns.icbm.silo.SiloScenarios.silo;
-import static com.gregguns.icbm.silo.SiloScenarios.tile;
 import static com.gregguns.icbm.silo.SiloScenarios.warhead;
 
 import net.minecraft.block.Block;
@@ -167,7 +166,7 @@ final class SiloSequenceScenarios {
     }
 
     private static void drain(ScenarioContext ctx) {
-        IGregTechTileEntity energy = tile(ctx, 0, -1, 0);
+        IGregTechTileEntity energy = SiloScenarios.part(ctx, DevStructureBuilder.SILO_ENERGY);
         if (energy != null) {
             energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
         }
@@ -178,7 +177,7 @@ final class SiloSequenceScenarios {
      * the controller (GT pushes a recipe check on a hatch's own change only).
      */
     static void pour(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
-        IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
+        IGregTechTileEntity hatch = SiloScenarios.part(ctx, DevStructureBuilder.SILO_FUEL);
         net.minecraftforge.fluids.Fluid f = net.minecraftforge.fluids.FluidRegistry.getFluid(fluid);
         out.check(f != null, "the test fluid " + fluid + " is registered");
         out.check(

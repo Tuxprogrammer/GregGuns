@@ -185,10 +185,10 @@ public final class ComplexRaster {
             switch (ch) {
                 case 'C':
                 case 'F':
+                case 'H':
                     cell = Cell.SILO_CONCRETE;
                     break;
                 case 'G':
-                case 'W':
                     cell = Cell.SILO_GLASS;
                     break;
                 case 'B':
@@ -206,7 +206,8 @@ public final class ComplexRaster {
             }
             set(s.x(c, a), 11 - r, s.z(c, a), cell);
         }
-        // The hatches stand in the window's outer columns, two high, so the missile shows through the middle.
+        // The hatches stand in the hatch columns beside the glass window, two high; a missing Energy Hatch leaves the
+        // column's concrete (D299).
         for (byte role : SiloSlot.HATCH_ROLES) {
             if (role == Cell.HATCH_ENERGY && s.missing() == MissingPart.ENERGY_HATCH) continue;
             int[] at = s.hatchCell(role);
@@ -216,9 +217,9 @@ public final class ComplexRaster {
     }
 
     /**
-     * The silo's own Launch Control (D288): in the front face, the window's top row (one above the controller), in
-     * the outer column {@link com.gregguns.icbm.silo.SiloShape#LAUNCH_CONTROL_COLUMN}. Every generated silo has one;
-     * the part a silo misses is never the Launch Control.
+     * The silo's own Launch Control (D288, D299): in the front face, on top of the right hatch column
+     * ({@link com.gregguns.icbm.silo.SiloShape#LAUNCH_CONTROL_COLUMN}), one above the controller, outside the glass
+     * window. Every generated silo has one; the part a silo misses is never the Launch Control.
      */
     private void launchControl(SiloSlot s) {
         int col = com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_COLUMN;

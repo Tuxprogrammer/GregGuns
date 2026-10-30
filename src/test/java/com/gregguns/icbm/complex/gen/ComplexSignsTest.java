@@ -61,7 +61,7 @@ class ComplexSignsTest {
     }
 
     @Test
-    void everySiloSignHangsInTheWalkwayAboveItsControllerFacingTheHall() {
+    void everySiloSignHangsInTheWalkwayOverTheWindowFacingTheHall() {
         for (long seed = 0; seed < 40; seed++) {
             ComplexPlan plan = ComplexLayout.generate(seed, 2, 2);
             ComplexRaster raster = new ComplexRaster(plan);
@@ -78,10 +78,12 @@ class ComplexSignsTest {
                 int[] at = ComplexSigns.siloSignAt(s);
                 assertEquals(Cell.AIR, raster.at(at[0], at[1], at[2]), "sign cell is open air");
                 assertEquals(ComplexSigns.SILO_SIGN_Y, at[1]);
+                assertEquals(2 + com.gregguns.icbm.silo.SiloShape.NAME_SIGN_RISE, at[1], "two over the controller");
                 int bx = at[0] + (at[3] == 5 ? -1 : at[3] == 4 ? 1 : 0);
                 int bz = at[2] + (at[3] == 3 ? -1 : at[3] == 2 ? 1 : 0);
                 assertEquals(s.controllerX(), bx, "hangs on the silo's face");
                 assertEquals(s.controllerZ(), bz, "hangs on the silo's face");
+                assertEquals(Cell.SILO_CONCRETE, raster.at(bx, at[1], bz), "hangs on the concrete over the window");
             }
         }
     }

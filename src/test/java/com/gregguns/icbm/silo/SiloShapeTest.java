@@ -34,16 +34,41 @@ class SiloShapeTest {
 
     @Test
     void theBlockCountsMatchTheSheet() {
-        assertEquals(35, SiloShape.count("G") + SiloShape.count("W"));
-        assertEquals(6, SiloShape.count("W"));
+        assertEquals(35, SiloShape.count("G"));
+        assertEquals(6, SiloShape.count("H"));
+        assertEquals(0, SiloShape.count("W"));
         assertEquals(12 * 7, SiloShape.count("C"));
         assertEquals(9, SiloShape.count("P"));
         assertEquals(12, SiloShape.count("F"));
         assertEquals(12, SiloShape.count("B"));
-        assertEquals(96, SiloShape.casingPositions());
+        assertEquals(102, SiloShape.casingPositions());
+        assertEquals(84, SiloShape.CASING_MINIMUM);
         assertTrue(SiloShape.CASING_MINIMUM < SiloShape.casingPositions());
-        // D117: a hatch may replace a wall, glass or floor-ring block or the controller, never the rim or the pad.
-        assertEquals(84 + 35 + 12 + 1, SiloShape.hatchPositions());
+        // D117: a hatch may replace a wall, hatch-column, glass or floor-ring block or the controller, never the rim or
+        // the pad.
+        assertEquals(84 + 6 + 35 + 12 + 1, SiloShape.hatchPositions());
+    }
+
+    /** The owner's build (D299): a 3x3 glass window around the controller, a hatch column on each side, flush. */
+    @Test
+    void theFrontIsFiveWideInTheWindowRows() {
+        String[][] p = SiloShape.piece();
+        assertEquals("HGGGH", p[0][8]);
+        assertEquals("HG~GH", p[0][9]);
+        assertEquals("HGGGH", p[0][10]);
+        for (int r = 0; r < SiloShape.HEIGHT; r++) {
+            if (r >= 8 && r <= 10) continue;
+            assertEquals(' ', p[0][r].charAt(0), "front corner row " + r);
+            assertEquals(' ', p[0][r].charAt(4), "front corner row " + r);
+        }
+        assertEquals(0, SiloShape.HATCH_COLUMN_RIGHT);
+        assertEquals(4, SiloShape.HATCH_COLUMN_LEFT);
+        assertEquals(SiloShape.HATCH_COLUMN_RIGHT, SiloShape.LAUNCH_CONTROL_COLUMN);
+        assertEquals('H', p[0][SiloShape.CONTROLLER_ROW - SiloShape.LAUNCH_CONTROL_RISE].charAt(0));
+        // The name sign hangs on the concrete over the window.
+        assertEquals(
+            'C',
+            p[0][SiloShape.CONTROLLER_ROW - SiloShape.NAME_SIGN_RISE].charAt(SiloShape.CONTROLLER_COLUMN));
     }
 
     @Test
@@ -62,9 +87,7 @@ class SiloShapeTest {
         String[][] p = SiloShape.piece();
         for (int r = 8; r <= 10; r++) {
             assertTrue(
-                (p[0][r].contains("G") || p[0][r].contains("W")) && p[4][r].contains("G")
-                    && p[2][r].startsWith("G")
-                    && p[2][r].endsWith("G"));
+                p[0][r].contains("G") && p[4][r].contains("G") && p[2][r].startsWith("G") && p[2][r].endsWith("G"));
         }
     }
 

@@ -139,8 +139,8 @@ final class SiloGuiShots {
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final MissileShotsScenario.Plan plan = new MissileShotsScenario.Plan();
             final EntityMissile[] m = { null };
-            final int bx = ctx.originX() - 1;
-            final int by = ctx.originY() + SiloScenarios.CY + SiloShape.LAUNCH_CONTROL_RISE;
+            final int bx = ctx.originX() + com.gregguns.machine.DevStructureBuilder.SILO_LC[0];
+            final int by = ctx.originY() + SiloScenarios.CY + com.gregguns.machine.DevStructureBuilder.SILO_LC[1];
             final int bz = ctx.originZ();
 
             plan.after(5, () -> MissileShotsScenario.signal(p, "hud", "off"));

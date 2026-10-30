@@ -91,10 +91,11 @@ public final class ComplexScenarios {
     }
 
     /**
-     * The owner's layout: the hatches stand in the window's outer columns (Energy Hatch and Input Bus on the viewer's
-     * right, Input Hatch and Maintenance Hatch on the left), and every other window cell is clear glass, so the missile
-     * shows. The left and right of the viewer in front of the controller are computed from the facing here, not from
-     * the shape's columns.
+     * The owner's layout (D299): a 3x3 clear glass window around the controller and a hatch column on each side of it,
+     * two out from the controller: the Input Bus over the Energy Hatch on the viewer's right with the silo's own Launch
+     * Control on top, the Input Hatch over the Maintenance Hatch on the left with concrete on top, and a concrete band
+     * over the five-wide face. The left and right of the viewer in front of the controller are computed from the facing
+     * here, not from the shape's columns.
      */
     private static void siloHatchLayout(World world, SiloSlot s, int ax, int az, int floor,
         ScenarioResult.Builder out) {
@@ -105,23 +106,40 @@ public final class ComplexScenarios {
         int cx = ax + s.controllerX(), cz = az + s.controllerZ();
         int y = floor + 2;
         boolean energyThere = s.missing() != MissingPart.ENERGY_HATCH;
+        Block conc = gregtech.api.GregTechAPI.sBlockConcretes;
+        out.check(hatchIs(world, cx + 2 * rx, y, cz + 2 * rz, 'B'), "Input Bus in the right hatch column");
         out.check(
-            hatchIs(world, cx + rx, y, cz + rz, 'E') == energyThere,
-            "Energy Hatch beside the controller on the viewer's right (" + s.missing() + ")");
-        out.check(hatchIs(world, cx + rx, y - 1, cz + rz, 'B'), "Input Bus under it");
-        out.check(hatchIs(world, cx - rx, y, cz - rz, 'H'), "Input Hatch beside the controller on the viewer's left");
-        out.check(hatchIs(world, cx - rx, y - 1, cz - rz, 'M'), "Maintenance Hatch under it");
-        // Clear glass in every other window cell: the row above, under the controller, and (with the Energy Hatch
-        // missing) where it would stand.
-        // The cell above the Energy Hatch (column 1, row 1) holds the silo's own Launch Control (D288), not glass.
-        int[][] glass = { { 0, 1, 0 }, { 1, 1, 1 }, { -1, 1, 0 }, { 0, -1, 0 }, { 1, 0, energyThere ? 1 : 0 } };
-        for (int[] g : glass) {
-            if (g[2] == 1) continue;
-            int gx = cx + g[0] * rx, gz = cz + g[0] * rz, gy = y + g[1];
+            energyThere ? hatchIs(world, cx + 2 * rx, y - 1, cz + 2 * rz, 'E')
+                : world.getBlock(cx + 2 * rx, y - 1, cz + 2 * rz) == conc,
+            "Energy Hatch under the Input Bus, or concrete where it is the missing part (" + s.missing() + ")");
+        out.check(hatchIs(world, cx - 2 * rx, y, cz - 2 * rz, 'H'), "Input Hatch in the left hatch column");
+        out.check(hatchIs(world, cx - 2 * rx, y - 1, cz - 2 * rz, 'M'), "Maintenance Hatch under the Input Hatch");
+        out.check(hatchIs(world, cx + 2 * rx, y + 1, cz + 2 * rz, 'L'), "the Launch Control tops the right column");
+        out.check(world.getBlock(cx - 2 * rx, y + 1, cz - 2 * rz) == conc, "concrete tops the left column");
+        for (int a = -1; a <= 1; a++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (a == 0 && dy == 0) continue;
+                int gx = cx + a * rx, gz = cz + a * rz, gy = y + dy;
+                out.check(
+                    com.gregguns.icbm.silo.SiloGlass
+                        .accepts(world.getBlock(gx, gy, gz), world.getBlockMetadata(gx, gy, gz)),
+                    "clear glass at window cell (" + a + ", " + dy + ") of a silo facing " + s.facing());
+            }
+        }
+        // The walkway in front of the face is open across all five columns, from the floor to the band over the
+        // window, and the band itself is the silo's concrete.
+        int fx = s.frontX() - s.controllerX(), fz = s.frontZ() - s.controllerZ();
+        for (int a = -2; a <= 2; a++) {
             out.check(
-                com.gregguns.icbm.silo.SiloGlass
-                    .accepts(world.getBlock(gx, gy, gz), world.getBlockMetadata(gx, gy, gz)),
-                "clear glass at window cell (" + g[0] + ", " + g[1] + ") of a silo facing " + s.facing());
+                world.getBlock(cx + a * rx, y + 2, cz + a * rz) == conc,
+                "concrete over the window at column " + a + " of a silo facing " + s.facing());
+            for (int dy = -1; dy <= 2; dy++) {
+                int wx = cx + a * rx + fx, wz = cz + a * rz + fz;
+                boolean sign = a == 0 && dy == 2;
+                out.check(
+                    sign || world.isAirBlock(wx, y + dy, wz),
+                    "the walkway is open at column " + a + ", height " + (dy + 2) + " of a silo facing " + s.facing());
+            }
         }
     }
 
@@ -136,6 +154,8 @@ public final class ComplexScenarios {
                 return m instanceof gregtech.api.metatileentity.implementations.MTEHatchInputBus;
             case 'H':
                 return m instanceof gregtech.api.metatileentity.implementations.MTEHatchInput;
+            case 'L':
+                return m instanceof com.gregguns.icbm.control.MTELaunchControl;
             default:
                 return m instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance;
         }
@@ -291,7 +311,7 @@ public final class ComplexScenarios {
                 out.check(
                     world.isAirBlock(plan.anchorX() + s.frontX(), floor + 2, plan.anchorZ() + s.frontZ()),
                     "the walkway in front of the controller is open");
-                // "Silo N" hangs one above the controller, on the silo's face, facing the hall (D-signs).
+                // "Silo N" hangs on the concrete over the window, in the controller's column, facing the hall (D299).
                 int[] sg = com.gregguns.icbm.complex.gen.ComplexSigns.siloSignAt(s);
                 int number = com.gregguns.icbm.complex.gen.ComplexSigns.siloOrder(cp)
                     .indexOf(s) + 1;
@@ -300,7 +320,7 @@ public final class ComplexScenarios {
                     world.getBlock(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2]) == Blocks.wall_sign
                         && world.getBlockMetadata(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2])
                             == sg[3],
-                    "silo " + number + " has its wall sign above the controller, facing the hall");
+                    "silo " + number + " has its wall sign over the window, facing the hall");
                 out.check(
                     st instanceof net.minecraft.tileentity.TileEntitySign
                         && ("Silo " + number).equals(((net.minecraft.tileentity.TileEntitySign) st).signText[1]),
@@ -339,7 +359,7 @@ public final class ComplexScenarios {
                     out.check(
                         com.gregguns.machine.DevStructureBuilder.check(world, cx, floor + 2, cz),
                         "a silo forms once its missing " + s.missing() + " is added");
-                    // Its own Launch Control, in the window's top row, is part of it (D288).
+                    // Its own Launch Control, on top of the right hatch column, is part of it (D288, D299).
                     TileEntity formed = world.getTileEntity(cx, floor + 2, cz);
                     out.check(
                         formed instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity

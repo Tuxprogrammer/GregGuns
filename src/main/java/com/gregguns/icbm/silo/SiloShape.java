@@ -8,19 +8,15 @@ package com.gregguns.icbm.silo;
  * <p>
  * Shape layout is StructureLib's: {@code piece[aisle][row][column]}, aisles running front to back (the controller's
  * wall first), rows top to bottom, columns left to right as seen from the front. Characters: {@code C} wall (GT Light
- * or Dark
- * Concrete, see {@link SiloConcrete}), {@code F} the same concrete in the floor's outer ring (D117: hatches may replace
- * C, F
- * and G cells, never B or P), {@code P} a Galacticraft
- * launch pad block (the shaft floor,
- * either the nine unformed blocks or the formed pad), {@code G} clear glass
- * (Tinkers' Clear Glass or EnderIO's Quite Clear Glass, see {@link SiloGlass}) where a hatch or the controller may
- * replace it (the three rings just above the floor), {@code B} Gantry Beam (the rim), {@code ~} controller, a space
- * means anything. {@code W} is a window-edge cell of the controller's face (the left and right columns of the glass
- * window): clear glass, or the wall's concrete, or a hatch (the owner's build puts hatches in these two columns and
- * concrete above them, so the missile shows through the middle column). The
- * 3x3 shaft is also spaces, not "air", so a body
- * stacked by hand in it does not unform the silo; the missile's own climb check keeps the way up clear.
+ * or Dark Concrete, see {@link SiloConcrete}), {@code F} the same concrete in the floor's outer ring (D117: hatches
+ * may replace C, F, H and G cells, never B or P), {@code P} a Galacticraft launch pad block (the shaft floor, either
+ * the nine unformed blocks or the formed pad), {@code G} clear glass (Tinkers' Clear Glass or EnderIO's Quite Clear
+ * Glass, see {@link SiloGlass}) where a hatch or the controller may replace it (the three rings just above the floor),
+ * {@code B} Gantry Beam (the rim), {@code ~} controller, a space means anything. {@code H} is a hatch-column cell:
+ * the front face is five wide in its three window rows, a 3x3 clear glass window around the controller with one
+ * column on each side of it, flush with the glass (the owner's build, D299). An {@code H} cell takes the same concrete
+ * as {@code C}, a hatch or the Launch Control, and counts as casing. The 3x3 shaft is also spaces, not "air", so a
+ * body stacked by hand in it does not unform the silo; the missile's own climb check keeps the way up clear.
  *
  * <p>
  * Usage: {@code SiloShape.SHAFT_CENTER_DEPTH} is 2. Both sides.
@@ -45,28 +41,32 @@ public final class SiloShape {
      */
     public static final int FLOOR_SURFACE_BELOW_CONTROLLER = 1;
     /**
-     * Where a built silo's Launch Control stands (D288): the front aisle, this column counted from the left of the
-     * shape (the outer window column on the right of a viewer facing the controller, above the Energy Hatch), and
-     * {@link #LAUNCH_CONTROL_RISE} rows above the controller. Any hatch position takes a Launch Control; this is the
-     * one the generated complex and the dev builder use.
+     * The hatch column on the right of a viewer facing the controller (counted from the left of the shape). Both the
+     * world-generation turn ({@code SiloSlot}) and a north-facing controller ({@code DevStructureBuilder}: column 0 at
+     * x-2, the west, which is a south-looking viewer's right) put shape column 0 there. Generated and dev-built silos
+     * carry the Input Bus (controller row) over the Energy Hatch (the row under it) in it, and the Launch Control on
+     * top.
      */
-    public static final int LAUNCH_CONTROL_COLUMN = 1;
-    /** How many rows above the controller the built silo's Launch Control stands: the window's top row. */
+    public static final int HATCH_COLUMN_RIGHT = 0;
+    /** The hatch column on the viewer's left: the Input Hatch (controller row) over the Maintenance Hatch. */
+    public static final int HATCH_COLUMN_LEFT = 4;
+    /**
+     * Where a built silo's Launch Control stands (D288, D299): the front aisle, the top of the right hatch column,
+     * {@link #LAUNCH_CONTROL_RISE} rows above the controller, outside the glass window. Any hatch position takes a
+     * Launch Control; this is the one the generated complex and the dev builder use.
+     */
+    public static final int LAUNCH_CONTROL_COLUMN = HATCH_COLUMN_RIGHT;
+    /** How many rows above the controller the built silo's Launch Control stands: level with the window's top row. */
     public static final int LAUNCH_CONTROL_RISE = 1;
+    /**
+     * How many rows above the controller the silo's name sign hangs ("Silo N", read by the Launch Control's screen):
+     * on the concrete over the glass window, in the controller's column.
+     */
+    public static final int NAME_SIGN_RISE = 2;
     /** Shaft side length, blocks. */
     public static final int SHAFT_WIDTH = 3;
-    /** The fewest casing blocks (C and F) the silo needs to form; the rest of the positions may be hatches. */
+    /** The fewest casing blocks (C, F and H) the silo needs to form; the rest of the positions may be hatches. */
     public static final int CASING_MINIMUM = 84;
-
-    /**
-     * The window-edge columns of the controller's face (counted from the left of the shape). The world-generation
-     * turn ({@code SiloSlot}) puts the low column on the right of a viewer standing in front of the controller, so the
-     * Energy Hatch, built on {@link #WINDOW_COLUMN_LOW}, is on that viewer's right and the Maintenance Hatch, on
-     * {@link #WINDOW_COLUMN_HIGH}, on the left.
-     */
-    public static final int WINDOW_COLUMN_LOW = 1;
-    /** See {@link #WINDOW_COLUMN_LOW}. */
-    public static final int WINDOW_COLUMN_HIGH = 3;
 
     /** The silo, one fixed piece. */
     // spotless:off
@@ -82,9 +82,9 @@ public final class SiloShape {
             " CCC ",
             " CCC ",
             " CCC ",
-            " WGW ",
-            " W~W ",
-            " WGW ",
+            "HGGGH",
+            "HG~GH",
+            "HGGGH",
             " FFF " },
           { "B   B",
             "C   C",
@@ -165,17 +165,17 @@ public final class SiloShape {
         return total;
     }
 
-    /** @return the number of casing positions (C and F) */
+    /** @return the number of casing positions (C, F and the hatch columns H) */
     public static int casingPositions() {
-        return count("CF");
+        return count("CFH");
     }
 
     /**
-     * @return the number of positions where a hatch may go (D117): walls, glass (window edges too), the floor ring and
-     *         the controller
+     * @return the number of positions where a hatch may go (D117): walls, hatch columns, glass, the floor ring and the
+     *         controller
      */
     public static int hatchPositions() {
-        return count("C") + count("G") + count("W") + count("F") + count("~");
+        return count("C") + count("H") + count("G") + count("F") + count("~");
     }
 
     /**

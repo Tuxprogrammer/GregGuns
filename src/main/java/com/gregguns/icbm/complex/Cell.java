@@ -22,7 +22,8 @@ public final class Cell {
     public static final byte HATCH_BUS = 10;
     public static final byte HATCH_MAINTENANCE = 11;
     public static final byte HATCH_ENERGY = 12;
-    public static final byte HATCH_POWER = 13;
+    /** The silo's Input Hatch, for its rocket fuel. */
+    public static final byte HATCH_FUEL = 13;
     /** Air plus a ladder (the escape shaft inside the level). */
     public static final byte LADDER = 14;
     /** The HV radar controller of a radar station on the surface (a GT machine, like {@link #CONTROLLER}). */
@@ -54,7 +55,7 @@ public final class Cell {
 
     /** @return whether the cell is a GT machine of a silo: the controller, a hatch or its Launch Control */
     public static boolean siloMachine(byte c) {
-        return c >= CONTROLLER && c <= HATCH_POWER || c == SILO_LAUNCH_CONTROL;
+        return c >= CONTROLLER && c <= HATCH_FUEL || c == SILO_LAUNCH_CONTROL;
     }
 
     /** @return whether a player walks through the cell at foot or head height */

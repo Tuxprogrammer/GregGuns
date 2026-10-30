@@ -95,8 +95,8 @@ public final class LaunchControlGuiShots implements Scenario {
         final EntityMissile[] m = { null };
         final double cx = ctx.originX() + 0.5;
         final double cz = ctx.originZ() + 2.5;
-        final int bx = ctx.originX() - 1;
-        final int by = ctx.originY() + SiloScenarios.CY + SiloShape.LAUNCH_CONTROL_RISE;
+        final int bx = ctx.originX() + com.gregguns.machine.DevStructureBuilder.SILO_LC[0];
+        final int by = ctx.originY() + SiloScenarios.CY + com.gregguns.machine.DevStructureBuilder.SILO_LC[1];
         final int bz = ctx.originZ();
         final MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
 

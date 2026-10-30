@@ -198,7 +198,7 @@ public final class GtMachineHook implements MachineHook {
             case Cell.HATCH_ENERGY:
                 return ENERGY_HATCH.get(1)
                     .getItemDamage();
-            case Cell.HATCH_POWER:
+            case Cell.HATCH_FUEL:
                 return ItemList.Hatch_Input_HV.get(1)
                     .getItemDamage();
             case Cell.SILO_LAUNCH_CONTROL:
