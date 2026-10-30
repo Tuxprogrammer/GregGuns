@@ -173,9 +173,9 @@ class StructurePopulatorTest {
         Set<Long> seeds = new HashSet<>();
         for (LootPending p : r.marks.orders) {
             seeds.add(p.seed());
-            assertEquals("gregguns:weaponchest_t1", p.category(), "test ids have ceiling 1 (LV)");
             assertEquals(1, p.richness());
         }
+        assertTables(r, 1, "test ids have ceiling 1 (LV)");
         assertEquals(r.marks.orders.size(), seeds.size(), "every chest has its own seed");
     }
 
@@ -285,35 +285,45 @@ class StructurePopulatorTest {
         Run r = run(populatorWith(rolling(5)), null, GridColumns.flat(64), PLAINS);
         assertTrue(r.stamped > 0);
         assertTrue(!r.marks.orders.isEmpty());
-        for (LootPending o : r.marks.orders) {
-            assertEquals("gregguns:weaponchest_t5", o.category(), "a rolled IV ceiling uses the IV table");
-        }
+        assertTables(r, 5, "a rolled IV ceiling uses the IV table");
     }
 
     @Test
     void aRolledCeilingAboveZpmUsesTheZpmTables() {
         Run r = run(populatorWith(rolling(9)), null, GridColumns.flat(64), PLAINS);
         assertTrue(!r.marks.orders.isEmpty());
-        for (LootPending o : r.marks.orders) {
-            assertEquals("gregguns:weaponchest_t7", o.category());
-        }
+        assertTables(r, 7, "UV and UHV use the ZPM tables");
     }
 
     @Test
     void noRollKeepsTheSurfaceCeiling() {
         Run r = run(populatorWith(rolling(0)), null, GridColumns.flat(64), PLAINS);
         assertTrue(!r.marks.orders.isEmpty());
-        for (LootPending o : r.marks.orders) {
-            assertEquals("gregguns:weaponchest_t1", o.category(), "an unrolled hut stays at its LV ceiling");
-        }
+        assertTables(r, 1, "an unrolled hut stays at its LV ceiling");
     }
 
     @Test
     void theRolledCeilingNeverFallsBelowTheConfiguredOne() {
         // lootCeiling is 1 in rolling(); a roll of MV (2) must give the MV table, not less.
         Run r = run(populatorWith(rolling(2)), null, GridColumns.flat(64), PLAINS);
-        for (LootPending o : r.marks.orders) {
-            assertEquals("gregguns:weaponchest_t2", o.category());
+        assertTables(r, 2, "a rolled MV keeps the MV tables");
+    }
+
+    /** Every chest of the run uses table {@code t}: weapon chests the weapon table, vanilla chests the supply mix. */
+    private static void assertTables(Run r, int t, String why) {
+        assertTrue(!r.marks.orders.isEmpty());
+        for (int i = 0; i < r.marks.orders.size(); i++) {
+            String kind = r.marks.chests.get(i)
+                .substring(
+                    0,
+                    r.marks.chests.get(i)
+                        .indexOf('@'));
+            String want = (kind.equals("vanilla") ? "gregguns:supplychest_t" : "gregguns:weaponchest_t") + t;
+            assertEquals(
+                want,
+                r.marks.orders.get(i)
+                    .category(),
+                why + " (" + kind + ")");
         }
     }
 }

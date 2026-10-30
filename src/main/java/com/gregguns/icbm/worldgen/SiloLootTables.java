@@ -211,25 +211,22 @@ public final class SiloLootTables {
         }
     }
 
-    /** Adds the GregGuns guns of the weapon table the ceiling draws from (GregGuns content stops at ZPM). */
+    /**
+     * Adds the GregGuns arms of the table the ceiling draws from (GregGuns content stops at ZPM): guns, plenty of their
+     * ammo, and grenades ({@link LootCategoryDefs#arms}).
+     */
     private static void weapons(List<Line> out, int ceiling, int weightScale) {
-        String name = "gregguns:weaponchest_t" + SiloCeiling.tableTier(ceiling);
-        for (LootCategory c : LootCategoryDefs.all()) {
-            if (c.name()
-                .equals(name)) {
-                for (LootEntry e : c.entries()) {
-                    out.add(
-                        new Line(
-                            e.ref(),
-                            e.drop()
-                                .min(),
-                            e.drop()
-                                .max(),
-                            e.weight() * weightScale,
-                            e.tier()
-                                .voltageIndex()));
-                }
-            }
+        for (LootEntry e : LootCategoryDefs.arms(SiloCeiling.tableTier(ceiling))) {
+            out.add(
+                new Line(
+                    e.ref(),
+                    e.drop()
+                        .min(),
+                    e.drop()
+                        .max(),
+                    e.weight() * weightScale,
+                    e.tier()
+                        .voltageIndex()));
         }
     }
 

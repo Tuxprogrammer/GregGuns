@@ -15,66 +15,47 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import com.gregguns.api.Tier;
+import com.gregguns.entity.npc.loot.LootDrop;
 
 class LootCategoriesTest {
 
     @Test
-    void fifteenCategoriesWithTheSpecCeilings() {
+    void twentyTwoCategoriesWithTheSpecCeilings() {
         assertEquals(
-            15,
+            22,
             LootCategoryDefs.all()
                 .size());
-        assertEquals(
-            Tier.LV,
-            LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T1)
-                .ceiling());
-        assertEquals(
-            Tier.MV,
-            LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T2)
-                .ceiling());
-        assertEquals(
-            Tier.HV,
-            LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T3)
-                .ceiling());
-        assertEquals(
-            Tier.LV,
-            LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T1)
-                .ceiling());
-        assertEquals(
-            Tier.MV,
-            LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T2)
-                .ceiling());
-        assertEquals(
-            Tier.HV,
-            LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T3)
-                .ceiling());
+        Tier[] tiers = { Tier.LV, Tier.MV, Tier.HV, Tier.EV, Tier.IV, Tier.LUV, Tier.ZPM };
+        for (int t = 1; t <= 7; t++) {
+            for (String name : new String[] { LootCategoryDefs.weaponChest(t), LootCategoryDefs.reinforcedChest(t),
+                LootCategoryDefs.supplyChest(t) }) {
+                LootCategory c = LootCategoryDefs.get(name);
+                assertNotNull(c, name);
+                assertEquals(tiers[t - 1], c.ceiling(), name);
+            }
+        }
+        assertEquals(LootCategoryDefs.WEAPONCHEST_T1, LootCategoryDefs.weaponChest(1));
+        assertEquals(LootCategoryDefs.REINFORCEDCHEST_T3, LootCategoryDefs.reinforcedChest(3));
+        assertEquals(LootCategoryDefs.SUPPLYCHEST_T2, LootCategoryDefs.supplyChest(2));
         assertEquals(
             Tier.MV,
             LootCategoryDefs.get(LootCategoryDefs.BARRACKS)
                 .ceiling());
-        // The Ross128 tables (design record 0019): EV, IV, LuV, ZPM.
-        Tier[] high = { Tier.EV, Tier.IV, Tier.LUV, Tier.ZPM };
-        for (int i = 0; i < high.length; i++) {
-            assertEquals(
-                high[i],
-                LootCategoryDefs.get("gregguns:weaponchest_t" + (4 + i))
-                    .ceiling());
-            assertEquals(
-                high[i],
-                LootCategoryDefs.get("gregguns:reinforcedchest_t" + (4 + i))
-                    .ceiling());
-        }
     }
 
     @Test
-    void countsMatchTheTechgunsTables() {
-        assertCounts(LootCategoryDefs.WEAPONCHEST_T1, 2, 8);
-        assertCounts(LootCategoryDefs.WEAPONCHEST_T2, 4, 8);
+    void pickCountsPerKind() {
+        // About half a Roguelike top-floor chest (15 stacks): more than the Techguns 2-8, so the pack mix has room.
+        assertCounts(LootCategoryDefs.WEAPONCHEST_T1, 4, 8);
+        assertCounts(LootCategoryDefs.WEAPONCHEST_T2, 4, 9);
         assertCounts(LootCategoryDefs.WEAPONCHEST_T3, 5, 10);
-        assertCounts(LootCategoryDefs.REINFORCEDCHEST_T1, 3, 6);
+        assertCounts(LootCategoryDefs.SUPPLYCHEST_T1, 4, 8);
+        assertCounts(LootCategoryDefs.SUPPLYCHEST_T2, 5, 9);
+        assertCounts(LootCategoryDefs.SUPPLYCHEST_T3, 5, 10);
+        assertCounts(LootCategoryDefs.REINFORCEDCHEST_T1, 4, 7);
         assertCounts(LootCategoryDefs.REINFORCEDCHEST_T2, 4, 8);
         assertCounts(LootCategoryDefs.REINFORCEDCHEST_T3, 5, 9);
-        assertCounts(LootCategoryDefs.BARRACKS, 1, 4);
+        assertCounts(LootCategoryDefs.BARRACKS, 2, 5);
     }
 
     private static void assertCounts(String name, int min, int max) {
@@ -118,7 +99,9 @@ class LootCategoriesTest {
     void flamethrowerAndRocketsOnlyFromTierThreeUp() {
         for (LootCategory c : LootCategoryDefs.all()) {
             boolean hv = c.name()
-                .equals(LootCategoryDefs.WEAPONCHEST_T3);
+                .equals(LootCategoryDefs.WEAPONCHEST_T3)
+                || c.name()
+                    .equals(LootCategoryDefs.SUPPLYCHEST_T3);
             Set<String> refs = refs(c);
             boolean allowed = c.ceiling()
                 .ordinal() >= Tier.HV.ordinal();
@@ -245,13 +228,12 @@ class LootCategoriesTest {
                     allowed.contains(
                         r.entry()
                             .ref()));
-                assertTrue(
-                    r.count() >= r.entry()
-                        .drop()
-                        .min() && r.count()
-                            <= r.entry()
-                                .drop()
-                                .max());
+                LootDrop range = r.companion() ? r.entry()
+                    .companion()
+                    : r.entry()
+                        .drop();
+                assertEquals(range.ref(), r.ref());
+                assertTrue(r.count() >= range.min() && r.count() <= range.max());
             }
         }
     }
@@ -303,10 +285,7 @@ class LootCategoriesTest {
         Random rand = new Random(seed);
         for (int i = 0; i < 20; i++) {
             for (LootDraw.Roll r : LootDraw.draw(c, richness, rand)) {
-                out.add(
-                    r.entry()
-                        .ref() + "x"
-                        + r.count());
+                out.add(r.ref() + "x" + r.count());
             }
         }
         return out;
