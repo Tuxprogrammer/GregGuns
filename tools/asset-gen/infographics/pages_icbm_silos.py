@@ -225,7 +225,7 @@ def _room_contents() -> dict:
         if not body.strip():
             continue
         d = dict(chests=set(), machines=set(), furniture=set(), posts="spawners(" in body or "MarkKind.SPAWNER" in body,
-                 frames="frames(fit)" in body, nasa="fit.nasa" in body)
+                 frames="frames(fit)" in body or "displays(fit)" in body, nasa="fit.nasa" in body)
         d["chests"] |= {k.lower() for k in re.findall(r"LootKeys\.(\w+)", body)}
         d["machines"] |= set(re.findall(r"MachineRole\.(\w+)\.name", body))
         d["furniture"] |= {_FURN[k] for k in re.findall(r"fit\.(?:row|column)\((T|C|B|SH),", body)}
@@ -278,7 +278,7 @@ ROOM_SPECIAL = {
     "ASSEMBLY_BAY": "The hub: every hall leaves it.",
     "WARHEAD_MAGAZINE": "Fallout rubble; no warhead is ever stored.",
     "PUMP_ROOM": "Floods when the complex is not operational.",
-    "ARMORY": "Two rows of guns in item frames on the back wall.",
+    "ARMORY": "Display walls across the room, a gun in an item frame every fifth block over a chest of its ammo (24 guns at most).",
     "GUARD_POST": "Stands beside a hall mouth.",
     "DECON_AIRLOCK": "In the corner between the hub and a hall.",
     "LAUNCH_CONTROL": "Windows over the silo gallery.",
@@ -313,7 +313,7 @@ def room_card(kind: str) -> str:
     if furn:
         lines.append("Furniture: " + ", ".join(sorted(furn)))
     if c["frames"]:
-        lines.append("<b>Item frames</b> with guns on the back wall")
+        lines.append("<b>Item frames</b> with guns on display walls, each over an ammo chest" if kind == "ARMORY" else "<b>Item frames</b> with guns on the back wall")
     if kind in ROOM_SPECIAL and kind != "ARMORY":
         lines.append(ROOM_SPECIAL[kind])
     if c["posts"]:
