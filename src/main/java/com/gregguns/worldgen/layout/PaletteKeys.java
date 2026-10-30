@@ -46,7 +46,9 @@ public final class PaletteKeys {
     // (class + ObjectHolder), #L57 concrete, #L70 stonebricksmooth, #L95 factoryblock, #L100 laboratoryblock,
     // #L110 hexPlating, #L112 technical, #L117 warningSign, #L126 leadblock, #L181 lantern, #L54 glass_pane;
     // copperblock, tinblock, iron_block and gold_block are declared in the same file.
-    // The Chisel metas below are the first variation of each block; they are cosmetic and unverified in game.
+    // The Chisel metas below are variations the block defines (ChiselVariants lists them; glass_pane and gold_block
+    // have
+    // none at meta 0, which draws Chisel's missing texture, so they use the plain-looking 2 and 1).
     private static final String CHISEL_BLOCKS_CLASS = "team.chisel.init.ChiselBlocks";
 
     /** Role key, Chisel field (null for vanilla-only keys), Chisel meta, vanilla fallback name and meta. */
@@ -61,12 +63,12 @@ public final class PaletteKeys {
         { "plating", "hexPlating", "0", "minecraft:iron_block", "0" },
         { "hazard", "warningSign", "0", "minecraft:stained_hardened_clay", "4" },
         { "lantern", "lantern", "0", "minecraft:glowstone", "0" },
-        { "glass_pane", "glass_pane", "0", "minecraft:glass_pane", "0" },
+        { "glass_pane", "glass_pane", "2", "minecraft:glass_pane", "0" },
         { "lead_block", "leadblock", "0", "minecraft:iron_block", "0" },
         { "copper_block", "copperblock", "0", "minecraft:stained_hardened_clay", "1" },
         { "tin_block", "tinblock", "0", "minecraft:iron_block", "0" },
         { "iron_plate", "iron_block", "0", "minecraft:iron_block", "0" },
-        { "gold_plate", "gold_block", "0", "minecraft:gold_block", "0" },
+        { "gold_plate", "gold_block", "1", "minecraft:gold_block", "0" },
         // Vanilla-only roles.
         { "air", null, "0", "minecraft:air", "0" }, };
 
@@ -107,6 +109,16 @@ public final class PaletteKeys {
                 block = chisel.field(row[1]);
                 if (block == null) {
                     warn.accept("Palette key '" + key + "': Chisel block '" + row[1] + "' is null; using " + row[3]);
+                } else if (!ChiselVariants.isValid(row[1], Integer.parseInt(row[2]))) {
+                    warn.accept(
+                        "Palette key '" + key
+                            + "': Chisel block '"
+                            + row[1]
+                            + "' has no meta "
+                            + row[2]
+                            + "; using "
+                            + row[3]);
+                    block = null;
                 } else {
                     fallback = false;
                     meta = Integer.parseInt(row[2]);
