@@ -25,7 +25,8 @@ import com.gregguns.item.gun.GunItems;
  * {@code npc.hold_showcase}: a visual check of how NPCs hold guns, for a connected client (see
  * {@code docs/testing/README.md}). Each step stands one NPC on a fixed spot holding one gun, puts the (creative,
  * empty-handed) player beside it or in front of it and asks the client for a screenshot labeled
- * {@code npc-<mob>-<gun>-<side|front>}. Then the player holds each gun and is shot from the front and the back
+ * {@code npc-<mob>-<gun>-<idle|aim>-<side|front>}, with the NPC idle (no target, arms down) or aiming (arms up). Then
+ * the player holds each gun and is shot from the front and the back
  * ({@code player-<gun>-<front|back>}) as the reference for what a held gun looks like. Not part of {@code test all}:
  * it needs a connected client. Dev environment only, server side.
  */
@@ -65,12 +66,14 @@ final class NpcHoldShowcaseScenario implements Scenario {
         private final NpcMob mob;
         private final String gun;
         private final boolean front;
+        private final boolean aim;
         private final String label;
 
-        Shot(NpcMob mob, String gun, boolean front, String label) {
+        Shot(NpcMob mob, String gun, boolean front, boolean aim, String label) {
             this.mob = mob;
             this.gun = gun;
             this.front = front;
+            this.aim = aim;
             this.label = label;
         }
 
@@ -84,6 +87,10 @@ final class NpcHoldShowcaseScenario implements Scenario {
 
         boolean front() {
             return front;
+        }
+
+        boolean aim() {
+            return aim;
         }
 
         String label() {
@@ -108,13 +115,16 @@ final class NpcHoldShowcaseScenario implements Scenario {
         List<Shot> shots = new ArrayList<>();
         for (NpcMob mob : MOBS) {
             for (String gun : GUNS) {
-                shots.add(new Shot(mob, gun, false, "npc-" + mob.name() + "-" + gun + "-side"));
-                shots.add(new Shot(mob, gun, true, "npc-" + mob.name() + "-" + gun + "-front"));
+                for (boolean aim : new boolean[] { false, true }) {
+                    String stem = "npc-" + mob.name() + "-" + gun + (aim ? "-aim" : "-idle");
+                    shots.add(new Shot(mob, gun, false, aim, stem + "-side"));
+                    shots.add(new Shot(mob, gun, true, aim, stem + "-front"));
+                }
             }
         }
         for (String gun : GUNS) {
-            shots.add(new Shot(null, gun, true, "player-" + gun + "-front"));
-            shots.add(new Shot(null, gun, false, "player-" + gun + "-back"));
+            shots.add(new Shot(null, gun, true, true, "player-" + gun + "-front"));
+            shots.add(new Shot(null, gun, false, true, "player-" + gun + "-back"));
         }
         ctx.clearArea(8, 4);
         for (int dx = -6; dx <= 6; dx++) {
@@ -190,6 +200,8 @@ final class NpcHoldShowcaseScenario implements Scenario {
                 npc.renderYawOffset = 0.0F;
                 npc.motionX = 0.0;
                 npc.motionZ = 0.0;
+                // An NPC aims (arms up) while it has a target; the creative player is a harmless one.
+                npc.setAttackTarget(s.aim() ? player : null);
             }
             if (phase == STEP - 8) {
                 signal(player, "shot", s.label());
