@@ -105,7 +105,19 @@ public final class GtMachineHook implements MachineHook {
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
         claim(base);
-        base.setFrontFacing(front);
+        // The asked front when the machine allows it, else the nearest valid side (never left DOWN).
+        ForgeDirection use = front;
+        if (!proto.isFacingValid(front)) {
+            int index = Math.max(
+                0,
+                java.util.Arrays.asList(FACINGS)
+                    .indexOf(front));
+            ForgeDirection alt = com.gregguns.icbm.worldgen.MachineFacing
+                .choose(index, base.getMetaTileEntity()::isFacingValid);
+            if (alt != null) use = alt;
+        }
+        base.setFrontFacing(use);
+        com.gregguns.icbm.worldgen.MachineFacingAudit.check(base, "GtMachineHook.placeMte", x, y, z);
         return true;
     }
 

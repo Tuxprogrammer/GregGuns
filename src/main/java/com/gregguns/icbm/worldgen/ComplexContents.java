@@ -339,6 +339,7 @@ public final class ComplexContents {
         out.add(
             Placement.at(Kind.MACHINE, m.x(), m.y(), m.z())
                 .machine(role, machineTier(role, ceiling, h), dead)
+                .front(m.facing())
                 .build());
     }
 

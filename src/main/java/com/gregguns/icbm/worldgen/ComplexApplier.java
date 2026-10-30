@@ -232,10 +232,10 @@ public final class ComplexApplier {
             mteId = pick.stack()
                 .getItemDamage();
         }
-        placeMte(x, y, z, mteId);
+        placeMte(x, y, z, mteId, p.front(), p);
     }
 
-    private void placeMte(int x, int y, int z, int mteId) {
+    private void placeMte(int x, int y, int z, int mteId, int front, Placement p) {
         IMetaTileEntity proto = mteId >= 0 && mteId < GregTechAPI.METATILEENTITIES.length
             ? GregTechAPI.METATILEENTITIES[mteId]
             : null;
@@ -243,9 +243,10 @@ public final class ComplexApplier {
             return;
         }
         if (sink.setBlock(x, y, z, GregTechAPI.sBlockMachines, proto.getTileEntityBaseType())) {
-            gregtech.api.metatileentity.BaseMetaTileEntity tile = new gregtech.api.metatileentity.BaseMetaTileEntity();
-            tile.setInitialValuesAsNBT(null, (short) mteId);
-            com.gregguns.icbm.complex.gen.GtMachineHook.claim(tile);
+            gregtech.api.metatileentity.BaseMetaTileEntity tile = MachineFacing
+                .build(mteId, front, com.gregguns.icbm.complex.gen.GtMachineHook::claim);
+            if (tile == null) return;
+            MachineFacingAudit.check(tile, "ComplexApplier.placeMte " + p, x, y, z);
             sink.setTile(x, y, z, tile);
         }
     }

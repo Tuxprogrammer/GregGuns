@@ -476,7 +476,9 @@ final class ComplexFurnisher {
                 int ca = a + o[0], cd = d + o[1];
                 if (!free(ca, cd)) continue;
                 occ[ca * D + cd] = SOLID;
-                r.add(k, f.x(ca, cd), 1, f.z(ca, cd), key);
+                // A machine's front faces the room's door side (0 north, 1 east, 2 south, 3 west), toward the walkway.
+                if (k == MarkKind.MACHINE) r.add(k, f.x(ca, cd), 1, f.z(ca, cd), key, f.side, 1);
+                else r.add(k, f.x(ca, cd), 1, f.z(ca, cd), key);
                 return true;
             }
             return false;
