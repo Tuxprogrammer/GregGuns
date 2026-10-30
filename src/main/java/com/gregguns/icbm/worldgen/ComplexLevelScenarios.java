@@ -99,6 +99,7 @@ public final class ComplexLevelScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Levels());
         registry.register(new Guards());
+        registry.register(new Armory());
         SalvageScenarios.registerAll(registry);
     }
 
@@ -189,6 +190,127 @@ public final class ComplexLevelScenarios {
             rejected += sink.rejectedWrites();
         }
         return new int[] { rejected, PopulateGuard.violationCount() - before, busy, blocks, (int) total, (int) most };
+    }
+
+    // --- the armory scenario ----------------------------------------------------------------------------------
+
+    /** Generates an operational complex and reads its armories back: display walls, frames, ammo chests. */
+    private static final class Armory implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.complex.armory";
+        }
+
+        @Override
+        public String description() {
+            return "Generates an operational complex and checks every armory: guns hang in item frames on short"
+                + " interior partitions of the room's wall block (open air above them, clear of the outer walls),"
+                + " none on the outer walls, and a chest stands right under each gun holding that gun's ammo.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            World world = ctx.world();
+            StructurePlan plan = plan(world);
+            SiloChests.register();
+            try {
+                load(world, plan);
+                slab(world, plan, false);
+                ComplexPlacer placer = placer().forceLevel(ActivityLevel.OPERATIONAL)
+                    .forceCeiling(SiloCeiling.EV);
+                int[] r = generate(world, plan, placer, "gregguns_complex_armory");
+                out.checkEquals("writes dropped outside a window", 0, r[0]);
+                read(out, world, plan, placer);
+            } finally {
+                slab(world, plan, true);
+            }
+            return out.build();
+        }
+
+        private void read(ScenarioResult.Builder out, World world, StructurePlan plan, ComplexPlacer placer) {
+            ComplexPlan cp = placer.rasterOf(plan)
+                .plan();
+            int ax = plan.anchorX(), az = plan.anchorZ(), floor = floor(world);
+            List<Placement> ps = ComplexContents.build(cp, ActivityLevel.OPERATIONAL, SiloCeiling.EV, null);
+            int armories = 0, guns = 0, wrongAmmo = 0, noChest = 0, noWall = 0, noGun = 0, tall = 0, outer = 0;
+            for (com.gregguns.icbm.complex.Room room : cp.rooms()) {
+                if (room.kind() != com.gregguns.icbm.complex.RoomKind.ARMORY) continue;
+                armories++;
+                com.gregguns.icbm.complex.Box b = room.bounds();
+                // No frame on the outer walls: every frame in the room hangs on a block that is not on the perimeter.
+                @SuppressWarnings("unchecked")
+                List<Object> inRoom = world.getEntitiesWithinAABB(
+                    net.minecraft.entity.item.EntityItemFrame.class,
+                    AxisAlignedBB
+                        .getBoundingBox(ax + b.minX, floor, az + b.minZ, ax + b.maxX, floor + b.sizeY(), az + b.maxZ));
+                for (Object o : inRoom) {
+                    net.minecraft.entity.item.EntityItemFrame f = (net.minecraft.entity.item.EntityItemFrame) o;
+                    int[] dx = { 0, -1, 0, 1 }, dz = { 1, 0, -1, 0 };
+                    // The block it hangs on: one step behind the cell it floats in.
+                    int wx = (int) Math.floor(f.posX) - dx[f.hangingDirection] - ax,
+                        wz = (int) Math.floor(f.posZ) - dz[f.hangingDirection] - az;
+                    if (wx <= b.minX + 1 || wx >= b.maxX - 2 || wz <= b.minZ + 1 || wz >= b.maxZ - 2) outer++;
+                }
+                for (Placement p : ps) {
+                    if (p.kind() != Kind.FRAME_WALL || p.x() <= b.minX
+                        || p.x() >= b.maxX - 1
+                        || p.z() <= b.minZ
+                        || p.z() >= b.maxZ - 1) {
+                        continue;
+                    }
+                    guns++;
+                    int x = ax + p.x(), z = az + p.z(), y = floor + p.y();
+                    int bx = p.facing() == 1 ? 1 : p.facing() == 3 ? -1 : 0,
+                        bz = p.facing() == 0 ? -1 : p.facing() == 2 ? 1 : 0;
+                    if (w(world, x + bx, y, z + bz) == Blocks.air) noWall++;
+                    if (world.getBlock(x + bx, floor + 3, z + bz) != Blocks.air) tall++;
+                    @SuppressWarnings("unchecked")
+                    List<Object> es = world.getEntitiesWithinAABB(
+                        net.minecraft.entity.item.EntityItemFrame.class,
+                        AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1));
+                    ItemStack gun = es.isEmpty() ? null
+                        : ((net.minecraft.entity.item.EntityItemFrame) es.get(0)).getDisplayedItem();
+                    if (gun == null) {
+                        noGun++;
+                        continue;
+                    }
+                    TileEntity t = world.getTileEntity(x, y - 1, z);
+                    if (!(t instanceof TileEntityChest)) {
+                        noChest++;
+                        continue;
+                    }
+                    String gunName = net.minecraft.item.Item.itemRegistry.getNameForObject(gun.getItem())
+                        .toString();
+                    List<String> allowed = ArmoryDisplay.itemsFor(gunName);
+                    boolean any = false;
+                    TileEntityChest chest = (TileEntityChest) t;
+                    for (int i = 0; i < chest.getSizeInventory(); i++) {
+                        ItemStack s = chest.getStackInSlot(i);
+                        if (s == null) continue;
+                        any = true;
+                        String n = net.minecraft.item.Item.itemRegistry.getNameForObject(s.getItem())
+                            .toString();
+                        if (!allowed.contains(n.substring(n.indexOf(':') + 1))) wrongAmmo++;
+                    }
+                    if (!any) noChest++;
+                }
+            }
+            out.note("armories " + armories + ", display guns " + guns);
+            out.check(armories > 0, "the complex has an armory");
+            out.check(guns >= 8 * armories, "each armory shows its guns: " + guns);
+            out.checkEquals("frames on an outer wall", 0, outer);
+            out.checkEquals("frames with no wall behind", 0, noWall);
+            out.checkEquals("partitions that reach the ceiling", 0, tall);
+            out.checkEquals("frames holding no gun", 0, noGun);
+            out.checkEquals("guns with no ammo chest under them", 0, noChest);
+            out.checkEquals("ammo stacks that do not fit the gun above", 0, wrongAmmo);
+        }
+
+        private static Block w(World world, int x, int y, int z) {
+            return world.getBlock(x, y, z);
+        }
     }
 
     // --- the level scenario -----------------------------------------------------------------------------------
@@ -521,6 +643,15 @@ public final class ComplexLevelScenarios {
         /** @return stacks in the chest that are neither on the chest's table at the ceiling nor one of its bonuses */
         private static int outsideTable(IInventory inv, Placement p, int ceiling) {
             Set<String> allowed = new HashSet<>();
+            if (com.gregguns.icbm.complex.LootKeys.ARMORY_AMMO.equals(p.key())) {
+                // An armory display chest holds its gun's ammo (checked by icbm.complex.armory), else the armory table.
+                for (com.gregguns.gun.def.GunDefinition g : com.gregguns.gun.def.GunDefinitions.ALL) {
+                    for (String item : ArmoryDisplay.itemsFor(g.name())) {
+                        ItemStack s = LootCategories.stack("gregguns:" + item, 1);
+                        if (s != null) allowed.add(id(s));
+                    }
+                }
+            }
             for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {
                 ItemStack s = LootCategories.stack(l.ref(), 1);
                 if (s != null) allowed.add(id(s));

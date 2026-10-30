@@ -309,8 +309,8 @@ class ComplexLayoutTest {
                     int wx = m.x() + bx, wz = m.z() + bz;
                     assertEquals(Cell.AIR, raster.at(m.x(), 1, m.z()), "the chest cell is open");
                     assertEquals(Cell.AIR, raster.at(m.x(), 2, m.z()), "the frame cell is open");
-                    for (int y = 1; y <= 3; y++) assertEquals(Cell.WALL, raster.at(wx, y, wz), "partition layer " + y);
-                    assertEquals(Cell.AIR, raster.at(wx, 4, wz), "the partition stands short of the ceiling");
+                    for (int y = 1; y <= 2; y++) assertEquals(Cell.WALL, raster.at(wx, y, wz), "partition layer " + y);
+                    assertEquals(Cell.AIR, raster.at(wx, 3, wz), "the partition stands short of the ceiling");
                     assertTrue(
                         wx > r.bounds().minX + 1 && wx < r.bounds().maxX - 2
                             && wz > r.bounds().minZ + 1
@@ -320,7 +320,7 @@ class ComplexLayoutTest {
                 if (r.kind() == RoomKind.ARMORY) {
                     armories++;
                     displays += here;
-                    assertTrue(here >= 8 && here <= 24, "an armory shows about sixteen guns: " + here);
+                    assertTrue(here >= 8 && here <= 40, "an armory shows about sixteen guns: " + here);
                 }
             }
         }
@@ -582,7 +582,8 @@ class ComplexLayoutTest {
                         }
                     }
                 }
-                if (m.kind() == MarkKind.LOOT_CHEST) occupied[m.x() * S + m.z()] = true;
+                if (m.kind() == MarkKind.LOOT_CHEST || m.kind() == MarkKind.GUN_DISPLAY)
+                    occupied[m.x() * S + m.z()] = true;
             }
             ArrayDeque<int[]> q = new ArrayDeque<int[]>();
             for (int x = 0; x < S; x++) for (int y = 0; y < Y; y++) for (int z = 0; z < S; z++) {

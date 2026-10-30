@@ -131,11 +131,13 @@ class ComplexContentsTest {
             ComplexPlan plan = ComplexLayout.generate(s, 0, 0);
             long marks = plan.allMarks()
                 .stream()
-                .filter(m -> m.kind() == MarkKind.LOOT_CHEST)
+                .filter(m -> m.kind() == MarkKind.LOOT_CHEST || m.kind() == MarkKind.GUN_DISPLAY)
                 .count();
             for (ActivityLevel level : ActivityLevel.values()) {
                 List<Placement> ps = ComplexContents.build(plan, level, 6, null);
-                assertEquals(marks, count(ps, Kind.CHEST));
+                // Displays in a collapsed room or an abandoned complex's stripped slots are not placed.
+                if (level == ActivityLevel.OPERATIONAL) assertEquals(marks, count(ps, Kind.CHEST));
+                else assertTrue(count(ps, Kind.CHEST) <= marks);
                 Set<Integer> idx = new HashSet<>();
                 for (Placement p : ps) {
                     if (p.kind() == Kind.CHEST) {

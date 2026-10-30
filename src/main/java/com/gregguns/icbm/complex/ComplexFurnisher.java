@@ -864,13 +864,14 @@ final class ComplexFurnisher {
     }
 
     /** Partition rows in the armory, and how tall a partition stands (the frame hangs at its middle layer). */
-    static final int DISPLAY_ROWS = 2, PARTITION_HEIGHT = 3;
+    static final int DISPLAY_ROWS = 2, PARTITION_HEIGHT = 2;
     /** Lateral cells between two guns on one face of a partition. */
     static final int DISPLAY_STRIDE = 4;
     private static final String PARTITION = RoomFurniture.PARTITION;
 
     /**
-     * Free-standing display walls across the armory (owner, 2026-10-30): short partitions of the room's wall block
+     * Free-standing display walls across the armory (owner, 2026-10-30): short partitions (two blocks) of the room's
+     * wall block
      * running along the room, a walkway between rows and an open end at each side. Each face holds a gun in an item
      * frame every {@link #DISPLAY_STRIDE} cells (the two faces staggered), with the ammo chest on the floor right
      * below it: one {@link MarkKind#GUN_DISPLAY} mark per gun, at the chest's cell, the frame one layer up. Nothing

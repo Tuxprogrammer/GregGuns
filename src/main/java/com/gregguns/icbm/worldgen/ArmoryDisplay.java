@@ -94,13 +94,6 @@ public final class ArmoryDisplay {
         AmmoType round = roundByName(ammo);
         if (round != null) {
             out.add(new Stock(round.roundItemName(), 32, 64));
-            for (MagazineType m : AmmoTypes.allMagazines()
-                .values()) {
-                if (m.ammo() == round) {
-                    out.add(new Stock(m.loadedItemName(), 2, 4));
-                    break;
-                }
-            }
             return out;
         }
         out.add(new Stock(ammo, 8, 24)); // a tank, a charge or a grenade belt: the one item the gun burns

@@ -192,7 +192,7 @@ public final class ComplexContents {
                     if (!collapsed
                         && Mix.unit(Mix.of(seed, S_DISPLAY, m.x() * 4096L + m.z(), m.y())) < displayKeep(level)) {
                         Placement chest = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
-                            .category(SiloLootTables.categoryName(LootKeys.ARMORY, ceiling))
+                            .category(SiloLootTables.categoryName(LootKeys.ARMORY_AMMO, ceiling))
                             .key(LootKeys.ARMORY_AMMO)
                             .chest(counter[0]++, p.richness())
                             .build();
