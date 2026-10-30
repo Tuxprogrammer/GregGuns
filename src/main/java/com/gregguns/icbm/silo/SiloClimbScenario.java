@@ -58,7 +58,7 @@ final class SiloClimbScenario implements Scenario {
         }
         ScenarioResult.Builder out = ScenarioResult.builder(name());
         out.note("build: " + SiloScenarios.build(ctx, ItemList.Hatch_Energy_LuV));
-        IGregTechTileEntity cb = SiloScenarios.launchControl(ctx, 5, -2);
+        IGregTechTileEntity cb = SiloScenarios.ownControl(ctx); // the silo's own Launch Control (D288)
         final int oldCountdown = IcbmConfig.countdownTicks;
         final boolean oldTerrain = IcbmConfig.terrainDamageT1;
         IcbmConfig.countdownTicks = COUNTDOWN;
