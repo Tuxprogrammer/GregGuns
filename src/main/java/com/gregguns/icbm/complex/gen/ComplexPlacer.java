@@ -397,6 +397,8 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
         if (tagSink != null) tagSink.as(RoleAudit.SIGNS);
+        // The silo numbers belong to the silo, so the shell pass writes them (shell-only runs read them back too).
+        ComplexSigns.writeSilos(cp, ax, floorY, az, new QuietSink(sink));
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(under),

@@ -46,6 +46,10 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Military Bases and the Big Bunker: containers and sandbags are Chisel hempcrete in red and brown (GregTech's stone layers no longer eat into either), crates are Chisel crates, and desert tents use Chisel's desert camo.
 - The Gas Station canopy now carries a whole iron-bar railing; before, only a fence, an iron bar and a fence stood in one corner of its roof.
 
+## Silo signs
+
+- Every silo in a complex now has a sign reading "Silo 1", "Silo 2" and so on (north to south, then west to east), hanging on the silo wall directly above the controller, centered on it and facing the gallery. It sits above rather than on the controller so the controller stays clickable. A silo with its controller missing gets the same sign.
+
 ## Fixed
 
 - The Missile Silo no longer starts a mating cycle or a fuel pump without power. With no EU in its Energy Hatch it used to take the body, warhead or fuel, power-fail on the first tick and switch itself back on, over and over. It now takes nothing, shows "No power" in its status line, and starts by itself once the hatch holds enough EU.
