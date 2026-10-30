@@ -14,6 +14,7 @@ Sheets without a link are planned.
 - [blast-visuals.md](blast-visuals.md): dense colored gas clouds and the large-blast smoke plume (I2).
 - effects.md (planned): engine smoke, launch, blast visuals, red matter renderer rebuild.
 - sounds.md (planned): launch, flight, blast and alarm sounds with provenance.
+- Launch and flight sound (D280): the missile's engine is Galacticraft's rocket loop, `galacticraftcore:shuttle.shuttle`, played by event name (we ship none of its audio). It starts when the warm-up begins, rises in pitch through the countdown, holds full pitch in flight, falls off with distance, and ends on impact, interception, despawn or abort (`MissileEngineSound`, `MissileEngineMath`). Blast sounds are unchanged.
 - lang.md (planned): module keys.
 - Player guides: the guide sheets, preview sheets and gallery are planned in [ROADMAP-ICBM § Visuals and player guides](../../ROADMAP-ICBM.md#visuals-and-player-guides) (D39); tooltip rules in D41; quests in the GregGuns tab (D40).
 

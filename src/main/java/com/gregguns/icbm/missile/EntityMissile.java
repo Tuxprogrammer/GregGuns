@@ -70,6 +70,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private int warmupLead;
     /** Lead plus countdown, ticks; set at launch (D88). */
     private int warmupTotal;
+    /** Client: the engine loop has been started for this entity (it plays once per missile). */
+    private boolean engineSoundStarted;
     /** Consecutive checks a silo-only body found no formed silo under it; not saved. */
     private int strayChecks;
     private int fuelMb;
@@ -600,7 +602,6 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         if (++phaseTick >= warmupTotal) {
             phaseTick = 0;
             setPhase(FlightPhase.CLIMB);
-            worldObj.playSoundEffect(posX, posY, posZ, "fireworks.launch", 4.0F, 0.6F);
         }
     }
 
@@ -755,7 +756,22 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         worldObj.spawnParticle("largesmoke", bx, by, bz, -ux * 0.05, -uy * 0.05, -uz * 0.05);
     }
 
+    /** Client: starts the engine loop once the missile leaves the pad; it ends itself when the missile is removed. */
+    @SideOnly(Side.CLIENT)
+    private void clientTickSound() {
+        if (!MissileEngineMath.sounding(phase())) {
+            engineSoundStarted = false; // an aborted launch ends the loop; the next launch starts a new one
+            return;
+        }
+        if (engineSoundStarted) {
+            return;
+        }
+        engineSoundStarted = true;
+        com.gregguns.client.icbm.MissileEngineSound.start(this);
+    }
+
     private void clientTick() {
+        clientTickSound();
         if (phase() == FlightPhase.WARMUP) {
             phaseTick++;
             clientTickParticles();
