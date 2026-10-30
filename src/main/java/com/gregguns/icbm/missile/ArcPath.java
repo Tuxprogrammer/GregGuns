@@ -8,7 +8,7 @@ package com.gregguns.icbm.missile;
  * zero or dive (ICBM-03-17), and a missing target is not the world origin (ICBM-03-19: the caller must pass one).
  * Because the position is a pure function of the tick, a reloaded missile resumes exactly where it was and the client
  * can extrapolate the same line. Past the arrival tick the curve keeps descending, so a missile that missed its target
- * height still hits the ground. It begins at the top of the vertical climb ({@link FlightPath}, D285), above the launch
+ * height still hits the ground. It begins at the top of the vertical climb ({@link FlightPath}, D287), above the launch
  * point. No Minecraft types, both sides.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/flight.md (The arc)
@@ -21,7 +21,7 @@ public final class ArcPath {
     /** Highest apex above the chord, blocks. */
     public static final double APEX_MAX = 300.0;
     /**
-     * Fastest vertical speed at the end of the arc, blocks per tick (D285). The arc starts at the build height, well
+     * Fastest vertical speed at the end of the arc, blocks per tick (D287). The arc starts at the build height, well
      * above most targets, so a short flight would otherwise drop that height in a few ticks; it is slowed down
      * instead, which keeps every dive within reach of a SAM (D126).
      */
@@ -76,7 +76,7 @@ public final class ArcPath {
     /**
      * The speed a missile has at the end of its arc: the horizontal speed and the vertical speed
      * {@code (4 * apex + drop) / ticks} of the parabola's last step, as a magnitude. The arc begins at the build height
-     * (D285), so the drop is the build height less the target's height. The vertical part never exceeds
+     * (D287), so the drop is the build height less the target's height. The vertical part never exceeds
      * {@link #MAX_DIVE}; this is what the SAM's speed must beat (D126).
      *
      * @param speed horizontal blocks per tick, above 0

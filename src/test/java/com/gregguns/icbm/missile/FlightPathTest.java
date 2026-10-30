@@ -7,7 +7,7 @@ import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
-/** D285: the vertical climb to the build height, then the arc from that waypoint to the target. */
+/** D287: the vertical climb to the build height, then the arc from that waypoint to the target. */
 class FlightPathTest {
 
     /** A silo pad 64 blocks down, a target 300 blocks south on the surface. */

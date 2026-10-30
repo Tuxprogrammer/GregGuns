@@ -58,7 +58,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     private final MissileTickets tickets = new MissileTickets();
     private ArcPath path;
-    /** The climb and the arc from launch point to target (D285); rebuilt from the saved fields when null. */
+    /** The climb and the arc from launch point to target (D287); rebuilt from the saved fields when null. */
     private FlightPath flight;
     private Object landingPad;
 
@@ -87,7 +87,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private double launchX;
     private double launchY;
     private double launchZ;
-    /** Top of the vertical climb (the build height above the launch point, D285); set at launch. */
+    /** Top of the vertical climb (the build height above the launch point, D287); set at launch. */
     private double waypointY;
     private double arcX;
     private double arcY;
@@ -524,7 +524,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     /**
      * @return true when nothing solid stands in the column right above the pad: from the pad to the top of the body
      *         {@link FlightPath#MIN_CLIMB} blocks up (ICBM-04-26). The climb goes on to the build height through
-     *         whatever stands higher, colliding with nothing and breaking nothing (D285).
+     *         whatever stands higher, colliding with nothing and breaking nothing (D287).
      */
     private boolean climbColumnClear() {
         int x0 = net.minecraft.util.MathHelper.floor_double(posX - width / 2.0);
@@ -627,7 +627,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     /**
      * One tick of the climb: straight up the launch point's column, never sideways, so the missile leaves a silo shaft
      * through its open doors and passes nothing on the way up; it does not collide in the climb (GGS-ICBM-03-52). At
-     * the waypoint (the build height) it turns onto the arc (D285).
+     * the waypoint (the build height) it turns onto the arc (D287).
      */
     private void climbTick() {
         phaseTick++;
@@ -658,7 +658,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         return flight;
     }
 
-    /** @return the top of the climb, the arc's start (D285); 0 before launch */
+    /** @return the top of the climb, the arc's start (D287); 0 before launch */
     public double waypointY() {
         return waypointY;
     }

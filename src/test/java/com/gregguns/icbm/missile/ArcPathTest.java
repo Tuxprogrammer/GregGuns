@@ -49,7 +49,7 @@ class ArcPathTest {
         // ICBM-03-17: a flat distance of 0 or under 1 broke the baseline arc.
         for (double d : new double[] { 0.0, 0.3, 1.0 }) {
             ArcPath p = new ArcPath(0, 100, 0, d, 100, 0, 0.8);
-            // The dive cap (D285) stretches the hop over the apex, never below one tick.
+            // The dive cap (D287) stretches the hop over the apex, never below one tick.
             assertTrue(p.ticks() >= 1 && p.ticks() <= Math.ceil(4 * p.apex() / ArcPath.MAX_DIVE) + 1);
             for (int n = 0; n < 5; n++) {
                 for (double v : p.position(n)) {
@@ -89,7 +89,7 @@ class ArcPathTest {
 
     @Test
     void aTargetFarBelowTheStartIsReachedWithinTheDiveCap() {
-        // D285: the arc starts at the build height; a short flight to a low target is slowed, not a free fall.
+        // D287: the arc starts at the build height; a short flight to a low target is slowed, not a free fall.
         for (double flat : new double[] { 20, 50, 100, 400, 2000 }) {
             for (double drop : new double[] { 0, 100, 192, 256 }) {
                 ArcPath p = new ArcPath(0, drop, 0, flat, 0, 0, 1.6);

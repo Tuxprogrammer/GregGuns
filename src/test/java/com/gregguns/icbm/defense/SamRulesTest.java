@@ -29,7 +29,7 @@ class SamRulesTest {
 
     /**
      * D126: the SAM beats the steepest dive any tier makes, from the arc itself: every distance, and every drop from
-     * the build height where the arc starts (D285) down to a target at the bottom of the world.
+     * the build height where the arc starts (D287) down to a target at the bottom of the world.
      */
     @Test
     void aSamOutrunsTheSteepestDiveOfEveryTierAtItsShortestRange() {

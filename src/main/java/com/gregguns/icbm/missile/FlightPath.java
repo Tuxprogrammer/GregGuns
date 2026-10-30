@@ -3,7 +3,7 @@ package com.gregguns.icbm.missile;
 /**
  * The whole powered flight of a missile as a closed-form function of the tick since ignition: a vertical climb from
  * the launch point (the LP) straight up to a waypoint at the world's build height, then the {@link ArcPath} from that
- * waypoint to the target (D285). The climb never moves sideways, so a missile leaves a silo shaft and its open doors
+ * waypoint to the target (D287). The climb never moves sideways, so a missile leaves a silo shaft and its open doors
  * in a straight line and is above every block of the world before it turns; the arc is computed from the waypoint,
  * which stands directly above the LP, so the flat distance (and with it the range, the scatter and the fuel bonus) is
  * the one measured at the LP. The climb accelerates at {@link #CLIMB_ACCEL} up to {@link #CLIMB_MAX_SPEED}, then holds

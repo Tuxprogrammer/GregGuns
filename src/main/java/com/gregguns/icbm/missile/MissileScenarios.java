@@ -595,7 +595,7 @@ public final class MissileScenarios {
                 if (!m.isDead) {
                     flew[0] |= m.phase() == FlightPhase.ARC;
                     maxY[0] = Math.max(maxY[0], m.posY);
-                    // D285: the first tick off the pad's column is the first step of the arc, from the build height.
+                    // D287: the first tick off the pad's column is the first step of the arc, from the build height.
                     if (leftColumnAt[0] < 0 && Math.hypot(m.posX - lpX, m.posZ - lpZ) > 1e-6) {
                         leftColumnAt[0] = m.posY;
                     }

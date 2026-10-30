@@ -20,7 +20,7 @@ import gregtech.api.enums.ItemList;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 
 /**
- * D285: a silo launch climbs straight up through the open doors to the build height before it turns. The silo is
+ * D287: a silo launch climbs straight up through the open doors to the build height before it turns. The silo is
  * buried the way a player builds it: a stone roof lies on the rim around the 3 x 3 opening and a chimney of stone
  * stands on the rim around the opening. The old flight turned onto its arc twelve blocks up, right at the rim, and
  * flew into the chimney; this one must stay on the shaft's column until it is above the build height, break no block
