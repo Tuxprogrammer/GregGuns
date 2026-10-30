@@ -5,6 +5,8 @@ import java.util.List;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -142,12 +144,16 @@ final class NpcHoldShowcaseScenario implements Scenario {
         player.worldObj.difficultySetting = EnumDifficulty.NORMAL;
         signal(player, "hud", "off");
         EntityLiving[] current = { null };
+        EntityLiving[] decoy = { null };
         return ScenarioResult.pending(NAME, shots.size() * STEP + 200, t -> {
             int index = t / STEP;
             int phase = t % STEP;
             if (index >= shots.size()) {
                 if (current[0] != null) {
                     current[0].setDead();
+                }
+                if (decoy[0] != null) {
+                    decoy[0].setDead();
                 }
                 player.worldObj.difficultySetting = prior;
                 signal(player, "view", "0");
@@ -163,6 +169,10 @@ final class NpcHoldShowcaseScenario implements Scenario {
                 if (current[0] != null) {
                     current[0].setDead();
                     current[0] = null;
+                }
+                if (decoy[0] != null) {
+                    decoy[0].setDead();
+                    decoy[0] = null;
                 }
                 ItemStack gun = new ItemStack(GunItems.get(s.gun()));
                 if (s.mob() == null) {
@@ -183,6 +193,16 @@ final class NpcHoldShowcaseScenario implements Scenario {
                     npc.setCurrentItemOrArmor(0, gun);
                     player.worldObj.spawnEntityInWorld(npc);
                     current[0] = npc;
+                    if (s.aim()) {
+                        // The target it aims at, 6 blocks ahead of it (+z), so it faces +z whichever way the camera is.
+                        EntityLiving pig = new EntityPig(player.worldObj);
+                        pig.setLocationAndAngles(cx, cy, cz + 6.0, 0.0F, 0.0F);
+                        pig.getEntityAttribute(SharedMonsterAttributes.maxHealth)
+                            .setBaseValue(1.0E6);
+                        pig.setHealth(1.0E6F);
+                        player.worldObj.spawnEntityInWorld(pig);
+                        decoy[0] = pig;
+                    }
                     signal(player, "view", "0");
                     // Side: 3 blocks to the NPC's left (+x), looking toward -x (yaw 90). Front: 3 blocks ahead (+z)
                     // looking toward -z (yaw 180).
@@ -197,11 +217,18 @@ final class NpcHoldShowcaseScenario implements Scenario {
                 EntityLiving npc = current[0];
                 npc.setLocationAndAngles(cx, cy, cz, 0.0F, 0.0F);
                 npc.rotationYawHead = 0.0F;
+                npc.prevRotationYawHead = 0.0F;
                 npc.renderYawOffset = 0.0F;
+                npc.prevRenderYawOffset = 0.0F;
+                npc.prevRotationYaw = 0.0F;
                 npc.motionX = 0.0;
                 npc.motionZ = 0.0;
-                // An NPC aims (arms up) while it has a target; the creative player is a harmless one.
-                npc.setAttackTarget(s.aim() ? player : null);
+                // An NPC aims (arms up) while it has a target.
+                if (decoy[0] != null) {
+                    decoy[0].setLocationAndAngles(cx, cy, cz + 6.0, 0.0F, 0.0F);
+                    decoy[0].setHealth(1.0E6F);
+                }
+                npc.setAttackTarget(decoy[0]);
             }
             if (phase == STEP - 8) {
                 signal(player, "shot", s.label());
