@@ -51,7 +51,8 @@ public final class PaletteKeys {
     // https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java
     // concrete L857-L868 (0 default, 1 block, 4 weathered, 10 asphalt); factoryblock L1171-L1187 (1 rust2, 3 platex,
     // 6 hazard, 13 plating); technical L3805-L3821 (13 grate); laboratoryblock L2185-L2201 (11 large
-    // steel); stonebricksmooth L3724-L3744 (5 large bricks, 7 chaotic bricks, 12 hard panel); brickCustom L463-L487 (5 aged,
+    // steel); stonebricksmooth L3724-L3744 (5 large bricks, 7 chaotic bricks, 12 hard panel); brickCustom L463-L487 (5
+    // aged,
     // 13 sooty); glowstone L1563-L1579 (4 sulphur neon panel); glass_pane L1398-L1406 (2 no border); nation and rebel
     // L2784-L2804 (0 camo); <wood>_planks L4380-L4406 (10 crate); hempcrete L1902-L1917 (wool color order, 14 red).
     // Source: GT concrete metas (0 dark, 8 light, 12 cracked light bricks, 15 smooth light), at 5.09.54.205:

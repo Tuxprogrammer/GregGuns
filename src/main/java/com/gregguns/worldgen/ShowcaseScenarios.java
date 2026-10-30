@@ -20,8 +20,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
-import cpw.mods.fml.common.Loader;
-
 import com.gregguns.GregGuns;
 import com.gregguns.core.config.UtilityConfig;
 import com.gregguns.core.testing.AutotestSignal;
@@ -39,6 +37,8 @@ import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.layout.ResolvedBlock;
 import com.gregguns.worldgen.layout.Stamper;
+
+import cpw.mods.fml.common.Loader;
 
 /**
  * Palette review tools (dev and test hooks only, never part of {@code test all}): {@code worldgen.palette_showcase}
