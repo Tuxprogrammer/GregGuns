@@ -408,7 +408,12 @@ public final class ComplexPlacer implements ComplexWriter {
                 plan.cellX(),
                 plan.cellZ(),
                 ceilingOf(plan)).withLamps(st::litLamp);
-            for (Placement p : contentsOf(plan, cp)) applier.apply(p);
+            for (Placement p : contentsOf(plan, cp)) {
+                if (tagUnder != null)
+                    tagUnder.as(p.kind() == Placement.Kind.LIGHT ? RoleAudit.LIGHT : RoleAudit.CONTENTS);
+                applier.apply(p);
+            }
+            if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
         }
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);

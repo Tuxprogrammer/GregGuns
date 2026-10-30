@@ -134,6 +134,19 @@ public final class Patterns {
         }, refs);
     }
 
+    /**
+     * A ceiling accent: {@code base} with about one cell in {@code period} (hashed from the position, so scattered,
+     * never a grid) swapped for {@code accent}. The accent is one more block the design places, so the role check
+     * (D265) counts it as part of the design.
+     *
+     * @return the sparse design
+     */
+    public static CellPattern sparse(CellPattern base, BlockRef accent, int period) {
+        List<BlockRef> refs = new ArrayList<>(base.refs());
+        refs.add(accent);
+        return new Pattern((x, z, sx, sz) -> hash(x + 7, z + 3) % period == 0 ? accent : base.at(x, z, sx, sz), refs);
+    }
+
     /** @return the distance from the nearest room edge, in cells */
     static int edge(int x, int z, int sx, int sz) {
         return Math.min(Math.min(x, sx - 1 - x), Math.min(z, sz - 1 - z));

@@ -36,8 +36,10 @@ import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.Box;
+import com.gregguns.icbm.complex.Cell;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.complex.MissingPart;
@@ -254,6 +256,30 @@ public final class I6VisualSetups {
         logRoom(ax, az, floor, cp.hall(), "HALL");
         for (Room r : cp.rooms()) {
             logRoom(ax, az, floor, r, "ROOM");
+            // The wall block at the room's low corner tells which style set drew it.
+            Box rb = r.bounds();
+            GregGuns.LOG.info(
+                "I6C wallblock id={} block={} meta={}",
+                r.id(),
+                net.minecraft.block.Block.blockRegistry
+                    .getNameForObject(world.getBlock(ax + rb.minX, floor + 1, az + rb.minZ)),
+                world.getBlockMetadata(ax + rb.minX, floor + 1, az + rb.minZ));
+            // How many of the ceiling's cells are Chisel Technical vents (meta 7)?
+            int vents = 0, cells = 0, cy = -1;
+            ComplexRaster raster = new ComplexRaster(cp);
+            for (int x = rb.minX + 1; x < rb.maxX - 1; x++) {
+                for (int z = rb.minZ + 1; z < rb.maxZ - 1; z++) {
+                    for (int y = 1; y < ComplexRaster.LEVELS; y++) {
+                        if (raster.ownerAt(x, z) != r.id() || raster.at(x, y, z) != Cell.CEILING) continue;
+                        net.minecraft.block.Block b = world.getBlock(ax + x, floor + y, az + z);
+                        cells++;
+                        cy = y;
+                        if ("chisel:technical".equals(net.minecraft.block.Block.blockRegistry.getNameForObject(b))
+                            && world.getBlockMetadata(ax + x, floor + y, az + z) == 7) vents++;
+                    }
+                }
+            }
+            GregGuns.LOG.info("I6C ceiling id={} cells={} vents={} y={}", r.id(), cells, vents, cy);
         }
         int i = 0;
         for (SiloSlot s : cp.silos()) {

@@ -10,6 +10,7 @@ import static com.gregguns.icbm.complex.palette.Patterns.checker;
 import static com.gregguns.icbm.complex.palette.Patterns.doubleRing;
 import static com.gregguns.icbm.complex.palette.Patterns.grid;
 import static com.gregguns.icbm.complex.palette.Patterns.plain;
+import static com.gregguns.icbm.complex.palette.Patterns.sparse;
 import static com.gregguns.icbm.complex.palette.Patterns.stripes;
 
 import java.util.ArrayList;
@@ -260,7 +261,7 @@ final class PaletteSets {
                     checker(s12, s5, 2),
                     centerStrip(s12, s4, 3),
                     bands(s12, s5, 4, false))
-                .ceilings(plain(tc9), grid(tc9, tc7, 5), grid(tc9, tc3, 6))
+                .ceilings(plain(tc9), sparse(plain(tc9), tc7, 10), grid(tc9, tc3, 6))
                 .lamp(litLamp(8), f0)
                 .accent(factory(6))
                 .worn(wornConcrete)
@@ -289,7 +290,7 @@ final class PaletteSets {
                     centerStrip(nd7, nd5, 3),
                     plain(nd3),
                     doubleRing(nd5, nd4, nd7, 2))
-                .ceilings(plain(k2), grid(k9, k2, 4), plain(k9))
+                .ceilings(plain(k2), grid(k9, k2, 4), sparse(plain(k9), tc7, 11))
                 .lamp(litLamp(4), tyrian(13))
                 .accent(tyrian(11))
                 .furniture(Furniture.TABLE, STONE_TABLE)
@@ -322,7 +323,7 @@ final class PaletteSets {
                     checker(a10, a1, 4),
                     stripes(a10, a3, 6, false),
                     bands(a10, a6, 3, true))
-                .ceilings(plain(ncl11), plain(ncl9), grid(ncl11, ncl8, 6))
+                .ceilings(plain(ncl11), sparse(plain(ncl9), tc7, 12), grid(ncl11, ncl8, 6))
                 .lamp(litLamp(14), ch("concrete", 4, gtConcrete(12), WALL_BRICK))
                 .accent(ch("concrete", 10, gtConcrete(7), WALL_BRICK))
                 .worn(ch("andesite", 11, FLOOR_SLAB))
@@ -357,7 +358,7 @@ final class PaletteSets {
                     checker(ff13, ff9, 3),
                     centerStrip(ff13, ff3, 4))
                 .ceilings(plain(ncd3), grid(ncd3, ncd1, 6), plain(ncd7))
-                .lamp(litLamp(5), technical(7))
+                .lamp(litLamp(5), lab(9, 15))
                 .accent(technical(3))
                 .worn(wornConcrete)
                 .furniture(Furniture.TABLE, STONE_TABLE)
@@ -406,7 +407,7 @@ final class PaletteSets {
                     plain(b7),
                     centerStrip(b7, b3, 3),
                     doubleRing(b6, b3, b7, 2))
-                .ceilings(plain(cc2), grid(cc9, cc2, 5))
+                .ceilings(plain(cc2), sparse(grid(cc9, cc2, 5), tc7, 12))
                 .lamp(litLamp(13), g6)
                 .accent(of(gtGranite(15), v("stonebrick", 3)))
                 .furniture(Furniture.TABLE, STONE_TABLE)
@@ -444,7 +445,7 @@ final class PaletteSets {
                     StyleGroup.WORKSHOP)
                 .walls(tk1, tk3, tk5)
                 .floors(plain(lv0), checker(lv0, lv1, 4), borderField(lv1, lv0, 2), centerStrip(lv0, lv1, 4))
-                .ceilings(plain(zvc0), grid(zvc0, tc7, 5))
+                .ceilings(plain(zvc0), sparse(plain(zvc0), tc7, 10))
                 .lamp(litLamp(8), tk5)
                 .accent(lv1)
                 .worn(wornConcrete)
@@ -499,7 +500,7 @@ final class PaletteSets {
                     borderField(nd5, nd7, 2),
                     centerStrip(nd7, nd5, 3),
                     bands(nd7, nd3, 5, true))
-                .ceilings(plain(tc9), grid(tc9, tc7, 5), plain(tc7))
+                .ceilings(plain(tc9), sparse(plain(tc9), tc7, 10), sparse(grid(tc9, tc3, 6), tc7, 12))
                 .lamp(litLamp(15), lab(9, 15))
                 .accent(factory(6))
                 .furniture(Furniture.TABLE, STONE_TABLE)

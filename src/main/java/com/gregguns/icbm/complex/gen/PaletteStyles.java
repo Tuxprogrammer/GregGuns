@@ -130,7 +130,8 @@ public final class PaletteStyles implements Styles {
         RoomStyle s = style(id);
         Box b = plan.sectionBox(id);
         int ix = inner(x, b.minX, b.sizeX()), iz = inner(z, b.minZ, b.sizeZ());
-        String r = role == Cell.FLOOR ? "floor" : role == Cell.CEILING ? "ceiling" : "wall";
+        String r = role == Cell.FLOOR ? "floor"
+            : role == Cell.CEILING ? "ceiling" : role == Cell.LAMP ? "lit lamp" : "wall";
         return s.describe(r, ix, iz, span(b.sizeX()), span(b.sizeZ()));
     }
 
