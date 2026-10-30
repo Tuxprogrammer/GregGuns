@@ -38,6 +38,7 @@ layout.json
 
 # Claude Code runtime files
 /.claude/scheduled_tasks.lock
+/.claude/settings.local.json
 
 # Local secrets (API keys) - never commit
 .env
