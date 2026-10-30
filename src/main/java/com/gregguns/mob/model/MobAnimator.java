@@ -100,6 +100,8 @@ public final class MobAnimator {
                 return in.aiming ? 1.0F : 0.0F;
             case HOLDING:
                 return in.holding ? 1.0F : 0.0F;
+            case CARRYING:
+                return in.carrying && !in.aiming ? 1.0F : 0.0F;
             case DYING:
                 return Math.max(0.0F, Math.min(1.0F, in.deathProgress));
             default:

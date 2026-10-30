@@ -95,6 +95,7 @@ public final class RenderDataBiped extends RenderBiped {
         if (yOffset != 0.0F) {
             GL11.glTranslatef(0.0F, MobYOffset.scaledTranslation(yOffset, scale), 0.0F);
         }
+        model.carryingGun = holdsGun(living);
         boolean aiming = isAiming(living);
         model.aimedBow = aiming;
         field_82423_g.aimedBow = aiming;

@@ -88,7 +88,7 @@ tick (`idle`). A `swing` at limbSwing 0 and amount 1 equals its amplitude times 
 
 Angles that apply on a condition, for the aimed pose and attacks.
 
-- `when`: `aiming` (weight 1 while the mob aims; false otherwise), `holding` (an item is in the right hand), `attacking` (weight from the
+- `when`: `aiming` (weight 1 while the mob aims; false otherwise), `holding` (an item is in the right hand), `carrying` (a gun is in the hand and the mob is not aiming: the hip-carry pose; with `mode: set` it replaces the walk swing of that arm), `attacking` (weight from the
   attack progress), or `dying` (weight = `MobAnimSource.deathProgress`, 0 to 1; a `set` pose moves a part toward a target as the mob dies,
   e.g. the helicopter's chin gun blends from its 25 degree rest pitch to level).
 - `angles`: `{"x": .., "y": .., "z": ..}`, any subset. `mode` is `"add"` (default; adds the weighted angles) or `"set"` (moves the listed axes toward

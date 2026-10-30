@@ -108,6 +108,13 @@ final class ModelRig {
     }
 
     /**
+     * @param value whether the mob carries a gun this frame; with no aim it drives the {@code carrying} poses
+     */
+    void setCarrying(boolean value) {
+        input.carrying = value;
+    }
+
+    /**
      * Evaluates the animations and writes the angles onto the parts.
      *
      * @param limbSwing       walk distance
