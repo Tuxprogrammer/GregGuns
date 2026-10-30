@@ -6,6 +6,12 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - When a client joins a server whose `modules.*` flags differ from the client's own `config/gregguns.cfg`, the player now gets one chat line naming each module that differs, and the log gets one warning. Recipes and NEI follow the client's own config, so set the same values there and restart. Singleplayer is unaffected.
 
+## Structures: calmer palettes
+
+- Newly generated structures are built from one material family each, matching the Techguns originals: the Small Factory is rusted steel on a concrete base, the Train Station weathered red brick under a gray stone roof, the Gas Station an asphalt forecourt with a stone-brick shop under a steel canopy, the Medium House gray stone under its dark red roof, the Big Bunker plain concrete, and the carrier and submarine gray and dark steel. Walls no longer speckle concrete with dark bricks and purple metal, roofs no longer checker gray and sandstone stairs, and no wall or deck repeats Chisel's radiation sign, glowing hex plating or flame lanterns: hazard trim is a hazard stripe and lights are light panels.
+- Military Bases: red containers are Chisel hempcrete, sandbags are plain hardened clay (GregTech's stone layers no longer eat into either), crates are Chisel crates, and desert tents use Chisel's desert camo.
+- The Gas Station canopy now carries a whole iron-bar railing; before, only a fence, an iron bar and a fence stood in one corner of its roof.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.
