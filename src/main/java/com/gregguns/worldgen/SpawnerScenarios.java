@@ -409,7 +409,10 @@ public final class SpawnerScenarios {
         }
     }
 
-    /** Each NPC a spawner places carries the Infernal marker and its danger before it joins the world. */
+    /**
+     * Each NPC a spawner places has its danger set when it joins; it carries the Infernal opt-out marker then only when
+     * {@code infernalSpawnerOptOut} is on (default off, so spawner NPCs can roll as infernal).
+     */
     private static final class InfernalMarker implements Scenario {
 
         @Override
@@ -419,38 +422,47 @@ public final class SpawnerScenarios {
 
         @Override
         public String description() {
-            return "Every NPC a GregGuns spawner places already has its danger set when it joins the world, and with"
-                + " Infernal Mobs loaded it already carries the opt-out marker then, so Infernal never rolls it.";
+            return "Every NPC a GregGuns spawner places already has its danger set when it joins the world; with"
+                + " Infernal Mobs loaded it carries the opt-out marker only when infernalSpawnerOptOut is on.";
         }
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            Rig rig = new Rig(ctx);
-            boolean allow = NpcConfig.infernalAllowSpawnerNpcs;
-            NpcConfig.infernalAllowSpawnerNpcs = false;
-            JoinWatcher watcher = new JoinWatcher();
-            MinecraftForge.EVENT_BUS.register(watcher);
+            boolean saved = NpcConfig.infernalSpawnerOptOut;
             try {
-                TileEntityMobSpawner tile = rig.spawner(SpawnerKind.ZOMBIE, 0, 0);
-                if (tile == null) {
-                    out.check(false, "the spawner should carry a mob spawner tile");
-                    return out.build();
+                for (boolean optOut : new boolean[] { false, true }) {
+                    NpcConfig.infernalSpawnerOptOut = optOut;
+                    Rig rig = new Rig(ctx);
+                    JoinWatcher watcher = new JoinWatcher();
+                    MinecraftForge.EVENT_BUS.register(watcher);
+                    try {
+                        TileEntityMobSpawner tile = rig.spawner(SpawnerKind.ZOMBIE, 0, 0);
+                        if (tile == null) {
+                            out.check(false, "the spawner should carry a mob spawner tile");
+                            return out.build();
+                        }
+                        rig.playerAt(6.0);
+                        drive(rig, tile, SpawnerKind.ZOMBIE, 200);
+                        String tag = "(optOut=" + optOut + ")";
+                        out.check(watcher.joined > 0, "the spawner should place NPCs " + tag);
+                        out.checkEquals("NPCs that joined without a danger " + tag, 0, watcher.noDanger);
+                        if (InfernalHooks.available()) {
+                            out.checkEquals(
+                                "NPCs that joined with the Infernal marker " + tag,
+                                optOut ? watcher.joined : 0,
+                                watcher.marked);
+                        }
+                    } finally {
+                        MinecraftForge.EVENT_BUS.unregister(watcher);
+                        rig.finish();
+                    }
                 }
-                rig.playerAt(6.0);
-                drive(rig, tile, SpawnerKind.ZOMBIE, 200);
-                out.check(watcher.joined > 0, "the spawner should place NPCs");
-                out.checkEquals("NPCs that joined without a danger", 0, watcher.noDanger);
-                if (InfernalHooks.available()) {
-                    out.checkEquals("NPCs that joined without the Infernal marker", 0, watcher.unmarked);
-                    out.note("Infernal Mobs present: the marker was in each NPC's persistent data at join");
-                } else {
-                    out.note("Infernal Mobs absent: the hook writes nothing; danger checked at join");
-                }
+                out.note(
+                    InfernalHooks.available() ? "Infernal Mobs present: marker checked at join"
+                        : "Infernal Mobs absent: the hook writes nothing; danger checked at join");
             } finally {
-                MinecraftForge.EVENT_BUS.unregister(watcher);
-                NpcConfig.infernalAllowSpawnerNpcs = allow;
-                rig.finish();
+                NpcConfig.infernalSpawnerOptOut = saved;
             }
             return out.build();
         }
@@ -460,7 +472,7 @@ public final class SpawnerScenarios {
 
             int joined;
             int noDanger;
-            int unmarked;
+            int marked;
 
             @SubscribeEvent
             public void onJoin(EntityJoinWorldEvent event) {
@@ -472,7 +484,7 @@ public final class SpawnerScenarios {
                 for (Object key : data.func_150296_c()) {
                     has |= InfernalOptOut.MARKER.equals(data.getString((String) key));
                 }
-                if (!has) unmarked++;
+                if (has) marked++;
             }
         }
     }

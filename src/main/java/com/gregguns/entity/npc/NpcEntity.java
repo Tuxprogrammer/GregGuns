@@ -284,8 +284,10 @@ public class NpcEntity extends EntityMob
      * A vanilla spawner with GregGuns {@code SpawnData} is placing this NPC: the data was just read, and the NPC has
      * not joined the world yet. Does what the spawner's own path skips: the egg-style setup that rolls the equipment.
      * When the spawner stands on its worldgen origin ({@link SpawnerOrigin#placedFromOrigin}) the danger is the spawn
-     * position's raised to the spawner's floor, and the NPC takes the Infernal Mobs opt-out (before Infernal sees the
-     * join). A spawner carried away from its origin acts as a plain vanilla spawner of the NPC at the lowest danger,
+     * position's raised to the spawner's floor, and, only when {@code infernalSpawnerOptOut} is on, the NPC takes the
+     * Infernal Mobs
+     * opt-out (before Infernal sees the join; by default it rolls like any other NPC). A spawner carried away from its
+     * origin acts as a plain vanilla spawner of the NPC at the lowest danger,
      * 0, so moving a deep post into a base farms nothing better than the weakest gear. The key is never written back,
      * so a reload does not repeat this.
      *

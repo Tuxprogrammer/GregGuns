@@ -97,7 +97,7 @@ public class NpcConfig {
         "Leave Infernal Mobs' own drop lists unchanged when this is on, or an NPC may drop twice.", "Default: true." })
     public static boolean infernalTieredLoot = true;
 
-    @Config.Comment({ "NPCs placed by spawner blocks may roll as infernal mobs. Off, they never do (farm guard).",
-        "Default: false." })
-    public static boolean infernalAllowSpawnerNpcs = false;
+    @Config.Comment({ "NPCs placed by spawner blocks never roll as infernal mobs when true (farm guard).",
+        "Off, they roll like any other NPC at Infernal Mobs' own rates.", "Default: false." })
+    public static boolean infernalSpawnerOptOut = false;
 }
