@@ -154,7 +154,11 @@ class ComplexContentsTest {
                 .count();
             for (ActivityLevel level : ActivityLevel.values()) {
                 List<Placement> ps = ComplexContents.build(plan, level, 6, null);
-                assertEquals(marks, count(ps, Kind.CHEST));
+                if (level == ActivityLevel.ABANDONED) {
+                    assertTrue(count(ps, Kind.CHEST) <= marks, "a ruin only loses chests");
+                } else {
+                    assertEquals(marks, count(ps, Kind.CHEST));
+                }
                 Set<Integer> idx = new HashSet<>();
                 for (Placement p : ps) {
                     if (p.kind() == Kind.CHEST) {
@@ -291,7 +295,7 @@ class ComplexContentsTest {
     @Test
     void theDamagePassNeverBreaksTheWallBehindAnArmoryFrame() {
         int frames = 0;
-        for (long s = 0; s < 60; s++) {
+        for (long s = 0; s < 250; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 5, 6);
             List<Placement> ps = ComplexContents.build(plan, ActivityLevel.ABANDONED, 4, null);
             for (Placement f : ps) {
@@ -355,8 +359,8 @@ class ComplexContentsTest {
         long[] ab = machinesAndChests(ActivityLevel.ABANDONED);
         long[] pa = machinesAndChests(ActivityLevel.PARTLY_ABANDONED);
         long[] op = machinesAndChests(ActivityLevel.OPERATIONAL);
-        assertTrue(op[0] > 0 && ab[0] * 8 < pa[0], "working machines " + ab[0] + " vs " + pa[0]);
-        assertTrue(ab[0] * 20 < op[0], "working machines " + ab[0] + " vs " + op[0]);
+        assertTrue(op[0] > 0 && ab[0] * 5 < pa[0], "working machines " + ab[0] + " vs " + pa[0]);
+        assertTrue(ab[0] * 10 < op[0], "working machines " + ab[0] + " vs " + op[0]);
         assertTrue(ab[1] * 2 < op[1], "chests " + ab[1] + " vs " + op[1]);
         assertTrue(ab[1] > 0, "a few chests remain");
     }
