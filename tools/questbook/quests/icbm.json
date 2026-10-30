@@ -2,454 +2,3576 @@
   "chapter": "icbm",
   "quests": [
     {
-      "key": "gg.icbm.warhead",
-      "title": "Your First Warhead",
+      "key": "gg.icbm.intro",
+      "title": "Missile Materials",
       "tier": "HV",
-      "desc": "A warhead is a GregTech-built charge: a stainless steel casing around TNT and a payload. The starter recipe in the Assembler makes a Condensed warhead with a fill of 1 from 2 stainless steel plates, 2 TNT and a Fuze Assembly Mk I. Make one and keep it.",
-      "pre": ["gg.ammo.explosives", 160, 753],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:warhead_t1", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 742,
+      "desc": [
+        "So you want to throw a bomb at something a thousand blocks away. Welcome to the ICBM program. A GregGuns missile is not one crafting recipe: it's a §lMissile Body§r and a §lWarhead§r, built separately from GregTech parts and Galacticraft rocket hardware, then stacked on a launch pad and fired from a Launch Control.",
+        "This chapter walks the Tier 1 build part by part, the way the [quest]Space Race[/quest] tab walks the Tier 1 rocket. Start by stocking the materials almost every part shares. Advanced circuits go into the Missile Chip (2), the Guidance Computer (1), the Fuze Assembly (1) and the Launch Control (2). Stainless steel plates are the warhead casing, and steel plates go into the computer and the fuze. Nothing in the ICBM program runs below HV, so your HV Assembler and Circuit Assembler will be busy.",
+        "Then work through the part quests below: chip and schematic, compressed plates, fins, engine and guidance for the body, a fuze for the warhead. Check NEI on every part.",
+        "[note]The ICBM chapter needs Galacticraft and the ICBM module (config modules.icbm). If you already hold a finished Missile Body T1, the body's part quests complete themselves.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.explosives",
+        160,
+        753
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17305,
+              "ore": "plateSteel"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "GalacticraftCore:item.basicItem",
+              "count": 6,
+              "damage": 9,
+              "ore": "compressedSteel"
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 922,
       "y": 420,
-      "size": 28,
-      "main": false,
-      "icon": {"id": "gregguns:warhead_t1", "count": 1, "damage": 0},
-      "implicit": ["gg.ammo.explosives"]
-    },
-    {
-      "key": "gg.icbm.demolition",
-      "title": "Demolition Charge",
-      "tier": "HV",
-      "desc": "Place a warhead where you want the hole and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius, so a full Condensed warhead gives you 6. Get well clear, and keep other charges away: another explosion sets one off in half a second.",
-      "pre": ["gg.icbm.warhead"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 780,
-      "y": 420,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:warhead_t1", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.t2_casing",
-      "title": "Titanium Casing",
-      "tier": "EV",
-      "desc": "The Tier 2 casing is made of titanium and holds up to 20 charges, four times the 5 charges of the Tier 1 casing. Its blast types are made in the Assembler at EV, from eight titanium plates, Industrial TNT, Plastic Explosive and a Fuze Assembly Mk II. Make a Tier 2 warhead.",
-      "pre": ["gg.icbm.demolition", 176, 860],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:warhead_t2", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 816,
-      "y": 420,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:warhead_t2", "count": 1, "damage": 0},
-      "implicit": []
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:missile_body_t1",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.ammo.explosives"
+      ]
     },
     {
       "key": "gg.icbm.chip",
       "title": "Missile Chip",
       "tier": "HV",
-      "desc": "Every missile starts as a chip. The GregTech Circuit Assembler makes a Missile Chip T1 at HV from an Advanced Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wire. The Tier 2 chip is made at EV from an Advanced Epoxy Circuit Board, 2 Data circuits and 4 fine electrum wire. Make a Tier 1 chip.",
-      "pre": ["gg.icbm.demolition"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:missile_chip_t1", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 852,
-      "y": 420,
+      "desc": [
+        "Every missile starts as a chip. The Missile Chip T1 holds the flight program, and it's the first thing the NASA Workbench will ask about.",
+        "Make it in the GregTech Circuit Assembler at HV (20 seconds) from an Advanced Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wires. Check NEI for the exact recipe. The chip is only half the job: the next quest engraves it into a schematic."
+      ],
+      "pre": [
+        "gg.icbm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.03",
+              "count": 1,
+              "damage": 32106
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 2,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.02",
+              "count": 4,
+              "damage": 19086,
+              "ore": "wireFineGold"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_chip_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "GalacticraftCore:item.basicItem",
+              "count": 6,
+              "damage": 9,
+              "ore": "compressedSteel"
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 790,
+      "y": 504,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:missile_chip_t1", "count": 1, "damage": 0},
-      "implicit": []
+      "main": true,
+      "icon": {
+        "id": "gregguns:missile_chip_t1",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.schematic",
       "title": "Engrave the Schematic",
       "tier": "HV",
-      "desc": "Put the chip and a Red lens (Tier 2: Blue) in the Laser Engraver. The lens is not used up. Slot the finished Missile Schematic into the Galacticraft NASA Workbench to open the missile's page.",
-      "pre": ["gg.icbm.chip"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:missile_schematic_t1", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 888,
-      "y": 420,
+      "desc": [
+        "A Galacticraft NASA Workbench builds whatever its schematic tells it to. The Missile Schematic T1 opens the missile's own page, with slots in the shape of the missile.",
+        "Put the chip and a red lens in the Laser Engraver at HV (30 seconds); the lens is not used up. Slot the finished schematic into the NASA Workbench and use the Next button to find the missile page. Check NEI for the lens.",
+        "[note]Each missile tier has its own chip and schematic. A Tier 2 schematic never opens the Tier 1 page.[/note]"
+      ],
+      "pre": [
+        "gg.icbm.chip"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_chip_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_schematic_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "GalacticraftCore:item.basicItem",
+              "count": 6,
+              "damage": 9,
+              "ore": "compressedSteel"
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 790,
+      "y": 552,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:missile_schematic_t1", "count": 1, "damage": 0},
-      "implicit": []
+      "main": true,
+      "icon": {
+        "id": "gregguns:missile_schematic_t1",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.airframe",
+      "title": "Compressed Steel Airframe",
+      "tier": "HV",
+      "desc": [
+        "The missile's airframe is a column of three compressed steel plates, the same Galacticraft plates the rocket program uses.",
+        "Compressed plates come from the Implosion Compressor: a steel plate plus an explosive charge. Check NEI for the charge it takes. Make three; the body page has exactly three plate slots in one vertical column."
+      ],
+      "pre": [
+        "gg.icbm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17305,
+              "ore": "plateSteel"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "GalacticraftCore:item.basicItem",
+              "count": 3,
+              "damage": 9,
+              "ore": "compressedSteel"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 838,
+      "y": 504,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "GalacticraftCore:item.basicItem",
+        "count": 3,
+        "damage": 9,
+        "ore": "compressedSteel"
+      }
+    },
+    {
+      "key": "gg.icbm.fins",
+      "title": "Rocket Fins",
+      "tier": "HV",
+      "desc": [
+        "A missile is a rocket that doesn't come back, so it flies on rocket fins. The body takes four Galacticraft Tier 1 Rocket Fins, one in each fin slot, the same fins the Tier 1 rocket uses.",
+        "In this pack the fins are made from compressed steel and heavy-duty plates. Check NEI, or the [quest]Space Race[/quest] tab, which walks the rocket parts too."
+      ],
+      "pre": [
+        "gg.icbm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "GalacticraftCore:item.rocketFins",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 886,
+      "y": 504,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "GalacticraftCore:item.rocketFins",
+        "count": 4,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.engine",
+      "title": "Rocket Engine",
+      "tier": "HV",
+      "desc": [
+        "The Tier 1 missile burns the same engine as the Galacticraft Tier 1 rocket. It's the priciest single part of the body, so take your time with it.",
+        "The pack's engine recipe uses SDHD120 and heavy-duty plates, a fuel canister, a firebox casing and a detector. Check NEI for the current recipe. One engine per body."
+      ],
+      "pre": [
+        "gg.icbm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "GalacticraftCore:item.engine",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 934,
+      "y": 504,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "GalacticraftCore:item.engine",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.guidance",
+      "title": "Guidance Computer",
+      "tier": "HV",
+      "desc": [
+        "The Guidance Computer tells the missile where to come down. The Mk I is the base computer for a Tier 1 body; better computers land closer.",
+        "Make the Mk I in the Assembler at HV from an Advanced circuit, a steel plate and 4 fine copper wires. A Mk II (EV) gives a Tier 1 body one step of guidance and a Mk III (IV) two, so the missile scatters less. You can fit a better computer into a finished body later in the Assembler. Check NEI."
+      ],
+      "pre": [
+        "gg.icbm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 1,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17305,
+              "ore": "plateSteel"
+            },
+            {
+              "id": "gregtech:gt.metaitem.02",
+              "count": 4,
+              "damage": 19035,
+              "ore": "wireFineCopper"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 982,
+      "y": 504,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:guidance_computer_mk1",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.fuze",
+      "title": "Fuze Assembly",
+      "tier": "HV",
+      "desc": [
+        "Every Tier 1 warhead has a Fuze Assembly Mk I in it: the timer and trigger that make the charge go off when and where you want.",
+        "It's an Assembler recipe at HV from an Advanced circuit, a steel plate and 4 fine copper wires, the same shopping list as the Guidance Computer. Check NEI. Make a few: every warhead recipe of the tier eats one."
+      ],
+      "pre": [
+        "gg.icbm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 1,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17305,
+              "ore": "plateSteel"
+            },
+            {
+              "id": "gregtech:gt.metaitem.02",
+              "count": 4,
+              "damage": 19035,
+              "ore": "wireFineCopper"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1078,
+      "y": 504,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:fuze_assembly_mk1",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.body",
       "title": "Missile Body",
       "tier": "HV",
-      "desc": "On the NASA Workbench page, build a Missile Body T1: three compressed steel plates in one column, four Galacticraft Tier 1 rocket fins, a Galacticraft Tier 1 engine and a Guidance Computer Mk I. Compressed plates come from the Implosion Compressor. There is no warhead slot; the warhead goes on at the pad. A better Guidance Computer makes the missile land closer.",
-      "pre": ["gg.icbm.schematic"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:missile_body_t1", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 924,
-      "y": 420,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:missile_body_t1", "count": 1, "damage": 0},
-      "implicit": []
+      "desc": [
+        "Time to put the airframe together. With the Missile Schematic T1 slotted, the NASA Workbench's missile page shows the slots on a rocket outline: three compressed steel plates down the middle, four fins at the bottom, the engine at the base and the guidance computer beside the nose.",
+        "Fill every slot and take the Missile Body T1 from the result slot. It uses one item from each slot. There is no warhead slot: the warhead goes on the body later, on the launch pad. A Tier 1 body flies 20 to 1,000 blocks and needs 2,000 mB of fuel.",
+        "Hand-building comes first for a reason. Later, a hand-built body is the research item that unlocks the Assembly Line recipe for more of them."
+      ],
+      "pre": [
+        "gg.icbm.schematic",
+        "gg.icbm.airframe",
+        "gg.icbm.fins",
+        "gg.icbm.engine",
+        "gg.icbm.guidance"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "GalacticraftCore:item.basicItem",
+              "count": 3,
+              "damage": 9,
+              "ore": "compressedSteel"
+            },
+            {
+              "id": "GalacticraftCore:item.rocketFins",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "GalacticraftCore:item.engine",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_body_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 874,
+      "y": 588,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:missile_body_t1",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.warhead",
+      "title": "Your First Warhead",
+      "tier": "HV",
+      "desc": [
+        "The warhead is the part that does the talking. It's a GregTech-built charge: a stainless steel casing around explosives and a fuze. A Tier 1 casing holds up to 5 charges, and more charges make a wider, harder blast.",
+        "The cheap starter recipe in the Assembler at HV makes a Condensed warhead with a fill of 1 from 2 stainless steel plates, 2 TNT and a Fuze Assembly Mk I. The full Condensed recipe (fill 5) takes 4 stainless plates, 8 TNT, 2 dynamite, 3 Plastic Explosive and a fuze. Every other Tier 1 blast type has its own Assembler recipe: check NEI and read the tooltips for radius and damage.",
+        "[warn]A warhead is a live explosive block. Fire, redstone and nearby explosions all set it off.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.fuze"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "minecraft:tnt",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:launcher_warhead_he",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1054,
+      "y": 588,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:warhead_t1",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.pad",
-      "title": "Stack It on the Pad",
+      "title": "Launch Pad",
       "tier": "HV",
-      "desc": "Place the Missile Body on the middle of a Galacticraft Launch Pad, then set a warhead on its nose; it seats flush. Sneak and right-click the body with an empty hand to arm it, which turns the stack into a missile.",
-      "pre": ["gg.icbm.body"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 960,
-      "y": 420,
+      "desc": [
+        "A missile launches from a Galacticraft launch pad: nine pad blocks in a 3 by 3 square. You may already have one from the rocket program.",
+        "Right-click the pad with the body; whichever pad block you click, it stands in the middle. Then place the warhead on its nose, where it seats flush. Sneak and right-click the body with an empty hand to arm it, which turns the stack into one missile. A warhead heavier than the body's tier is refused at arming.",
+        "[note]Changed your mind? Sneak and right-click the armed missile with an empty hand: it drops the body and the warhead, and the fuel is lost.[/note]"
+      ],
+      "pre": [
+        "gg.icbm.body"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "GalacticraftCore:tile.landingPad",
+              "count": 9,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 790,
+      "y": 612,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:missile_body_t1", "count": 1, "damage": 0},
-      "implicit": []
+      "main": true,
+      "icon": {
+        "id": "GalacticraftCore:tile.landingPad",
+        "count": 9,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.fuel",
       "title": "Fuel the Missile",
       "tier": "HV",
-      "desc": "Attach a Galacticraft Fuel Loader to the pad. A Tier 1 missile takes 2,000 mB of RP-1 or Cetane-Boosted Diesel, or better. Fuel left unburned at impact makes the blast up to 25 percent bigger, so a closer target hits harder.",
-      "pre": ["gg.icbm.pad"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 996,
-      "y": 420,
+      "desc": [
+        "The missile's tank starts empty and only fills while it stands on the pad. Attach a Galacticraft Fuel Loader to the pad and feed it rocket fuel.",
+        "A Tier 1 missile takes 2,000 mB of Cetane-Boosted Diesel or RP-1, or a better rocket fuel; plain Galacticraft fuel is refused. It won't launch until the tank is full. Fuel left unburned at impact makes the blast up to 25 percent wider, so a close target hits harder than a far one."
+      ],
+      "pre": [
+        "gg.icbm.pad"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "GalacticraftCore:tile.fuelLoader",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 790,
+      "y": 660,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:missile_body_t1", "count": 1, "damage": 0},
-      "implicit": []
+      "main": true,
+      "icon": {
+        "id": "GalacticraftCore:tile.fuelLoader",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.control",
       "title": "Launch Control",
       "tier": "HV",
-      "desc": "Place a Launch Control block within 4 blocks of the pad and power it at HV. Type the target X and Z, or load them from a Data Stick. The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect.",
-      "pre": ["gg.icbm.fuel"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20140}]}],
-      "rewards": [],
-      "x": 1032,
-      "y": 420,
+      "desc": [
+        "The Launch Control is the button. It's a GregTech single block at HV, made in the Assembler from an HV machine hull, an HV sensor, an HV emitter, an empty data stick and 2 Advanced circuits. Check NEI.",
+        "Place it within 4 blocks of the pad (2 up or down) and power it at HV. Type the target X and Z, press Use My Position, or load a target from a data stick (Save and Load target buttons). The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect."
+      ],
+      "pre": [
+        "gg.icbm.fuel"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 13
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 32692
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 32682
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 32708
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 2,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20140
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "GalacticraftCore:item.basicItem",
+              "count": 6,
+              "damage": 9,
+              "ore": "compressedSteel"
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 790,
+      "y": 708,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20140},
-      "implicit": []
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20140
+      }
     },
     {
       "key": "gg.icbm.launch",
       "title": "First Launch",
       "tier": "HV",
-      "desc": "Press Launch, or send the block a redstone pulse. After two seconds of warm-up the missile climbs, flies its arc and detonates on impact; a Tier 1 flight at full range takes about a minute. The pad, the fuel loader and the Launch Control come through unharmed. Make sure nobody stands at the target.",
-      "pre": ["gg.icbm.control"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 1068,
-      "y": 420,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:missile_body_t1", "count": 1, "damage": 0},
-      "implicit": []
+      "desc": [
+        "Everything comes together here: a Missile Body, a warhead and a Launch Control, with the pad and the fuel loader you already built. Hold all three to finish the quest, then go and fire it.",
+        "Stack the missile on the pad, arm it, fill the tank and set a target. Press Launch, or give the Launch Control a redstone pulse. A 10-second countdown starts, and Abort still stands the missile down, armed and fueled. After ignition there's no turning back: the missile climbs, flies its arc and detonates on impact. A Tier 1 flight at full range takes about a minute. The pad, the fuel loader and the Launch Control come through unharmed.",
+        "Next: a Tier 2 missile, radar and air defense, and the Missile Silo.",
+        "[warn]Make sure nobody stands at the target, you included. A missile that is shot down still goes off where it is hit.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.body",
+        "gg.icbm.warhead",
+        "gg.icbm.pad",
+        "gg.icbm.fuel",
+        "gg.icbm.control"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_body_t1",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:warhead_t1",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20140
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 2
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:launcher_warhead_he",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 958,
+      "y": 696,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:missile_body_t1",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.icbm.pad",
+        "gg.icbm.fuel"
+      ]
     },
     {
-      "key": "gg.icbm.t2_missile",
-      "title": "Tier 2 Missile",
-      "tier": "EV",
-      "desc": "Tier 2 flies up to 3,000 blocks and carries a titanium-cased warhead. Its chip is made at EV, its body takes six titanium plates, and it burns 4,000 mB of Dense Hydrazine or better. Build it, fuel it and launch it.",
-      "pre": ["gg.icbm.launch", "gg.icbm.t2_casing"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:missile_body_t2", "count": 1, "damage": 0}]}],
+      "key": "gg.icbm.body_skip",
+      "title": "Trigger: Missile Body Skip",
+      "tier": "HV",
+      "desc": "No Description",
+      "skip": true,
+      "pre": [
+        160,
+        753
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_body_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
       "rewards": [],
-      "x": 1104,
-      "y": 420,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:missile_body_t2", "count": 1, "damage": 0},
-      "implicit": ["gg.icbm.t2_casing"]
-    },
-    {
-      "key": "gg.icbm.silo",
-      "title": "Missile Silo",
-      "tier": "LuV",
-      "desc": "Missiles launch from the Missile Silo, a 5 by 5 tower you build from Light or Dark Concrete (any finish but cobblestone) and clear glass (Tinkers' Construct or EnderIO) around an open 3 by 3 shaft, with a Galacticraft Launch Pad for its floor and a ring of Gantry Beams on top. The controller is an HV machine, and the Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. A silo shot flies 25% farther and scatters half as much. Fit an Input Bus for bodies and warheads, an Input Hatch for fuel, an Energy Hatch and a Maintenance Hatch in place of any wall, glass or floor-ring block, but not the rim or the pad. Feed it a body and a warhead and it stands the missile in the shaft for you. Build the silo and put a Launch Control within 6 blocks of it.",
-      "pre": ["gg.icbm.t2_missile"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20141}]}],
-      "rewards": [],
-      "x": 1104,
-      "y": 456,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20141},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.nuclear",
-      "title": "Nuclear Warhead",
-      "tier": "ZPM",
-      "desc": "The nuclear warhead is a Tier 3 casing at ZPM, two blocks tall, made in the Assembler from tungstensteel plates, Industrial TNT, Plastic Explosive, uranium-235, plutonium and a Fuze Assembly Mk III. It flies only on a Tier 3 missile from the silo. A full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour: cross it in full hazmat armor. Launch one from your silo, and stand well back.",
-      "pre": ["gg.icbm.silo"],
-      "tasks": [{"type": "retrieval", "matchNBT": true, "items": [{"id": "gregguns:warhead_t3", "count": 1, "damage": 0, "tag": {"explosive": "nuclear"}}]}],
-      "rewards": [],
-      "x": 1140,
-      "y": 456,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:warhead_t3", "count": 1, "damage": 0},
-      "implicit": []
+      "completes": [
+        "gg.icbm.intro",
+        "gg.icbm.chip",
+        "gg.icbm.schematic",
+        "gg.icbm.airframe",
+        "gg.icbm.fins",
+        "gg.icbm.engine",
+        "gg.icbm.guidance"
+      ],
+      "icon": {
+        "id": "gregguns:missile_body_t1",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.assembly_line",
       "title": "Automate the Body",
       "tier": "EV",
-      "desc": "Scan one hand-built body into a Data Stick in the Scanner, then the Assembly Line builds the basic body from plates, fins, an engine, 2 circuits (Advanced for Tier 1, Data for Tier 2) and 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2. A better Guidance Computer is fitted afterwards in the Assembler: put the body and the computer in, and the same body comes out with that guidance.",
-      "pre": ["gg.icbm.body"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 924,
-      "y": 456,
+      "desc": [
+        "Once you own an Assembly Line, bodies stop being handwork. Scan a hand-built Missile Body T1 onto a data stick in the Scanner (60 seconds at HV) to unlock the recipe.",
+        "The line builds the body from the same plates, fins and engine, plus 2 circuits (Advanced for Tier 1, Data for Tier 2) in place of the guidance computer and 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2. A body from the line has no guidance steps. To fit a better computer, put the body and the computer in the Assembler and the same body comes out guided. Build four bodies."
+      ],
+      "pre": [
+        "gg.icbm.body",
+        1412
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 32708
+            },
+            {
+              "id": "GalacticraftCore:item.basicItem",
+              "count": 3,
+              "damage": 9,
+              "ore": "compressedSteel"
+            },
+            {
+              "id": "GalacticraftCore:item.rocketFins",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "GalacticraftCore:item.engine",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 2,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_body_t1",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_titanium",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 934,
+      "y": 600,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:missile_body_t1", "count": 1, "damage": 0},
-      "implicit": []
+      "icon": {
+        "id": "gregguns:missile_body_t1",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
-      "key": "gg.icbm.radar",
-      "title": "Radar",
+      "key": "gg.icbm.demolition",
+      "title": "Demolition Charge",
       "tier": "HV",
-      "desc": "A radar watches the missiles in flight and flags the ones that will land inside its protected radius, which you set on its screen (64 blocks to begin with). The radar is a small 3 by 3 build of Radar Casing, two high, with one casing on top for the dish, which turns while the radar scans. Make the casing four at a time in the Assembler at HV from 6 stainless steel plates. The HV controller sees 128 blocks and the EV controller 256, flat, at any height; put an Energy Hatch of its tier and a Maintenance Hatch in the base. A missile that only passes over is tracked but not a threat. The redstone it puts out on every side is the number of incoming missiles, up to 15. Right-click the controller with a Data Stick to save its link for a battery. Build a radar and power it.",
-      "pre": ["gg.icbm.launch"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20142}]}],
-      "rewards": [],
-      "x": 1068,
-      "y": 492,
+      "desc": [
+        "A warhead doesn't need a missile. Place it where you want the hole and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius, so a full Condensed warhead gives you 6 seconds to leave.",
+        "Bigger holes need Plastic Explosive, the one explosive part almost every warhead shares. The Assembler makes 4 at HV from 2 PTFE plates and 2 Industrial TNT. Make three, enough for a full Condensed warhead, and keep a lighter.",
+        "[warn]Get well clear, and keep other charges away: another explosion sets a warhead off in half a second.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.warhead"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17473,
+              "ore": "platePolytetrafluoroethylene"
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:flint_and_steel",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:launcher_warhead_he",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1138,
+      "y": 600,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20142},
-      "implicit": []
+      "icon": {
+        "id": "gregguns:plastic_explosive",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
-      "key": "gg.icbm.radar_tower",
-      "title": "Radar Tower",
-      "tier": "IV",
-      "desc": "The Radar Tower is a 3 by 3 tower of Radar Casing, 7 blocks tall, with a Gantry Beam mast up the middle. The casing is the same as the small radar's, and a dish turns on top of the mast. Its range comes from its weakest Energy Hatch: 512 blocks at IV, 768 at LuV, 1,024 at ZPM, 1,280 at UV and 1,536 at UHV. Put an Energy Hatch and a Maintenance Hatch in the bottom ring, and set the protected radius from the R button on the controller screen. Build the controller.",
-      "pre": ["gg.icbm.radar"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20144}]}],
-      "rewards": [],
-      "x": 1104,
-      "y": 492,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20144},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.air_defense",
-      "title": "Air-Defense Battery",
-      "tier": "HV",
-      "desc": "The battery holds 4 stacks of 16 SAMs and a Data Stick. Put a stick that carries a radar's link in its slot and it fires by itself at the nearest threat that radar reports, within 256 blocks: one SAM a second at most, 400 EU each. A SAM does 40 damage, so Tier 1 and Tier 2 missiles fall to one and a Tier 3 missile takes two. The warhead goes off where the missile is hit, so shoot early. Make a battery and a SAM.",
-      "pre": ["gg.icbm.radar"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20145}, {"id": "gregguns:sam", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 1068,
-      "y": 528,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20145},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.emp",
-      "title": "EMP Tower",
+      "key": "gg.icbm.t2_casing",
+      "title": "Titanium Casing",
       "tier": "EV",
-      "desc": "The EMP Tower sends one pulse when you press Fire, on a redstone rising edge or from a computer. The radius is yours, 4 to 100 blocks, and the pulse costs 25 EU per square block of radius: 90,000 EU at 60. It drains the 64 nearest machines, batteries and Battery Buffers to zero and gives each multiblock one maintenance issue. A missile in range is destroyed 50 percent of the time, has its guidance fried 40 percent and has its warhead set off 1 percent. Build one, and keep it away from your own base.",
-      "pre": ["gg.icbm.air_defense"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20146}]}],
-      "rewards": [],
-      "x": 1104,
-      "y": 528,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20146},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.handheld",
-      "title": "Handheld Tools",
-      "tier": "HV",
-      "desc": "The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV). The Defuser puts a lit fuse out, or takes a missile on its pad apart before the engines light; it lasts 32 uses. Make all three.",
-      "pre": ["gg.icbm.emp"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:radar_gun", "count": 1, "damage": 0}, {"id": "gregguns:remote_detonator_hv", "count": 1, "damage": 0}, {"id": "gregguns:defuser", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 1140,
-      "y": 528,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:defuser", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.exotic",
-      "title": "Ender Warhead",
-      "tier": "LuV",
-      "desc": "The Ender warhead is a Tier 3 casing made in the Assembler at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, a LuV Emitter, 16 Eyes of Ender and a Fuze Assembly Mk III. It digs no crater. For 8 seconds it pulls every living thing within 24 blocks toward the center, and anything that reaches the middle (within 4 blocks) is sent to one landing spot 40 to 128 blocks away, up to 64 per blast. Bosses are pulled but never sent. It flies only from the silo. Make one.",
-      "pre": ["gg.icbm.silo"],
-      "tasks": [{"type": "retrieval", "matchNBT": true, "items": [{"id": "gregguns:warhead_t3", "count": 1, "damage": 0, "tag": {"explosive": "ender"}}]}],
-      "rewards": [],
-      "x": 1068,
+      "desc": [
+        "The Tier 2 casing is titanium and holds up to 20 charges, four times the Tier 1 casing. Its blast types are made in the Assembler at EV, and every one takes eight titanium plates and a Fuze Assembly Mk II.",
+        "The Mk II fuze is an EV Assembler recipe from a Data circuit, a titanium plate and 4 fine electrum wires. A Fragmentation warhead, for example, adds 10 Industrial TNT, 4 Plastic Explosive and a titanium Fragmentation Sleeve. Check NEI for all of them. Make a Tier 2 warhead.",
+        "[warn]Tier 2 blasts reach much farther than Tier 1. Read the tooltip's radius before you place one.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.demolition",
+        176,
+        860
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_titanium",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t2",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_titanium",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 1186,
       "y": 600,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:warhead_t3", "count": 1, "damage": 0},
-      "implicit": ["gg.icbm.silo"]
-    },
-    {
-      "key": "gg.icbm.antigrav",
-      "title": "Anti-Gravitational Warhead",
-      "tier": "LuV",
-      "desc": "The other exotic Tier 3 warhead is built at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, 2 LuV Field Generators, 4 Nether Stars and a Fuze Assembly Mk III. For 30 seconds it lifts up to 512 plain blocks within 20 blocks off the ground, top layer first, and floats the living things there. Machines and chests stay put, and every lifted block lands again or drops as an item. Make one.",
-      "pre": ["gg.icbm.exotic"],
-      "tasks": [{"type": "retrieval", "matchNBT": true, "items": [{"id": "gregguns:warhead_t3", "count": 1, "damage": 0, "tag": {"explosive": "antigrav"}}]}],
-      "rewards": [],
-      "x": 1104,
-      "y": 600,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:warhead_t3", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.antimatter",
-      "title": "Antimatter",
-      "tier": "ZPM",
-      "desc": "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges, made in the Assembler at UV from 8 naquadria plates, 2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. A full warhead blasts 80 blocks, and nothing living in the inner 60 percent (48 blocks) survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.",
-      "pre": ["gg.icbm.nuclear"],
-      "tasks": [{"type": "retrieval", "matchNBT": true, "items": [{"id": "gregguns:warhead_t4", "count": 1, "damage": 0, "tag": {"explosive": "antimatter"}}]}],
-      "rewards": [],
-      "x": 1068,
-      "y": 636,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:warhead_t4", "count": 1, "damage": 0},
-      "implicit": ["gg.icbm.nuclear"]
-    },
-    {
-      "key": "gg.icbm.redmatter",
-      "title": "Red Matter",
-      "tier": "ZPM",
-      "desc": "Red Matter is the Tier 5 casing, made in the Assembler at UHV from 8 neutronium plates, 2 UHV Field Generators, 2 Quantum Eyes, 2 UHV Emitters, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. It digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. Antimatter ends it at once. Make one.",
-      "pre": ["gg.icbm.antimatter"],
-      "tasks": [{"type": "retrieval", "matchNBT": true, "items": [{"id": "gregguns:warhead_t5", "count": 1, "damage": 0, "tag": {"explosive": "redmatter"}}]}],
-      "rewards": [],
-      "x": 1104,
-      "y": 636,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:warhead_t5", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.icbm.fallout",
-      "title": "Fallout Cleanup",
-      "tier": "ZPM",
-      "desc": "A ZPM nuclear blast leaves irradiated earth, hot earth near ground zero, trinitite and a little fallout goo. Mine it in full hazmat armor. Trinitite Shards are macerated at HV into Crushed Trinitite, which a Centrifuge at HV turns into dusts. Goo is dissolved in 1,000 L of nitric acid in a Chemical Reactor at LuV, then centrifuged at EV with krypton and xenon. While goo stands in a chunk its ground never heals: dig it up. Make Crushed Trinitite.",
-      "pre": ["gg.icbm.nuclear"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:trinitite_shard", "count": 1, "damage": 1}]}],
-      "rewards": [],
-      "x": 1068,
-      "y": 672,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:trinitite_shard", "count": 1, "damage": 0},
-      "implicit": ["gg.icbm.nuclear"]
-    },
-    {
-      "key": "gg.icbm.antidote",
-      "title": "Antidote",
-      "tier": "HV",
-      "desc": "The Antidote is a syringe made in the Assembler at HV: 1 rubber plate, 1 stainless steel plate and 2 charcoal dust make 2. Hold use for 1.6 seconds and it cures poison, hunger, weakness, slowness, nausea, mining fatigue and radiation at once, then guards you against them for 3 minutes. Armor still keeps the cause off, and it does nothing against fire or explosions. Make one.",
-      "pre": ["gg.icbm.fallout"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:antidote", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 1104,
-      "y": 672,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:antidote", "count": 1, "damage": 0},
-      "implicit": []
+      "icon": {
+        "id": "gregguns:warhead_t2",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.launcher",
       "title": "Launcher Warhead",
       "tier": "HV",
-      "desc": "Your launchers can carry a blast type. Make a Launcher Warhead: High Explosive, Heavy Slug, Incendiary and Phosphorus at HV, Demolition at EV, for the Rocket Launcher and Grim Reaper; Grenade HE (HV) and Grenade Cluster (EV) for the Grenade Launcher; EMP (LuV) for the Nuke Launcher. Craft it with the launcher in the crafting grid for 4 charges, up to 16. Each shot spends one charge and the launcher's own round, and goes off as a small blast; center damage is capped at 1.25 times the launcher's own. Make a High Explosive one.",
-      "pre": ["gg.icbm.demolition"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:launcher_warhead_he", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 1068,
-      "y": 708,
+      "desc": [
+        "Your shoulder launchers can carry a blast type too. A Launcher Warhead is a small charge: High Explosive, Heavy Slug, Incendiary and Phosphorus at HV and Demolition at EV for the Rocket Launcher and Grim Reaper; Grenade HE (HV) and Grenade Cluster (EV) for the Grenade Launcher; EMP (LuV) for the Nuke Launcher.",
+        "Craft it with the launcher in the crafting grid for 4 charges, up to 16. Each shot spends one charge and the launcher's own round, and goes off as a small blast; its center damage is capped at 1.25 times the launcher's own. Make a High Explosive one; check NEI for its recipe.",
+        "[warn]Keep your distance from the impact point: these rounds hurt you as much as your target.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.demolition"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:launcher_warhead_he",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:launcher_warhead_he",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1138,
+      "y": 648,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:launcher_warhead_he", "count": 1, "damage": 0},
-      "implicit": ["gg.icbm.demolition"]
+      "icon": {
+        "id": "gregguns:launcher_warhead_he",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
-      "key": "gg.icbm.golden_dome",
-      "title": "Golden Dome",
-      "tier": "HV",
-      "desc": "The Golden Dome is a yellow OpenComputers floppy with ready-made programs, made in the Assembler at HV from a blank floppy and a Good circuit. Put it in a computer's disk drive, and link your machines through an Adapter. The launch program fires a missile (it always asks first), radarwatch lists radar contacts with an alarm, autodefense fires your batteries at incoming missiles, and emp runs the EMP tower. Insert it in a computer and run radarwatch.",
-      "pre": ["gg.icbm.air_defense"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 1104,
-      "y": 708,
+      "key": "gg.icbm.t2_missile",
+      "title": "Tier 2 Missile",
+      "tier": "EV",
+      "desc": [
+        "Tier 2 flies up to 3,000 blocks and carries a titanium-cased warhead (or a lighter one). The build follows the Tier 1 path one step up.",
+        "The Tier 2 chip is made at EV from an Advanced Epoxy Circuit Board, 2 Data circuits and 4 fine electrum wires, and engraved with a blue lens. The body page takes four compressed titanium plates, four Tier 2 rocket fins, a Tier 2 engine and a Guidance Computer Mk II or better. It burns 4,000 mB of Dense Hydrazine or a better rocket fuel. Check NEI. Build a Tier 2 body."
+      ],
+      "pre": [
+        "gg.icbm.launch",
+        "gg.icbm.t2_casing"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_schematic_t2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "GalacticraftMars:item.itemBasicAsteroids",
+              "count": 4,
+              "damage": 6,
+              "ore": "compressedTitanium"
+            },
+            {
+              "id": "GalacticraftMars:item.itemBasicAsteroids",
+              "count": 4,
+              "damage": 2
+            },
+            {
+              "id": "GalacticraftMars:item.itemBasicAsteroids",
+              "count": 1,
+              "damage": 1
+            },
+            {
+              "id": "gregguns:guidance_computer_mk2",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:missile_body_t2",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_titanium",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 958,
+      "y": 780,
       "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:sam", "count": 1, "damage": 0},
-      "implicit": ["gg.icbm.air_defense"]
+      "main": true,
+      "icon": {
+        "id": "gregguns:missile_body_t2",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.icbm.t2_casing"
+      ]
+    },
+    {
+      "key": "gg.icbm.silo",
+      "title": "Missile Silo",
+      "tier": "EV",
+      "desc": [
+        "The Missile Silo is a GregTech multiblock that loads, fuels and fires missiles for you. A silo shot flies 25 percent farther and scatters half as much as a pad shot.",
+        "Build a 5 by 5 tower around an open 3 by 3 shaft: a Galacticraft launch pad for the shaft floor in a ring of Light or Dark Concrete, three rings of clear glass (Tinkers' Construct or EnderIO), seven rings of concrete (any finish but cobblestone) and a rim of 12 Gantry Beams. The HV controller sits in the middle glass ring. Fit an Input Bus, an Input Hatch for fuel, an Energy Hatch and a Maintenance Hatch in place of wall, glass or floor-ring blocks. Check the controller's hologram.",
+        "The Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. Feed the bus a body and a warhead and it stands the missile in the shaft. A Launch Control within 6 blocks fires it."
+      ],
+      "pre": [
+        "gg.icbm.t2_missile"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20141
+            },
+            {
+              "id": "gregguns:casings",
+              "count": 12,
+              "damage": 4
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_titanium",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 958,
+      "y": 828,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20141
+      }
     },
     {
       "key": "gg.icbm.silo_complex",
       "title": "Abandoned Silo Complex",
       "tier": "EV",
-      "desc": "Old missile bases lie buried in the Overworld and on every planet with solid ground. A complex is about 240 by 240 blocks and 24 blocks down, with a hub, wide halls and hallways branching into 35 to 40 rooms, and a gallery of four to ten real silos. On the surface you see only concrete shafts, sometimes a small radar hut, and an escape-ladder trapdoor. Nothing in a complex is better than its planet's ceiling: EV in the Overworld and on the Moon, and one voltage tier more for each rocket tier above it. The sign in the Assembly Bay names the class. Guards wait at the posts, and a post you break stays broken. A Data Stick in a Comms chest names the nearest other complex. Find a complex and walk its hall.",
-      "pre": ["gg.icbm.silo"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 1140,
-      "y": 492,
+      "desc": [
+        "Old missile bases lie buried in the Overworld and on every planet with solid ground. A complex is about 240 by 240 blocks and 24 blocks down: a hub, wide halls, 35 to 40 rooms and a gallery of four to ten real silos. On the surface you see only concrete shafts, sometimes a small radar hut, and an escape-ladder trapdoor.",
+        "Nothing in a complex is better than its planet's ceiling: EV in the Overworld and on the Moon, one voltage tier more for each rocket tier above. Bring back proof: a block of Silo Complex Wall, or a damaged missile body from a salvage chest. The damaged body can't be placed or flown, but it recycles for its plates.",
+        "[warn]Operational complexes have guards at their posts, and a post you break stays broken.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.silo"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:complex_wall",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:missile_body_t1",
+              "count": 1,
+              "damage": 1
+            },
+            {
+              "id": "gregguns:missile_body_t2",
+              "count": 1,
+              "damage": 1
+            },
+            {
+              "id": "gregguns:missile_body_t3",
+              "count": 1,
+              "damage": 1
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_titanium",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 910,
+      "y": 876,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregguns:complex_wall", "count": 1, "damage": 0},
-      "implicit": []
+      "icon": {
+        "id": "gregguns:complex_wall",
+        "count": 1,
+        "damage": 0
+      }
     },
     {
       "key": "gg.icbm.silo_repair",
       "title": "Take Over a Silo",
-      "tier": "LuV",
-      "desc": "Every silo in a complex is a real Missile Silo with its hatches in place, missing exactly one part: a concrete block where the controller goes, or a clear glass block under it where the Energy Hatch goes. Look for the part in the Safe, Stockpile, Workshop and Control chests, or craft it, then put it in and the silo forms. A found Energy Hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Clear the guard posts first, then power it and add a Launch Control. Repair a silo.",
-      "pre": ["gg.icbm.silo_complex"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 1176,
-      "y": 492,
+      "tier": "EV",
+      "desc": [
+        "Every silo in a complex is a real Missile Silo with its hatches in place, missing exactly one part: a concrete block where the controller goes, or a glass block under it where the Energy Hatch goes.",
+        "Look for the part in the Safe, Stockpile, Workshop and Control chests, or craft it. Put it in and the silo forms. A found Energy Hatch is EV, which launches up to Tier 2; swap in a LuV hatch for Tier 3. Power it, add a Launch Control, and the complex's silo is yours. Bring back the part you found.",
+        "[warn]Clear the guard posts before you start working on the silo.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.silo_complex"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20141
+            },
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 44
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 2
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:guidance_computer_mk2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_titanium",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 862,
+      "y": 876,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20141},
-      "implicit": []
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20141
+      }
     },
     {
       "key": "gg.icbm.silo_radar",
       "title": "Radar Station",
       "tier": "HV",
-      "desc": "The radar huts on a complex's surface hold a small radar with its Energy Hatch left out. Mine the Radar Casing under the radar controller, put an HV Energy Hatch in its place and power it. The radar forms and its dish starts to turn. Link it to a battery with a Data Stick as for any radar. Bring a radar station online.",
-      "pre": ["gg.icbm.silo_complex", "gg.icbm.radar"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 1176,
-      "y": 528,
+      "desc": [
+        "The radar huts on a complex's surface hold a small radar with its Energy Hatch left out, so they sit dark.",
+        "Mine the Radar Casing under the radar controller, put an HV Energy Hatch in its place and power it. The radar forms and its dish starts to turn. Link it to an air-defense battery with a data stick, as for any radar. Bring the controller and an HV Energy Hatch to finish the quest."
+      ],
+      "pre": [
+        "gg.icbm.silo_complex",
+        "gg.icbm.radar"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20142
+            },
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 43
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:sam",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 862,
+      "y": 924,
       "size": 24,
       "main": false,
-      "icon": {"id": "gregtech:gt.blockmachines", "count": 1, "damage": 20142},
-      "implicit": ["gg.icbm.radar"]
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20142
+      },
+      "implicit": [
+        "gg.icbm.radar"
+      ]
+    },
+    {
+      "key": "gg.icbm.nuclear",
+      "title": "Nuclear Warhead",
+      "tier": "ZPM",
+      "desc": [
+        "The nuclear warhead is a Tier 3 casing, two blocks tall, built in the Assembler at ZPM from 8 tungstensteel plates, 12 Industrial TNT, 4 Plastic Explosive, 8 uranium-235 ingots, 4 plutonium ingots and a Fuze Assembly Mk III. It flies only on a Tier 3 missile, from the silo. Check NEI.",
+        "A full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour.",
+        "[warn]Cross the blast zone only in full hazmat armor, and stand well back from the launch target. There is no safe distance inside the inner radius.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.silo",
+        2610
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 12,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t3",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "explosive": "nuclear"
+              }
+            }
+          ],
+          "matchNBT": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance3",
+              "count": 2
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sausageinbreadItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 32706,
+              "ore": "circuitMaster"
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        }
+      ],
+      "x": 958,
+      "y": 876,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:warhead_t3",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.fallout",
+      "title": "Fallout Cleanup",
+      "tier": "ZPM",
+      "desc": [
+        "A nuclear blast leaves irradiated earth, hot earth near ground zero, trinitite and a little fallout goo. Mine it out in full hazmat armor.",
+        "Trinitite Shards are macerated at HV into Crushed Trinitite, which a Centrifuge at HV turns into dusts. Goo is dissolved in 1,000 L of nitric acid in a Chemical Reactor at LuV, then centrifuged at EV. While goo stands in a chunk its ground never heals, so dig it up. Make Crushed Trinitite.",
+        "[warn]Irradiated ground hurts without full hazmat armor.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.nuclear"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:trinitite_shard",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:trinitite_shard",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance3",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:supremepizzaItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 32706,
+              "ore": "circuitMaster"
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        }
+      ],
+      "x": 910,
+      "y": 924,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:trinitite_shard",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.antidote",
+      "title": "Antidote",
+      "tier": "HV",
+      "desc": [
+        "The Antidote is a syringe for the bad days. The Assembler makes 2 at HV from a rubber plate, a stainless steel plate and 2 charcoal dust. Check NEI.",
+        "Hold use for 1.6 seconds and it cures poison, hunger, weakness, slowness, nausea, mining fatigue and radiation at once, then guards you against them for 3 minutes. Armor still has to keep the cause off, and it does nothing against fire or explosions. Make one."
+      ],
+      "pre": [
+        "gg.icbm.fallout"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:antidote",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:sam",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 910,
+      "y": 972,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:antidote",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.antimatter",
+      "title": "Antimatter",
+      "tier": "ZPM",
+      "desc": [
+        "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes it at UV from 8 naquadria plates, 2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. Check NEI.",
+        "A full warhead blasts 80 blocks, and nothing living in the inner 48 survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.",
+        "[warn]Bosses are not safe and neither are you. Launch it from far away.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.nuclear"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t4",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "explosive": "antimatter"
+              }
+            }
+          ],
+          "matchNBT": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance3",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:rainbowcurryItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 32706,
+              "ore": "circuitMaster"
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        }
+      ],
+      "x": 958,
+      "y": 924,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:warhead_t4",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.redmatter",
+      "title": "Red Matter",
+      "tier": "ZPM",
+      "desc": [
+        "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes it at UHV from 8 neutronium plates, 2 UHV Field Generators, 2 Quantum Eyes, 2 UHV Emitters, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. Check NEI.",
+        "It digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. An Antimatter blast ends it at once. Make one.",
+        "[warn]Nothing inside the ball survives. Keep an Antimatter warhead ready if you ever need to stop one.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.antimatter"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t5",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "explosive": "redmatter"
+              }
+            }
+          ],
+          "matchNBT": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance3",
+              "count": 2
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sausageinbreadItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 32706,
+              "ore": "circuitMaster"
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        }
+      ],
+      "x": 958,
+      "y": 972,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:warhead_t5",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.exotic",
+      "title": "Ender Warhead",
+      "tier": "LuV",
+      "desc": [
+        "The Ender warhead is a Tier 3 casing made in the Assembler at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, a LuV Emitter, 16 Eyes of Ender and a Fuze Assembly Mk III. Check NEI.",
+        "It digs no crater. For 8 seconds it pulls every living thing within 24 blocks toward the center, and anything that reaches the middle (within 4 blocks) is sent to one landing spot 40 to 128 blocks away, up to 64 per blast. Bosses are pulled but never sent. It flies only from the silo. Make one.",
+        "[warn]The landing spot is random. Don't stand in the pull unless you want to go too.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.silo",
+        1493
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "minecraft:ender_eye",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t3",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "explosive": "ender"
+              }
+            }
+          ],
+          "matchNBT": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance2",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:epicbaconItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 32706,
+              "ore": "circuitMaster"
+            },
+            {
+              "id": "gregguns:launcher_warhead_emp",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1006,
+      "y": 876,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:warhead_t3",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.antigrav",
+      "title": "Anti-Gravitational Warhead",
+      "tier": "LuV",
+      "desc": [
+        "The other exotic Tier 3 warhead is built in the Assembler at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, 2 LuV Field Generators, 4 Nether Stars and a Fuze Assembly Mk III. Check NEI.",
+        "For 30 seconds it lifts up to 512 plain blocks within 20 blocks off the ground, top layer first, and floats the living things there. Machines and chests stay put, and every lifted block lands again or drops as an item. Make one.",
+        "[warn]What goes up comes down. Anything floating when the effect ends falls.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.exotic"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "minecraft:nether_star",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t3",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "explosive": "antigrav"
+              }
+            }
+          ],
+          "matchNBT": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance2",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:meatfeastpizzaItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fuze_assembly_mk3",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 32706,
+              "ore": "circuitMaster"
+            },
+            {
+              "id": "gregguns:launcher_warhead_emp",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1006,
+      "y": 924,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:warhead_t3",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.radar",
+      "title": "Radar",
+      "tier": "HV",
+      "desc": [
+        "Other people have missiles too. A radar watches every missile in flight and flags the ones that will land inside its protected radius, which you set on its screen (64 blocks to begin with).",
+        "The radar is a small 3 by 3 build of Radar Casing, two high, with one casing on top for the dish. The Assembler makes the casing four at a time at HV from 6 stainless steel plates. The HV controller sees 128 blocks and the EV controller 256, at any height; put an Energy Hatch of its tier and a Maintenance Hatch in the base. Its redstone output on every side is the number of incoming missiles, up to 15. Right-click the controller with a data stick to save its link for a battery. Build a radar."
+      ],
+      "pre": [
+        "gg.icbm.launch"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20142
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:sam",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1054,
+      "y": 780,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20142
+      }
+    },
+    {
+      "key": "gg.icbm.radar_tower",
+      "title": "Radar Tower",
+      "tier": "IV",
+      "desc": [
+        "When 256 blocks isn't enough warning, build the Radar Tower: a 3 by 3 tower of Radar Casing, 7 blocks tall, with a Gantry Beam mast up the middle and a dish turning on top.",
+        "Its range comes from its weakest Energy Hatch: 512 blocks at IV, 768 at LuV, 1,024 at ZPM, 1,280 at UV and 1,536 at UHV. Put an Energy Hatch and a Maintenance Hatch in the bottom ring, and set the protected radius from the R button on the controller screen. Build the controller; check NEI."
+      ],
+      "pre": [
+        "gg.icbm.radar",
+        213
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20144
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance2",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:heartybreakfastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:guidance_computer_mk3",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 32705,
+              "ore": "circuitElite"
+            },
+            {
+              "id": "gregguns:remote_detonator_iv",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1102,
+      "y": 780,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20144
+      }
+    },
+    {
+      "key": "gg.icbm.air_defense",
+      "title": "Air-Defense Battery",
+      "tier": "HV",
+      "desc": [
+        "A radar tells you a missile is coming; the Air-Defense Battery does something about it. It holds 4 stacks of 16 SAMs and a data stick.",
+        "Put a stick that carries a radar's link in its slot and it fires by itself at the nearest threat that radar reports within 256 blocks: one SAM a second at most, 400 EU each. A SAM does 40 damage, so Tier 1 and Tier 2 missiles fall to one and a Tier 3 missile takes two. Check NEI for both recipes. Make a battery and a SAM.",
+        "[warn]The warhead goes off where the missile is hit, so shoot early, well away from your base.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.radar"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20145
+            },
+            {
+              "id": "gregguns:sam",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:sam",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1054,
+      "y": 828,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20145
+      }
+    },
+    {
+      "key": "gg.icbm.emp",
+      "title": "EMP Tower",
+      "tier": "EV",
+      "desc": [
+        "The EMP Tower sends one pulse when you press Fire, on a redstone rising edge or from a computer. You pick the radius, 4 to 100 blocks, and the pulse costs 25 EU per square block of radius: 90,000 EU at 60. It's an EV Assembler recipe; check NEI.",
+        "The pulse drains the 64 nearest machines, batteries and Battery Buffers to zero and gives each multiblock one maintenance issue. A missile in range is destroyed 50 percent of the time, has its guidance fried 40 percent of the time and has its warhead set off 1 percent of the time.",
+        "[warn]The pulse doesn't care whose machines it drains. Keep the tower away from your own base.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.air_defense",
+        176
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20146
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorII",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 32704,
+              "ore": "circuitData"
+            },
+            {
+              "id": "gregguns:sam",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:launcher_warhead_demolition",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 1102,
+      "y": 828,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20146
+      }
+    },
+    {
+      "key": "gg.icbm.handheld",
+      "title": "Handheld Tools",
+      "tier": "HV",
+      "desc": [
+        "Three tools for the field. The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it in. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV).",
+        "The Defuser puts a lit fuse out, or takes a missile on its pad apart before the engines light; it lasts 32 uses. Check NEI for the recipes. Make all three.",
+        "[warn]A lit fuse doesn't wait for you. Defuse fast or run.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.emp"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:radar_gun",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:remote_detonator_hv",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:defuser",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:sam",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1150,
+      "y": 828,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:defuser",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.golden_dome",
+      "title": "Golden Dome",
+      "tier": "HV",
+      "desc": [
+        "Prefer a computer at the controls? The Golden Dome is a yellow OpenComputers floppy with ready-made programs, made in the Assembler at HV from a blank floppy and a Good circuit. Check NEI.",
+        "Put it in a computer's disk drive and link your machines through an OpenComputers Adapter. The launch program fires a missile (it always asks first), radarwatch lists radar contacts with an alarm, autodefense fires your batteries at incoming missiles, and emp runs the EMP tower. Build an Adapter to wire it up."
+      ],
+      "pre": [
+        "gg.icbm.air_defense"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "OpenComputers:adapter",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:sam",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:antidote",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "IC2:itemPartCircuitAdv",
+              "count": 4,
+              "damage": 0,
+              "ore": "circuitAdvanced"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1054,
+      "y": 876,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:sam",
+        "count": 1,
+        "damage": 0
+      }
     }
   ]
 }
