@@ -115,6 +115,29 @@ final class ComplexFurnisher {
             lampSection(r.id(), r.bounds(), ds == 0 || ds == 2, rowsOfFurniture(r.kind()) ? DENSE_GAP : TILE_GAP);
         }
         for (Tunnel t : plan.tunnels()) lampSection(t.id(), t.bounds(), t.alongX(), TILE_GAP);
+        walkwayLamps();
+    }
+
+    /**
+     * Run numbers of the walkway lamps start here, clear of any grid run of a section, so each walkway is its own run
+     * (an abandoned complex rolls each walkway on its own, as it does each grid run).
+     */
+    static final int WALKWAY_RUN = 1000;
+
+    /**
+     * One lamp over each silo walkway: flush in the gallery wall right above the niche's middle column, so the silo's
+     * window and the walkway floor are lit like the rest of the complex. The gallery's own grid lamps sit up to twelve
+     * cells up and three or more cells out, which leaves the niche and the window face in the dark. The lamp is an
+     * ordinary light mark of the gallery (same palette block, same lit roll per activity level); its key is
+     * {@code lamp:<gallery id>:<WALKWAY_RUN + silo index>}.
+     */
+    private void walkwayLamps() {
+        int n = 0;
+        for (Door d : plan.doors()) {
+            if (d.kind != Door.Kind.WALKWAY) continue;
+            int x = (d.x0 + d.x1) / 2, z = (d.z0 + d.z1) / 2;
+            add(plan.section(d.a), MarkKind.LIGHT, x, d.y1 + 1, z, "lamp:" + d.a + ":" + (WALKWAY_RUN + n++));
+        }
     }
 
     /**
