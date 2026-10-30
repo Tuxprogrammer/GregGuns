@@ -46,6 +46,10 @@ public class CommonProxy {
         GregGuns.LOG.info("{} {} loading", GregGuns.NAME, Tags.VERSION);
         // Order per CONTRIBUTING.md: config first, then the modules register items, blocks and entities.
         GregGunsConfig.register();
+        if (cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.lootbags.LootBagGroups.MOD_ID)) {
+            // After ELB's preInit (after:enhancedlootbags) and before any texture stitch reads the group icons.
+            com.gregguns.compat.lootbags.LootBagInjector.preInit(event.getModConfigurationDirectory());
+        }
         GregGunsNetwork.init();
         modules = new ModuleManager(ModuleFlags::isEnabled, ModPresence::isLoaded, new GregGunsTab());
         registerModules(modules);
@@ -64,6 +68,14 @@ public class CommonProxy {
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(ModuleGate.INSTANCE);
         // Re-merges the GregGuns vending trades after /vending reload; nothing without the Vending Machine.
         com.gregguns.compat.VendingMachineCompat.init();
+        if (com.gregguns.compat.lootbags.LootBagInjector.active()) {
+            // Whatever compat.lootBags says: a GregGuns bag must never crash ELB (LootBagGuard).
+            com.gregguns.compat.lootbags.LootBagGuard guard = new com.gregguns.compat.lootbags.LootBagGuard();
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+            FMLCommonHandler.instance()
+                .bus()
+                .register(guard);
+        }
         if (DevEnvironment.testHooksEnabled()) {
             // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
             ScenarioChunks.registerCallback();
@@ -97,6 +109,7 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {
         modules.postInit(event);
         applyPackFit();
+        com.gregguns.compat.lootbags.LootBagInjector.postInit();
     }
 
     /**
@@ -151,6 +164,7 @@ public class CommonProxy {
         com.gregguns.fx.FxScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.machine.BuildScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.compat.VendingScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        com.gregguns.compat.lootbags.LootBagScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         GregGunsCommand command = new GregGunsCommand();
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         command.register(new com.gregguns.core.command.BuildSubCommand());

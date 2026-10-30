@@ -35,10 +35,11 @@ TIER_COLORS = {'Steam': '§c', 'LV': '§2', 'MV': '§6', 'HV': '§5', 'EV': '§8
 # bag-tier check (GGS-12-07) reads each entry's quest tier from it: a bag is never above its quest's tier. Names are
 # matched case-insensitively. Every name is a GregGuns group of EnhancedLootBags' own bag item (GroupMetaID as the
 # damage), which GregGuns adds to ELB's group list at startup from assets/gregguns/lootbags/groups.xml
-# (docs/gregguns-spec/06-items/pack-loot.md). The tier is the lowest quest tier that may hand the bag out.
+# (docs/gregguns-spec/06-items/pack-loot.md). The tier is the lowest quest tier that may hand the bag out. Group 1700
+# is reserved and unused; bags hold GregGuns items and the precursors GregGuns recipes consume, never food (food is a
+# separate item reward).
 LOOTBAG = 'enhancedlootbags:lootbag'
 BAGS = {
-    'rations': {'id': LOOTBAG, 'damage': 1700, 'tier': 'Steam'},  # Field Rations: Pam's food, intro quests
     'steam': {'id': LOOTBAG, 'damage': 1701, 'tier': 'Steam'},  # Recruit
     'lv': {'id': LOOTBAG, 'damage': 1702, 'tier': 'LV'},  # Rifleman
     'mv': {'id': LOOTBAG, 'damage': 1703, 'tier': 'MV'},  # Sergeant
@@ -68,6 +69,9 @@ WELCOME = 'gg.start.welcome'
 WILDCARD = 32767  # OreDictionary.WILDCARD_VALUE: "damage": "*" matches every damage value (the pack writes 32767)
 # Pack item ids the data may name besides gregguns: ones (regenerate with pack_items.py).
 PACK_ITEMS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pack_items.txt')
+# The GregGuns loot bag groups that ship in the jar; every BAGS damage must be one of their GroupMetaIDs.
+GROUPS_XML = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'src', 'main', 'resources', 'assets',
+                          'gregguns', 'lootbags', 'groups.xml')
 GT_MACHINES = 'gregtech:gt.blockmachines'
 SIZES = (24, 28, 48, 72)  # box sizes (GGS-12-15): 24 normal, 28 chapter head, 48 main quest or head, 72 milestone
 # Fields the data may carry. Anything else is a typo; keys starting with '_' are writer notes and are ignored.
@@ -369,9 +373,18 @@ def check_stack(k, where, s, known):
     return problems
 
 
+def bag_group_problems(groups_xml=GROUPS_XML):
+    """BAGS names a GroupMetaID that the shipped groups file does not define."""
+    import xml.etree.ElementTree as ET
+    ids = {int(g.get('GroupMetaID')) for g in ET.parse(groups_xml).getroot().iter('LootGroup')}
+    return ['BAGS %s: damage %d is not a group in %s' % (n, b['damage'], os.path.basename(groups_xml))
+            for n, b in sorted(BAGS.items()) if b['id'] == LOOTBAG and b['damage'] not in ids]
+
+
 def check(data):
     """Build-time checks for the requirements that the file shape cannot show. Returns (errors, warnings)."""
     problems, warnings = [], []
+    problems += bag_group_problems()
     known = pack_items()
     keys = {q['key'] for q in data['quests']}
     if len(keys) != len(data['quests']):

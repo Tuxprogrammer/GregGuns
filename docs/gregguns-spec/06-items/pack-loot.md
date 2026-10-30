@@ -60,7 +60,7 @@ Tiers are the D1 tiers: Steam/ULV, LV, MV, HV, EV and up. D5 says surface struct
 | `gregguns:weaponchest_t4` to `_t7`, `gregguns:reinforcedchest_t4` to `_t7` | EV / IV / LuV / ZPM | Ross128b and Ross128ba only, by a structure's rolled ceiling (design record 0019) |
 | Roguelike dungeon levels 0 to 4 | Level 0-1 LV, 2-3 MV, 4 rare HV | Dungeon level rises with depth |
 | Elite / ultra / infernal drops | LV-MV / MV / MV, rare HV | See [Infernal Mobs](#infernal-mobs) |
-| EnhancedLootBags `tier_N_*` | The bag's own tier | The bag name is the tier |
+| GregGuns loot bags (EnhancedLootBags 1701 to 1712) | The bag's own tier | The bag name is the tier; quests never pay a bag above their tier (GGS-12-07) |
 
 ## Integration points
 
@@ -283,29 +283,41 @@ Roguelike Dungeons builds its chests from JSON loot rules.
 
 ### EnhancedLootBags
 
-EnhancedLootBags gives quest rewards as bags; each bag draws from a tier group.
+EnhancedLootBags (ELB) gives quest rewards as bags. A bag is the one item `enhancedlootbags:lootbag`; its damage is a group id (`GroupMetaID`), and opening it draws items from that group.
 
-- **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/EnhancedLootBags/LootBags.xml`.
-  - Tier groups: `dreamcraft.lootbag.group.steam_age` (id 2), `tier_1_lv` (4), `tier_2_mv` (5), `tier_3_hv` (6), `tier_4_ev` (7), `tier_5_iv` (8), `tier_6_luv` (41), `tier_7_zpm` (42), `tier_8_uv` (43), `tier_9_uhv` (44). Each draws 1 to 2 items.
-  - Sums of `Chance` as shipped: steam_age 4367, tier_1_lv 4943, tier_2_mv 3180, tier_3_hv 3715, tier_4_ev 3060, tier_5_iv 1600, tier_6_luv 1375, tier_7_zpm 1405.
-  - A line is `<Loot Identifier="<unique GUID>" ItemName="modid:name[:meta]" Amount="N" NBTTag="" Chance="N" LimitedDropCount="0" RandomAmount="false"/>`. Existing lines use names like `gregtech:gt.metaitem.01:32601`.
-  - The pack already puts IC2 jetpacks and the Hazmat helmet in these bags, so adding powered gear fits.
-- **Source:** [`LootGroups`](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/core/serializer/LootGroups.java#L88): `Chance` is a relative weight, summed per group. `ItemName` goes through `ItemDescriptor.fromString` ([L189](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/core/serializer/LootGroups.java#L189)). `ItemGroup` and `LimitedDropCount` are read but their rules are not verified here.
-- **GregGuns does:** nothing in code.
-- **Pack-side change:** add `Loot` lines to these groups. Weights are about 1% to 2% per line of the group sum.
+- **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/EnhancedLootBags/LootBags.xml`. The pack's groups use ids 0 to 59; its tier groups are `dreamcraft.lootbag.group.steam_age` (2), `tier_1_lv` (4) to `tier_7_zpm` (42).
+- **Source** (ELB [1.3.5](https://github.com/GTNewHorizons/EnhancedLootBags/tree/1.3.5)):
+  - ELB reads `LootBags.xml` once, in its own preInit ([EnhancedLootBags.java L65-L78](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/EnhancedLootBags.java#L65-L78)), into a public, mutable list ([LootGroupsHandler L56-L69](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/core/LootGroupsHandler.java#L56-L69)). It has no API.
+  - The server sends clients only the group headers (name, rarity, item count). Icons, the tooltip and NEI read each side's **local** list ([ItemLootBag L71-L79, L270-L273](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/core/items/ItemLootBag.java#L71-L79)).
+  - A bag whose group is missing crashes: opening it dereferences a null group ([LootGroupsHandler L181-L220](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/core/LootGroupsHandler.java#L181-L220)), and so does its tooltip.
+  - `MinItems` < `MaxItems` rolls 1 to `MaxItems`, so only equal values give a fixed count ([ItemLootBag L138-L139](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/core/items/ItemLootBag.java#L138-L139)). Merging the trash group is one level deep; Fortune III skips it. `LimitedDropCount` is per player and stored in the world's `LootBags.dat`.
+  - `/lootbags reload` (alias `/lbag`) re-reads `LootBags.xml` only ([LootBagCommand L69-L75](https://github.com/GTNewHorizons/EnhancedLootBags/blob/1.3.5/src/main/java/eu/usrv/enhancedlootbags/server/LootBagCommand.java#L69-L75)).
+- **GregGuns does:** ships its own groups and adds them to ELB at startup, on both sides (`com.gregguns.compat.lootbags`). The pack's `LootBags.xml` is never edited.
+  - **Data:** `assets/gregguns/lootbags/groups.xml` in the jar, in ELB's own `LootBags.xml` format, so an adopter can paste it into the pack file. A pack that wants other contents puts a file of the same format at `config/gregguns-lootbags.xml`; GregGuns then reads that one instead. Each side reads its own copy.
+  - **preInit** (GregGuns loads `after:enhancedlootbags`): the XML becomes ELB's own objects through JAXB, as ELB reads its file, and is appended. A group whose id or name the pack already has is left out, and the pack's copy wins; a pack group is never changed. Every list change is copy-on-write, so a reader on the client thread never sees a list mid-change.
+  - **postInit:** drops naming an item that is not registered are removed (a missing mod costs a drop, not a re-roll), and each group's weight sum is refreshed.
+  - **Guard** (`LootBagGuard`), on whenever ELB is loaded: a right click with a bag of 1700 to 1799 whose group is missing first puts the groups back; if that fails, the item use is denied (`PlayerInteractEvent` RIGHT_CLICK_AIR, `useItem = DENY`) with a red chat line, and the bag is kept. `/lootbags reload` runs inside GregGuns' `CommandEvent` handler, which puts the groups back in the same call and resends the headers to every player. On the client, once a second, a missing group is put back, so the tooltip never reads a null group; with `compat.lootBags` off, an empty header is added instead.
+  - **Config:** `compat.lootBags` (default on) ([config.md](../../config.md#compat-compat)).
+  - **Icons:** `LootbagIcon="gregguns:lootbag/<key>"`. ELB registers it with the icon register as written, so it resolves in our jar, `textures/items/lootbag/<key>.png` (`tools/asset-gen/lootbag_icons.py`).
+- **Ids:** GregGuns reserves 1700 to 1799. **1700 is reserved and unused.**
 
-| Group | GregGuns items | `Chance` |
-|---|---|---|
-| `steam_age` | Hand Cannon; stone bullets (Amount 16) | 60; 60 |
-| `tier_1_lv` | 9mm Pistol; Revolver; Combat Knife; Crowbar; 9mm bullets (Amount 16); shotgun shells (Amount 16) | 50; 50; 40; 40; 60; 60 |
-| `tier_2_mv` | Thompson; M4; Combat Shotgun; Medkit; Flashbang (Amount 4); SMG magazine (Amount 2) | 40; 30; 30; 50; 50; 50 |
-| `tier_3_hv` | AUG; Vector; LMG magazine (Amount 2); rocket (Amount 4); jump pack | 40; 40; 40; 40; 30 |
-| `tier_4_ev` | Pulse Rifle; PDW; Laser Rifle; advanced magazine (Amount 2); energy cell | 40; 40; 30; 40; 40 |
-| `tier_5_iv` | Blaster Rifle; Scatter Laser Rifle; Golden Revolver | 20; 20; 20 |
-| `tier_6_luv` | Nether Blaster; Alien Blaster; Nether Charge (Amount 8) | 20; 20; 20 |
-| `tier_7_zpm` | Nuclear Death Ray; Nuke Launcher; Nuclear Power Cell | 15; 15; 15 |
+| Id | Name key | Bag | Tier | Items | Merges |
+|---|---|---|---|---|---|
+| 1701 | `recruit` | GregGuns Recruit | Steam | 3 | none |
+| 1702 | `rifleman` | GregGuns Rifleman | LV | 3 | 1701 |
+| 1703 | `sergeant` | GregGuns Sergeant | MV | 4 | 1702 |
+| 1704 | `lieutenant` | GregGuns Lieutenant | HV | 4 | 1703 |
+| 1705 | `captain` | GregGuns Captain | EV | 5 | 1704 |
+| 1706 | `major` | GregGuns Major | IV | 5 | 1705 |
+| 1707 | `colonel` | GregGuns Colonel | LuV | 6 | 1706 |
+| 1708 | `general` | GregGuns General | ZPM | 6 | 1707 |
+| 1709 | `spoils` | GregGuns Spoils of War | HV (boss kills) | 1 kit | none |
+| 1710 | `ordnance_1` | GregGuns Ordnance I | HV (ICBM) | 3 | 1704 |
+| 1711 | `ordnance_2` | GregGuns Ordnance II | IV (ICBM) | 4 | 1710 |
+| 1712 | `ordnance_3` | GregGuns Ordnance III | LuV (ICBM) | 5 | 1711 |
 
-Tier assignment is [D1](../../design/0001-tier-map.md). The IV to ZPM sums are small (1375 to 1600), so the `Chance` values there are about 1% to 4% per line.
+- **Contents:** a bag holds GregGuns items (ammunition, magazines, parts, guns, armor and gear) and the precursors that GregGuns' own recipes consume at that tier (GT plates, circuits, motors, the EV battery, gunpowder). There is no food and no generic tier loot: food is a separate quest reward. `MinItems` equals `MaxItems`, so the count is fixed. Guns and armor pieces are limited to two per player (`LimitedDropCount`), and every group keeps unlimited drops so a bag always opens. `LootBagGroupsTest` holds the allowed precursors, each with the GregGuns recipe that consumes it.
+- **Quests** name bags through the `BAGS` table in `tools/questbook/build_quests.py` ([authoring.md](../12-questbook/authoring.md#rewards)).
 
 ### Infernal Mobs
 

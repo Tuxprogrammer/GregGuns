@@ -34,7 +34,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | Minigame rewards | Follow `chest1..4` ADD files | LootGames 2.2.14 | [pack-loot.md](pack-loot.md#lootgames) |
 | Dungeon chests | Pack JSON loot rules | Roguelike-Dungeons 1.6.6-GTNH | [pack-loot.md](pack-loot.md#roguelike-dungeons) |
 | None (no currency in Techguns) | GregGuns Coin; trades merged into the Vending Machine at server start | VendingMachine 0.4.101, BetterQuesting 3.8.89-GTNH | [coins-and-vending.md](coins-and-vending.md) |
-| Quest rewards | Entries in the tier groups | EnhancedLootBags 1.3.5 | [pack-loot.md](pack-loot.md#enhancedlootbags) |
+| Quest rewards | GregGuns bag groups 1701 to 1712, added at startup from the jar | EnhancedLootBags 1.3.5 | [pack-loot.md](pack-loot.md#enhancedlootbags) |
 | NPC drops | Infernal drop lists, or a soft-dependency handler | Infernal-Mobs 1.10.7-GTNH | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | Fixed per-mob drops | Optional `CustomDrop` entries | dreamcraft CustomDrops | [pack-loot.md](pack-loot.md#gtnh-customdrops) |
 | Metals, plates, wires, circuits, plastic, rubber | Not registered; GT parts through the unificator | GT5-Unofficial 5.09.54.205 | [components-and-materials.md](components-and-materials.md#gregtech-parts-through-the-unificator) |
@@ -59,7 +59,6 @@ These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHori
 | File | Change | Why | Sheet |
 |---|---|---|---|
 | `config/TooMuchLoot/loot/gregguns_<category>.xml` (new, one per category) | `loading_mode="ADD"` files for `bonusChest`, `dungeonChest`, `mineshaftCorridor`, `villageBlacksmith`, `pyramidDesertyChest`, `pyramidJungleChest`, `strongholdCorridor`, `strongholdCrossing`, `chest1`, `chest2`, `chest3`, `chest4` | The vanilla and pack categories ship as `OVERRIDE`, so code-side additions are wiped | [pack-loot.md](pack-loot.md#draft-add-files) |
-| `config/EnhancedLootBags/LootBags.xml` | Add `Loot` lines to `steam_age` and `tier_1_lv` to `tier_7_zpm` | Quest-reward bags are data only | [pack-loot.md](pack-loot.md#enhancedlootbags) |
 | `config/roguelike_dungeons/settings/loot_weapons.json`, `loot_supplies.json`, `loot_armor.json` | Add GregGuns loot rules per dungeon level | Dungeon chests are JSON only | [pack-loot.md](pack-loot.md#roguelike-dungeons) |
 | `config/InfernalMobs.cfg` | Append GregGuns entries to `droppedItemIDsElite`, `droppedItemIDsUltra`, `droppedItemIDsInfernal` (route A only) | Drop lists are global config | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | `config/InfernalMobs.cfg` | Optional: set `permittedentities` or `entitiesalwaysinfernal` keys for GregGuns NPCs, by simple class name | `useSimpleEntityClassnames=true` in the pack | [pack-loot.md](pack-loot.md#infernal-mobs) |

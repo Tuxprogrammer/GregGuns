@@ -38,4 +38,10 @@ public class CompatConfig {
         "the tier's intro quest. Needs the Vending Machine mod; ignored without it. Off removes them at the next",
         "start. Default: true." })
     public static boolean vendingTrades = true;
+
+    @Config.Comment({ "Adds the GregGuns loot bag groups (the quest rewards, EnhancedLootBags ids 1701-1712) to",
+        "EnhancedLootBags' group list at startup, from the jar or from config/gregguns-lootbags.xml when present.",
+        "LootBags.xml is never written. Turn off only if the pack defines these groups itself. Needs",
+        "EnhancedLootBags; ignored without it. Default: true." })
+    public static boolean lootBags = true;
 }
