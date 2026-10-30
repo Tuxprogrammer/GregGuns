@@ -216,10 +216,8 @@ public final class GunAnimations {
             if (holds) {
                 ItemStack held = ((EntityLivingBase) holder).getHeldItem();
                 if (held.getItem() instanceof ItemGun) {
-                    rotorSounds.update(
-                        (EntityLivingBase) holder,
-                        ((ItemGun) held.getItem()).contentName(),
-                        s.spinFraction());
+                    rotorSounds
+                        .update((EntityLivingBase) holder, ((ItemGun) held.getItem()).contentName(), s.spinFraction());
                 }
             }
         }
