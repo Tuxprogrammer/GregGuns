@@ -59,7 +59,7 @@ class ComplexRasterTest {
      * cell.
      */
     @Test
-    void hatchesStandInTheOuterColumnsAndTheRestOfTheWindowIsGlass() {
+    void hatchesStandInTheOuterColumnsAndTheRestOfTheWindowIsGlassBesideTheLaunchControl() {
         int[] rightX = { -1, 0, 1, 0 }, rightZ = { 0, -1, 0, 1 }; // viewer's right, by facing 0 north..3 west
         for (long s = 0; s < 40; s++) {
             ComplexPlan p = ComplexLayout.generate(s, 5, 1);
@@ -78,7 +78,10 @@ class ComplexRasterTest {
                 assertEquals(Cell.HATCH_MAINTENANCE, r.at(cx - rx, 1, cz - rz), at + " maintenance under it");
                 assertEquals(Cell.SILO_GLASS, r.at(cx, 1, cz), at + " glass under the controller");
                 assertEquals(Cell.SILO_GLASS, r.at(cx, 3, cz), at + " glass over the controller");
-                assertEquals(Cell.SILO_GLASS, r.at(cx + rx, 3, cz + rz), at + " glass over the right column");
+                assertEquals(
+                    Cell.SILO_LAUNCH_CONTROL,
+                    r.at(cx + rx, 3, cz + rz),
+                    at + " the silo's own Launch Control over the right column");
                 assertEquals(Cell.SILO_GLASS, r.at(cx - rx, 3, cz - rz), at + " glass over the left column");
             }
         }
