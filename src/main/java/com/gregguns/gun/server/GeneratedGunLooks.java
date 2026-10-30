@@ -99,29 +99,29 @@ public final class GeneratedGunLooks {
     /** One gun's timeline step at local tick {@code t} (0 to {@link #SEGMENT_TICKS}). */
     private static void step(int t, EntityPlayerMP a, GunDefinition def) {
         String p = "look-" + def.name();
-        // A scoped gun zooms; a gun on the ADS list lines its sights up. Either way the pose is the "aim" shot.
-        boolean aims = def.stats()
-            .hasScope() || AdsSupport.supports(def.name());
+        // A scoped gun zooms after it has fired; a gun on the ADS list lines its sights up. A gun that fires its
+        // whole magazine in the "fire" step (the Golden Gun) is aimed before it fires, so the aim shot is not
+        // taken mid-reload (a reload ends the aim).
+        boolean scoped = def.stats()
+            .hasScope();
+        boolean sights = !scoped && AdsSupport.supports(def.name());
+        int fireAt = sights ? 55 : 30;
+        int aimOn = sights ? 32 : 70;
+        int aimShot = sights ? 45 : 90;
+        int aimOff = sights ? 50 : 95;
+        boolean aims = scoped || sights;
+        if (t == fireAt) {
+            signal(a, "arm", "shot", p + "-first-person-fire", "1");
+        } else if (t == fireAt + 2) {
+            signal(a, "fire", "1");
+        } else if (aims && t == aimOn || aims && t == aimOff) {
+            ServerGunHandler.onZoomToggle(a);
+        } else if (aims && t == aimShot) {
+            signal(a, "shot", p + "-first-person-aim");
+        }
         switch (t) {
             case 10 -> signal(a, "view", "0");
             case 25 -> signal(a, "shot", p + "-first-person-idle");
-            case 30 -> signal(a, "arm", "shot", p + "-first-person-fire", "1");
-            case 32 -> signal(a, "fire", "1");
-            case 70 -> {
-                if (aims) {
-                    ServerGunHandler.onZoomToggle(a);
-                }
-            }
-            case 90 -> {
-                if (aims) {
-                    signal(a, "shot", p + "-first-person-aim");
-                }
-            }
-            case 95 -> {
-                if (aims) {
-                    ServerGunHandler.onZoomToggle(a);
-                }
-            }
             case 105 -> signal(a, "view", "2");
             case 115 -> signal(a, "shot", p + "-third-person-front");
             case 125 -> signal(a, "view", "0");
