@@ -93,7 +93,8 @@ final class ComplexFurnisher {
     static boolean rowsOfFurniture(RoomKind k) {
         return k == RoomKind.CAFETERIA || k == RoomKind.MESS_GALLEY
             || k == RoomKind.SERVER_ROOM
-            || k == RoomKind.STOCKPILE;
+            || k == RoomKind.STOCKPILE
+            || k == RoomKind.ARMORY; // the display walls cast shadows
     }
 
     /** Gap of the ceiling-only lamp rows of low sections (a lamp five cells over the floor reaches two cells). */
@@ -866,7 +867,7 @@ final class ComplexFurnisher {
     /** Partition rows in the armory, and how tall a partition stands (the frame hangs at its middle layer). */
     static final int DISPLAY_ROWS = 2, PARTITION_HEIGHT = 2;
     /** Lateral cells between two guns on one face of a partition. */
-    static final int DISPLAY_STRIDE = 4;
+    static final int DISPLAY_STRIDE = 5;
     private static final String PARTITION = RoomFurniture.PARTITION;
 
     /**
