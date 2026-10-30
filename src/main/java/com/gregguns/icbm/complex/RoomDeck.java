@@ -51,6 +51,17 @@ final class RoomDeck {
             && !k.small();
     }
 
+    /**
+     * Adds a mandatory card at the top of the deck, for one more slot: the missile assembly floor when no side of the
+     * gallery could take it.
+     */
+    void require(RoomKind k) {
+        rounds.get(0)
+            .add(0, k);
+        mandatoryLeft.add(k);
+        left++;
+    }
+
     /** @return how many slots are still to deal */
     int left() {
         return left;

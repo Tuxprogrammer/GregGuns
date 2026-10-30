@@ -675,6 +675,8 @@ final class ComplexGrower {
             RoomKind k = RoomKind.MISSILE_ASSEMBLY;
             assembly = place(s, k, k.length, k.depth) != null;
         }
+        // No gallery side had room: the floor is the first card for any other slot.
+        if (!assembly) deck.require(RoomKind.MISSILE_ASSEMBLY);
         int minors = 0, maxMinors = 10 + rnd.nextInt(6);
         int postsLeft = posts;
         for (int guard = 0; guard < 6000 && !deck.empty(); guard++) {
@@ -789,7 +791,7 @@ final class ComplexGrower {
                     int lat0 = Math.max(s.cursor, lo - w / 2);
                     if (Math.min(hi, lat0 + w) - Math.max(lo, lat0) - 3 < need) continue;
                     int[] b = clip(adjacent(p, s.side, lat0, w, d));
-                    if (b == null || !free(b[0], b[1], b[2], b[3])) continue;
+                    if (b == null || !fits(k, s.side, b) || !free(b[0], b[1], b[2], b[3])) continue;
                     Node r = attachRoom(p, s.side, k, b, dw);
                     if (r == null) continue;
                     s.cursor = lat0 + w;
@@ -806,12 +808,19 @@ final class ComplexGrower {
             int span = hi - lo;
             int lat0 = lo - w + need + 3 + rnd.nextInt(Math.max(1, span + w - 2 * need - 6));
             int[] b = clip(adjacent(p, s.side, lat0, w, d));
-            if (b == null || !free(b[0], b[1], b[2], b[3])) continue;
+            if (b == null || !fits(k, s.side, b) || !free(b[0], b[1], b[2], b[3])) continue;
             Node r = attachRoom(p, s.side, k, b, dw);
             if (r != null) return r;
         }
         s.done = true;
         return null;
+    }
+
+    /** @return whether a box on a parent's side (clipped to the complex) is a size the kind may stand at (D307) */
+    private static boolean fits(RoomKind k, int side, int[] b) {
+        int along = (side & 1) == 0 ? b[2] - b[0] : b[3] - b[1];
+        int out = (side & 1) == 0 ? b[3] - b[1] : b[2] - b[0];
+        return k.fits(along, out);
     }
 
     private static int doorWidth(RoomKind k, Node parent) {
@@ -921,9 +930,16 @@ final class ComplexGrower {
         // A kind with a size cap (the showers) never grows past it, whatever the coverage asks (D307).
         int max = lateralAxis ? n.kind.maxLateral : n.kind.maxDepth;
         if (max > 0) cap = Math.min(cap, max);
+        // A deep kind (the range) keeps its door on a short wall: it never grows wider than it is deep.
+        if (lateralAxis && n.kind.length < n.kind.depth && along >= depthOf(n)) return false;
         // Rooms stay rooms, not corridors: neither side grows past twice the other.
         int other = (side & 1) == 0 ? n.x1 - n.x0 : n.z1 - n.z0;
         return along < cap && along < 2 * other;
+    }
+
+    /** @return a room's size away from its door wall */
+    private static int depthOf(Node n) {
+        return (n.dir & 1) == 0 ? n.z1 - n.z0 : n.x1 - n.x0;
     }
 
     private boolean growSide(Node n, int side) {

@@ -82,12 +82,14 @@ public enum RoomKind {
     /**
      * @param lateral walls-included size along the door wall
      * @param depth   walls-included size away from it
-     * @return whether a room of this kind may stand at that size (its minimum and maximum, D307)
+     * @return whether a room of this kind may stand at that size (its minimum and maximum, D307); a kind deeper than
+     *         wide (the range) also keeps its door on a short wall
      */
     public boolean fits(int lateral, int depth) {
         return lateral >= minLateral && depth >= minDepth
             && (maxLateral == 0 || lateral <= maxLateral)
-            && (maxDepth == 0 || depth <= maxDepth);
+            && (maxDepth == 0 || depth <= maxDepth)
+            && (this.length >= this.depth || lateral <= depth);
     }
 
     /** @return true for the small annex rooms (guard post, airlock), which keep the minor hallways' height */
