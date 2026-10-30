@@ -60,14 +60,14 @@ public final class AdsTable {
 
     /**
      * @param def a gun's client definition
-     * @return the first-person item-frame shift that puts its sights on the screen center, or null if the gun cannot
-     *         aim (or is akimbo)
+     * @return the first-person pose that lines the gun up and puts its sights on the screen center, or null if the gun
+     *         cannot aim (or is akimbo)
      */
-    public static double[] shiftOf(ClientGunDefinition def) {
+    public static AdsPose poseOf(ClientGunDefinition def) {
         AdsSpec spec = of(def.gunName());
         if (spec == null || def.akimbo()) {
             return null;
         }
-        return AdsOffset.itemShift(def.transforms(), def.boxes(), def.modelScale(), spec);
+        return AdsOffset.pose(def.transforms(), def.boxes(), def.modelScale(), spec, def.xFamily());
     }
 }

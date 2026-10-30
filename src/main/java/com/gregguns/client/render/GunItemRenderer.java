@@ -16,6 +16,7 @@ import com.gregguns.client.GunsClientModule;
 import com.gregguns.client.anim.AnimWindow;
 import com.gregguns.client.anim.CamoIndex;
 import com.gregguns.client.anim.GunAnimState;
+import com.gregguns.client.render.profile.AdsPose;
 import com.gregguns.client.render.profile.AkimboLayout;
 import com.gregguns.client.render.profile.GunTransforms;
 import com.gregguns.client.render.profile.MuzzleFlashSpec;
@@ -70,11 +71,11 @@ final class GunItemRenderer implements IItemRenderer {
     private final ModelState state = new ModelState();
     private final boolean akimbo;
     /** Item-frame shift that puts the sights on the screen center at full aim, or null if the gun cannot aim. */
-    private final double[] adsShift;
+    private final AdsPose adsPose;
 
-    GunItemRenderer(GunModel model, GunTransforms transforms, boolean akimbo, double[] adsShift) {
+    GunItemRenderer(GunModel model, GunTransforms transforms, boolean akimbo, AdsPose adsPose) {
         this.akimbo = akimbo;
-        this.adsShift = adsShift == null ? null : adsShift.clone();
+        this.adsPose = adsPose;
         this.model = model;
         this.transforms = transforms;
         this.textures = model.textures();
@@ -128,7 +129,7 @@ final class GunItemRenderer implements IItemRenderer {
                 .ammoPerShot() >= 2;
         int hands = AkimboLayout.handsDrawn(akimbo, firstPerson);
         // Aim down sights: slide the gun toward the screen center by the eased blend (0 in the normal hold).
-        double aim = firstPerson && adsShift != null ? anims.ads()
+        double aim = firstPerson && adsPose != null ? anims.ads()
             .blendFor(stack.getItem(), anims.partial()) : 0.0;
         for (int hand = 0; hand < hands; hand++) {
             boolean fired = AkimboLayout.animates(akimbo, firstPerson, hand, attackType, doubleShot);
@@ -138,7 +139,13 @@ final class GunItemRenderer implements IItemRenderer {
             GL11.glPushMatrix();
             try {
                 if (aim > 0.0) {
-                    GL11.glTranslated(adsShift[0] * aim, adsShift[1] * aim, adsShift[2] * aim);
+                    double[] shift = adsPose.shift();
+                    double[] pivot = adsPose.pivot();
+                    double[] axis = adsPose.axis();
+                    GL11.glTranslated(shift[0] * aim, shift[1] * aim, shift[2] * aim);
+                    GL11.glTranslated(pivot[0], pivot[1], pivot[2]);
+                    GL11.glRotated(adsPose.angleDegrees() * aim, axis[0], axis[1], axis[2]);
+                    GL11.glTranslated(-pivot[0], -pivot[1], -pivot[2]);
                 }
                 if (mirrored) {
                     // The second gun: a mirror image about the screen centre. Mirroring flips the winding.

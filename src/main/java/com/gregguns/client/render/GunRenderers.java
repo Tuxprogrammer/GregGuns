@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.gregguns.GregGuns;
+import com.gregguns.client.render.profile.AdsPose;
 import com.gregguns.client.render.profile.AdsTable;
 import com.gregguns.client.render.profile.ClientGunDefinition;
 import com.gregguns.client.render.profile.GunTransforms;
@@ -81,18 +82,18 @@ public final class GunRenderers {
     /**
      * As {@link #register(Item, GunModel, GunTransforms, boolean)}, for a gun that can aim down its sights.
      *
-     * @param adsShift the item-frame shift that puts the sights on the screen center ({@code AdsTable.shiftOf}), or
+     * @param adsPose  the item-frame pose that puts the sights on the screen center ({@code AdsTable.poseOf}), or
      *                 null if the gun cannot aim
      */
     private static void register(Item item, GunModel model, GunTransforms transforms, boolean akimbo,
-        double[] adsShift) {
+        AdsPose adsPose) {
         if (item == null || model == null || transforms == null) {
             throw new IllegalArgumentException("item, model and transforms are required");
         }
         if (REGISTRY.put(item, new Entry(transforms)) != null) {
             GregGuns.LOG.warn("Gun renderer for {} registered twice; the later one wins", item.getUnlocalizedName());
         }
-        MinecraftForgeClient.registerItemRenderer(item, new GunItemRenderer(model, transforms, akimbo, adsShift));
+        MinecraftForgeClient.registerItemRenderer(item, new GunItemRenderer(model, transforms, akimbo, adsPose));
         if (transforms.scope() != null) {
             ScopeTextures.install();
         }
@@ -119,13 +120,13 @@ public final class GunRenderers {
                 definition.xFamily()),
             definition.transforms(),
             definition.akimbo(),
-            adsShiftOf(definition));
+            adsPoseOf(definition));
     }
 
-    /** The sights shift of a gun that can aim; a bad ADS table entry is logged and the gun just does not aim. */
-    private static double[] adsShiftOf(ClientGunDefinition definition) {
+    /** The sights pose of a gun that can aim; a bad ADS table entry is logged and the gun just does not aim. */
+    private static AdsPose adsPoseOf(ClientGunDefinition definition) {
         try {
-            return AdsTable.shiftOf(definition);
+            return AdsTable.poseOf(definition);
         } catch (IllegalArgumentException e) {
             GregGuns.LOG.warn("Aim down sights is off for {}: {}", definition.gunName(), e.getMessage());
             return null;

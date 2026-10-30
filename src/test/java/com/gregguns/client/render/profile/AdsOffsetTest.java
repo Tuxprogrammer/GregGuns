@@ -44,26 +44,77 @@ class AdsOffsetTest {
         }
     }
 
+    /** Plays the pose back at blend 1 the way the renderer's GL calls do, on a point in eye space. */
+    private static double[] aimed(AdsPose pose, double[] eyePoint) {
+        InHandFit.Affine item = InHandFit.firstPersonItemFrame();
+        double[] p = item.invert()
+            .apply(eyePoint);
+        double[] pivot = pose.pivot();
+        double[] axis = pose.axis();
+        double[] r = new double[3];
+        for (int i = 0; i < 3; i++) {
+            r[i] = p[i] - pivot[i];
+        }
+        double c = Math.cos(Math.toRadians(pose.angleDegrees()));
+        double s = Math.sin(Math.toRadians(pose.angleDegrees()));
+        double dot = axis[0] * r[0] + axis[1] * r[1] + axis[2] * r[2];
+        double[] cross = { axis[1] * r[2] - axis[2] * r[1], axis[2] * r[0] - axis[0] * r[2],
+            axis[0] * r[1] - axis[1] * r[0] };
+        double[] shift = pose.shift();
+        double[] q = new double[3];
+        for (int i = 0; i < 3; i++) {
+            q[i] = pivot[i] + r[i] * c + cross[i] * s + axis[i] * dot * (1 - c) + shift[i];
+        }
+        return item.apply(q);
+    }
+
     @Test
-    void theSightsLandOnTheScreenCenterAtTheirOwnDepth() {
+    void theSightsLandOnTheScreenCenterAtTheirOwnDepthWithTheBarrelStraightAhead() {
         for (AdsSpec spec : AdsTable.ALL) {
             ClientGunDefinition def = ClientGunDefinitions.byName(spec.gunName());
-            double[] shift = AdsTable.shiftOf(def);
-            assertNotNull(shift, spec.gunName());
+            AdsPose pose = AdsTable.poseOf(def);
+            assertNotNull(pose, spec.gunName());
             BoxSpec[] boxes = def.boxes();
             double[] point = AdsOffset.sightPoint(boxes, def.modelScale(), spec);
             int part = AdsOffset.sightPart(boxes, spec);
-            double[] before = AdsOffset.eyeOf(def.transforms(), part, point);
-            // What the renderer does: translate in the item frame first, then the gun's rows.
-            InHandFit.Affine item = InHandFit.firstPersonItemFrame();
-            double[] inItem = item.invert()
-                .apply(before);
-            double[] moved = item
-                .apply(new double[] { inItem[0] + shift[0], inItem[1] + shift[1], inItem[2] + shift[2] });
+            double[] before = AdsOffset.eyeOf(def.transforms(), part, point, def.xFamily());
+            double[] moved = aimed(pose, before);
             assertEquals(0.0, moved[0], 1e-9, spec.gunName() + " x");
             assertEquals(0.0, moved[1], 1e-9, spec.gunName() + " y");
             assertEquals(before[2], moved[2], 1e-9, spec.gunName() + " depth is unchanged");
+            // A point one texel further along the barrel lies straight ahead of the sights: no sideways or vertical
+            // drift, so the gun runs down the line of sight.
+            double[] aheadBefore = AdsOffset.eyeOf(
+                def.transforms(),
+                part,
+                new double[] { point[0] + 1.0, point[1], point[2] },
+                def.xFamily());
+            double[] ahead = aimed(pose, aheadBefore);
+            assertEquals(0.0, ahead[0], 1e-9, spec.gunName() + " barrel x");
+            assertEquals(0.0, ahead[1], 1e-9, spec.gunName() + " barrel y");
+            assertTrue(ahead[2] < moved[2], spec.gunName() + " the muzzle is further from the eye than the sights");
         }
+    }
+
+    @Test
+    void theQuarterTurnOfAZFamilyModelIsPartOfTheSightPosition() {
+        // Regression: the Golden Gun (and the 9mm Pistol) sat left of center because the sights were placed in the
+        // model's authored axes while the renderer turns a Z-family model a quarter turn about Y.
+        ClientGunDefinition def = ClientGunDefinitions.byName("golden_gun");
+        assertTrue(!def.xFamily());
+        AdsSpec spec = AdsTable.of("golden_gun");
+        double[] point = AdsOffset.sightPoint(def.boxes(), def.modelScale(), spec);
+        int part = AdsOffset.sightPart(def.boxes(), spec);
+        double[] turned = AdsOffset.eyeOf(def.transforms(), part, point, false);
+        double[] authored = AdsOffset.eyeOf(def.transforms(), part, point, true);
+        assertTrue(Math.abs(turned[0] - authored[0]) + Math.abs(turned[2] - authored[2]) > 0.05);
+    }
+
+    @Test
+    void theLmgIsTurnedToLieAlongTheViewNotDraggedAcrossIt() {
+        // Regression: translating only, the slanted LMG's buttstock came across the camera.
+        AdsPose pose = AdsTable.poseOf(ClientGunDefinitions.byName("lmg"));
+        assertTrue(pose.angleDegrees() > 5.0, "the LMG needs a turn, got " + pose.angleDegrees());
     }
 
     @Test
@@ -71,7 +122,7 @@ class AdsOffsetTest {
         for (AdsSpec spec : AdsTable.ALL) {
             ClientGunDefinition def = ClientGunDefinitions.byName(spec.gunName());
             double[] point = AdsOffset.sightPoint(def.boxes(), def.modelScale(), spec);
-            double[] eye = AdsOffset.eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point);
+            double[] eye = AdsOffset.eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point, def.xFamily());
             assertTrue(eye[2] < -0.1, spec.gunName() + " sights are ahead of the camera, z=" + eye[2]);
             // The gun starts in the lower right; it must not need to travel more than a screen's worth.
             assertTrue(Math.hypot(eye[0], eye[1]) < 1.5, spec.gunName() + " offset " + eye[0] + "," + eye[1]);
@@ -100,7 +151,7 @@ class AdsOffsetTest {
     @Test
     void gunsOffTheListHaveNoShift() {
         assertNull(AdsTable.of("bolt_action_rifle"));
-        assertNull(AdsTable.shiftOf(ClientGunDefinitions.byName("bolt_action_rifle")));
-        assertNull(AdsTable.shiftOf(ClientGunDefinitions.byName("akimbo_pistols")));
+        assertNull(AdsTable.poseOf(ClientGunDefinitions.byName("bolt_action_rifle")));
+        assertNull(AdsTable.poseOf(ClientGunDefinitions.byName("akimbo_pistols")));
     }
 }
