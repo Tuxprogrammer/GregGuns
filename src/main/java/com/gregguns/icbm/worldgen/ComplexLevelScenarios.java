@@ -649,11 +649,9 @@ public final class ComplexLevelScenarios {
             Set<String> allowed = new HashSet<>();
             if (com.gregguns.icbm.complex.LootKeys.ARMORY_AMMO.equals(p.key())) {
                 // An armory display chest holds its gun's ammo (checked by icbm.complex.armory), else the armory table.
-                for (com.gregguns.gun.def.GunDefinition g : com.gregguns.gun.def.GunDefinitions.ALL) {
-                    for (String item : ArmoryDisplay.itemsFor(g.name())) {
-                        ItemStack s = LootCategories.stack("gregguns:" + item, 1);
-                        if (s != null) allowed.add(id(s));
-                    }
+                for (String item : ArmoryDisplay.everyItem()) {
+                    ItemStack s = LootCategories.stack("gregguns:" + item, 1);
+                    if (s != null) allowed.add(id(s));
                 }
             }
             for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {

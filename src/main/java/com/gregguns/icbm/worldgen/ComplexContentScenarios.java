@@ -261,6 +261,15 @@ public final class ComplexContentScenarios {
                         SiloChests.fill(inv, p, seed, n, 9);
                         Set<String> allowed = allowedCache.computeIfAbsent(p.key() + "@" + ceiling, k -> {
                             Set<String> a = new HashSet<>();
+                            for (String item : ArmoryDisplay.everyItem()) {
+                                ItemStack st = p.key()
+                                    .equals(com.gregguns.icbm.complex.LootKeys.ARMORY_AMMO)
+                                        ? LootCategories.stack("gregguns:" + item, 1)
+                                        : null;
+                                if (st != null) {
+                                    a.add(id(st)); // an armory display chest holds its gun's ammo
+                                }
+                            }
                             for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {
                                 ItemStack st = LootCategories.stack(l.ref(), 1);
                                 if (st != null) {

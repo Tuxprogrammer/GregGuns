@@ -96,7 +96,8 @@ public final class ArmoryDisplay {
             out.add(new Stock(round.roundItemName(), 32, 64));
             return out;
         }
-        out.add(new Stock(ammo, 8, 24)); // a tank, a charge or a grenade belt: the one item the gun burns
+        // A tank, a charge or a grenade belt: the one item the gun burns; a nuclear rocket is only ever a couple.
+        out.add(ammo.contains("nuke") ? new Stock(ammo, 1, 2) : new Stock(ammo, 8, 24));
         return out;
     }
 
@@ -105,6 +106,15 @@ public final class ArmoryDisplay {
         List<String> out = new ArrayList<>();
         for (Stock s : stockFor(gun)) {
             out.add(s.item());
+        }
+        return out;
+    }
+
+    /** @return every item registry name any gun's display chest may hold */
+    public static java.util.Set<String> everyItem() {
+        java.util.Set<String> out = new java.util.LinkedHashSet<>();
+        for (GunDefinition g : GunDefinitions.ALL) {
+            out.addAll(itemsFor(g.name()));
         }
         return out;
     }
