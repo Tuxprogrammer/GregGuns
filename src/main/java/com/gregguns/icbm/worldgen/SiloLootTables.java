@@ -31,8 +31,8 @@ public final class SiloLootTables {
         "NaquadahAlloy", "Neutronium", "CosmicNeutronium", "Infinity", "TranscendentMetal", "SpaceTime" };
 
     /** Every loot key the layout uses, in the layout's order. */
-    public static final String[] KEYS = { "salvage", "stockpile", "safe", "comms", "armory", "workshop", "medical",
-        "galley", "bunks", "fuel", "control", "magazine" };
+    public static final String[] KEYS = { "salvage", "stockpile", "safe", "comms", "armory", "armory_ammo", "workshop",
+        "medical", "galley", "bunks", "fuel", "control", "magazine" };
 
     private SiloLootTables() {}
 
@@ -124,6 +124,7 @@ public final class SiloLootTables {
                 ladder(out, ceiling, "plate", 1, 4, 2, 4, 2);
                 break;
             case "armory":
+            case "armory_ammo": // the energy-gun display chests draw the armory table
                 out.add(new Line("gt:ingot.Steel", 4, 12, 2, 2));
                 weapons(out, ceiling, 4);
                 break;

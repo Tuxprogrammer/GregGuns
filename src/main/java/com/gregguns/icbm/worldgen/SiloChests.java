@@ -5,14 +5,18 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraftforge.common.ChestGenHooks;
 
 import com.gregguns.GregGuns;
+import com.gregguns.icbm.complex.LootKeys;
 import com.gregguns.worldgen.loot.LootCategories;
 import com.gregguns.worldgen.loot.LootCategory;
 import com.gregguns.worldgen.loot.LootPending;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * Registers the silo complex loot categories with Forge and fills a chest from a {@link Placement}. Chests fill at
@@ -63,6 +67,10 @@ public final class SiloChests {
      * @param cellZ     the complex's grid cell Z
      */
     public static void fill(IInventory inv, Placement p, long worldSeed, int cellX, int cellZ) {
+        if (LootKeys.ARMORY_AMMO.equals(p.key())) {
+            fillDisplay(inv, p, worldSeed, cellX, cellZ);
+            return;
+        }
         Random rand = new LootPending(
             p.category(),
             p.richness(),
@@ -80,6 +88,37 @@ public final class SiloChests {
                 continue;
             }
             inv.setInventorySlotContents(free.remove(rand.nextInt(free.size())), s);
+        }
+    }
+
+    /**
+     * Fills the chest under an armory display gun with that gun's ammo ({@link ArmoryDisplay#stockFor}), one stack per
+     * line in random slots. An energy gun, which burns no ammo, gets a draw of the armory table instead.
+     */
+    private static void fillDisplay(IInventory inv, Placement p, long worldSeed, int cellX, int cellZ) {
+        Random rand = new LootPending(
+            p.category(),
+            p.richness(),
+            LootPending.seed(worldSeed, cellX, cellZ, p.chestIndex())).random();
+        String gun = ArmoryDisplay.gunAt(p.ceiling(), worldSeed ^ (cellX * 31L + cellZ), p.x(), p.z());
+        List<ArmoryDisplay.Stock> stock = ArmoryDisplay.stockFor(gun);
+        if (stock.isEmpty()) {
+            LootCategories.fill(inv, p.category(), p.richness(), rand);
+            return;
+        }
+        List<Integer> free = new ArrayList<>();
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            free.add(i);
+        }
+        for (ArmoryDisplay.Stock s : stock) {
+            Item item = GameRegistry.findItem(GregGuns.MODID, s.item());
+            if (item == null || free.isEmpty()) {
+                continue;
+            }
+            int n = s.min() + rand.nextInt(s.max() - s.min() + 1);
+            inv.setInventorySlotContents(
+                free.remove(rand.nextInt(free.size())),
+                new ItemStack(item, Math.min(n, item.getItemStackLimit())));
         }
     }
 

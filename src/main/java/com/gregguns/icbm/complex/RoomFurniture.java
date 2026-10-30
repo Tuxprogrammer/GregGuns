@@ -37,6 +37,11 @@ public final class RoomFurniture {
         RoomKind.WATER_TREATMENT,
         RoomKind.FUEL_DEPOT);
 
+    /**
+     * The furniture key of an armory display-wall cell: the room's wall block, drawn by the raster, never worn away.
+     */
+    public static final String PARTITION = "PARTITION";
+
     private RoomFurniture() {}
 
     /**

@@ -123,7 +123,7 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 | Infirmary | Beds along the side walls, a clipboard chart over each; two-high medicine cabinets on the back wall; a desk and chair in the middle; medical chests |
 | Stockpile | Chests along the back wall; rows of two-high shelves |
 | Mess galley, cafeteria | A serving counter; rows of tables with a chair on each side, runs of 3 tables with 2-cell gaps, a 3-cell aisle between rows and 3 clear cells along each side wall; galley chests |
-| Armory | Two staggered rows of item frames on the back wall, split around a doorway; chests; tool racks along one side wall, armor stands along the other; guards |
+| Armory | Two free-standing display walls across the room (two blocks tall, an open end and a walkway beside each), each face showing a gun in an item frame every fifth cell with its ammo chest on the floor below; a few loot chests on the back wall; tool racks along one side wall, armor stands along the other; guards |
 | Vehicle bay | Battery buffers and a workbench on the back wall; a workshop chest |
 | Server room | Rows of two-high server racks (the style's console block); the operator's desk with a typewriter on the back wall and its chair; a comms machine; a comms chest |
 | Missile assembly | The NASA Workbench in the middle, or the fitting place nearest it; two workbenches; casing frame boxes on the back wall; salvage chests; guards (no furniture: a bay) |
@@ -156,9 +156,14 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 - **Escape:** a 1 x 1 ladder at the dead end of a minor hallway (else of a major hall, else the hub's corner), clinging to the end wall (`ComplexPlan.escapeMeta`). It runs up through its section's ceiling (`escapeTop`) to a closed top-half trapdoor flush with the ground, with the natural cover over the trapdoor cleared as over a mouth. A lake over the column gets no trapdoor. The cell behind it is stone up to just under the surface block.
 - **`landY`:** `HeightProbe.landY` is the top solid block, so the trapdoor replaces it and lies flush (D201).
 - **Radar stations (D215):** 0 to 2 huts anywhere on the surface, at least 12 blocks apart, 3 blocks clear of every silo shaft and clear of the escape column. Each is the same 5 x 5 hut with the small radar on its roof as before, inert without its Energy Hatch.
-- **Armory frames:**
-  - The `ITEM_FRAME_WALL` mark is the first frame cell. It carries the frames' facing and how many frames hang every third cell along +X or +Z.
-  - The world side hangs a gun from the weapon tables up to the ceiling in each frame.
+- **Armory display walls:**
+  - `ComplexFurnisher.displays` lays up to two rows of partition (`DISPLAY_ROWS`) parallel to the door wall, at depths 4 and 10 from the back wall, each as long as the room allows between three-cell open ends. A row is dropped when its front chest would crowd the door rows. A partition is two blocks tall (`PARTITION_HEIGHT`), so the space above it stays open to the ceiling. Its cells are `FURNITURE` marks keyed `PARTITION` that the raster writes as the wall role: the room's own wall block, so the three-different-blocks rule and `RoleAudit` hold. Wear never removes them.
+  - Each face carries a `GUN_DISPLAY` mark every `DISPLAY_STRIDE` (5) cells, the two faces staggered by two. The mark sits at the floor cell in front of the wall (the chest cell) and carries the frame's facing; the frame hangs one layer up, on the partition. No frame hangs on the outer walls, and the old `ITEM_FRAME_WALL` mark is no longer used for the armory.
+  - The armory takes the closer lamp grid of the furniture-row rooms (`DENSE_GAP`), since the partitions cast shadows.
+  - An armory shows at most `MAX_DISPLAYS` (24) guns, so a very large room does not outgrow the old two rows of frames.
+  - Walkways of three cells separate the rows; the reachability pass keeps every chest reachable.
+  - The contents pass turns a mark into an ammo chest (`armory_ammo`) and a one-frame `FRAME_WALL` placement. The gun is `SiloFrames.gunFor` of the cell, so frame and chest agree whichever window builds them. A collapsed armory shows no displays; an abandoned complex keeps 30 percent of its display slots (the same share as its other chests).
+  - The chest holds the gun's ammo (`ArmoryDisplay.stockFor`): 4 to 8 loaded magazines and 24 to 64 loose rounds for a magazine gun, 32 to 64 rounds for a loose-round gun, 8 to 24 of the one item a rocket, grenade or fuel-tank gun burns. An energy gun's chest draws the armory table.
   - The damage pass never breaks the wall behind a frame.
 
 ## Tests

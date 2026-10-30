@@ -93,7 +93,8 @@ final class ComplexFurnisher {
     static boolean rowsOfFurniture(RoomKind k) {
         return k == RoomKind.CAFETERIA || k == RoomKind.MESS_GALLEY
             || k == RoomKind.SERVER_ROOM
-            || k == RoomKind.STOCKPILE;
+            || k == RoomKind.STOCKPILE
+            || k == RoomKind.ARMORY; // the display walls cast shadows
     }
 
     /** Gap of the ceiling-only lamp rows of low sections (a lamp five cells over the floor reaches two cells). */
@@ -780,7 +781,7 @@ final class ComplexFurnisher {
                 fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.MEDICAL);
                 break;
             case ARMORY:
-                frames(fit);
+                displays(fit);
                 fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.ARMORY);
                 spawners(fit, guards, "room");
                 break;
@@ -865,36 +866,41 @@ final class ComplexFurnisher {
             1);
     }
 
+    /** Partition rows in the armory, and how tall a partition stands (the frame hangs at its middle layer). */
+    static final int DISPLAY_ROWS = 2, PARTITION_HEIGHT = 2;
+    /** Lateral cells between two guns on one face of a partition. */
+    static final int DISPLAY_STRIDE = 5;
+    /** Most guns one armory shows, however large the room: it keeps the total near the old two rows of frames. */
+    static final int MAX_DISPLAYS = 24;
+    private static final String PARTITION = RoomFurniture.PARTITION;
+
     /**
-     * Two rows of item frames on the back wall (y 2 and 3), one frame every {@link ComplexLayout#FRAME_STRIDE} cells,
-     * the upper row starting one cell further along so the guns stagger. A doorway in the back wall splits a row.
+     * Free-standing display walls across the armory (owner, 2026-10-30): short partitions (two blocks) of the room's
+     * wall block
+     * running along the room, a walkway between rows and an open end at each side. Each face holds a gun in an item
+     * frame every {@link #DISPLAY_STRIDE} cells (the two faces staggered), with the ammo chest on the floor right
+     * below it: one {@link MarkKind#GUN_DISPLAY} mark per gun, at the chest's cell, the frame one layer up. Nothing
+     * hangs on the outer walls.
      */
-    private void frames(Fit fit) {
+    private void displays(Fit fit) {
         ComplexLayout.Frame f = fit.f;
-        boolean[] open = new boolean[fit.L];
-        for (int a = 0; a < fit.L; a++) {
-            int wx = f.backWallX(a), wz = f.backWallZ(a);
-            for (Door d : plan.doors()) {
-                if (d.kind == Door.Kind.WINDOW) continue;
-                if (wx >= d.x0 - 1 && wx <= d.x1 + 1 && wz >= d.z0 - 1 && wz <= d.z1 + 1) open[a] = true;
-            }
-        }
-        int facing = f.backFacing();
-        for (int y = 2; y <= 3; y++) {
-            int a = 1 + (y - 2);
-            while (a < fit.L - 1) {
-                if (open[a]) {
-                    a++;
-                    continue;
-                }
-                int start = a, count = 0;
-                while (a < fit.L - 1 && !open[a]) {
-                    if ((a - start) % ComplexLayout.FRAME_STRIDE == 0) count++;
-                    a++;
-                }
-                if (count > 0) {
-                    fit.r
-                        .add(MarkKind.ITEM_FRAME_WALL, f.x(start, 0), y, f.z(start, 0), LootKeys.ARMORY, facing, count);
+        int L = fit.L, D = fit.D;
+        if (L < 10) return;
+        int shown = 0;
+        String[] layers = new String[PARTITION_HEIGHT];
+        java.util.Arrays.fill(layers, PARTITION);
+        for (int i = 0; i < DISPLAY_ROWS; i++) {
+            int dw = 4 + 6 * i;
+            if (dw + 1 > D - 4) break; // the front chest and its walkway must stay clear of the door rows
+            for (int a = 3; a <= L - 4; a++) fit.put(a, dw, f.backFacing(), layers);
+            for (int face = -1; face <= 1; face += 2) {
+                int facing = face > 0 ? f.backFacing() : (f.backFacing() + 2) & 3;
+                for (int a = face > 0 ? 3 : 5; a <= L - 4; a += DISPLAY_STRIDE) {
+                    int d = dw + face;
+                    if (shown >= MAX_DISPLAYS || !PARTITION.equals(fit.pieceAt(a, dw)) || !fit.free(a, d)) continue;
+                    shown++;
+                    fit.occ[a * D + d] = SOLID;
+                    fit.r.add(MarkKind.GUN_DISPLAY, f.x(a, d), 1, f.z(a, d), LootKeys.ARMORY, facing, 1);
                 }
             }
         }

@@ -15,6 +15,12 @@ public enum MarkKind {
      */
     ITEM_FRAME_WALL,
     /**
+     * An armory display: the ammo chest on the floor at the mark's cell and, one layer above it, an item frame holding
+     * a gun, hung on the partition wall behind. {@link Mark#facing()} is the way the frame faces. The chest holds the
+     * ammo of the gun in the frame.
+     */
+    GUN_DISPLAY,
+    /**
      * A lamp flush in the ceiling layer, or a light tile flush in the floor layer (D231). The key is
      * {@code lamp:<section>:<run>}: the activity level lights whole runs or whole sections (D36, D231).
      */

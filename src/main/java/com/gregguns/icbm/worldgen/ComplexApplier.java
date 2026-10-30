@@ -162,7 +162,8 @@ public final class ComplexApplier {
                 y,
                 z - FRAME_DZ[p.facing()],
                 p.facing());
-            String ref = SiloFrames.gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, GUN);
+            String ref = SiloFrames
+                .gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, ArmoryDisplay.IS_GUN);
             ItemStack gun = ref == null ? null : com.gregguns.worldgen.loot.LootCategories.stack(ref, 1);
             if (gun != null) {
                 frame.setDisplayedItem(gun);
@@ -177,11 +178,6 @@ public final class ComplexApplier {
      */
     private static final int[] FRAME_DX = { 0, -1, 0, 1 };
     private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
-
-    private static final java.util.function.Predicate<String> GUN = ref -> {
-        net.minecraft.item.Item it = com.gregguns.entity.npc.NpcItems.item(ref);
-        return it instanceof com.gregguns.item.gun.ItemGun;
-    };
 
     private static Block rubble(int x, int y, int z) {
         return ((x * 31 + y * 17 + z * 13) & 3) == 0 ? Blocks.gravel : Blocks.cobblestone;

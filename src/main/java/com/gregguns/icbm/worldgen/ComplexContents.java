@@ -6,6 +6,7 @@ import java.util.List;
 import com.gregguns.icbm.complex.Box;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.LootKeys;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.Room;
@@ -32,7 +33,7 @@ public final class ComplexContents {
     /** Salts, one per roll family, so two rolls on one cell are independent. */
     private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_SPAWN = 0x59A, S_ELITE = 0xE11,
         S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_CHEST = 0xC4E,
-        S_ABSENT = 0xAB5, S_HOLD = 0x401D, S_HOLD_N = 0x401E;
+        S_ABSENT = 0xAB5, S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_DISPLAY = 0xD15;
 
     private ComplexContents() {}
 
@@ -199,6 +200,24 @@ public final class ComplexContents {
                             .frames(m.facing(), m.extent())
                             .build());
                     break;
+                case GUN_DISPLAY:
+                    if (!collapsed
+                        && Mix.unit(Mix.of(seed, S_DISPLAY, m.x() * 4096L + m.z(), m.y())) < displayKeep(level)) {
+                        Placement chest = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
+                            .category(SiloLootTables.categoryName(LootKeys.ARMORY_AMMO, ceiling))
+                            .key(LootKeys.ARMORY_AMMO)
+                            .chest(counter[0]++, p.richness())
+                            .build();
+                        chests.add(chest);
+                        out.add(chest);
+                        out.add(
+                            Placement.at(Kind.FRAME_WALL, m.x(), ArmoryDisplay.FRAME_Y, m.z())
+                                .category(SiloLootTables.categoryName(m.key(), ceiling))
+                                .key(m.key())
+                                .frames(m.facing(), 1)
+                                .build());
+                    }
+                    break;
                 case LIGHT:
                     if (Mix.unit(lightRoll(seed, m, level)) < p.litChance()) {
                         out.add(
@@ -263,6 +282,14 @@ public final class ComplexContents {
             }
         }
         return Mix.of(seed, S_LIGHT, m.x() * 4096L + m.z(), m.y());
+    }
+
+    /**
+     * @return the share of an armory's display slots (a gun with its ammo chest) that still stand: a ruin was stripped
+     *         long ago, the same share as its other chests keep
+     */
+    static double displayKeep(ActivityLevel level) {
+        return level == ActivityLevel.ABANDONED ? 0.30 : 1.0;
     }
 
     private static double rubbleMarkChance(ActivityLevel level) {

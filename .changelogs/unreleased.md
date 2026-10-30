@@ -50,6 +50,10 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - Every silo in a complex now has a sign reading "Silo 1", "Silo 2" and so on (north to south, then west to east), hanging on the silo wall directly above the controller, centered on it and facing the gallery. It sits above rather than on the controller so the controller stays clickable. A silo with its controller missing gets the same sign.
 
+## Changed: silo complex armories
+
+- The guns of a complex's armory no longer hang on the outer walls. Two short display walls (two blocks tall, open above) stand across the room with walkways between them, each showing a gun in an item frame every fifth block. A chest on the floor directly below each gun holds that gun's ammo: loaded magazines and loose rounds, or the rockets, grenades or fuel it burns. The armory shows about as many guns as before and holds far more ammo. Abandoned complexes keep fewer of the displays.
+
 ## Fixed
 
 - The Missile Silo no longer starts a mating cycle or a fuel pump without power. With no EU in its Energy Hatch it used to take the body, warhead or fuel, power-fail on the first tick and switch itself back on, over and over. It now takes nothing, shows "No power" in its status line, and starts by itself once the hatch holds enough EU.

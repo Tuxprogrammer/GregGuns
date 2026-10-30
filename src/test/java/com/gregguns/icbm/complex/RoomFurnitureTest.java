@@ -32,7 +32,7 @@ class RoomFurnitureTest {
     }
 
     private static boolean furnitureMark(Mark m) {
-        return m.kind() == MarkKind.FURNITURE && !"BASIN".equals(m.key());
+        return m.kind() == MarkKind.FURNITURE && !"BASIN".equals(m.key()) && !RoomFurniture.PARTITION.equals(m.key());
     }
 
     @Test

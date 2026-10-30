@@ -37,7 +37,8 @@ public final class FurnitureWear {
      * @param out       where a removal (air) or a crushed piece (rubble) goes
      */
     public static void wear(Mark m, boolean collapsed, ActivityLevel level, long seed, List<Placement> out) {
-        if (m.kind() != MarkKind.FURNITURE || "BASIN".equals(m.key())) return;
+        if (m.kind() != MarkKind.FURNITURE || "BASIN".equals(m.key())
+            || com.gregguns.icbm.complex.RoomFurniture.PARTITION.equals(m.key())) return; // walls stay
         if (collapsed) {
             out.add(
                 Placement.at(Kind.RUBBLE, m.x(), m.y(), m.z())
