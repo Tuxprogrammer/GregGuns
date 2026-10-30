@@ -26,10 +26,12 @@ final class InertWarheadItemRenderer implements IItemRenderer {
 
     private InertWarheadItemRenderer() {}
 
-    /** Registers the renderer on the inert warhead item. Call from init. */
+    /** Registers the renderer on the five inert warhead items. Call from init. */
     static void register() {
-        if (InertWarheads.item() != null) {
-            MinecraftForgeClient.registerItemRenderer(InertWarheads.item(), new InertWarheadItemRenderer());
+        for (WarheadCasing casing : WarheadCasing.values()) {
+            if (InertWarheads.item(casing) != null) {
+                MinecraftForgeClient.registerItemRenderer(InertWarheads.item(casing), new InertWarheadItemRenderer());
+            }
         }
     }
 

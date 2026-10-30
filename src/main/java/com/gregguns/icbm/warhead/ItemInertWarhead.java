@@ -8,6 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
+import com.gregguns.api.Tier;
+import com.gregguns.api.Tiered;
 import com.gregguns.core.text.AddedBy;
 import com.gregguns.icbm.TooltipWrap;
 import com.gregguns.icbm.explosive.ExplosiveDef;
@@ -17,24 +19,42 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * The inert warhead (D282): the first step of the warhead chain, one subtype per casing (damage 0 for T1 to 4 for T5),
- * with an optional payload in NBT. It holds no charges. It is a plain item, not a block, so it cannot be placed, cannot
+ * The inert warhead (D282): the first step of the warhead chain, one item per casing ({@code inert_warhead_t1} to
+ * {@code _t5}), with an optional payload in NBT. It holds no charges. It is a plain item, not a block, so it cannot be
+ * placed, cannot
  * sit on a missile, is ignored by the silo's input bus and nothing can set it off: it is inert by construction. Loading
  * Plastic Explosive charges ({@link WarheadChargeRecipe} or the Assembler) turns it into the live warhead of its
  * casing.
  * Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (The inert warhead)
-public final class ItemInertWarhead extends Item {
+public final class ItemInertWarhead extends Item implements Tiered {
 
     /** Pixels a tooltip line may take before it wraps. */
     private static final int TOOLTIP_WRAP_WIDTH = TooltipWrap.WIDTH;
 
-    /** Creates the item: subtypes by casing, stacks of 16 like the live warhead. */
-    public ItemInertWarhead() {
-        setHasSubtypes(true);
+    private final WarheadCasing casing;
+
+    /**
+     * Creates the item: stacks of 16 like the live warhead.
+     *
+     * @param casing the casing this inert warhead is
+     */
+    public ItemInertWarhead(WarheadCasing casing) {
+        this.casing = casing;
         setMaxDamage(0);
         setMaxStackSize(16);
+    }
+
+    /** @return the casing */
+    public WarheadCasing casing() {
+        return casing;
+    }
+
+    /** @return the live warhead's tier, as {@link BlockWarhead#getTier()} gives it: HV, EV, then ZPM from T3 up */
+    @Override
+    public Tier getTier() {
+        return casing == WarheadCasing.T1 ? Tier.HV : casing == WarheadCasing.T2 ? Tier.EV : Tier.ZPM;
     }
 
     @Override
@@ -42,7 +62,6 @@ public final class ItemInertWarhead extends Item {
         if (stack == null) {
             return super.getItemStackDisplayName(stack);
         }
-        WarheadCasing casing = InertWarheads.casing(stack);
         String payload = InertWarheads.payload(stack);
         return InertWarheadTooltipFormat.displayName(
             StatCollector.translateToLocal("gregguns.icbm.inert.name"),
@@ -55,15 +74,11 @@ public final class ItemInertWarhead extends Item {
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void getSubItems(Item item, CreativeTabs tab, List list) {
-        // The bare casings first, then every payload of each casing, so NEI lists each step of the chain.
-        for (WarheadCasing casing : WarheadCasing.values()) {
-            list.add(InertWarheads.stack(casing, null));
-        }
-        for (WarheadCasing casing : WarheadCasing.values()) {
-            for (WarheadBlast blast : WarheadBlast.values()) {
-                if (blast != WarheadBlast.CONDENSED && blast.tier() == casing.tier()) {
-                    list.add(InertWarheads.stack(casing, blast.id()));
-                }
+        // The bare casing first, then every payload it takes, so NEI lists each step of the chain.
+        list.add(InertWarheads.stack(casing, null));
+        for (WarheadBlast blast : WarheadBlast.values()) {
+            if (blast != WarheadBlast.CONDENSED && blast.tier() == casing.tier()) {
+                list.add(InertWarheads.stack(casing, blast.id()));
             }
         }
     }
@@ -72,7 +87,6 @@ public final class ItemInertWarhead extends Item {
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
-        WarheadCasing casing = InertWarheads.casing(stack);
         String payload = InertWarheads.payload(stack);
         String explosive = WarheadCharging.explosiveFor(casing, payload);
         ExplosiveDef def = explosive == null ? null : Explosives.get(explosive);

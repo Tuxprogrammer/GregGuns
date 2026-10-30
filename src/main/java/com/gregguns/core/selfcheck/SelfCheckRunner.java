@@ -353,6 +353,12 @@ public final class SelfCheckRunner {
             return false;
         }
         for (ItemStack stack : stacks) {
+            // D282: the inert T4 and T5 warheads and their payloads are made at UV and UHV too.
+            if (com.gregguns.icbm.warhead.InertWarheads.is(stack)
+                && com.gregguns.icbm.warhead.InertWarheads.casing(stack)
+                    .number() >= 4) {
+                return true;
+            }
             if (stack != null
                 && net.minecraft.block.Block
                     .getBlockFromItem(stack.getItem()) instanceof com.gregguns.icbm.warhead.BlockWarhead

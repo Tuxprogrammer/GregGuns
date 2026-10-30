@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Every Tier 1 warhead has a Fuze Assembly Mk I in it: the timer and trigger that make the charge go off when and where you want.\n\nIt\u0027s an Assembler recipe at HV from an Advanced circuit, a steel plate and 4 fine copper wires, the same shopping list as the Guidance Computer. Check NEI. Make a few: every warhead recipe of the tier eats one.",
+      "desc:8": "Every Tier 1 warhead starts as an inert casing, and a Fuze Assembly Mk I is built into it: the timer and trigger that make the charges go off when and where you want, and nothing before that.\n\nIt\u0027s an Assembler recipe at HV from an Advanced circuit, a steel plate and 4 fine copper wires, the same shopping list as the Guidance Computer. Check NEI. Make a few: every Inert T1 Warhead takes one, and so do the HV launcher warheads.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

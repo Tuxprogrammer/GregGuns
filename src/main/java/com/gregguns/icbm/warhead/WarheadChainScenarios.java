@@ -53,7 +53,7 @@ public final class WarheadChainScenarios {
     }
 
     private static ScenarioResult needsModule(String name) {
-        if (InertWarheads.item() == null || WarheadBlocks.of(WarheadCasing.T1) == null) {
+        if (InertWarheads.item(WarheadCasing.T1) == null || WarheadBlocks.of(WarheadCasing.T1) == null) {
             return ScenarioResult.fail(name, "the ICBM content is not registered");
         }
         return null;
@@ -134,8 +134,8 @@ public final class WarheadChainScenarios {
                 ItemStack[] items = in.toArray(new ItemStack[0]);
                 ItemStack made = assemble(spec.voltageIndex(), items);
                 out.check(
-                    InertWarheads.is(made) && made.getItemDamage() == spec.casing()
-                        .ordinal() && InertWarheads.payload(made) == null,
+                    InertWarheads.is(made) && InertWarheads.casing(made) == spec.casing()
+                        && InertWarheads.payload(made) == null,
                     spec + ": plates and fuze make the bare inert warhead at its tier");
                 ItemStack below = assemble(spec.voltageIndex() - 1, items);
                 out.check(!InertWarheads.is(below), spec + ": one voltage tier lower makes no inert warhead");
@@ -294,7 +294,7 @@ public final class WarheadChainScenarios {
                 return missing;
             }
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            Item item = InertWarheads.item();
+            Item item = InertWarheads.item(WarheadCasing.T1);
             out.check(!(item instanceof ItemBlock), "the inert warhead is not a block item");
             Block b = Block.getBlockFromItem(item);
             out.check(!(b instanceof BlockWarhead), "no warhead block stands behind the inert warhead");

@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Ender warhead is a Tier 3 casing made in the Assembler at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, a LuV Emitter, 16 Eyes of Ender and a Fuze Assembly Mk III. Check NEI.\n\nIt digs no crater. For 8 seconds it pulls every living thing within 24 blocks toward the center, and anything that reaches the middle (within 4 blocks) is sent to one landing spot 40 to 128 blocks away, up to 64 per blast. Bosses are pulled but never sent. It flies only from the silo. Make one.\n\n[warn]The landing spot is random. Don\u0027t stand in the pull unless you want to go too.[/warn]",
+      "desc:8": "The Ender warhead is a Tier 3 casing. Fit the ender payload to an Inert T3 Warhead in the Assembler at LuV (a LuV Emitter and 16 Eyes of Ender), then load up to 64 Plastic Explosive charges. Check NEI.\n\nIt digs no crater. For 8 seconds it pulls every living thing within 24 blocks toward the center, and anything that reaches the middle (within 4 blocks) is sent to one landing spot 40 to 128 blocks away, up to 64 per blast. Bosses are pulled but never sent. It flies only from the silo. Make one.\n\n[warn]The landing spot is random. Don\u0027t stand in the pull unless you want to go too.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -131,10 +131,10 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 8,
-          "Damage:2": 17316,
-          "OreDict:8": "plateTungstenSteel",
-          "id:8": "gregtech:gt.metaitem.01"
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:inert_warhead_t3"
         },
         "1:10": {
           "Count:3": 1,
@@ -149,10 +149,10 @@
           "id:8": "minecraft:ender_eye"
         },
         "3:10": {
-          "Count:3": 1,
+          "Count:3": 64,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:fuze_assembly_mk3"
+          "id:8": "gregguns:plastic_explosive"
         }
       },
       "taskID:8": "bq_standard:optional_retrieval"

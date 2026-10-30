@@ -23,10 +23,13 @@ public final class WarheadRegistration {
     public static void preInit(ModuleRegistrar registrar) {
         WarheadBlasts.registerAll();
         com.gregguns.icbm.recipe.IcbmParts.register(registrar);
-        // D282: the inert warhead, the first step of the chain, sits just before the live warheads.
-        ItemInertWarhead inert = registrar.registerItem(InertWarheads.NAME, new ItemInertWarhead());
-        inert.setTextureName("gregguns:" + InertWarheads.NAME);
-        InertWarheads.set(inert);
+        // D282: the inert warheads, the first step of the chain, sit just before the live warheads.
+        for (WarheadCasing casing : WarheadCasing.values()) {
+            ItemInertWarhead inert = registrar.registerItem(InertWarheads.name(casing), new ItemInertWarhead(casing));
+            // One flat fallback icon for all five; the item renderer draws the casing's model.
+            inert.setTextureName("gregguns:inert_warhead");
+            InertWarheads.set(casing, inert);
+        }
         for (WarheadCasing casing : WarheadCasing.values()) {
             BlockWarhead block = registrar
                 .registerBlock(casing.blockName(), new BlockWarhead(casing), ItemBlockWarhead.class);

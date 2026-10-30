@@ -66,9 +66,7 @@ public final class RecipeScenarios {
             // D282: the inert warhead of each casing, then each blast's payload and fill.
             for (InertWarheadSpec spec : InertWarheadSpec.values()) {
                 GTRecipe r = findOutput(
-                    o -> InertWarheads.is(o) && !o.hasTagCompound()
-                        && o.getItemDamage() == spec.casing()
-                            .ordinal());
+                    o -> InertWarheads.is(o) && !o.hasTagCompound() && InertWarheads.casing(o) == spec.casing());
                 out.check(r != null, "Assembler recipe of the inert " + spec + " warhead");
                 if (r != null) {
                     out.checkEquals(spec + " inert voltage", GTValues.VP[spec.voltageIndex()], (long) r.mEUt);

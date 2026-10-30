@@ -1,8 +1,12 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -3846270064191317513,
-      "questIDLow:4": -5296237746598317479
+      "questIDHigh:4": 3995211488086283615,
+      "questIDLow:4": -8746542850698651010
+    },
+    "1:10": {
+      "questIDHigh:4": 4773845841430337328,
+      "questIDLow:4": -5214983502479779990
     }
   },
   "properties:10": {
@@ -17,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The warhead is the part that does the talking. It\u0027s a GregTech-built charge: a stainless steel casing around explosives and a fuze. A Tier 1 casing holds up to 5 charges, and more charges make a wider, harder blast.\n\nThe cheap starter recipe in the Assembler at HV makes a Condensed warhead with a fill of 1 from 2 stainless steel plates, 2 TNT and a Fuze Assembly Mk I. The full Condensed recipe (fill 5) takes 4 stainless plates, 8 TNT, 2 dynamite, 3 Plastic Explosive and a fuze. Every other Tier 1 blast type has its own Assembler recipe: check NEI and read the tooltips for radius and damage.\n\n[warn]A warhead is a live explosive block. Fire, redstone and nearby explosions all set it off.[/warn]",
+      "desc:8": "Now make it live. Put an Inert T1 Warhead and 1 to 8 Plastic Explosive in a crafting grid and you get a live T1 warhead with that many charges, up to its cap of 5. A bare casing with charges alone is a Condensed warhead, plain high explosive. A casing with a payload becomes that blast type.\n\nPut the warhead back in the grid with more Plastic Explosive to top it up; a load that would pass the cap simply doesn\u0027t craft, so nothing is wasted. For automation, the Assembler fills a whole casing at once: an inert warhead and 5 Plastic Explosive on the blast\u0027s circuit. Check NEI.\n\nThe tooltip shows the charges, the blast radius and the center damage. Make one warhead, any type, any fill.\n\n[warn]A warhead is a live explosive block. Fire, redstone and nearby explosions all set it off.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -127,22 +131,16 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 2,
-          "Damage:2": 17306,
-          "OreDict:8": "plateStainlessSteel",
-          "id:8": "gregtech:gt.metaitem.01"
-        },
-        "1:10": {
-          "Count:3": 2,
-          "Damage:2": 0,
-          "OreDict:8": "",
-          "id:8": "minecraft:tnt"
-        },
-        "2:10": {
           "Count:3": 1,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:fuze_assembly_mk1"
+          "id:8": "gregguns:inert_warhead_t1"
+        },
+        "1:10": {
+          "Count:3": 5,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
         }
       },
       "taskID:8": "bq_standard:optional_retrieval"

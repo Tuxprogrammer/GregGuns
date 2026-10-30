@@ -183,7 +183,7 @@ public class QuestbookResourcesTest {
     @Test
     void questCountMatchesTheSpec() {
         assertEquals(
-            179 + SKIP_TRIGGERS,
+            182 + SKIP_TRIGGERS,
             QUESTS.size(),
             "update docs/gregguns-spec/12-questbook when the count changes");
     }
@@ -412,6 +412,10 @@ public class QuestbookResourcesTest {
         // The ICBM warheads are registered by their module, not part of the NEI order list.
         for (WarheadCasing casing : WarheadCasing.values()) {
             names.add(casing.blockName());
+        }
+        // The inert warheads, the first step of the warhead chain (D282).
+        for (WarheadCasing casing : WarheadCasing.values()) {
+            names.add(com.gregguns.icbm.warhead.InertWarheads.name(casing));
         }
         // The ICBM missile line registers its chips, schematics and bodies the same way.
         for (com.gregguns.icbm.production.MissileBuildSpec spec : com.gregguns.icbm.production.MissileBuildSpec
