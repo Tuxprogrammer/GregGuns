@@ -356,7 +356,7 @@ Tasks (`type`):
 |---|---|---|
 | `retrieval` | `items` (stacks); `any` true: any one of the items (OR within the task), otherwise all of them (AND); `matchNBT` true compares the stacks' `tag` | `bq_standard:retrieval`, `requireOnlyOneItem:1` = `any`, `consume:1` 0 |
 | `optional_retrieval` | as `retrieval` | `bq_standard:optional_retrieval`: lists items (recipe inputs) without gating the quest. Never with `taskLogic` `OR` |
-| `crafting` | `items` | `bq_standard:crafting`; crafting grid, furnace and anvil only |
+| `crafting` | `items`, `matchNBT` | `bq_standard:crafting`; crafting grid, furnace and anvil only. NBT is ignored unless `matchNBT` is true |
 | `hunt` | `target` (`gregguns.<Name>` or `Zombie`), `count` | `bq_standard:hunt` |
 | `fluid` | `fluids`: a list of `{"name": "<fluid registry name>", "amount": <mB>}` | `bq_standard:fluid`: fluid in containers (cells, buckets) in the inventory, `consume:1` 0 |
 | `location` | `dimension` (id), `name` (shown) | `bq_standard:location`, dimension only (range -1), the one way the pack uses it |

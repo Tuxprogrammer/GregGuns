@@ -1,7 +1,9 @@
 package com.gregguns.icbm.warhead;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,6 +22,7 @@ import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.objects.ItemData;
+import gregtech.api.objects.MaterialStack;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipeBuilder;
@@ -82,6 +85,8 @@ public final class WarheadRecipes {
             }
         }
         addRecycling();
+        // D283: the Cutting Machine runs the chain backwards.
+        WarheadDearmRecipes.addAll();
     }
 
     /**
@@ -184,7 +189,11 @@ public final class WarheadRecipes {
             .addTo(RecipeMaps.assemblerRecipes);
     }
 
-    /** GT recycling data: the casing metal comes back, the contents burn away (D44); the inert warhead alike. */
+    /**
+     * GT recycling data (D44, D283): the casing plates and the fuze's metal come back, the charges, payload and fluid
+     * burn away. The live and the inert warhead share it, so the Macerator and Arc Furnace give the same for either.
+     * {@link com.gregguns.icbm.recipe.PartRecipes} queues first, so the fuze's own data is already there.
+     */
     private static void addRecycling() {
         long plate = OrePrefixes.plate.getMaterialAmount();
         attach(WarheadCasing.T1, new ItemData(Materials.StainlessSteel, T1_PLATES * plate));
@@ -194,8 +203,55 @@ public final class WarheadRecipes {
         attach(WarheadCasing.T5, new ItemData(Materials.Neutronium, T5_PLATES * plate));
     }
 
-    private static void attach(WarheadCasing casing, ItemData data) {
+    private static void attach(WarheadCasing casing, ItemData plates) {
+        ItemData data = withFuze(plates, fuze(casing));
         GTOreDictUnificator.addItemData(new ItemStack(Item.getItemFromBlock(WarheadBlocks.of(casing))), data);
         GTOreDictUnificator.addItemData(InertWarheads.stack(casing, null), data);
+    }
+
+    /**
+     * @param plates the casing metal
+     * @param fuze   one Fuze Assembly, or null
+     * @return the casing metal as the main material, plus the fuze's materials as GT recorded them; the plates alone
+     *         when the fuze has no data. Fresh material stacks, so GT's registered fuze data is never shared.
+     */
+    private static ItemData withFuze(ItemData plates, ItemStack fuze) {
+        ItemData fuzeData = fuze == null ? null : GTOreDictUnificator.getItemData(fuze);
+        if (fuzeData == null || !fuzeData.hasValidMaterialData()) {
+            return plates;
+        }
+        Map<Materials, Long> amounts = new LinkedHashMap<>();
+        amounts.put(plates.mMaterial.mMaterial, plates.mMaterial.mAmount);
+        amounts.merge(fuzeData.mMaterial.mMaterial, fuzeData.mMaterial.mAmount, Long::sum);
+        for (MaterialStack m : fuzeData.mByProducts) {
+            if (m != null && m.mAmount > 0) {
+                amounts.merge(m.mMaterial, m.mAmount, Long::sum);
+            }
+        }
+        List<MaterialStack> rest = new ArrayList<>();
+        for (Map.Entry<Materials, Long> e : amounts.entrySet()) {
+            if (e.getKey() != plates.mMaterial.mMaterial) {
+                rest.add(new MaterialStack(e.getKey(), e.getValue()));
+            }
+        }
+        return new ItemData(
+            plates.mMaterial.mMaterial,
+            amounts.get(plates.mMaterial.mMaterial),
+            rest.toArray(new MaterialStack[0]));
+    }
+
+    /**
+     * @param casing a casing
+     * @return one of its Fuze Assembly, as its inert warhead recipe takes it; null when it does not resolve
+     */
+    private static ItemStack fuze(WarheadCasing casing) {
+        for (Ing in : InertWarheadSpec.of(casing)
+            .inputs()) {
+            if (in.src() == Ing.Src.PART) {
+                ItemStack s = IcbmIngredients.stack(in);
+                return s == null ? null : new ItemStack(s.getItem(), 1, s.getItemDamage());
+            }
+        }
+        return null;
     }
 }

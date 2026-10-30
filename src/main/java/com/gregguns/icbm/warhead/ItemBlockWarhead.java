@@ -165,6 +165,7 @@ public final class ItemBlockWarhead extends ItemBlock {
         l.detailCurve = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.curve");
         l.detailFuse = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.fuse");
         l.detailCharge = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.charge");
+        l.detailDearm = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.dearm");
         l.detailEffect = blast == null ? null
             : StatCollector.translateToLocalFormatted("gregguns.icbm.effect." + id, effectArgs(id));
         return l;

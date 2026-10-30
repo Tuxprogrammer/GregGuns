@@ -41,6 +41,8 @@ public final class WarheadTooltipFormat {
         public String detailCharge;
         /** Detail: the explosive's special effect text, already localized; may be null. */
         public String detailEffect;
+        /** Detail: how to de-arm it (D283), one slot: the most charges per grid unload; may be null. */
+        public String detailDearm;
     }
 
     /** The values of one warhead stack. */
@@ -130,6 +132,9 @@ public final class WarheadTooltipFormat {
             out.add(String.format(l.detailFuse, fuseSeconds(f.fuseTicks)));
         }
         out.add(l.detailCharge);
+        if (l.detailDearm != null && !l.detailDearm.isEmpty()) {
+            out.add(String.format(l.detailDearm, WarheadDearming.MAX_PER_CRAFT));
+        }
         return out;
     }
 }

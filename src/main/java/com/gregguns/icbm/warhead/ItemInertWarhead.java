@@ -107,6 +107,8 @@ public final class ItemInertWarhead extends Item implements Tiered {
         l.nextBare = StatCollector.translateToLocal("gregguns.icbm.inert.tooltip.next_bare");
         l.nextFitted = StatCollector.translateToLocal("gregguns.icbm.inert.tooltip.next_fitted");
         l.howToCharge = StatCollector.translateToLocal("gregguns.icbm.inert.tooltip.how");
+        l.dearmFitted = StatCollector.translateToLocal("gregguns.icbm.inert.tooltip.dearm_fitted");
+        l.dearmBare = StatCollector.translateToLocal("gregguns.icbm.inert.tooltip.dearm_bare");
         boolean shift = net.minecraft.client.gui.GuiScreen.isShiftKeyDown();
         net.minecraft.client.gui.FontRenderer font = net.minecraft.client.Minecraft.getMinecraft().fontRenderer;
         for (String line : InertWarheadTooltipFormat.lines(l, f, shift)) {

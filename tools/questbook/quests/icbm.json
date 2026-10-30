@@ -2089,6 +2089,103 @@
       }
     },
     {
+      "key": "gg.icbm.dearm",
+      "title": "De-arming",
+      "tier": "HV",
+      "desc": [
+        "Built the wrong warhead, or want the parts back? Every step of the chain runs backwards. Put a live warhead and a Defuse Kit in a crafting grid: each craft takes out up to 8 Plastic Explosive, whole, for one use of the kit. The last charge out leaves the inert warhead with its payload, ready for a different load.",
+        "The Cutting Machine does the rest at the warhead's own tier: it empties a full warhead in one go, takes a payload out and cuts a bare casing back into its plates and Fuze Assembly. Check NEI.",
+        "Unload a T1 warhead until only the inert casing is left.",
+        "[note]A payload's parts come back, but any fluid it held is spent. A Macerator or Arc Furnace only gives back a warhead's metal.[/note]"
+      ],
+      "pre": [
+        "gg.icbm.warhead"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:warhead_t1",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:defuser",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "crafting",
+          "items": [
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:shepardspieItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:defuser",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_steel",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1018,
+      "y": 660,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:defuser",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
       "key": "gg.icbm.t2_casing",
       "title": "Titanium Casing",
       "tier": "EV",

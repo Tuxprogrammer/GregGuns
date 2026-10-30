@@ -46,7 +46,10 @@ public final class WarheadRegistration {
         registrar.registerTileEntity("warhead_filler", TileWarheadFiller.class);
     }
 
-    /** Recipes and recycling data, queued for GT's before-postload hook. Runs only for an enabled module. */
+    /**
+     * Recipes and recycling data, queued for GT's before-postload hook, and the crafting-grid charge load and unload.
+     * Runs only for an enabled module.
+     */
     public static void init() {
         com.gregguns.icbm.recipe.PartRecipes.init();
         WarheadRecipes.init();
@@ -57,6 +60,17 @@ public final class WarheadRegistration {
             net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS,
             "");
         cpw.mods.fml.common.registry.GameRegistry.addRecipe(new WarheadChargeRecipe());
+        // D283: the grid unload (a live warhead and a Defuse Kit), and the handler that hands its charges back.
+        net.minecraftforge.oredict.RecipeSorter.register(
+            "gregguns:warhead_unload",
+            WarheadUnloadRecipe.class,
+            net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS,
+            "");
+        WarheadUnloadRecipe unload = new WarheadUnloadRecipe();
+        cpw.mods.fml.common.registry.GameRegistry.addRecipe(unload);
+        cpw.mods.fml.common.FMLCommonHandler.instance()
+            .bus()
+            .register(unload);
     }
 
     /**

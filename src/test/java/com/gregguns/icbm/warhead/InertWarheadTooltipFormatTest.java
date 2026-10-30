@@ -1,6 +1,7 @@
 package com.gregguns.icbm.warhead;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -23,6 +24,8 @@ class InertWarheadTooltipFormatTest {
         l.nextBare = "NextBare";
         l.nextFitted = "NextFitted";
         l.howToCharge = "Up to %s per craft";
+        l.dearmFitted = "DearmFitted";
+        l.dearmBare = "DearmBare";
         return l;
     }
 
@@ -69,5 +72,16 @@ class InertWarheadTooltipFormatTest {
         List<String> lines = InertWarheadTooltipFormat.lines(labels(), facts("Thermobaric", false, 20), true);
         assertEquals("Payload: Thermobaric", lines.get(0));
         assertTrue(lines.contains("NextFitted"));
+        assertEquals("DearmFitted", lines.get(lines.size() - 1));
+        assertFalse(lines.contains("DearmBare"));
+    }
+
+    @Test
+    void aBareCasingSaysHowToScrapIt() {
+        List<String> lines = InertWarheadTooltipFormat.lines(labels(), facts(null, true, 5), true);
+        assertEquals("DearmBare", lines.get(lines.size() - 1));
+        assertFalse(
+            InertWarheadTooltipFormat.lines(labels(), facts(null, true, 5), false)
+                .contains("DearmBare"));
     }
 }
