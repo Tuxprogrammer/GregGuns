@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import net.minecraft.item.Item;
@@ -52,9 +53,10 @@ public final class GtAchievementFilter {
             Map<String, Achievement> table = GTMod.achievements.achievementList;
             int n = strip(table.values(), GtAchievementFilter::isGregGuns);
             if (n > 0) {
-                for (AchievementPage page : AchievementPage.getAchievementPages()) {
-                    strip(page.getAchievements(), GtAchievementFilter::isGregGuns);
-                }
+                stripPages(
+                    AchievementPage.getAchievementPages(),
+                    AchievementPage::getAchievements,
+                    GtAchievementFilter::isGregGuns);
                 strip(AchievementList.achievementList, GtAchievementFilter::isGregGuns);
                 GregGuns.LOG.info("Removed {} GregGuns items from GregTech's generated achievements", n);
             }
@@ -89,6 +91,35 @@ public final class GtAchievementFilter {
             }
         }
         return n;
+    }
+
+    /**
+     * Strips every page's list, skipping a page whose list cannot be read now, so one mod's page cannot stop the
+     * pages after it and the vanilla list from being cleaned. KubaTech's tea page is one: on the client its
+     * {@code getAchievements} reads {@code Minecraft.thePlayer}, which is null at load-complete. That page only ever
+     * lists KubaTech's teas, so skipping it loses nothing.
+     *
+     * @param <P>          page type
+     * @param <T>          element type
+     * @param pages        the pages
+     * @param achievements reads one page's list
+     * @param match        which elements to drop
+     * @return how many pages were skipped
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/kubatech/loaders/item/kubaitem/items/ItemTeaCollection.java#L188-L199
+    // (TeaPage.getAchievements: Minecraft.getMinecraft().thePlayer.getStatFileWriter() on the client)
+    static <P, T> int stripPages(Iterable<P> pages, Function<? super P, ? extends Collection<T>> achievements,
+        Predicate<? super T> match) {
+        int skipped = 0;
+        for (P page : pages) {
+            try {
+                strip(achievements.apply(page), match);
+            } catch (RuntimeException e) {
+                skipped++;
+            }
+        }
+        return skipped;
     }
 
     /** Overload for a page's list, which may be a plain list. */

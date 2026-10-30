@@ -2,6 +2,7 @@ package com.gregguns.compat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,22 @@ class GtAchievementFilterTest {
         List<String> l = new ArrayList<>(Arrays.asList("gregguns:a", "gt:b", "gregguns:c"));
         assertEquals(2, GtAchievementFilter.strip(l, s -> s.startsWith("gregguns:")));
         assertEquals(Arrays.asList("gt:b"), l);
+    }
+
+    @Test
+    void stripPagesSkipsAThrowingPageAndCleansTheRest() {
+        List<String> first = new ArrayList<>(Arrays.asList("gregguns:a", "gt:b"));
+        List<String> last = new ArrayList<>(Arrays.asList("gregguns:c"));
+        List<List<String>> pages = Arrays.asList(first, null, last);
+        int skipped = GtAchievementFilter.stripPages(pages, p -> {
+            if (p == null) {
+                throw new NullPointerException("no client player yet");
+            }
+            return p;
+        }, s -> s.startsWith("gregguns:"));
+        assertEquals(1, skipped);
+        assertEquals(Arrays.asList("gt:b"), first);
+        assertTrue(last.isEmpty());
     }
 
     @Test
