@@ -1,749 +1,784 @@
 {
- "chapter": "zpm",
- "quests": [
-  {
-   "key": "gg.zpm.intro",
-   "title": "Nuclear Arms",
-   "tier": "ZPM",
-   "desc": "The top of the GregGuns tree. ZPM brings the Nuclear Death Ray, the Nuke Launcher and the components behind them, and every one is an Assembly Line build. Naquadah alloy is the gate, so the first thing you need is a supply of its plates.\n\nZPM weapons run at 122,880 EU/t recipes with lead shielding, ZPM circuits, soldering alloy and lubricant, and research items you scanned yourself. The Death Ray is a tier 7 electric item that charges only in a ZPM charger or battery buffer. The Nuke Launcher is ammo-fed.\n\nThis tier handles uranium. The tactical nuke rocket and the depleted Nuclear Power Cell are radioactive, and GT irradiates anyone who carries them without full radiation hazmat. Plan your storage before you build.\n\n[note]Press R over any item in NEI for its recipe. Quests only check what you carry and never take it.[/note]",
-   "pre": [
-    "gg.luv.intro",
-    2610,
-    1667
-   ],
-   "tasks": [
+  "chapter": "zpm",
+  "quests": [
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 4,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "rations",
-       "count": 1
+      "key": "gg.zpm.intro",
+      "title": "Nuclear Arms",
+      "tier": "ZPM",
+      "desc": "The top of the GregGuns tree. ZPM brings the Nuclear Death Ray, the Nuke Launcher and the components behind them, and every one is an Assembly Line build. Naquadah alloy is the gate, so the first thing you need is a supply of its plates.\n\nZPM weapons run at 122,880 EU/t recipes with lead shielding, ZPM circuits, soldering alloy and lubricant, and research items you scanned yourself. The Death Ray is a tier 7 electric item that charges only in a ZPM charger or battery buffer. The Nuke Launcher is ammo-fed.\n\nThis tier handles uranium. The tactical nuke rocket and the depleted Nuclear Power Cell are radioactive, and GT irradiates anyone who carries them without full radiation hazmat. Plan your storage before you build.\n\n[note]Press R over any item in NEI for its recipe. Quests only check what you carry and never take it.[/note]",
+      "pre": [
+        "gg.luv.intro",
+        2610,
+        1667
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIV",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sausageinbreadItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_rad_emitter",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2076,
+      "y": 94,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:nuclear_death_ray",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "dreamcraft:CoinSurvivorIV",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 5,
-       "damage": 0
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 32,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
+      "key": "gg.zpm.cell",
+      "title": "Nuclear Power Cell",
+      "tier": "ZPM",
+      "desc": "A sealed uranium cell, the part that makes ZPM feel nuclear. Weapons here do not burn it as ammo: the Death Ray runs on stored energy. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nTwo cells come from four Naquadah alloy plates, four lead plates, eight enriched uranium dust, four redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating. When a cell is used up, a ZPM Assembler refuels it from the depleted cell and four more enriched uranium dust.\n\n[warn]Radioactive. Keep depleted cells in a lead-lined chest, or wear full radiation hazmat while carrying them.[/warn]",
+      "pre": [
+        "gg.zpm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:part_power_plating",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:cell_nuclear",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:supremepizzaItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:part_nuclear_warhead",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_rad_emitter",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2088,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:cell_nuclear",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:part_mechanical_3",
-       "count": 8,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_rad_emitter",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 2076,
-   "y": 94,
-   "size": 48,
-   "main": true,
-   "icon": {
-    "id": "gregguns:nuclear_death_ray",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.zpm.cell",
-   "title": "Nuclear Power Cell",
-   "tier": "ZPM",
-   "desc": "A sealed uranium cell, the part that makes ZPM feel nuclear. Weapons here do not burn it as ammo: the Death Ray runs on stored energy. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nTwo cells come from four Naquadah alloy plates, four lead plates, eight enriched uranium dust, four redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating. When a cell is used up, a ZPM Assembler refuels it from the depleted cell and four more enriched uranium dust.\n\n[warn]Radioactive. Keep depleted cells in a lead-lined chest, or wear full radiation hazmat while carrying them.[/warn]",
-   "pre": [
-    "gg.zpm.intro"
-   ],
-   "tasks": [
-    {
-     "type": "optional_retrieval",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 4,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      },
-      {
-       "id": "gregguns:part_power_plating",
-       "count": 1,
-       "damage": 0
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:cell_nuclear",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "zpm",
-       "count": 1
+      "key": "gg.zpm.rad_emitter",
+      "title": "Rad Emitter",
+      "tier": "ZPM",
+      "desc": "The Rad Emitter is the Death Ray's business end: a ZPM emitter that sprays radiation along a beam. It is a ZPM Assembly Line part.\n\nBuild it from a ZPM emitter, two lead plates, a block of enriched uranium dust, two Mechanical Parts T3, two ZPM circuits and soldering alloy. The research item is a Sonic Emitter, scanned in a Research Station. NEI shows the full recipe.\n\n[warn]It carries uranium. Wear full radiation hazmat when carrying a stack.[/warn]",
+      "pre": [
+        "gg.zpm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_sonic_emitter",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_rad_emitter",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_rad_emitter",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2142,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_rad_emitter",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "dreamcraft:CoinSurvivorIII",
-       "count": 5,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureII",
-       "count": 5,
-       "damage": 0
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 32,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
+      "key": "gg.zpm.death_ray",
+      "title": "Nuclear Death Ray",
+      "tier": "ZPM",
+      "desc": "The best energy weapon in the tree. Hold the trigger and it fires a continuous beam that does heavy damage every tick and ignores armor. It has no reload. When the charge is gone, it is gone.\n\nIt is an Assembly Line recipe, researched from the Alien Blaster. The inputs are a Rad Emitter, a Carbon Receiver and Gunstock, a LuV field generator, two ZPM circuits, four lead plates, four Naquadah alloy plates and eight screws, with 1,152 mB of soldering alloy and 500 mB of lubricant. NEI has the exact list.\n\nIt is a tier 7 electric item holding 10 billion EU, and a beam tick costs 20 million EU. Charge it only in a ZPM charger or battery buffer; a lower one will not accept it.\n\n[note]The lead in the recipe is the shielding. Keep a spare Alien Blaster before you start, or the scan has nothing to read.[/note]",
+      "pre": [
+        "gg.zpm.rad_emitter",
+        "gg.zpm.cell"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_rad_emitter",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:nuclear_death_ray",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIV",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:rainbowcurryItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 64,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:part_rad_emitter",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2130,
+      "y": 202,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:nuclear_death_ray",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:part_nuclear_warhead",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_rad_emitter",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 2088,
-   "y": 160,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:cell_nuclear",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.zpm.rad_emitter",
-   "title": "Rad Emitter",
-   "tier": "ZPM",
-   "desc": "The Rad Emitter is the Death Ray's business end: a ZPM emitter that sprays radiation along a beam. It is a ZPM Assembly Line part.\n\nBuild it from a ZPM emitter, two lead plates, a block of enriched uranium dust, two Mechanical Parts T3, two ZPM circuits and soldering alloy. The research item is a Sonic Emitter, scanned in a Research Station. NEI shows the full recipe.\n\n[warn]It carries uranium. Wear full radiation hazmat when carrying a stack.[/warn]",
-   "pre": [
-    "gg.zpm.intro"
-   ],
-   "tasks": [
-    {
-     "type": "optional_retrieval",
-     "items": [
-      {
-       "id": "gregguns:part_sonic_emitter",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_mechanical_3",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 1,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      }
-     ]
+      "implicit": [
+        "gg.zpm.cell"
+      ]
     },
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:part_rad_emitter",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "zpm",
-       "count": 1
+      "key": "gg.zpm.warhead",
+      "title": "Small Nuclear Warhead",
+      "tier": "ZPM",
+      "desc": "The warhead is the payload of a tactical nuke rocket. It is a lead-shielded block of uranium and TNT wired for a ZPM fuze.\n\nCraft two at a time in a ZPM Assembly Line from lead plates, TNT dust, LuV circuits, enriched uranium dust and one Naquadah alloy plate, with soldering alloy. NEI lists the research item and the rest.\n\n[warn]Radioactive. A stack of warheads irradiates you unless you wear full radiation hazmat.[/warn]",
+      "pre": [
+        "gg.zpm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_nuclear_warhead",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sausageinbreadItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_nuclear_warhead",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2196,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_nuclear_warhead",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "dreamcraft:CoinSurvivorIII",
-       "count": 5,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureII",
-       "count": 5,
-       "damage": 0
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:part_rad_emitter",
-       "count": 2,
-       "damage": 0
+      "key": "gg.zpm.nuke_rocket",
+      "title": "Tactical Nuke Rocket",
+      "tier": "ZPM",
+      "desc": "A rocket with a nuclear warhead. One is enough to level a neighborhood, so treat it like a decision.\n\nBuild it in the ZPM Assembly Line from a regular Rocket, a Small Nuclear Warhead, two Naquadah alloy plates, two lead plates, a ZPM circuit and soldering alloy. The research item is a Rocket.\n\n[warn]Radioactive, and it is the biggest explosion in the mod. Only fire it where nobody lives, and wear full radiation hazmat while you carry it.[/warn]",
+      "pre": [
+        "gg.zpm.warhead"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_nuclear_warhead",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_rocket_nuke",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:supremepizzaItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rocket_nuke",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 32,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2196,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:ammo_rocket_nuke",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 32,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      },
-      {
-       "id": "gregguns:part_mechanical_3",
-       "count": 8,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 2142,
-   "y": 160,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:part_rad_emitter",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.zpm.death_ray",
-   "title": "Nuclear Death Ray",
-   "tier": "ZPM",
-   "desc": "The best energy weapon in the tree. Hold the trigger and it fires a continuous beam that does heavy damage every tick and ignores armor. It has no reload. When the charge is gone, it is gone.\n\nIt is an Assembly Line recipe, researched from the Alien Blaster. The inputs are a Rad Emitter, a Carbon Receiver and Gunstock, a LuV field generator, two ZPM circuits, four lead plates, four Naquadah alloy plates and eight screws, with 1,152 mB of soldering alloy and 500 mB of lubricant. NEI has the exact list.\n\nIt is a tier 7 electric item holding 10 billion EU, and a beam tick costs 20 million EU. Charge it only in a ZPM charger or battery buffer; a lower one will not accept it.\n\n[note]The lead in the recipe is the shielding. Keep a spare Alien Blaster before you start, or the scan has nothing to read.[/note]",
-   "pre": [
-    "gg.zpm.rad_emitter",
-    "gg.zpm.cell"
-   ],
-   "tasks": [
-    {
-     "type": "optional_retrieval",
-     "items": [
-      {
-       "id": "gregguns:part_rad_emitter",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_receiver_carbon",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_stock_carbon",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 4,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:nuclear_death_ray",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "zpm",
-       "count": 1
+      "key": "gg.zpm.nuke_launcher",
+      "title": "Nuke Launcher",
+      "tier": "ZPM",
+      "desc": "A shoulder-fired nuclear weapon. Inside 60% of its blast radius it annihilates anything that lives, and a boss takes half of its maximum health.\n\nIt is an Assembly Line build, researched from the Grim Reaper. The inputs are two Hardened Steel Barrels, a Carbon Receiver, a ZPM electric motor, two ZPM circuits, four lead plates, four Naquadah alloy plates and eight screws, with soldering alloy and lubricant. The tactical nuke rocket is its ammo.\n\n[warn]The nuke is the largest blast in GregGuns. Do not fire it from inside your own base.[/warn]\n\n[note]Servers that keep explosions.blockDamage off leave the terrain intact. Creatures are still hit.[/note]",
+      "pre": [
+        "gg.zpm.nuke_rocket"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:nuke_launcher",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIV",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 64,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:ammo_rocket_nuke",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2238,
+      "y": 202,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:nuke_launcher",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "dreamcraft:CoinSurvivorIV",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 5,
-       "damage": 0
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 64,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
+      "key": "gg.zpm.summary",
+      "title": "Top of the Tree",
+      "tier": "ZPM",
+      "desc": "That is everything GregGuns offers. A continuous beam that ignores armor, and a rocket launcher that ends arguments. You built both from naquadah, lead and uranium, on the same Assembly Line that makes the rest of the pack's ZPM gear.\n\nFrom here, the rest of the mod is yours to play with. The ICBM line takes you from rockets to missiles and silos, the NPC chapters have things worth hunting, and the pack has plenty of ZPM to go. Take the coins, open the bags, and keep your hazmat on.\n\nIf you want a longer game, go back and fill in the quests you skipped. Every chapter has side builds that pay well and teach something the capstones do not.\n\n[note]This capstone pays out the biggest reward in the tab, with four bags and the best meal.[/note]",
+      "pre": [
+        "gg.zpm.death_ray",
+        "gg.zpm.nuke_launcher"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:nuclear_death_ray",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:nuke_launcher",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "zpm",
+              "count": 4
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorIV",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureIII",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:supremepizzaItem",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 64,
+              "damage": 17325,
+              "ore": "plateNaquadahAlloy"
+            },
+            {
+              "id": "gregguns:ammo_rocket_nuke",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_rad_emitter",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:cell_nuclear",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 2184,
+      "y": 256,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:nuclear_death_ray",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:part_rad_emitter",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_receiver_carbon",
-       "count": 4,
-       "damage": 0
-      }
-     ]
+      "implicit": [
+        "gg.zpm.nuke_launcher"
+      ]
     }
-   ],
-   "x": 2130,
-   "y": 202,
-   "size": 48,
-   "main": true,
-   "icon": {
-    "id": "gregguns:nuclear_death_ray",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": [
-    "gg.zpm.cell"
-   ]
-  },
-  {
-   "key": "gg.zpm.warhead",
-   "title": "Small Nuclear Warhead",
-   "tier": "ZPM",
-   "desc": "The warhead is the payload of a tactical nuke rocket. It is a lead-shielded block of uranium and TNT wired for a ZPM fuze.\n\nCraft two at a time in a ZPM Assembly Line from lead plates, TNT dust, LuV circuits, enriched uranium dust and one Naquadah alloy plate, with soldering alloy. NEI lists the research item and the rest.\n\n[warn]Radioactive. A stack of warheads irradiates you unless you wear full radiation hazmat.[/warn]",
-   "pre": [
-    "gg.zpm.intro"
-   ],
-   "tasks": [
-    {
-     "type": "optional_retrieval",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 1,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      }
-     ]
-    },
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:part_nuclear_warhead",
-       "count": 2,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "zpm",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivorIII",
-       "count": 5,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureII",
-       "count": 5,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:part_nuclear_warhead",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 32,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      },
-      {
-       "id": "gregguns:ammo_rocket",
-       "count": 16,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 2196,
-   "y": 160,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:part_nuclear_warhead",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.zpm.nuke_rocket",
-   "title": "Tactical Nuke Rocket",
-   "tier": "ZPM",
-   "desc": "A rocket with a nuclear warhead. One is enough to level a neighborhood, so treat it like a decision.\n\nBuild it in the ZPM Assembly Line from a regular Rocket, a Small Nuclear Warhead, two Naquadah alloy plates, two lead plates, a ZPM circuit and soldering alloy. The research item is a Rocket.\n\n[warn]Radioactive, and it is the biggest explosion in the mod. Only fire it where nobody lives, and wear full radiation hazmat while you carry it.[/warn]",
-   "pre": [
-    "gg.zpm.warhead"
-   ],
-   "tasks": [
-    {
-     "type": "optional_retrieval",
-     "items": [
-      {
-       "id": "gregguns:ammo_rocket",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_nuclear_warhead",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 2,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      }
-     ]
-    },
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:ammo_rocket_nuke",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "zpm",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivorIII",
-       "count": 5,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureII",
-       "count": 5,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:ammo_rocket_nuke",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 32,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      },
-      {
-       "id": "gregguns:ammo_rocket",
-       "count": 32,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 2196,
-   "y": 214,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:ammo_rocket_nuke",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.zpm.nuke_launcher",
-   "title": "Nuke Launcher",
-   "tier": "ZPM",
-   "desc": "A shoulder-fired nuclear weapon. Inside 60% of its blast radius it annihilates anything that lives, and a boss takes half of its maximum health.\n\nIt is an Assembly Line build, researched from the Grim Reaper. The inputs are two Hardened Steel Barrels, a Carbon Receiver, a ZPM electric motor, two ZPM circuits, four lead plates, four Naquadah alloy plates and eight screws, with soldering alloy and lubricant. The tactical nuke rocket is its ammo.\n\n[warn]The nuke is the largest blast in GregGuns. Do not fire it from inside your own base.[/warn]\n\n[note]Servers that keep explosions.blockDamage off leave the terrain intact. Creatures are still hit.[/note]",
-   "pre": [
-    "gg.zpm.nuke_rocket"
-   ],
-   "tasks": [
-    {
-     "type": "optional_retrieval",
-     "items": [
-      {
-       "id": "gregguns:part_barrel_hardened",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_receiver_carbon",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 4,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      }
-     ]
-    },
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:nuke_launcher",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "zpm",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivorIV",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 5,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 64,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      },
-      {
-       "id": "gregguns:ammo_rocket_nuke",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_receiver_carbon",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 2238,
-   "y": 202,
-   "size": 48,
-   "main": true,
-   "icon": {
-    "id": "gregguns:nuke_launcher",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.zpm.summary",
-   "title": "Top of the Tree",
-   "tier": "ZPM",
-   "desc": "That is everything GregGuns offers. A continuous beam that ignores armor, and a rocket launcher that ends arguments. You built both from naquadah, lead and uranium, on the same Assembly Line that makes the rest of the pack's ZPM gear.\n\nFrom here, the rest of the mod is yours to play with. The ICBM line takes you from rockets to missiles and silos, the NPC chapters have things worth hunting, and the pack has plenty of ZPM to go. Take the coins, open the bags, and keep your hazmat on.\n\nIf you want a longer game, go back and fill in the quests you skipped. Every chapter has side builds that pay well and teach something the capstones do not.\n\n[note]This capstone pays out the biggest reward in the tab, with four bags and the best meal.[/note]",
-   "pre": [
-    "gg.zpm.death_ray",
-    "gg.zpm.nuke_launcher"
-   ],
-   "tasks": [
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:nuclear_death_ray",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:nuke_launcher",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "zpm",
-       "count": 4
-      },
-      {
-       "id": "dreamcraft:CoinSurvivorIV",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureIII",
-       "count": 5,
-       "damage": 0
-      },
-      {
-       "id": "harvestcraft:supremepizzaItem",
-       "count": 2,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 64,
-       "damage": 17325,
-       "ore": "plateNaquadahAlloy"
-      },
-      {
-       "id": "gregguns:ammo_rocket_nuke",
-       "count": 4,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_rad_emitter",
-       "count": 4,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:cell_nuclear",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 2184,
-   "y": 256,
-   "size": 48,
-   "main": true,
-   "icon": {
-    "id": "gregguns:nuclear_death_ray",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": [
-    "gg.zpm.nuke_launcher"
-   ]
-  }
- ]
+  ]
 }

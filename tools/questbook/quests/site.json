@@ -1,730 +1,740 @@
 {
- "chapter": "site",
- "quests": [
-  {
-   "key": "gg.site.intro",
-   "title": "Ruins and Camps",
-   "tier": "Steam",
-   "desc": [
-    "Factories, houses, bunkers, camps and ships dot the Overworld, and their chests hold GregGuns gear you would otherwise have to craft. Each structure draws from loot tables with a tier ceiling: the small ruins stop at LV, and everything bigger stops at MV, so a trip is worth it at any stage but never hands you the next tier early.",
-    "Structures spawn only in the Overworld and an admin can turn any of them off in the worldgen section of the GregGuns config. Vanilla chests fill when the world generates; Weapon and Reinforced chests fill the first time someone opens them.",
-    "Each quest in this chapter asks you to bring back something you can find there. Craftable items count too, so you can also build your way through, but the loot is free.",
-    "[note]Go armed: carry a Hand Cannon and some stone bullets before you leave the base.[/note]"
-   ],
-   "pre": [
-    "gg.steam.hand_cannon",
-    11
-   ],
-   "tasks": [
+  "chapter": "site",
+  "quests": [
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:handcannon",
-       "count": 1,
-       "damage": 0
+      "key": "gg.site.intro",
+      "title": "Ruins and Camps",
+      "tier": "Steam",
+      "desc": [
+        "Factories, houses, bunkers, camps and ships dot the Overworld, and their chests hold GregGuns gear you would otherwise have to craft. Each structure draws from loot tables with a tier ceiling: the small ruins stop at LV, and everything bigger stops at MV, so a trip is worth it at any stage but never hands you the next tier early.",
+        "Structures spawn only in the Overworld and an admin can turn any of them off in the worldgen section of the GregGuns config. Vanilla chests fill when the world generates; Weapon and Reinforced chests fill the first time someone opens them.",
+        "Each quest in this chapter asks you to bring back something you can find there. Craftable items count too, so you can also build your way through, but the loot is free.",
+        "[note]Go armed: carry a Hand Cannon and some stone bullets before you leave the base.[/note]"
+      ],
+      "pre": [
+        "gg.steam.hand_cannon",
+        11
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:handcannon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivor",
+              "count": 20,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventure",
+              "count": 20,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:grilledcheeseItem",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_heavy_cloth",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 22,
+      "y": 540,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:weapon_chest",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:ammo_stone_bullet",
-       "count": 16,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "rations",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivor",
-       "count": 20,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventure",
-       "count": 20,
-       "damage": 0
-      }
-     ]
+      "implicit": [
+        "gg.steam.hand_cannon"
+      ]
     },
     {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:ammo_stone_bullet",
-       "count": 32,
-       "damage": 0
+      "key": "gg.site.surface",
+      "title": "Small Ruins",
+      "tier": "LV",
+      "desc": [
+        "The small factory, train station, gas station and medium house are the easy stops. Their chests draw from the LV weapon table: 9mm and shotgun rounds, revolvers, sawed-offs and the occasional Hand Cannon. The medium house also holds Reinforced Chests of GregTech ingots (tin, copper, lead, iron) and a few Weapon Chests.",
+        "Bring back a revolver, sawed-off or Hand Cannon, and some 9mm or shotgun rounds. Both are LV guns you can also build with a steel plate, so check NEI if the chests are not generous."
+      ],
+      "pre": [
+        "gg.site.intro",
+        88
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:revolver",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:sawed_off",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:handcannon",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 16,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivor",
+              "count": 30,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventure",
+              "count": 30,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:meatystewItem",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305,
+              "ore": "plateSteel"
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 82,
+      "y": 540,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:weapon_chest",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "minecraft:gunpowder",
-       "count": 16,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:part_heavy_cloth",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 22,
-   "y": 540,
-   "size": 48,
-   "main": true,
-   "icon": {
-    "id": "gregguns:weapon_chest",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": [
-    "gg.steam.hand_cannon"
-   ]
-  },
-  {
-   "key": "gg.site.surface",
-   "title": "Small Ruins",
-   "tier": "LV",
-   "desc": [
-    "The small factory, train station, gas station and medium house are the easy stops. Their chests draw from the LV weapon table: 9mm and shotgun rounds, revolvers, sawed-offs and the occasional Hand Cannon. The medium house also holds Reinforced Chests of GregTech ingots (tin, copper, lead, iron) and a few Weapon Chests.",
-    "Bring back a revolver, sawed-off or Hand Cannon, and some 9mm or shotgun rounds. Both are LV guns you can also build with a steel plate, so check NEI if the chests are not generous."
-   ],
-   "pre": [
-    "gg.site.intro",
-    88
-   ],
-   "tasks": [
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:revolver",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:sawed_off",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:handcannon",
-       "count": 1,
-       "damage": 0
-      }
-     ],
-     "any": true
+      "implicit": []
     },
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:ammo_9mm_bullet",
-       "count": 16,
-       "damage": 0
+      "key": "gg.site.dungeon",
+      "title": "Dungeon Weapons",
+      "tier": "LV",
+      "desc": [
+        "Roguelike dungeons sink deep into the ground. Near the surface they hold LV gear, deeper down MV gear, depending on how your pack's dungeon loot is set up.",
+        "Bring back one gun and one blade from your delve: a pistol, revolver or sawed-off, and a Combat Knife or Crowbar. If the dungeon is stingy, you can always build them.",
+        "[warn]Dungeons are full of vanilla mobs and traps. Bring armor, light and an exit plan.[/warn]"
+      ],
+      "pre": [
+        "gg.site.surface"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:pistol_9mm",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:revolver",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:sawed_off",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:combat_knife",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:crowbar",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivor",
+              "count": 15,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventure",
+              "count": 15,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:vegetablesoupItem",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305,
+              "ore": "plateSteel"
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 94,
+      "y": 492,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:weapon_chest",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:ammo_shotgun_shell",
-       "count": 16,
-       "damage": 0
-      }
-     ],
-     "any": true
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "lv",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivor",
-       "count": 30,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventure",
-       "count": 30,
-       "damage": 0
-      },
-      {
-       "id": "harvestcraft:meatystewItem",
-       "count": 2,
-       "damage": 0
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:ammo_9mm_bullet",
-       "count": 48,
-       "damage": 0
+      "key": "gg.site.bunker",
+      "title": "Big Bunker",
+      "tier": "MV",
+      "desc": [
+        "The Big Bunker is a concrete fortress with Weapon and Reinforced chests throughout and a spawner room, and its loot reaches MV: Thompsons, MAC-10s, AK-47s, M4s and their magazines. Zombie Soldiers, Farmers and Miners spill out of the vanilla mob spawners inside, three at a time, up to five of each at once.",
+        "Kill three Zombie Soldiers and take an MV gun out of the chests. Breaking a spawner by hand takes a long time, so farm it instead.",
+        "[warn]The zombies carry guns and the bunker is dark. Bring light and armor.[/warn]"
+      ],
+      "pre": [
+        "gg.site.surface",
+        1148
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.ZombieSoldier",
+          "count": 3
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:thompson_smg",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mac10",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ak47",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:m4",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivor",
+              "count": 50,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventure",
+              "count": 50,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:omeletItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 142,
+      "y": 540,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:weapon_chest",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:ammo_shotgun_shell",
-       "count": 32,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 8,
-       "damage": 17305,
-       "ore": "plateSteel"
-      },
-      {
-       "id": "gregguns:bandages",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 82,
-   "y": 540,
-   "size": 48,
-   "main": true,
-   "icon": {
-    "id": "gregguns:weapon_chest",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.site.dungeon",
-   "title": "Dungeon Weapons",
-   "tier": "LV",
-   "desc": [
-    "Roguelike dungeons sink deep into the ground. Near the surface they hold LV gear, deeper down MV gear, depending on how your pack's dungeon loot is set up.",
-    "Bring back one gun and one blade from your delve: a pistol, revolver or sawed-off, and a Combat Knife or Crowbar. If the dungeon is stingy, you can always build them.",
-    "[warn]Dungeons are full of vanilla mobs and traps. Bring armor, light and an exit plan.[/warn]"
-   ],
-   "pre": [
-    "gg.site.surface"
-   ],
-   "tasks": [
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:pistol_9mm",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:revolver",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:sawed_off",
-       "count": 1,
-       "damage": 0
-      }
-     ],
-     "any": true
+      "implicit": []
     },
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:combat_knife",
-       "count": 1,
-       "damage": 0
+      "key": "gg.site.camp",
+      "title": "Military Camp",
+      "tier": "MV",
+      "desc": [
+        "A Military Camp is a ring of tents, barracks, bunkers and a flag post, and soldiers pour out of the flag as long as you stay near. Barracks hold T1 and T2 Combat armor, and the crates hold MV weapons.",
+        "Kill four Army Soldiers and bring back a piece of T2 Combat armor from the barracks. You can also craft it, but the barracks are free.",
+        "[note]The flag drops a single iron ingot when broken; the guns are in the crates.[/note]"
+      ],
+      "pre": [
+        "gg.site.bunker"
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.ArmySoldier",
+          "count": 4
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t2_combat_helmet",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t2_combat_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t2_combat_leggings",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t2_combat_boots",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivor",
+              "count": 25,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventure",
+              "count": 25,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:eggsaladItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 154,
+      "y": 600,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:weapon_chest",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:crowbar",
-       "count": 1,
-       "damage": 0
-      }
-     ],
-     "any": true
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "lv",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivor",
-       "count": 15,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventure",
-       "count": 15,
-       "damage": 0
-      },
-      {
-       "id": "harvestcraft:vegetablesoupItem",
-       "count": 2,
-       "damage": 0
-      }
-     ]
+      "implicit": []
     },
     {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:ammo_9mm_bullet",
-       "count": 48,
-       "damage": 0
+      "key": "gg.site.ships",
+      "title": "Carrier and Submarine",
+      "tier": "MV",
+      "desc": [
+        "The Aircraft Carrier and the Submarine are the largest structures, and their chests hold MV weapons and grenades. The carrier also carries a flag that sends out Army Soldiers and Commandos, up to nine at a time, so bring backup.",
+        "Bring back an MV gun and four Stielgranates from the chests. Both are craftable, but the ships hold plenty.",
+        "[warn]Commandos carry explosive charges. Do not stand in a corridor.[/warn]"
+      ],
+      "pre": [
+        "gg.site.camp"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:thompson_smg",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mac10",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ak47",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:m4",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:stielgranate",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivor",
+              "count": 25,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventure",
+              "count": 25,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:porksausageItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 154,
+      "y": 648,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:weapon_chest",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:ammo_shotgun_shell",
-       "count": 32,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 8,
-       "damage": 17305,
-       "ore": "plateSteel"
-      },
-      {
-       "id": "gregguns:bandages",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 94,
-   "y": 492,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:weapon_chest",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.site.bunker",
-   "title": "Big Bunker",
-   "tier": "MV",
-   "desc": [
-    "The Big Bunker is a concrete fortress with Weapon and Reinforced chests throughout and a spawner room, and its loot reaches MV: Thompsons, MAC-10s, AK-47s, M4s and their magazines. Zombie Soldiers, Farmers and Miners spill out of the vanilla mob spawners inside, three at a time, up to five of each at once.",
-    "Kill three Zombie Soldiers and take an MV gun out of the chests. Breaking a spawner by hand takes a long time, so farm it instead.",
-    "[warn]The zombies carry guns and the bunker is dark. Bring light and armor.[/warn]"
-   ],
-   "pre": [
-    "gg.site.surface",
-    1148
-   ],
-   "tasks": [
-    {
-     "type": "hunt",
-     "target": "gregguns.ZombieSoldier",
-     "count": 3
+      "implicit": []
     },
     {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:thompson_smg",
-       "count": 1,
-       "damage": 0
+      "key": "gg.site.nest",
+      "title": "Alien Bug Nest",
+      "tier": "EV",
+      "desc": [
+        "The Alien Bug Nest is a hive of hard resin walls and soft egg clusters, with a climbable slime trail down its entrance shaft and a vanilla mob spawner for the Alien Bug at its heart. Nothing else generates resin or eggs, so mining some is proof you were there.",
+        "Bring back four resin and two egg clusters. Resin is hard to mine; eggs are soft.",
+        "[note]The nest is off by default. An admin can place it by enabling the Alien Bug Nest in the worldgen section of the GregGuns config.[/note]"
+      ],
+      "pre": [
+        "gg.site.ships"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:bug_nest",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:bug_nest",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "dreamcraft:CoinSurvivorI",
+              "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "dreamcraft:CoinAdventureI",
+              "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 106,
+      "y": 648,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:bug_nest",
+        "count": 1,
+        "damage": 0
       },
-      {
-       "id": "gregguns:mac10",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:ak47",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:m4",
-       "count": 1,
-       "damage": 0
-      }
-     ],
-     "any": true
+      "implicit": []
     }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "mv",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivor",
-       "count": 50,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventure",
-       "count": 50,
-       "damage": 0
-      },
-      {
-       "id": "harvestcraft:omeletItem",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:ammo_rifle_bullet",
-       "count": 48,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:mag_assault_rifle",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 8,
-       "damage": 17019,
-       "ore": "plateAluminium"
-      },
-      {
-       "id": "gregguns:frag_grenade",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 142,
-   "y": 540,
-   "size": 48,
-   "main": true,
-   "icon": {
-    "id": "gregguns:weapon_chest",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.site.camp",
-   "title": "Military Camp",
-   "tier": "MV",
-   "desc": [
-    "A Military Camp is a ring of tents, barracks, bunkers and a flag post, and soldiers pour out of the flag as long as you stay near. Barracks hold T1 and T2 Combat armor, and the crates hold MV weapons.",
-    "Kill four Army Soldiers and bring back a piece of T2 Combat armor from the barracks. You can also craft it, but the barracks are free.",
-    "[note]The flag drops a single iron ingot when broken; the guns are in the crates.[/note]"
-   ],
-   "pre": [
-    "gg.site.bunker"
-   ],
-   "tasks": [
-    {
-     "type": "hunt",
-     "target": "gregguns.ArmySoldier",
-     "count": 4
-    },
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:t2_combat_helmet",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:t2_combat_chestplate",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:t2_combat_leggings",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:t2_combat_boots",
-       "count": 1,
-       "damage": 0
-      }
-     ],
-     "any": true
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "mv",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivor",
-       "count": 25,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventure",
-       "count": 25,
-       "damage": 0
-      },
-      {
-       "id": "harvestcraft:eggsaladItem",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:ammo_rifle_bullet",
-       "count": 48,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:mag_assault_rifle",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 8,
-       "damage": 17019,
-       "ore": "plateAluminium"
-      },
-      {
-       "id": "gregguns:medkit",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 154,
-   "y": 600,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:weapon_chest",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.site.ships",
-   "title": "Carrier and Submarine",
-   "tier": "MV",
-   "desc": [
-    "The Aircraft Carrier and the Submarine are the largest structures, and their chests hold MV weapons and grenades. The carrier also carries a flag that sends out Army Soldiers and Commandos, up to nine at a time, so bring backup.",
-    "Bring back an MV gun and four Stielgranates from the chests. Both are craftable, but the ships hold plenty.",
-    "[warn]Commandos carry explosive charges. Do not stand in a corridor.[/warn]"
-   ],
-   "pre": [
-    "gg.site.camp"
-   ],
-   "tasks": [
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:thompson_smg",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:mac10",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:ak47",
-       "count": 1,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:m4",
-       "count": 1,
-       "damage": 0
-      }
-     ],
-     "any": true
-    },
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:stielgranate",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "mv",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivor",
-       "count": 25,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventure",
-       "count": 25,
-       "damage": 0
-      },
-      {
-       "id": "harvestcraft:porksausageItem",
-       "count": 1,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregguns:ammo_rifle_bullet",
-       "count": 48,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:mag_assault_rifle",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 8,
-       "damage": 17019,
-       "ore": "plateAluminium"
-      },
-      {
-       "id": "gregguns:frag_grenade",
-       "count": 4,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 154,
-   "y": 648,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:weapon_chest",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  },
-  {
-   "key": "gg.site.nest",
-   "title": "Alien Bug Nest",
-   "tier": "EV",
-   "desc": [
-    "The Alien Bug Nest is a hive of hard resin walls and soft egg clusters, with a climbable slime trail down its entrance shaft and a vanilla mob spawner for the Alien Bug at its heart. Nothing else generates resin or eggs, so mining some is proof you were there.",
-    "Bring back four resin and two egg clusters. Resin is hard to mine; eggs are soft.",
-    "[note]The nest is off by default. An admin can place it by enabling the Alien Bug Nest in the worldgen section of the GregGuns config.[/note]"
-   ],
-   "pre": [
-    "gg.site.ships"
-   ],
-   "tasks": [
-    {
-     "type": "retrieval",
-     "items": [
-      {
-       "id": "gregguns:bug_nest",
-       "count": 4,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:bug_nest",
-       "count": 2,
-       "damage": 1
-      }
-     ]
-    }
-   ],
-   "rewards": [
-    {
-     "type": "item",
-     "items": [
-      {
-       "bag": "ev",
-       "count": 1
-      },
-      {
-       "id": "dreamcraft:CoinSurvivorI",
-       "count": 10,
-       "damage": 0
-      },
-      {
-       "id": "dreamcraft:CoinAdventureI",
-       "count": 10,
-       "damage": 0
-      }
-     ]
-    },
-    {
-     "type": "choice",
-     "items": [
-      {
-       "id": "gregtech:gt.metaitem.01",
-       "count": 8,
-       "damage": 17028,
-       "ore": "plateTitanium"
-      },
-      {
-       "id": "gregguns:medkit",
-       "count": 2,
-       "damage": 0
-      },
-      {
-       "id": "gregguns:ammo_rocket",
-       "count": 8,
-       "damage": 0
-      }
-     ]
-    }
-   ],
-   "x": 106,
-   "y": 648,
-   "size": 24,
-   "main": false,
-   "icon": {
-    "id": "gregguns:bug_nest",
-    "count": 1,
-    "damage": 0
-   },
-   "implicit": []
-  }
- ]
+  ]
 }

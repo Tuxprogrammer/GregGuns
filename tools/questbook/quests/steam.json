@@ -34,12 +34,17 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "steam",
               "count": 1
             },
             {
               "id": "dreamcraft:CoinSurvivor",
               "count": 20,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:meatystewItem",
+              "count": 2,
               "damage": 0
             }
           ]

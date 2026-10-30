@@ -42,7 +42,7 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "steam",
               "count": 1
             },
             {
@@ -53,6 +53,11 @@
             {
               "id": "dreamcraft:CoinAdventure",
               "count": 20,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:cornbreadItem",
+              "count": 2,
               "damage": 0
             }
           ]

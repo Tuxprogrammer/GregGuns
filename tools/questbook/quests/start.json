@@ -25,12 +25,17 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "steam",
               "count": 1
             },
             {
               "id": "dreamcraft:CoinSurvivor",
               "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:potatocakesItem",
+              "count": 2,
               "damage": 0
             }
           ]
@@ -99,12 +104,17 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "steam",
               "count": 1
             },
             {
               "id": "dreamcraft:CoinSurvivor",
               "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:chickensandwichItem",
+              "count": 2,
               "damage": 0
             }
           ]
@@ -212,12 +222,17 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "steam",
               "count": 1
             },
             {
               "id": "dreamcraft:CoinSurvivor",
               "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:pbandjItem",
+              "count": 2,
               "damage": 0
             }
           ]
@@ -303,12 +318,17 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "steam",
               "count": 1
             },
             {
               "id": "dreamcraft:CoinSurvivor",
               "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:bakedbeansItem",
+              "count": 2,
               "damage": 0
             }
           ]
@@ -376,12 +396,17 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "steam",
               "count": 1
             },
             {
               "id": "dreamcraft:CoinSurvivor",
               "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:fishandchipsItem",
+              "count": 2,
               "damage": 0
             }
           ]

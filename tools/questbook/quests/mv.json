@@ -34,12 +34,17 @@
           "type": "item",
           "items": [
             {
-              "bag": "rations",
+              "bag": "mv",
               "count": 1
             },
             {
               "id": "dreamcraft:CoinSurvivorI",
               "count": 10,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:trailmixItem",
+              "count": 1,
               "damage": 0
             }
           ]
