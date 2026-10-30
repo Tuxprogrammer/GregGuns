@@ -63,6 +63,11 @@ public final class QuestbookBundle {
                 JsonObject o = readObject(source, path);
                 quests.put(id(o, "questIDHigh:4", "questIDLow:4", path), o);
             }
+            for (UUID retired : index.retired) {
+                if (quests.containsKey(retired)) {
+                    throw new QuestbookException("A retired quest id is also shipped: " + retired);
+                }
+            }
             for (UUID positioned : positions.keySet()) {
                 if (!quests.containsKey(positioned)) {
                     throw new QuestbookException("A position file names a quest that is not shipped: " + positioned);

@@ -1,0 +1,6 @@
+{
+  "format": 1,
+  "namespace": "6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8",
+  "line": {"key": "line:gregguns", "name": "GregGuns", "desc": "Guns that follow GregTech progression.", "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0}, "visibility": "UNLOCKED"},
+  "retired": []
+}

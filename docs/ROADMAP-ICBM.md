@@ -92,7 +92,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Player guide sheets:** 13 stand-alone infographics in `docs/assets/infographics/`, built by [tools/asset-gen/infographics](../tools/asset-gen/infographics/README.md) from real renders of our models and GT textures. The tooling was written on Windows: it drives Edge through Playwright, and its docs use `cygpath`. On the Linux host it needs Playwright's own Chromium and plain paths.
 - **The renderer** (`render3d.py`) draws 1.7.10 box models and voxel scenes only. The ICBM models are meshes ([D43](gregguns-icbm-spec/DECISIONS.md)), so it needs a triangle-mesh path that reads the same OBJ files the game loads.
 - **Preview sheets** in `docs/assets/previews/` (models, icons, blocks, GUIs, particles) for reviewing new art before it reaches a guide.
-- **The quest line,** built by [tools/questbook](../tools/questbook/README.md) from `quests.json` with stable keys and installed from the jar.
+- **The quest line,** built by [tools/questbook](../tools/questbook/README.md) from `quests/` with stable keys and installed from the jar.
 - **Screenshots** from the batched client sessions.
 
 **Rules,** on top of the [infographic writing rules](../tools/asset-gen/infographics/README.md#writing-rules) (player language; no IDs, specs or repo links; the mod described as finished; strong contrast on every element; GT textures credited):

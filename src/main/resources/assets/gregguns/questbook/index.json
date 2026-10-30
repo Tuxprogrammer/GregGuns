@@ -122,13 +122,10 @@
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/CommandosandStor-4gg1AG4HXMadTcKsWXWc8w==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/Cyberdemon-KX-pQPLZWgSCTyjXwnLAJg==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/DictatorDave-R02XjcLfWyuLzIo6xjcahQ==.json",
-    "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/EliteVariants-Gr5HlmnTVcKuwMy565oUBA==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/AttackHelicopter-P0cM5jjnWWi0jPfg1nfTaw==.json",
-    "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/InfernalVariants-t8BhfdgpVnCMaZTth-goMQ==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/HostileFactions-a315yLzbWASFSYtqJlkyDQ==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/SkeletonSoldiers-YGbgOq4_WZWQaK62pgw0zw==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/PsychoSteve-80v0VhPfVBKUVzQY1NhNKQ==.json",
-    "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/UltraVariants-WzjEdlpfX7CnoQWAB1Vjeg==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/WalkingDead-HNX5vy9IXyWXlDl05MGb6w==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/BigBunker-Tkq4h6W7X9WBrKfavb-TUQ==.json",
     "QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/MilitaryCamp-OKZ9OGCiXDOv_DYYvjYKlA==.json",
@@ -276,13 +273,10 @@
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/CommandosandStor-4gg1AG4HXMadTcKsWXWc8w==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/Cyberdemon-KX-pQPLZWgSCTyjXwnLAJg==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/DictatorDave-R02XjcLfWyuLzIo6xjcahQ==.json",
-    "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/EliteVariants-Gr5HlmnTVcKuwMy565oUBA==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/AttackHelicopter-P0cM5jjnWWi0jPfg1nfTaw==.json",
-    "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/InfernalVariants-t8BhfdgpVnCMaZTth-goMQ==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/HostileFactions-a315yLzbWASFSYtqJlkyDQ==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/SkeletonSoldiers-YGbgOq4_WZWQaK62pgw0zw==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/PsychoSteve-80v0VhPfVBKUVzQY1NhNKQ==.json",
-    "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/UltraVariants-WzjEdlpfX7CnoQWAB1Vjeg==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/WalkingDead-HNX5vy9IXyWXlDl05MGb6w==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/BigBunker-Tkq4h6W7X9WBrKfavb-TUQ==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/MilitaryCamp-OKZ9OGCiXDOv_DYYvjYKlA==.json",
@@ -314,5 +308,10 @@
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/NuclearArms-GqpwePIVV6GeDRh-yMkzkw==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/NukeLauncher-tUMCQKVHVRarlhC600tDTQ==.json",
     "Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/TopoftheTree-_WK5gkzGU72JerH0PueN0g==.json"
+  ],
+  "retired": [
+    "1abe4796-69d3-55c2-aec0-ccb9eb9a1404",
+    "5b38c476-5a5f-5fb0-a7a1-05800755637a",
+    "b7c0617d-d829-5670-8c69-94ed87e82831"
   ]
 }

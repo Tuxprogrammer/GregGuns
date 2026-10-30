@@ -22,7 +22,11 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
 
-/** Index parsing, path resolution, the upsert plan, idempotency and tab-order insertion over a 3-quest fixture. */
+/**
+ * Index parsing, path resolution, the upsert plan, retirement, idempotency and tab-order insertion over a 3-quest
+ * fixture whose index retires a fourth id.
+ */
+// Spec: docs/gregguns-spec/12-questbook/index.md (GGS-12-02, GGS-12-18)
 class QuestbookInstallerTest {
 
     private static final String FIXTURE_ROOT = "fixture/questbook/";
@@ -30,6 +34,8 @@ class QuestbookInstallerTest {
     private static final UUID Q1 = new UUID(7, 1);
     private static final UUID Q2 = new UUID(7, 2);
     private static final UUID Q3 = new UUID(7, 3);
+    /** The id the fixture's index retires. */
+    private static final UUID RETIRED = new UUID(7, 4);
     private static final UUID PACK_QUEST = new UUID(0, 88);
     private static final UUID PACK_LINE = new UUID(0, 5);
 
@@ -43,6 +49,7 @@ class QuestbookInstallerTest {
         int saves;
         int syncs;
         int orderSets;
+        final List<UUID> removed = new ArrayList<>();
 
         @Override
         public Set<UUID> questIds() {
@@ -65,9 +72,18 @@ class QuestbookInstallerTest {
         }
 
         @Override
+        public void removeQuest(UUID id) {
+            quests.remove(id);
+            for (Map<UUID, JsonObject> positions : linePositions.values()) {
+                positions.remove(id);
+            }
+            removed.add(id);
+        }
+
+        @Override
         public void putLine(UUID id, JsonObject definition, Map<UUID, JsonObject> positions) {
             lines.put(id, definition);
-            linePositions.put(id, positions);
+            linePositions.put(id, new HashMap<>(positions));
         }
 
         @Override
@@ -109,6 +125,74 @@ class QuestbookInstallerTest {
         assertEquals(3, index.linePositions.size());
         assertEquals(3, index.quests.size());
         assertEquals("AAAAAAAAAAEAAAAAAAAAAg==", index.orderLineToken());
+        assertEquals(Collections.singletonList(RETIRED), index.retired);
+    }
+
+    @Test
+    void retiredIsOptionalAndMustBeUuids() throws Exception {
+        assertTrue(QuestbookIndex.parse("{\"format\":1,\"line\":\"x\"}").retired.isEmpty());
+        assertThrows(
+            QuestbookException.class,
+            () -> QuestbookIndex.parse("{\"format\":1,\"line\":\"x\",\"retired\":[\"not-a-uuid\"]}"));
+        assertThrows(
+            QuestbookException.class,
+            () -> QuestbookIndex.parse("{\"format\":1,\"line\":\"x\",\"retired\":\"x\"}"));
+    }
+
+    @Test
+    void aRetiredIdThatIsAlsoShippedFailsTheLoad() {
+        QuestbookSource shipsRetired = new QuestbookSource() {
+
+            private final QuestbookSource real = new Classpath(
+                QuestbookInstallerTest.class.getClassLoader(),
+                FIXTURE_ROOT);
+
+            @Override
+            public String read(String relativePath) throws IOException {
+                String text = real.read(relativePath);
+                return relativePath.equals("index.json") ? text.replace("0000-000000000004", "0000-000000000002")
+                    : text;
+            }
+        };
+        assertThrows(QuestbookException.class, () -> QuestbookBundle.load(shipsRetired));
+    }
+
+    @Test
+    void installDeletesExactlyTheRetiredIdsThatExist() throws Exception {
+        QuestbookBundle bundle = fixture();
+        FakeTarget target = packWithOtherContent();
+        target.quests.put(RETIRED, new JsonObject());
+        Map<UUID, JsonObject> oldPositions = new HashMap<>();
+        oldPositions.put(RETIRED, new JsonObject());
+        oldPositions.put(Q1, new JsonObject());
+        target.lines.put(LINE, new JsonObject());
+        target.linePositions.put(LINE, oldPositions);
+        target.order.add(LINE);
+        JsonObject packQuest = target.quests.get(PACK_QUEST);
+
+        QuestbookInstaller.Plan plan = QuestbookInstaller.plan(bundle, target);
+        assertEquals(Collections.singletonList(RETIRED), plan.retiredQuests);
+        QuestbookInstaller.install(bundle, target);
+        assertEquals(Collections.singletonList(RETIRED), target.removed);
+        assertFalse(target.quests.containsKey(RETIRED));
+        assertFalse(
+            target.linePositions.get(LINE)
+                .containsKey(RETIRED));
+        assertEquals(packQuest, target.quests.get(PACK_QUEST));
+        assertEquals(new HashSet<>(Arrays.asList(PACK_QUEST, Q1, Q2, Q3)), target.questIds());
+
+        // Already gone: a second install plans and deletes nothing.
+        QuestbookInstaller.Plan again = QuestbookInstaller.install(bundle, target);
+        assertTrue(again.retiredQuests.isEmpty());
+        assertEquals(1, target.removed.size());
+    }
+
+    @Test
+    void aRetiredIdTheDatabaseNeverHadIsNotDeleted() throws Exception {
+        FakeTarget target = packWithOtherContent();
+        QuestbookInstaller.Plan plan = QuestbookInstaller.install(fixture(), target);
+        assertTrue(plan.retiredQuests.isEmpty());
+        assertTrue(target.removed.isEmpty());
     }
 
     @Test

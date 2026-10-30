@@ -1,0 +1,80 @@
+{
+  "chapter": "zpm",
+  "quests": [
+    {
+      "key": "gg.zpm.intro",
+      "title": "Nuclear Arms",
+      "tier": "ZPM",
+      "desc": "ZPM weapons use nuclear cells. Naquadah is the gate.",
+      "pre": ["gg.luv.intro", 2610, 1667],
+      "tasks": [{"type": "checkbox"}],
+      "rewards": [],
+      "x": 1462,
+      "y": 94,
+      "size": 28,
+      "main": false,
+      "icon": {"id": "gregguns:nuclear_death_ray", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.zpm.cell",
+      "title": "Nuclear Power Cell",
+      "tier": "ZPM",
+      "desc": "Uranium-based power cell. Store it carefully.",
+      "pre": ["gg.zpm.intro"],
+      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:cell_nuclear", "count": 1, "damage": 0}]}],
+      "rewards": [],
+      "x": 1464,
+      "y": 132,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:cell_nuclear", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.zpm.death_ray",
+      "title": "Nuclear Death Ray",
+      "tier": "ZPM",
+      "desc": "The top energy weapon.",
+      "pre": ["gg.zpm.cell"],
+      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:nuclear_death_ray", "count": 1, "damage": 0}]}],
+      "rewards": [],
+      "x": 1446,
+      "y": 168,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:nuclear_death_ray", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.zpm.nuke_launcher",
+      "title": "Nuke Launcher",
+      "tier": "ZPM",
+      "desc": "Fires tactical nuke rockets. Do not use near your base.",
+      "pre": ["gg.zpm.cell"],
+      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:nuke_launcher", "count": 1, "damage": 0}]}],
+      "rewards": [],
+      "x": 1482,
+      "y": 168,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:nuke_launcher", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.zpm.summary",
+      "title": "Top of the Tree",
+      "tier": "ZPM",
+      "desc": "You have built everything GregGuns offers.",
+      "pre": ["gg.zpm.nuke_launcher", "gg.zpm.death_ray"],
+      "tasks": [{"type": "checkbox"}],
+      "rewards": [{"type": "item", "items": [{"id": "enhancedlootbags:lootbag", "count": 1, "damage": 42}]}],
+      "x": 1482,
+      "y": 204,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:nuclear_death_ray", "count": 1, "damage": 0},
+      "implicit": ["gg.zpm.death_ray"]
+    }
+  ]
+}
