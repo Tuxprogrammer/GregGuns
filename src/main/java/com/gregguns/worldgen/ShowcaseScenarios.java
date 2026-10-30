@@ -110,7 +110,8 @@ public final class ShowcaseScenarios {
         @Override
         public String description() {
             return "Palette review (needs no client, not part of test all): builds every surface structure and three"
-                + " Military Bases (woodland, desert, snow camo) on flat lots from x " + LOT_X
+                + " Military Bases (woodland, desert, snow camo) on flat lots from x "
+                + LOT_X
                 + " z "
                 + LOT_Z
                 + " through the real populator and pack palette, leaves them standing and logs each box as a"
@@ -165,8 +166,8 @@ public final class ShowcaseScenarios {
                 StructureState state = new StructureState("gregguns_showcase_" + lot.label);
                 Set<Type> biome = Collections.singleton(lot.biome);
                 for (int cx = Math.floorDiv(plan.anchorX() - 24, 16); cx <= Math.floorDiv(plan.maxX() + 8, 16); cx++) {
-                    for (int cz = Math.floorDiv(plan.anchorZ() - 24, 16); cz <= Math.floorDiv(plan.maxZ() + 8, 16);
-                        cz++) {
+                    for (int cz = Math.floorDiv(plan.anchorZ() - 24, 16); cz
+                        <= Math.floorDiv(plan.maxZ() + 8, 16); cz++) {
                         PopulateWindow window = new PopulateWindow(cx, cz);
                         ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
                         populator.populatePlans(
