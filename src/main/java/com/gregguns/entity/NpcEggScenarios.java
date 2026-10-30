@@ -58,7 +58,8 @@ final class NpcEggScenarios {
         public String description() {
             return "Using the egg of every registered egg mob (the Cyberdemon, Alien Bug, Attack Helicopter and"
                 + " Dictator Dave included) on a block spawns exactly that mob's class and consumes one egg, with the"
-                + " npcs.cyberdemon/alienBug/helicopter/miniBosses switches off.";
+                + " npcs.helicopter switch off (that flag gates camps, not the egg). The flags that do gate eggs are covered"
+                + " by npc.spawn_flags_refuse.";
         }
 
         @Override
@@ -78,16 +79,10 @@ final class NpcEggScenarios {
             FakePlayer player = new FakePlayer(
                 (WorldServer) world,
                 new GameProfile(UUID.nameUUIDFromBytes("npc_egg_all".getBytes(StandardCharsets.UTF_8)), "npc_egg_all"));
-            boolean cyberdemon = com.gregguns.core.config.NpcConfig.cyberdemon;
-            boolean alienBug = com.gregguns.core.config.NpcConfig.alienBug;
             boolean helicopter = com.gregguns.core.config.NpcConfig.helicopter;
-            boolean miniBosses = com.gregguns.core.config.NpcConfig.miniBosses;
             int checked = 0;
             try {
-                com.gregguns.core.config.NpcConfig.cyberdemon = false;
-                com.gregguns.core.config.NpcConfig.alienBug = false;
                 com.gregguns.core.config.NpcConfig.helicopter = false;
-                com.gregguns.core.config.NpcConfig.miniBosses = false;
                 for (NpcMob mob : NpcRegistry.eggMobs()) {
                     if (mob.isDevOnly()) {
                         continue;
@@ -116,10 +111,7 @@ final class NpcEggScenarios {
                     checked++;
                 }
             } finally {
-                com.gregguns.core.config.NpcConfig.cyberdemon = cyberdemon;
-                com.gregguns.core.config.NpcConfig.alienBug = alienBug;
                 com.gregguns.core.config.NpcConfig.helicopter = helicopter;
-                com.gregguns.core.config.NpcConfig.miniBosses = miniBosses;
             }
             out.check(
                 NpcRegistry.eggMobs()
