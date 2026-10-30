@@ -61,6 +61,8 @@ public class CommonProxy {
         // Retired ids get an inert machine so old worlds cannot crash GT's item render (see MtePlaceholders). Still
         // inside GT's registration window.
         MtePlaceholders.registerMissing();
+        // GT recycling data for every GregGuns stack that has none, from the recipes that make it (GGS-06-49).
+        com.gregguns.recipe.recycling.RecyclingDerivation.register();
         FMLCommonHandler.instance()
             .bus()
             .register(this);
@@ -165,6 +167,7 @@ public class CommonProxy {
         com.gregguns.machine.BuildScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.compat.VendingScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.compat.lootbags.LootBagScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        com.gregguns.recipe.recycling.RecyclingScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         GregGunsCommand command = new GregGunsCommand();
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         command.register(new com.gregguns.core.command.BuildSubCommand());

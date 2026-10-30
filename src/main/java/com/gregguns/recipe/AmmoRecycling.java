@@ -120,12 +120,15 @@ public final class AmmoRecycling {
         ProductionRecipes.attach(
             magazine.emptyItemName(),
             new ItemData(new MaterialStack(Materials.Aluminium, aluminium), new MaterialStack(Materials.Steel, steel)));
+        // The rounds may share a material with the magazine (steel rifle rounds); GT's merging constructor adds such
+        // amounts into one stack instead of listing the material twice.
         ProductionRecipes.attach(
             magazine.loadedItemName(),
             new ItemData(
-                new MaterialStack(Materials.Aluminium, aluminium),
-                new MaterialStack(Materials.Steel, steel),
-                new MaterialStack(foilMaterial, foil * rounds),
-                new MaterialStack(roundMaterial, round * rounds)));
+                new ItemData(
+                    new MaterialStack(Materials.Aluminium, aluminium),
+                    new MaterialStack(Materials.Steel, steel),
+                    new MaterialStack(foilMaterial, foil * rounds),
+                    new MaterialStack(roundMaterial, round * rounds))));
     }
 }

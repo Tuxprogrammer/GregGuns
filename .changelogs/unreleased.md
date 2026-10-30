@@ -6,6 +6,11 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - When a client joins a server whose `modules.*` flags differ from the client's own `config/gregguns.cfg`, the player now gets one chat line naming each module that differs, and the log gets one warning. Recipes and NEI follow the client's own config, so set the same values there and restart. Singleplayer is unaffected.
 
+## GT recycling for every GregGuns item
+
+- Nearly every GregGuns item, block and machine now recycles in GregTech's Macerator and Arc Furnace (and the other GT recyclers), returning the materials of the cheapest recipe that makes it, the way GT recycles its own machines. This adds most guns (the Assembly Line guns too), the Gun Mount Hatches, every casing and Bastion Plating, turret armor plates, explosive charges, grenades, the LMG, AS50 and Minigun magazines, rockets, shotgun shells and the other press ammo, the chainsaw and power hammers. Circuits, gunpowder and other explosives, and radioactive materials do not come back.
+- Not recyclable on purpose: coins, spawn eggs, fallout, silo complex walls, world blocks from structures, cloth, leather and wooden parts (GT gives those materials no recycling value), the antidote, launcher warheads and guidance chips.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.
