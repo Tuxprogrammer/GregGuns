@@ -24,7 +24,7 @@ Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquest
 | [quest-line.md](quest-line.md) | All 135 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
 | [authoring.md](authoring.md) | The pack's file format, ID derivation, one fully worked quest, the builder and validator in `tools/questbook/`, how to rebuild and test, checklist |
 
-The code for this area is the quest data and tools in `tools/questbook/` (`quests.json`, `build_quests.py`, `validate_quests.py`), the generated resources in `src/main/resources/assets/gregguns/questbook/`, and `QuestbookResourcesTest`. The installer is a separate piece, built behind the hidden config key.
+The code for this area is the quest data and tools in `tools/questbook/` (`quests/`, `build_quests.py`, `validate_quests.py`), the generated resources in `src/main/resources/assets/gregguns/questbook/`, and `QuestbookResourcesTest`. The installer is a separate piece, built behind the hidden config key.
 
 ## Tab placement
 
@@ -154,7 +154,7 @@ How the install behaves:
 | Requirement | Verified by |
 |---|---|
 | GGS-12-01, 03, 04, 05, 06, 15 | `QuestbookResourcesTest` (index lists every file, prerequisites resolve to a GregGuns quest or a pack id in the [Referenced pack quests](#referenced-pack-quests) table, no cycle, no overlapping boxes). `tools/questbook/validate_quests.py` runs the same checks on the files, and on a full `DefaultQuests` folder with `--only GregGuns-` |
-| GGS-12-02 | `QuestbookResourcesTest` recomputes uuid5 of every key in `tools/questbook/quests.json` and compares it to the resources. Rebuilding with `build_quests.py` gives byte-identical files |
+| GGS-12-02 | `QuestbookResourcesTest` recomputes uuid5 of every key in `tools/questbook/quests/` and compares it to the resources. Rebuilding with `build_quests.py` gives byte-identical files |
 | GGS-12-07, 08, 09, 11, 12, 13 | Build-time checks in `build_quests.py` (bag tier at most the quest tier, crafting only in the Steam chapter, SECRET only on the three bosses, OR only on the welcome quest). A review confirms the table in [quest-line.md](quest-line.md) matches the data |
 | GGS-12-10, 16 | `QuestbookResourcesTest` against `NeiOrder.names()`, `NpcMob` and `GregGunsMTEIDs` |
 | GGS-12-14 | Manual review against the checklist in [authoring.md](authoring.md#checklist) |

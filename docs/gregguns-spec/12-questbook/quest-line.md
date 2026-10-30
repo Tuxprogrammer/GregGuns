@@ -27,7 +27,7 @@ Every row is one quest. The **key** is stable: the quest's UUID is derived from 
 | Prerequisites | `gg.…` is a GregGuns quest. `pack N` is an existing pack quest, listed with its name in [index.md](index.md#referenced-pack-quests). `any of` means the quest unlocks when one of them is done. `(hover)` is a BetterQuesting implicit prerequisite: it still gates, but its line shows only on hover or with Shift held |
 | Layout | `x, y (size)` in canvas units. Size 28 is a chapter head, 24 everything else. No quest is `main` |
 
-Item names are the registry names (`gregguns:<name>`, as `NeiOrder` lists them). The GT meta tile entities (the Ammo Press, Ammunition Works, Repair Bench, Armory Gantry and Turret) are `gregtech:gt.blockmachines` stacks whose damage is the reserved MTE id from `GregGunsMTEIDs`. The data behind these tables is `tools/questbook/quests.json`; the tables are regenerated from it, so edit the data and rebuild.
+Item names are the registry names (`gregguns:<name>`, as `NeiOrder` lists them). The GT meta tile entities (the Ammo Press, Ammunition Works, Repair Bench, Armory Gantry and Turret) are `gregtech:gt.blockmachines` stacks whose damage is the reserved MTE id from `GregGunsMTEIDs`. The data behind these tables is `tools/questbook/quests/`; the tables are regenerated from it, so edit the data and rebuild.
 
 ## Design rules
 

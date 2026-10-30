@@ -2,20 +2,20 @@
 
 Builds the GregGuns quest line that ships inside the jar (`src/main/resources/assets/gregguns/questbook`). Python 3, standard library only. Design: `docs/gregguns-spec/12-questbook/`.
 
-- `quests.json`: the quest data, the single source of truth (keys, titles, tasks, rewards, prerequisites, layout). Quest IDs are `uuid5(namespace, key)`, so a key never changes after release.
+- `quests/`: the quest data, the single source of truth (keys, titles, tasks, rewards, prerequisites, layout). `_line.json` holds the header (`format`, `namespace`, `line`); each `<chapter>.json` is `{"chapter": "<chapter>", "quests": [...]}`, so parallel edits to different chapters never conflict. Quest IDs are `uuid5(namespace, key)`, so a key never changes after release.
 - `build_quests.py`: writes `index.json`, the line file, and one quest file plus one position file per quest. Output is byte-identical across rebuilds.
 - `validate_quests.py`: checks a quest folder (file names, prerequisites, cycles, overlaps, `index.json`).
 
 ```sh
 python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook
-python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook
+python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook --data tools/questbook/quests
 ```
 
-After editing `quests.json`, rebuild, update the tables in `quest-line.md` and the quest count, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
+After editing a chapter file, rebuild, update the tables in `quest-line.md` and the quest count, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
 
 ## Layout and prerequisites
 
-`quests.json` per quest: `x`, `y`, `size`, `pre` (quest keys, or pack quest numbers), optional `implicit` (a subset of `pre` drawn as BetterQuesting implicit prerequisites) and optional `main` (default: `size > 24`; GregGuns sets it false everywhere).
+Per quest: `x`, `y`, `size`, `pre` (quest keys, or pack quest numbers), optional `implicit` (a subset of `pre` drawn as BetterQuesting implicit prerequisites) and optional `main` (default: `size > 24`; GregGuns sets it false everywhere).
 
 Rules: 36 unit pitch, 24 unit nodes, 28 unit chapter heads, at most two in-line prerequisites per quest, only the first one drawn, no hub fan-out from `gg.start.welcome`.
 

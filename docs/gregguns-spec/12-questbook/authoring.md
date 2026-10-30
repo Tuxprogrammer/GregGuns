@@ -97,7 +97,7 @@ Properties that matter (the exporter writes about forty; the builder writes all 
 | `taskID:8` | JSON | Used for |
 |---|---|---|
 | `bq_standard:checkbox` | `{"index:3": 0, "taskID:8": "bq_standard:checkbox"}` | Intros, summaries, honor-system lessons |
-| `bq_standard:retrieval` | `requiredItems:9` (stacks), `requireOnlyOneItem:1` (1 = any one of the stacks), `consume:1` (0), `ignoreNBT:1` (1, or 0 to match a stack's NBT: the Nuclear Warhead quest uses `matchNBT` and a stack `tag` in `quests.json`), `partialMatch:1` (1), `autoConsume:1`, `groupDetect:1` | Anything made in a machine or found |
+| `bq_standard:retrieval` | `requiredItems:9` (stacks), `requireOnlyOneItem:1` (1 = any one of the stacks), `consume:1` (0), `ignoreNBT:1` (1, or 0 to match a stack's NBT: the Nuclear Warhead quest uses `matchNBT` and a stack `tag` in the data), `partialMatch:1` (1), `autoConsume:1`, `groupDetect:1` | Anything made in a machine or found |
 | `bq_standard:crafting` | `requiredItems:9`, `allowCraft:1`, `allowSmelt:1`, `allowAnvil:1`, `ignoreNBT:1`, `partialMatch:1`. Listens for the crafting table, furnace and anvil only ([TaskCrafting#L189-L200](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskCrafting.java#L189-L200)) | Steam-chapter quests |
 | `bq_standard:hunt` | `target:8` (an `EntityList` name), `required:3`, `subtypes:1` (0 = exact class), `ignoreNBT:1` (1), `targetNBT:10`, `damageType:8` (empty = any) | NPC branch |
 | `bq_standard:location` | `dimension:3`, `posX/Y/Z:3`, `range:3`, `structure:8`, `biome:3`, `name:8`, `invert:1`, `taxiCabDist:1`, `hideInfo:1`, `visible:1` | Not used. Present in the pack (34 times) |
@@ -282,14 +282,14 @@ All in `tools/questbook/`, Python 3, standard library only. Run them with `pytho
 
 | File | Role |
 |---|---|
-| `quests.json` | The quest data, the single source of truth. A header (`format`, the uuid5 `namespace`, the `line`) and one object per quest |
+| `quests/` | The quest data, the single source of truth. `_line.json` holds the header (`format`, the uuid5 `namespace`, the `line`); each `<chapter>.json` holds `{"chapter": "<chapter>", "quests": [...]}`, one object per quest. The file sets the chapter, so writers on different chapters never touch the same file |
 | `build_quests.py` | Reads the data and writes the resource tree, `index.json` included |
 | `validate_quests.py` | Checks a quest folder: the in-jar tree or a pack `DefaultQuests` |
 
-A quest in `quests.json`:
+A quest in `quests/lv.json`:
 
 ```json
-{"key": "gg.lv.pistol", "chapter": "lv", "title": "9mm Pistol", "tier": "LV", "desc": "...", "pre": ["gg.lv.ammo_9mm", 97],
+{"key": "gg.lv.pistol", "title": "9mm Pistol", "tier": "LV", "desc": "...", "pre": ["gg.lv.ammo_9mm", 97],
  "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:pistol_9mm", "count": 1, "damage": 0}]}],
  "rewards": [{"type": "item", "items": [{"id": "gregguns:mag_9mm_pistol", "count": 1, "damage": 0}]}],
  "x": 276, "y": 264, "size": 24, "main": false, "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0}}
@@ -303,7 +303,7 @@ Rebuild after any change to the data, then run the test:
 
 ```
 python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook
-python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook
+python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook --data tools/questbook/quests
 ```
 
 The builder deletes `QuestLines/` and `Quests/` under `--out` and rewrites them, so a removed quest leaves no stale file. The output is a pure function of the data: ids are uuid5 of the keys, keys are sorted, no timestamps, `\n` line endings. Two builds are byte-identical (GGS-12-02). Before it writes anything the builder checks the rules the file shape cannot show: a bag never above its quest's tier, `crafting` only in the Steam chapter, `SECRET` only on the three bosses, `OR` only on the welcome quest, and every GregGuns prerequisite key existing.
@@ -312,7 +312,7 @@ The validator checks that every file name matches the ID inside it, every prereq
 
 ## Rebuild and test
 
-1. **Edit** `tools/questbook/quests.json`. Keep a key stable once released: a retired quest is removed and its key never reused (GGS-12-02).
+1. **Edit** the chapter file in `tools/questbook/quests/`. Keep a key stable once released: a retired quest is removed and its key never reused (GGS-12-02).
 2. **Rebuild** with the two commands above, and update the tables in [quest-line.md](quest-line.md) and the quest count where it is stated.
 3. **Unit test.** `QuestbookResourcesTest` loads the resources from the classpath and checks the index, the ids, the prerequisites (against the [Referenced pack quests](index.md#referenced-pack-quests) table), cycles, registered item, entity and machine names, and overlapping boxes. It fails with "resources are stale" if the data and the resources disagree.
 4. **In game** (batched client pass). Turn the hidden install key on in a dev pack with BetterQuesting, start a new world and check the tab order, the layout and every icon. Nudge positions in edit mode (`/bq_admin edit`). With `/bq_admin complete`, complete the pack quests in the [Unlock design](index.md#unlock-design) table in turn and confirm each chapter intro appears only then. Obtain each item with `/give` and confirm the retrieval completes; kill each hunt target from its spawn egg and confirm the count rises; claim a bag and an item reward in survival.
@@ -320,7 +320,7 @@ The validator checks that every file name matches the ID inside it, every prereq
 
 ## Checklist
 
-- [ ] Every quest in `quests.json` has a Quests file and a position file with the same name, and [quest-line.md](quest-line.md) matches the data.
+- [ ] Every quest in `quests/` has a Quests file and a position file with the same name, and [quest-line.md](quest-line.md) matches the data.
 - [ ] IDs come from the builder; no hand-picked UUIDs.
 - [ ] `index.json` lists every file; the installer adds the line last in the tab order.
 - [ ] Every `gregguns:` item, `gregguns.` entity and machine id is registered (`QuestbookResourcesTest`); no placeholder left.

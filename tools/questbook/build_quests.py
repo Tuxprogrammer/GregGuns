@@ -1,18 +1,22 @@
-"""Build the GregGuns BetterQuesting quest line (BQ 3.8.89-GTNH file format) from quests.json.
+"""Build the GregGuns BetterQuesting quest line (BQ 3.8.89-GTNH file format) from the quests/ folder.
 
-usage: python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook [--lang src/main/resources/assets/gregguns/lang/en_US.lang] [--data quests.json]
+usage: python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook [--lang src/main/resources/assets/gregguns/lang/en_US.lang] [--data tools/questbook/quests]
+
+The data folder holds _line.json (format, namespace, line) and one <chapter>.json per chapter
+({"chapter": name, "quests": [...]}), so writers working on different chapters never touch the same file.
 
 Writes, under --out:
   index.json                          the list of every file (jars cannot list directories)
   QuestLines/GregGuns-<line id>/QuestLine.json and one position file per quest
   Quests/GregGuns-<line id>/<Name>-<id>.json, one per quest
 
-The output is a pure function of quests.json: ids are uuid5 of the keys, keys are sorted, no timestamps. Two builds
+The output is a pure function of the data folder: ids are uuid5 of the keys, keys are sorted, no timestamps. Two builds
 give byte-identical files (GGS-12-02). Python 3, standard library only.
 Spec: docs/gregguns-spec/12-questbook/authoring.md
 """
 import argparse
 import base64
+import glob
 import json
 import os
 import re
@@ -25,6 +29,30 @@ TIERS = ['Steam', 'LV', 'MV', 'HV', 'EV', 'IV', 'LuV', 'ZPM']
 # EnhancedLootBags GroupMetaID per tier (config/EnhancedLootBags/LootBags.xml in the pack)
 BAG_META = {'Steam': 2, 'LV': 4, 'MV': 5, 'HV': 6, 'EV': 7, 'IV': 8, 'LuV': 41, 'ZPM': 42}
 LINE_FOLDER = 'GregGuns'
+
+
+LINE_FILE = '_line.json'
+
+
+def load_data(folder):
+    """Read the data folder into one dict: the _line.json header plus every chapter's quests, each quest tagged
+    with its chapter (the file's "chapter"). Files whose name starts with '_' are not chapters."""
+    with open(os.path.join(folder, LINE_FILE), encoding='utf8') as fh:
+        data = json.load(fh)
+    data['quests'] = []
+    for path in sorted(glob.glob(os.path.join(folder, '*.json'))):
+        stem = os.path.basename(path)[:-5]
+        if stem.startswith('_'):
+            continue
+        with open(path, encoding='utf8') as fh:
+            chapter = json.load(fh)
+        if chapter.get('chapter') != stem:
+            raise ValueError('%s: "chapter" must be the file name, %s' % (path, stem))
+        for q in chapter['quests']:
+            if 'chapter' in q:
+                raise ValueError('%s: %s carries its own "chapter"; the file sets it' % (path, q.get('key')))
+            data['quests'].append(dict(q, chapter=stem))
+    return data
 
 
 def qid(ns, key):
@@ -219,8 +247,7 @@ def check(data):
 
 
 def build(data_path, out_dir, lang_path=None):
-    with open(data_path, encoding='utf8') as fh:
-        data = json.load(fh)
+    data = load_data(data_path)
     problems = check(data)
     if problems:
         for p in problems:
@@ -267,7 +294,7 @@ if __name__ == '__main__':
     here = os.path.dirname(os.path.abspath(__file__))
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('--out', required=True, help='questbook resource root')
-    ap.add_argument('--data', default=os.path.join(here, 'quests.json'))
+    ap.add_argument('--data', default=os.path.join(here, 'quests'), help='quest data folder')
     ap.add_argument('--lang', help='en_US.lang to refresh the generated betterquesting.* block in')
     args = ap.parse_args()
     sys.exit(build(args.data, args.out, args.lang))

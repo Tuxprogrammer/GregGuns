@@ -1,0 +1,81 @@
+{
+  "chapter": "start",
+  "quests": [
+    {
+      "key": "gg.start.welcome",
+      "title": "Welcome to GregGuns",
+      "tier": "Steam",
+      "desc": "Guns here follow GregTech progression: each weapon needs a machine tier and a gate material. This tab walks you up the tiers.",
+      "pre": [11, 44],
+      "tasks": [{"type": "checkbox"}],
+      "rewards": [],
+      "x": 58,
+      "y": 22,
+      "size": 28,
+      "logic": "OR",
+      "main": false,
+      "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.start.controls",
+      "title": "Fire, Reload, Zoom",
+      "tier": "Steam",
+      "desc": "Hold use to fire, press the reload key to swap magazines, right-click to zoom. Rebind keys in Controls.",
+      "pre": ["gg.start.welcome"],
+      "tasks": [{"type": "checkbox"}],
+      "rewards": [],
+      "x": 60,
+      "y": 60,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.start.ammo_types",
+      "title": "Ammo and Magazines",
+      "tier": "Steam",
+      "desc": "Each gun takes one caliber. Loose rounds fill a magazine; sneak-click a magazine to empty it.",
+      "pre": ["gg.start.controls"],
+      "tasks": [{"type": "checkbox"}],
+      "rewards": [],
+      "x": 96,
+      "y": 60,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.start.find_gear",
+      "title": "Where Gear Comes From",
+      "tier": "Steam",
+      "desc": "Craft it in GT machines, or find it: quest loot bags, chests in ruins, drops from hostile soldiers. NEI lists every recipe and drop.",
+      "pre": ["gg.start.welcome"],
+      "tasks": [{"type": "checkbox"}],
+      "rewards": [],
+      "x": 96,
+      "y": 24,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0},
+      "implicit": []
+    },
+    {
+      "key": "gg.start.tiers",
+      "title": "Reading a Tier",
+      "tier": "Steam",
+      "desc": "An LV item needs an LV machine and steel, an MV item needs aluminum, and so on. Tooltips show the tier.",
+      "pre": ["gg.start.find_gear"],
+      "tasks": [{"type": "checkbox"}],
+      "rewards": [],
+      "x": 132,
+      "y": 24,
+      "size": 24,
+      "main": false,
+      "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0},
+      "implicit": []
+    }
+  ]
+}

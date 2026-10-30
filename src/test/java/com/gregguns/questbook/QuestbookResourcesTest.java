@@ -47,6 +47,8 @@ import com.gregguns.machine.GregGunsMTEIDs;
 class QuestbookResourcesTest {
 
     private static final String ROOT = "assets/gregguns/questbook/";
+    /** The quest data folder: {@code _line.json} plus one file per chapter. */
+    private static final String DATA = "tools/questbook/quests";
     private static final UUID NAMESPACE = UUID.fromString("6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8");
     private static final String GT_MACHINES = "gregtech:gt.blockmachines";
     /** Hidden tier-skip triggers (LV to ZPM): in no line, so they have no position file. */
@@ -218,15 +220,12 @@ class QuestbookResourcesTest {
 
     @Test
     void idsAreUuid5OfTheDataKeys() throws Exception {
-        JsonObject data = new JsonParser()
-            .parse(new String(Files.readAllBytes(Paths.get("tools/questbook/quests.json")), StandardCharsets.UTF_8))
-            .getAsJsonObject();
         assertEquals(
             NAMESPACE.toString(),
-            data.get("namespace")
+            readData(Paths.get(DATA, "_line.json")).get("namespace")
                 .getAsString());
         Set<String> expected = new HashSet<>();
-        for (JsonElement e : data.getAsJsonArray("quests")) {
+        for (JsonElement e : dataQuests()) {
             UUID id = uuid5(
                 NAMESPACE,
                 e.getAsJsonObject()
@@ -239,6 +238,32 @@ class QuestbookResourcesTest {
             actual.add(q.high + "/" + q.low);
         }
         assertEquals(expected, actual, "resources are stale: rerun tools/questbook/build_quests.py");
+    }
+
+    private static JsonObject readData(java.nio.file.Path path) throws IOException {
+        return new JsonParser().parse(new String(Files.readAllBytes(path), StandardCharsets.UTF_8))
+            .getAsJsonObject();
+    }
+
+    /**
+     * Every quest in the data folder: the {@code quests} array of each chapter file ({@code <chapter>.json}; files
+     * whose name starts with {@code _} are not chapters).
+     */
+    private static List<JsonElement> dataQuests() throws IOException {
+        List<JsonElement> out = new ArrayList<>();
+        try (java.util.stream.Stream<java.nio.file.Path> files = Files.list(Paths.get(DATA))) {
+            for (java.nio.file.Path p : (Iterable<java.nio.file.Path>) files.sorted()::iterator) {
+                String name = p.getFileName()
+                    .toString();
+                if (name.endsWith(".json") && !name.startsWith("_")) {
+                    for (JsonElement e : readData(p).getAsJsonArray("quests")) {
+                        out.add(e);
+                    }
+                }
+            }
+        }
+        assertFalse(out.isEmpty(), "no quest data under " + DATA);
+        return out;
     }
 
     /** The ids of the pack quests that index.md says GregGuns may depend on. */
