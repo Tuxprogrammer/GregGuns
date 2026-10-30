@@ -47,7 +47,7 @@
 
 ## The T3 EMP warhead (D80)
 
-A T3 blast type, `emp`, on the tungstensteel casing at **LuV**, 1x1x2, fill cap 64. Radius `48 x (fill/64)^(1/3)` blocks (never below 3), no crater, no damage; the effect is one pulse in mode `all` at the blast radius, centered on the blast, with the same device cap, nearest-first order and missile table as the tower. Recipe: Assembler at LuV, circuit 4: 8 tungstensteel plates, 4 Industrial TNT, 2 Plastic Explosive, 2 LuV field generators, 2 LuV emitters, a Fuze Assembly Mk III (cost in the T3 band of D34).
+A T3 blast type, `emp`, on the tungstensteel casing at **LuV**, 1x1x2, fill cap 64. Radius `48 x (fill/64)^(1/3)` blocks (never below 3), no crater, no damage; the effect is one pulse in mode `all` at the blast radius, centered on the blast, with the same device cap, nearest-first order and missile table as the tower. Recipe (warhead chain, D282): the Inert T3 Warhead, then the EMP payload in the Assembler at LuV on circuit 4 (2 LuV field generators and 2 LuV emitters), then 64 Plastic Explosive charges. The cost is in the T3 band of D34.
 
 ## Requirements
 

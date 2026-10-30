@@ -66,6 +66,7 @@ class CircuitRangeTest {
         for (WarheadRecipeSpec s : WarheadRecipeSpec.values()) {
             check(bad, "warhead " + s, s.circuit());
         }
+        check(bad, "inert warhead", com.gregguns.icbm.warhead.InertWarheadSpec.CIRCUIT);
         for (IcbmPart p : IcbmPart.values()) {
             check(bad, "part " + p, p.circuit());
         }

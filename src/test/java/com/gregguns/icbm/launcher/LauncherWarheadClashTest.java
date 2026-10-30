@@ -36,8 +36,16 @@ class LauncherWarheadClashTest {
 
     private static List<R> others() {
         List<R> all = new ArrayList<>();
+        // D282: the payload recipes (condensed has none; its only recipe is the fill, which takes an inert warhead no
+        // launcher recipe has) and the inert warheads. A payload recipe also takes an inert warhead, left out here,
+        // which only makes the check stricter.
         for (WarheadRecipeSpec s : WarheadRecipeSpec.values()) {
-            all.add(new R("warhead " + s, s.circuit(), s.inputs()));
+            if (!s.chargesOnly()) {
+                all.add(new R("warhead payload " + s, s.circuit(), s.inputs()));
+            }
+        }
+        for (com.gregguns.icbm.warhead.InertWarheadSpec s : com.gregguns.icbm.warhead.InertWarheadSpec.values()) {
+            all.add(new R("inert warhead " + s, com.gregguns.icbm.warhead.InertWarheadSpec.CIRCUIT, s.inputs()));
         }
         for (IcbmPart p : IcbmPart.values()) {
             all.add(new R("part " + p, p.circuit(), p.inputs()));
@@ -99,16 +107,18 @@ class LauncherWarheadClashTest {
     }
 
     @Test
-    void theCheckSeesTheOldHeClash() {
-        // HE was circuit 1 with {2 plates, 4 TNT, 2 PE, fuze}: contained in the T1 condensed warhead's inputs.
-        R condensed = null;
+    void theCheckSeesAClash() {
+        // A launcher recipe on the inert warhead's circuit that held its plates and fuze (and more) would let the
+        // Assembler make an inert T1 warhead from the launcher's inputs: the check must flag it.
+        R inert = null;
         for (R o : others()) {
-            if (o.name.equals("warhead CONDENSED")) {
-                condensed = o;
+            if (o.name.equals("inert warhead T1")) {
+                inert = o;
             }
         }
-        assertTrue(
-            clash(new R("he", condensed.circuit, LauncherWarhead.HE.inputs()), condensed),
-            "the check must flag HE against the condensed warhead");
+        assertTrue(inert != null, "the inert T1 warhead is among the checked recipes");
+        List<Ing> probe = new ArrayList<>(com.gregguns.icbm.warhead.InertWarheadSpec.T1.inputs());
+        probe.add(Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2));
+        assertTrue(clash(new R("probe", inert.circuit, probe), inert), "the check must flag the probe");
     }
 }

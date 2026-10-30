@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes it at UV from 8 naquadria plates, 2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. Check NEI.\n\nA full warhead blasts 80 blocks, and nothing living in the inner 48 survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.\n\n[warn]Bosses are not safe and neither are you. Launch it from far away.[/warn]",
+      "desc:8": "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes the Inert T4 Warhead at UV from 8 naquadria plates and a Fuze Assembly Mk III, fits the antimatter payload at UV (2 UV Field Generators, a Quantum Eye and 4 plutonium-241 ingots), and fills it with 128 Plastic Explosive. Check NEI.\n\nA full warhead blasts 80 blocks, and nothing living in the inner 48 survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.\n\n[warn]Bosses are not safe and neither are you. Launch it from far away.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

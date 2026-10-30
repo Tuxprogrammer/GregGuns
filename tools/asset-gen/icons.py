@@ -900,6 +900,18 @@ def _(c, x):
     c.pix(4, 5, COPPER[HL])
 
 
+@icon("inert_warhead")
+def _(c, x):
+    # An empty warhead casing, nose up: a gray steel cone over a short body, with the blue band that marks inert
+    # (training) munitions and an open fuze well at the tip (D282).
+    c.poly([(7, 1), (8, 1), (12, 8), (3, 8)], x.m)
+    c.rect(3, 8, 12, 14, x.m)
+    c.rect(3, 10, 12, 11, ramp((70, 110, 190)))
+    c.hline(4, 11, 14, x.m[DK])
+    c.pix(7, 1, x.m[HL]); c.pix(8, 2, x.m[DK])
+    c.vline(5, 4, 9, x.m[LT])
+
+
 @icon("part_uv_emitter")
 def _(c, x):
     c.rect(1, 3, 14, 12, x.m)

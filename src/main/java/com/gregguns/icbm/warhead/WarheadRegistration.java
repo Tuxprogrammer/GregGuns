@@ -4,8 +4,9 @@ import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 
 /**
- * Registration of the warhead content: the two casing blocks and their items, the filler block, the tiles, the T1 and
- * T2 explosives, and (later hooks) recipes and scenarios. {@code IcbmModule} calls the hooks. Common side.
+ * Registration of the warhead content: the inert warhead item, the casing blocks and their items, the filler block,
+ * the tiles, the explosives, and (later hooks) the recipes, the charge-loading crafting recipe and scenarios.
+ * {@code IcbmModule} calls the hooks. Common side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warhead-blocks.md, warheads-and-fill.md
 public final class WarheadRegistration {
@@ -22,6 +23,13 @@ public final class WarheadRegistration {
     public static void preInit(ModuleRegistrar registrar) {
         WarheadBlasts.registerAll();
         com.gregguns.icbm.recipe.IcbmParts.register(registrar);
+        // D282: the inert warheads, the first step of the chain, sit just before the live warheads.
+        for (WarheadCasing casing : WarheadCasing.values()) {
+            ItemInertWarhead inert = registrar.registerItem(InertWarheads.name(casing), new ItemInertWarhead(casing));
+            // One flat fallback icon for all five; the item renderer draws the casing's model.
+            inert.setTextureName("gregguns:inert_warhead");
+            InertWarheads.set(casing, inert);
+        }
         for (WarheadCasing casing : WarheadCasing.values()) {
             BlockWarhead block = registrar
                 .registerBlock(casing.blockName(), new BlockWarhead(casing), ItemBlockWarhead.class);
@@ -42,6 +50,13 @@ public final class WarheadRegistration {
     public static void init() {
         com.gregguns.icbm.recipe.PartRecipes.init();
         WarheadRecipes.init();
+        // Source: Forge 1.7.10 RecipeSorter.register; without it FML logs "Unknown recipe class" at load.
+        net.minecraftforge.oredict.RecipeSorter.register(
+            "gregguns:warhead_charge",
+            WarheadChargeRecipe.class,
+            net.minecraftforge.oredict.RecipeSorter.Category.SHAPELESS,
+            "");
+        cpw.mods.fml.common.registry.GameRegistry.addRecipe(new WarheadChargeRecipe());
     }
 
     /**

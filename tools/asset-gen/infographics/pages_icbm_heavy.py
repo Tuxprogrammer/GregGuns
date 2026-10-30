@@ -69,22 +69,19 @@ def _verify() -> None:
     """The payload text printed below, checked against the recipe source."""
     spec = P._SPEC
     need = [
-        "ENDER(WarheadBlast.ENDER, false, 5, plates(Tier.LUV, 8), Ing.industrialTnt(8), pe(3),",
-        'Ing.gtItem("Emitter_LuV", 1, Tier.LUV, 10.0), Ing.gt("gem", "EnderEye", 16',
-        "ANTIGRAV(WarheadBlast.ANTIGRAV, false, 6, plates(Tier.LUV, 8), Ing.industrialTnt(6), pe(2),",
-        'Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0), Ing.gt("gem", "NetherStar", 4',
-        "EMP(WarheadBlast.EMP, false, 4, plates(Tier.LUV, 8), Ing.industrialTnt(4), pe(2),",
-        'Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0), Ing.gtItem("Emitter_LuV", 2',
-        "NUCLEAR(WarheadBlast.NUCLEAR, false, 3, plates(Tier.LUV, 8), Ing.industrialTnt(12), pe(4),",
-        'Ing.gt("ingot", "Uranium235", 8, Tier.HV, 6.0), Ing.gt("ingot", "Plutonium", 4',
-        "EXOTHERMIC(WarheadBlast.EXOTHERMIC, false, 1, plates(Tier.LUV, 8), Ing.industrialTnt(16), pe(6),",
-        "Ing.part(IcbmPart.NAPALM_CANISTER, 4), fuze3(), Ing.kerosene(8000)",
-        "Ing.part(IcbmPart.DISPERSAL_CANISTER, 4), fuze3(), Ing.gas(\"Helium\", 8000",
-        "ANTIMATTER(WarheadBlast.ANTIMATTER, false, 1, naquadria(8), Ing.industrialTnt(8), pe(4),",
+        "ENDER(WarheadBlast.ENDER, 5,",
+        'Ing.gtItem("Emitter_LuV", 1, Tier.LUV, 10.0)', 'Ing.gt("gem", "EnderEye", 16',
+        "ANTIGRAV(WarheadBlast.ANTIGRAV, 6,",
+        'Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0)', 'Ing.gt("gem", "NetherStar", 4',
+        "EMP(WarheadBlast.EMP, 4,", 'Ing.gtItem("Emitter_LuV", 2',
+        "NUCLEAR(WarheadBlast.NUCLEAR, 3,",
+        'Ing.gt("ingot", "Uranium235", 8, Tier.HV, 6.0)', 'Ing.gt("ingot", "Plutonium", 4',
+        "EXOTHERMIC(WarheadBlast.EXOTHERMIC, 1, Ing.part(IcbmPart.NAPALM_CANISTER, 4), Ing.kerosene(8000))",
+        "Ing.part(IcbmPart.DISPERSAL_CANISTER, 4),", 'Ing.gas("Helium", 8000',
+        "ANTIMATTER(WarheadBlast.ANTIMATTER, 1,",
         'Ing.gtItem("Field_Generator_UV", 2', 'Ing.gtItem("QuantumEye", 1', 'Ing.gt("ingot", "Plutonium241", 4',
-        "REDMATTER(WarheadBlast.REDMATTER, false, 2, neutronium(8), Ing.industrialTnt(8), pe(4),",
+        "REDMATTER(WarheadBlast.REDMATTER, 2,",
         'Ing.gtItem("Field_Generator_UHV", 2', 'Ing.gtItem("QuantumEye", 2', 'Ing.gtItem("Emitter_UHV", 2',
-        "fuze3()",
     ]
     missing = [n for n in need if n not in spec]
     if missing:
@@ -100,14 +97,14 @@ MACHINE = {"exothermic": "LuV", "endothermic": "LuV", "nuclear": "ZPM", "emp": "
 
 TIER_NAME = {"HV": "HV", "EV": "EV", "LUV": "LuV"}
 PAY = {
-    "exothermic": "16 Industrial TNT, 6 Plastic Explosive, 4 Napalm Canisters, 8,000 L kerosene",
-    "endothermic": "16 Industrial TNT, 6 Plastic Explosive, 4 Dispersal Canisters, 8,000 L helium",
-    "nuclear": "12 Industrial TNT, 4 Plastic Explosive, 8 uranium-235 ingots, 4 plutonium ingots",
-    "emp": "4 Industrial TNT, 2 Plastic Explosive, 2 LuV Field Generators, 2 LuV Emitters",
-    "ender": "8 Industrial TNT, 3 Plastic Explosive, a LuV Emitter, 16 Eyes of Ender",
-    "antigrav": "6 Industrial TNT, 2 Plastic Explosive, 2 LuV Field Generators, 4 Nether Stars",
-    "antimatter": "8 Industrial TNT, 4 Plastic Explosive, 2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots",
-    "redmatter": "8 Industrial TNT, 4 Plastic Explosive, 2 UHV Field Generators, 2 Quantum Eyes, 2 UHV Emitters",
+    "exothermic": "4 Napalm Canisters, 8,000 L kerosene; then 64 Plastic Explosive",
+    "endothermic": "4 Dispersal Canisters, 8,000 L helium; then 64 Plastic Explosive",
+    "nuclear": "8 uranium-235 ingots, 4 plutonium ingots; then 64 Plastic Explosive as its implosion lens",
+    "emp": "2 LuV Field Generators, 2 LuV Emitters; then 64 Plastic Explosive",
+    "ender": "a LuV Emitter, 16 Eyes of Ender; then 64 Plastic Explosive",
+    "antigrav": "2 LuV Field Generators, 4 Nether Stars; then 64 Plastic Explosive",
+    "antimatter": "2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots; then 128 Plastic Explosive",
+    "redmatter": "2 UHV Field Generators, 2 Quantum Eyes, 2 UHV Emitters; then 128 Plastic Explosive",
 }
 CAT_COLOR = {"Crater": "#ff8a1f", "Annihilate": "#ff5555", "Utility": "#38c6d9", "Teleport": "#b88cff", "Lift": "#6fd36b"}
 
@@ -153,7 +150,7 @@ def _t3_card(bid, name, kind, what, size_html=None):
 <div class="top"><h3>{esc(name)}</h3><span class="kind">{esc(kind)}</span></div>
 <div class="nums"><span>Radius <b>{P._n(rad)}</b></span>{dmg_html}<span>Fuse <b>{_fuse(rad)} s</b></span></div>
 <div class="what">{what}</div>
-<div class="pay"><span>Payload</span> {esc(PAY[bid])}</div><div class="pay"><span>Made at</span> {tchip(MACHINE[bid])} in the Assembler</div></div></div></div>"""
+<div class="pay"><span>Payload</span> {esc(PAY[bid])}</div><div class="pay"><span>Made at</span> {tchip(MACHINE[bid])} in the Assembler, on an inert warhead</div></div></div></div>"""
 
 
 def _casing(tier, label, tier_chip, mesh, tex, plate_html, cap, extra, blurb, ppu=150):

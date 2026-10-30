@@ -661,8 +661,8 @@
       "title": "Fuze Assembly",
       "tier": "HV",
       "desc": [
-        "Every Tier 1 warhead has a Fuze Assembly Mk I in it: the timer and trigger that make the charge go off when and where you want.",
-        "It's an Assembler recipe at HV from an Advanced circuit, a steel plate and 4 fine copper wires, the same shopping list as the Guidance Computer. Check NEI. Make a few: every warhead recipe of the tier eats one."
+        "Every Tier 1 warhead starts as an inert casing, and a Fuze Assembly Mk I is built into it: the timer and trigger that make the charges go off when and where you want, and nothing before that.",
+        "It's an Assembler recipe at HV from an Advanced circuit, a steel plate and 4 fine copper wires, the same shopping list as the Guidance Computer. Check NEI. Make a few: every Inert T1 Warhead takes one, and so do the HV launcher warheads."
       ],
       "pre": [
         "gg.icbm.intro"
@@ -755,6 +755,364 @@
       "main": true,
       "icon": {
         "id": "gregguns:fuze_assembly_mk1",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.charges",
+      "title": "Plastic Explosive",
+      "tier": "HV",
+      "desc": [
+        "Every warhead's explosive is Plastic Explosive: one piece is one charge. More charges make a wider, harder blast, though each extra charge adds a little less than the one before.",
+        "The Assembler makes 4 at HV from 2 PTFE plates and 2 Industrial TNT. Check NEI. That's the only place Industrial TNT goes; a warhead takes the charges and nothing else explosive.",
+        "Make five, enough to fill a Tier 1 casing. Heavier casings hold 20, 64 and finally 128, so it's worth automating early.",
+        "[warn]Plastic Explosive is safe in a chest. Once it's loaded into a warhead it isn't.[/warn]"
+      ],
+      "pre": [
+        "gg.icbm.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17473,
+              "ore": "platePolytetrafluoroethylene"
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 5,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:epicbaconItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "IC2:blockITNT",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17473,
+              "ore": "platePolytetrafluoroethylene"
+            },
+            {
+              "id": "gregguns:launcher_warhead_he",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1126,
+      "y": 504,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:plastic_explosive",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.inert_warhead",
+      "title": "Inert Warhead",
+      "tier": "HV",
+      "desc": [
+        "A warhead is built in steps, and the first is an empty one. The Inert T1 Warhead is a stainless steel casing with a Fuze Assembly Mk I wired into it. There is no explosive inside yet, so it is perfectly safe: it can't be placed, launched or set off, and a silo won't take it.",
+        "The Assembler makes it at HV from 4 stainless steel plates and a Fuze Assembly Mk I, on programmed circuit 2. Check NEI. Every heavier casing follows the same pattern at its own tier: titanium and a Mk II fuze at EV, then tungstensteel, naquadria and neutronium with a Mk III.",
+        "From here you customize it. Fit a payload in the Assembler if you want a special blast, then load Plastic Explosive charges to make it live. A Tier 1 casing takes up to 5 charges.",
+        "[note]An inert warhead looks like the real thing, only darker. Read the tooltip: it shows the payload and Charges: 0.[/note]"
+      ],
+      "pre": [
+        "gg.icbm.fuze"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:heartybreakfastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fuze_assembly_mk1",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:fragmentation_sleeve_steel",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            }
+          ]
+        }
+      ],
+      "x": 1078,
+      "y": 552,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:inert_warhead_t1",
+        "count": 1,
+        "damage": 0
+      }
+    },
+    {
+      "key": "gg.icbm.payload",
+      "title": "Choose a Payload",
+      "tier": "HV",
+      "desc": [
+        "A plain warhead just goes bang. A payload changes what the bang does: steel fragments, a lead mass, napalm, a dizzying or choking gas, smoke, or a field generator that pushes everything away or pulls it in.",
+        "The Assembler fits a payload at HV: put one bare Inert T1 Warhead in with the payload's parts and the right programmed circuit, and you get the same inert warhead with that payload, ready for charges. The Shrapnel payload, for example, is one Steel Fragmentation Sleeve. Check NEI for every payload and its circuit.",
+        "[note]A payload holds no explosive. You still load Plastic Explosive afterwards. Fitting a new payload to a casing that already has one replaces the old payload.[/note]"
+      ],
+      "pre": [
+        "gg.icbm.inert_warhead"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:fragmentation_sleeve_steel",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:napalm_canister",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:dispersal_canister",
+              "count": 2,
+              "damage": 0
+            }
+          ],
+          "any": true
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "shrapnel"
+              }
+            },
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "anvil"
+              }
+            },
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "incendiary"
+              }
+            },
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "debilitation"
+              }
+            },
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "chemical"
+              }
+            },
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "smoke"
+              }
+            },
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "repulsive"
+              }
+            },
+            {
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "payload": "attractive"
+              }
+            }
+          ],
+          "any": true,
+          "matchNBT": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ordnance1",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefwellingtonItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:fragmentation_sleeve_steel",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:napalm_canister",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:dispersal_canister",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:plastic_explosive",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1030,
+      "y": 552,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:fragmentation_sleeve_steel",
         "count": 1,
         "damage": 0
       }
@@ -875,31 +1233,27 @@
       "title": "Your First Warhead",
       "tier": "HV",
       "desc": [
-        "The warhead is the part that does the talking. It's a GregTech-built charge: a stainless steel casing around explosives and a fuze. A Tier 1 casing holds up to 5 charges, and more charges make a wider, harder blast.",
-        "The cheap starter recipe in the Assembler at HV makes a Condensed warhead with a fill of 1 from 2 stainless steel plates, 2 TNT and a Fuze Assembly Mk I. The full Condensed recipe (fill 5) takes 4 stainless plates, 8 TNT, 2 dynamite, 3 Plastic Explosive and a fuze. Every other Tier 1 blast type has its own Assembler recipe: check NEI and read the tooltips for radius and damage.",
+        "Now make it live. Put an Inert T1 Warhead and 1 to 8 Plastic Explosive in a crafting grid and you get a live T1 warhead with that many charges, up to its cap of 5. A bare casing with charges alone is a Condensed warhead, plain high explosive. A casing with a payload becomes that blast type.",
+        "Put the warhead back in the grid with more Plastic Explosive to top it up; a load that would pass the cap simply doesn't craft, so nothing is wasted. For automation, the Assembler fills a whole casing at once: an inert warhead and 5 Plastic Explosive on the blast's circuit. Check NEI.",
+        "The tooltip shows the charges, the blast radius and the center damage. Make one warhead, any type, any fill.",
         "[warn]A warhead is a live explosive block. Fire, redstone and nearby explosions all set it off.[/warn]"
       ],
       "pre": [
-        "gg.icbm.fuze"
+        "gg.icbm.inert_warhead",
+        "gg.icbm.charges"
       ],
       "tasks": [
         {
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregtech:gt.metaitem.01",
-              "count": 2,
-              "damage": 17306,
-              "ore": "plateStainlessSteel"
-            },
-            {
-              "id": "minecraft:tnt",
-              "count": 2,
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
               "damage": 0
             },
             {
-              "id": "gregguns:fuze_assembly_mk1",
-              "count": 1,
+              "id": "gregguns:plastic_explosive",
+              "count": 5,
               "damage": 0
             }
           ]
@@ -1634,7 +1988,7 @@
       "tier": "HV",
       "desc": [
         "A warhead doesn't need a missile. Place it where you want the hole and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius, so a full Condensed warhead gives you 6 seconds to leave.",
-        "Bigger holes need Plastic Explosive, the one explosive part almost every warhead shares. The Assembler makes 4 at HV from 2 PTFE plates and 2 Industrial TNT. Make three, enough for a full Condensed warhead, and keep a lighter.",
+        "Fill a Condensed warhead to its cap of 5 charges for the biggest hole a Tier 1 casing makes: in a crafting grid, or all at once in the Assembler from a bare Inert T1 Warhead and 5 Plastic Explosive on circuit 1. Keep a lighter with it.",
         "[warn]Get well clear, and keep other charges away: another explosion sets a warhead off in half a second.[/warn]"
       ],
       "pre": [
@@ -1645,14 +1999,13 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregtech:gt.metaitem.01",
-              "count": 2,
-              "damage": 17473,
-              "ore": "platePolytetrafluoroethylene"
+              "id": "gregguns:inert_warhead_t1",
+              "count": 1,
+              "damage": 0
             },
             {
-              "id": "IC2:blockITNT",
-              "count": 2,
+              "id": "gregguns:plastic_explosive",
+              "count": 5,
               "damage": 0
             }
           ]
@@ -1661,16 +2014,21 @@
           "type": "retrieval",
           "items": [
             {
-              "id": "gregguns:plastic_explosive",
-              "count": 3,
-              "damage": 0
+              "id": "gregguns:warhead_t1",
+              "count": 1,
+              "damage": 0,
+              "tag": {
+                "explosive": "condensed",
+                "fill": 5
+              }
             },
             {
               "id": "minecraft:flint_and_steel",
               "count": 1,
               "damage": 0
             }
-          ]
+          ],
+          "matchNBT": true
         }
       ],
       "rewards": [
@@ -1735,8 +2093,8 @@
       "title": "Titanium Casing",
       "tier": "EV",
       "desc": [
-        "The Tier 2 casing is titanium and holds up to 20 charges, four times the Tier 1 casing. Its blast types are made in the Assembler at EV, and every one takes eight titanium plates and a Fuze Assembly Mk II.",
-        "The Mk II fuze is an EV Assembler recipe from a Data circuit, a titanium plate and 4 fine electrum wires. A Fragmentation warhead, for example, adds 10 Industrial TNT, 4 Plastic Explosive and a titanium Fragmentation Sleeve. Check NEI for all of them. Make a Tier 2 warhead.",
+        "The Tier 2 casing is titanium and holds up to 20 charges, four times the Tier 1 casing. The Assembler makes the Inert T2 Warhead at EV from 8 titanium plates and a Fuze Assembly Mk II. The Mk II fuze is itself an EV Assembler recipe from a Data circuit, a titanium plate and 4 fine electrum wires.",
+        "A Tier 2 casing needs a payload before it takes charges: Fragmentation (a titanium Fragmentation Sleeve), Thermobaric (canisters of kerosene), Sonic, Breaching or Contagious, each fitted in the Assembler at EV. Then load 20 Plastic Explosive, in the Assembler or a few at a time in a crafting grid. Check NEI. Make a Tier 2 warhead.",
         "[warn]Tier 2 blasts reach much farther than Tier 1. Read the tooltip's radius before you place one.[/warn]"
       ],
       "pre": [
@@ -1755,13 +2113,13 @@
               "ore": "plateTitanium"
             },
             {
-              "id": "IC2:blockITNT",
-              "count": 10,
+              "id": "gregguns:fuze_assembly_mk2",
+              "count": 1,
               "damage": 0
             },
             {
-              "id": "gregguns:plastic_explosive",
-              "count": 4,
+              "id": "gregguns:inert_warhead_t2",
+              "count": 1,
               "damage": 0
             },
             {
@@ -1770,8 +2128,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:fuze_assembly_mk2",
-              "count": 1,
+              "id": "gregguns:plastic_explosive",
+              "count": 20,
               "damage": 0
             }
           ]
@@ -2408,7 +2766,7 @@
       "title": "Nuclear Warhead",
       "tier": "ZPM",
       "desc": [
-        "The nuclear warhead is a Tier 3 casing, two blocks tall, built in the Assembler at ZPM from 8 tungstensteel plates, 12 Industrial TNT, 4 Plastic Explosive, 8 uranium-235 ingots, 4 plutonium ingots and a Fuze Assembly Mk III. It flies only on a Tier 3 missile, from the silo. Check NEI.",
+        "The nuclear warhead is a Tier 3 casing, two blocks tall. Start with an Inert T3 Warhead (the Assembler at LuV: 8 tungstensteel plates and a Fuze Assembly Mk III), fit the nuclear payload at ZPM (8 uranium-235 ingots and 4 plutonium ingots), then load 64 Plastic Explosive, its implosion lens. It flies only on a Tier 3 missile, from the silo. Check NEI.",
         "A full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour.",
         "[warn]Cross the blast zone only in full hazmat armor, and stand well back from the launch target. There is no safe distance inside the inner radius.[/warn]"
       ],
@@ -2421,19 +2779,8 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregtech:gt.metaitem.01",
-              "count": 8,
-              "damage": 17316,
-              "ore": "plateTungstenSteel"
-            },
-            {
-              "id": "IC2:blockITNT",
-              "count": 12,
-              "damage": 0
-            },
-            {
-              "id": "gregguns:plastic_explosive",
-              "count": 4,
+              "id": "gregguns:inert_warhead_t3",
+              "count": 1,
               "damage": 0
             },
             {
@@ -2449,8 +2796,8 @@
               "ore": "ingotPlutonium"
             },
             {
-              "id": "gregguns:fuze_assembly_mk3",
-              "count": 1,
+              "id": "gregguns:plastic_explosive",
+              "count": 64,
               "damage": 0
             }
           ]
@@ -2706,7 +3053,7 @@
       "title": "Antimatter",
       "tier": "ZPM",
       "desc": [
-        "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes it at UV from 8 naquadria plates, 2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. Check NEI.",
+        "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes the Inert T4 Warhead at UV from 8 naquadria plates and a Fuze Assembly Mk III, fits the antimatter payload at UV (2 UV Field Generators, a Quantum Eye and 4 plutonium-241 ingots), and fills it with 128 Plastic Explosive. Check NEI.",
         "A full warhead blasts 80 blocks, and nothing living in the inner 48 survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.",
         "[warn]Bosses are not safe and neither are you. Launch it from far away.[/warn]"
       ],
@@ -2792,7 +3139,7 @@
       "title": "Red Matter",
       "tier": "ZPM",
       "desc": [
-        "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes it at UHV from 8 neutronium plates, 2 UHV Field Generators, 2 Quantum Eyes, 2 UHV Emitters, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. Check NEI.",
+        "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes the Inert T5 Warhead at UHV from 8 neutronium plates and a Fuze Assembly Mk III, fits the red matter payload at UHV (2 UHV Field Generators, 2 Quantum Eyes and 2 UHV Emitters), and fills it with 128 Plastic Explosive. Check NEI.",
         "It digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. An Antimatter blast ends it at once. Make one.",
         "[warn]Nothing inside the ball survives. Keep an Antimatter warhead ready if you ever need to stop one.[/warn]"
       ],
@@ -2878,7 +3225,7 @@
       "title": "Ender Warhead",
       "tier": "LuV",
       "desc": [
-        "The Ender warhead is a Tier 3 casing made in the Assembler at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, a LuV Emitter, 16 Eyes of Ender and a Fuze Assembly Mk III. Check NEI.",
+        "The Ender warhead is a Tier 3 casing. Fit the ender payload to an Inert T3 Warhead in the Assembler at LuV (a LuV Emitter and 16 Eyes of Ender), then load up to 64 Plastic Explosive charges. Check NEI.",
         "It digs no crater. For 8 seconds it pulls every living thing within 24 blocks toward the center, and anything that reaches the middle (within 4 blocks) is sent to one landing spot 40 to 128 blocks away, up to 64 per blast. Bosses are pulled but never sent. It flies only from the silo. Make one.",
         "[warn]The landing spot is random. Don't stand in the pull unless you want to go too.[/warn]"
       ],
@@ -2891,10 +3238,9 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregtech:gt.metaitem.01",
-              "count": 8,
-              "damage": 17316,
-              "ore": "plateTungstenSteel"
+              "id": "gregguns:inert_warhead_t3",
+              "count": 1,
+              "damage": 0
             },
             {
               "id": "gregtech:gt.metaitem.01",
@@ -2907,8 +3253,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:fuze_assembly_mk3",
-              "count": 1,
+              "id": "gregguns:plastic_explosive",
+              "count": 64,
               "damage": 0
             }
           ]
@@ -2991,7 +3337,7 @@
       "title": "Anti-Gravitational Warhead",
       "tier": "LuV",
       "desc": [
-        "The other exotic Tier 3 warhead is built in the Assembler at LuV from tungstensteel plates, Industrial TNT, Plastic Explosive, 2 LuV Field Generators, 4 Nether Stars and a Fuze Assembly Mk III. Check NEI.",
+        "The other exotic Tier 3 warhead takes the anti-gravitational payload, fitted to an Inert T3 Warhead in the Assembler at LuV (2 LuV Field Generators and 4 Nether Stars), then up to 64 Plastic Explosive charges. Check NEI.",
         "For 30 seconds it lifts up to 512 plain blocks within 20 blocks off the ground, top layer first, and floats the living things there. Machines and chests stay put, and every lifted block lands again or drops as an item. Make one.",
         "[warn]What goes up comes down. Anything floating when the effect ends falls.[/warn]"
       ],
@@ -3003,10 +3349,9 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregtech:gt.metaitem.01",
-              "count": 8,
-              "damage": 17316,
-              "ore": "plateTungstenSteel"
+              "id": "gregguns:inert_warhead_t3",
+              "count": 1,
+              "damage": 0
             },
             {
               "id": "gregtech:gt.metaitem.01",
@@ -3019,8 +3364,8 @@
               "damage": 0
             },
             {
-              "id": "gregguns:fuze_assembly_mk3",
-              "count": 1,
+              "id": "gregguns:plastic_explosive",
+              "count": 64,
               "damage": 0
             }
           ]

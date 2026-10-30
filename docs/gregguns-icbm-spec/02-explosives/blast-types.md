@@ -37,24 +37,24 @@
 | breaching | T2 | none | 12 | none | a 3x3 tunnel 24 deep, straight down, through anything of hardness 50 or less |
 | thermobaric | T2 | sphere crater | 20 | 3,000 | none beyond the ramp (the widest conventional crater) |
 
-- **Payloads (D56, D57).** What each type is made of, besides its casing, a Fuze and Plastic Explosive. Full recipes are in [warheads-and-fill](warheads-and-fill.md#recipes).
+- **Payloads (D56, D57, D282).** What each type is made of, fitted to an inert warhead in the Assembler. The explosive is always the Plastic Explosive charges loaded afterwards. Full recipes are in [warheads-and-fill](warheads-and-fill.md#recipes).
 
   | Type | Payload |
   |---|---|
-  | condensed | TNT, dynamite |
-  | shrapnel | TNT, a Steel Fragmentation Sleeve |
-  | anvil | TNT, 12 lead plates (a dense mass) |
+  | condensed | none: Plastic Explosive alone |
+  | shrapnel | a Steel Fragmentation Sleeve |
+  | anvil | 12 lead plates (a dense mass) |
   | incendiary | 2 Napalm Canisters (Dispersal Canister plus gasoline) |
   | debilitation | 2 Dispersal Canisters, nitrous oxide |
   | chemical | 2 Dispersal Canisters, ammonia gas, a few mustard seeds when HarvestCraft is present |
   | smoke | 2 Dispersal Canisters, creosote, coal dust |
   | repulsive | a Field Generator (HV) |
   | attractive | a Field Generator (HV), magnetic steel rods |
-  | fragmentation | Industrial TNT, a Titanium Fragmentation Sleeve |
-  | thermobaric | Industrial TNT, 2 Dispersal Canisters, kerosene |
-  | sonic | Industrial TNT, 2 Emitters (EV) |
-  | breaching | Industrial TNT, 2 Shaped-Charge Liner Cones, titanium rods |
-  | contagious | Industrial TNT, 4 Bio Lab culture dishes, biomass |
+  | fragmentation | a Titanium Fragmentation Sleeve |
+  | thermobaric | 2 Dispersal Canisters, kerosene |
+  | sonic | 2 Emitters (EV) |
+  | breaching | 2 Shaped-Charge Liner Cones, titanium rods |
+  | contagious | 4 Bio Lab culture dishes, biomass |
 
   The gas, smoke and fuel-air fills are general industrial fluids in canisters, chosen by theme; no chemical-warfare agent is used or named (D56 as amended).
 ## The T3 set (I3)
@@ -69,7 +69,7 @@ Casing T3 (LuV to ZPM, fill cap 64). Radius and damage are at a full casing; the
 | ender | T3 (LuV) | none | 24 | none | pulls living things for 8 s; those that reach the middle are sent to one landing spot, see below |
 | anti-gravitational | T3 (LuV) | none (blocks are lifted, not destroyed) | 20 | none | lifts up to 512 plain blocks as flying blocks and floats living things, see below |
 
-Payloads: exothermic is Industrial TNT, Plastic Explosive, four Napalm Canisters and kerosene; endothermic is Industrial TNT, Plastic Explosive, four Dispersal Canisters and helium; nuclear is Industrial TNT, Plastic Explosive, a core of eight uranium-235 and four plutonium ingots. Ender is Industrial TNT, Plastic Explosive, a LuV Emitter and sixteen Eyes of Ender; anti-gravitational is Industrial TNT, Plastic Explosive, two LuV Field Generators and four Nether Stars. EMP shipped in I4.
+Payloads (D282; the explosive is always the Plastic Explosive charges, 64 to a full T3 casing): exothermic is four Napalm Canisters and kerosene; endothermic is four Dispersal Canisters and helium; nuclear is a core of eight uranium-235 and four plutonium ingots, with the charges as its implosion lens. Ender is a LuV Emitter and sixteen Eyes of Ender; anti-gravitational is two LuV Field Generators and four Nether Stars. EMP shipped in I4.
 
 - **Damage targets (D34):** the damaging T1 types deal at least 1,200 at ground zero at full fill, and T2 at least 3,000, before armor. The unit test `WarheadBlastTest` pins the numbers, and scenario `icbm.blast.condensed` (and the T2 ones) kills a target in the zone. Partial fills deal `D * sqrt(fill / cap)`.
 - **Special types** (gas, fire, push, sonic, breaching, smoke) are balanced on their own effect, not on the damage table (0018 §6).

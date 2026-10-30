@@ -649,6 +649,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.turret_armor_carbon | src/main/resources/assets/gregguns/textures/items/turret_armor_carbon.png | tools/asset-gen/icons.py | 3989877665 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.golden_round | src/main/resources/assets/gregguns/textures/items/golden_round.png | tools/asset-gen/icons.py | 997846474 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.shaped_charge_liner_cone | src/main/resources/assets/gregguns/textures/items/shaped_charge_liner_cone.png | tools/asset-gen/icons.py | 1124081610 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-26 |
+| icon.inert_warhead | src/main/resources/assets/gregguns/textures/items/inert_warhead.png | tools/asset-gen/icons.py | 319050416 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass); the flat fallback of the inert warhead, whose 3D item renderer draws the shipped NTM warhead models | MIT | 2026-10-30 |
 
 ### lootbag_icons (12)
 

@@ -8,6 +8,8 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.icbm.warhead.InertWarheadSpec;
+import com.gregguns.icbm.warhead.InertWarheads;
 import com.gregguns.icbm.warhead.WarheadBlast;
 import com.gregguns.icbm.warhead.WarheadRecipeSpec;
 import com.gregguns.icbm.warhead.WarheadStacks;
@@ -17,8 +19,8 @@ import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTRecipe;
 
 /**
- * Checks that every ICBM recipe the unit-tested tables promise is really in GT's Assembler map: each part and each
- * warhead, at the voltage of its tier. Dev environment only. Server side.
+ * Checks that every ICBM recipe the unit-tested tables promise is really in GT's Assembler map: each part, each inert
+ * warhead, and each warhead's payload and fill (D282), at the voltage of its tier. Dev environment only. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (Recipes)
 public final class RecipeScenarios {
@@ -39,7 +41,8 @@ public final class RecipeScenarios {
 
         @Override
         public String description() {
-            return "Every ICBM part and every T1 and T2 warhead has its Assembler recipe at its tier's voltage.";
+            return "Every ICBM part, every inert warhead and every warhead payload and fill has its Assembler recipe at"
+                + " its tier's voltage.";
         }
 
         @Override
@@ -60,15 +63,47 @@ public final class RecipeScenarios {
                     out.checkEquals(part + " output count", part.outputCount(), r.mOutputs[0].stackSize);
                 }
             }
+            // D282: the inert warhead of each casing, then each blast's payload and fill.
+            for (InertWarheadSpec spec : InertWarheadSpec.values()) {
+                GTRecipe r = findOutput(
+                    o -> InertWarheads.is(o) && !o.hasTagCompound() && InertWarheads.casing(o) == spec.casing());
+                out.check(r != null, "Assembler recipe of the inert " + spec + " warhead");
+                if (r != null) {
+                    out.checkEquals(spec + " inert voltage", GTValues.VP[spec.voltageIndex()], (long) r.mEUt);
+                }
+            }
             for (WarheadRecipeSpec spec : WarheadRecipeSpec.values()) {
                 WarheadBlast blast = spec.blast();
-                GTRecipe r = find(null, blast.id(), spec.isStarter() ? 1 : blast.fillCap());
-                out.check(r != null, "Assembler recipe of the " + blast.id() + (spec.isStarter() ? " starter" : ""));
+                if (!spec.chargesOnly()) {
+                    GTRecipe p = findOutput(
+                        o -> InertWarheads.is(o) && blast.id()
+                            .equals(InertWarheads.payload(o)));
+                    out.check(p != null, "Assembler payload recipe of " + blast.id());
+                    if (p != null) {
+                        out.checkEquals(
+                            spec + " payload voltage",
+                            GTValues.VP[spec.machineVoltageIndex()],
+                            (long) p.mEUt);
+                    }
+                }
+                GTRecipe r = find(null, blast.id(), blast.fillCap());
+                out.check(r != null, "Assembler fill recipe of " + blast.id());
                 if (r != null) {
-                    out.checkEquals(spec + " voltage", GTValues.VP[spec.machineVoltageIndex()], (long) r.mEUt);
+                    out.checkEquals(spec + " fill voltage", GTValues.VP[spec.machineVoltageIndex()], (long) r.mEUt);
+                    out.check(r.isNBTSensitive, spec + " fill recipe matches the payload exactly (NBT-sensitive)");
                 }
             }
             return out.build();
+        }
+
+        /** The first Assembler recipe whose first output passes the test. */
+        private static GTRecipe findOutput(java.util.function.Predicate<ItemStack> test) {
+            for (GTRecipe r : RecipeMaps.assemblerRecipes.getAllRecipes()) {
+                if (r.mOutputs != null && r.mOutputs.length > 0 && r.mOutputs[0] != null && test.test(r.mOutputs[0])) {
+                    return r;
+                }
+            }
+            return null;
         }
 
         /** A part by its item, or a warhead by its explosive id and fill. */

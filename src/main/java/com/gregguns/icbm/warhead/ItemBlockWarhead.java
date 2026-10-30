@@ -74,6 +74,21 @@ public final class ItemBlockWarhead extends ItemBlock {
             casing.number());
     }
 
+    /**
+     * @param casing a casing
+     * @return the colored tier text of the tooltip's tier line: HV, EV-IV, LuV-ZPM, UV or UHV
+     */
+    static String tierText(WarheadCasing casing) {
+        return casing == WarheadCasing.T1 ? TierText.colored(com.gregguns.api.Tier.HV)
+            : casing == WarheadCasing.T2
+                ? TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV)
+                : casing == WarheadCasing.T3
+                    ? TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM)
+                    : TierText.coloredIndex(
+                        casing.tier()
+                            .minVoltageTier());
+    }
+
     /** Pixels a tooltip line may take before it wraps. */
     private static final int TOOLTIP_WRAP_WIDTH = 200;
 
@@ -87,14 +102,7 @@ public final class ItemBlockWarhead extends ItemBlock {
         int cap = WarheadStacks.cap(casing, def);
         WarheadTooltipFormat.Facts f = new WarheadTooltipFormat.Facts();
         f.explosiveName = StatCollector.translateToLocal("gregguns.icbm.explosive." + data.explosive());
-        f.tierText = casing == WarheadCasing.T1 ? TierText.colored(com.gregguns.api.Tier.HV)
-            : casing == WarheadCasing.T2
-                ? TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV)
-                : casing == WarheadCasing.T3
-                    ? TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM)
-                    : TierText.coloredIndex(
-                        casing.tier()
-                            .minVoltageTier());
+        f.tierText = tierText(casing);
         f.fill = data.fill();
         f.cap = cap;
         f.radius = def == null ? 0 : Math.max(WarheadMath.MIN_RADIUS, def.radius(data.fill()));
