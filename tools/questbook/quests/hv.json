@@ -1,140 +1,1456 @@
 {
-  "chapter": "hv",
-  "quests": [
+ "chapter": "hv",
+ "quests": [
+  {
+   "key": "gg.hv.intro",
+   "title": "Heavy Arms",
+   "tier": "HV",
+   "desc": "Welcome to the heavy end of the arsenal. HV is where GregGuns grows teeth: belt-fed machine guns, anti-materiel rifles, rocket and grenade launchers, a flamethrower and two power tools that double as weapons. The gate material is stainless steel, so bring a few plates.\n\nEvery HV gun is built in an HV Assembler (480 EU/t) from stainless steel plates, screws and small springs, plus parts you already know from earlier tiers. The recipes get long, so press R over any gun in NEI and work backwards. The quests below start with shared components, then the guns that use them.\n\nAmmo moves up a tier as well. High caliber rounds, rockets and the fuel tank are HV work, made in the Ammo Press and the Assembler.\n\n[note]Quests only check that you are carrying the item. Nothing is ever taken from you, so keep your plates.[/note]",
+   "pre": [
+    "gg.mv.intro",
+    160,
+    753
+   ],
+   "tasks": [
     {
-      "key": "gg.hv.intro",
-      "title": "Heavy Arms",
-      "tier": "HV",
-      "desc": "HV adds heavy weapons, launchers and electric tools. Stainless steel is the gate.",
-      "pre": ["gg.mv.intro", 160, 753],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [],
-      "x": 706,
-      "y": 94,
-      "size": 28,
-      "main": false,
-      "icon": {"id": "gregguns:lmg", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.rifles",
-      "title": "AUG, SCAR or Vector",
-      "tier": "HV",
-      "desc": "Specialist rifles. Pick one; they are all HV builds.",
-      "pre": ["gg.hv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:aug", "count": 1, "damage": 0}, {"id": "gregguns:scar", "count": 1, "damage": 0}, {"id": "gregguns:vector", "count": 1, "damage": 0}], "any": true}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:mag_assault_rifle", "count": 2, "damage": 0}]}],
-      "x": 618,
-      "y": 132,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:aug", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.lmg",
-      "title": "LMG",
-      "tier": "HV",
-      "desc": "Belt-fed and heavy. LMG magazines are an HV part.",
-      "pre": ["gg.hv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:mag_lmg", "count": 1, "damage": 0}]}, {"type": "retrieval", "items": [{"id": "gregguns:lmg", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 654,
-      "y": 132,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:mag_lmg", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.as50",
-      "title": "AS50",
-      "tier": "HV",
-      "desc": "Anti-materiel rifle with its own magazines.",
-      "pre": ["gg.hv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:as50", "count": 1, "damage": 0}]}],
-      "rewards": [],
-      "x": 690,
-      "y": 132,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:as50", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.grenade_launcher",
-      "title": "Grenade Launcher",
-      "tier": "HV",
-      "desc": "Fires the 40 mm grenades you learned to make at MV.",
-      "pre": ["gg.hv.intro"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:grenade_launcher", "count": 1, "damage": 0}]}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:ammo_40mm_grenade", "count": 8, "damage": 0}]}],
-      "x": 726,
-      "y": 132,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:grenade_launcher", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.rocket_launcher",
-      "title": "Rocket Launcher",
-      "tier": "HV",
-      "desc": "Rockets need explosive dust and a circuit. Mind your own blast radius.",
-      "pre": ["gg.hv.grenade_launcher"],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:rocket_launcher", "count": 1, "damage": 0}]}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:ammo_rocket", "count": 2, "damage": 0}]}],
-      "x": 726,
-      "y": 168,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:rocket_launcher", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.flamethrower",
-      "title": "Flamethrower",
-      "tier": "HV",
-      "desc": "Burns GT fuel from a fuel tank. Diesel works.",
-      "pre": ["gg.hv.intro", 553],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:flamethrower", "count": 1, "damage": 0}]}],
-      "rewards": [{"type": "item", "items": [{"id": "gregguns:tank_fuel", "count": 1, "damage": 0}]}],
-      "x": 762,
-      "y": 132,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:flamethrower", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.tools",
-      "title": "Chainsaw and Power Hammer",
-      "tier": "HV",
-      "desc": "Electric tools charge only in a charger or battery buffer of exactly their tier: HV.",
-      "pre": ["gg.hv.intro", 1142],
-      "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:chainsaw", "count": 1, "damage": 0}, {"id": "gregguns:power_hammer", "count": 1, "damage": 0}], "any": true}],
-      "rewards": [],
-      "x": 798,
-      "y": 132,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:chainsaw", "count": 1, "damage": 0},
-      "implicit": []
-    },
-    {
-      "key": "gg.hv.summary",
-      "title": "Heavy Arms Done",
-      "tier": "HV",
-      "desc": "EV brings energy weapons.",
-      "pre": ["gg.hv.tools", "gg.hv.lmg"],
-      "tasks": [{"type": "checkbox"}],
-      "rewards": [{"type": "item", "items": [{"id": "enhancedlootbags:lootbag", "count": 1, "damage": 6}]}],
-      "x": 798,
-      "y": 168,
-      "size": 24,
-      "main": false,
-      "icon": {"id": "gregguns:lmg", "count": 1, "damage": 0},
-      "implicit": ["gg.hv.lmg"]
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 4,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
     }
-  ]
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "rations",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 3,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 32,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:part_receiver_steel",
+       "count": 2,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_barrel_hardened",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 616,
+   "y": 94,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregguns:lmg",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.receiver",
+   "title": "Hardened Receiver",
+   "tier": "HV",
+   "desc": "The Hardened Receiver is the frame of every serious HV rifle. The SCAR, Vector, AS50, LMG and later the Minigun and Laser Rifle are all built around one, so make a few before you start on guns.\n\nCraft it in an HV Assembler from three stainless steel plates, two stainless steel screws and a Mechanical Parts T2. Press R on the receiver in NEI for the exact recipe.\n\n[note]The AUG takes the plainer Steel Receiver instead, so it is the one rifle you can build without this part.[/note]",
+   "pre": [
+    "gg.hv.intro"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 3,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:part_mechanical_2",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:part_receiver_hardened",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 3,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:part_mechanical_2",
+       "count": 8,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_barrel_hardened",
+       "count": 4,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 616,
+   "y": 148,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregguns:part_receiver_hardened",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.rifles",
+   "title": "AUG, SCAR or Vector",
+   "tier": "HV",
+   "desc": "Three specialist rifles, one quest: build any of them to move on. The AUG is the all-rounder with a good scope, the SCAR is the precise one with its diamond lens, and the Vector is a fast-firing SMG for close work.\n\nAll three come from the HV Assembler. Each takes a Hardened Steel Barrel, a Plastic Gun Stock, a lens (glass for the AUG and Vector, diamond for the SCAR) and stainless steel plates, screws and springs. The SCAR and Vector use the Hardened Receiver; the AUG uses a Steel Receiver. Check NEI for the exact list.\n\nThe AUG and SCAR load Assault Rifle Magazines. The Vector takes SMG Magazines.",
+   "pre": [
+    "gg.hv.receiver"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:part_barrel_hardened",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_receiver_hardened",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_stock_plastic",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:aug",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:scar",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:vector",
+       "count": 1,
+       "damage": 0
+      }
+     ],
+     "any": true
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:mag_assault_rifle",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:mag_smg",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    }
+   ],
+   "x": 628,
+   "y": 214,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:aug",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.infiltrator",
+   "title": "The Infiltrator",
+   "tier": "HV",
+   "desc": "The Infiltrator is a suppressed M4. It plays a muffled shot sound instead of the M4's crack, which is easier on your ears and your neighbors.\n\nYou do not build it from scratch: put an M4 Assault Rifle in the HV Assembler with two stainless steel plates, two rubber plates, a long stainless steel rod and two glass lenses. The rubber and rod are the suppressor.\n\n[note]The M4 is used up, and the Infiltrator comes out fresh: its loaded rounds and camo skin do not carry over.[/note]",
+   "pre": [
+    "gg.hv.intro"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:m4",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:infiltrator",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:mag_assault_rifle",
+       "count": 6,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:ammo_rifle_bullet",
+       "count": 64,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 682,
+   "y": 160,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:infiltrator",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.lmg",
+   "title": "LMG",
+   "tier": "HV",
+   "desc": "The light machine gun is a belt-fed wall of lead. Its magazine holds 100 rounds, it has a mild zoom for steady fire at range, and it is the first gun where you really feel the difference between HV and MV firepower.\n\nBuild the LMG in the HV Assembler: a Hardened Steel Barrel, a Hardened Receiver, a Plastic Gun Stock, a glass lens, and stainless steel plates, screws and springs. Its magazines are an HV part too: build empty LMG Magazines, then load them with rifle bullets in the Ammo Press. The quest wants the gun and one loaded magazine.\n\n[note]One LMG magazine eats about eight rifle bullets, so the rifle bullet line from MV is worth scaling up.[/note]",
+   "pre": [
+    "gg.hv.receiver"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:part_barrel_hardened",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_receiver_hardened",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_stock_plastic",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 3,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:lmg",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:mag_lmg",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 3,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:mag_lmg",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:ammo_rifle_bullet",
+       "count": 64,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    }
+   ],
+   "x": 670,
+   "y": 202,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregguns:lmg",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.hc_ammo",
+   "title": "High Caliber Rounds",
+   "tier": "HV",
+   "desc": "High caliber rounds are what the AS50 shoots: heavy brass-cased slugs that punch through armor. One of these rounds does more than a whole handful of rifle bullets.\n\nMake them in an HV Ammo Press from brass casings, stainless steel rounds and gunpowder; a run gives you a stack. NEI shows the recipe and the circuit that selects it. Magazines are loaded with them in the same machine.\n\n[note]An AS50 magazine holds 10 rounds, filled from two high caliber rounds. A full stack goes a long way.[/note]",
+   "pre": [
+    "gg.hv.intro"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:ammo_high_caliber_round",
+       "count": 16,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:ammo_high_caliber_round",
+       "count": 32,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:mag_as50_empty",
+       "count": 2,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    }
+   ],
+   "x": 736,
+   "y": 160,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:ammo_high_caliber_round",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.as50",
+   "title": "AS50",
+   "tier": "HV",
+   "desc": "The AS50 is an anti-materiel sniper rifle with a heavy zoom. It trades rate of fire for a hit that deletes most things at long range, and it makes quick work of armored targets.\n\nBuild it in the HV Assembler from two Hardened Steel Barrels, a Hardened Receiver, a Plastic Gun Stock, a diamond lens and stainless steel plates, screws and springs. Empty AS50 magazines are made first, then loaded with high caliber rounds in the Ammo Press.\n\nThe quest wants the rifle and one loaded magazine.",
+   "pre": [
+    "gg.hv.hc_ammo",
+    "gg.hv.receiver"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:part_barrel_hardened",
+       "count": 2,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_receiver_hardened",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_stock_plastic",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 3,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:as50",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:mag_as50",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:mag_as50",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:ammo_high_caliber_round",
+       "count": 32,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    }
+   ],
+   "x": 736,
+   "y": 214,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:as50",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": [
+    "gg.hv.receiver"
+   ]
+  },
+  {
+   "key": "gg.hv.grenade_launcher",
+   "title": "Grenade Launcher",
+   "tier": "HV",
+   "desc": "The grenade launcher lobs the 40 mm grenades you learned to make at MV. It is the cheapest way to clear a room, and a good tool for a mob that keeps its distance.\n\nBuild it in the HV Assembler from a Hardened Steel Barrel, a Steel Receiver, a Plastic Gun Stock, and stainless steel plates, screws and springs. Press R over it in NEI for the full list. Grenades are the ammo, so carry a few.\n\n[note]Explosions hurt creatures, but on servers that keep the explosions.blockDamage setting off they leave the terrain alone.[/note]",
+   "pre": [
+    "gg.hv.intro"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:part_barrel_hardened",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_receiver_steel",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_stock_plastic",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:grenade_launcher",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:ammo_40mm_grenade",
+       "count": 4,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:ammo_40mm_grenade",
+       "count": 16,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:part_receiver_steel",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 790,
+   "y": 160,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:grenade_launcher",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.rocket_ammo",
+   "title": "Rockets",
+   "tier": "HV",
+   "desc": "Rockets are the biggest bang you can carry at HV: a real blast radius in a single shot. The Rocket Launcher fires them, and so does the Grim Reaper much later.\n\nMake them in the HV Ammo Press from stainless steel plates, TNT dust, gunpowder and an HV circuit that acts as the fuze. Each run yields four rockets. NEI will show the exact recipe.\n\n[warn]Rockets blow up where they land. Never fire one at a wall closer than the blast radius, and never at your own feet.[/warn]",
+   "pre": [
+    "gg.hv.intro"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 4,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:ammo_rocket",
+       "count": 4,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:ammo_rocket",
+       "count": 8,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:ammo_40mm_grenade",
+       "count": 8,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 844,
+   "y": 160,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:ammo_rocket",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.rocket_launcher",
+   "title": "Rocket Launcher",
+   "tier": "HV",
+   "desc": "A shoulder-fired launcher for the moments when a grenade is not enough. It comes empty, so every rocket you fire comes from your own stock.\n\nBuild it in the HV Assembler from two Hardened Steel Barrels, a Steel Receiver, a small stainless steel pipe, and stainless steel plates and screws. NEI has the full recipe.\n\nKeep your distance: the blast radius is real, and a rocket at point-blank range will hurt you too.\n\n[note]With explosions.blockDamage off, a default server keeps its terrain safe. Creatures still take the full hit.[/note]",
+   "pre": [
+    "gg.hv.rocket_ammo",
+    "gg.hv.grenade_launcher"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:part_barrel_hardened",
+       "count": 2,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_receiver_steel",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:rocket_launcher",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:ammo_rocket",
+       "count": 8,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:ammo_40mm_grenade",
+       "count": 16,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 844,
+   "y": 214,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:rocket_launcher",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": [
+    "gg.hv.grenade_launcher"
+   ]
+  },
+  {
+   "key": "gg.hv.fuel_tank",
+   "title": "Fuel Tank",
+   "tier": "HV",
+   "desc": "The Fuel Tank is the ammo for two HV weapons, the Flamethrower and the Chainsaw. It holds 1,000 mB of fuel, and a Fluid Canner fills it for you.\n\nBuild four tanks at a time in the HV Assembler from a stainless steel Large Fluid Cell, two stainless steel plates and two rubber plates. The Large Fluid Cell comes from the pack's own Tier 3 fluid storage line, so check NEI.\n\n[note]Any liquid fuel GT can burn in its fuel recipes works: diesel, gasoline and the other burnables. A full tank is 100 flamethrower rounds or 300 chainsaw rounds.[/note]",
+   "pre": [
+    "gg.hv.intro"
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:tank_fuel",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:tank_fuel",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:tank_air",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 898,
+   "y": 160,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:tank_fuel",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.flamethrower",
+   "title": "Flamethrower",
+   "tier": "HV",
+   "desc": "Fire is the cheapest damage per tank, and the Flamethrower sets fire to anything it touches. It is wonderful against crowds and nasty in a corridor.\n\nBuild it in the HV Assembler from a Pump Mechanism, an Iron Receiver, a Plastic Gun Stock, four Kanthal fine wires (the igniter coil), a small stainless steel pipe, and stainless steel plates and screws. A Fuel Tank is the ammo.\n\n[warn]It burns whatever it points at, and the target can be your ally. Mind who is in front of you.[/warn]",
+   "pre": [
+    "gg.hv.fuel_tank",
+    553
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:part_pump_mechanism",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_receiver_iron",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:part_stock_plastic",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:flamethrower",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:tank_fuel",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      },
+      {
+       "id": "gregguns:part_pump_mechanism",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "x": 898,
+   "y": 214,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:flamethrower",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.tools",
+   "title": "Chainsaw and Power Hammer",
+   "tier": "HV",
+   "desc": "Two tools that happen to be weapons. The Chainsaw is a fuel-hungry melee weapon whose right click also fires a short ranged cut. The Power Hammer charges a shockwave that hits everything and breaks blocks in a small cube in front of you.\n\nThe Chainsaw takes a Fuel Tank. The Power Hammer takes a Compressed Air Tank, a sibling of the Fuel Tank built from an aluminum Large Fluid Cell. Both are HV Assembler builds. Check NEI for either recipe and build whichever you like.\n\n[note]Hold right click to charge the hammer: the longer the charge, the more air it spends and the harder it hits.[/note]",
+   "pre": [
+    "gg.hv.fuel_tank",
+    1142
+   ],
+   "tasks": [
+    {
+     "type": "optional_retrieval",
+     "items": [
+      {
+       "id": "gregguns:tank_fuel",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:tank_air",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 2,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    },
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:chainsaw",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:power_hammer",
+       "count": 1,
+       "damage": 0
+      }
+     ],
+     "any": true
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 1
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 7,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventure",
+       "count": 5,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:tank_fuel",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:tank_air",
+       "count": 4,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 16,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    }
+   ],
+   "x": 952,
+   "y": 214,
+   "size": 24,
+   "main": false,
+   "icon": {
+    "id": "gregguns:chainsaw",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": []
+  },
+  {
+   "key": "gg.hv.summary",
+   "title": "Heavy Arms Done",
+   "tier": "HV",
+   "desc": "That is the heavy tier. You hold a belt-fed LMG, a sniper that takes things apart at range, and a launcher that can level a room. With these three you can walk into most of the pack's HV hazards and come out the other side.\n\nThe next step is energy. EV swaps brass and powder for batteries and lenses: laser rifles, pulse rifles and electric armor, all built from titanium. The EV Assembler runs at 1,920 EU/t, and those guns only charge at an EV charger or battery buffer, so plan your power before you start.\n\nThis quest pays double, so spend the coins at the Vending Machine and open the bag when you are ready.\n\n[note]Bring your Hardened Receivers forward. The Laser Rifle and the Minigun use them too.[/note]",
+   "pre": [
+    "gg.hv.lmg",
+    "gg.hv.as50",
+    "gg.hv.rocket_launcher",
+    "gg.hv.flamethrower",
+    "gg.hv.tools"
+   ],
+   "tasks": [
+    {
+     "type": "retrieval",
+     "items": [
+      {
+       "id": "gregguns:lmg",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:as50",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:rocket_launcher",
+       "count": 1,
+       "damage": 0
+      }
+     ]
+    }
+   ],
+   "rewards": [
+    {
+     "type": "item",
+     "items": [
+      {
+       "bag": "hv",
+       "count": 3
+      },
+      {
+       "id": "dreamcraft:CoinSurvivorII",
+       "count": 3,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureII",
+       "count": 1,
+       "damage": 0
+      },
+      {
+       "id": "dreamcraft:CoinAdventureI",
+       "count": 5,
+       "damage": 0
+      },
+      {
+       "id": "harvestcraft:baconcheeseburgerItem",
+       "count": 2,
+       "damage": 0
+      }
+     ]
+    },
+    {
+     "type": "choice",
+     "items": [
+      {
+       "id": "gregguns:mag_lmg",
+       "count": 8,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:ammo_rocket",
+       "count": 16,
+       "damage": 0
+      },
+      {
+       "id": "gregguns:ammo_high_caliber_round",
+       "count": 64,
+       "damage": 0
+      },
+      {
+       "id": "gregtech:gt.metaitem.01",
+       "count": 32,
+       "damage": 17306,
+       "ore": "plateStainlessSteel"
+      }
+     ]
+    }
+   ],
+   "x": 778,
+   "y": 256,
+   "size": 48,
+   "main": true,
+   "icon": {
+    "id": "gregguns:lmg",
+    "count": 1,
+    "damage": 0
+   },
+   "implicit": [
+    "gg.hv.as50",
+    "gg.hv.flamethrower",
+    "gg.hv.tools",
+    "gg.hv.rocket_launcher"
+   ]
+  }
+ ]
 }
