@@ -170,7 +170,8 @@ public final class DevStructureBuilder {
 
     /**
      * Builds the Missile Silo around the controller at the position, with the hatches in the glass rings (the bus and
-     * the maintenance hatch beside the controller, the energy and fuel hatches below them).
+     * the maintenance hatch beside the controller, the energy and fuel hatches below them) and its Launch Control in
+     * the window's top row, on the west.
      *
      * @param world  the world
      * @param x      controller x
@@ -202,6 +203,14 @@ public final class DevStructureBuilder {
         hatch(world, x + 1, y, z, ItemList.Hatch_Maintenance, ForgeDirection.NORTH);
         hatch(world, x, y - 1, z, energy, ForgeDirection.NORTH);
         hatch(world, x + 1, y - 1, z, ItemList.Hatch_Input_HV, ForgeDirection.NORTH);
+        // The silo's own Launch Control (D288): the window's top row, the outer column on a viewer's right (west).
+        place(
+            world,
+            x - 1,
+            y + com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_RISE,
+            z,
+            GregGunsMTEIDs.LAUNCH_CONTROL,
+            ForgeDirection.NORTH);
         return finish(world, x, y, z, "Missile Silo");
     }
 

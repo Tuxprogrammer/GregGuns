@@ -338,6 +338,15 @@ public final class ComplexScenarios {
                     out.check(
                         com.gregguns.machine.DevStructureBuilder.check(world, cx, floor + 2, cz),
                         "a silo forms once its missing " + s.missing() + " is added");
+                    // Its own Launch Control, in the window's top row, is part of it (D288).
+                    TileEntity formed = world.getTileEntity(cx, floor + 2, cz);
+                    out.check(
+                        formed instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                            && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) formed)
+                                .getMetaTileEntity() instanceof com.gregguns.icbm.silo.MTEMissileSilo
+                            && ((com.gregguns.icbm.silo.MTEMissileSilo) ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) formed)
+                                .getMetaTileEntity()).launchControl() != null,
+                        "a formed generated silo has its own Launch Control");
                 }
             }
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();

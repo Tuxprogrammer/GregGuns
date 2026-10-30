@@ -81,7 +81,7 @@ public final class LaunchControlGuiShots implements Scenario {
         IcbmConfig.countdownTicks = 600;
         IcbmConfig.doorOpenTicks = 60;
         SiloScenarios.build(ctx, ItemList.Hatch_Energy_LuV);
-        final IGregTechTileEntity cb = SiloScenarios.launchControl(ctx, 5, -2);
+        final IGregTechTileEntity cb = SiloScenarios.ownControl(ctx);
         cb.setOwnerName(p.getCommandSenderName());
         cb.setOwnerUuid(p.getUniqueID());
         p.setGameType(WorldSettings.GameType.CREATIVE);
@@ -95,9 +95,9 @@ public final class LaunchControlGuiShots implements Scenario {
         final EntityMissile[] m = { null };
         final double cx = ctx.originX() + 0.5;
         final double cz = ctx.originZ() + 2.5;
-        final int bx = ctx.originX() + 5;
-        final int by = ctx.originY() + SiloScenarios.CY;
-        final int bz = ctx.originZ() - 2;
+        final int bx = ctx.originX() - 1;
+        final int by = ctx.originY() + SiloScenarios.CY + SiloShape.LAUNCH_CONTROL_RISE;
+        final int bz = ctx.originZ();
         final MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
 
         plan.after(5, () -> MissileShotsScenario.signal(p, "hud", "off"));

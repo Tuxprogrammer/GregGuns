@@ -32,9 +32,9 @@ import com.gregguns.icbm.IcbmSync;
 import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseGui;
 
 /**
- * The Launch Control panel: a dark status screen (state, target, distance and range, expected blast radius, EU), the X
- * and Z fields, "Use my position", the target slot (Radar Gun) with Load and Save, and the Launch button. Every button
- * is an
+ * The Launch Control panel: a dark status screen (state, the silo or pad it is bound to, target, distance and range,
+ * expected blast radius, EU), the X and Z fields, "Use my position", the target slot (Radar Gun) with Load and Save,
+ * and the Launch button. Every button is an
  * {@link InteractionSyncHandler} whose action runs on the server and re-checks the pressing player; the fields write
  * through string sync values the server parses and clamps ({@link MTELaunchControl#setXText}). The Launch button is
  * locked, gray, with the reason as the tooltip, until the pre-check passes. The status numbers come to the client as
@@ -82,7 +82,13 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
         int lastStick = -1;
         long eu;
         String target = "";
+        SiteLine site = SiteLine.NONE;
     }
+
+    /** Screen row pitch: six rows of the 8 px game font fill the dark screen. */
+    private static final int ROW = 8;
+    /** The dark screen's height: six rows under a 3 px margin; the X and Z fields start 2 px below it. */
+    private static final int SCREEN_H = 3 + 6 * ROW;
 
     private final State state = new State();
 
@@ -173,6 +179,10 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             F_ABORT,
             0,
             new InteractionSyncHandler().setOnMousePressed(m -> machine.abortFromButton(sync.getPlayer())));
+        sync.syncValue(
+            "st_site",
+            0,
+            new StringSyncValue(() -> snap().site.encode(), v -> state.site = SiteLine.decode(v)));
         sync.syncValue("st_countdown", 0, new IntSyncValue(() -> snap().countdown, v -> state.countdown = v));
         sync.syncValue(
             F_POS,
@@ -200,18 +210,27 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             .fullWidth();
 
         ParentWidget<?> screen = new ParentWidget<>().pos(0, 0)
-            .size(CONTENT, 49)
+            .size(CONTENT, SCREEN_H)
             .background(screenDrawable());
-        screen.child(text(this::statusText, 4, 3, CONTENT - 8, 9, Alignment.CenterLeft, this::statusColor));
+        screen.child(text(this::statusText, 4, 3, CONTENT - 8, ROW, Alignment.CenterLeft, this::statusColor));
+        screen.child(
+            text(
+                () -> trf(state.site.langKey(), state.site.args()),
+                4,
+                3 + ROW,
+                CONTENT - 8,
+                ROW,
+                Alignment.CenterLeft,
+                () -> AMBER));
         screen.child(
             text(
                 () -> LaunchTarget.NONE.toString()
                     .equals(state.target) ? tr("gregguns.icbm.control.gui.target_none")
                         : trf("gregguns.icbm.control.gui.target", state.target),
                 4,
-                12,
+                3 + 2 * ROW,
                 CONTENT - 8,
-                9,
+                ROW,
                 Alignment.CenterLeft,
                 () -> AMBER));
         screen.child(
@@ -221,9 +240,9 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                     LaunchControlFormat.blocks(state.distance),
                     LaunchControlFormat.range(state.min, state.max)),
                 4,
-                21,
+                3 + 3 * ROW,
                 CONTENT - 8,
-                9,
+                ROW,
                 Alignment.CenterLeft,
                 () -> AMBER));
         screen.child(
@@ -232,9 +251,9 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                     ? trf("gregguns.icbm.control.gui.radius", LaunchControlFormat.radius(state.radiusTenths))
                     : tr("gregguns.icbm.control.gui.radius_none"),
                 4,
-                30,
+                3 + 4 * ROW,
                 CONTENT - 8,
-                9,
+                ROW,
                 Alignment.CenterLeft,
                 () -> AMBER));
         screen.child(
@@ -244,27 +263,27 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                     LaunchControlFormat.eu(state.eu),
                     MTELaunchControl.EU_PER_SHOT),
                 4,
-                39,
+                3 + 5 * ROW,
                 CONTENT - 8,
-                9,
+                ROW,
                 Alignment.CenterLeft,
                 () -> state.eu >= MTELaunchControl.EU_PER_SHOT ? AMBER : ALARM));
         content.child(screen);
 
         // Coordinates.
         content.child(
-            label("gregguns.icbm.control.gui.x", "gregguns.icbm.control.gui.x.tip", 0, 54, 10, Alignment.CenterLeft));
-        content.child(coordField("field_x", 11, 51));
+            label("gregguns.icbm.control.gui.x", "gregguns.icbm.control.gui.x.tip", 0, 56, 10, Alignment.CenterLeft));
+        content.child(coordField("field_x", 11, 53));
         content.child(
-            label("gregguns.icbm.control.gui.z", "gregguns.icbm.control.gui.z.tip", 84, 54, 10, Alignment.CenterLeft));
-        content.child(coordField("field_z", 95, 51));
+            label("gregguns.icbm.control.gui.z", "gregguns.icbm.control.gui.z.tip", 84, 56, 10, Alignment.CenterLeft));
+        content.child(coordField("field_z", 95, 53));
 
         // Use my position.
         content.child(
             control(
                 F_POS,
                 0,
-                67,
+                68,
                 CONTENT,
                 () -> tr("gregguns.icbm.control.gui.mypos"),
                 () -> true,

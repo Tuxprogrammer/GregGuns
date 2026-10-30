@@ -10,7 +10,7 @@
 
 | ICBM behavior | GregGuns behavior | Why |
 |---|---|---|
-| Launcher screen block linked to launchers by a cable network | One block within reach of the pad; no network at T1-T2 | A Galacticraft pad is one 3x3 area; the silo (I3) brings its own feed |
+| Launcher screen block linked to launchers by a cable network | One block set against the pad's edge, or built into the silo's structure; no network | A Galacticraft pad is one 3x3 area and Galacticraft's own controller attaches by touch; the silo knows its own Launch Control (D288) |
 | Energy buffer fed by a battery slot (dead in ICBM, ICBM-04-15) | GT EU buffer; 300 EU per shot, paid only when the pad accepted the launch | ICBM-04-07 |
 | Default target (0, 0, 0) is a legal target (ICBM-04-06) | A target is unset until both coordinates are given | ICBM-04-06 |
 | Range is two per-axis squares with a hard-coded minimum (ICBM-04-05) | A circle on the horizontal distance from the pad's center; the minimum is the body tier's (20) | ICBM-04-05 |
@@ -26,9 +26,15 @@
 
 ## Finding the pad or the silo
 
-From I3 the block fires a `LaunchSite`: a formed Missile Silo within 6 blocks horizontally and 4 vertically of the silo's controller (tried first, because its shaft floor is a pad too), else the Galacticraft pad as before. The range line and the expected radius are those of the linked site (a silo adds its bonus, [missile-silo](../03-missiles/missile-silo.md)), and a silo whose Energy Hatch is below the missile's tier shows `silo_tier` and locks the button.
+The block fires a `LaunchSite` (D288). There is no search for silos and no election between sites.
 
-The block scans a box of plus or minus 4 horizontally and plus or minus 2 vertically for the **center block of a Galacticraft rocket pad** (`GCBlocks.landingPadFull` with metadata 0) and takes the nearest (`PadSearch`, unit tested). A buggy pad is not a rocket pad. `LaunchPads` is the only class that names a Galacticraft block, and it is reached only after the module gate. The pad's center is passed to the pad API.
+- **Part of a silo.** A Launch Control built into a Missile Silo's structure, in any hatch position (a wall, glass or floor-ring block; [missile-silo](../03-missiles/missile-silo.md)), is that silo's. The silo's structure check finds it (`SiloLaunchControl`, a hatch element) and binds it (`MTELaunchControl.bindSilo`, the controller's coordinates, saved): the silo knows its Launch Control and the Launch Control knows its silo. It fires that silo only. While the silo is not formed it shows `silo_unformed` and fires nothing; a silo that forms without it (or a controller that is gone) releases it, and it stands free. A silo takes at most one Launch Control: a second one fails its position, and the silo does not form. Once, 20 ticks after it loads or is placed, a free block asks every formed silo whose structure could hold it, and that has no Launch Control, to check its structure again, because GT only rechecks a structure when a machine block beside its parts changes.
+- **Free-standing, beside a pad.** A Launch Control that is part of no silo fires a Galacticraft rocket pad it **touches**: it stands against one of the 3x3 pad's four edges, level with the pad, the way Galacticraft's own launch controller attaches (`TileEntityLandingPad.getConnectedTiles`). That is the twelve cells two blocks from the pad's center along one axis and at most one along the other (`PadAdjacency`, unit tested). A corner contact, a gap or a different level does not attach. The pad is found by its **center block** (`GCBlocks.landingPadFull`, metadata 0); a buggy pad is not a rocket pad. A formed silo's shaft floor is never a bare pad. With no touching pad the status is `no_pad` ("No pad adjacent").
+- **Several touching pads.** The block takes the one with a launch under way (so Abort reaches it), then one with a ready missile (armed, full tank), then an armed one, then one with anything on it, then an empty one; among equals the first in the fixed side order (north, east, south, west, each from the low coordinate up) (`SiteChoice`, unit tested). The choice never flips between two equal pads.
+
+The range line and the expected radius are those of the bound site (a silo adds its bonus), and a silo whose Energy Hatch is below the missile's tier shows `silo_tier` and locks the button. `LaunchPads` is the only class that names a Galacticraft block, and it is reached only after the module gate.
+
+**Generated silos** carry their Launch Control in the front face, in the window's top row (one above the controller), in the outer column on the right of a player facing the controller (`SiloShape.LAUNCH_CONTROL_COLUMN`, `LAUNCH_CONTROL_RISE`; worldgen cell `SILO_LAUNCH_CONTROL`). The dev builder (`DevStructureBuilder.buildSilo`) puts it in the same place. The Launch Control room of the complex keeps its own Launch Control as furniture: it touches no pad and is part of no silo, so it shows "No pad adjacent".
 
 ## The pad API (coder 1's `PadMissiles`)
 
@@ -44,7 +50,7 @@ The block scans a box of plus or minus 4 horizontally and plus or minus 2 vertic
 
 ## The GUI (ModularUI2)
 
-A dark status screen (state, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the target slot (a Radar Gun, with a faint gun icon when empty; data sticks are accepted without a mention) with **Load target** and **Save target**, **Launch** and **Abort** (D88). Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray with nothing in the slot and say so. **Abort** sits beside Launch: it is live while a countdown runs (the screen reads "Countdown: N s"), gray when none runs, and gray with "Ignition: no abort" once the engines have lit. Status numbers reach the client as read-only sync values; no client code reads the world.
+A dark status screen (state, the bound site, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the target slot (a Radar Gun, with a faint gun icon when empty; data sticks are accepted without a mention) with **Load target** and **Save target**, **Launch** and **Abort** (D88). Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray with nothing in the slot and say so. **Abort** sits beside Launch: it is live while a countdown runs (the screen reads "Countdown: N s"), gray when none runs, and gray with "Ignition: no abort" once the engines have lit. The site line names what the block is bound to: `Silo 2 at 120, -30` (the silo's name is the first written line of a wall sign on its face one block above the controller, where the complex hangs `Silo N`), `Silo at 120, -30` without a sign, `Pad at 120, -30`, or `Bound to no silo or pad`; the coordinates are the launch point (the shaft's or the pad's center). Six 8 px rows fill the screen. Status numbers reach the client as read-only sync values; no client code reads the world.
 
 ## Triggers
 
@@ -66,10 +72,11 @@ A shot starts a 40-tick cooldown on the block.
 - **GGS-I2-13** A held signal fires once. A far or dead player's button press does nothing.
 - **GGS-I2-14** Every status has a lang key (ICBM-04-16, 04-17).
 - **GGS-I2-15** The block never touches the pad, the fuel loader or anything attached; only the pad API acts on the pad.
+- **GGS-ICBM-04-25** A Launch Control in a silo's structure fires that silo only, and names it; a free one fires only a pad it touches, level with it, and prefers a site with a ready missile over an empty one (D288).
 
 ## Tests
 
-`LaunchControlTest` (target, parse, gate order, trigger edge, pad search, stick codec, number format) and scenarios `icbm.control.registered`, `icbm.control.pad_and_gate`, `icbm.control.data_stick`, `icbm.control.redstone`. The full launch from the block is in the missile milestone's scenarios.
+`LaunchControlTest` (target, parse, gate order, trigger edge, stick codec, number format), `LaunchControlPairingTest` (pad adjacency, the site choice and its tie-break, the site line) and scenarios `icbm.control.registered`, `icbm.control.pad_and_gate` (only a touching pad, level with the block), `icbm.control.pad_choice` (between two pads the loaded one wins; ties keep the side order), `icbm.control.data_stick`, `icbm.control.redstone`, `icbm.silo.own_control` (two silos, each fired by its own Launch Control; a free one between them belongs to neither) and `icbm.silo.unformed_pad`. The full launch from the block is in the missile milestone's scenarios.
 
 ## Open questions
 

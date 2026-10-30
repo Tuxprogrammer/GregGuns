@@ -28,6 +28,7 @@ One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns
 - **Controller:** the middle of the front wall, in the middle glass ring (layer 3).
 - **Window edges (D290, owner 2026-10-30):** the two cells either side of the controller in each of the three front-face glass rings (six cells, `W` in `SiloShape`) accept clear glass, a hatch **or the wall's concrete**, so the hatches can stand in the face's two outer columns and leave the middle column clear glass. Every other glass cell still takes glass or a hatch only.
 - **Generated layout:** a silo in a complex has its four hatches in those two outer columns, two high, and glass everywhere else in the window. Seen by a viewer standing in front of the controller (looking at it, so the controller faces them): left column Input Hatch (controller row) over Maintenance Hatch; right column Energy Hatch (controller row) over Input Bus. The silo missing its Energy Hatch has glass in its place. A player-built silo may use the same layout or any other the structure accepts.
+- **Launch Control (D288):** optional, at most one, in any hatch position (a wall, glass or floor-ring cell; `SiloLaunchControl`, a hatch element in every hatch adder). The structure check binds it, so the silo fires through its own Launch Control and no other; a second one fails its position. It keeps its own texture. Generated and dev-built silos put it in the front face's window, top row (layer 4), in the outer column on a viewer's right (`SiloShape.LAUNCH_CONTROL_COLUMN`, `LAUNCH_CONTROL_RISE`). The controller's tooltip lists it.
 - **Pad:** the nine blocks accept either the unformed Galacticraft pad blocks (`tile.landingPad`) or the formed pad (`tile.landingPadFull` at the center and `tile.dummyblock` meta 2 on the other eight), found by registry name through `GalacticraftPads` so no Galacticraft class loads. Without Galacticraft the module is off and the silo inert. The launch never removes or damages the pad (D32): a missile does not extend `EntityAutoRocket`.
 - **Counts:** 96 concrete positions (84 needed, the rest may be hatches), 35 glass-ring cells (29 glass-only, 6 window edges) plus the controller, 12 beams, 9 pad blocks.
 - **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out and on up to the build height before it turns (D287, [flight.md](flight.md#the-climb)), so a roof or a chimney built around the opening is safe; keep the opening itself free of blocks for 12 blocks above the pad plus the body, or the launch is `BLOCKED`.
@@ -79,7 +80,7 @@ A missile launched from a silo gets scatter x0.5 (`icbm.siloScatterFactor`, on t
 
 ## The launch site API
 
-`com.gregguns.icbm.missile.LaunchSite` (`centerX/Z`, `status`, `maxRange`, `expectedRadius`, `hold`, `launch`). `PadMissiles.site(world, x, y, z)` wraps the unchanged static pad API; `MTEMissileSilo.site()` is the silo. The Launch Control reaches both through `LaunchSites.find`, the silo first (its floor is a pad too, but a silo launch must obey the silo), within 6 blocks horizontally and 4 vertically of the silo controller (`SiloSearch`).
+`com.gregguns.icbm.missile.LaunchSite` (`centerX/Z`, `status`, `maxRange`, `expectedRadius`, `hold`, `launch`). `PadMissiles.site(world, x, y, z)` wraps the unchanged static pad API; `MTEMissileSilo.site()` is the silo. The Launch Control reaches both through `LaunchSites.find`: its own silo when the silo's structure holds it, else a Galacticraft pad it touches (D288, [launch-control-block](../04-launch-control/launch-control-block.md)). A formed silo's floor is never fired as a bare pad. `MTEMissileSilo.signName()` reads the first written line of a wall sign on the face one block above the controller, for the Launch Control's site line.
 
 ## T3 missiles
 
@@ -107,7 +108,7 @@ Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,3
 
 ## Tests
 
-`SiloDoorsTest`, `SiloShapeTest`, `SiloRulesTest`, `SiloSequenceTest`, `SiloSearchTest`, `MissileTierTest`, `ScatterTest`; scenarios above.
+`SiloDoorsTest`, `SiloShapeTest`, `SiloRulesTest`, `SiloSequenceTest`, `LaunchControlPairingTest`, `MissileTierTest`, `ScatterTest`; scenarios above and `icbm.silo.own_control`.
 
 ## Open questions
 

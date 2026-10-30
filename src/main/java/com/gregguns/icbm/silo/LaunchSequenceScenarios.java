@@ -76,7 +76,7 @@ public final class LaunchSequenceScenarios {
             IcbmConfig.doorOpenTicks = DOORS;
             IcbmConfig.doorCloseHeight = 4;
             SiloScenarios.build(ctx, ItemList.Hatch_Energy_LuV);
-            cb = SiloScenarios.launchControl(ctx, 5, -2);
+            cb = SiloScenarios.ownControl(ctx);
         }
 
         int x() {

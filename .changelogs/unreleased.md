@@ -22,6 +22,13 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Five switches are on by default: `npcs.helicopter`, `npcs.alienBug`, `npcs.cyberdemon`, `worldgen.enabledAlienBugNest` and `utility.bioBlobSparesPlayers`. Camps can send the Attack Helicopter and a Camp Flag break calls one in, Alien Bugs and the Cyberdemon (Nether) may spawn, Alien Bug Nests generate in sandy biomes, and Bio Blob poison spares players (other creatures are still poisoned). Set any of them to `false` to turn it off.
 - `questbook.install` is on by default and shows in the in-game config GUI: a server with BetterQuesting gets the GregGuns quest line on start. Set it to `false` to skip the install. The Cyberdemon and Alien Bug quests are visible from the start.
 
+## Changed: the Launch Control belongs to its silo
+
+- A Launch Control between two silos no longer reports "No missile" because it picked the empty one. A Missile Silo now takes its Launch Control as part of its structure: build it in place of any wall, glass or floor-ring block (one per silo). That Launch Control fires its own silo and no other, and says so when the silo isn't formed. Silos built with a Launch Control merely nearby need it moved into the structure.
+- A Launch Control that isn't part of a silo pairs with a Galacticraft pad only when it touches one of the pad's edges, level with it, the way Galacticraft's own launch controller does. Otherwise it reads "No pad adjacent". Next to two pads it picks the one with a ready missile, and always the same one when both are ready.
+- The Launch Control screen names what it is bound to: the silo's sign ("Silo 2") or the silo or pad and its coordinates.
+- Every silo in a silo complex comes with its own Launch Control, in the top row of its window.
+
 ## Changed: abandoned silo complexes
 
 - Abandoned complexes now keep one or two guard spawners (Army Soldiers and Commandos) at a hall branch or a guard post room, so a ruin is no longer empty of danger.

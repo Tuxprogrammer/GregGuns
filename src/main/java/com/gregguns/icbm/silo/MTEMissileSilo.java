@@ -205,7 +205,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                 .addElement(
                     'C',
                     buildHatchAdder(MTEMissileSilo.class)
-                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance, SiloLaunchControl.ELEMENT)
                         .casingIndex(casingIndex)
                         .hint(1)
                         .buildAndChain(onElementPass(MTEMissileSilo::onCasingAdded, SiloConcrete.element())))
@@ -213,7 +213,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                 .addElement(
                     'F',
                     buildHatchAdder(MTEMissileSilo.class)
-                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance, SiloLaunchControl.ELEMENT)
                         .casingIndex(casingIndex)
                         .hint(1)
                         .buildAndChain(onElementPass(MTEMissileSilo::onCasingAdded, SiloConcrete.element())))
@@ -223,19 +223,16 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                 .addElement(
                     'G',
                     buildHatchAdder(MTEMissileSilo.class)
-                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance, SiloLaunchControl.ELEMENT)
                         .casingIndex(casingIndex)
                         .hint(2)
                         .buildAndChain(SiloGlass.element()))
-                // TODO(integration): the Launch Control agent adds SiloLaunchControl.ELEMENT to this atLeast list
-                // too; its canonical cell is the front aisle, shape row 8, WINDOW_COLUMN_LOW (the viewer's right, one
-                // above the controller), which the generated and the dev layouts leave free.
                 // The window edges of the controller's face (the columns either side of the controller): glass, the
                 // wall's concrete or a hatch, so hatches can stand in the outer columns with the glass in the middle.
                 .addElement(
                     'W',
                     buildHatchAdder(MTEMissileSilo.class)
-                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance, SiloLaunchControl.ELEMENT)
                         .casingIndex(casingIndex)
                         .hint(2)
                         .buildAndChain(ofChain(SiloGlass.element(), SiloConcrete.element())))
@@ -249,6 +246,94 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         casingCount++;
     }
 
+    /**
+     * Where the Launch Control in this silo's structure stands (D288), found by the last structure check. Kept as a
+     * position, not a reference, so a reload of the Launch Control's chunk alone does not break the pairing.
+     */
+    private boolean hasLaunchControl;
+    private int lcX;
+    private int lcY;
+    private int lcZ;
+
+    /**
+     * The structure check found a Launch Control in a hatch position: it becomes this silo's, unless the silo already
+     * has one.
+     *
+     * @param tile the GT tile at that position
+     * @return whether it was taken (false fails that position)
+     */
+    boolean addLaunchControl(IGregTechTileEntity tile) {
+        if (tile == null || !(tile.getMetaTileEntity() instanceof com.gregguns.icbm.control.MTELaunchControl)
+            || hasLaunchControl) {
+            return false;
+        }
+        hasLaunchControl = true;
+        lcX = tile.getXCoord();
+        lcY = tile.getYCoord();
+        lcZ = tile.getZCoord();
+        IGregTechTileEntity b = getBaseMetaTileEntity();
+        ((com.gregguns.icbm.control.MTELaunchControl) tile.getMetaTileEntity())
+            .bindSilo(b.getXCoord(), b.getYCoord(), b.getZCoord());
+        return true;
+    }
+
+    /** @return whether the last structure check found a Launch Control in this silo */
+    public boolean hasLaunchControl() {
+        return hasLaunchControl;
+    }
+
+    /**
+     * @param x X
+     * @param y Y
+     * @param z Z
+     * @return whether the last structure check found this silo's Launch Control at that position
+     */
+    public boolean hasLaunchControlAt(int x, int y, int z) {
+        return hasLaunchControl && lcX == x && lcY == y && lcZ == z;
+    }
+
+    /** @return the Launch Control the last structure check found in this silo, as the world holds it now, or null */
+    public com.gregguns.icbm.control.MTELaunchControl launchControl() {
+        World w = getBaseMetaTileEntity().getWorld();
+        if (!hasLaunchControl || w == null || !w.blockExists(lcX, lcY, lcZ)) {
+            return null;
+        }
+        net.minecraft.tileentity.TileEntity t = w.getTileEntity(lcX, lcY, lcZ);
+        return t instanceof IGregTechTileEntity
+            && ((IGregTechTileEntity) t).getMetaTileEntity() instanceof com.gregguns.icbm.control.MTELaunchControl
+                ? (com.gregguns.icbm.control.MTELaunchControl) ((IGregTechTileEntity) t).getMetaTileEntity()
+                : null;
+    }
+
+    /**
+     * The silo's name for the Launch Control screen: the first written line of a wall sign hanging on the silo's face
+     * one block above the controller, where the generated complex puts "Silo N" (a player may hang their own).
+     *
+     * @return the name, or empty when there is no such sign
+     */
+    public String signName() {
+        IGregTechTileEntity b = getBaseMetaTileEntity();
+        World w = b.getWorld();
+        ForgeDirection front = b.getFrontFacing();
+        int x = b.getXCoord() + front.offsetX;
+        int y = b.getYCoord() + 1;
+        int z = b.getZCoord() + front.offsetZ;
+        if (w == null || y > 255 || !w.blockExists(x, y, z)) {
+            return "";
+        }
+        net.minecraft.tileentity.TileEntity t = w.getTileEntity(x, y, z);
+        if (!(t instanceof net.minecraft.tileentity.TileEntitySign)) {
+            return "";
+        }
+        for (String line : ((net.minecraft.tileentity.TileEntitySign) t).signText) {
+            if (line != null && !line.trim()
+                .isEmpty()) {
+                return line.trim();
+            }
+        }
+        return "";
+    }
+
     @Override
     public IStructureDefinition<MTEMissileSilo> getStructureDefinition() {
         return Structure.DEFINITION;
@@ -257,6 +342,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public void checkMachine(IGregTechTileEntity baseMetaTileEntity, ItemStack stack, List<StructureError> errors) {
         casingCount = 0;
+        hasLaunchControl = false;
         if (!checkPiece(PIECE, SiloShape.CONTROLLER_COLUMN, SiloShape.CONTROLLER_ROW, 0, errors)) {
             return;
         }
@@ -1377,6 +1463,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             .addInputHatch(lang("structure.hatch"), 1)
             .addEnergyHatch(lang("structure.hatch"), 1)
             .addMaintenanceHatch(lang("structure.hatch"), 1)
+            .addOtherStructurePart(lang("structure.launch_control.element"), lang("structure.launch_control"))
             .addCasing(Integer.toString(SiloShape.count("G") + SiloShape.count("W")), lang("structure.glass"), false)
             .addCasing(Integer.toString(SiloShape.count("B")), lang("structure.rim"), false)
             .addAir(lang("structure.shaft"))

@@ -44,6 +44,15 @@ public final class SiloShape {
      * How far below the controller the shaft floor's surface is, so the missile's feet are at {@code controllerY - 1}.
      */
     public static final int FLOOR_SURFACE_BELOW_CONTROLLER = 1;
+    /**
+     * Where a built silo's Launch Control stands (D288): the front aisle, this column counted from the left of the
+     * shape (the outer window column on the right of a viewer facing the controller, above the Energy Hatch), and
+     * {@link #LAUNCH_CONTROL_RISE} rows above the controller. Any hatch position takes a Launch Control; this is the
+     * one the generated complex and the dev builder use.
+     */
+    public static final int LAUNCH_CONTROL_COLUMN = 1;
+    /** How many rows above the controller the built silo's Launch Control stands: the window's top row. */
+    public static final int LAUNCH_CONTROL_RISE = 1;
     /** Shaft side length, blocks. */
     public static final int SHAFT_WIDTH = 3;
     /** The fewest casing blocks (C and F) the silo needs to form; the rest of the positions may be hatches. */

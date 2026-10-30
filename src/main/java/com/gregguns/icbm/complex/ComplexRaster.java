@@ -212,5 +212,20 @@ public final class ComplexRaster {
             int[] at = s.hatchCell(role);
             set(at[0], at[1], at[2], role);
         }
+        launchControl(s);
+    }
+
+    /**
+     * The silo's own Launch Control (D288): in the front face, the window's top row (one above the controller), in
+     * the outer column {@link com.gregguns.icbm.silo.SiloShape#LAUNCH_CONTROL_COLUMN}. Every generated silo has one;
+     * the part a silo misses is never the Launch Control.
+     */
+    private void launchControl(SiloSlot s) {
+        int col = com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_COLUMN;
+        set(
+            s.x(col, 0),
+            com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_RISE + 2,
+            s.z(col, 0),
+            Cell.SILO_LAUNCH_CONTROL);
     }
 }

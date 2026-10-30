@@ -102,4 +102,18 @@ class ComplexRasterTest {
             }
         }
     }
+
+    @Test
+    void everySiloHasItsOwnLaunchControlInTheWindowsTopRow() {
+        int col = com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_COLUMN;
+        int y = 2 + com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_RISE;
+        for (long s = 0; s < 60; s++) {
+            ComplexPlan p = ComplexLayout.generate(s, 5, 1);
+            ComplexRaster r = new ComplexRaster(p);
+            for (SiloSlot silo : p.silos()) {
+                assertEquals(Cell.SILO_LAUNCH_CONTROL, r.at(silo.x(col, 0), y, silo.z(col, 0)), "seed " + s);
+                assertTrue(Cell.siloMachine(Cell.SILO_LAUNCH_CONTROL));
+            }
+        }
+    }
 }

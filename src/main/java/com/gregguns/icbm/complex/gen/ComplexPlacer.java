@@ -381,7 +381,7 @@ public final class ComplexPlacer implements ComplexWriter {
                     if (y >= 1 && Cell.open(c) && wy > seal[ColumnMaskSink.index(window, x, z)]) c = Cell.WALL;
                     if (c == Cell.AIR && signCells.contains(((long) lx << 40) ^ ((long) y << 32) ^ (lz & 0xFFFFFFFFL)))
                         continue;
-                    if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
+                    if (Cell.siloMachine(c)) {
                         if (under.setBlock(x, wy, z, air, 0) && world != null) {
                             machines.place(world, c, x, wy, z, siloFacing(cp, lx, lz));
                         }

@@ -237,7 +237,7 @@ def silo() -> str:
 <div class="card"><h2 style="margin-bottom:10px">Loading and launching</h2><div style="display:flex;flex-direction:column;gap:14px">
 <div class="step"><span class="num">1</span><div class="t"><b>Feed it.</b> Put a missile body and a warhead into the Input Bus, by hand or by conveyor. The silo stands the body on the pad, then seats the warhead on its nose, each part in view before its working cycle, and arms it.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Fuel it.</b> Pipe the right fuel into the Input Hatch. A Tier 3 missile takes 8,000 mB of Purple or Green fuel. Power the Energy Hatch.</div></div>
-<div class="step"><span class="num">3</span><div class="t"><b>Link it.</b> Put a Launch Control within 6 blocks sideways and 4 up or down of the silo controller. It finds the silo the way it finds a pad.</div></div>
+<div class="step"><span class="num">3</span><div class="t"><b>Link it.</b> Build a Launch Control into the silo in place of any wall, glass or floor-ring block, one per silo. It fires that silo and no other, and its screen names it.</div></div>
 <div class="step"><span class="num">4</span><div class="t"><b>Launch.</b> Pick the target on the Launch Control and fire. You never touch the missile.</div></div></div></div></div>
 <div class="card" style="margin-top:18px"><h2 style="margin-bottom:6px">Building a Tier 3 body</h2>
 <div class="muted" style="font-size:18px;margin-bottom:12px">A Tier 3 body is built like the smaller ones, by hand on the NASA Workbench or on a LuV Assembly Line. It needs the silo: a pad refuses it. It carries every warhead casing, from Tier 1 up to antimatter and red matter.</div>

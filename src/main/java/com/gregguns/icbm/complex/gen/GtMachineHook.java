@@ -17,7 +17,8 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.threads.RunnableMachineUpdate;
 
 /**
- * Places the silo's GT machines: the Missile Silo controller and the hatches around it, facing the silo's front (toward
+ * Places the silo's GT machines: the Missile Silo controller, the hatches around it and its Launch Control, facing the
+ * silo's front (toward
  * its gallery), the same way {@code DevStructureBuilder} builds a silo.
  */
 // Source: DevStructureBuilder.place (this repo) for the GT calls; GT5-Unofficial 5.09.54.205 BaseMetaTileEntity API.
@@ -200,6 +201,8 @@ public final class GtMachineHook implements MachineHook {
             case Cell.HATCH_POWER:
                 return ItemList.Hatch_Input_HV.get(1)
                     .getItemDamage();
+            case Cell.SILO_LAUNCH_CONTROL:
+                return GregGunsMTEIDs.LAUNCH_CONTROL;
             default:
                 return -1;
         }
