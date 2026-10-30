@@ -1269,7 +1269,7 @@ public final class SiloScenarios {
                         }
                         // Now the fuel: cut the power, offer fuel, and nothing may move.
                         energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
-                        fuel(ctx, out, "hydrogen");
+                        fuel(ctx, out, "nitrofuel");
                         mark[0] = ticks;
                         checks[0] = s.checks();
                         stage[0] = 4;
