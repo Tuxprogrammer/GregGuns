@@ -143,4 +143,31 @@ class RoleAuditTest {
             assertTrue(v.isEmpty(), "seed " + seed + ": a foreign wall faces in, " + v.size() + " sections");
         }
     }
+
+    @Test
+    void auditLightsReportsALitLampThatGivesNoLight() {
+        ComplexPlan plan = ComplexLayout.generate(5, 0, 4);
+        ComplexRaster raster = new ComplexRaster(plan);
+        // Every lamp cell holds "vent" (dark) or "glow" (lit): the vents are reported once per section.
+        RoleAudit.Reader lit = (x, y, z) -> (x + z) % 2 == 0 ? "vent" : "glow";
+        List<RoleAudit.DarkLight> dark = RoleAudit.auditLights(raster, lit, o -> "glow".equals(o));
+        assertFalse(dark.isEmpty(), "the plan has lamps");
+        java.util.Set<Integer> sections = new java.util.HashSet<>();
+        for (RoleAudit.DarkLight d : dark) {
+            assertEquals("vent", d.block);
+            assertTrue(sections.add(d.section), "once per section and block");
+            assertEquals(Cell.LAMP, raster.at(d.x, d.y, d.z));
+            String line = RoleAudit
+                .lightLine(plan, d, "test", "technical_works", "OPERATIONAL", "chisel:technical", "palette");
+            assertTrue(line.contains("emits no light") && line.contains("LAMP"), line);
+        }
+        assertTrue(
+            RoleAudit.auditLights(raster, lit, o -> true)
+                .isEmpty(),
+            "emitters pass");
+        assertTrue(
+            RoleAudit.auditLights(raster, (x, y, z) -> null, o -> false)
+                .isEmpty(),
+            "unwritten cells are left out");
+    }
 }

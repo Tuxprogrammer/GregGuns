@@ -19,6 +19,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 ## Fixed
 
+- Silo complex lights are always light-emitting blocks. A lit lamp is Chisel light stone or glowstone and is checked to give light when the palette resolves it, and a dead lamp is never a Chisel Technical vent. The vents are a sparse accent in the ceilings of plant rooms, halls, bunkers and granite halls, never a light. The role audit now reports a lit lamp that gives no light.
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.
 - Abandoned houses and other structures no longer place Chisel glass panes (and gold blocks) at a variant Chisel does not define, which showed the ERROR texture. They use Chisel's borderless pane and large-ingot gold now, and any Chisel block at an undefined variant is replaced by its vanilla stand-in.
 

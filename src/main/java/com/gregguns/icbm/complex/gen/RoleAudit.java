@@ -56,9 +56,9 @@ public final class RoleAudit {
     public static final String PROPERTY = "gregguns.icbm.roleAudit";
 
     /** Who wrote a cell last. */
-    public static final byte NONE = 0, SHELL = 1, MARK = 2, CONTENTS = 3, SIGNS = 4, SHAFT = 5;
+    public static final byte NONE = 0, SHELL = 1, MARK = 2, CONTENTS = 3, SIGNS = 4, SHAFT = 5, LIGHT = 6;
 
-    private static final String[] WRITER_NAMES = { "none", "shell", "marks", "contents", "signs", "shafts" };
+    private static final String[] WRITER_NAMES = { "none", "shell", "marks", "contents", "signs", "shafts", "lights" };
 
     private static final AtomicInteger TOTAL = new AtomicInteger();
     private static final AtomicInteger AUDITS = new AtomicInteger();
@@ -150,6 +150,78 @@ public final class RoleAudit {
             for (int i = 0; i < 3; i++) if (cells[i] != null) l.add(ROLE_NAMES[i]);
             return String.join(" and ", l);
         }
+    }
+
+    /** A lit lamp that gives no light. */
+    public static final class DarkLight {
+
+        public final int section;
+        public final Object block;
+        /** The first such cell, complex-local. */
+        public final int x, y, z;
+
+        DarkLight(int section, Object block, int x, int y, int z) {
+            this.section = section;
+            this.block = block;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    /**
+     * Checks the light role: every lit lamp the writer placed must be a block that emits light. The lamp cells are the
+     * raster's {@link Cell#LAMP} cells; {@code lit} reads the block a lit-lamp write left (null leaves the cell out:
+     * a dead lamp, air, unwritten).
+     *
+     * @param raster the complex's raster
+     * @param lit    the block at each lit lamp cell, or null
+     * @param emits  whether a block gives light
+     * @return the blocks that give none, once per section and block, with their first cell
+     */
+    public static List<DarkLight> auditLights(ComplexRaster raster, Reader lit,
+        java.util.function.Predicate<Object> emits) {
+        ComplexPlan plan = raster.plan();
+        List<DarkLight> out = new ArrayList<>();
+        Map<Integer, java.util.Set<Object>> seen = new java.util.HashMap<>();
+        for (int id = 0; id < plan.sectionCount(); id++) {
+            Box b = plan.sectionBox(id);
+            for (int x = b.minX; x < b.maxX; x++) {
+                for (int z = b.minZ; z < b.maxZ; z++) {
+                    if (raster.ownerAt(x, z) != id) continue;
+                    for (int y = 0; y < ComplexRaster.LEVELS; y++) {
+                        if (raster.at(x, y, z) != Cell.LAMP) continue;
+                        Object blk = lit.block(x, y, z);
+                        if (blk == null || emits.test(blk)) continue;
+                        if (seen.computeIfAbsent(id, k -> new java.util.HashSet<>())
+                            .add(blk)) out.add(new DarkLight(id, blk, x, y, z));
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    /** @return the WARN line of a lit lamp that gives no light, with the palette path that chose it */
+    public static String lightLine(ComplexPlan plan, DarkLight d, String where, String setId, String level,
+        String block, String path) {
+        return "Silo complex role audit: " + where
+            + ", "
+            + describeSection(plan, d.section)
+            + ", style set "
+            + setId
+            + ", level "
+            + level
+            + ": block "
+            + block
+            + " is a lit LAMP but emits no light (light value 0) at "
+            + d.x
+            + ","
+            + d.y
+            + ","
+            + d.z
+            + " written by "
+            + path;
     }
 
     private static final String[] ROLE_NAMES = { "FLOOR", "WALL", "CEILING" };
@@ -402,6 +474,31 @@ public final class RoleAudit {
             return b;
         };
         List<Violation> found = audit(t.raster, reader);
+        Reader litReader = (x, y, z) -> {
+            if (t.writer(x, y, z) != LIGHT) return null;
+            int wx = t.ax + x, wy = t.floorY + y, wz = t.az + z;
+            if (!t.world.getChunkProvider()
+                .chunkExists(wx >> 4, wz >> 4)) return null;
+            Block b = t.world.getBlock(wx, wy, wz);
+            // Changed by someone else after the lamp was written: not the palette's block.
+            if (Block.getIdFromBlock(b) != t.placed(x, y, z) || b == Blocks.air) return null;
+            return b;
+        };
+        List<DarkLight> dark = auditLights(t.raster, litReader, o -> ((Block) o).getLightValue() > 0);
+        for (DarkLight d : dark) {
+            String setId = t.styles instanceof PaletteStyles ? ((PaletteStyles) t.styles).style(d.section)
+                .setId() : "(no palette)";
+            report(
+                lightLine(
+                    t.raster.plan(),
+                    d,
+                    t.where,
+                    setId,
+                    t.level,
+                    GameData.getBlockRegistry()
+                        .getNameForObject(d.block),
+                    t.styles.path(Cell.LAMP, d.x, d.y, d.z)));
+        }
         AUDITS.incrementAndGet();
         CELLS.addAndGet(checked[0]);
         int changedCells = 0;
@@ -432,15 +529,16 @@ public final class RoleAudit {
                     .append(counts[i]);
             }
             GregGuns.LOG.info(
-                "Silo complex role audit: {}, {} sections, {} violations; role cells by last writer: {}; changed"
+                "Silo complex role audit: {}, {} sections, {} violations ({} lit lamps without light); role cells by last writer: {}; changed"
                     + " later by other worldgen (left out): {}",
                 t.where,
                 plan.sectionCount(),
-                found.size(),
+                found.size() + dark.size(),
+                dark.size(),
                 ex,
                 changed);
         }
-        return found.size();
+        return found.size() + dark.size();
     }
 
     /** Logs one violation line and counts it. */
