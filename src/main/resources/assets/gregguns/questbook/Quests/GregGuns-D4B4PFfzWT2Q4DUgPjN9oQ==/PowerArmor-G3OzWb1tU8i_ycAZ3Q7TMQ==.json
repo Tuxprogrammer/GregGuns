@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The heaviest suit in the mod: very high resistance across damage types, extra health on the chestplate, and boots with step assist and fall reduction. Its bonuses and its hazard protection only work while the chestplate holds a charge.\n\nEach piece is an IV Assembler recipe of Power Plating, IV circuits, IV electric motors and tungstensteel plates, with a programmed circuit for the piece. The chestplate is the electric part. Charge it at an IV charger or battery buffer. The quest checks the chestplate, but you want all four pieces.\n\n[note]The suit gives heat, cold and electrical protection while charged. Check NEI for the circuit number of each piece.[/note]",
+      "desc:8": "The heaviest suit in the mod: very high resistance across damage types, extra health from every piece, and boots with step assist and fall reduction. Its bonuses and its hazard protection only work while the chestplate holds a charge.\n\nEach piece is an IV Assembler recipe of Power Plating, IV circuits, IV electric motors and tungstensteel plates, with a programmed circuit for the piece. The chestplate is the electric part. Charge it at an IV charger or battery buffer. The quest checks the chestplate, but you want all four pieces.\n\n[note]The suit gives heat, cold and electrical protection while charged. Check NEI for the circuit number of each piece.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

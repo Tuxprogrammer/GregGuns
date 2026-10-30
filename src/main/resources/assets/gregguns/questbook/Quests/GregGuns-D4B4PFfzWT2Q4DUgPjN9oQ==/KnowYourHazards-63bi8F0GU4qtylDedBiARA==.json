@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "GregTech tracks hazards such as gas, radiation, heat, frost and electricity, and each protective item lists the ones it covers in its tooltip. Check the tooltip before you walk into a reactor hall.\n\nA full set protects when every piece does. T2 Commando armor covers electricity, Riot armor covers radiation from lead plating, and the Steam set covers heat. Bring one piece of any of these sets to practice reading its tooltip.\n\n[warn]One piece is not protection. Wear all four.[/warn]",
+      "desc:8": "GregTech tracks hazards such as gas, radiation, heat, frost and electricity, and each protective item lists the ones it covers in its tooltip. Check the tooltip before you walk into a reactor hall.\n\nA full set protects when every piece does. T2 Commando armor covers electricity, Ranger Veteran armor covers radiation from its lead plating, and the Steam set covers heat. Bring one piece of any of these sets to practice reading its tooltip.\n\n[warn]One piece is not protection. Wear all four.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Roguelike dungeons sink deep into the ground. Near the surface they hold LV gear, deeper down MV gear, depending on how your pack\u0027s dungeon loot is set up.\n\nBring back one gun and one blade from your delve: a pistol, revolver or sawed-off, and a Combat Knife or Crowbar. If the dungeon is stingy, you can always build them.\n\n[warn]Dungeons are full of vanilla mobs and traps. Bring armor, light and an exit plan.[/warn]",
+      "desc:8": "Roguelike dungeons sink deep into the ground. They hold GregGuns gear only if your server adds it to the dungeon loot files; when it does, the upper levels hold LV gear and the deeper ones MV.\n\nBring back one gun and one blade from your delve: a pistol, revolver or sawed-off, and a Combat Knife or Crowbar. If the dungeon is stingy, you can always build them.\n\n[warn]Dungeons are full of vanilla mobs and traps. Bring armor, light and an exit plan.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

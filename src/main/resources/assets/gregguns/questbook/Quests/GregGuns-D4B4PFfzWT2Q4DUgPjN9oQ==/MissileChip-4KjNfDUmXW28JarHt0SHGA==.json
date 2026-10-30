@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Every missile starts as a chip. The Missile Chip T1 holds the flight program, and it\u0027s the first thing the NASA Workbench will ask about.\n\nMake it in the GregTech Circuit Assembler at HV (20 seconds) from an Advanced Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wires. Check NEI for the exact recipe. The chip is only half the job: the next quest engraves it into a schematic.",
+      "desc:8": "Every missile starts as a chip. The Missile Chip T1 holds the flight program, and it\u0027s the first thing the NASA Workbench will ask about.\n\nMake it in the GregTech Circuit Assembler at HV (20 seconds) from a Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wires. Check NEI for the exact recipe. The chip is only half the job: the next quest engraves it into a schematic.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

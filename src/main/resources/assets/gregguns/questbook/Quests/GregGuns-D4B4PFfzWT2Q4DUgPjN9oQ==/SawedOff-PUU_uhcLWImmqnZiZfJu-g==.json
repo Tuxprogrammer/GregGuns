@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Two barrels, two shells, and an apology to whatever is in front of you. The Sawed Off fires a spray of pellets: ruinous at point-blank range and nearly useless at a distance. It holds two shells, loaded one at a time.\n\nBuild it in an LV Assembler from two Iron Barrels, a Wooden Stock, a steel plate, screws and a spring. Its ammo is the Shotgun Shell, which the Ammo Press makes from eight brass foils, twenty-four lead rounds and four gunpowder per batch of eight; the Ammo Logistics chapter walks through it.\n\n[warn]Do not stand in the open with it. Anything that survives the first two shells is already next to you.[/warn]",
+      "desc:8": "Two barrels, two shells, and an apology to whatever is in front of you. The Sawed Off fires a spray of pellets: ruinous at point-blank range and nearly useless at a distance. It holds two shells, and a reload tops up only what you have fired.\n\nBuild it in an LV Assembler from two Iron Barrels, a Wooden Stock, a steel plate, screws and a spring. Its ammo is the Shotgun Shell, which the Ammo Press makes from eight brass foils, twenty-four lead rounds and four gunpowder per batch of eight; the Ammo Logistics chapter walks through it.\n\n[warn]Do not stand in the open with it. Anything that survives the first two shells is already next to you.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

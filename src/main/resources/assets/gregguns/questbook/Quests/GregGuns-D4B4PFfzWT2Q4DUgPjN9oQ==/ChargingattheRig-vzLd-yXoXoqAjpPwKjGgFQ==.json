@@ -29,7 +29,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A GregGuns electric item has one tier, and only a GregTech charger or battery buffer of exactly that tier will charge it. A higher-tier charger does not work, which is how GregTech treats its own tools. The Night Vision Goggles are MV, and the Tactical Mask is HV.\n\nHold either one to finish this quest, then match your charger to it. The pack\u0027s Battery Buffer and charger quests show how to build them.\n\n[note]Check the item\u0027s tooltip for its tier. If it will not charge, you probably have the wrong tier of buffer.[/note]",
+      "desc:8": "A GregGuns electric item has one tier, and only a GregTech charger or battery buffer of exactly that tier will charge it. A higher-tier charger does not work, which is how GregTech treats its own tools. The Night Vision Goggles are MV, and the Tactical Mask is HV.\n\nHold either one to finish this quest, then match your charger to it. The pack\u0027s Battery Buffer and charger quests show how to build them.\n\n[note]The tooltip shows the charge but not the tier, so remember: goggles MV, mask HV. If it will not charge, you probably have the wrong tier of buffer.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

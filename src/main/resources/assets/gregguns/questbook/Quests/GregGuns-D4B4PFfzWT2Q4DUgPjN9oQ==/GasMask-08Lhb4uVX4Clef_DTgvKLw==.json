@@ -129,18 +129,24 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
+          "Count:3": 5,
+          "Damage:2": 17880,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
           "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "minecraft:glass_pane"
         },
-        "1:10": {
+        "2:10": {
           "Count:3": 1,
           "Damage:2": 17019,
           "OreDict:8": "plateAluminium",
           "id:8": "gregtech:gt.metaitem.01"
         },
-        "2:10": {
+        "3:10": {
           "Count:3": 1,
           "Damage:2": 0,
           "OreDict:8": "",

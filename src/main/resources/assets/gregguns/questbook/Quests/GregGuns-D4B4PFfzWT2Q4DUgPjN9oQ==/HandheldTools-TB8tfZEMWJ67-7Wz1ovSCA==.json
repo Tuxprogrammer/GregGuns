@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -2152254928795379147,
-      "questIDLow:4": -8924153600462217593
+      "questIDHigh:4": -5949206854851665966,
+      "questIDLow:4": -8459942860218389499
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Three tools for the field. The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it in. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV).\n\nThe Defuser puts a lit fuse out, or takes a missile on its pad apart before the engines light; it lasts 32 uses. Check NEI for the recipes. Make all three.\n\n[warn]A lit fuse doesn\u0027t wait for you. Defuse fast or run.[/warn]",
+      "desc:8": "Three tools for the field. The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it in. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV).\n\nThe Defuse Kit puts a lit fuse out (right-click), or takes apart a missile standing on a pad or in a silo (left-click) before its countdown starts; it lasts 32 uses. Check NEI for the recipes. Make all three.\n\n[warn]A lit fuse doesn\u0027t wait for you. Defuse fast or run.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

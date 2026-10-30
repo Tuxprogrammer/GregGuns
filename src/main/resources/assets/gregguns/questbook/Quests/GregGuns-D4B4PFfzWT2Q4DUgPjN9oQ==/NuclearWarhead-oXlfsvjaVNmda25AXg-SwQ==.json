@@ -149,6 +149,18 @@
           "id:8": "gregguns:plastic_explosive"
         },
         "3:10": {
+          "Count:3": 8,
+          "Damage:2": 11097,
+          "OreDict:8": "ingotUranium235",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "4:10": {
+          "Count:3": 4,
+          "Damage:2": 11100,
+          "OreDict:8": "ingotPlutonium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "5:10": {
           "Count:3": 1,
           "Damage:2": 0,
           "OreDict:8": "",

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Repairs cost parts: a plate of the set\u0027s gate material and Heavy Cloth. T1 Combat armor is gated by steel, so a worn Soldier\u0027s Vest takes steel plates and cloth, and the more damaged it is, the more parts it takes. Scout and Miner gear mends with cloth alone.\n\nGather a T1 Combat chestplate, four Heavy Cloth and four steel plates, then use the bench\u0027s Chest button. The bench accepts any mod\u0027s plate of the right material.\n\n[note]GregTech tools keep their wear in their own data and the bench never touches them.[/note]",
+      "desc:8": "Repairs cost parts: a plate of the set\u0027s gate material and Heavy Cloth. T1 Combat armor is gated by steel, so a worn Soldier\u0027s Vest takes steel plates and cloth, and the more damaged it is, the more parts it takes, up to two plates and two cloth. Bandit (Scout) gear mends with cloth alone.\n\nGather a T1 Combat chestplate, two Heavy Cloth and two steel plates, then use the bench\u0027s Chest button. The bench accepts any mod\u0027s plate of the right material.\n\n[note]GregTech tools keep their wear in their own data and the bench never touches them.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -121,13 +121,13 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 4,
+          "Count:3": 2,
           "Damage:2": 17305,
           "OreDict:8": "plateSteel",
           "id:8": "gregtech:gt.metaitem.01"
         },
         "1:10": {
-          "Count:3": 4,
+          "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:part_heavy_cloth"
@@ -151,13 +151,13 @@
           "id:8": "gregguns:t1_combat_chestplate"
         },
         "1:10": {
-          "Count:3": 4,
+          "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:part_heavy_cloth"
         },
         "2:10": {
-          "Count:3": 4,
+          "Count:3": 2,
           "Damage:2": 17305,
           "OreDict:8": "plateSteel",
           "id:8": "gregtech:gt.metaitem.01"

@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "When one bench is too slow, build the Armory Gantry: a hall of two to eight bays, each a portal frame with a hoist on its beam and a repair cradle on its floor, so each cycle mends up to one item per bay. Armor goes in an Input Bus, parts alongside, and repaired items come out of an Output Bus.\n\nThe controller is HV, and the hatches go up to ZPM, which sets the highest tier of item it repairs. It needs Input and Output Buses, an Energy Hatch and a Maintenance Hatch, Gantry Casings, glass of any tier and the interior parts: gearbox, motors, frame box hooks, floor rails, pipe runs and a lamp in every bay.\n\n[note]Use the controller\u0027s structure hints to see what is missing.[/note]",
+      "desc:8": "When one bench is too slow, build the Armory Gantry: a hall of two to eight bays, each a portal frame with a hoist on its beam and a repair cradle on its floor, so each cycle mends up to one item per bay. Armor goes in an Input Bus, parts alongside, and repaired items come out of an Output Bus.\n\nThe controller is HV, and the weakest Energy Hatch sets the highest tier of item it repairs. It needs Input and Output Buses, an Energy Hatch and a Maintenance Hatch, Gantry Casings, glass of any tier and the interior parts: gearbox, motors, frame box hooks, floor rails, pipe runs and a lamp in every bay.\n\n[note]Use the controller\u0027s structure hints to see what is missing.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Three kinds of zombie carry guns instead of just groaning. Farmers and miners are the common ones and carry hoes, picks and the odd Hand Cannon. Soldiers are rarer, tougher and often wear Combat armor.\n\nKill three of each. They drop heavy cloth, gunpowder and food, which feeds your armor and ammo crafting.",
+      "desc:8": "Three kinds of zombie carry guns instead of just groaning. Farmers and miners are the common ones and carry hoes, picks and the odd Hand Cannon. Soldiers are rarer, tougher and often wear Soldier\u0027s armor.\n\nKill three of each. They drop heavy cloth and gunpowder, plus food, coal, iron or ammo depending on the kind, which feeds your armor and ammo crafting.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The light machine gun is a belt-fed wall of lead. Its magazine holds 100 rounds, it has a mild zoom for steady fire at range, and it is the first gun where you really feel the difference between HV and MV firepower.\n\nBuild the LMG in the HV Assembler: a Hardened Steel Barrel, a Hardened Receiver, a Plastic Gun Stock, a glass lens, and stainless steel plates, screws and springs. Its magazines are an HV part too: build empty LMG Magazines, then load them with rifle bullets in the Ammo Press. The quest wants the gun and one loaded magazine.\n\n[note]One LMG magazine eats about eight rifle bullets, so the rifle bullet line from MV is worth scaling up.[/note]",
+      "desc:8": "The light machine gun is a belt-fed wall of lead. Its magazine holds 100 rounds, it has a mild zoom for steady fire at range, and it is the first gun where you really feel the difference between HV and MV firepower.\n\nBuild the LMG in the HV Assembler: a Hardened Steel Barrel, a Hardened Receiver, a Plastic Gun Stock, a glass lens, and stainless steel plates, screws and springs. Its magazines are an HV part too: build empty LMG Magazines, then load them with rifle bullets in the Ammo Press. The quest wants the gun and one loaded magazine.\n\n[note]One LMG magazine eats eight rifle bullets, so the rifle bullet line from MV is worth scaling up.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

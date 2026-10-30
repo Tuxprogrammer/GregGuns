@@ -25,7 +25,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Fuel Tanks hold GregTech fuel for the Flamethrower and the Chainsaw. A GregTech Fluid Canner fills an empty tank with a thousand millibuckets of an accepted liquid fuel; Diesel from the oil line works. A full tank is worth a hundred rounds for the Flamethrower and three hundred for the Chainsaw.\n\nHold two filled tanks to finish this quest. A half-used tank counts as filled, but the Canner cannot top it up, so empty and refill it.\n\n[note]The tank itself is an HV Assembler recipe from stainless steel.[/note]",
+      "desc:8": "Fuel Tanks hold GregTech fuel for the Flamethrower and the Chainsaw. A GregTech Fluid Canner fills an empty tank with a thousand millibuckets of an accepted liquid fuel; Diesel from the oil line works. A full tank is worth a hundred rounds for the Flamethrower and three hundred for the Chainsaw.\n\nHold two Fuel Tanks to finish this quest, then fill them. A gun only loads a completely full tank and hands the empty one back, so keep spares in rotation.\n\n[note]The tank itself is an HV Assembler recipe from stainless steel.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

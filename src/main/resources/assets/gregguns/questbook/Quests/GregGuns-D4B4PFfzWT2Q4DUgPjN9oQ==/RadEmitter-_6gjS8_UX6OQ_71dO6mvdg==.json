@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Rad Emitter is the Death Ray\u0027s business end: a ZPM emitter that sprays radiation along a beam. It is a ZPM Assembly Line part.\n\nBuild it from a ZPM emitter, two lead plates, a block of enriched uranium dust, two Mechanical Parts T3, two ZPM circuits and soldering alloy. The research item is a Sonic Emitter, scanned in a Research Station. NEI shows the full recipe.\n\n[warn]It carries uranium. Wear full radiation hazmat when carrying a stack.[/warn]",
+      "desc:8": "The Rad Emitter is the Death Ray\u0027s business end: a ZPM emitter that sprays radiation along a beam. It is a ZPM Assembly Line part.\n\nBuild it from a ZPM emitter, two lead plates, one enriched uranium dust, two Mechanical Parts T3, two ZPM circuits and soldering alloy. The research item is a Sonic Emitter, scanned in a Research Station. NEI shows the full recipe.\n\n[note]The lead plates seal the uranium in, so the emitter is safe to carry. Only the tactical nuke rocket and a depleted cell irradiate you.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -133,9 +133,9 @@
           "id:8": "gregguns:part_mechanical_3"
         },
         "2:10": {
-          "Count:3": 1,
-          "Damage:2": 17325,
-          "OreDict:8": "plateNaquadahAlloy",
+          "Count:3": 2,
+          "Damage:2": 17089,
+          "OreDict:8": "plateLead",
           "id:8": "gregtech:gt.metaitem.01"
         }
       },

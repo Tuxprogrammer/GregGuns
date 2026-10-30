@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Medkit is the best healing item you can carry before the endgame. Use it below full health and, after 50 ticks of use, it heals you 6 health and gives Regeneration II for 20 seconds.\n\nIt is built in an MV assembler from two aluminum plates, four Bandages, a Redstone dust and 250 mB of ethanol. Bandages are the LV version of the same idea: steel ring, string, leather and a slimeball. Check NEI.",
+      "desc:8": "The Medkit is the best healing item you can carry before the endgame. Use it below full health and, after 50 ticks of use, it heals you 6 health and gives Regeneration II for 20 seconds.\n\nIt is built in an MV assembler from two aluminum plates, four Bandages, a Redstone dust and 250 mB of ethanol. Bandages are the LV version of the same idea: a steel ring, three string and a slimeball make two. Check NEI.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

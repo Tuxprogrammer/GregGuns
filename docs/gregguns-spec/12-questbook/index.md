@@ -60,7 +60,7 @@ Rules that keep the gates honest:
 
 ## Referenced pack quests
 
-Twenty-nine existing quests are prerequisites. All have `questIDHigh:4` = 0 in the shipped pack. `Tab` is the quest line the quest is drawn in.
+Thirty-one existing quests are prerequisites. All have `questIDHigh:4` = 0 in the shipped pack. `Tab` is the quest line the quest is drawn in.
 
 | ID | Name | Tab | Tier | Used by chapters |
 |---|---|---|---|---|
@@ -87,6 +87,8 @@ Twenty-nine existing quests are prerequisites. All have `questIDHigh:4` = 0 in t
 | 1148 | Tier 2 (MV) | Tier 2 - MV | MV | mv, npc, site, mach, gear |
 | 1262 | EV Battery Buffer | Storing and Transforming EU | EV | ev |
 | 1412 | Assembly Line | Multiblock Goals | LuV | luv |
+| 1458 | Heavy Rocket Engine | Space Race | EV | icbm |
+| 1459 | Heavy Rocket Fins | Space Race | EV | icbm |
 | 1491 | HSS-G | Tier 4 - EV | EV | luv |
 | 1493 | Tier 6 (LuV) | Tier 6 - LuV | LuV | luv |
 | 1598 | Avengers, Assemble! 2 | Tier 2 - MV | MV | mv, ammo |

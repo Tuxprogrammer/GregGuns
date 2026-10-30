@@ -5,7 +5,7 @@
       "key": "gg.iv.intro",
       "title": "Power Armor Era",
       "tier": "IV",
-      "desc": "Tungstensteel opens the IV door: blaster rifles, the De-Atomizer pistols, a scatter laser, the golden revolver, and the powered suits that make a player feel like a tank. IV is also where flight arrives, with the Anti Gravity Device.\n\nEverything in this tier is built in the IV Assembler at 7,680 EU/t. Energy guns are tier 5 electric items: they take a Lapotronic Orb as their battery and a good dose of soldering alloy, they come out uncharged, and they only charge in an IV charger or battery buffer. Power armor works the same way.\n\nPlan your power first. A guns-only base can get by on a single IV buffer, but a full suit and a back device want a proper charging line.\n\n[note]Press R over any item in NEI for its exact recipe. Quests only check what you carry; they never take it.[/note]",
+      "desc": "Tungstensteel opens the IV door: blaster rifles, the De-Atomizer pistols, a scatter laser, the golden revolver, and the powered suits that make a player feel like a tank. IV is also where hovering flight arrives, with the Anti Gravity Device.\n\nEverything in this tier is built in the IV Assembler at 7,680 EU/t. Energy guns are tier 5 electric items: they take a Lapotronic Orb as their battery and a good dose of soldering alloy, they come out uncharged, and they only charge in an IV charger or battery buffer. Power armor works the same way.\n\nPlan your power first. A guns-only base can get by on a single IV buffer, but a full suit and a back device want a proper charging line.\n\n[note]Press R over any item in NEI for its exact recipe. Quests only check what you carry; they never take it.[/note]",
       "pre": [
         "gg.ev.intro",
         213,
@@ -81,7 +81,7 @@
       "key": "gg.iv.blaster",
       "title": "Blaster Rifle",
       "tier": "IV",
-      "desc": "The Blaster Rifle is the high-damage energy rifle of the IV tier: a laser with an IV emitter behind it and a Lapotronic Orb for a battery. It is the weapon that makes Laser Rifles feel like toys.\n\nBuild it in the IV Assembler from a Laser Barrel, a Carbon Receiver, a Carbon Gunstock, an IV emitter, a Lapotronic Orb, two IV circuits, a glass lens, tungstensteel plates and screws, and soldering alloy. NEI has the full list.\n\n[note]It is an electric item of tier 5. Only an IV charger or battery buffer will charge it.[/note]",
+      "desc": "The Blaster Rifle is the high-damage energy rifle of the IV tier: a laser with an IV emitter behind it and a Lapotronic Orb for a battery. It is the weapon that makes Laser Rifles feel like toys.\n\nBuild it in the IV Assembler from a Laser Barrel, a Carbon Receiver, a Carbon Gunstock, an IV emitter, a Lapotronic Orb, two IV circuits, tungstensteel plates and screws, and soldering alloy. NEI has the full list.\n\n[note]It is an electric item of tier 5. Only an IV charger or battery buffer will charge it.[/note]",
       "pre": [
         "gg.iv.intro"
       ],
@@ -279,7 +279,7 @@
       "key": "gg.iv.deatomizer",
       "title": "De-Atomizer Pistol",
       "tier": "IV",
-      "desc": "A compact energy pistol. The akimbo version holds a pair, one in each hand, for twice the volume of fire.\n\nBuild one in the IV Assembler from a Laser Barrel, a Sonic Emitter, Mechanical Parts T3, a Lapotronic Orb, an IV circuit, titanium and tungstensteel plates and screws. To make the pair, put two identical pistols in the crafting grid. The quest takes either one.\n\n[note]The akimbo pair is an electric item too. Charge it at an IV buffer.[/note]",
+      "desc": "A compact energy pistol. The akimbo version holds a pair, one in each hand, for twice the volume of fire.\n\nBuild one in the IV Assembler from a Laser Barrel, a Sonic Emitter, Mechanical Parts T3, a Lapotronic Orb, an IV circuit, titanium and tungstensteel plates and screws. To make the pair, put two De-Atomizer Pistols in the crafting grid. The quest takes either one.\n\n[note]The akimbo pair is an electric item too. Charge it at an IV buffer.[/note]",
       "pre": [
         "gg.iv.intro"
       ],
@@ -402,6 +402,12 @@
               "count": 2,
               "damage": 17316,
               "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17086,
+              "ore": "plateGold"
             }
           ]
         },
@@ -568,7 +574,7 @@
       "key": "gg.iv.power_armor",
       "title": "Power Armor",
       "tier": "IV",
-      "desc": "The heaviest suit in the mod: very high resistance across damage types, extra health on the chestplate, and boots with step assist and fall reduction. Its bonuses and its hazard protection only work while the chestplate holds a charge.\n\nEach piece is an IV Assembler recipe of Power Plating, IV circuits, IV electric motors and tungstensteel plates, with a programmed circuit for the piece. The chestplate is the electric part. Charge it at an IV charger or battery buffer. The quest checks the chestplate, but you want all four pieces.\n\n[note]The suit gives heat, cold and electrical protection while charged. Check NEI for the circuit number of each piece.[/note]",
+      "desc": "The heaviest suit in the mod: very high resistance across damage types, extra health from every piece, and boots with step assist and fall reduction. Its bonuses and its hazard protection only work while the chestplate holds a charge.\n\nEach piece is an IV Assembler recipe of Power Plating, IV circuits, IV electric motors and tungstensteel plates, with a programmed circuit for the piece. The chestplate is the electric part. Charge it at an IV charger or battery buffer. The quest checks the chestplate, but you want all four pieces.\n\n[note]The suit gives heat, cold and electrical protection while charged. Check NEI for the circuit number of each piece.[/note]",
       "pre": [
         "gg.iv.power_plating"
       ],
@@ -657,7 +663,7 @@
       "key": "gg.iv.exo",
       "title": "Exo Suit",
       "tier": "IV",
-      "desc": "The Exo Suit is the lighter powered suit. It trades some of the power armor's resistance for a better jump and a lower build cost, and it is the upgrade path for the Advanced Combat armor you built at EV.\n\nEach piece is an upgrade in the IV Assembler: an Advanced Combat piece, Mechanical Parts T3, an IV circuit, an IV electric motor and a tungstensteel plate. The Advanced Combat piece is used up and the Exo piece comes out fresh. Charge the chestplate at an IV buffer for the bonuses.\n\n[note]You need both tiers: the Advanced Combat piece is EV work, the upgrade is IV.[/note]",
+      "desc": "The Exo Suit is the lighter powered suit. It trades some of the power armor's resistance for a better jump and a lower build cost, and it is the upgrade path for the Advanced Combat armor you built at EV.\n\nEach piece is an upgrade in the IV Assembler: an Advanced Combat piece, Mechanical Parts T3, an IV circuit, an IV electric motor and one or two tungstensteel plates. The Advanced Combat piece is used up and the Exo piece comes out fresh. Charge the chestplate at an IV buffer for the bonuses.\n\n[note]You need both tiers: the Advanced Combat piece is EV work, the upgrade is IV.[/note]",
       "pre": [
         "gg.iv.intro"
       ],
@@ -926,7 +932,7 @@
       "key": "gg.iv.summary",
       "title": "Power Armor Era Done",
       "tier": "IV",
-      "desc": "Powered suit on your back, blaster in your hands. Every piece of it came out of GregTech machines, not a crafting table.\n\nFrom here, LuV recipes move to the Assembly Line. A weapon needs a research item scanned first, so keep a spare of whatever you want to unlock: an Alien Blaster needs a De-Atomizer Pistol, a Nether Blaster needs a Blaster Rifle. The line also asks for lubricant and more soldering alloy.\n\nHSS-G is the gate material at LuV, so start your HSS-G line now. The coins and the bag below are yours to spend while you set it up.\n\n[note]This capstone pays double, with a second bag. The coins spend at the Vending Machine.[/note]",
+      "desc": "Powered suit on your back, blaster in your hands. Every piece of it came out of GregTech machines, not a crafting table.\n\nAt LuV, the Nether Blaster and its Nether Charges move to the Assembly Line. Each needs a research item scanned first, so keep a spare: the Nether Blaster scans a Blaster Rifle, and the charge scans an Advanced Bullet. The gun recipes there also ask for lubricant and more soldering alloy.\n\nHSS-G is the gate material at LuV, so start your HSS-G line now. The coins and the bag below are yours to spend while you set it up.\n\n[note]This capstone pays extra, with three bags. The coins spend at the Vending Machine.[/note]",
       "pre": [
         "gg.iv.power_armor",
         "gg.iv.blaster",

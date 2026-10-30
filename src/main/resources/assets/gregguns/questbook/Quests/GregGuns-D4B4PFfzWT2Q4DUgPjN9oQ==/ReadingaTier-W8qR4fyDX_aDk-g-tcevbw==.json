@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Every item has a tier, and the tier tells you what it takes. A tier is a machine voltage plus a gate material: Steam is bronze, LV is steel, MV is aluminum, HV is stainless steel, EV is titanium, IV is tungstensteel, and so on up the GregTech ladder. The tooltip of every GregGuns item shows its tier.\n\nSo an LV recipe needs an LV machine and steel, an MV recipe needs an MV machine and aluminum, and a machine of a lower tier cannot run it at all. Higher machines can run lower recipes, and they run them faster.\n\nBronze plates are the Steam gate. Hold four to complete this quest and you are ready for the first chapter.\n\n[note]If a recipe in NEI shows a plate you cannot make yet, you are one tier early.[/note]",
+      "desc:8": "Every item has a tier, and the tier tells you what it takes. A tier is a machine voltage plus a gate material: Steam is bronze, LV is steel, MV is aluminum, HV is stainless steel, EV is titanium, IV is tungstensteel, and so on up the GregTech ladder. NEI shows the machine and voltage of every recipe, so you can read the tier there.\n\nSo an LV recipe needs an LV machine and steel, an MV recipe needs an MV machine and aluminum, and a machine of a lower tier cannot run it at all. Higher machines can run lower recipes, and they run them faster.\n\nBronze plates are the Steam gate. Hold four to complete this quest and you are ready for the first chapter.\n\n[note]If a recipe in NEI shows a plate you cannot make yet, you are one tier early.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

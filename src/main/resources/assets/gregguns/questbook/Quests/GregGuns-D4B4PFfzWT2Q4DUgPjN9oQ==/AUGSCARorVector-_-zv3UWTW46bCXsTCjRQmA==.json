@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Three specialist rifles, one quest: build any of them to move on. The AUG is the all-rounder with a good scope, the SCAR is the precise one with its diamond lens, and the Vector is a fast-firing SMG for close work.\n\nAll three come from the HV Assembler. Each takes a Hardened Steel Barrel, a Plastic Gun Stock, a lens (glass for the AUG and Vector, diamond for the SCAR) and stainless steel plates, screws and springs. The SCAR and Vector use the Hardened Receiver; the AUG uses a Steel Receiver. Check NEI for the exact list.\n\nThe AUG and SCAR load Assault Rifle Magazines. The Vector takes SMG Magazines.",
+      "desc:8": "Three specialist rifles, one quest: build any of them to move on. The AUG is the all-rounder with a good scope, the SCAR is the precise one with its diamond lens, and the Vector is a fast-firing SMG for close work.\n\nAll three come from the HV Assembler. Each takes a Hardened Steel Barrel, a Plastic Gun Stock, a lens (two glass lenses for the AUG, one for the Vector, a diamond lens for the SCAR) and stainless steel plates, screws and springs. The SCAR and Vector use the Hardened Receiver; the AUG uses a Steel Receiver. Check NEI for the exact list.\n\nThe AUG and SCAR load Assault Rifle Magazines. The Vector takes SMG Magazines.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

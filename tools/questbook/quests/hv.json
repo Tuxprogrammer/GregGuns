@@ -5,7 +5,7 @@
       "key": "gg.hv.intro",
       "title": "Heavy Arms",
       "tier": "HV",
-      "desc": "Welcome to the heavy end of the arsenal. HV is where GregGuns grows teeth: belt-fed machine guns, anti-materiel rifles, rocket and grenade launchers, a flamethrower and two power tools that double as weapons. The gate material is stainless steel, so bring a few plates.\n\nEvery HV gun is built in an HV Assembler (480 EU/t) from stainless steel plates, screws and small springs, plus parts you already know from earlier tiers. The recipes get long, so press R over any gun in NEI and work backwards. The quests below start with shared components, then the guns that use them.\n\nAmmo moves up a tier as well. High caliber rounds, rockets and the fuel tank are HV work, made in the Ammo Press and the Assembler.\n\n[note]Quests only check that you are carrying the item. Nothing is ever taken from you, so keep your plates.[/note]",
+      "desc": "Welcome to the heavy end of the arsenal. HV is where GregGuns grows teeth: belt-fed machine guns, anti-materiel rifles, rocket and grenade launchers, a flamethrower and two power tools that double as weapons. The gate material is stainless steel, so bring a few plates.\n\nEvery HV gun is built in an HV Assembler (480 EU/t) from stainless steel plates and screws, often with small springs, plus parts you already know from earlier tiers. The recipes get long, so press R over any gun in NEI and work backwards. The quests below start with shared components, then the guns that use them.\n\nAmmo moves up a tier as well. High caliber rounds, rockets and the fuel tank are HV work, made in the Ammo Press and the Assembler.\n\n[note]Quests only check that you are carrying the item. Nothing is ever taken from you, so keep your plates.[/note]",
       "pre": [
         "gg.mv.intro",
         160,
@@ -170,7 +170,7 @@
       "key": "gg.hv.rifles",
       "title": "AUG, SCAR or Vector",
       "tier": "HV",
-      "desc": "Three specialist rifles, one quest: build any of them to move on. The AUG is the all-rounder with a good scope, the SCAR is the precise one with its diamond lens, and the Vector is a fast-firing SMG for close work.\n\nAll three come from the HV Assembler. Each takes a Hardened Steel Barrel, a Plastic Gun Stock, a lens (glass for the AUG and Vector, diamond for the SCAR) and stainless steel plates, screws and springs. The SCAR and Vector use the Hardened Receiver; the AUG uses a Steel Receiver. Check NEI for the exact list.\n\nThe AUG and SCAR load Assault Rifle Magazines. The Vector takes SMG Magazines.",
+      "desc": "Three specialist rifles, one quest: build any of them to move on. The AUG is the all-rounder with a good scope, the SCAR is the precise one with its diamond lens, and the Vector is a fast-firing SMG for close work.\n\nAll three come from the HV Assembler. Each takes a Hardened Steel Barrel, a Plastic Gun Stock, a lens (two glass lenses for the AUG, one for the Vector, a diamond lens for the SCAR) and stainless steel plates, screws and springs. The SCAR and Vector use the Hardened Receiver; the AUG uses a Steel Receiver. Check NEI for the exact list.\n\nThe AUG and SCAR load Assault Rifle Magazines. The Vector takes SMG Magazines.",
       "pre": [
         "gg.hv.receiver"
       ],
@@ -369,7 +369,7 @@
       "key": "gg.hv.lmg",
       "title": "LMG",
       "tier": "HV",
-      "desc": "The light machine gun is a belt-fed wall of lead. Its magazine holds 100 rounds, it has a mild zoom for steady fire at range, and it is the first gun where you really feel the difference between HV and MV firepower.\n\nBuild the LMG in the HV Assembler: a Hardened Steel Barrel, a Hardened Receiver, a Plastic Gun Stock, a glass lens, and stainless steel plates, screws and springs. Its magazines are an HV part too: build empty LMG Magazines, then load them with rifle bullets in the Ammo Press. The quest wants the gun and one loaded magazine.\n\n[note]One LMG magazine eats about eight rifle bullets, so the rifle bullet line from MV is worth scaling up.[/note]",
+      "desc": "The light machine gun is a belt-fed wall of lead. Its magazine holds 100 rounds, it has a mild zoom for steady fire at range, and it is the first gun where you really feel the difference between HV and MV firepower.\n\nBuild the LMG in the HV Assembler: a Hardened Steel Barrel, a Hardened Receiver, a Plastic Gun Stock, a glass lens, and stainless steel plates, screws and springs. Its magazines are an HV part too: build empty LMG Magazines, then load them with rifle bullets in the Ammo Press. The quest wants the gun and one loaded magazine.\n\n[note]One LMG magazine eats eight rifle bullets, so the rifle bullet line from MV is worth scaling up.[/note]",
       "pre": [
         "gg.hv.receiver"
       ],
@@ -473,7 +473,7 @@
       "key": "gg.hv.hc_ammo",
       "title": "High Caliber Rounds",
       "tier": "HV",
-      "desc": "High caliber rounds are what the AS50 shoots: heavy brass-cased slugs that punch through armor. One of these rounds does more than a whole handful of rifle bullets.\n\nMake them in an HV Ammo Press from brass casings, stainless steel rounds and gunpowder; a run gives you a stack. NEI shows the recipe and the circuit that selects it. Magazines are loaded with them in the same machine.\n\n[note]An AS50 magazine holds 10 rounds, filled from two high caliber rounds. A full stack goes a long way.[/note]",
+      "desc": "High caliber rounds are what the AS50 shoots: heavy brass-cased slugs that punch through armor. One of these rounds does more than a whole handful of rifle bullets.\n\nMake them in an HV Ammo Press from eight brass casings, sixteen stainless steel rounds and four gunpowder; a run gives you eight. NEI shows the recipe. Magazines are loaded with them in the same machine.\n\n[note]An AS50 magazine holds 10 rounds, filled from two high caliber rounds. A full stack goes a long way.[/note]",
       "pre": [
         "gg.hv.intro"
       ],
@@ -483,9 +483,13 @@
           "items": [
             {
               "id": "gregtech:gt.metaitem.01",
-              "count": 2,
-              "damage": 17306,
-              "ore": "plateStainlessSteel"
+              "count": 16,
+              "damage": 25306
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 4,
+              "damage": 0
             }
           ]
         },
@@ -768,7 +772,7 @@
       "key": "gg.hv.rocket_ammo",
       "title": "Rockets",
       "tier": "HV",
-      "desc": "Rockets are the biggest bang you can carry at HV: a real blast radius in a single shot. The Rocket Launcher fires them, and so does the Grim Reaper much later.\n\nMake them in the HV Ammo Press from stainless steel plates, TNT dust, gunpowder and an HV circuit that acts as the fuze. Each run yields four rockets. NEI will show the exact recipe.\n\n[warn]Rockets blow up where they land. Never fire one at a wall closer than the blast radius, and never at your own feet.[/warn]",
+      "desc": "Rockets are the biggest bang you can carry at HV: a real blast radius in a single shot. The Rocket Launcher fires them, and so does the Grim Reaper much later.\n\nMake them in the HV Ammo Press from four stainless steel plates, two TNT, four gunpowder and an HV circuit that acts as the fuze. Each run yields four rockets. NEI will show the exact recipe.\n\n[warn]Rockets blow up where they land. Never fire one at a wall closer than the blast radius, and never at your own feet.[/warn]",
       "pre": [
         "gg.hv.intro"
       ],
@@ -781,6 +785,11 @@
               "count": 4,
               "damage": 17306,
               "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "minecraft:tnt",
+              "count": 2,
+              "damage": 0
             }
           ]
         },
@@ -949,7 +958,7 @@
       "key": "gg.hv.fuel_tank",
       "title": "Fuel Tank",
       "tier": "HV",
-      "desc": "The Fuel Tank is the ammo for two HV weapons, the Flamethrower and the Chainsaw. It holds 1,000 mB of fuel, and a Fluid Canner fills it for you.\n\nBuild four tanks at a time in the HV Assembler from a stainless steel Large Fluid Cell, two stainless steel plates and two rubber plates. The Large Fluid Cell comes from the pack's own Tier 3 fluid storage line, so check NEI.\n\n[note]Any liquid fuel GT can burn in its fuel recipes works: diesel, gasoline and the other burnables. A full tank is 100 flamethrower rounds or 300 chainsaw rounds.[/note]",
+      "desc": "The Fuel Tank is the ammo for two HV weapons, the Flamethrower and the Chainsaw. It holds 1,000 mB of fuel, and a Fluid Canner fills it for you.\n\nBuild four tanks at a time in the HV Assembler from a stainless steel Large Fluid Cell, two stainless steel plates and two rubber plates. The Large Fluid Cell is a GregTech item, so check NEI for it.\n\n[note]It takes diesel, gasoline, biodiesel or ethanol. A full tank is 100 flamethrower rounds or 300 chainsaw rounds.[/note]",
       "pre": [
         "gg.hv.intro"
       ],
@@ -962,6 +971,11 @@
               "count": 2,
               "damage": 17306,
               "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17880
             }
           ]
         },
@@ -1133,7 +1147,7 @@
       "key": "gg.hv.tools",
       "title": "Chainsaw and Power Hammer",
       "tier": "HV",
-      "desc": "Two tools that happen to be weapons. The Chainsaw is a fuel-hungry melee weapon whose right click also fires a short ranged cut. The Power Hammer charges a shockwave that hits everything and breaks blocks in a small cube in front of you.\n\nThe Chainsaw takes a Fuel Tank. The Power Hammer takes a Compressed Air Tank, a sibling of the Fuel Tank built from an aluminum Large Fluid Cell. Both are HV Assembler builds. Check NEI for either recipe and build whichever you like.\n\n[note]Hold right click to charge the hammer: the longer the charge, the more air it spends and the harder it hits.[/note]",
+      "desc": "Two tools that happen to be weapons. The Chainsaw is a fuel-hungry melee weapon whose right click also fires a short ranged cut. The Power Hammer charges a shockwave that hits everything and breaks blocks in a small cube in front of you.\n\nThe Chainsaw takes a Fuel Tank. The Power Hammer takes a Compressed Air Tank, a sibling of the Fuel Tank built from an aluminum Large Fluid Cell. Both are HV Assembler builds around an Iron Receiver, an HV Electric Piston and stainless steel plates and screws, and both come unloaded. Check NEI for either recipe and build whichever you like.\n\n[note]Hold right click to charge the hammer: the longer the charge, the more air it spends and the harder it hits.[/note]",
       "pre": [
         "gg.hv.fuel_tank",
         1142
@@ -1143,20 +1157,19 @@
           "type": "optional_retrieval",
           "items": [
             {
-              "id": "gregguns:tank_fuel",
-              "count": 1,
-              "damage": 0
-            },
-            {
-              "id": "gregguns:tank_air",
+              "id": "gregguns:part_receiver_iron",
               "count": 1,
               "damage": 0
             },
             {
               "id": "gregtech:gt.metaitem.01",
               "count": 2,
-              "damage": 17306,
-              "ore": "plateStainlessSteel"
+              "damage": 17306
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 27306
             }
           ]
         },

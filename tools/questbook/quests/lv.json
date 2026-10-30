@@ -7,7 +7,7 @@
       "tier": "LV",
       "desc": [
         "Steel changes everything. At LV your guns move from the crafting table to the GregTech Assembler, your ammunition moves to the GregGuns Ammo Press, and a handful of new weapons become possible: a pistol, a revolver, a sawed-off shotgun and a bolt-action rifle, plus steel armor and the first melee tools.",
-        "The gate is steel plate. Every LV recipe in this chapter has one in it, and the last step is always an LV machine. Hold eight steel plates to open the chapter; you will use them up quickly.",
+        "The gate is steel. Nearly every LV recipe in this chapter uses it, and the last step is always an LV machine. Hold eight steel plates to open the chapter; you will use them up quickly.",
         "Start with the Ammo Press, because every gun in this chapter is useless without it. Then make 9mm bullets, build the parts for your first pistol, and branch out to the rifle and shotgun when you have lead and brass to spare. The grenade, bandages and armor quests are optional, but the loot bags are worth the trip.",
         "[note]Press R on any gun in NEI to see its recipe. Every LV gun is built in an LV Assembler.[/note]"
       ],
@@ -558,7 +558,7 @@
       "tier": "LV",
       "desc": [
         "A heavier sidearm with six chambers and a bit more punch per shot than the pistol, at the cost of a longer reload. The Revolver uses loose 9mm bullets instead of a magazine: one bullet reloads all six chambers.",
-        "It is built in the LV Assembler from an Iron Barrel, Mechanical Parts, a Wooden Stock, steel plates and screws, and a spring. Compare its damage and range with the pistol on the tooltips and keep the one you like; two Revolvers combine into Akimbo Revolvers at MV.",
+        "It is built in the LV Assembler from an Iron Barrel, Mechanical Parts, a Wooden Stock, steel plates and screws, and a spring. Compare its damage and range with the pistol on the tooltips and keep the one you like; two Revolvers combine into Akimbo Revolvers at a crafting table.",
         "[note]The Revolver is the cheapest gun to keep fed, because one loose bullet fills it.[/note]"
       ],
       "pre": [
@@ -663,7 +663,7 @@
       "title": "Sawed Off",
       "tier": "LV",
       "desc": [
-        "Two barrels, two shells, and an apology to whatever is in front of you. The Sawed Off fires a spray of pellets: ruinous at point-blank range and nearly useless at a distance. It holds two shells, loaded one at a time.",
+        "Two barrels, two shells, and an apology to whatever is in front of you. The Sawed Off fires a spray of pellets: ruinous at point-blank range and nearly useless at a distance. It holds two shells, and a reload tops up only what you have fired.",
         "Build it in an LV Assembler from two Iron Barrels, a Wooden Stock, a steel plate, screws and a spring. Its ammo is the Shotgun Shell, which the Ammo Press makes from eight brass foils, twenty-four lead rounds and four gunpowder per batch of eight; the Ammo Logistics chapter walks through it.",
         "[warn]Do not stand in the open with it. Anything that survives the first two shells is already next to you.[/warn]"
       ],
@@ -962,7 +962,7 @@
       "title": "T1 Combat Armor",
       "tier": "LV",
       "desc": [
-        "Steel plate and Heavy Cloth, pressed in the LV Assembler. The Soldier's set is the first armor that protects better than the hand-made sets: three steel plates in each piece plus cloth, and a full set beats the Steam armor. The Soldier's Vest is the quest item.",
+        "Steel plate and Heavy Cloth, pressed in the LV Assembler. The Soldier's set is the first armor that protects better than the hand-made sets: three steel plates in every piece but the boots, which take two, plus cloth, and a full set beats the Steam armor. The Soldier's Vest is the quest item.",
         "Make Heavy Cloth in bulk (the Steam chapter showed how), because the vest alone eats five. Helmet, vest, pants and boots each use their own circuit number in the Assembler, and NEI shows each one.",
         "[note]Armor value shows on the tooltip. Compare sets before you commit plates.[/note]"
       ],

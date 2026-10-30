@@ -109,7 +109,7 @@
       "tier": "HV",
       "desc": [
         "Every missile starts as a chip. The Missile Chip T1 holds the flight program, and it's the first thing the NASA Workbench will ask about.",
-        "Make it in the GregTech Circuit Assembler at HV (20 seconds) from an Advanced Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wires. Check NEI for the exact recipe. The chip is only half the job: the next quest engraves it into a schematic."
+        "Make it in the GregTech Circuit Assembler at HV (20 seconds) from a Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wires. Check NEI for the exact recipe. The chip is only half the job: the next quest engraves it into a schematic."
       ],
       "pre": [
         "gg.icbm.intro"
@@ -1811,11 +1811,14 @@
       "tier": "EV",
       "desc": [
         "Tier 2 flies up to 3,000 blocks and carries a titanium-cased warhead (or a lighter one). The build follows the Tier 1 path one step up.",
-        "The Tier 2 chip is made at EV from an Advanced Epoxy Circuit Board, 2 Data circuits and 4 fine electrum wires, and engraved with a blue lens. The body page takes four compressed titanium plates, four Tier 2 rocket fins, a Tier 2 engine and a Guidance Computer Mk II or better. It burns 4,000 mB of Dense Hydrazine or a better rocket fuel. Check NEI. Build a Tier 2 body."
+        "The Tier 2 chip is made at EV from an Advanced Circuit Board (the epoxy one), 2 Data circuits and 4 fine electrum wires, and engraved with a blue lens. The body page takes four compressed titanium plates, four Heavy Rocket Fins, a Heavy Rocket Engine and a Guidance Computer Mk II or better. It burns 4,000 mB of Dense Hydrazine or a better rocket fuel. Check NEI. Build a Tier 2 body.",
+        "[note]The Heavy Rocket Fins and Engine are Galacticraft parts built from Tier 3 Heavy Duty Plates. This quest opens once you finish the Space Race quests for both.[/note]"
       ],
       "pre": [
         "gg.icbm.launch",
-        "gg.icbm.t2_casing"
+        "gg.icbm.t2_casing",
+        1458,
+        1459
       ],
       "tasks": [
         {
@@ -2013,7 +2016,7 @@
       "desc": [
         "Old missile bases lie buried in the Overworld and on every planet with solid ground. A complex is about 240 by 240 blocks and 24 blocks down: a hub, wide halls, 35 to 40 rooms and a gallery of four to ten real silos. On the surface you see only concrete shafts, sometimes a small radar hut, and an escape-ladder trapdoor.",
         "Nothing in a complex is better than its planet's ceiling: EV in the Overworld and on the Moon, one voltage tier more for each rocket tier above. Bring back proof: a block of Silo Complex Wall, or a damaged missile body from a salvage chest. The damaged body can't be placed or flown, but it recycles for its plates.",
-        "[warn]Operational complexes have guards at their posts, and a post you break stays broken.[/warn]"
+        "[warn]Partly abandoned and operational complexes have guards at their posts, and a post you break stays broken.[/warn]"
       ],
       "pre": [
         "gg.icbm.silo"
@@ -2193,10 +2196,10 @@
     {
       "key": "gg.icbm.silo_radar",
       "title": "Radar Station",
-      "tier": "HV",
+      "tier": "EV",
       "desc": [
         "The radar huts on a complex's surface hold a small radar with its Energy Hatch left out, so they sit dark.",
-        "Mine the Radar Casing under the radar controller, put an HV Energy Hatch in its place and power it. The radar forms and its dish starts to turn. Link it to an air-defense battery with a data stick, as for any radar. Bring the controller and an HV Energy Hatch to finish the quest."
+        "Mine the Radar Casing under the radar controller, put an HV Energy Hatch in its place and power it. The radar forms and its dish starts to turn. Link it to an air-defense battery with a data stick, as for any radar. Hold the Radar Casing you mined out and an HV Energy Hatch to finish the quest."
       ],
       "pre": [
         "gg.icbm.silo_complex",
@@ -2207,9 +2210,9 @@
           "type": "retrieval",
           "items": [
             {
-              "id": "gregtech:gt.blockmachines",
+              "id": "gregguns:casings",
               "count": 1,
-              "damage": 20142
+              "damage": 11
             },
             {
               "id": "gregtech:gt.blockmachines",
@@ -2312,6 +2315,18 @@
               "id": "gregguns:plastic_explosive",
               "count": 4,
               "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 11097,
+              "ore": "ingotUranium235"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 11100,
+              "ore": "ingotPlutonium"
             },
             {
               "id": "gregguns:fuze_assembly_mk3",
@@ -2494,7 +2509,7 @@
         "Hold use for 1.6 seconds and it cures poison, hunger, weakness, slowness, nausea, mining fatigue and radiation at once, then guards you against them for 3 minutes. Armor still has to keep the cause off, and it does nothing against fire or explosions. Make one."
       ],
       "pre": [
-        "gg.icbm.fallout"
+        "gg.icbm.warhead"
       ],
       "tasks": [
         {
@@ -2556,8 +2571,8 @@
           ]
         }
       ],
-      "x": 910,
-      "y": 972,
+      "x": 1066,
+      "y": 660,
       "size": 24,
       "main": false,
       "icon": {
@@ -2762,6 +2777,11 @@
               "ore": "plateTungstenSteel"
             },
             {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 32685
+            },
+            {
               "id": "minecraft:ender_eye",
               "count": 16,
               "damage": 0
@@ -2867,6 +2887,11 @@
               "count": 8,
               "damage": 17316,
               "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 32675
             },
             {
               "id": "minecraft:nether_star",
@@ -3292,11 +3317,11 @@
       "tier": "HV",
       "desc": [
         "Three tools for the field. The Radar Gun aims 200 blocks and stores that spot as a target; right-click a Launch Control to copy it in. The Remote Detonator links to a placed warhead when you sneak-click it, and a right-click lights its fuse from 128 blocks (HV), 256 (EV) or 512 (IV).",
-        "The Defuser puts a lit fuse out, or takes a missile on its pad apart before the engines light; it lasts 32 uses. Check NEI for the recipes. Make all three.",
+        "The Defuse Kit puts a lit fuse out (right-click), or takes apart a missile standing on a pad or in a silo (left-click) before its countdown starts; it lasts 32 uses. Check NEI for the recipes. Make all three.",
         "[warn]A lit fuse doesn't wait for you. Defuse fast or run.[/warn]"
       ],
       "pre": [
-        "gg.icbm.emp"
+        "gg.icbm.launcher"
       ],
       "tasks": [
         {
@@ -3368,8 +3393,8 @@
           ]
         }
       ],
-      "x": 1150,
-      "y": 828,
+      "x": 1138,
+      "y": 696,
       "size": 24,
       "main": false,
       "icon": {

@@ -22,7 +22,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Armor and gear sit in two places. Armor goes in the four armor slots, and so do masks, because GregTech\u0027s hazard checks and Galacticraft\u0027s air checks only read those slots. Everything else, goggles, back devices and the ammo pouch, goes in Baubles slots: head for goggles, wings for packs and gliders, quiver for the ammo pouch.\n\nPick up any starter armor to begin: Steam, Scout or Combat. The Steam set is crafted by hand from bronze plates and Heavy Cloth, and the T1 Combat set is built in an assembler. Check NEI for the exact pieces.\n\n[note]Wear every piece of a set for its full bonus. Items in Baubles slots drop when you die unless you keep your inventory.[/note]",
+      "desc:8": "Armor and gear sit in two places. Armor goes in the four armor slots, and so does the Gas Mask, because GregTech\u0027s hazard checks only read those slots. Galacticraft\u0027s oxygen gear uses Galacticraft\u0027s own slots. Everything else, goggles, back devices and the ammo pouch, goes in Baubles slots: head for goggles, wings for packs and gliders, quiver for the ammo pouch.\n\nPick up any starter chestplate to begin: Steam, Bandit (Scout) or Soldier\u0027s (T1 Combat). The Steam set is crafted by hand from bronze plates and Heavy Cloth, and the T1 Combat set is built in an assembler. Check NEI for the exact pieces.\n\n[note]Wear every piece of a set for its full bonus. Items in Baubles slots drop when you die unless you keep your inventory.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

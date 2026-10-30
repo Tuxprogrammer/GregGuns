@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "EV ammunition is made with titanium. Advanced Bullets (16 titanium foil, 16 titanium rounds and a TNT block make 16) fill Advanced Magazines, while Rifle Bullets fill Minigun Ammo Drums, 64 to a run. Both families have their own empty-magazine recipe in the EV press.\n\nEither an Advanced Magazine or a Minigun Ammo Drum counts. Hold eight magazines or four drums to finish this quest.\n\n[note]Only an EV press runs these recipes. Titanium plates and Mechanical Parts T3 are the gate inputs.[/note]",
+      "desc:8": "EV ammunition is made with titanium. Advanced Bullets (16 titanium foil, 16 titanium rounds and a TNT block make 16) fill Advanced Magazines, while 64 Rifle Bullets fill four Minigun Ammo Drums in one run. Both families have their own empty-magazine recipe in the EV press.\n\nEither an Advanced Magazine or a Minigun Ammo Drum counts. Hold eight magazines or four drums to finish this quest.\n\n[note]Only an EV press runs these recipes. Titanium plates and Mechanical Parts T3 are the gate inputs.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

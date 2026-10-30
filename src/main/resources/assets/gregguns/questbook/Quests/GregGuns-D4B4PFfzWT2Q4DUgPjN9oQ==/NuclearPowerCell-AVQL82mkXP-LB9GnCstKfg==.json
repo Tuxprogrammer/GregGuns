@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A sealed uranium cell, the part that makes ZPM feel nuclear. Weapons here do not burn it as ammo: the Death Ray runs on stored energy. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nTwo cells come from four Naquadah alloy plates, four lead plates, eight enriched uranium dust, four redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating. When a cell is used up, a ZPM Assembler refuels it from the depleted cell and four more enriched uranium dust.\n\n[warn]Radioactive. Keep depleted cells in a lead-lined chest, or wear full radiation hazmat while carrying them.[/warn]",
+      "desc:8": "A sealed uranium cell, the part that makes ZPM feel nuclear. Weapons here do not burn it as ammo: the Death Ray runs on stored energy. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nTwo cells come from four Naquadah alloy plates, four lead plates, eight enriched uranium dust, four redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating.\n\n[note]A fresh cell is safe to carry. NEI also lists a ZPM Assembler recipe that refills a depleted cell; a depleted cell is radioactive, so wear full radiation hazmat around one.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
