@@ -21,7 +21,10 @@ import net.minecraft.block.material.Material;
 
 import org.junit.jupiter.api.Test;
 
-/** GGS-11-25..27: Chisel is optional, a missing Chisel block falls back with one warning, and nothing names Chisel's classes. */
+/**
+ * GGS-11-25..27: Chisel is optional, a missing Chisel block falls back with one warning, and nothing names Chisel's
+ * classes.
+ */
 class PaletteKeysTest {
 
     @Test
@@ -62,11 +65,11 @@ class PaletteKeysTest {
     void aNullChiselBlockWarnsOncePerKeyNamingItAndNeverThrows() {
         List<String> warnings = new ArrayList<>();
         PaletteKeys keys = PaletteKeys.resolve(name -> null, new TestKeys.Blocks(), warnings::add);
-        assertEquals(1, count(warnings, "'lamp'"));
-        assertEquals(1, count(warnings, "'concrete'"));
+        assertEquals(1, count(warnings, "key 'lamp'"));
+        assertEquals(1, count(warnings, "key 'concrete'"));
         assertNotNull(keys.get("lamp"));
         // "air" has no Chisel candidate, so it never warns
-        assertEquals(0, count(warnings, "'air'"));
+        assertEquals(0, count(warnings, "key 'air'"));
     }
 
     @Test
@@ -74,7 +77,8 @@ class PaletteKeysTest {
         Block chiselPane = new Block(Material.glass) {};
         TestKeys.Blocks vanilla = new TestKeys.Blocks();
         PaletteKeys keys = PaletteKeys.resolve(n -> chiselPane, vanilla, s -> {});
-        // every shipped Chisel candidate names a meta Chisel defines, so with every Chisel block present none falls back
+        // every shipped Chisel candidate names a meta Chisel defines, so with every Chisel block present none falls
+        // back
         for (String k : keys.roleKeys()) {
             List<String> chain = PaletteKeys.table()
                 .get(k);

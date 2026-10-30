@@ -40,11 +40,14 @@ class StructurePaletteRulesTest {
             "gregtech:gt.blockgranites",
             "gregtech:gt.blockstones"));
 
-    /** Direct blocks that count as one family when mixed: rubble for a track bed, leaves of two trees for a camo roof. */
+    /**
+     * Direct blocks that count as one family when mixed: rubble for a track bed, leaves of two trees for a camo roof.
+     */
     private static final Map<String, String> DIRECT_FAMILY = new java.util.HashMap<>();
 
     static {
-        for (String rubble : Arrays.asList("minecraft:gravel", "minecraft:cobblestone", "minecraft:mossy_cobblestone")) {
+        for (String rubble : Arrays
+            .asList("minecraft:gravel", "minecraft:cobblestone", "minecraft:mossy_cobblestone")) {
             DIRECT_FAMILY.put(rubble, "rubble");
         }
     }
@@ -205,10 +208,7 @@ class StructurePaletteRulesTest {
         for (int x = 0; x < l.sizeX(); x++) {
             for (int z = 0; z < l.sizeZ(); z++) {
                 int i = l.cell(x, top, z);
-                boolean edge = x >= x0 && x <= x1
-                    && z >= z0
-                    && z <= z1
-                    && (x == x0 || x == x1 || z == z0 || z == z1);
+                boolean edge = x >= x0 && x <= x1 && z >= z0 && z <= z1 && (x == x0 || x == x1 || z == z0 || z == z1);
                 String key = i == Layout.SKIP ? null
                     : l.entry(i)
                         .choices()

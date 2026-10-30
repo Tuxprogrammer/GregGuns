@@ -65,9 +65,11 @@ public final class PaletteKeys {
     private static final String[][] TABLE = {
         // Concrete: Chisel's warm gray concrete, GregTech's light concrete behind it.
         { "concrete", "concrete", "chisel:concrete#0", "gregtech:gt.blockconcretes#8", "minecraft:stonebrick#0" },
-        { "concrete_panel", "concrete", "chisel:concrete#1", "gregtech:gt.blockconcretes#15", "minecraft:stonebrick#0" },
+        { "concrete_panel", "concrete", "chisel:concrete#1", "gregtech:gt.blockconcretes#15",
+            "minecraft:stonebrick#0" },
         { "concrete_dark", "concrete", "chisel:concrete#4", "gregtech:gt.blockconcretes#12", "minecraft:stonebrick#2" },
-        { "asphalt", "concrete", "chisel:concrete#10", "gregtech:gt.blockconcretes#0", "minecraft:double_stone_slab#0" },
+        { "asphalt", "concrete", "chisel:concrete#10", "gregtech:gt.blockconcretes#0",
+            "minecraft:double_stone_slab#0" },
         // Masonry: gray stone bricks; red brick for the railway house.
         { "brick", "masonry", "chisel:stonebricksmooth#5", "minecraft:stonebrick#0" },
         { "brick_worn", "masonry", "chisel:stonebricksmooth#7", "minecraft:stonebrick#2" },
@@ -89,8 +91,7 @@ public final class PaletteKeys {
         // Camp: camo nets by biome, sandbags, shipping containers.
         { "camo_woodland", "camo", "minecraft:leaves#4" },
         { "camo_desert", "camo", "chisel:rebel#0", "minecraft:sandstone#0" },
-        { "camo_snow", "camo", "minecraft:wool#0" },
-        { "sandbag", "sandbag", "minecraft:hardened_clay#0" },
+        { "camo_snow", "camo", "minecraft:wool#0" }, { "sandbag", "sandbag", "minecraft:hardened_clay#0" },
         { "container", "container", "chisel:hempcrete#14", "minecraft:wool#14" },
         // The Medium House's metal storage nook (deliberately the real storage blocks).
         { "lead_block", "metal_storage", "chisel:leadblock#0", "minecraft:iron_block#0" },
@@ -118,7 +119,11 @@ public final class PaletteKeys {
     static Map<String, List<String>> table() {
         Map<String, List<String>> out = new LinkedHashMap<>();
         for (String[] row : TABLE) {
-            out.put(row[0], Collections.unmodifiableList(Arrays.asList(row).subList(2, row.length)));
+            out.put(
+                row[0],
+                Collections.unmodifiableList(
+                    Arrays.asList(row)
+                        .subList(2, row.length)));
         }
         return Collections.unmodifiableMap(out);
     }
@@ -168,7 +173,8 @@ public final class PaletteKeys {
                     block = lookup.byName(name);
                     if (block == null) {
                         if (i == row.length - 1) {
-                            warn.accept("Palette key '" + key + "': fallback block " + name + " not found; key unavailable");
+                            warn.accept(
+                                "Palette key '" + key + "': fallback block " + name + " not found; key unavailable");
                         }
                         continue;
                     }
