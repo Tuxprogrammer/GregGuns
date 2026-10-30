@@ -33,7 +33,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Time to put the airframe together. With the Missile Schematic T1 slotted, the NASA Workbench\u0027s missile page shows the slots on a rocket outline: three compressed steel plates down the middle, four fins at the bottom, the engine at the base and the guidance computer beside the nose.\n\nFill every slot and take the Missile Body T1 from the result slot. It uses one item from each slot. There is no warhead slot: the warhead goes on the body later, on the launch pad. A Tier 1 body flies 20 to 1,000 blocks and needs 2,000 mB of fuel.\n\nHand-building comes first for a reason. Later, a hand-built body is the research item that unlocks the Assembly Line recipe for more of them.",
+      "desc:8": "Time to put the airframe together. With the Missile Schematic T1 slotted, the NASA Workbench\u0027s missile page shows the slots on a rocket outline: three compressed steel plates down the middle, four fins at the bottom, the engine at the base and the guidance computer beside the nose.\n\nFill every slot and take the Missile Body T1 from the result slot. It uses one item from each slot. There is no warhead slot: the warhead goes on the body later, on the launch pad. A Tier 1 body flies 20 to 1,000 blocks and needs 2,000 mB of fuel.\n\nHand-building comes first, and it never stops working. Once the parts flow, your HV Assembler builds the same body without the workbench: see [quest]Automate the Body[/quest].",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

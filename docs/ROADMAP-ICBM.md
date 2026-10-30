@@ -51,7 +51,7 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
 
 These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone checks against them.
 
-- **Cost:** an automatable arsenal. A missile costs about one of its tier's Galacticraft rocket launches in plates, circuits and fuel, and is Assembly Line-automatable. The warhead is the expensive part, and cost rises steeply by tier.
+- **Cost:** an automatable arsenal. A missile costs about one of its tier's Galacticraft rocket launches in plates, circuits and fuel, and is automatable in GT machines (the Assembler below LuV, the Assembly Line from LuV, D281). The warhead is the expensive part, and cost rises steeply by tier.
 - **Conventional center damage, at least:** T1 (HV) 1,200; T2 (EV–IV) 3,000; T3 (LuV) 8,000. Damage falls off to zero at the blast edge.
 - **Nuclear (ZPM), antimatter (UV) and red matter (UHV):** every living entity in the kill zone dies, bosses included. Players are subject only to server damage settings.
 - **Tiers** (D5): T1 HV; T2 EV–IV; T3 LuV–ZPM, with nuclear at ZPM; antimatter at UV; red matter at UHV.
@@ -185,7 +185,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Getting a missile body:**
   - a missile chip in the Circuit Assembler, then a schematic in the Laser Engraver (D8);
   - our NASA Workbench page for building by hand;
-  - Assembly Line recipes, behind a research data stick, for automation (D27).
+  - Machine recipes for automation (D27): the Assembler below LuV, the Assembly Line behind a research data stick from LuV (D281).
 - **The stack-on-pad build** (0018 §8): place the body on the Galacticraft pad and the warhead on its nose; arming fuses the stack into the missile entity. The body is a full-height 3D missile model on its fins, the warhead seats onto it, and the flying entity uses the same model ([D31](gregguns-icbm-spec/DECISIONS.md#d31-in-detail)).
 - **Fuel** keyed to tier through Galacticraft's `RocketFuels` lists and fuel loader (D19). A fixed amount per tier, and unburned fuel adds to the blast (D20).
 - **A launch-control block beside the pad.** Targeting by coordinates, data stick, ModularUI2 GUI, redstone or the GT machine-controller cover (D13).
@@ -201,7 +201,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** previews of the missile bodies, the stacked missile and the launch-control GUI; the `icbm-first-missile` sheet; quests from the chip to the first launch; screenshots and a short clip of build, launch, flight and impact from the client session.
 
 **Exit gate:**
-- [x] A T1 and a T2 missile are built by hand and by Assembly Line, stacked, fueled, launched and detonated on target. Scenario.
+- [x] A T1 and a T2 missile are built by hand and by machine (the Assembler, D281), stacked, fueled, launched and detonated on target. Scenario.
 - [x] The Galacticraft pad, fuel loader and anything attached are intact after a launch. Scenario `icbm.pad.survives`.
 - [x] A missile never holds more than two chunk tickets, and every ticket is released on impact, on timeout and on unload. Scenario.
 - [x] Recipes and costs match the cost target, and everything is visible in NEI.

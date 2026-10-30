@@ -6,7 +6,7 @@ Missile bodies, the stack-on-pad build, fuel, flight and tracking. Missiles ride
 
 ## Contents
 
-- [build-and-recipes.md](build-and-recipes.md): chip, schematic, NASA Workbench page, Assembly Line recipes with research, guidance carry-through, cost (D8, D27).
+- [build-and-recipes.md](build-and-recipes.md): chip, schematic, NASA Workbench page, machine body recipes (the Assembler below LuV, the Assembly Line with research from LuV), guidance carry-through, cost (D8, D27, D281).
 - [missile-bodies.md](missile-bodies.md): the T1 and T2 bodies, their numbers, model, tooltip and recycling (D8, D24, D31).
 - [stack-and-pad.md](stack-and-pad.md): placing the body, seating the warhead, arming into the entity, the pad API for launch control (D31).
 - [missile-silo.md](missile-silo.md): the Missile Silo multiblock, mating, fuel, the tier rule, the silo bonus and the T3 missile (D70 to D75).
@@ -25,7 +25,7 @@ Planned for later milestones:
 
 | ICBM feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| Missile crafting | Chip, schematic, NASA Workbench page; Assembly Line for automation | Galacticraft `SchematicRegistry`, GT Circuit Assembler, Laser Engraver, Assembly Line | [D8](../DECISIONS.md#d8-in-detail), [D27](../DECISIONS.md) |
+| Missile crafting | Chip, schematic, NASA Workbench page; the Assembler (below LuV) or Assembly Line (from LuV) for automation | Galacticraft `SchematicRegistry`, GT Circuit Assembler, Laser Engraver, Assembler, Assembly Line | [D8](../DECISIONS.md#d8-in-detail), [D27](../DECISIONS.md), [D281](../DECISIONS.md) |
 | Missile on the pad | Body and warhead stacked by the player, arming fuses them | Galacticraft launch pad | [D31](../DECISIONS.md#d31-in-detail) |
 | Pad removal on launch | Never; our missile does not extend `EntityAutoRocket` | Galacticraft 3.4.34-GTNH | [D32](../DECISIONS.md) |
 | Fuel | Per-tier `RocketFuels` lists, fixed amount, bonus blast | Galacticraft fuel loader | [D19, D20](../DECISIONS.md#d20-in-detail) |

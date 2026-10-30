@@ -30,7 +30,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Tier 2 flies up to 3,000 blocks and carries a titanium-cased warhead (or a lighter one). The build follows the Tier 1 path one step up.\n\nThe Tier 2 chip is made at EV from an Advanced Circuit Board (the epoxy one), 2 Data circuits and 4 fine electrum wires, and engraved with a blue lens. The body page takes four compressed titanium plates, four Heavy Rocket Fins, a Heavy Rocket Engine and a Guidance Computer Mk II or better. It burns 4,000 mB of Dense Hydrazine or a better rocket fuel. Check NEI. Build a Tier 2 body.\n\n[note]The Heavy Rocket Fins and Engine are Galacticraft parts built from Tier 3 Heavy Duty Plates. This quest opens once you finish the Space Race quests for both.[/note]",
+      "desc:8": "Tier 2 flies up to 3,000 blocks and carries a titanium-cased warhead (or a lighter one). The build follows the Tier 1 path one step up.\n\nThe Tier 2 chip is made at EV from an Advanced Circuit Board (the epoxy one), 2 Data circuits and 4 fine electrum wires, and engraved with a blue lens. The body page takes four compressed titanium plates, four Heavy Rocket Fins, a Heavy Rocket Engine and a Guidance Computer Mk II or better. It burns 4,000 mB of Dense Hydrazine or a better rocket fuel. Check NEI. Build a Tier 2 body. After that, your EV Assembler builds more of them from the same plates, fins and engine, 2 Data circuits and 250 L of lubricant.\n\n[note]The Heavy Rocket Fins and Engine are Galacticraft parts built from Tier 3 Heavy Duty Plates. This quest opens once you finish the Space Race quests for both.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
