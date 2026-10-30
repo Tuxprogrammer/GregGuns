@@ -67,6 +67,7 @@ public final class SiloScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Structure());
         registry.register(new HatchLayout());
+        registry.register(new FormedPad());
         registry.register(new Tiers());
         registry.register(new Refusals());
         registry.register(new T3Launch());
@@ -403,6 +404,116 @@ public final class SiloScenarios {
                         ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
                     }
+                    default:
+                        return out.build();
+                }
+            });
+        }
+    }
+
+    /**
+     * The shaft floor as a player makes it: nine Galacticraft launch pad blocks that Galacticraft forms into its pad
+     * (the Full block at the center, dummy blocks on the other eight). The silo forms with every state of it.
+     */
+    private static final class FormedPad implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.formed_pad";
+        }
+
+        @Override
+        public String description() {
+            return "A silo whose nine shaft-floor pad blocks are placed one at a time as a player would, until Galacticraft forms the pad (Full block at the center, dummy blocks on the other eight), forms; so does the unformed pad; a buggy pad block (meta 1) or a stone cell in the floor does not.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Block pad = GalacticraftParts.findBlock(GalacticraftParts.PAD);
+            Block full = GalacticraftParts.findBlock(GalacticraftParts.PAD_FULL);
+            Block multi = GalacticraftParts.findBlock(GalacticraftParts.PAD_MULTI);
+            out.check(pad != null && full != null && multi != null, "Galacticraft's three pad blocks resolve");
+            if (pad == null || full == null || multi == null) {
+                return out.build();
+            }
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] since = { 0 };
+            return ScenarioResult.pending(name(), 900, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                World w = ctx.world();
+                int x = ctx.originX();
+                int y = ctx.originY() + CY - 2;
+                int z = ctx.originZ() + 2;
+                switch (stage[0]) {
+                    case 0:
+                        if (!formed(ctx) && ticks < WARMUP + 40) {
+                            return null;
+                        }
+                        out.check(formed(ctx), "the silo forms from the builder's pad blocks");
+                        // Tear the floor out and lay nine pad blocks one at a time.
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlockToAir(x + dx, y, z + dz);
+                            }
+                        }
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 3);
+                            }
+                        }
+                        stage[0] = 1;
+                        since[0] = ticks;
+                        return null;
+                    case 1:
+                        if (w.getBlock(x, y, z) != full && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(
+                            w.getBlock(x, y, z) == full,
+                            "Galacticraft formed the pad: the Full block at the center");
+                        int dummies = 0;
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                if ((dx != 0 || dz != 0) && w.getBlock(x + dx, y, z + dz) == multi) {
+                                    dummies++;
+                                }
+                            }
+                        }
+                        out.check(dummies == 8, "dummy blocks on the other eight: " + dummies);
+                        out.check(formed(ctx), "the silo forms with the formed Galacticraft pad");
+                        stage[0] = 2;
+                        since[0] = ticks;
+                        return null;
+                    case 2:
+                        // The unformed state: a lone block of the pad in each cell, no Galacticraft forming.
+                        w.setBlockToAir(x, y, z);
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 2);
+                            }
+                        }
+                        out.check(formed(ctx), "the silo forms with the nine unformed pad blocks");
+                        w.setBlock(x + 1, y, z + 1, pad, 1, 2);
+                        out.check(!formed(ctx), "a buggy fueling pad block in the floor does not form the silo");
+                        w.setBlock(x + 1, y, z + 1, Blocks.stone, 0, 2);
+                        out.check(!formed(ctx), "a stone block in the pad floor does not form the silo");
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
                     default:
                         return out.build();
                 }
