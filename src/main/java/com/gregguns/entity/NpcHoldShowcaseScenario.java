@@ -10,6 +10,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldSettings;
 
 import com.gregguns.core.testing.AutotestSignal;
@@ -126,6 +127,9 @@ final class NpcHoldShowcaseScenario implements Scenario {
         double cx = ctx.originX() + 0.5;
         double cy = ctx.originY();
         double cz = ctx.originZ() + 0.5;
+        // Hostile mobs despawn at once in a peaceful world; the scenario puts it back when it ends.
+        EnumDifficulty prior = player.worldObj.difficultySetting;
+        player.worldObj.difficultySetting = EnumDifficulty.NORMAL;
         signal(player, "hud", "off");
         EntityLiving[] current = { null };
         return ScenarioResult.pending(NAME, shots.size() * STEP + 200, t -> {
@@ -135,6 +139,7 @@ final class NpcHoldShowcaseScenario implements Scenario {
                 if (current[0] != null) {
                     current[0].setDead();
                 }
+                player.worldObj.difficultySetting = prior;
                 signal(player, "view", "0");
                 signal(player, "hud", "on");
                 player.inventory.clearInventory(null, -1);
