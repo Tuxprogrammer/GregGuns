@@ -10,7 +10,7 @@ package com.gregguns.client.render.profile;
  * first-person placement is the shared item frame ({@link InHandFit#firstPersonItemFrame}) followed by the profile's
  * {@code fpBase} and {@code fpIdle} rows; evaluating those rows gives the sight point in eye space ({@link #eyeOf}).
  * The wanted eye-space point is straight ahead: the same depth, x and y zero. The shift between them, taken back into
- * the item frame, is one translation the renderer applies before the gun's own rows ({@link #pose}), scaled by the
+ * the item frame, is one translation the renderer applies before the gun's own rows ({@link #itemShift}), scaled by the
  * blend (0 to 1). Keeping the depth means the gun neither grows nor shrinks, it only slides to the middle.
  *
  * <p>
@@ -116,64 +116,24 @@ public final class AdsOffset {
     }
 
     /**
-     * The pose that lines the gun up with the view and puts its sights on the middle of the screen. The barrel (model
-     * +X, the muzzle direction) is turned by the smallest rotation about the sight point that makes it run straight
-     * ahead; then the sight point slides to the center at its current depth. Keeping the depth means the gun neither
-     * grows nor shrinks. Without the turn, a long gun that sits slanted across the screen (the LMG) would be dragged
-     * with its butt across the camera.
+     * The translation, in the item frame (what the renderer has set before the gun's own rows), that moves the sights
+     * to the middle of the screen at their current depth.
      *
      * @param t          the gun's transform rows
      * @param boxes      the model boxes
      * @param modelScale GL units per texel
      * @param spec       the gun's ADS data
      * @param xFamily    true if the model is drawn as authored (the muzzle toward +X)
-     * @return the pose, in the item frame
+     * @return {@code {x, y, z}} to pass to {@code glTranslated} scaled by the blend
      */
-    public static AdsPose pose(GunTransforms t, BoxSpec[] boxes, float modelScale, AdsSpec spec, boolean xFamily) {
-        int part = sightPart(boxes, spec);
-        double[] point = sightPoint(boxes, modelScale, spec);
-        double[] eye = eyeOf(t, part, point, xFamily);
-        double[] ahead = eyeOf(t, part, new double[] { point[0] + 1.0, point[1], point[2] }, xFamily);
-        double[] d = { ahead[0] - eye[0], ahead[1] - eye[1], ahead[2] - eye[2] };
-        double len = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
-        for (int i = 0; i < 3; i++) {
-            d[i] /= len;
-        }
-        // Smallest turn from d to straight ahead (0, 0, -1): axis d x target, angle acos(d . target).
-        double[] axisEye = { d[1] * -1.0 - d[2] * 0.0, d[2] * 0.0 - d[0] * -1.0, 0.0 };
-        double cos = Math.max(-1.0, Math.min(1.0, -d[2]));
-        double angle = Math.toDegrees(Math.acos(cos));
-        double axisLen = Math.sqrt(axisEye[0] * axisEye[0] + axisEye[1] * axisEye[1]);
-        if (axisLen < 1e-9 || angle < 1e-6) {
-            axisEye = new double[] { 0.0, 1.0, 0.0 };
-            angle = 0.0;
-        } else {
-            axisEye[0] /= axisLen;
-            axisEye[1] /= axisLen;
-        }
-        // The item frame is a rotation and a uniform scale of eye space, so a turn keeps its angle and a direction
-        // maps through the inverse of the linear part.
+    public static double[] itemShift(GunTransforms t, BoxSpec[] boxes, float modelScale, AdsSpec spec,
+        boolean xFamily) {
+        double[] eye = eyeOf(t, sightPart(boxes, spec), sightPoint(boxes, modelScale, spec), xFamily);
+        double[] wanted = { 0.0, 0.0, eye[2] };
         InHandFit.Affine inverse = InHandFit.firstPersonItemFrame()
             .invert();
-        double[] zero = inverse.apply(new double[3]);
-        double[] axisItem = linear(inverse, zero, axisEye);
-        double norm = Math.sqrt(axisItem[0] * axisItem[0] + axisItem[1] * axisItem[1] + axisItem[2] * axisItem[2]);
-        for (int i = 0; i < 3; i++) {
-            axisItem[i] /= norm;
-        }
-        double[] wanted = { 0.0, 0.0, eye[2] };
         double[] from = inverse.apply(eye);
         double[] to = inverse.apply(wanted);
-        // Rotation about the sight point leaves it where it is, so the slide is the same as without the turn.
-        return new AdsPose(
-            new double[] { to[0] - from[0], to[1] - from[1], to[2] - from[2] },
-            from,
-            axisItem,
-            angle);
-    }
-
-    private static double[] linear(InHandFit.Affine map, double[] zero, double[] v) {
-        double[] a = map.apply(v);
-        return new double[] { a[0] - zero[0], a[1] - zero[1], a[2] - zero[2] };
+        return new double[] { to[0] - from[0], to[1] - from[1], to[2] - from[2] };
     }
 }

@@ -35,7 +35,7 @@ public final class AdsTable {
             new AdsSpec("m4", NONE, "red_dot"),
             new AdsSpec("ak47", NONE, "sight_leaf", "sight_tip"),
             new AdsSpec("vector", NONE, "red_dot"),
-            new AdsSpec("lmg", NONE, "sight_base", "sight_cap"),
+            new AdsSpec("lmg", NONE, "rd_window"),
             new AdsSpec("laser_rifle", NONE, "dot"),
             new AdsSpec("tesla_rifle", NONE, "red_dot"),
             new AdsSpec("scatter_laser_rifle", NONE, "sight_glow_window"),
@@ -60,14 +60,14 @@ public final class AdsTable {
 
     /**
      * @param def a gun's client definition
-     * @return the first-person pose that lines the gun up and puts its sights on the screen center, or null if the gun
-     *         cannot aim (or is akimbo)
+     * @return the first-person item-frame shift that puts its sights on the screen center, or null if the gun cannot
+     *         aim (or is akimbo)
      */
-    public static AdsPose poseOf(ClientGunDefinition def) {
+    public static double[] shiftOf(ClientGunDefinition def) {
         AdsSpec spec = of(def.gunName());
         if (spec == null || def.akimbo()) {
             return null;
         }
-        return AdsOffset.pose(def.transforms(), def.boxes(), def.modelScale(), spec, def.xFamily());
+        return AdsOffset.itemShift(def.transforms(), def.boxes(), def.modelScale(), spec, def.xFamily());
     }
 }
