@@ -174,7 +174,7 @@ The Fuze Assembly Mk III (LuV: a Master circuit, a tungstensteel plate and four 
 - GGS-ICBM-02-07 (D282): the inert warhead crafts in the Assembler at its casing tier and not one tier below; a payload recipe gives an inert warhead with that payload; the fill recipe only matches an inert warhead with that exact payload (a bare T1 for condensed).
 - GGS-ICBM-02-08 (D282): the crafting grid loads 1 to 8 Plastic Explosive into an inert or a live warhead, one charge per fill, and refuses a bare T2 to T5 casing, a load past the cap, two warheads and any other item.
 - GGS-ICBM-02-09 (D282): an inert warhead cannot be placed, a silo does not mate it, and a warhead made by the chain arms into a missile that carries its explosive.
-- GGS-ICBM-02-18 (D282): no warhead payload takes TNT, dynamite, Industrial TNT, Plastic Explosive or a fuze, and no launcher warhead takes both Industrial TNT and Plastic Explosive.
+- GGS-ICBM-02-18 (D282): no warhead payload takes TNT, dynamite, Industrial TNT, Plastic Explosive or a fuze, and no launcher warhead takes vanilla TNT, Industrial TNT or dynamite alongside Plastic Explosive.
 
 ## Tests
 

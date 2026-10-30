@@ -20,10 +20,10 @@ public enum LauncherWarhead {
 
     /** High explosive for the rocket launchers. */
     HE("he", "condensed", LauncherKind.ROCKET, Tier.HV, 6, Ing.gt("plate", "StainlessSteel", 2, Tier.HV, 1.0),
-        Ing.tnt(4), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2), Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
+        Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 5), Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
     /** A dense lead slug: heavy, slows what it hits. */
     HEAT("heat", "anvil", LauncherKind.ROCKET, Tier.HV, 7, Ing.gt("plate", "StainlessSteel", 2, Tier.HV, 1.0),
-        Ing.tnt(3), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2), Ing.gt("plate", "Lead", 6, Tier.LV, 0.5),
+        Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 4), Ing.gt("plate", "Lead", 6, Tier.LV, 0.5),
         Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
     /** Napalm for the rocket launchers. */
     INCENDIARY("incendiary", "incendiary", LauncherKind.ROCKET, Tier.HV, 8,
@@ -31,7 +31,7 @@ public enum LauncherWarhead {
         Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2), Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
     /** Steel fragments that set everything alight. */
     PHOSPHORUS("phosphorus", "shrapnel", LauncherKind.ROCKET, Tier.HV, 9,
-        Ing.gt("plate", "StainlessSteel", 2, Tier.HV, 1.0), Ing.tnt(3), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 1),
+        Ing.gt("plate", "StainlessSteel", 2, Tier.HV, 1.0), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 3),
         Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_STEEL, 1), Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
     /** A shaped charge that bores down (EV). */
     DEMOLITION("demolition", "breaching", LauncherKind.ROCKET, Tier.EV, 10,
@@ -43,7 +43,7 @@ public enum LauncherWarhead {
         Ing.part(IcbmPart.FUZE_ASSEMBLY_MK3, 1)),
     /** High explosive for the Grenade Launcher. */
     GRENADE_HE("grenade_he", "condensed", LauncherKind.GRENADE, Tier.HV, 12,
-        Ing.gt("plate", "StainlessSteel", 1, Tier.HV, 1.0), Ing.tnt(2), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 1),
+        Ing.gt("plate", "StainlessSteel", 1, Tier.HV, 1.0), Ing.part(IcbmPart.PLASTIC_EXPLOSIVE, 2),
         Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)),
     /** A fragmentation grenade charge for the Grenade Launcher (EV). */
     GRENADE_CLUSTER("grenade_cluster", "fragmentation", LauncherKind.GRENADE, Tier.EV, 13,

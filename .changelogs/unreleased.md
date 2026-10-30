@@ -21,7 +21,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - A warhead is now built in steps. First the Assembler makes an **Inert Warhead** of its casing tier from the casing plates and the Fuze Assembly. The Assembler then fits a **payload** (shrapnel sleeve, napalm, gas canisters, field generators, a fissile core and so on). Last, **Plastic Explosive charges** go in, one charge per unit of fill. Load 1 to 8 at a time in a crafting grid (top-ups work), or fill the whole casing in the Assembler. Charges alone in a T1 casing make a Condensed warhead.
 - An inert warhead cannot be placed, launched or set off, and a silo with one in its Input Bus says it is inert.
-- No recipe takes both Industrial TNT and Plastic Explosive any more: the warhead payloads carry no explosive, and the Demolition, Cluster and EMP launcher warheads take more Plastic Explosive instead.
+- No recipe takes both Industrial TNT and Plastic Explosive any more: the warhead payloads carry no explosive, and the launcher warheads take only Plastic Explosive (the HE, HEAT, Phosphorus and Grenade HE ones no longer take vanilla TNT beside it).
 - The one-step full-warhead Assembler recipes and the fill-1 condensed starter recipe are gone. Existing warheads keep working.
 
 ## New: GregGuns Coins and the Vending Machine
