@@ -346,7 +346,7 @@ A quest in `quests/lv.json`, in the pack's reward shape (a choice with a bag as 
 | `x`, `y`, `size`, `main` | Layout ([README](../../../tools/questbook/README.md#layout-and-prerequisites)). `size` is 24, or 48 for a main quest or chapter head, 72 for a tier milestone (28 for the older chapter heads). `main: true` marks the spine (thick incoming lines, jagged edge); the default is `size > 24` |
 | `icon` | A stack |
 | `repeatTime` | Optional: the quest repeats after this many ticks (the pack's repeatable hunts use 432000, six hours) |
-| `visibility` | `NORMAL` (default); `SECRET` only on the three bosses (GGS-12-13) |
+| `visibility` | `NORMAL` (default); `SECRET` only on the Dictator Dave quest (GGS-12-13) |
 | `skip`, `completes` | Hidden skip triggers only ([quest-line.md](quest-line.md#hidden-tier-skip-triggers)): `completes` lists the keys the trigger completes, after any normal rewards |
 | `_anything` | A writer's note. Fields that start with `_` are ignored; any other unknown field is an error |
 

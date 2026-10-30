@@ -69,7 +69,7 @@ For testing only, set `logCascadingWorldgen` = `true` in `config/archaicfix.cfg`
 ## Open questions
 
 - **Gas station.** 0005 lists it among the natural structures, but Techguns leaves it dormant: it has no register entry and no spawn size ([C2](../../techguns-spec/11-worldgen/structure-catalog.md#c2-city-gas-station-citygasstation)). The plan is to register it as a SMALL land structure (13 x 16 as built) and fix its door rotation (WGEN-31). That makes the SMALL pool three structures with a 1/3 pick each. A design record is only needed if that dilution is unwanted.
-- **Alien Bug Nest default.** GGS-11-15 defaults it to disabled because 0005 gates the Alien Bug as late-game content. Confirm when area 10 fixes the Alien Bug config.
+- **Alien Bug Nest default.** GGS-11-15 defaults it to enabled (owner decision, 2026-10-30), like every other structure.
 - **Ore Cluster Scanner, Ore Drill and cluster blocks.** See [ore-and-oil.md](ore-and-oil.md).
 - **Village avoidance.** See [structure-placement.md](structure-placement.md).
 - **Multi-chunk ground height.** See [structure-placement.md](structure-placement.md).

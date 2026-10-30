@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is off by default and comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.\n\n[warn]It hits hard. Bring good armor.[/warn]",
+      "desc:8": "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is a Nether mob that also comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.\n\n[warn]It hits hard. Bring good armor.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -57,7 +57,7 @@
       "snd_complete:8": "random.levelup",
       "snd_update:8": "random.levelup",
       "taskLogic:8": "AND",
-      "visibility:8": "SECRET"
+      "visibility:8": "NORMAL"
     }
   },
   "questIDHigh:4": 2990294774014630404,

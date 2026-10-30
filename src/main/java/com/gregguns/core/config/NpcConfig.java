@@ -31,14 +31,14 @@ public class NpcConfig {
     @Config.Comment({ "Super Mutants may spawn (camps and eggs).", "Default: true." })
     public static boolean mutants = true;
 
-    @Config.Comment({ "Alien Bugs may spawn (spawner block and egg).", "Default: false." })
-    public static boolean alienBug = false;
+    @Config.Comment({ "Alien Bugs may spawn (spawner block and egg).", "Default: true." })
+    public static boolean alienBug = true;
 
-    @Config.Comment({ "The Cyberdemon may spawn (egg and command only).", "Default: false." })
-    public static boolean cyberdemon = false;
+    @Config.Comment({ "The Cyberdemon may spawn (egg and command only).", "Default: true." })
+    public static boolean cyberdemon = true;
 
-    @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: false." })
-    public static boolean helicopter = false;
+    @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: true." })
+    public static boolean helicopter = true;
 
     @Config.Comment({ "Spawn weight of the Zombie Farmer. 0 means it is never registered or selected.",
         "Default: 100 (half of the Techguns value)." })

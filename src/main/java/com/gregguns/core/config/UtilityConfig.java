@@ -42,8 +42,8 @@ public class UtilityConfig {
     public static float chargeAdvancedMaxHardness = 100.0F;
 
     @Config.Comment({ "Bio Blob poison does not hurt players when true. Other living entities are always hurt.",
-        "Default: false." })
-    public static boolean bioBlobSparesPlayers = false;
+        "Default: true." })
+    public static boolean bioBlobSparesPlayers = true;
 
     @Config.Comment({ "Ticks between one Bio Blob decay step and the next.", "Default: 60." })
     @Config.RangeInt(min = 1, max = 24000)

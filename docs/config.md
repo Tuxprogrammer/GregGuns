@@ -77,7 +77,7 @@ Turret, explosive charge, Bio Blob and Camp Flag tuning (M6). Server-side only, 
 | `utility.turretRange` | int | `24` | 4 to 64 | no | Blocks within which a Turret looks for targets. |
 | `utility.chargeMaxHardness` | float | `30.0` | 0 to 100000 | no | Hardest block the Explosive Charge bores (exclusive). |
 | `utility.chargeAdvancedMaxHardness` | float | `100.0` | 0 to 100000 | no | Hardest block the Advanced Explosive Charge bores (inclusive). |
-| `utility.bioBlobSparesPlayers` | boolean | `false` | n/a | no | Bio Blob poison skips players. |
+| `utility.bioBlobSparesPlayers` | boolean | `true` | n/a | no | Bio Blob poison skips players. |
 | `utility.bioBlobDecayTicks` | int | `60` | 1 to 24000 | no | Ticks per Bio Blob decay step. |
 | `utility.campFlagSpawnIntervalTicks` | int | `200` | 20 to 24000 | no | Ticks between Camp Flag spawn attempts. |
 | `utility.campFlagCapFactor` | float | `0.75` | 0 to 10 | no | NPC cap is int(((sizeX + sizeZ) / 2) * factor). |
@@ -91,7 +91,7 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 |---|---|---|---|---|---|
 | `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids where NPCs spawn naturally. |
 | `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. |
-| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `false` | n/a | no | Switches for the special mobs. |
+| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. |
 | `npcs.weightZombieFarmer` / `weightZombieMiner` | int | `100` | 0 to 10000 | no | Spawn weights (half of Techguns). |
 | `npcs.weightZombieSoldier` / `weightSkeletonSoldier` | int | `50` | 0 to 10000 | no | Spawn weights. |
 | `npcs.weightBandit` | int | `25` | 0 to 10000 | no | Spawn weight. |
@@ -113,7 +113,7 @@ Structure placement, gating and loot tuning (M8). Read only while `modules.world
 | `worldgen.spacingSmall` / `spacingMedium` / `spacingBig` | int | `16` / `32` / `64` | 2 to 1024 | no | Grid cell size in chunks per size class. |
 | `worldgen.structureDimensions` | int list | `[0]` | any | no | Dimension ids where structures are placed. |
 | `worldgen.structureWorldTypes` | string list | `default`, `RWG`, `largeBiomes`, `amplified` | any | no | World type names that allow structures (case-insensitive). Flat and unknown types are out. |
-| `worldgen.enabled<Id>` | boolean | `true` (`false` for `AlienBugNest`) | n/a | no | Place that structure. |
+| `worldgen.enabled<Id>` | boolean | `true` | n/a | no | Place that structure. |
 | `worldgen.biomeBlacklist<Id>` | string list | none | any | no | BiomeDictionary type names in which that structure is never placed. |
 | `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot category. |
 | `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; scales counts and weights only. |
@@ -254,19 +254,19 @@ Server side of aim down sights. Read on the server; none is synced.
 | `aim.adsEnabled` | boolean | `true` | n/a | no | Lets sights-only guns aim on a right-click. Off: the server ignores the request and drops a running aim. Scope zoom is unaffected. |
 | `aim.adsSpreadMultiplier` | float | `0.75` | 0.0 to 1.0 | no | Multiplier on spread while aiming a gun with no scope zoom of its own (0.75 is 25 percent tighter). A scoped gun keeps its own zoom multiplier. |
 
-## Hidden keys
+## Questbook (`questbook`)
 
-These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their class carries GTNHLib's `@Config.ExcludeFromAutoGui`). They are for server owners and are edited in the file. The `debug` category is hidden the same way.
+Server only. The key is in the in-game config GUI and in `config/gregguns.cfg`. (The `debug` category is hidden from the GUI and edited in the file.)
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `questbook.install` | boolean | `false` | n/a | no | On server start, installs the GregGuns quest line from this jar into BetterQuesting's database (design record 0015). Needs BetterQuesting; with it absent the key is ignored (one INFO line). Needs a server restart. |
+| `questbook.install` | boolean | `true` | n/a | no | On server start, installs the GregGuns quest line from this jar into BetterQuesting's database (design record 0015). Needs BetterQuesting; with it absent the key is ignored (one INFO line). Needs a server restart. |
 
-**Questbook install.** Set `questbook.install=true` and restart the server. After BetterQuesting has loaded its database, GregGuns reads the quest line from `assets/gregguns/questbook/` in its own jar and upserts it by fixed quest ID, marks the database for BetterQuesting's next world save, syncs connected players and logs `Installed/updated GregGuns quest line: N quests`.
+**Questbook install.** With `questbook.install` on (the default), the server installs the line on each start. After BetterQuesting has loaded its database, GregGuns reads the quest line from `assets/gregguns/questbook/` in its own jar and upserts it by fixed quest ID, marks the database for BetterQuesting's next world save, syncs connected players and logs `Installed/updated GregGuns quest line: N quests`.
 
 - **Safe to leave on.** It only touches the GregGuns quests and the GregGuns line. Every other quest and line stays as it is. Player progress is kept: completion and claims live per quest ID, and task progress is restored after the definition is replaced. The install rewrites GregGuns quest text and positions on each start.
 - **Tab order.** The GregGuns tab is added after the existing tabs the first time. If an admin later moves it, the move is kept. **In the GTNH pack this does not hold:** while the pack's `config/modpack-update` marker is present, DreamCoreMod runs `/bq_admin default load` on every start, which rebuilds the database from the pack's DefaultQuests. The install then adds the GregGuns line again (the log says "121 added") and the tab goes back to last. Player progress is still kept.
-- **Off is not removal.** Setting the key back to `false` does nothing at all: an installed line stays in the world's database. To remove it, open the questbook in edit mode (`/bq_admin edit`) and delete the GregGuns line and its quests, or delete the quests by ID with the `/bq_admin` commands. Back up `betterquesting/` in the world folder first; deleting a quest also deletes its progress. While the key stays `true`, a removed quest comes back on the next start, so turn the key off first.
+- **Off is not removal.** Setting the key to `false` does nothing at all: an installed line stays in the world's database. To remove it, open the questbook in edit mode (`/bq_admin edit`) and delete the GregGuns line and its quests, or delete the quests by ID with the `/bq_admin` commands. Back up `betterquesting/` in the world folder first; deleting a quest also deletes its progress. While the key stays `true`, a removed quest comes back on the next start, so turn the key off first.
 - **Retired quests.** The install never removes a quest. Delete one by hand if you want it gone.
 
 ## Rules for new options

@@ -626,7 +626,7 @@
       "desc": [
         "The Alien Bug Nest is a hive of hard resin walls and soft egg clusters, with a climbable slime trail down its entrance shaft and a vanilla mob spawner for the Alien Bug at its heart. Nothing else generates resin or eggs, so mining some is proof you were there.",
         "Bring back four resin and two egg clusters. Resin is hard to mine; eggs are soft.",
-        "[note]The nest is off by default. An admin can place it by enabling the Alien Bug Nest in the worldgen section of the GregGuns config.[/note]"
+        "[note]An admin can stop nests from generating with the Alien Bug Nest setting in the worldgen section of the GregGuns config.[/note]"
       ],
       "pre": [
         "gg.site.ships"

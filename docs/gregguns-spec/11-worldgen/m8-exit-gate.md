@@ -56,7 +56,7 @@ Each `worldgen.<id>_places` scenario (fixed seed and cell: footprint block count
 | Aircraft Carrier | shipped | `StructureLayoutsS3Test`, `CascadeHarnessTest` | `worldgen.aircraft_carrier_places` | PASS |
 | Submarine | shipped | same | `worldgen.submarine_places` | PASS |
 | Military Base | shipped (9 parts) | `CampPartLayoutsTest`, `CascadeHarnessTest` | `worldgen.military_base_places`, `worldgen.carrier_flag`, `worldgen.camp_flag_init` | PASS |
-| Alien Bug Nest (default off) | procedural (`nest/NestPlan`, no layout file) | `NestPlanTest`, `NestPlacerTest`, `CascadeHarnessTest.bugNestThroughThePopulatePipelineStaysInItsWindows` | `worldgen.bug_nest_places`, `worldgen.bug_nest_default_off` | PASS |
+| Alien Bug Nest | procedural (`nest/NestPlan`, no layout file) | `NestPlanTest`, `NestPlacerTest`, `CascadeHarnessTest.bugNestThroughThePopulatePipelineStaysInItsWindows` | `worldgen.bug_nest_places`, `worldgen.bug_nest_default_on` | PASS |
 
 
 ## Spawner blocks (G11)
@@ -86,7 +86,7 @@ Client checks still owed for M8. None can be judged headless.
 - [ ] Chisel palette: with Chisel present, each palette key resolves to the intended variant and reads well; with Chisel absent, the vanilla fallbacks look acceptable (GGS-11-25 to 27).
 - [ ] GT ore pass over structures (Q4, answered: GT's ore pass replaces `minecraft:stone`). Confirm in game that ore veins appear inside structure stone, and decide whether the layouts need non-stone walls. Palette keys avoid raw stone and cobblestone until this is checked.
 - [ ] Weapon and reinforced chests in structures show the GregGuns chest model, face the right way, and fill when opened.
-- [ ] Alien Bug Nest (enable `worldgen.enabledAlienBugNest`): fly into a sandy biome nest, screenshot the shaft mouth, the slime climb, the main chamber pillar and a Bug Hole chamber with egg piles; confirm the climb works and the Bug Holes spawn Alien Bugs when `alienBug` is on.
+- [ ] Alien Bug Nest (`worldgen.enabledAlienBugNest`, on by default): fly into a sandy biome nest, screenshot the shaft mouth, the slime climb, the main chamber pillar and a Bug Hole chamber with egg piles; confirm the climb works and the Bug Holes spawn Alien Bugs when `alienBug` is on.
 - [ ] Optional evidence: a pack that carries ArchaicFix with `logCascadingWorldgen=true`, flying or teleporting across a few thousand blocks of fresh terrain, with no log line naming `gregguns`.
 
 ## Open items found while building the harness
@@ -111,14 +111,14 @@ Fixed on `m8/polish`: `worldgen.generator_test_layout` now compares only the cel
 
 ## Alien Bug Nest and its blocks (S5)
 
-Status: done. Default off (Q2, GGS-11-15): enabled only by `worldgen.enabledAlienBugNest`.
+Status: done. On by default (GGS-11-15); `worldgen.enabledAlienBugNest` switches it off.
 
 | Rule | Evidence | Status |
 |---|---|---|
 | Rules of the notes: 6 to 11 chambers, 5 to 10 Bug Holes, main chamber 10 to 16 under the surface, radii 3 to 5, shaft open to the surface and lined with slime, shells never above ground, seed-deterministic | `NestPlanTest` | PASS |
 | Writes only inside each window, no foreign chunk, windows add up to exactly the non-empty cells, window order is irrelevant, one hole mark per chamber | `NestPlacerTest`, `CascadeHarnessTest.bugNestThroughThePopulatePipelineStaysInItsWindows` (zero chest marks, GGS-11-24) | PASS |
 | In the world: block counts match the pure plan, Bug Hole blocks carry Bug tiles, open shaft, no chest, byte-identical in the opposite window order | scenario `worldgen.bug_nest_places` | PASS |
-| Default config plans no nest; the enabled control does | scenario `worldgen.bug_nest_default_off`, `StructureCatalogTest.bugNestJoinsTheMediumPoolOnlyWhenEnabledAndWanted` | PASS |
+| Default config plans nests; the disabled control plans none | scenario `worldgen.bug_nest_default_on`, `StructureCatalogTest.bugNestJoinsTheMediumPoolOnlyWhenEnabledAndWanted` | PASS |
 | Blocks: `bug_nest` (meta 0 resin, meta 1 eggs) and `bug_nest_slime` (climbable vine, never spreads); palette keys `bugnest_wall`, `bugnest_egg`, `bugnest_slime` each fall back to vanilla | `PaletteKeysTest.bugNestKeysUseTheirOwnBlocksOrAVanillaFallback` | PASS |
 | Textures are original (`bugnestblock`, `bugnesteggs`, `bugnestslimy`, generated in `tools/asset-gen`) | `tools/asset-gen/credits/blocks.csv` | PASS |
 

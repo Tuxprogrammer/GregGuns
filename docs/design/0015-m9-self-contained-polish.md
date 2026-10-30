@@ -9,7 +9,7 @@ On 2026-10-21 the owner signed off M0–M8 as the MVP and asked for `0.3.0-beta`
 
 ## Decision
 1. **M9 is polish and pack fit, delivered inside our own jar.** GregGuns stays **fully self-contained**: one portable jar that a server owner drops into a GTNH 2.9 pack. Nothing in M9 depends on a PR to, or a change in, the GTNH modpack or any other mod's repository.
-2. **The questbook ships in the jar.** The GregGuns quest line ([12-questbook](../gregguns-spec/12-questbook/index.md)) is installed from resources in our jar. A **hidden config key** (not shown in the in-game config GUI, off by default) installs it into the server's BetterQuesting database. It is not delivered as a `DefaultQuests` change to the pack.
+2. **The questbook ships in the jar.** The GregGuns quest line ([12-questbook](../gregguns-spec/12-questbook/index.md)) is installed from resources in our jar. A **config key** (`questbook.install`, on by default, shown in the in-game config GUI and switchable off) installs it into the server's BetterQuesting database. It is not delivered as a `DefaultQuests` change to the pack.
 3. **PACK-CHANGES rows become in-jar work where possible.** Each row of [PACK-CHANGES.md](../gregguns-spec/PACK-CHANGES.md) is either done from our jar (a config default, a runtime hook, a bundled resource) or recorded as an optional server-owner step. None is a PR to GTNH.
 4. **Back in scope from the 0014 adopter list:**
    - the balance pass;

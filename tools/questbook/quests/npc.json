@@ -560,7 +560,7 @@
       "tier": "HV",
       "desc": [
         "A flying boss with 100 health and its own boss bar, the Attack Helicopter circles you with machine-gun bursts and rockets. Bring launchers and cover. It drops rifle bullets, rockets, cybernetic parts and iron blocks.",
-        "[note]It is off by default. An admin can turn on the helicopter setting under npcs in the GregGuns config; then breaking a Camp Flag calls one in.[/note]"
+        "[note]Breaking a Camp Flag calls one in. An admin can turn the helicopter setting off under npcs in the GregGuns config.[/note]"
       ],
       "pre": [
         "gg.npc.commandos",
@@ -717,7 +717,7 @@
       "title": "Cyberdemon",
       "tier": "EV",
       "desc": [
-        "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is off by default and comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.",
+        "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is a Nether mob that also comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.",
         "[warn]It hits hard. Bring good armor.[/warn]"
       ],
       "pre": [
@@ -786,15 +786,14 @@
         "count": 1,
         "damage": 67
       },
-      "implicit": [],
-      "visibility": "SECRET"
+      "implicit": []
     },
     {
       "key": "gg.npc.alien_bug",
       "title": "Alien Bug",
       "tier": "EV",
       "desc": [
-        "A fast, wall-climbing spider-like creature from the Alien Bug Nest. The nest is off by default, so an admin has to enable it before the bug spawns from the vanilla mob spawner inside.",
+        "A fast, wall-climbing spider-like creature from the Alien Bug Nest. Find a nest in a sandy biome: the bug spawns from the vanilla mob spawner inside.",
         "It drops string and spider eyes. Check the nest quest in the site chapter for what else the nest holds."
       ],
       "pre": [
@@ -863,8 +862,7 @@
         "count": 1,
         "damage": 66
       },
-      "implicit": [],
-      "visibility": "SECRET"
+      "implicit": []
     }
   ]
 }
