@@ -23,6 +23,8 @@ class MissileBuildSpecTest {
     private static final int CIRCUIT_ASSEMBLER_ITEMS = 6;
     /** The Assembly Line takes up to 16 items and 4 fluids. */
     private static final int LINE_ITEMS = 16;
+    /** RecipeMaps.assemblerRecipes, and the HV to IV single blocks, take up to nine items and one fluid. */
+    private static final int ASSEMBLER_ITEMS = 9;
 
     @Test
     void chipInputsAreAtOrBelowTheRecipeTierAndFitTheCircuitAssembler() {
@@ -51,12 +53,13 @@ class MissileBuildSpecTest {
     }
 
     @Test
-    void bodyInputsFitTheAssemblyLineAndTheEngineIsAtOrBelowTheTier() {
+    void bodyInputsFitTheirMachineAndTheEngineIsAtOrBelowTheTier() {
         for (MissileBuildSpec s : MissileBuildSpec.values()) {
-            // plates, fins, engine and circuits: GT's line needs 4 to 16 item inputs
-            assertTrue(4 >= 4 && 4 <= LINE_ITEMS);
+            // plates, fins, engine and circuits: GT's line needs 4 to 16 item inputs, the Assembler takes up to 9
+            int items = 4;
+            assertTrue(s.onAssemblyLine() ? items <= LINE_ITEMS : items <= ASSEMBLER_ITEMS, s.toString());
             assertTrue(
-                s.lineCircuits()
+                s.bodyCircuits()
                     .tier()
                     .voltageIndex()
                     <= s.tier()
@@ -69,7 +72,35 @@ class MissileBuildSpecTest {
                             .voltageIndex(),
                     s + " takes " + in.id() + " above its tier");
             }
-            assertTrue(s.scanSeconds() > 0 && s.lineTicks() > 0);
+            assertTrue(s.bodyTicks() > 0);
+        }
+    }
+
+    @Test
+    void onlyLuvAndUpBodiesUseTheAssemblyLineAndOnlyTheyHaveResearch() {
+        // D281 (owner, 0.4.0 alpha playtest): the Assembly Line is a LuV machine in GTNH, so nothing below LuV uses it.
+        assertEquals(com.gregguns.api.Tier.LUV, MissileBuildSpec.ASSEMBLY_LINE_TIER);
+        assertFalse(MissileBuildSpec.T1.onAssemblyLine());
+        assertFalse(MissileBuildSpec.T2.onAssemblyLine());
+        assertTrue(MissileBuildSpec.T3.onAssemblyLine());
+        int luv = com.gregguns.api.Tier.LUV.voltageIndex();
+        for (MissileBuildSpec s : MissileBuildSpec.values()) {
+            boolean below = s.tier()
+                .voltageIndex() < luv;
+            assertEquals(!below, s.onAssemblyLine(), s.toString());
+            if (s.onAssemblyLine()) {
+                assertTrue(s.scanSeconds() > 0, s + " line recipe needs a research scan");
+                assertNotNull(s.scanTier(), s.toString());
+                assertTrue(
+                    s.scanTier()
+                        .voltageIndex()
+                        <= s.tier()
+                            .voltageIndex(),
+                    s + " scan above its tier");
+            } else {
+                assertEquals(0, s.scanSeconds(), s + " Assembler body has no research");
+                assertEquals(null, s.scanTier(), s.toString());
+            }
         }
     }
 
@@ -230,7 +261,7 @@ class MissileBuildSpecTest {
                     .voltageIndex() >= hv,
                 s + " is below HV");
             assertTrue(
-                s.scanTier()
+                s.scanTier() == null || s.scanTier()
                     .voltageIndex() >= hv,
                 s + " research scan is below HV");
         }
@@ -244,7 +275,8 @@ class MissileBuildSpecTest {
 
     @Test
     void eachTierHasItsOwnResearchBodyAndFitCircuit() {
-        // GT's scanner keeps the first Assembly Line recipe of a research item, so one recipe per tier needs its own.
+        // GT's scanner keeps the first Assembly Line recipe of a research item, so one line recipe per tier needs its
+        // own (the LuV and up bodies); the fit circuits keep the Assembler fits apart.
         Set<Integer> numbers = new HashSet<>();
         Set<Integer> circuits = new HashSet<>();
         for (MissileBuildSpec s : MissileBuildSpec.values()) {
