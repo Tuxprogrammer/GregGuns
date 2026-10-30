@@ -31,6 +31,7 @@ public final class FxScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Core());
         registry.register(new Stress());
+        FxShowcaseScenario.register(registry);
     }
 
     private static final class Core implements Scenario {
