@@ -138,7 +138,7 @@
         <Loot Identifier="gg_lieutenant_oxygen_mask" ItemName="gregguns:oxygen_mask" Amount="1" NBTTag="" Chance="60" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>
         <Loot Identifier="gg_lieutenant_oxygen_tanks" ItemName="gregguns:oxygen_tanks" Amount="1" NBTTag="" Chance="60" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>
         <Loot Identifier="gg_lieutenant_tactical_mask" ItemName="gregguns:tactical_mask" Amount="1" NBTTag="" Chance="60" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>
-        <Loot Identifier="gg_lieutenant_advanced_explosive_charge" ItemName="gregguns:advanced_explosive_charge" Amount="4" NBTTag="" Chance="130" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_lieutenant_advanced_explosive_charge" ItemName="gregguns:explosive_charge:1" Amount="4" NBTTag="" Chance="130" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_lieutenant_gt_metaitem_01_17306" ItemName="gregtech:gt.metaitem.01:17306" Amount="16" NBTTag="" Chance="185" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_lieutenant_gt_metaitem_01_32602" ItemName="gregtech:gt.metaitem.01:32602" Amount="4" NBTTag="" Chance="125" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
     </LootGroup>

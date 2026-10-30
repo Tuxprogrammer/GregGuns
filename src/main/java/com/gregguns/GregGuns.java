@@ -27,8 +27,14 @@ public class GregGuns {
 
     public static final String MODID = "gregguns";
     public static final String NAME = "GregGuns";
-    /** Hard dependencies: GregGuns is built on GT5-Unofficial and GTNHLib and cannot load without them. */
-    public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib;before:EnderZoo;after:betterquesting";
+    /**
+     * Hard dependencies: GregGuns is built on GT5-Unofficial and GTNHLib and cannot load without them. Soft order:
+     * after EnhancedLootBags, whose group list GregGuns adds its loot bag groups to in preInit. FML orders mods by
+     * {@code mcmod.info} ({@code "useDependencyInformation": true}), whose {@code dependencies} list must carry the
+     * same
+     * load-after ids.
+     */
+    public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib;before:EnderZoo;after:betterquesting;after:enhancedlootbags";
     public static final Logger LOG = LogManager.getLogger(MODID);
 
     /** The mod instance, needed by Forge's entity registry. */

@@ -31,4 +31,10 @@ public class CompatConfig {
         "GregGuns structure spawner drops no Broken Spawner and releases no burst of extra mobs, and GregGuns NPCs",
         "cannot be farmed in a Powered Spawner. Needs EnderIO; ignored without it. Default: true." })
     public static boolean enderioSpawnerBlacklist = true;
+
+    @Config.Comment({ "Adds the GregGuns loot bag groups (the quest rewards, EnhancedLootBags ids 1701-1712) to",
+        "EnhancedLootBags' group list at startup, from the jar or from config/gregguns-lootbags.xml when present.",
+        "LootBags.xml is never written. Turn off only if the pack defines these groups itself. Needs",
+        "EnhancedLootBags; ignored without it. Default: true." })
+    public static boolean lootBags = true;
 }

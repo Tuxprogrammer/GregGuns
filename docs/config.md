@@ -46,6 +46,7 @@ In-memory pack-fit hooks ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md)). Eac
 | `compat.thaumcraftMobAspects` | boolean | `true` | n/a | no | Registers Thaumcraft scan aspects for the GregGuns NPCs. |
 | `compat.listHooks` | boolean | `true` | n/a | no | Adds `gregguns.` to AngerMod's `butcherItems` and `gregguns.SimpleTurret` to Mobs Info's `MobBlacklist`. |
 | `compat.enderioSpawnerBlacklist` | boolean | `true` | n/a | no | Puts every GregGuns NPC on EnderIO's Powered Spawner blacklist by IMC: a broken GregGuns spawner drops no Broken Spawner and releases no burst, and GregGuns NPCs stay out of the Powered Spawner. |
+| `compat.lootBags` | boolean | `true` | n/a | no | Adds the GregGuns loot bag groups (EnhancedLootBags ids 1701 to 1712, the quest rewards) to EnhancedLootBags' group list at startup, from the jar or from `config/gregguns-lootbags.xml` when that file exists. `LootBags.xml` is never written. Turn it off only when the pack defines these groups itself; GregGuns still keeps a bag whose group is missing from crashing (the use is denied with a chat line). |
 
 ## Debug (`debug`)
 
