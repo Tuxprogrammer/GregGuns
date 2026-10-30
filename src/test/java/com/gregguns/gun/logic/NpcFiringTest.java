@@ -16,6 +16,13 @@ class NpcFiringTest {
     private static final GunStats PISTOL = GunCatalog.PISTOL;
 
     @Test
+    void gunDamageFlagZeroesTheLaunchScaleOnly() {
+        Scaling hard = NpcFiring.scaling(Difficulty.HARD, false);
+        assertEquals(0.375F, NpcFiring.damageScale(hard, true), 1e-6F);
+        assertEquals(0.0F, NpcFiring.damageScale(hard, false));
+    }
+
+    @Test
     void difficultyTableMatchesTheSpec() {
         assertEquals(
             0.0,

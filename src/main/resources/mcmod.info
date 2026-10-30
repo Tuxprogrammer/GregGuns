@@ -13,9 +13,6 @@
     "logoFile": "",
     "screenshots": [],
     "parent": "",
-    "requiredMods": ["gregtech", "gtnhlib"],
-    "dependencies": ["gregtech", "gtnhlib", "enhancedlootbags"],
-    "dependants": [],
-    "useDependencyInformation": true
+    "useDependencyInformation": false
   }]
 }

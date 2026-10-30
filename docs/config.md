@@ -55,7 +55,6 @@ Hidden from the in-game config GUI (developer aids; edit the file).
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Reserved for developers: nothing reads it yet, so changing it has no effect. Kept from Techguns' `enableDebugKeybinds`. |
 | `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
 
 ## Bio Gun (`bioGun`)
@@ -90,8 +89,8 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
 | `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids where NPCs spawn naturally. |
-| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. |
-| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. |
+| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. `zombies`, `military` and `bandits` gate natural spawning; `miniBosses` and `mutants` also refuse eggs, camps and spawners. |
+| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. `alienBug` and `cyberdemon` refuse the egg, camp and spawner spawns; `helicopter` gates the camp and Camp Flag helicopter. |
 | `npcs.weightZombieFarmer` / `weightZombieMiner` | int | `100` | 0 to 10000 | no | Spawn weights (half of Techguns). |
 | `npcs.weightZombieSoldier` / `weightSkeletonSoldier` | int | `50` | 0 to 10000 | no | Spawn weights. |
 | `npcs.weightBandit` | int | `25` | 0 to 10000 | no | Spawn weight. |

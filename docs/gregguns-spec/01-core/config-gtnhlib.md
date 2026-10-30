@@ -33,7 +33,7 @@ Techguns reads a Forge `Configuration` by hand in `TGConfig`. GregGuns declares 
 | `Ore Drills` (all 10 keys, including the RF multipliers) | **Removed** | Ore Drill is dropped ([0002](../../design/0002-machine-deconfliction.md)) |
 | `Spawn Controll`: `spawnOilHoles`, `oilHoleFrequency` | **Removed** | No oil holes ([0005](../../design/0005-world-presence.md)); the pack's `GenerateOil` owns oil, see below |
 | `Damage Factors` (5 keys) | Kept; `@Config.Sync` | Used by combat on both sides ([0004](../../design/0004-damage-model.md)) |
-| `Debug`: `enableDebugKeybinds` | Kept | Developer aid |
+| `Debug`: `enableDebugKeybinds` | **Removed** | No debug keybinds exist; `recipeDump` is the only debug key |
 | `Clientside`: death-effect and FOV keys | Kept; `FixedSprintFovMultiplier` is wired up | Fixes [CORE-12](../../techguns-spec/01-core/index.md#suspected-bugs) |
 | `Clientside`: `EnableVersionChecker`, `EnableVersionCheckerBeta` | **Removed** | The GTNH pack manages updates; also removes [CORE-02](../../techguns-spec/01-core/index.md#suspected-bugs) |
 | New: per-item energy capacities | Added | [0003](../../design/0003-energy-model.md) ("every value is a config option") |

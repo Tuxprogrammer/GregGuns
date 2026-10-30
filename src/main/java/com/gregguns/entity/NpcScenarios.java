@@ -29,6 +29,7 @@ public final class NpcScenarios {
         NpcCapScenarios.registerAll(registry);
         NpcBossScenarios.registerAll(registry);
         CyberDemonScenarios.registerAll(registry);
+        SpawnFlagsScenarios.registerAll(registry);
         AttackHelicopterScenarios.registerAll(registry);
         NpcAlienBugScenarios.registerAll(registry);
         NpcTurretScenarios.registerAll(registry);

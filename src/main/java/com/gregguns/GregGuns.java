@@ -30,11 +30,17 @@ public class GregGuns {
     public static final String NAME = "GregGuns";
     /**
      * Hard dependencies: GregGuns is built on GT5-Unofficial and GTNHLib and cannot load without them. Soft order:
-     * after EnhancedLootBags, whose group list GregGuns adds its loot bag groups to in preInit. FML orders mods by
-     * {@code mcmod.info} ({@code "useDependencyInformation": true}), whose {@code dependencies} list must carry the
-     * same
-     * load-after ids.
+     * after BetterQuesting and EnhancedLootBags (whose group list GregGuns adds its loot bag groups to in preInit),
+     * before EnderZoo.
+     *
+     * <p>
+     * This string is the only source of load order: {@code mcmod.info} sets {@code "useDependencyInformation": false}.
+     * With it true, Forge ignores this string and reads the ordering from {@code mcmod.info} alone.
      */
+    // Source:
+    // https://github.com/MinecraftForge/FML/blob/a099592d3d1418245e3af65eda195da244287188/src/main/java/cpw/mods/fml/common/FMLModContainer.java#L160
+    // (bindMetadata: the @Mod dependencies string is parsed by Loader.computeDependencies only when the annotation
+    // overrides metadata or mcmod.info has useDependencyInformation false; otherwise modMetadata's lists are used)
     public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib;before:EnderZoo;after:betterquesting;after:enhancedlootbags";
     public static final Logger LOG = LogManager.getLogger(MODID);
 
