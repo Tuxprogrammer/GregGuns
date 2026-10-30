@@ -71,7 +71,8 @@ class AdsOffsetTest {
         for (AdsSpec spec : AdsTable.ALL) {
             ClientGunDefinition def = ClientGunDefinitions.byName(spec.gunName());
             double[] point = AdsOffset.sightPoint(def.boxes(), def.modelScale(), spec);
-            double[] eye = AdsOffset.eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point, def.xFamily());
+            double[] eye = AdsOffset
+                .eyeOf(def.transforms(), AdsOffset.sightPart(def.boxes(), spec), point, def.xFamily());
             assertTrue(eye[2] < -0.1, spec.gunName() + " sights are ahead of the camera, z=" + eye[2]);
             // The gun starts in the lower right; it must not need to travel more than a screen's worth.
             assertTrue(Math.hypot(eye[0], eye[1]) < 1.5, spec.gunName() + " offset " + eye[0] + "," + eye[1]);
