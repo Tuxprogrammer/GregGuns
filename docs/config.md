@@ -91,7 +91,8 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 |---|---|---|---|---|---|
 | `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids where NPCs spawn naturally. |
 | `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. |
-| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `false` | n/a | no | Switches for the special mobs. |
+| `npcs.alienBug` / `cyberdemon` | boolean | `false` | n/a | no | Switches for the special mobs. |
+| `npcs.helicopter` | boolean | `true` | n/a | no | The Attack Helicopter may spawn (camps, and when a Camp Flag breaks). |
 | `npcs.weightZombieFarmer` / `weightZombieMiner` | int | `100` | 0 to 10000 | no | Spawn weights (half of Techguns). |
 | `npcs.weightZombieSoldier` / `weightSkeletonSoldier` | int | `50` | 0 to 10000 | no | Spawn weights. |
 | `npcs.weightBandit` | int | `25` | 0 to 10000 | no | Spawn weight. |

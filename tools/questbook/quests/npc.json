@@ -560,7 +560,7 @@
       "tier": "HV",
       "desc": [
         "A flying boss with 100 health and its own boss bar, the Attack Helicopter circles you with machine-gun bursts and rockets. Bring launchers and cover. It drops rifle bullets, rockets, cybernetic parts and iron blocks.",
-        "[note]It is off by default. An admin can turn on the helicopter setting under npcs in the GregGuns config; then breaking a Camp Flag calls one in.[/note]"
+        "[note]Breaking a Camp Flag calls one in. An admin can turn the helicopter setting off under npcs in the GregGuns config.[/note]"
       ],
       "pre": [
         "gg.npc.commandos",

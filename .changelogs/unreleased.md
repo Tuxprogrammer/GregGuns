@@ -10,6 +10,10 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - Ops get `/gregguns locate <kind> [radius_cells] [generate]` (permission level 2) for every GregGuns structure: `complex` (silo complexes), `military_base`, `big_bunker`, `factory_small`, `train_station`, `gas_station`, `house_medium`, `alien_bug_nest`, `aircraft_carrier`, `submarine` or `any`. It lists the sites near you in this dimension, nearest first, each as built, skipped (with the reason, such as ground too steep) or not generated yet. `generate` makes the nearest five undecided sites decide now, a chunk per tick, and reports which were built. A click on a built site's line teleports you to it. The log now names every structure's placed or skipped verdict.
 
+## Changed
+
+- The Attack Helicopter is on by default (`npcs.helicopter` is `true`): camps can send one, and breaking a Camp Flag calls one in. Set the option to `false` to keep it out of the world; its spawn egg works either way.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.

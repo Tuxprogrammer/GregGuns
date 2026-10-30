@@ -37,8 +37,8 @@ public class NpcConfig {
     @Config.Comment({ "The Cyberdemon may spawn (egg and command only).", "Default: false." })
     public static boolean cyberdemon = false;
 
-    @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: false." })
-    public static boolean helicopter = false;
+    @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: true." })
+    public static boolean helicopter = true;
 
     @Config.Comment({ "Spawn weight of the Zombie Farmer. 0 means it is never registered or selected.",
         "Default: 100 (half of the Techguns value)." })

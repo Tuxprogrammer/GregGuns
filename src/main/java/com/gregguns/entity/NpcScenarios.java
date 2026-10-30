@@ -62,7 +62,9 @@ public final class NpcScenarios {
             out.checkEquals("spawn dimension", 0, NpcConfig.spawnDimensions[0]);
             out.checkEquals("per-chunk cap", 4, NpcConfig.perChunkCap);
             out.checkEquals("per-player cap", 8, NpcConfig.perPlayerCap);
-            out.check(!NpcConfig.helicopter && !NpcConfig.cyberdemon && !NpcConfig.alienBug, "special mobs off");
+            out.check(
+                NpcConfig.helicopter && !NpcConfig.cyberdemon && !NpcConfig.alienBug,
+                "helicopter on, other special mobs off");
             return out.build();
         }
     }
