@@ -363,6 +363,13 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         int maskedColumns = 0;
         for (boolean m : mask) if (m) maskedColumns++;
+        // The silo number signs are written after the shell, into the walkway cell they hang in; the shell leaves that
+        // air cell to them, so no cell is written twice.
+        Set<Long> signCells = new java.util.HashSet<>();
+        for (SiloSlot s : cp.silos()) {
+            int[] at = ComplexSigns.siloSignAt(s);
+            signCells.add(((long) at[0] << 40) ^ ((long) at[1] << 32) ^ (at[2] & 0xFFFFFFFFL));
+        }
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 for (int y = 0; y < ComplexRaster.LEVELS; y++) {
@@ -372,6 +379,8 @@ public final class ComplexPlacer implements ComplexWriter {
                     int wy = floorY + y;
                     // Open cells beside a cut-off column whose ground lies under them face its water or air: wall.
                     if (y >= 1 && Cell.open(c) && wy > seal[ColumnMaskSink.index(window, x, z)]) c = Cell.WALL;
+                    if (c == Cell.AIR && signCells.contains(((long) lx << 40) ^ ((long) y << 32) ^ (lz & 0xFFFFFFFFL)))
+                        continue;
                     if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
                         if (under.setBlock(x, wy, z, air, 0) && world != null) {
                             machines.place(world, c, x, wy, z, siloFacing(cp, lx, lz));
@@ -398,7 +407,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
         if (tagSink != null) tagSink.as(RoleAudit.SIGNS);
         // The silo numbers belong to the silo, so the shell pass writes them (shell-only runs read them back too).
-        ComplexSigns.writeSilos(cp, ax, floorY, az, new QuietSink(sink));
+        ComplexSigns.writeSilos(cp, ax, floorY, az, new QuietSink(masked ? new ColumnMaskSink(sink, mask) : sink));
         if (contents) {
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(under),
