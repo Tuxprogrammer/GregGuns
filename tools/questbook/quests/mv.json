@@ -75,9 +75,9 @@
       "size": 48,
       "main": true,
       "icon": {
-        "id": "gregtech:gt.metaitem.01",
+        "id": "gregguns:ak47",
         "count": 1,
-        "damage": 17019
+        "damage": 0
       },
       "implicit": []
     },
