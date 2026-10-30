@@ -54,3 +54,4 @@ The other options, and why each was not chosen.
 | [0022](0022-steam-armor-steam-age.md) | Steam armor moves to the Steam age: bronze, hand-crafted, coal-fired; Steam Armor Plating retired (amends 0001, 0021) | D1 | Accepted |
 | [0023](0023-connected-casing-textures.md) | Connected textures for the base casings: MCPatcher `method=ctm` through the pack's Angelica (M9 polish) | D6 | Accepted |
 | [0024](0024-vanilla-spawners.md) | Structure spawners are vanilla mob spawners with GregGuns NBT; the four GregGuns spawner blocks are retired (amends 0005) | D5 | Accepted |
+| [0025](0025-structure-palettes.md) | Structure palettes: each role is a look with a fallback chain, one family per weighted mix, no signs or overlays as building blocks, no GT-replaceable blocks in the pack (owner report) | D6 | Accepted (by default) |

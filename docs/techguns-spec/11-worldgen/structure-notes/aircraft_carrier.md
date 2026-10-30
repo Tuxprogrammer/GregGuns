@@ -48,13 +48,13 @@ Totals: 6 vanilla, 8 reinforced, 12 weapon (26 chests). Techguns used its top lo
 
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
-| Hull and island steel | `factory_wall` | iron block | hull shell, island walls |
-| Deck slab | `plating` | iron block | flight deck |
-| Hazard trim | `hazard` | yellow hardened clay | deck rim, lane edges, props |
-| Floor panels | `factory_floor` | double stone slab | hangar and hold floors |
+| Hull and island steel | `factory_wall` (gray steel plate) | smooth stone slab | hull shell, island walls |
+| Deck slab | `plating` | smooth stone slab | flight deck |
+| Hazard trim | `hazard` (hazard stripe) | yellow stained clay | deck rim, lane edges, props |
+| Floor panels | `factory_floor` (steel grate) | smooth stone slab | hangar and hold floors |
 | Glass | `glass_pane` | glass pane | bridge, windows |
 | Iron bars | `minecraft:iron_bars` | same | rails, mast |
-| Lamps | `lantern` | glowstone | all rooms, deck edge |
+| Lamps | `lamp` | glowstone | all rooms, deck edge |
 | Stairs | `minecraft:stone_brick_stairs@stairs` | same | island stairs |
 | Ladders | `minecraft:ladder@facing` | same | hold hatches, island, shaft |
 | Doors | `minecraft:iron_door@door`, both halves | same | bulkheads (about 30 across the ship) |

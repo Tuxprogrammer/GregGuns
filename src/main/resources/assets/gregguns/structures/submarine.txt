@@ -10,12 +10,12 @@ ground: 0
 
 palette:
 a = air
-P = plating
+P = hull_dark
 W = factory_wall
-F = factory_floor
-K = brick
+F = plating
+K = factory_floor
 Z = hazard
-L = lantern
+L = lamp
 B = minecraft:iron_bars
 M = minecraft:planks
 2 = minecraft:ladder#2@facing

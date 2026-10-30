@@ -18,7 +18,7 @@ The pack makes four things matter: it forces the RWG world generator, it ships A
 | [rwg-biomes.md](rwg-biomes.md) | RWG as the only Overworld generator, and how Techguns' biome tests map to `BiomeDictionary` types |
 | [structure-placement.md](structure-placement.md) | Generator order against GT, the populate window (no cascading worldgen), seeded grid, dimension allow-list, Roguelike-Dungeons and villages |
 | [structure-loot.md](structure-loot.md) | Which loot category each structure draws from, and its tier ceiling. Table contents are in [06-items/pack-loot.md](../06-items/pack-loot.md) |
-| [chisel-palette.md](chisel-palette.md) | Palette keys with Chisel resolved at `postInit` and a fallback (fixes WGEN-24) |
+| [chisel-palette.md](chisel-palette.md) | Palette roles: one look per role with a Chisel, GT and vanilla chain, one family per weighted mix ([0025](../../design/0025-structure-palettes.md)); fixes WGEN-24 |
 | [layout-format.md](layout-format.md) | The GregGuns layout text format, rotation tables, weighted palette entries, validation and the window-clipped stamper |
 | [ore-and-oil.md](ore-and-oil.md) | What replaces Techguns' ores, clusters and oil holes: GT and dreamcraft |
 
@@ -32,7 +32,7 @@ The pack makes four things matter: it forces the RWG world generator, it ships A
 | Hard-coded dimension 0 (WGEN-28) | Config allow-list, default `[0]` | TwilightForest, PersonalSpace, Galacticraft, GalaxySpace | [structure-placement.md](structure-placement.md) |
 | Grid at chunk multiples (a BIG structure at spawn) | Seeded offset inside each grid cell | Roguelike-Dungeons (same idea) | [structure-placement.md](structure-placement.md) |
 | Chest fill from `DUNGEON_CHEST` plus TG tables | GregGuns categories with a tier ceiling per structure, each a mix of pack loot (after Roguelike Dungeons' top floors) and GregGuns gear, guns rare and ammo common | TooMuchLoot, Roguelike Dungeons (as the model) | [structure-loot.md](structure-loot.md) |
-| Chisel blocks in palettes (WGEN-24) | Palette keys with fallback | Chisel | [chisel-palette.md](chisel-palette.md) |
+| Chisel blocks in palettes (WGEN-24); `MultiMBlock` mixes | Palette roles with fallback chains; a weighted mix stays in one family (0025) | Chisel, GregTech | [chisel-palette.md](chisel-palette.md) |
 | Titanium and uranium veins, ore clusters | Not built | GT ore generation | [ore-and-oil.md](ore-and-oil.md) |
 | Oil holes | Not built | dreamcraft oil generator | [ore-and-oil.md](ore-and-oil.md) |
 

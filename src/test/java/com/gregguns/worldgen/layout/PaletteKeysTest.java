@@ -21,18 +21,24 @@ import net.minecraft.block.material.Material;
 
 import org.junit.jupiter.api.Test;
 
-/** GGS-11-25..27: Chisel is optional, a null field falls back with one warning, and only this class names Chisel. */
+/**
+ * GGS-11-25..27: Chisel is optional, a missing Chisel block falls back with one warning, and nothing names Chisel's
+ * classes.
+ */
 class PaletteKeysTest {
 
     @Test
-    void chiselAbsentResolvesEveryKeyToItsVanillaFallback() {
+    void chiselAbsentResolvesEveryKeyToALaterCandidate() {
         TestKeys.Blocks vanilla = new TestKeys.Blocks();
         List<String> warnings = new ArrayList<>();
         PaletteKeys keys = PaletteKeys.resolve(null, vanilla, warnings::add);
         ResolvedBlock wall = keys.get("factory_wall");
         assertNotNull(wall);
-        assertSame(vanilla.byName("minecraft:iron_block"), wall.block);
+        assertSame(vanilla.byName("minecraft:double_stone_slab"), wall.block);
         assertTrue(wall.fallback);
+        // GregTech stands between Chisel and vanilla for the concretes
+        assertSame(vanilla.byName("gregtech:gt.blockconcretes"), keys.get("concrete").block);
+        assertEquals(8, keys.get("concrete").meta);
         assertTrue(keys.fallbackCount() > 5);
         assertTrue(warnings.isEmpty(), "absent Chisel is normal, not a warning");
         for (String k : keys.roleKeys()) {
@@ -41,26 +47,46 @@ class PaletteKeysTest {
     }
 
     @Test
-    void chiselFieldIsUsedWhenPresent() {
+    void chiselBlockIsUsedWhenPresent() {
         TestKeys.Blocks vanilla = new TestKeys.Blocks();
         Block chiselConcrete = new Block(Material.rock) {};
         PaletteKeys keys = PaletteKeys
             .resolve(name -> name.equals("concrete") ? chiselConcrete : null, vanilla, s -> {});
         assertSame(chiselConcrete, keys.get("concrete").block);
+        assertEquals(0, keys.get("concrete").meta);
         assertFalse(keys.get("concrete").fallback);
-        // every other Chisel field was null, so those fell back
+        assertSame(chiselConcrete, keys.get("asphalt").block);
+        assertEquals(10, keys.get("asphalt").meta);
+        // every other Chisel block was null, so those fell back
         assertTrue(keys.get("brick").fallback);
     }
 
     @Test
-    void aNullFieldWarnsOncePerKeyNamingItAndNeverThrows() {
+    void aNullChiselBlockWarnsOncePerKeyNamingItAndNeverThrows() {
         List<String> warnings = new ArrayList<>();
         PaletteKeys keys = PaletteKeys.resolve(name -> null, new TestKeys.Blocks(), warnings::add);
-        assertEquals(1, count(warnings, "'lantern'"));
-        assertEquals(1, count(warnings, "'concrete'"));
-        assertNotNull(keys.get("lantern"));
-        // "air" has no Chisel field, so it never warns
-        assertEquals(0, count(warnings, "'air'"));
+        assertEquals(1, count(warnings, "key 'lamp'"));
+        assertEquals(1, count(warnings, "key 'concrete'"));
+        assertNotNull(keys.get("lamp"));
+        // "air" has no Chisel candidate, so it never warns
+        assertEquals(0, count(warnings, "key 'air'"));
+    }
+
+    @Test
+    void everyShippedChiselCandidateNamesADefinedVariation() {
+        Block chiselPane = new Block(Material.glass) {};
+        TestKeys.Blocks vanilla = new TestKeys.Blocks();
+        PaletteKeys keys = PaletteKeys.resolve(n -> chiselPane, vanilla, s -> {});
+        // every shipped Chisel candidate names a meta Chisel defines, so with every Chisel block present none falls
+        // back
+        for (String k : keys.roleKeys()) {
+            List<String> chain = PaletteKeys.table()
+                .get(k);
+            if (chain.get(0)
+                .startsWith("chisel:")) {
+                assertFalse(keys.get(k).fallback, k + " skipped its Chisel candidate");
+            }
+        }
     }
 
     @Test
@@ -68,9 +94,9 @@ class PaletteKeysTest {
         List<String> warnings = new ArrayList<>();
         PaletteKeys keys = PaletteKeys
             .resolve(null, n -> n.equals("minecraft:glowstone") ? null : new Block(Material.rock) {}, warnings::add);
-        assertNull(keys.get("lantern"));
-        assertFalse(keys.has("lantern"));
-        assertEquals(1, count(warnings, "'lantern'"));
+        assertNull(keys.get("lamp"));
+        assertFalse(keys.has("lamp"));
+        assertEquals(1, count(warnings, "'lamp'"));
     }
 
     @Test
@@ -95,7 +121,7 @@ class PaletteKeysTest {
         return n;
     }
 
-    /** GGS-11-25: scan main sources; only PaletteKeys may name the Chisel package. */
+    /** GGS-11-25: scan main sources; no class names the Chisel package (Chisel is read by registry name). */
     @Test
     void onlyPaletteKeysNamesChisel() throws IOException {
         Path root = Paths.get("src", "main", "java");
@@ -105,18 +131,13 @@ class PaletteKeysTest {
             for (Path p : (Iterable<Path>) files.filter(
                 f -> f.toString()
                     .endsWith(".java"))::iterator) {
-                if (p.getFileName()
-                    .toString()
-                    .equals("PaletteKeys.java")) {
-                    continue;
-                }
                 String text = new String(Files.readAllBytes(p), StandardCharsets.UTF_8);
                 if (text.contains(needle)) {
                     offenders.add(p.toString());
                 }
             }
         }
-        assertTrue(offenders.isEmpty(), "Chisel is named outside PaletteKeys: " + offenders);
+        assertTrue(offenders.isEmpty(), "Chisel classes are named in: " + offenders);
     }
 
     @Test

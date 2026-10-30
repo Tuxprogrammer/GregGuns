@@ -31,11 +31,11 @@
 
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
-| Walls | `brick` | stone brick | house walls (weighted mix with `concrete`) |
+| Walls | `red_brick` weight 3, `red_brick_worn` weight 1 | bricks | house walls |
 | Floor | `concrete` | stone brick | house interior |
 | Track bed | `minecraft:gravel`, `minecraft:cobblestone`, `minecraft:mossy_cobblestone` | same | bed (cobble is fine here: it is ground fill, not a wall) |
 | Rails | `minecraft:rail` weight 2, `air` weight 1 | same | two lines |
-| Roof | `minecraft:stone_stairs@stairs` (sandstone stairs as a second option) | same | gable; add `air` weight 1 against stairs weight 4 |
+| Roof | `minecraft:stone_brick_stairs@stairs` weight 4, `air` weight 1; ridge `minecraft:stone_slab#5` (stone brick slab) weight 4, `air` weight 1 | same | gable with holes |
 | Windows | `glass_pane` weight 1, `air` weight 1 | glass pane | house walls |
 | Loft slabs | `minecraft:wooden_slab` upper half | same | loft |
 | Furniture | `minecraft:ladder@facing`, `minecraft:fence`, `minecraft:wooden_pressure_plate`, `minecraft:furnace@facing`, `minecraft:crafting_table` | same | interior |

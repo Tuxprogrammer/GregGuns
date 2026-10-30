@@ -8,7 +8,7 @@ ground: 1
 palette:
 D = minecraft:wooden_door#3@door
 G = minecraft:gravel
-L = lantern
+L = lamp
 P = minecraft:planks
 a = air
 d = minecraft:wooden_door#8

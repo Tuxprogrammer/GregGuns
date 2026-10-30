@@ -6,10 +6,10 @@ size: 10 3 10
 ground: 1
 
 palette:
-B = brick
-F = factory_floor
+B = concrete
+F = asphalt
 H = hazard
-L = lantern
+L = lamp
 
 marks:
 spawn.npc 4 2 2

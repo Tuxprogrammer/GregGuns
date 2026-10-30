@@ -47,15 +47,15 @@ Chests face into the room (`@facing`). Reinforced and weapon chests are GregGuns
 
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
-| Base course | `brick` | stone brick | bottom two layers |
-| Main walls | `concrete` weight 2, `brick` weight 1 | stone brick | walls |
-| Trim | `iron_plate` | iron block | corner posts, door frames (sparingly) |
+| Base course | `brick_worn` | cracked stone brick | bottom two layers |
+| Main walls | `brick` weight 4, `brick_worn` weight 1 | stone brick | walls |
+| Trim | `brick_trim` (stone panel; the iron storage blocks of the first palette were pink-gray posts that mined into iron) | chiseled stone brick | corner posts, door frames |
 | Floor boards | `minecraft:planks#5` | same | dark-oak plank floors |
 | Roof | `minecraft:nether_brick_stairs@stairs` | same | gables |
 | Roof fill, gable ends | `minecraft:nether_brick` | same | ridge, gable ends |
 | Windows | `glass_pane`; `minecraft:iron_bars` | glass pane | walls |
-| Metal storage corner | `lead_block`, `copper_block`, `tin_block`, `iron_plate`, `gold_plate` | per key | east-wing nook |
-| Lamps | `lantern` | glowstone | rooms |
+| Metal storage corner | `lead_block`, `copper_block`, `tin_block`, `gold_plate` | per key | east-wing nook |
+| Lamps | `lamp` | glowstone | rooms |
 | Doors | `minecraft:wooden_door` with `@door`, both halves | same | front, back, interior |
 | Stairs inside | `minecraft:oak_stairs@stairs`, `minecraft:dark_oak_stairs@stairs` | same | staircase |
 | Furniture | `minecraft:bookshelf`, `minecraft:crafting_table`, `minecraft:fence`, `minecraft:wooden_pressure_plate`, `minecraft:carpet`, `minecraft:bed` | same | rooms |

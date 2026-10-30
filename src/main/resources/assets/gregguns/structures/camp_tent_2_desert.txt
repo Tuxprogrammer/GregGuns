@@ -7,7 +7,7 @@ ground: 1
 
 palette:
 G = minecraft:gravel
-N = minecraft:sandstone
+N = camo_desert
 f = minecraft:fence
 
 layers:
