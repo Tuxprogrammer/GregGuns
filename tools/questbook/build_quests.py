@@ -27,10 +27,13 @@ import struct
 import sys
 import uuid
 
-TIERS = ['Steam', 'LV', 'MV', 'HV', 'EV', 'IV', 'LuV', 'ZPM']
-# Title color per tier, the codes the pack's tier tabs put before every title (with bold, §l). A mixed-tier tab such
-# as Multiblock Goals colors each title by its quest's tier; so does ours. Hidden triggers keep a plain title.
-TIER_COLORS = {'Steam': '§c', 'LV': '§2', 'MV': '§6', 'HV': '§5', 'EV': '§8', 'IV': '§9', 'LuV': '§d', 'ZPM': '§b'}
+TIERS = ['Steam', 'LV', 'MV', 'HV', 'EV', 'IV', 'LuV', 'ZPM', 'UV', 'UHV']
+# Title prefix per tier, the codes the pack's tier tabs put before every title: color and bold (§l), plus underline
+# (§n) from UV up (Tier8UV and Tier9UHV in the pack's DefaultQuests). UV shares LV's dark green, as in the pack. A
+# mixed-tier tab such as Multiblock Goals colors each title by its quest's tier; so does ours. Hidden triggers keep a
+# plain title.
+TIER_COLORS = {'Steam': '§c§l', 'LV': '§2§l', 'MV': '§6§l', 'HV': '§5§l', 'EV': '§8§l', 'IV': '§9§l', 'LuV': '§d§l',
+               'ZPM': '§b§l', 'UV': '§2§l§n', 'UHV': '§4§l§n'}
 # The one loot bag table. A {"type": "bag", "tier": name} reward and a {"bag": name} stack resolve through it, and the
 # bag-tier check (GGS-12-07) reads each entry's quest tier from it: a bag is never above its quest's tier. Names are
 # matched case-insensitively. Every name is a GregGuns group of EnhancedLootBags' own bag item (GroupMetaID as the
@@ -154,8 +157,26 @@ def stack(s):
     out = {'Count:3': s.get('count', 1), 'Damage:2': WILDCARD if damage == '*' else damage,
            'OreDict:8': s.get('ore', ''), 'id:8': s['id']}
     if s.get('tag'):
-        # Item NBT in BetterQuesting's typed-key JSON: a string value is "<key>:8".
-        out['tag:10'] = {k + ':8': v for k, v in s['tag'].items()}
+        out['tag:10'] = nbt(s['tag'])
+    return out
+
+
+# BetterQuesting's typed-key JSON writes each NBT key as "<key>:<tag id>" (NBTConverter, BQ 3.8.89-GTNH); the id picks
+# the tag the value becomes. A task that matches NBT (matchNBT) compares tag types too, so an int read as a string
+# never matches (ItemComparison.CompareNBTTag).
+NBT_INT, NBT_STRING, NBT_COMPOUND = 3, 8, 10
+
+
+def nbt(tag):
+    """A data tag (a dict of strings, ints and nested dicts) -> BetterQuesting's typed-key JSON compound."""
+    out = {}
+    for k, v in tag.items():
+        if isinstance(v, dict):
+            out['%s:%d' % (k, NBT_COMPOUND)] = nbt(v)
+        elif isinstance(v, bool) or not isinstance(v, (int, str)):
+            raise ValueError('tag %s: only strings, integers and nested tags are supported' % k)
+        else:
+            out['%s:%d' % (k, NBT_INT if isinstance(v, int) else NBT_STRING)] = v
     return out
 
 
@@ -226,10 +247,10 @@ def complete_reward(ns, i, key):
 
 
 def title_text(q):
-    """The shown title: tier color and bold before it, unless the quest is a trigger or the title sets its own."""
+    """The shown title: the tier's prefix before it, unless the quest is a trigger or the title sets its own."""
     if q.get('skip') or q['title'].startswith('§'):
         return q['title']
-    return TIER_COLORS[q['tier']] + '§l' + q['title']
+    return TIER_COLORS[q['tier']] + q['title']
 
 
 def link_id(ns, ref):
@@ -368,6 +389,11 @@ def check_stack(k, where, s, known):
         return problems
     if 'id' not in s:
         return problems + ['%s: %s stack has no id' % (k, where)]
+    if s.get('tag'):
+        try:
+            nbt(s['tag'])
+        except ValueError as e:
+            problems.append('%s: %s %s' % (k, s['id'], e.args[0]))
     if s.get('damage', 0) != '*' and not isinstance(s.get('damage', 0), int):
         problems.append('%s: %s damage must be an integer or "*"' % (k, s['id']))
     if s['id'] != GT_MACHINES and not s['id'].startswith('gregguns:') and s['id'] not in known:
@@ -505,8 +531,7 @@ def build(data_path, out_dir, lang_path=None):
     data = load_data(data_path)
     problems, warnings = check(data)
     for w in warnings:
-        if w not in boxes:
-            print('WARNING', w, file=sys.stderr)
+        print('WARNING', w, file=sys.stderr)
     if problems:
         for p in problems:
             print('ERROR', p, file=sys.stderr)

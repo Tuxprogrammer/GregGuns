@@ -1361,25 +1361,6 @@
   "priority": "P3"
  },
  {
-  "id": "icon.part_treated_leather",
-  "kind": "icon",
-  "path": "textures/items/part_treated_leather.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080"
-  ],
-  "brief": "Treated Leather (LV): GT-style 16x16 item icon, soft top-left light, dark outline. dark green-black treated leather.",
-  "footprint_ref": "textures/items/treatedLeather.png",
-  "priority": "P2"
- },
- {
   "id": "icon.part_power_plating",
   "kind": "icon",
   "path": "textures/items/part_power_plating.png",
@@ -2089,26 +2070,6 @@
   ],
   "brief": "Nuclear Power Cell (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. green-glow uranium cell in a lead sleeve.",
   "footprint_ref": "textures/items/nuclearPowerCell.png",
-  "priority": "P3"
- },
- {
-  "id": "icon.cell_nuclear_depleted",
-  "kind": "icon",
-  "path": "textures/items/cell_nuclear_depleted.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#282828",
-   "#8C648C"
-  ],
-  "brief": "Nuclear Power Cell, Depleted (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. same cell, glow gone, dull gray-brown.",
-  "footprint_ref": "textures/items/nuclearPowerCellDepleted.png",
   "priority": "P3"
  },
  {

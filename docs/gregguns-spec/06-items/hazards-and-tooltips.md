@@ -11,7 +11,7 @@ How the pack's hazard, tooltip and fuel data files relate to GregGuns items, and
 
 ## What changes from Techguns
 
-Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain item. In GTNH, radioactive materials irradiate their holder. GregGuns hooks into that system so the Nuclear Power Cell, the Small Nuclear Warhead and the Rad Emitter are dangerous to carry without protection. This is the only change that touches player-visible behavior. The tooltip and fuel files need no entries.
+Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain item. In GTNH, radioactive materials irradiate their holder. GregGuns hooks into that system so the tactical nuke rocket is dangerous to carry without protection. The Nuclear Power Cell is not: it is a recipe component (D293). This is the only change that touches player-visible behavior. The tooltip and fuel files need no entries.
 
 | File | Verdict | Reason |
 |---|---|---|
@@ -40,8 +40,8 @@ Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain
   - [`GTOreDictUnificator.addItemData`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java#L350-L359) attaches composition data to a stack.
   - The protection side: [`Hazard`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/hazards/Hazard.java#L10-L18) (`BIOLOGICAL`, `FROST`, `HEAT`, `RADIOLOGICAL`, `ELECTRICAL`, `GAS`, `SPACE`) and [`IHazardProtector`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/hazards/IHazardProtector.java#L8-L12). The class comment says other mods may add their own hazmat gear that interacts with these checks. That side belongs to area 05.
 - **GregGuns does:**
-  - Gives the Nuclear Power Cell (full and depleted), the Small Nuclear Warhead, the tactical nuke rocket and the Rad Emitter `ItemData` whose material is `Materials.Uranium235` with a small amount, for example `new ItemData(Materials.Uranium235, OrePrefixes.dust.getMaterialAmount())`. GT then irradiates the holder at level 2, scaled by stack size.
-  - Marks the depleted cell the same way (it is still radioactive).
+  - Gives the tactical nuke rocket (and, per this sheet, the Small Nuclear Warhead and the Rad Emitter; see [Open questions](#open-questions)) `ItemData` whose material is `Materials.Uranium235` with a small amount, for example `new ItemData(Materials.Uranium235, OrePrefixes.dust.getMaterialAmount())`. GT then irradiates the holder at level 2, scaled by stack size.
+  - The Nuclear Power Cell gets no such data: its recycling data is derived from its plates, and derived data never keeps a radioactive material (GGS-06-46, D293).
   - The `ItemData` also feeds GT recycling, so a recycler returns uranium dust. If that is unwanted, use the Radioactivity enchantment on the stack instead (`EnchantmentRadioactivity.INSTANCE`, [file](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enchants/EnchantmentRadioactivity.java#L13-L15)), which does not touch recycling but shows an enchantment line.
   - Area 05 makes the hazmat and nuclear-capable armor implement `IHazardProtector` for `RADIOLOGICAL`.
 - **Pack-side change:** none.
@@ -62,7 +62,7 @@ Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain
 
 ## Requirements
 
-- **GGS-06-23.** The Nuclear Power Cell (full and depleted), the Small Nuclear Warhead, the tactical nuke rocket and the Rad Emitter are radioactive through GT: `GTUtility.getRadioactivityLevel(stack)` returns a value above 0 for each.
+- **GGS-06-23.** The Small Nuclear Warhead, the tactical nuke rocket and the Rad Emitter are radioactive through GT: `GTUtility.getRadioactivityLevel(stack)` returns a value above 0 for each.
 - **GGS-06-24.** No GregGuns item other than those in GGS-06-23 is radioactive. Dangerous `ItemData` materials (radioactive or hot) are never attached to other items by accident.
 - **GGS-06-25.** GregGuns writes no `HazardousItems.xml`, `CustomToolTips.xml` or `CustomFuels.xml` entry, and registers no burn time.
 
@@ -73,9 +73,10 @@ Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain
 | GGS-06-23 | Unit test calling `GTUtility.getRadioactivityLevel` on each stack |
 | GGS-06-24 | Unit test: iterate GregGuns items and assert level 0 for all not in the list |
 | GGS-06-25 | Code review (nothing to ship) |
-| Manual | Carry a Nuclear Power Cell in survival: slowness and mining fatigue; with full radiation hazmat: none |
+| Manual | Carry a tactical nuke rocket in survival: slowness and mining fatigue; with full radiation hazmat: none |
 
 ## Open questions
 
-- **Radiation strength.** Level 2 comes from `Uranium235`. Whether a single cell should hit as hard as a uranium dust stack is a balance choice for M2, adjustable by the amount in `ItemData`.
+- **Radiation strength.** Level 2 comes from `Uranium235`. Whether a single rocket should hit as hard as a uranium dust stack is a balance choice, adjustable by the amount in `ItemData`.
+- **Warhead and Rad Emitter radiation.** On a 2026-10-30 boot (`production.ammo_line` probe) `GTUtility.getRadioactivityLevel` read 0 for the Small Nuclear Warhead and the Rad Emitter: only the nuke rocket carries hand-written Uranium-235 data, and their derived data drops it. Either they get hand-written data, as the rocket does, or GGS-06-23 drops them.
 - **Recycling side effect.** Attaching uranium `ItemData` makes the cell recyclable into uranium. Decide whether to use the enchantment route instead.

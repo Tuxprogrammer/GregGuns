@@ -39,7 +39,7 @@ public final class AmmoLineScenarios {
 
         @Override
         public String description() {
-            return "RC-35 (Tactical Nuke Rocket) and RC-36 (Nether Charge) are Assembly Line recipes with the sheet's EU/t, time, count and research; the nuke rocket and the depleted cell are radioactive.";
+            return "RC-35 (Tactical Nuke Rocket) and RC-36 (Nether Charge) are Assembly Line recipes with the sheet's EU/t, time, count and research; the nuke rocket is radioactive and the Nuclear Power Cell is not.";
         }
 
         @Override
@@ -48,13 +48,18 @@ public final class AmmoLineScenarios {
             for (ComponentTable.Spec spec : AmmoLineTable.SPECS) {
                 ComponentScenarios.ComponentRecipesScenario.checkAssemblyLine(out, spec);
             }
-            for (String item : new String[] { NukeRocketAmmo.TYPE.roundItemName(),
-                ComponentItems.CELL_NUCLEAR_DEPLETED }) {
-                ItemStack stack = ProductionRecipes.modStack(item, 1);
-                out.check(stack != null, item + " should be registered");
-                if (stack != null) {
-                    out.check(GTUtility.getRadioactivityLevel(stack) > 0, item + " should be radioactive through GT");
-                }
+            String item = NukeRocketAmmo.TYPE.roundItemName();
+            ItemStack stack = ProductionRecipes.modStack(item, 1);
+            out.check(stack != null, item + " should be registered");
+            if (stack != null) {
+                out.check(GTUtility.getRadioactivityLevel(stack) > 0, item + " should be radioactive through GT");
+            }
+            // D293: the full cell is a recipe component and carries no radioactivity (its derived recycling data drops
+            // the Uranium-235, GGS-06-46); only the tactical nuke rocket is radioactive here.
+            ItemStack cell = ProductionRecipes.modStack(ComponentItems.CELL_NUCLEAR, 1);
+            out.check(cell != null, ComponentItems.CELL_NUCLEAR + " should be registered");
+            if (cell != null) {
+                out.checkEquals("cell_nuclear radioactivity", 0, GTUtility.getRadioactivityLevel(cell));
             }
             return out.build();
         }

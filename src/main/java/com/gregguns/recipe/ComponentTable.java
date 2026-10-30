@@ -413,19 +413,6 @@ public final class ComponentTable {
                 Input.gt("dust", "Uranium235", 8),
                 Input.gt("dust", "Redstone", 4),
                 Input.gt("circuit", "Ultimate", 1)));
-        // RC-60: Assembler exception to the Assembly Line rule (it converts a returned item). Deviation: one Naquadah
-        // alloy plate (the fresh seal) joins the sheet's two inputs, so the row has a ZPM gate input.
-        list.add(
-            asm(
-                "RC-60",
-                ComponentItems.CELL_NUCLEAR,
-                1,
-                Tier.ZPM,
-                20,
-                1,
-                Input.mod(ComponentItems.CELL_NUCLEAR_DEPLETED, 1),
-                Input.gt("dust", "Uranium235", 4),
-                Input.gt("plate", "NaquadahAlloy", 1)));
         list.add(
             asm(
                 "RC-61",
@@ -550,7 +537,6 @@ public final class ComponentTable {
 
     /**
      * @return the rows keyed by output name, for {@link GateRule}; the first row wins when two make the same output
-     *         (the Nuclear Power Cell has RC-59 and RC-60), so the full Assembly Line row is the gate of record
      */
     public static Map<String, Row> byOutput() {
         Map<String, Row> map = new LinkedHashMap<>();

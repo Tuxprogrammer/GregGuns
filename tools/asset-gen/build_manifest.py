@@ -216,7 +216,6 @@ PARTS = [
     ("part_rad_emitter", "Rad Emitter", "ZPM", ["NaquadahAlloy", "Uranium235"], "radEmitter", "P3", "lead-shielded emitter with green glow"),
     ("part_anti_gravity_core", "Anti Gravity Core", "IV", ["TungstenSteel"], "antiGravityCore", "P3", "cyan core sphere in a steel cage"),
     ("part_cybernetic", "Cybernetic Parts", "EV", ["Electrum", "Titanium"], "cyberneticParts", "P3", "wires and plates, warm gray"),
-    ("part_treated_leather", "Treated Leather", "LV", ["Steel"], "treatedLeather", "P2", "dark green-black treated leather"),
     ("part_power_plating", "Power Plating", "IV", ["TungstenSteel", "EpoxidFiberReinforced"], "powerPlating", "P2", "slate plate with fiber layer"),
     ("part_gas_mask_filter", "Gas Mask Filter", "MV", ["Aluminium"], "gasMaskFilter", "P2", "round filter canister"),
     ("part_nuclear_warhead", "Small Nuclear Warhead", "ZPM", ["NaquadahAlloy", "Lead"], "tacticalNuclearWarhead", "P3", "olive warhead with hazard band"),
@@ -277,8 +276,6 @@ for reg, disp, tier, fpn, pri, mats, desc in TANKS:
              fp=ttex("items/%s%s.png" % (fpn, "Empty" if empty else "")))
 icon("cell_nuclear", "Nuclear Power Cell (ZPM)", G + "green-glow uranium cell in a lead sleeve.", mats=["NaquadahAlloy", "Uranium235", "Lead"],
      pri="P3", fp=ttex("items/nuclearPowerCell.png"))
-icon("cell_nuclear_depleted", "Nuclear Power Cell, Depleted (ZPM)", G + "same cell, glow gone, dull gray-brown.", mats=["NaquadahAlloy", "Lead"],
-     pri="P3", fp=ttex("items/nuclearPowerCellDepleted.png"))
 
 # Consumables, tools, placers, misc
 icon("bandages", "Bandages (LV)", G + "rolled white bandage with a small red mark.", extra_palette=["#FFFFFF", "#C80000"],

@@ -46,7 +46,7 @@ public final class RepairSpec {
      * @param metalPrefix   GT ore prefix of the metal part, for example {@code "plate"}; null for none
      * @param metalMaterial GT material name, for example {@code "Steel"}; null for none
      * @param clothItem     {@code modid:name} id of the cloth part (for example {@code "Backpack:tannedLeather"}), or
-     *                      a bare GregGuns registry name (for example {@code "part_treated_leather"})
+     *                      a bare GregGuns registry name (for example {@code "part_power_plating"})
      * @param metalRatio    share of the parts that is metal, 0..1; ignored when there is no metal
      * @param totalMats     parts needed to repair a piece with one durability point left
      */

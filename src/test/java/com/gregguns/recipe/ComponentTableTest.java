@@ -183,8 +183,13 @@ class ComponentTableTest {
                 .tier());
         assertEquals(
             Tier.ZPM,
-            spec("RC-60").row()
+            spec("RC-59").row()
                 .tier());
+        assertTrue(
+            ComponentTable.rows()
+                .stream()
+                .noneMatch(row -> "RC-60".equals(row.id())),
+            "D293: the Nuclear Power Cell has no refill row");
     }
 
     @Test

@@ -3,6 +3,10 @@
     "0:10": {
       "questIDHigh:4": -6811307739137288999,
       "questIDLow:4": -7103462764511784255
+    },
+    "1:10": {
+      "questIDHigh:4": 0,
+      "questIDLow:4": 2613
     }
   },
   "properties:10": {
@@ -29,7 +33,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "§b§lAntimatter",
+      "name:8": "§2§l§nAntimatter",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,

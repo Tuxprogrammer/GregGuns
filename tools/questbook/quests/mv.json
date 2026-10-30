@@ -1018,7 +1018,7 @@
       "title": "T2 Armor",
       "tier": "MV",
       "desc": [
-        "Aluminum armor comes in three flavors. Combat is aluminum plates and Tanned Leather, the all-rounder. Commando is aluminum, rubber and a glass pane, lighter and built to move. The Ranger Veteran set upgrades a Combat piece with lead plates and Treated Leather for the most protection. Any one chestplate completes this quest.",
+        "Aluminum armor comes in three flavors. Combat is aluminum plates and Tanned Leather, the all-rounder. Commando is aluminum, rubber and a glass pane, lighter and built to move. The Ranger Veteran set upgrades a Combat piece with lead plates and more Tanned Leather for the most protection. Any one chestplate completes this quest.",
         "All three are MV Assembler recipes; NEI shows every piece. Tanned Leather and rubber are the common inputs.",
         "[note]Armor value shows on the tooltip. Compare sets before you commit plates.[/note]"
       ],
@@ -1097,9 +1097,10 @@
               "damage": 17019
             },
             {
-              "id": "gregguns:part_treated_leather",
-              "count": 4,
-              "damage": 0
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17089,
+              "ore": "plateLead"
             }
           ]
         }

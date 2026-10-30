@@ -320,7 +320,7 @@ class ArmorTiersTest {
             legs.repair()
                 .metalMaterial());
         assertEquals(
-            "part_treated_leather",
+            ArmorCatalog.TANNED_LEATHER,
             ArmorCatalog.T2_RIOT.pieces()
                 .get(ArmorSlot.BOOTS)
                 .repair()

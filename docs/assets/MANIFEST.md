@@ -4,7 +4,7 @@ Every non-code asset GregGuns needs, derived from the design records ([0001](../
 
 The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-gen/manifest.json), built by `python -I tools/asset-gen/build_manifest.py`. Edit the script, not the generated files.
 
-**Totals:** 820 assets. By kind: icon 176, model 165, block 128, gui 14, particle 31, sound 279, branding 11, infographic 16. By priority: P1 34, P2 312, P3 474.
+**Totals:** 818 assets. By kind: icon 174, model 165, block 128, gui 14, particle 31, sound 279, branding 11, infographic 16. By priority: P1 34, P2 311, P3 473.
 
 ## Conventions
 
@@ -16,7 +16,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 - **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.
 - Provenance for every delivered asset goes in [CREDITS.md](CREDITS.md).
 
-## 2. Item icons (176)
+## 2. Item icons (174)
 
 ### Guns, melee and grenades (49)
 
@@ -72,7 +72,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.nuke_launcher` | `textures/items/nuke_launcher.png` | 16x16 | Nuke Launcher (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive launcher with hazard trefoil. Metal parts take the NaquadahAlloy gate color. | #282828 | textures/guns/nukerocketlauncher.png (model sheet, silhouette reference only) | P3 |
 | `icon.golden_gun` | `textures/items/golden_gun.png` | 16x16 | Golden Gun (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. polished gold 9mm pistol (the pistol's model in gold; GregGuns original). Metal parts take the HSSG gate color. | #999900 | textures/guns/pistol3.png (model sheet, silhouette reference only) | P2 |
 
-### Gun parts, emitters, plating and cloth (28)
+### Gun parts, emitters, plating and cloth (27)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -98,7 +98,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.part_rad_emitter` | `textures/items/part_rad_emitter.png` | 16x16 | Rad Emitter (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. lead-shielded emitter with green glow. | #282828 #46FA46 | `textures/items/radEmitter.png` | P3 |
 | `icon.part_anti_gravity_core` | `textures/items/part_anti_gravity_core.png` | 16x16 | Anti Gravity Core (IV): GT-style 16x16 item icon, soft top-left light, dark outline. cyan core sphere in a steel cage. | #6464A0 | `textures/items/antiGravityCore.png` | P3 |
 | `icon.part_cybernetic` | `textures/items/part_cybernetic.png` | 16x16 | Cybernetic Parts (EV): GT-style 16x16 item icon, soft top-left light, dark outline. wires and plates, warm gray. | #FFFF64 #DCA0F0 | `textures/items/cyberneticParts.png` | P3 |
-| `icon.part_treated_leather` | `textures/items/part_treated_leather.png` | 16x16 | Treated Leather (LV): GT-style 16x16 item icon, soft top-left light, dark outline. dark green-black treated leather. | #808080 | `textures/items/treatedLeather.png` | P2 |
 | `icon.part_power_plating` | `textures/items/part_power_plating.png` | 16x16 | Power Plating (IV): GT-style 16x16 item icon, soft top-left light, dark outline. slate plate with fiber layer. | #6464A0 #A07010 | `textures/items/powerPlating.png` | P2 |
 | `icon.part_gas_mask_filter` | `textures/items/part_gas_mask_filter.png` | 16x16 | Gas Mask Filter (MV): GT-style 16x16 item icon, soft top-left light, dark outline. round filter canister. | #80C8F0 | `textures/items/gasMaskFilter.png` | P2 |
 | `icon.part_nuclear_warhead` | `textures/items/part_nuclear_warhead.png` | 16x16 | Small Nuclear Warhead (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive warhead with hazard band. | #282828 #8C648C | `textures/items/tacticalNuclearWarhead.png` | P3 |
@@ -120,7 +119,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.ammo_rocket_nuke` | `textures/items/ammo_rocket_nuke.png` | 16x16 | Rocket (Tactical Nuke) (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive finned rocket with hazard trefoil. | #282828 | n/a | P3 |
 | `icon.ammo_nether_charge` | `textures/items/ammo_nether_charge.png` | 16x16 | Nether Charge (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. tan charge pack with orange glow. | #999900 | `textures/items/nethercharge.png` | P3 |
 
-### Magazines, tanks and cells (22)
+### Magazines, tanks and cells (21)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -145,7 +144,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.tank_air` | `textures/items/tank_air.png` | 16x16 | Compressed Air Tank (HV): GT-style 16x16 item icon, soft top-left light, dark outline. pale-blue air bottle, full. | #C8C8DC | `textures/items/compressedAirTank.png` | P2 |
 | `icon.tank_air_empty` | `textures/items/tank_air_empty.png` | 16x16 | Compressed Air Tank (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. pale-blue air bottle, drained: gray glass, no fill. | #C8C8DC | `textures/items/compressedAirTankEmpty.png` | P2 |
 | `icon.cell_nuclear` | `textures/items/cell_nuclear.png` | 16x16 | Nuclear Power Cell (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. green-glow uranium cell in a lead sleeve. | #282828 #46FA46 #8C648C | `textures/items/nuclearPowerCell.png` | P3 |
-| `icon.cell_nuclear_depleted` | `textures/items/cell_nuclear_depleted.png` | 16x16 | Nuclear Power Cell, Depleted (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. same cell, glow gone, dull gray-brown. | #282828 #8C648C | `textures/items/nuclearPowerCellDepleted.png` | P3 |
 
 ### Armor sets (44)
 

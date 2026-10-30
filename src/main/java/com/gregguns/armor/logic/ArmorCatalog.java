@@ -135,9 +135,6 @@ public final class ArmorCatalog {
 
     // ---- M3 wave B: T2 and T3 sets and steam armor ---------------------------------------------------------------
 
-    /** Registry name of the Treated Leather the Ranger Veteran set is repaired with (RC-22). */
-    public static final String TREATED_LEATHER = "part_treated_leather";
-
     private static final double[] REPAIR_RATIO = { 0.5, 0.5, 1.0 / 3.0, 0.5 };
     private static final int[] REPAIR_MATS = { 2, 4, 3, 2 };
 
@@ -299,7 +296,7 @@ public final class ArmorCatalog {
                     ArmorBonus.KNOCKBACK_RESISTANCE,
                     T2_RIOT_KB[slot.ordinal()]))
             .partialHazards(HazardFlag.RADIOLOGICAL)
-            .repair(repairFor(slot, "plate", "Aluminium", TREATED_LEATHER))
+            .repair(repairFor(slot, "plate", "Aluminium", TANNED_LEATHER))
             .build();
     }
 

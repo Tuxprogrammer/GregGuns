@@ -97,7 +97,7 @@ Properties that matter (the exporter writes about forty; the builder writes all 
 | `taskID:8` | JSON | Used for |
 |---|---|---|
 | `bq_standard:checkbox` | `{"index:3": 0, "taskID:8": "bq_standard:checkbox"}` | `gg.start.welcome` only (GGS-12-11) |
-| `bq_standard:retrieval` | `requiredItems:9` (stacks), `requireOnlyOneItem:1` (1 = any one of the stacks), `consume:1` (0), `ignoreNBT:1` (1, or 0 to match a stack's NBT: the Nuclear Warhead quest uses `matchNBT` and a stack `tag` in the data), `partialMatch:1` (1), `autoConsume:1`, `groupDetect:1` | Anything made in a machine or found |
+| `bq_standard:retrieval` | `requiredItems:9` (stacks), `requireOnlyOneItem:1` (1 = any one of the stacks), `consume:1` (0), `ignoreNBT:1` (1, or 0 to match a stack's NBT: the warhead quests and the Fuel Tanks quest use `matchNBT` and a stack `tag` in the data), `partialMatch:1` (1), `autoConsume:1`, `groupDetect:1` | Anything made in a machine or found |
 | `bq_standard:crafting` | `requiredItems:9`, `allowCraft:1`, `allowSmelt:1`, `allowAnvil:1`, `ignoreNBT:1`, `partialMatch:1`. Listens for the crafting table, furnace and anvil only ([TaskCrafting#L189-L200](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskCrafting.java#L189-L200)) | Items made in the crafting grid |
 | `bq_standard:optional_retrieval` | As `retrieval`. Its `ignored()` is true, so it never gates the quest ([TaskOptionalRetrieval](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskOptionalRetrieval.java)); the periodic update counts it as done, so a quest with `taskLogic` `OR` and an optional task completes by itself | Recipe inputs beside the required item |
 | `bq_standard:fluid` | `requiredFluids:9` (`Amount:3`, `FluidName:8`), `consume:1`, `ignoreNBT:1`, `autoConsume:1`, `groupDetect:1` | Fluids in cells |
@@ -336,9 +336,9 @@ A quest in `quests/lv.json`, in the pack's reward shape (a choice with a bag as 
 | Field | Meaning |
 |---|---|
 | `key` | `gg.<chapter>.<name>`. The id is uuid5 of it, so it never changes after release (GGS-12-02) |
-| `title` | The plain title. The builder puts the tier color and bold in front (`§2§l` for LV) unless the title starts with its own `§` code; hidden triggers stay plain |
+| `title` | The plain title. The builder puts the tier's prefix from `TIER_COLORS` in front (color and bold, `§2§l` for LV; UV and UHV add underline, `§2§l§n` and `§4§l§n`, as the pack's own tier tabs do) unless the title starts with its own `§` code; hidden triggers stay plain |
 | `desc` | A string, or a list of paragraphs that the builder joins with a blank line. Tags: `[note]`, `[warn]`, `[quest]`, `[url]`, `[questlink]` (GGS-12-14). `[questlink]gg.lv.pistol[/questlink]` (or `[questlink]gg.lv.pistol the pistol[/questlink]` for other link text) names a quest key, or a pack quest number; the builder writes its id in place, and an unknown key fails the build |
-| `tier` | `Steam`, `LV`, `MV`, `HV`, `EV`, `IV`, `LuV`, `ZPM`. Caps the bag tier (GGS-12-07) and picks the title color |
+| `tier` | `Steam`, `LV`, `MV`, `HV`, `EV`, `IV`, `LuV`, `ZPM`, `UV`, `UHV`: the voltage of the recipe that makes the task item, or the tier of a higher prerequisite that gates it. Caps the bag tier (GGS-12-07) and picks the title color |
 | `pre`, `implicit`, `logic` | Prerequisites: GregGuns keys (strings) and pack quest numbers (integers, `High = 0`). `implicit` is the subset drawn as BetterQuesting implicit lines. `logic` is the prerequisite logic, `AND` (default) or `OR` (GGS-12-03) |
 | `tasks` | One or more tasks, below |
 | `taskLogic` | `AND` (default): every task must be done. `OR`: any one task completes the quest. `OR` needs at least two tasks and no `optional_retrieval` |
@@ -373,7 +373,7 @@ Rewards (`type`):
 | `bag` | `tier` (a `BAGS` name), `count` (default 1) | `bq_standard:item` with the bag stack the table names |
 | `xp` | `amount`; `levels` (default true: levels, false: points) | `bq_standard:xp` |
 
-Stacks: `id`, `count` (default 1), `damage` (default 0; `"*"` matches every damage value, written 32767), `ore` (an OreDict name: any item in it matches as well, the way the pack asks for "any steel plate"; keep a real `id` and `damage` for the item the task shows), `tag` (string NBT, with `matchNBT`). A stack `{"bag": "<tier>", "count": N}` is a bag inside any reward list; writers never write the bag item's id. An id other than `gregguns:` must be in `pack_items.txt` (coins such as `dreamcraft:CoinSmith`, Galacticraft parts, GT materials, HarvestCraft food).
+Stacks: `id`, `count` (default 1), `damage` (default 0; `"*"` matches every damage value, written 32767), `ore` (an OreDict name: any item in it matches as well, the way the pack asks for "any steel plate"; keep a real `id` and `damage` for the item the task shows), `tag` (NBT, with `matchNBT`: string values become string tags, integers int tags and nested objects compounds, so a number matches the int the item writes; `{"Fluid": {"Amount": 1000}}` is a full Fuel Tank). A stack `{"bag": "<tier>", "count": N}` is a bag inside any reward list; writers never write the bag item's id. An id other than `gregguns:` must be in `pack_items.txt` (Galacticraft parts, GT materials, HarvestCraft food; quests pay `gregguns:coin`).
 
 **Loot bags.** `BAGS` in `build_quests.py` is the one table that maps a bag name (`steam`, `lv`, `mv`, `hv`, `ev`, `iv`, `luv`, `zpm`, `spoils`, `ordnance1`, `ordnance2`, `ordnance3`; case-insensitive) to an item id, a damage and the lowest quest tier that may pay it (the [table above](#rewards)). Pointing a name at another group, or adding a name, is a change to that table alone.
 
@@ -395,7 +395,7 @@ The validator checks that every file name matches the ID inside it, every prereq
 ## Rebuild and test
 
 1. **Edit** the chapter file in `tools/questbook/quests/`. Keep a key stable once released: a removed quest goes in a `retired` list and its key is never reused (GGS-12-02).
-2. **Rebuild** with the two commands above, and update the tables in [quest-line.md](quest-line.md) and the quest count where it is stated.
+2. **Rebuild** with the two commands above, then regenerate the tables and counts in [quest-line.md](quest-line.md) with `python -I tools/questbook/quest_doc.py` (`--check` only reports whether the doc is stale).
 3. **Unit test.** `QuestbookResourcesTest` loads the resources from the classpath and checks the index, the ids, the prerequisites (against the [Referenced pack quests](index.md#referenced-pack-quests) table), cycles, registered item, entity and machine names, and overlapping boxes. It fails with "resources are stale" if the data and the resources disagree.
 4. **In game** (batched client pass). Turn the hidden install key on in a dev pack with BetterQuesting, start a new world and check the tab order, the layout and every icon. Nudge positions in edit mode (`/bq_admin edit`). With `/bq_admin complete`, complete the pack quests in the [Unlock design](index.md#unlock-design) table in turn and confirm each chapter intro appears only then. Obtain each item with `/give` and confirm the retrieval completes; kill each hunt target from its spawn egg and confirm the count rises; claim a bag and an item reward in survival.
 5. **Warning.** `/bq_admin default save` **deletes the whole `DefaultQuests` folder before rewriting it** ([QuestCommandDefaults#L166-L196](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L166-L196)). Only run it in a world that was loaded from the full default set.

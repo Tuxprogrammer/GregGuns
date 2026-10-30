@@ -21,7 +21,7 @@ Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquest
 
 | File | Covers |
 |---|---|
-| [quest-line.md](quest-line.md) | All 135 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
+| [quest-line.md](quest-line.md) | All 184 quests and the 8 hidden triggers: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
 | [authoring.md](authoring.md) | The pack's file format, ID derivation, one fully worked quest, the builder and validator in `tools/questbook/`, how to rebuild and test, checklist |
 
 The code for this area is the quest data and tools in `tools/questbook/` (`quests/`, `build_quests.py`, `validate_quests.py`), the generated resources in `src/main/resources/assets/gregguns/questbook/`, and `QuestbookResourcesTest`. The installer is a separate piece, built behind the `questbook.install` config key.
@@ -60,7 +60,7 @@ Rules that keep the gates honest:
 
 ## Referenced pack quests
 
-Thirty-one existing quests are prerequisites. All have `questIDHigh:4` = 0 in the shipped pack. `Tab` is the quest line the quest is drawn in.
+Thirty-three existing quests are prerequisites. All have `questIDHigh:4` = 0 in the shipped pack. `Tab` is the quest line the quest is drawn in.
 
 | ID | Name | Tab | Tier | Used by chapters |
 |---|---|---|---|---|
@@ -95,12 +95,14 @@ Thirty-one existing quests are prerequisites. All have `questIDHigh:4` = 0 in th
 | 1667 | Your First Naquadah Ingot | Tier 5 - IV | IV | zpm |
 | 1888 | Repairing Your Hazmat Suit | Tier 0.5 - Steam | Steam | gear |
 | 2610 | Tier 7 (ZPM) | Tier 7 - ZPM | ZPM | zpm |
+| 2613 | Tier 8 (UV) | Tier 8 - UV | UV | icbm |
+| 2616 | Tier 9 (UHV) | Tier 9 - UHV | UHV | icbm |
 
 ## Integration map
 
 | Techguns feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| (none: Techguns has no quests) | One BetterQuesting line of 148 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
+| (none: Techguns has no quests) | One BetterQuesting line of 184 quests, plus 8 hidden triggers | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
 | Hostile NPC factions, bosses ([10](../10-entities-npcs/index.md)) | `bq_standard:hunt` on `gregguns.<Name>` | BetterQuesting | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Infernal variants ([infernal-mobs.md](../10-entities-npcs/infernal-mobs.md)) | No hunt: a hunt cannot match "any infernal" (GGS-12-11) | Infernal Mobs 1.10.7-GTNH | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Structures and their chests ([11](../11-worldgen/index.md)) | Quests that ask for what the structure holds (GGS-12-12) | TooMuchLoot, EnhancedLootBags | [quest-line.md](quest-line.md#structures) |
@@ -116,10 +118,10 @@ Per [0015](../../design/0015-m9-self-contained-polish.md) nothing here is a chan
 
 | Resource | Content | Sheet |
 |---|---|---|
-| `index.json` | `format`, the `line` path, `linePositions` (133 paths), `quests` (131 paths: 133 plus the 7 triggers), `orderEntry` (`D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns`, the entry the installer adds to the tab order) and `retired` (the ids the installer deletes) | [authoring.md](authoring.md#file-layout) |
+| `index.json` | `format`, the `line` path, `linePositions` (184 paths), `quests` (192 paths: 184 plus the 8 triggers), `orderEntry` (`D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns`, the entry the installer adds to the tab order) and `retired` (the ids the installer deletes) | [authoring.md](authoring.md#file-layout) |
 | `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` | Line properties: name `GregGuns`, icon, `visibility` `UNLOCKED` | [authoring.md](authoring.md#line-files) |
-| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (133) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | [quest-line.md](quest-line.md) |
-| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (133) and `Quests/NoQuestLine/<Name>-<id>.json` (7 triggers) | One file per quest: properties, prerequisites, tasks, rewards | [authoring.md](authoring.md#quest-files) |
+| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (184) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | [quest-line.md](quest-line.md) |
+| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (184) and `Quests/NoQuestLine/<Name>-<id>.json` (8 triggers) | One file per quest: properties, prerequisites, tasks, rewards | [authoring.md](authoring.md#quest-files) |
 
 How the install behaves:
 
@@ -139,7 +141,7 @@ How the install behaves:
 - **GGS-12-05** A prerequisite is a GregGuns key from the same file set, or a pack quest id from the [Referenced pack quests](#referenced-pack-quests) table. Nothing else.
 - **GGS-12-06** Every prerequisite exists, and the prerequisite graph has no cycle.
 - **GGS-12-07** A quest's tier is at most the highest pack tier in its prerequisite chain. A bag reward's tier, read from the builder's bag table, is at most the quest's tier, wherever the bag appears (an item, choice or bag reward). A fixed item reward belongs to that tier or lower under [0001](../../design/0001-tier-map.md).
-- **GGS-12-08** Rewards are `item`, `choice`, `xp` and `bag`, in the pack's shape: a `choice` of useful items of the quest's tier with a loot bag as one option, plus an `item` reward of coins (`dreamcraft:Coin*`), main quests paying about twice the coins. A bag names a tier (`{"bag": "lv"}` in any reward list, or a `bag` reward), and one table in `build_quests.py` (`BAGS`) maps it to the stack handed out: `enhancedlootbags:lootbag` with a GregGuns group's `GroupMetaID` as damage. Bags never hold food; food rewards are Pam's HarvestCraft items in an `item` reward. No command reward is used.
+- **GGS-12-08** Rewards are `item`, `choice`, `xp` and `bag`, in the pack's shape: a `choice` of useful items of the quest's tier with a loot bag as one option, plus an `item` reward of GregGuns coins (`gregguns:coin`, [coins-and-vending.md](../06-items/coins-and-vending.md)), main quests paying about twice the coins. A bag names a tier (`{"bag": "lv"}` in any reward list, or a `bag` reward), and one table in `build_quests.py` (`BAGS`) maps it to the stack handed out: `enhancedlootbags:lootbag` with a GregGuns group's `GroupMetaID` as damage. Bags never hold food; food rewards are Pam's HarvestCraft items in an `item` reward. No command reward is used.
 - **GGS-12-09** A quest asks for the thing it teaches. Items made in a GT machine are `retrieval` tasks with `consume` off: "one of this family" is one retrieval with `requireOnlyOneItem`, "all these parts" is one retrieval listing every part, and alternative sets are several tasks with `taskLogic` `OR`. Recipe inputs may be shown in an `optional_retrieval` beside the required task. An OreDict entry may stand for a material. `crafting` tasks are for items made in the crafting grid, furnace or anvil only, since BetterQuesting counts nothing else.
 - **GGS-12-10** Hunt tasks use `gregguns.<Name>` entity names with `subtypes` off, and every name is registered by GregGuns.
 - **GGS-12-11** Only `gg.start.welcome` uses a checkbox. Every other quest has a task the game checks: an item, a craft or a kill. A hunt cannot match an Infernal rank, so no quest hunts one.
