@@ -45,7 +45,6 @@ public final class RecyclingExclusions {
         EXCLUDED.put("bio_blob", NO_RECIPE_WORLD);
         EXCLUDED.put("camp_flag", NO_RECIPE_WORLD);
         // Made of materials GT gives no item data, so GT itself would recover nothing.
-        EXCLUDED.put("part_heavy_cloth", "wool and string; GT gives them no material data, so nothing comes back");
         EXCLUDED.put("part_stock_wooden", "three logs; GT gives logs no material data, so nothing comes back");
         EXCLUDED.put(
             "part_treated_leather",

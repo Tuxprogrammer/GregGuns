@@ -49,7 +49,7 @@ Worn armor and other damaged stacks do not match damage-0 data, as for GT's own 
 | `irradiated_earth`, `irradiated_rubble`, `trinitite`, `trinitite_shard`, `fallout_goo`, `fallout_goo_item` | Fallout; data would turn free rubble into uranium (D84, D155) |
 | `complex_wall` | Silo complex wall; a complex must not be a casing mine (D205) |
 | `bug_nest` (both variants), `bug_nest_slime`, `bio_blob`, `camp_flag` | World blocks placed by structures; no recipe |
-| `part_heavy_cloth`, `part_treated_leather`, `part_stock_wooden` | Wool and string, leather, logs: GT gives none of them material data, so GT would recover nothing |
+| `part_treated_leather`, `part_stock_wooden` | Leather, logs: GT gives none of them material data, so GT would recover nothing |
 | `antidote` | Consumable; its sheet gives it no data ([antidote.md](../../gregguns-icbm-spec/06-blocks-items/antidote.md)) |
 | `launcher_warhead_*` | Consumable launcher charges; their sheet gives them no data ([launcher-warheads.md](../../gregguns-icbm-spec/02-explosives/launcher-warheads.md)) |
 | `missile_chip_t*`, `missile_schematic_t*` | Guidance chips from the Circuit Assembler, engraved or not: circuits, and GT recycles no circuits |
