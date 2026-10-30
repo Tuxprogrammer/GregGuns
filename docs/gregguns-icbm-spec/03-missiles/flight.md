@@ -47,7 +47,7 @@ The climb ends on the first tick that reaches the waypoint; the missile stands t
 
 - **No collision in the climb** (GGS-ICBM-03-52): the column right above the pad is checked at launch (`BLOCKED`); above it the missile passes whatever a player built later or the terrain holds, and breaks nothing. Its feet are at the build height when it turns, so no block in the world stands in the first steps of the arc.
 - **The silo doors** open before ignition and close once the missile's bottom is 4 blocks above the rim (`icbm.doorCloseHeight`), as before: the climb is straight, so it is far above the panels when they swing.
-- **Range and accuracy** are measured at the LP. The waypoint is straight above it, so the flat distance of the arc is the one the range check, the scatter (`siloScatterFactor`) and the fuel bonus (`siloRangeFactor`) used. The flight takes the climb's ticks longer.
+- **Range and accuracy** are measured at the LP. The waypoint is straight above it, so the flat distance of the arc is the one the range check (with `siloRangeFactor`), the scatter (with `siloScatterFactor`) and the fuel bonus used. The flight takes the climb's ticks longer.
 - **Detection and EMP:** the climb is a flight phase like the arc: the radar sees it, a SAM can hit it, an EMP can destroy or fry it (a fried missile in the climb falls straight back down its column). The engine loop follows the entity the whole way.
 - **Pads** climb the same way. The old 12-block climb turned a long pad shot onto an arc whose first slope is `4 * apex / flat` (0.4 for a 3,000-block T2 flight), so it flew within 20 blocks of the ground for its first 50 blocks and hit hills and trees near the pad.
 
