@@ -264,7 +264,7 @@ public final class ControlLaunchScenario implements Scenario {
                     com.gregguns.GregGuns.LOG.info("launch_to_impact before the second shot: {}", second.report(w));
                     // The raised signal is the only trigger: nothing has fired yet.
                     out.check(!missile[0].isDead && missile[0].onPad(), "the second missile waits on the pad");
-                    ctx.setBlock(4, 0, 0, Blocks.redstone_block, 0);
+                    ctx.setBlock(3, 0, 0, Blocks.redstone_block, 0);
                     mark[0] = ticks;
                     stage[0] = 3;
                     return null;
@@ -314,7 +314,7 @@ public final class ControlLaunchScenario implements Scenario {
                         0,
                         m.tickets()
                             .heldChunks());
-                    ctx.setBlock(4, 0, 0, Blocks.air, 0);
+                    ctx.setBlock(3, 0, 0, Blocks.air, 0);
                     IcbmConfig.terrainDamageT1 = terrain;
                     base.setInventorySlotContents(MTELaunchControl.SLOT_STICK, null);
                     return out.build();
