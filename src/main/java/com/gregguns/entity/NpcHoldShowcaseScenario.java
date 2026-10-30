@@ -161,7 +161,6 @@ final class NpcHoldShowcaseScenario implements Scenario {
                         player.worldObj);
                     npc.setLocationAndAngles(cx, cy, cz, 0.0F, 0.0F);
                     npc.setCurrentItemOrArmor(0, gun);
-                    npc.setEntityInvulnerable(true);
                     player.worldObj.spawnEntityInWorld(npc);
                     current[0] = npc;
                     signal(player, "view", "0");
