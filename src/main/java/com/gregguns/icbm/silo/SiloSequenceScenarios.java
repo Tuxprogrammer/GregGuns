@@ -5,7 +5,6 @@ import static com.gregguns.icbm.silo.SiloScenarios.WARMUP;
 import static com.gregguns.icbm.silo.SiloScenarios.build;
 import static com.gregguns.icbm.silo.SiloScenarios.busItems;
 import static com.gregguns.icbm.silo.SiloScenarios.formed;
-import static com.gregguns.icbm.silo.SiloScenarios.fuel;
 import static com.gregguns.icbm.silo.SiloScenarios.gate;
 import static com.gregguns.icbm.silo.SiloScenarios.hatchMb;
 import static com.gregguns.icbm.silo.SiloScenarios.power;
@@ -174,6 +173,25 @@ final class SiloSequenceScenarios {
         }
     }
 
+    /**
+     * Pours fuel into the Input Hatch through its tank's {@code fill}, as a pipe or a player does, so the hatch tells
+     * the controller (GT pushes a recipe check on a hatch's own change only).
+     */
+    private static void pour(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
+        IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
+        net.minecraftforge.fluids.Fluid f = net.minecraftforge.fluids.FluidRegistry.getFluid(fluid);
+        out.check(f != null, "the test fluid " + fluid + " is registered");
+        out.check(
+            hatch != null
+                && hatch.getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchInput,
+            "the silo has a fuel hatch where the test pours");
+        if (f != null && hatch != null
+            && hatch.getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchInput) {
+            ((gregtech.api.metatileentity.implementations.MTEHatchInput) hatch.getMetaTileEntity())
+                .fill(new net.minecraftforge.fluids.FluidStack(f, 16000), true);
+        }
+    }
+
     private static boolean active(MTEMissileSilo s) {
         return s.getBaseMetaTileEntity()
             .isActive();
@@ -327,7 +345,7 @@ final class SiloSequenceScenarios {
                         out.check(!bodyStands(ctx) && !warheadSeated(ctx), "the blocks became the missile");
                         out.checkEquals("no part dropped as an item", 0, items(ctx)[0] + items(ctx)[1]);
                         out.checkEquals("the sequence is over", SiloSequence.Stage.NONE, s.stage());
-                        fuel(ctx, out, "nitrofuel");
+                        pour(ctx, out, "nitrofuel");
                         mark[0] = ticks;
                         stage[0] = 7;
                         return null;
@@ -388,7 +406,7 @@ final class SiloSequenceScenarios {
                     case 0:
                         out.check(formed(ctx), "the silo forms");
                         putBus(ctx, warhead(WarheadCasing.T1, "condensed"));
-                        fuel(ctx, out, "nitrofuel");
+                        pour(ctx, out, "nitrofuel");
                         mark[0] = ticks;
                         stage[0] = 1;
                         return null;
@@ -591,7 +609,7 @@ final class SiloSequenceScenarios {
 
         @Override
         public String description() {
-            return "Photographs the silo shaft empty, with the body placed, waiting, with the warhead seated, armed and fueling, for a connected client. Needs 1 client; not part of test all.";
+            return "Photographs the silo shaft empty, with the body placed, the body waiting, the warhead seated, and the missile armed and fueling, for a connected client. Needs 1 client; not part of test all.";
         }
 
         @Override
@@ -648,17 +666,24 @@ final class SiloSequenceScenarios {
             plan.after(GAP, () -> shot(p, "silo-seq-1-body-placed-inside"));
             plan.after(120, () -> {
                 out.checkEquals("2: the body waits", SiloSequence.Stage.BODY_DONE, silo(ctx).stage());
-                putBus(ctx, warhead(WarheadCasing.T1, "condensed"));
+                outside.run();
             });
-            plan.after(60, () -> {
+            plan.after(GAP, () -> shot(p, "silo-seq-2-body-waits-outside"));
+            plan.after(10, () -> putBus(ctx, warhead(WarheadCasing.T1, "condensed")));
+            plan.after(40, () -> {
                 out.check(onTheNose(ctx), "3: the warhead sits on the nose");
                 out.checkEquals("3: the mating cycle runs", SiloSequence.Stage.WARHEAD, silo(ctx).stage());
                 out.check(silo(ctx).missile() == null, "3: not armed yet");
             });
-            plan.after(GAP - 60, () -> shot(p, "silo-seq-3-warhead-seated-inside"));
-            plan.after(SiloRules.WARHEAD_TICKS, () -> {
+            plan.after(20, () -> shot(p, "silo-seq-3-warhead-seated-outside"));
+            plan.after(10, inside);
+            plan.after(60, () -> {
+                out.check(silo(ctx).missile() == null, "3: still not armed at the inside shot");
+                shot(p, "silo-seq-3-warhead-seated-inside");
+            });
+            plan.after(SiloRules.WARHEAD_TICKS - 60, () -> {
                 out.check(silo(ctx).missile() != null, "4: the missile is armed");
-                fuel(ctx, out, "nitrofuel");
+                pour(ctx, out, "nitrofuel");
             });
             plan.after(GAP, () -> shot(p, "silo-seq-4-armed-fueling-inside"));
             plan.after(10, outside);
