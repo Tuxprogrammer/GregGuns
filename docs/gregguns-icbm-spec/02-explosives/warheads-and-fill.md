@@ -2,7 +2,7 @@
 
 - **ICBM baseline:** [explosive-registry](../../icbm-spec/02-explosives/explosive-registry.md) (catalog and tiers), [explosive-block](../../icbm-spec/02-explosives/explosive-block.md) (the block item and its NBT). ICBM 2's modular warhead sizes (1/5/20/64/128) are in the ICBM 2 appendix.
 - **Design records:** [0018 §5-8](../../design/0018-icbm-program.md), [0001 tier map](../../design/0001-tier-map.md)
-- **Decisions:** [D5](../DECISIONS.md#decided), [D56, D57](../DECISIONS.md#decided), [D282](../DECISIONS.md#decided) (the warhead chain), [D20](../DECISIONS.md#d20-in-detail), [D23](../DECISIONS.md#d23-in-detail), [D34](../DECISIONS.md#decided), [D41](../DECISIONS.md#decided), [D44](../DECISIONS.md#decided)
+- **Decisions:** [D5](../DECISIONS.md#decided), [D56, D57](../DECISIONS.md#decided), [D282](../DECISIONS.md#decided) (the warhead chain), [D283](../DECISIONS.md#decided) (de-arming), [D20](../DECISIONS.md#d20-in-detail), [D23](../DECISIONS.md#d23-in-detail), [D34](../DECISIONS.md#decided), [D41](../DECISIONS.md#decided), [D44](../DECISIONS.md#decided)
 - **Pack mods:** GregTech (`gregtech`, 5.09.54.205): recipe maps, `TierEU`, `GTOreDictUnificator`; NotEnoughItems for recipe display
 - **Roadmap:** [I1](../../ROADMAP-ICBM.md#i1--warheads-and-the-blast-engine); extended in I3 (T3, nuclear) and I5 (antimatter, red matter)
 
@@ -14,6 +14,7 @@
 | Blast size fixed by config per explosive | Radius and damage are computed from `fill` at detonation | The player chooses how much to spend |
 | Tier is only a tooltip color | Tier is the **casing tier**: it caps `fill` and gates the recipe | GT progression (D5) |
 | Everything crafted from a grid | A warhead is **built in steps**: an inert casing (Assembler), a payload (Assembler), then Plastic Explosive charges (crafting grid, or a full casing in the Assembler) | GT first (D57); the owner's knob (D23, D282) |
+| A warhead is only spent by firing it | A warhead **de-arms** step by step back to its parts: charges out in a crafting grid with a Defuse Kit (or all at once in the Cutting Machine), then the payload and the casing in the Cutting Machine | The owner wants warheads repurposed and their materials returned, more modular than the GT recycler (D283) |
 
 ## The warhead chain (D282)
 
@@ -33,9 +34,29 @@ No recipe takes both Industrial TNT and Plastic Explosive, because Plastic Explo
 
 - **Inert by construction.** It is a plain item, not a block. It cannot be placed, so it cannot sit on a missile nose or stand on a pad. The silo's Input Bus does not take it: with a body waiting, the silo says "the warhead in the Input Bus is inert". Nothing lights, detonates or defuses it. There is no dud missile, because an inert warhead never becomes part of a missile.
 - **Name:** "Inert T1 Warhead", or "Inert Shrapnel T1 Warhead" with a payload (`gregguns.icbm.inert.name` and `.name_payload`, built by `InertWarheadTooltipFormat.displayName`).
-- **Tooltip (D41):** the payload line ("none (charges alone make it Condensed)" on a bare T1, "none" on the others), the tier line, `Charges: 0 / cap` and the inert line. Shift adds the next step and how charges are loaded.
+- **Tooltip (D41):** the payload line ("none (charges alone make it Condensed)" on a bare T1, "none" on the others), the tier line, `Charges: 0 / cap` and the inert line. Shift adds the next step, how charges are loaded, and the way back: the Cutting Machine takes a payload out or scraps a bare casing (D283).
 - **Looks:** the item renderer draws the live warhead's model, the payload's own model where it has one, dimmed to 60% so an inert casing reads apart from a live one. The flat icon (`textures/items/inert_warhead.png`, our own: a gray casing with a blue inert band) is only the fallback.
 - NEI and the creative tab list the five bare casings, then every payload of each casing.
+
+## De-arming (D283)
+
+Every step of the chain runs backwards, so a warhead can be repurposed or taken back to its parts. What the crafting grid puts in, the crafting grid takes out; what the Assembler fits, GT's **Cutting Machine** (`RecipeMaps.cutterRecipes`) takes off, at the same voltage as the build step (`WarheadDearmRecipes`).
+
+| Step | Where | Input | Output | Loss |
+|---|---|---|---|---|
+| 1. Unload charges | crafting grid | one live warhead and a **Defuse Kit**, nothing else | the same warhead with up to 8 fewer charges, or, once the last charge is out, the inert warhead with the payload it was built with (bare for Condensed). The charges go to the player's inventory (dropped at their feet when it is full) | none; the kit loses one use per craft |
+| 1. Unload charges (bulk) | Cutting Machine, the blast's voltage | one **full** warhead (NBT-exact) | the inert warhead with its payload, and the full casing of Plastic Explosive (5, 20, 64, 128 or 128; 128 as two stacks) | the cutting fluid |
+| 2. Remove the payload | Cutting Machine, the blast's voltage | one inert warhead with that payload (NBT-exact) | the bare inert warhead and every item of the payload recipe at its count (the sleeve, canisters, field generators, fissile core, dishes, and the mustard seeds when HarvestCraft gave them) | the payload's fluid (nitrous oxide, ammonia, creosote, kerosene, helium, biomass) and the cutting fluid |
+| 3. Scrap the casing | Cutting Machine, the casing's voltage | one bare inert warhead (NBT-exact, no tag) | its casing plates and its Fuze Assembly | the cutting fluid |
+| (GT default) | Macerator, Arc Furnace | a live or inert warhead | the casing metal and the fuze's metal, from GT recycling data (D44) | charges, payload and fluid |
+
+- **Partial unloads mirror loading.** A grid load adds 1 to 8 charges; a grid unload takes out up to 8 (all of them when 8 or fewer remain). A Thermobaric T2 warhead with 20 charges unloads to 12, then 4, then the inert Thermobaric casing. To get an exact smaller fill, unload and load again: both directions are lossless. A partly filled warhead never matches the Cutting Machine's full-warhead recipe; the grid handles it.
+- **Never a dupe.** The grid reads the warhead's own tag: it needs both `explosive` and `fill`, and the explosive must be one its casing carries. A tag-less warhead (which would read as full) or a hand-edited explosive makes no recipe. The fill is clamped to the cap, as the blast reads it. Every Cutting Machine input is NBT-sensitive, so a bare casing never matches a payload's removal and hands out a sleeve it never had. A build followed by a de-arm returns exactly what went in, minus the fluids above (`WarheadDearmingTest`, `icbm.warhead.dearm.round_trip`).
+- **The Defuse Kit** is a container item that stays in the grid; each craft costs one of its 32 uses, and the craft on its last use still de-arms, then the kit breaks. It is the only tool, at every tier: de-arming any warhead is a careful job, and the kit is HV, the chain's first tier.
+- **Why the Cutting Machine.** The GT Disassembler is not in this GT version, and the Assembler has one output slot. The cutter has four item outputs, enough for the largest step (the inert warhead and two stacks of charges, or the bare casing and three payload items), and its water or lubricant cut is how real munitions are opened. GT adds its water, distilled water, lubricant and superfluid variants. LuV and up runs in the Industrial Cutting Factory.
+- **The grid's charge hand-back** is FML's `ItemCraftedEvent` (the akimbo split's precedent, GUN-26): FML fires it before the grid gives up its ingredients, so the handler reads the warhead the result was made from and gives exactly that many charges, on the server only.
+- **NEI** lists the Cutting Machine steps, one row per payload. The grid unload is a custom recipe, not listed (as the grid load, D150, D282); the warhead's, the inert warhead's and the kit's tooltips explain it.
+- **Self-check.** The D1 tier map judges what a recipe makes, and a de-arm hands back parts below the warhead's tier by design, so the boot self-check skips Cutting Machine recipes that take a warhead.
 
 ## The warhead item
 
@@ -83,7 +104,7 @@ Sample (condensed, T1: `R` 9, `D` 1,200):
 ## Tooltip (D41)
 
 - **Short:** explosive name; tier (`TierText.colored`) of the casing; `Charges: n / cap`; `Blast radius: r blocks`; center damage, or the annihilation line for nuclear and up; "Hold Shift for details".
-- **Shift:** the casing cap (and that more Plastic Explosive tops it up in a crafting grid), the radius and damage curve in one line, the fuse behavior for the demolition use, the blast's special effect, and "Added by: GregGuns".
+- **Shift:** the casing cap (and that more Plastic Explosive tops it up in a crafting grid), the radius and damage curve in one line, the fuse behavior for the demolition use, the blast's special effect, how to de-arm it (D283), and "Added by: GregGuns".
 - The radius shown is the final blast radius at that fill and the damage is the center damage at that fill.
 - **Name (D58):** `<Explosive> T<casing> Warhead` from the stack (`gregguns.icbm.warhead.name`, built by `WarheadTooltipFormat.displayName`), such as "Condensed T1 Warhead". The block names with no NBT are "T1 Warhead" and "T2 Warhead". The tier line reads `Tier: ` plus the colored tier text: HV for T1, EV-IV for T2.
 - **Lit warhead (client):** while the fuse burns, the placed block shows smoke and sparks (`randomDisplayTick`); the tile's description packet tells the client once when it is lit.
@@ -106,6 +127,8 @@ Decisions: D56 (realistic, pack-made inputs), D57 (the parts) and D282 (the chai
 | Payload | one bare Inert T*n* Warhead and the payload (table below) | the blast's | Inert *Blast* T*n* Warhead | 400 ticks |
 | Fill (full) | one Inert *Blast* T*n* Warhead (bare T1 for Condensed) and a full casing of Plastic Explosive (5, 20, 64, 128 or 128; past 64 in two stacks) | the blast's | the live warhead, full | 200 ticks |
 | Fill (any amount) | crafting grid: one inert or live warhead and 1 to 8 Plastic Explosive | none | the live warhead with that many more charges | n/a |
+| Unload (any amount) | crafting grid: one live warhead and a Defuse Kit | none | the warhead with up to 8 fewer charges (inert with its payload once empty), and the charges | n/a |
+| Unload (full), payload out, scrap | Cutting Machine (see [De-arming](#de-arming-d283)) | none | the inverse of the fill, payload and inert warhead steps | 200 ticks (400 with water) |
 
 ### The parts
 
@@ -160,7 +183,7 @@ The Fuze Assembly Mk III (LuV: a Master circuit, a tungstensteel plate and four 
 - **The payload recipe is not NBT-sensitive.** The Bio Lab's petri dish carries NBT. Because of that, an inert warhead that already has a payload can be refitted, and the old payload is lost. The fill recipe is NBT-sensitive. GT's `nbtSensitive` matching compares the item, damage and the whole tag (`GTRecipe.RecipeItemInput.matchesRecipe`). Inputs of the same item are summed across slots, so 128 charges can sit in two stacks.
 - **Cost (D34).** A full warhead costs the inert warhead (casing plates and fuze), plus the payload, plus a full casing of Plastic Explosive at 1.1 each. The comparison is an estimate: the pack's rocket recipes live in the GTNH scripts, which this repository does not carry. GTNH's tier 1 and tier 2 rockets have a nose cone, an engine, fins, a stack of tier heavy-duty plates, a chip, and fuel worth several buckets. That comes to about 15 to 25 plate-equivalents of HV-class materials for a T1 rocket (call it 20), and about 1.5 to 2 times that at EV for T2 (call it 27). Weights, in plate equivalents: plate 1, Plastic Explosive 1.1, Fuze Mk I 5, Mk II 8 and Mk III 12, Steel and Titanium Sleeves 4 and 7, Dispersal Canister 2.5, Napalm Canister 3.5, Field Generator 8, Emitter 6, a petri dish 3, and 1 per 2,000 L of fluid. `WarheadRecipeSpecTest` holds the bands: T1 14 to 26 (about one T1 launch), T2 38 to 52 (about one and a half to two T2 launches), T3 90 to 180, and T4 and T5 100 to 400. If the pack's real rocket costs turn out higher, scale the casing constants `T1_PLATES` to `T5_PLATES` in `WarheadRecipes` (the recycling data follows them) or the payload counts in `WarheadRecipeSpec`.
 - **Tier ladder.** The explosive climbs with the casing through the charge count: 5, 20, 64, then 128 Plastic Explosive, each made from Industrial TNT and PTFE. The payloads climb from steel to titanium to tungstensteel-era field generators and exotics.
-- GT recycling data (D44): each live warhead and each inert warhead recycles into its casing plates. Each part recycles into its metal and plastic. Explosives and fluids are lost.
+- GT recycling data (D44, D283): each live warhead and each inert warhead recycles into its casing plates and its Fuze Assembly's metal; a fitted inert warhead recycles the same, so its payload is lost. Each part recycles into its metal and plastic. Explosives and fluids are lost. The Cutting Machine's de-arm is the lossless way back.
 - NEI: every machine step is an Assembler recipe, so NEI shows each one with its programmed circuit and its fluid, and NEI can follow the chain from the inert warhead to the live warhead. The crafting-grid load is a custom recipe and is not listed in NEI (as for the launcher warheads, D150). The inert warhead's tooltip explains it.
 
 ## Requirements
@@ -174,11 +197,15 @@ The Fuze Assembly Mk III (LuV: a Master circuit, a tungstensteel plate and four 
 - GGS-ICBM-02-07 (D282): the inert warhead crafts in the Assembler at its casing tier and not one tier below; a payload recipe gives an inert warhead with that payload; the fill recipe only matches an inert warhead with that exact payload (a bare T1 for condensed).
 - GGS-ICBM-02-08 (D282): the crafting grid loads 1 to 8 Plastic Explosive into an inert or a live warhead, one charge per fill, and refuses a bare T2 to T5 casing, a load past the cap, two warheads and any other item.
 - GGS-ICBM-02-09 (D282): an inert warhead cannot be placed, a silo does not mate it, and a warhead made by the chain arms into a missile that carries its explosive.
+- GGS-ICBM-02-38 (D283): a crafting grid of one live warhead and one Defuse Kit gives the warhead with `min(8, fill)` fewer charges, or the inert warhead with its payload (bare for Condensed) once empty, and hands exactly those charges to the player; the kit stays in the grid one use down and breaks after its last use.
+- GGS-ICBM-02-39 (D283): the grid unload refuses a missing kit, two kits, two warheads, an inert warhead, any other item, a warhead with no `explosive` or `fill` tag, and an explosive its casing cannot carry.
+- GGS-ICBM-02-40 (D283): the Cutting Machine, at the build step's voltage and not one tier below, empties a full warhead into its inert warhead and its charges, takes a payload out into the bare inert warhead and the payload recipe's items, and scraps a bare inert warhead into its plates and fuze; every input is NBT-exact, so a partial warhead or a bare casing matches no fuller recipe.
+- GGS-ICBM-02-41 (D283): a build followed by a de-arm, through any sequence of grid loads, returns every item and charge that went in; only the payload's fluid and the cutting fluid are spent.
 - GGS-ICBM-02-18 (D282): no warhead payload takes TNT, dynamite, Industrial TNT, Plastic Explosive or a fuze, and no launcher warhead takes both Industrial TNT and Plastic Explosive.
 
 ## Tests
 
-`WarheadMathTest`, `WarheadNbtTest`, `WarheadTooltipFormatTest`, `WarheadRecipeSpecTest`, `WarheadChargingTest`, `InertWarheadTooltipFormatTest`, `IcbmPartTest`, `PartTooltipFormatTest`, `LauncherWarheadClashTest`; recipe self-checks run at the dev boot; scenarios `icbm.warhead.item_nbt`, `icbm.recipes.assembler`, `icbm.warhead.chain.recipes`, `icbm.warhead.chain.grid`, `icbm.warhead.chain.inert`, `icbm.warhead.chain.launch` and `icbm.silo.refusals`.
+`WarheadMathTest`, `WarheadNbtTest`, `WarheadTooltipFormatTest`, `WarheadRecipeSpecTest`, `WarheadChargingTest`, `InertWarheadTooltipFormatTest`, `WarheadDearmingTest`, `IcbmPartTest`, `PartTooltipFormatTest`, `LauncherWarheadClashTest`; recipe self-checks run at the dev boot; scenarios `icbm.warhead.item_nbt`, `icbm.recipes.assembler`, `icbm.warhead.chain.recipes`, `icbm.warhead.chain.grid`, `icbm.warhead.chain.inert`, `icbm.warhead.chain.launch`, `icbm.warhead.dearm.grid`, `icbm.warhead.dearm.round_trip`, `icbm.warhead.dearm.machine` and `icbm.silo.refusals`.
 
 ## Open questions
 

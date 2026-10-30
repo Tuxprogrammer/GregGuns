@@ -17,6 +17,13 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - No recipe takes both Industrial TNT and Plastic Explosive any more: the warhead payloads carry no explosive, and the Demolition, Cluster and EMP launcher warheads take more Plastic Explosive instead.
 - The one-step full-warhead Assembler recipes and the fill-1 condensed starter recipe are gone. Existing warheads keep working.
 
+## New: de-arming a warhead
+
+- Put a live warhead and a **Defuse Kit** in a crafting grid to take out up to 8 Plastic Explosive per craft. The charges come back whole and the kit loses one use. The last charge out leaves the inert warhead with its payload, ready to be loaded again.
+- The **Cutting Machine** runs the rest of the chain backwards at the warhead's own tier: it empties a full warhead at once, takes a payload out (its parts come back, its fluid does not) and cuts a bare inert warhead back into its plates and Fuze Assembly. Check NEI.
+- Macerating or arc smelting a warhead now also returns its fuze's metal.
+- New ICBM quest: De-arming.
+
 ## New: GregGuns Coins and the Vending Machine
 
 - **GregGuns Coin** (`gregguns:coin`), GregGuns' own currency, in five values like the pack's coins: 1, 10, 100, 1000 and 10K (damage 0 to 4). One coin breaks into ten of the next lower value in a crafting grid; ten coins and programmed circuit 10 make one of the next higher value in any GT Assembler.

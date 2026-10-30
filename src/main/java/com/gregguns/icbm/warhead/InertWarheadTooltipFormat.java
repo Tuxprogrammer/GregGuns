@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * Pure layout of the inert warhead's name and tooltip (D41, D282): the payload, the tier, the empty charge count and
- * the inert line, then the next step behind Shift. It takes already localized templates, so it has no Minecraft types
+ * the inert line, then the next step and the way back (D283) behind Shift. It takes already localized templates, so it has no Minecraft types
  * and is unit tested.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (The inert warhead)
@@ -38,6 +38,10 @@ public final class InertWarheadTooltipFormat {
         public String nextFitted;
         /** Detail: how charges are loaded, one slot: the most per crafting-grid load. */
         public String howToCharge;
+        /** Detail for a casing with a payload: how the payload comes out (D283), no slots. */
+        public String dearmFitted;
+        /** Detail for a bare casing: how it is scrapped (D283), no slots. */
+        public String dearmBare;
     }
 
     /** The values of one stack. */
@@ -86,6 +90,10 @@ public final class InertWarheadTooltipFormat {
         }
         out.add(f.payloadName != null ? l.nextFitted : f.t1 ? l.nextBareT1 : l.nextBare);
         out.add(String.format(l.howToCharge, WarheadCharging.MAX_PER_CRAFT));
+        String dearm = f.payloadName != null ? l.dearmFitted : l.dearmBare;
+        if (dearm != null && !dearm.isEmpty()) {
+            out.add(dearm);
+        }
         return out;
     }
 }

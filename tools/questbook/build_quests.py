@@ -78,7 +78,7 @@ SIZES = (24, 28, 48, 72)  # box sizes (GGS-12-15): 24 normal, 28 chapter head, 4
 QUEST_FIELDS = {'key', 'chapter', 'title', 'tier', 'desc', 'pre', 'implicit', 'logic', 'taskLogic', 'tasks', 'rewards',
                 'x', 'y', 'size', 'main', 'icon', 'visibility', 'skip', 'completes', 'repeatTime'}
 TASK_FIELDS = {'checkbox': {'type'}, 'retrieval': {'type', 'items', 'any', 'matchNBT'},
-               'optional_retrieval': {'type', 'items', 'any', 'matchNBT'}, 'crafting': {'type', 'items'},
+               'optional_retrieval': {'type', 'items', 'any', 'matchNBT'}, 'crafting': {'type', 'items', 'matchNBT'},
                'hunt': {'type', 'target', 'count'}, 'fluid': {'type', 'fluids'},
                'location': {'type', 'dimension', 'name'}}
 ITEM_TASKS = ('retrieval', 'optional_retrieval', 'crafting')
@@ -184,8 +184,10 @@ def task(t):
                 'name:8': t.get('name', ''), 'posX:3': 0, 'posY:3': 0, 'posZ:3': 0, 'range:3': -1, 'structure:8': '',
                 'taskID:8': 'bq_standard:location', 'taxiCabDist:1': 0, 'visible:1': 0}
     if kind == 'crafting':
+        # NBT is ignored unless matchNBT says otherwise, as for retrieval: an item whose tag varies (a payload, a
+        # fill) still counts (ItemComparison.CompareNBTTag fails a tagless requirement against a tagged stack).
         return {'allowAnvil:1': 0, 'allowCraft:1': 1, 'allowCraftedFromStatistics:1': 0, 'allowSmelt:1': 1,
-                'ignoreNBT:1': 0, 'partialMatch:1': 1, 'requiredItems:9': stacks(t['items']),
+                'ignoreNBT:1': 0 if t.get('matchNBT') else 1, 'partialMatch:1': 1, 'requiredItems:9': stacks(t['items']),
                 'taskID:8': 'bq_standard:crafting'}
     if kind == 'hunt':
         return {'damageType:8': '', 'ignoreNBT:1': 1, 'required:3': t['count'], 'subtypes:1': 0,

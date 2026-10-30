@@ -54,6 +54,7 @@ public final class WarheadScenarios {
         registry.register(new BlockDamageOff());
         registry.register(new WarheadShotsScenario());
         WarheadChainScenarios.registerAll(registry);
+        WarheadDearmScenarios.registerAll(registry);
         NuclearScenarios.registerAll(registry);
         AnnihilationScenarios.registerAll(registry);
         T3MachineryScenarios.registerAll(registry);
