@@ -28,7 +28,7 @@ One table per loot key (`LootKeys`) and ceiling, registered as `gregguns:silo_<k
 | Stainless Steel plates (four) | `magazine` chests | always |
 | Rocket fuel cells (8 to 16), the best rung the ceiling allows | `fuel` chests | always |
 
-The `ITEM_FRAME_WALL` (armory) holds one gun per frame drawn from the armory table at the ceiling.
+A `GUN_DISPLAY` (armory) holds one gun per frame drawn from the weapon tables at or below the ceiling, with an `armory_ammo` chest under it holding that gun's magazines and rounds (see silo-layout, Armory display walls).
 
 ## Requirements
 

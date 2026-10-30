@@ -17,6 +17,10 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Zombies, bandits and soldiers drop Tanned Leather where they dropped Heavy Cloth, the Recruit loot bag holds two Tanned Leather, and the Vending Machine no longer sells Heavy Cloth.
 - The Steam chapter's Heavy Cloth quest is replaced by a Tanned Leather quest, and quest rewards that paid Heavy Cloth pay Tanned Leather.
 
+## Changed: silo complex armories
+
+- The guns of a complex's armory no longer hang on the outer walls. Two short display walls (two blocks tall, open above) stand across the room with walkways between them, each showing a gun in an item frame every fourth block. A chest on the floor directly below each gun holds that gun's ammo: loaded magazines and loose rounds, or the rockets, grenades or fuel it burns. The armory shows about as many guns as before and holds far more ammo. Abandoned complexes keep fewer of the displays.
+
 ## Fixed
 
 - Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.

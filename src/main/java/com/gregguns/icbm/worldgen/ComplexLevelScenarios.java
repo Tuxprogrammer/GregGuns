@@ -241,7 +241,7 @@ public final class ComplexLevelScenarios {
                 com.gregguns.icbm.complex.Box b = room.bounds();
                 // No frame on the outer walls: every frame in the room hangs on a block that is not on the perimeter.
                 @SuppressWarnings("unchecked")
-                List<Object> inRoom = world.getEntitiesWithinAABB(
+                List<?> inRoom = world.getEntitiesWithinAABB(
                     net.minecraft.entity.item.EntityItemFrame.class,
                     AxisAlignedBB
                         .getBoundingBox(ax + b.minX, floor, az + b.minZ, ax + b.maxX, floor + b.sizeY(), az + b.maxZ));
@@ -267,7 +267,7 @@ public final class ComplexLevelScenarios {
                     if (w(world, x + bx, y, z + bz) == Blocks.air) noWall++;
                     if (world.getBlock(x + bx, floor + 3, z + bz) != Blocks.air) tall++;
                     @SuppressWarnings("unchecked")
-                    List<Object> es = world.getEntitiesWithinAABB(
+                    List<?> es = world.getEntitiesWithinAABB(
                         net.minecraft.entity.item.EntityItemFrame.class,
                         AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1));
                     ItemStack gun = es.isEmpty() ? null
