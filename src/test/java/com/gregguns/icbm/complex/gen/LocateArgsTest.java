@@ -14,7 +14,7 @@ class LocateArgsTest {
     void defaultsToTheDefaultRadiusAndNoGeneration() {
         LocateArgs a = LocateArgs.parse(new String[] { "complex" });
         assertEquals(LocateArgs.Mode.LIST, a.mode);
-        assertEquals(ComplexLocator.DEFAULT_RADIUS, a.radius);
+        assertEquals(StructureLocator.DEFAULT_RADIUS, a.radius);
         assertFalse(a.generate);
     }
 
@@ -32,16 +32,27 @@ class LocateArgsTest {
     void radiusIsBounded() {
         assertEquals("gregguns.locate.badradius", thrown("complex", "0"));
         assertEquals("gregguns.locate.badradius", thrown("complex", "-3"));
-        assertEquals("gregguns.locate.badradius", thrown("complex", String.valueOf(ComplexLocator.MAX_RADIUS + 1)));
-        assertEquals(ComplexLocator.MAX_RADIUS, LocateArgs.parse(new String[] { "complex", "16" }).radius);
+        assertEquals("gregguns.locate.badradius", thrown("complex", String.valueOf(StructureLocator.MAX_RADIUS + 1)));
+        assertEquals(StructureLocator.MAX_RADIUS, LocateArgs.parse(new String[] { "complex", "16" }).radius);
     }
 
     @Test
-    void teleportTakesACell() {
-        LocateArgs a = LocateArgs.parse(new String[] { "complex", "tp", "-4", "12" });
+    void kindsAreStructureIdsWithAliases() {
+        assertEquals("silo_complex", LocateArgs.parse(new String[] { "complex" }).kind);
+        assertEquals("military_base", LocateArgs.parse(new String[] { "military_base", "4" }).kind);
+        assertEquals("military_base", LocateArgs.parse(new String[] { "camp" }).kind);
+        assertEquals("any", LocateArgs.parse(new String[] { "ANY", "generate" }).kind);
+    }
+
+    @Test
+    void teleportTakesAnIdClassAndCell() {
+        LocateArgs a = LocateArgs.parse(new String[] { "tp", "military_base", "big", "-4", "12" });
         assertEquals(LocateArgs.Mode.TP, a.mode);
+        assertEquals("military_base", a.kind);
+        assertEquals(com.gregguns.worldgen.SizeClass.BIG, a.sizeClass);
         assertEquals(-4, a.cellX);
         assertEquals(12, a.cellZ);
+        assertEquals("silo_complex", LocateArgs.parse(new String[] { "tp", "silo_complex", "big", "1", "2" }).kind);
     }
 
     @Test
@@ -49,8 +60,10 @@ class LocateArgsTest {
         assertEquals("gregguns.locate.usage", thrown());
         assertEquals("gregguns.locate.usage", thrown("silo"));
         assertEquals("gregguns.locate.usage", thrown("complex", "far"));
-        assertEquals("gregguns.locate.usage", thrown("complex", "tp", "1"));
-        assertEquals("gregguns.locate.usage", thrown("complex", "tp", "a", "b"));
+        assertEquals("gregguns.locate.usage", thrown("tp", "complex", "big", "1"));
+        assertEquals("gregguns.locate.usage", thrown("tp", "complex", "huge", "1", "2"));
+        assertEquals("gregguns.locate.usage", thrown("tp", "any", "big", "1", "2"));
+        assertEquals("gregguns.locate.usage", thrown("tp", "complex", "big", "a", "b"));
     }
 
     private static String thrown(String... words) {

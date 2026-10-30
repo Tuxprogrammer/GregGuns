@@ -144,17 +144,19 @@ public class CommonProxy {
     }
 
     /**
-     * Registers {@code /gregguns}: the op-only {@code locate} subcommand whenever the ICBM module is active, and in the
+     * Registers {@code /gregguns}: the op-only {@code locate} subcommand whenever structures generate, and in the
      * dev environment (or with {@code -Dgregguns.testHooks=true}) also {@code test} and the built-in scenarios.
      */
     public void serverStarting(FMLServerStartingEvent event) {
         // Optional quest line install; runs after BetterQuesting has loaded its database (GregGuns declares
         // after:betterquesting).
         com.gregguns.compat.BetterQuestingInstall.onServerStarting();
-        // Silo complex locator: an op tool for real servers too, so it registers whenever the ICBM module is active.
+        // Structure locator: an op tool for real servers too, so it registers whenever worldgen or the ICBM module is
+        // on.
         GregGunsCommand command = new GregGunsCommand();
         boolean any = false;
-        if (com.gregguns.worldgen.StructureGenerator.complexWriter() != null) {
+        if (com.gregguns.worldgen.StructureGenerator.complexWriter() != null
+            || com.gregguns.worldgen.StructureGenerator.ordinaryGrid() != null) {
             command.register(new com.gregguns.icbm.complex.gen.LocateSubCommand());
             com.gregguns.icbm.complex.gen.LocateGeneration.ensureRegistered();
             any = true;

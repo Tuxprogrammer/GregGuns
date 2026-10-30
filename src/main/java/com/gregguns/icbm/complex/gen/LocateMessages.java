@@ -12,12 +12,25 @@ final class LocateMessages {
     private LocateMessages() {}
 
     /** The command a click on a built complex's line runs. */
-    static String tpCommand(ComplexLocator.Candidate c) {
-        return "/gregguns locate complex tp " + c.cellX() + " " + c.cellZ();
+    static String tpCommand(StructureLocator.Candidate c) {
+        return "/gregguns locate tp " + c.plan.id()
+            + " "
+            + c.plan.sizeClass()
+                .name()
+                .toLowerCase(java.util.Locale.ROOT)
+            + " "
+            + c.cellX()
+            + " "
+            + c.cellZ();
+    }
+
+    /** @return the structure's display name as a lang component */
+    static IChatComponent kind(StructureLocator.Candidate c) {
+        return new ChatComponentTranslation("gregguns.locate.kind." + c.plan.id());
     }
 
     /** @return {@code comp}, clickable to teleport to the complex when {@code c} is built */
-    static IChatComponent clickable(IChatComponent comp, ComplexLocator.Candidate c) {
+    static IChatComponent clickable(IChatComponent comp, StructureLocator.Candidate c) {
         comp.setChatStyle(
             new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, tpCommand(c)))
                 .setChatHoverEvent(
@@ -28,7 +41,7 @@ final class LocateMessages {
     }
 
     /** The status of one candidate, as the tail of a list row or a progress line. */
-    static IChatComponent status(ComplexLocator.Candidate c, int[] arrival) {
+    static IChatComponent status(StructureLocator.Candidate c, int[] arrival) {
         switch (c.status) {
             case GENERATED:
                 return new ChatComponentTranslation(
@@ -46,18 +59,19 @@ final class LocateMessages {
     }
 
     /** One numbered row: cell, block position, distance, status; clickable when built. */
-    static IChatComponent row(int n, ComplexLocator.Candidate c) {
-        int[] arrival = c.status == ComplexLocator.Status.GENERATED ? ComplexLocator.arrival(c.plan)
+    static IChatComponent row(int n, StructureLocator.Candidate c) {
+        int[] arrival = c.status == StructureLocator.Status.GENERATED ? StructureLocator.arrival(c.plan)
             : new int[] { c.centerX(), c.centerZ() };
         IChatComponent row = new ChatComponentTranslation(
             "gregguns.locate.row",
             n,
+            kind(c),
             c.cellX(),
             c.cellZ(),
             c.centerX(),
             c.centerZ(),
             (int) Math.round(c.distance),
             status(c, arrival));
-        return c.status == ComplexLocator.Status.GENERATED ? clickable(row, c) : row;
+        return c.status == StructureLocator.Status.GENERATED ? clickable(row, c) : row;
     }
 }

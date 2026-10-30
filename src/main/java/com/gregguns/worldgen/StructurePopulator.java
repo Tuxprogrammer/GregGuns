@@ -254,7 +254,7 @@ public final class StructurePopulator {
     }
 
     /** True when an ordinary structure's box meets a complex that exists (or may be rolled) in its dimension. */
-    static boolean meetsComplex(StructurePlan plan, long worldSeed, int chancePercent, StructureState state) {
+    public static boolean meetsComplex(StructurePlan plan, long worldSeed, int chancePercent, StructureState state) {
         int cell = COMPLEX_SPACING_CHUNKS * 16;
         int x0 = Math.floorDiv(plan.anchorX() - ComplexWriter.SIZE - COMPLEX_MARGIN, cell);
         int x1 = Math.floorDiv(plan.maxX() + COMPLEX_MARGIN, cell);
