@@ -562,4 +562,88 @@ public class QuestbookResourcesTest {
             assertTrue(questIds.contains(id), "position file for an unknown quest: " + e.getKey());
         }
     }
+
+    /**
+     * An NBT-matched task compares tag types as well as values (BetterQuesting's ItemComparison.CompareNBTTag), so
+     * every
+     * number GregGuns writes as an int (a warhead's fill, a tank's fluid amount) must be typed {@code :3}, never
+     * {@code :8}: a string "5" never matches the int 5 and the quest could not complete.
+     */
+    @Test
+    void nbtMatchedTasksTypeTheirNumbersAsInts() {
+        int checked = 0;
+        for (Quest q : QUESTS) {
+            JsonObject tasks = q.json.getAsJsonObject("tasks:9");
+            for (Map.Entry<String, JsonElement> t : tasks.entrySet()) {
+                JsonObject task = t.getValue()
+                    .getAsJsonObject();
+                if (!task.has("ignoreNBT:1") || task.get("ignoreNBT:1")
+                    .getAsInt() != 0) {
+                    continue;
+                }
+                for (Map.Entry<String, JsonElement> item : task.getAsJsonObject("requiredItems:9")
+                    .entrySet()) {
+                    JsonObject stack = item.getValue()
+                        .getAsJsonObject();
+                    if (stack.has("tag:10")) {
+                        checked += checkNumberTypes(q.title, stack.getAsJsonObject("tag:10"));
+                    }
+                }
+            }
+        }
+        assertTrue(checked > 0, "no NBT-matched number to check: the demolition and fuel quests carry some");
+    }
+
+    private static int checkNumberTypes(String title, JsonObject tag) {
+        int n = 0;
+        for (Map.Entry<String, JsonElement> e : tag.entrySet()) {
+            String key = e.getKey();
+            if (key.endsWith(":10")) {
+                n += checkNumberTypes(
+                    title,
+                    e.getValue()
+                        .getAsJsonObject());
+            } else if (e.getValue()
+                .isJsonPrimitive()
+                && e.getValue()
+                    .getAsJsonPrimitive()
+                    .isNumber()) {
+                        assertTrue(key.endsWith(":3"), title + ": the number " + key + " must be an int tag (:3)");
+                        n++;
+                    }
+        }
+        return n;
+    }
+
+    /** The Fuel Tanks quest counts only full tanks: an NBT match on the fluid amount at the tank's capacity. */
+    @Test
+    void theFuelTankQuestNeedsFullTanks() {
+        Quest fuel = null;
+        for (Quest q : QUESTS) {
+            if (q.title.endsWith("Fuel Tanks")) {
+                fuel = q;
+            }
+        }
+        assertNotNull(fuel, "the Fuel Tanks quest");
+        JsonObject task = fuel.json.getAsJsonObject("tasks:9")
+            .getAsJsonObject("0:10");
+        assertEquals(
+            0,
+            task.get("ignoreNBT:1")
+                .getAsInt(),
+            "NBT is matched");
+        JsonObject stack = task.getAsJsonObject("requiredItems:9")
+            .getAsJsonObject("0:10");
+        assertEquals(
+            "gregguns:tank_fuel",
+            stack.get("id:8")
+                .getAsString());
+        assertEquals(
+            com.gregguns.item.part.TankMath.CAPACITY,
+            stack.getAsJsonObject("tag:10")
+                .getAsJsonObject("Fluid:10")
+                .get("Amount:3")
+                .getAsInt(),
+            "a full tank, as ItemTank writes it (FluidStack.writeToNBT under Fluid)");
+    }
 }

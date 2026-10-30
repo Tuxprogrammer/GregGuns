@@ -17,6 +17,22 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Zombies, bandits and soldiers drop Tanned Leather where they dropped Heavy Cloth, the Recruit loot bag holds two Tanned Leather, and the Vending Machine no longer sells Heavy Cloth.
 - The Steam chapter's Heavy Cloth quest is replaced by a Tanned Leather quest, and quest rewards that paid Heavy Cloth pay Tanned Leather.
 
+## Changed: Treated Leather and the Nuclear Power Cell
+
+- GregGuns' **Treated Leather** is removed with its Chemical Bath recipe. The Ranger Veteran (Riot) set and its repairs take the pack's **Tanned Leather** at the same counts, like every other set. The Rifleman loot bag holds four Tanned Leather in its place.
+- The **Nuclear Death Ray** recipe now takes one **Nuclear Power Cell** as its power core. The gun still runs on stored EU.
+- The Nuclear Power Cell recipe makes one cell from half the materials.
+- The Nuclear Power Cell, the Small Nuclear Warhead and the Rad Emitter are radioactive, like the tactical nuke rocket: carrying one without full radiation hazmat irradiates you. They still recycle into their plates, never into uranium.
+- The **Depleted Nuclear Power Cell** and its refill recipe are removed: nothing reloads from a cell.
+
+## Changed: quests
+
+- Quests above ZPM carry their pack tier: Antimatter is a UV quest and Red Matter a UHV quest, with the pack's UV and UHV title colors, and each now also needs the pack's Tier 8 (UV) or Tier 9 (UHV) quest.
+- The **Fuel Tanks** quest counts only full Fuel Tanks; empty or part-filled ones no longer complete it.
+- The **Demolition Charge** quest completes: it now matches the warhead's fill as the number the warhead stores.
+- The **Dungeon Weapons** quest says where the gun and blade come from in any pack: GregGuns ruins and camps, the LV Assembler, or dungeon chests on servers that stock them.
+- The Nuclear Power Cell and Nuclear Death Ray quests describe the cell as the Death Ray's power core.
+
 ## Changed
 
 - Five switches are on by default: `npcs.helicopter`, `npcs.alienBug`, `npcs.cyberdemon`, `worldgen.enabledAlienBugNest` and `utility.bioBlobSparesPlayers`. Camps can send the Attack Helicopter and a Camp Flag break calls one in, Alien Bugs and the Cyberdemon (Nether) may spawn, Alien Bug Nests generate in sandy biomes, and Bio Blob poison spares players (other creatures are still poisoned). Set any of them to `false` to turn it off.

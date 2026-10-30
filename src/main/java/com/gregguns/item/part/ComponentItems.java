@@ -66,8 +66,6 @@ public final class ComponentItems {
     public static final String TANK_AIR = "tank_air";
     /** Registry name of the Nuclear Power Cell. */
     public static final String CELL_NUCLEAR = "cell_nuclear";
-    /** Registry name of the depleted Nuclear Power Cell. */
-    public static final String CELL_NUCLEAR_DEPLETED = "cell_nuclear_depleted";
     /** Registry name of Bandages. */
     public static final String BANDAGES = "bandages";
     /** Registry name of the Medkit. */
@@ -109,8 +107,6 @@ public final class ComponentItems {
                 return new ItemConsumable(
                     tier,
                     BANDAGES.equals(entry.name()) ? ConsumableSpec.BANDAGES : ConsumableSpec.MEDKIT);
-            case CELL_HIDDEN:
-                return new ItemPartHidden(tier);
             default:
                 return new ItemPart(tier);
         }

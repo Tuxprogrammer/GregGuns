@@ -46,9 +46,6 @@ public final class RecyclingExclusions {
         EXCLUDED.put("camp_flag", NO_RECIPE_WORLD);
         // Made of materials GT gives no item data, so GT itself would recover nothing.
         EXCLUDED.put("part_stock_wooden", "three logs; GT gives logs no material data, so nothing comes back");
-        EXCLUDED.put(
-            "part_treated_leather",
-            "leather from the Chemical Bath; GT gives leather no material data, so nothing comes back");
         // Consumables whose sheets rule out recycling data.
         EXCLUDED.put("antidote", "consumable; its sheet gives it no recycling data (antidote.md)");
 

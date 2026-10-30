@@ -51,10 +51,10 @@ The numbers are the row numbers of the Techguns sheets. "Drop" means GT already 
 |---|---|
 | 1 (gunpowder), 2 (concrete), 16 (clay), 17 (leather), 14 (slimeball) | Drop. Vanilla or GT chains already make these |
 | 3, 8 (rubber, plastic) | Drop. GT polymer chain |
-| 4, 5b, 15 (Creeper Acid, Treated Leather) | Drop the fluid ([0002](../../design/0002-machine-deconfliction.md)). Treated Leather becomes a Chemical Bath recipe only if a GregGuns item still needs it |
+| 4, 5b, 15 (Creeper Acid, Treated Leather) | Drop the fluid ([0002](../../design/0002-machine-deconfliction.md)). No Treated Leather: the pack's Tanned Leather takes its place (D292) |
 | 5a, 6b, 6c, 9, 10 (fill or empty Bio, Fuel and Compressed Air tanks) | Fluid Canner. `cannerRecipes` fills any `IFluidContainerItem` with capacity above 0 ([FluidCannerBackend#L72-L73](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/maps/FluidCannerBackend.java#L72-L73)). So the GregGuns tank items implement `IFluidContainerItem` and use GT fuels ([0001](../../design/0001-tier-map.md) lists "fuel tanks (GT fuels), compressed-air tanks") |
 | 6a, 6d (TGX explosive), 11 (Nether Charge), 7 (carbon fibers) | Chemical Reactor or Mixer through `UniversalChemical`, which adds to both the single-block and multiblock reactor maps ([GTRecipeConstants#L386-L400](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeConstants.java#L386-L400)) |
-| 12, 13 (Yellowcake, Nuclear Power Cell refuel) | Rework on GT's uranium materials in M5; no GregGuns recipe in M4 |
+| 12, 13 (Yellowcake, Nuclear Power Cell refuel) | Drop. GT supplies Uranium-235, and the Nuclear Power Cell is a recipe input, not a refillable consumable (D293) |
 
 ### Fabricator (6 recipes)
 
@@ -124,5 +124,5 @@ All six go to `assemblerRecipes`. Rows 3 to 5 use Techguns circuit names (`circu
 
 - **Stack upgrade.** Drop it, or turn it into a GT-style parallel or speed item for the one kept production multiblock? Settles under area 06; probably a new design record.
 - **Assembly Line for ZPM-tier components.** Needs the research item chain from [0001](../../design/0001-tier-map.md). Decide in M5.
-- **Nuclear items.** Yellowcake and the Nuclear Power Cell depend on GT's uranium and radioactive materials; defer to M5.
+- **Nuclear items (closed).** Yellowcake is dropped (GT supplies Uranium-235), and the Nuclear Power Cell is an Assembly Line component the Nuclear Death Ray's recipe takes, with no refill (D293).
 - **Charging tier rule conflicts with 0003.** [0003](../../design/0003-energy-model.md) says an item "charges only in a GT charger or battery buffer of that tier **or higher**". GT's Battery Buffer accepts an item only when the tiers are **equal** (see the Charging Station section above). A tier-IV rifle would not fit an EV or LuV buffer. Either 0003 is reworded to "of that tier", or GregGuns items report a lower tier than their recipe tier. Needs a short amendment to 0003.

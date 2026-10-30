@@ -12,7 +12,7 @@ import com.gregguns.item.part.ItemPart;
 import com.gregguns.item.part.ItemTank;
 
 /**
- * The armor module's own parts: Treated Leather, the Gas Mask Filter, the Compressed Air Tank and the glider parts.
+ * The armor module's own parts: the Gas Mask Filter, the Compressed Air Tank and the glider parts.
  * Registered by the armor module because the armor and equipment recipes are their only consumers. The cloth lining of
  * the armor sets is the pack's Tanned Leather ({@link ArmorCatalog#TANNED_LEATHER}), not a part of ours.
  *
@@ -32,14 +32,13 @@ public final class ArmorParts {
     public static final String GLIDER_WING = "part_glider_wing";
 
     /** The armor module's own parts, in declaration order ({@code ArmorItemOrder} sorts them into tiers). */
-    public static final List<String> NAMES = Collections.unmodifiableList(
-        Arrays.asList(ArmorCatalog.TREATED_LEATHER, GAS_MASK_FILTER, TANK_AIR, GLIDER_BACKPACK, GLIDER_WING));
+    public static final List<String> NAMES = Collections
+        .unmodifiableList(Arrays.asList(GAS_MASK_FILTER, TANK_AIR, GLIDER_BACKPACK, GLIDER_WING));
 
     private static ItemPart gliderBackpack;
     private static ItemPart gliderWing;
     private static ItemPart gasMaskFilter;
     private static ItemTank tankAir;
-    private static ItemPart treatedLeather;
 
     private ArmorParts() {}
 
@@ -59,16 +58,13 @@ public final class ArmorParts {
      * Registers one part by registry name. Area 06 owns these items; they stay registered here because the armor
      * module can run without the guns module's ComponentItems. The filter is a plain part (RC-25); the Compressed Air
      * Tank is the 1,000 mB IFluidContainerItem of GGS-06-40; the glider parts come from the armor recipes sheet
-     * (recipes.md, HV); Treated Leather is RC-22 (RC-23, Steam Armor Plating, is retired: design record 0022).
+     * (recipes.md, HV).
      *
      * @param registrar the armor module's registrar
      * @param name      one of {@link #NAMES}
      */
     public static void registerOne(ModuleRegistrar registrar, String name) {
         switch (name) {
-            case ArmorCatalog.TREATED_LEATHER:
-                treatedLeather = registrar.registerItem(name, new ItemPart(Tier.LV));
-                break;
             case GAS_MASK_FILTER:
                 gasMaskFilter = registrar.registerItem(name, new ItemPart(Tier.MV));
                 break;
@@ -84,11 +80,6 @@ public final class ArmorParts {
             default:
                 throw new IllegalArgumentException("not an armor part: " + name);
         }
-    }
-
-    /** @return Treated Leather; null before registration */
-    public static ItemPart treatedLeather() {
-        return treatedLeather;
     }
 
     /** @return the Gas Mask Filter; null before registration */

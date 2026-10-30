@@ -1,14 +1,11 @@
 package com.gregguns.compat.vending;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.gregguns.api.Tier;
 import com.gregguns.armor.ArmorItemOrder;
@@ -131,10 +128,6 @@ public final class VendingCatalog {
 
     /** Heavy rounds sell in smaller lots: name to count (the nuke rocket is priced on its own, see {@link #build}). */
     static final Map<String, Integer> ROUNDS;
-
-    /** Never sold: the depleted cell is made by use only and kept out of the creative tab. */
-    static final Set<String> NOT_SOLD = Collections
-        .unmodifiableSet(new HashSet<>(Arrays.asList("cell_nuclear_depleted")));
 
     /** The nuclear rocket: one per trade, at {@link #NUKE_UNITS} units. */
     static final String NUKE_ROCKET = "ammo_rocket_nuke";
@@ -268,9 +261,6 @@ public final class VendingCatalog {
 
     private static void addGunsSlot(List<Offer> out, GunsItemOrder.Slot slot) {
         String name = slot.name();
-        if (NOT_SOLD.contains(name)) {
-            return;
-        }
         Tier t = slot.tier();
         int u = unit(t);
         switch (slot.kind()) {

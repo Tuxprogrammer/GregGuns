@@ -399,33 +399,21 @@ public final class ComponentTable {
         // RC-59: Assembly Line. Deviation: the research item is our own Power Plating (IV), not the Lapotronic Orb
         // that stood in for the withdrawn cell_energy: GT already scans the orb for its own research, and one scanned
         // item unlocks only one recipe (found by tools/recipe-clash).
+        // One cell per run (D293 follow-up): the sheet's inputs halved where they divide, the ZPM circuit kept.
         list.add(
             line(
                 "RC-59",
                 ComponentItems.CELL_NUCLEAR,
-                2,
+                1,
                 Tier.ZPM,
                 30,
                 new Research(Input.mod(ComponentItems.POWER_PLATING, 1), 60, Tier.EV),
-                solder(288),
-                Input.gt("plate", "NaquadahAlloy", 4),
-                Input.gt("plate", "Lead", 4),
-                Input.gt("dust", "Uranium235", 8),
-                Input.gt("dust", "Redstone", 4),
-                Input.gt("circuit", "Ultimate", 1)));
-        // RC-60: Assembler exception to the Assembly Line rule (it converts a returned item). Deviation: one Naquadah
-        // alloy plate (the fresh seal) joins the sheet's two inputs, so the row has a ZPM gate input.
-        list.add(
-            asm(
-                "RC-60",
-                ComponentItems.CELL_NUCLEAR,
-                1,
-                Tier.ZPM,
-                20,
-                1,
-                Input.mod(ComponentItems.CELL_NUCLEAR_DEPLETED, 1),
+                solder(144),
+                Input.gt("plate", "NaquadahAlloy", 2),
+                Input.gt("plate", "Lead", 2),
                 Input.gt("dust", "Uranium235", 4),
-                Input.gt("plate", "NaquadahAlloy", 1)));
+                Input.gt("dust", "Redstone", 2),
+                Input.gt("circuit", "Ultimate", 1)));
         list.add(
             asm(
                 "RC-61",
@@ -550,7 +538,6 @@ public final class ComponentTable {
 
     /**
      * @return the rows keyed by output name, for {@link GateRule}; the first row wins when two make the same output
-     *         (the Nuclear Power Cell has RC-59 and RC-60), so the full Assembly Line row is the gate of record
      */
     public static Map<String, Row> byOutput() {
         Map<String, Row> map = new LinkedHashMap<>();

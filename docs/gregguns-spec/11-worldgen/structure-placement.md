@@ -22,6 +22,7 @@
 | Grid points at chunk multiples of 16/32/64, so a BIG structure sits at chunk (0,0), the world spawn | Each grid cell holds one attempt at a seeded offset inside the cell | Roguelike-Dungeons does the same; no structure on the spawn point |
 | Hard-coded dimension 0 check; the dimension list is never consulted (WGEN-28) | One allow-list of dimension IDs from config, default `[0]` | Excludes every pack dimension without naming it |
 | Terrain checked on an unrotated box (WGEN-05, 06, 07, 08) | Terrain checked on the rotated footprint, with a water-depth test for ships | Fixes the listed bugs |
+| The Submarine lies on the sea floor ([A8](../../techguns-spec/11-worldgen/structure-catalog.md#a8-submarine-submarine)) | **Deviation (D291):** the Submarine floats. Like the Aircraft Carrier it is anchored at the lowest water surface of its footprint, so its hull's bottom row replaces the top water block and the conning tower stands above the sea | Owner decision: a player finds it from a boat or the shore without hunting the sea floor ([DECISIONS D291](../../gregguns-icbm-spec/DECISIONS.md)) |
 | `SpawnStructures` plus three spacing keys | Keep the keys. Add one `enabled` flag per structure (0005: "each config-gated") | Admin control |
 | Village bunker (dormant) | Not built (0005) | No integration point; see the index |
 

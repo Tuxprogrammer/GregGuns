@@ -4,6 +4,7 @@ Builds the GregGuns quest line that ships inside the jar (`src/main/resources/as
 
 - `quests/`: the quest data, the single source of truth (keys, titles, tasks, rewards, prerequisites, layout). `_line.json` holds the header (`format`, `namespace`, `line`, `retired`); each `<chapter>.json` is `{"chapter": "<chapter>", "retired": [...], "quests": [...]}` (`retired` optional), so parallel edits to different chapters never conflict. Quest IDs are `uuid5(namespace, key)`, so a key never changes after release.
 - `build_quests.py`: writes `index.json`, the line file, and one quest file plus one position file per quest. Output is byte-identical across rebuilds.
+- `quest_doc.py`: regenerates the quest tables, reward budget, totals and trigger table of `docs/gregguns-spec/12-questbook/quest-line.md` from the data (`--check` reports a stale doc and writes nothing).
 - `validate_quests.py`: checks a quest folder (file names, prerequisites, cycles, overlaps, `index.json`); with `--data`, also the data's own checks and that the resources are not stale.
 - `pack_items.txt`: the pack item ids quests may name besides `gregguns:` ones (coins, Galacticraft parts, GT materials, HarvestCraft food, loot bags). `pack_items.py <pack .minecraft>` regenerates it from the pack's `DefaultQuests`, `LootBags.xml` and the HarvestCraft jar's lang.
 
@@ -14,7 +15,7 @@ python -I tools/questbook/build_quests.py --out src/main/resources/assets/greggu
 python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook --data tools/questbook/quests
 ```
 
-After editing a chapter file, rebuild, update the tables in `quest-line.md` and the quest count, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
+After editing a chapter file, rebuild, run `python -I tools/questbook/quest_doc.py` to regenerate the tables in `quest-line.md`, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
 
 ## Layout and prerequisites
 

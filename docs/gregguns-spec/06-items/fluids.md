@@ -59,7 +59,7 @@ Techguns fluids become GT materials' fluids, and Techguns' tanks become fluid co
 
 ### Energy cells
 
-Per [0003](../../design/0003-energy-model.md), the Energy Cell and Nuclear Power Cell are no longer consumable fluid-style ammo. The Energy Cell is dropped ([0010](../../design/0010-material-remap-and-tier-additions.md): energy weapons are their own batteries). The Nuclear Power Cell is a GregGuns item whose recharge route is a decision for M2. GT's lithium battery family (`ItemList.Battery_RE_LV_Lithium`, [L526](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L526)) is the capacity baseline.
+Per [0003](../../design/0003-energy-model.md), the Energy Cell and Nuclear Power Cell are no longer consumable fluid-style ammo. The Energy Cell is dropped ([0010](../../design/0010-material-remap-and-tier-additions.md): energy weapons are their own batteries). The Nuclear Power Cell is a GregGuns component with no recharge route: one cell goes into the Nuclear Death Ray's recipe (D293). GT's lithium battery family (`ItemList.Battery_RE_LV_Lithium`, [L526](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L526)) is the capacity baseline.
 
 ## Requirements
 

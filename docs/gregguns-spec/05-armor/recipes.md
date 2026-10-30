@@ -22,6 +22,7 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 | Obsidian Steel (T2) and carbon (T3) have no GT equivalent | The tier material of the consuming item replaces Obsidian Steel (the T2 sets are MV, so Aluminum). Carbon is `plate.EpoxidFiberReinforced` plus the tier material (Titanium for the EV sets); IC2 carbon plate is not used | [0010](../../design/0010-material-remap-and-tier-additions.md) decisions 1 and 2. See [Open questions](#open-questions) |
 | Energy Cell in the Nightvision Goggles recipe, charged and empty variants | One recipe. The goggles are an electric item and come out empty | [0003](../../design/0003-energy-model.md) |
 | Nuclear Power Cell in the Anti Gravity Device | `Field_Generator_IV` | The cell is a consumable fuel in Techguns; the device is now an IV electric item |
+| Treated Leather in the Riot (Ranger Veteran) set | The pack's Tanned Leather (`TAN`) at the same counts | GregGuns has no leather of its own (D292); Tanned Leather already lines every other set |
 | Tactical Mask folded NVG, Gas Mask and Oxygen Mask in one grid | Same idea, in the Assembler | Keeps the item |
 | Jetpack recipes (two) | None | [0009](../../design/0009-gtnh-integration-defaults.md) drops the Jetpack |
 
@@ -54,7 +55,7 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 - **EU/t.** `TierEU.RECIPE_<tier>` of the set. No recipe in this sheet uses a lower voltage.
 - **Time.** 2 seconds per input item, at least 10 seconds. The programmed circuit is not counted.
 - **Programmed circuit** (`.circuit(n)`): helmet 1, chestplate 2, leggings 3, boots 4 in every set, except the Hazardous Environment boots, which use 5 (the Combat boots on circuit 4 are a subset of their inputs). Single items say their own number. The number keeps the four pieces of one set apart when a player loads a bus.
-- **Notation.** `TAN` is the pack's Tanned Leather (`Backpack:tannedLeather`), `TL` is Treated Leather, `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank. All are [assumed components](#assumed-components); Tanned Leather is the one from the pack. `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
+- **Notation.** `TAN` is the pack's Tanned Leather (`Backpack:tannedLeather`), `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank. All are [assumed components](#assumed-components); Tanned Leather is the one from the pack. `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
 - **Fresh output.** Every output of this sheet has camo index 0 and no stored charge, as Techguns' `onCreated` does for crafted multi-camo and powered armor.
 - **Gate.** The input that cannot be had below the tier, plus the machine voltage.
 
@@ -136,14 +137,14 @@ Techguns: "T2 Commando" (`h` `itemRubber`, `i` `ingotObsidianSteel`, `g` `paneGl
 
 ### T2 Riot / Ranger Veteran (4 recipes)
 
-Techguns: "T2 Riot" (upgrade of the matching Combat piece, `p` `plateLead`, `l` Treated Leather). The Combat piece is an input at any damage and any camo, and the output is fresh. Gate: the Combat piece, which carries Aluminum and was itself made at MV.
+Techguns: "T2 Riot" (upgrade of the matching Combat piece, `p` `plateLead`, `l` Treated Leather; GregGuns uses Tanned Leather, D292). The Combat piece is an input at any damage and any camo, and the output is fresh. Gate: the Combat piece, which carries Aluminum and was itself made at MV.
 
 | Output | Inputs | Circuit | Time |
 |---|---|---|---|
-| Ranger Veteran Helmet | Combat Helmet ×1, `plate.Lead` ×2, TL ×2 | 1 | 10 s |
-| Ranger Veteran Jacket | Combat Vest ×1, `plate.Lead` ×3, TL ×4 | 2 | 16 s |
-| Ranger Veteran Pants | Combat Pants ×1, `plate.Lead` ×2, TL ×4 | 3 | 14 s |
-| Ranger Veteran Boots | Combat Boots ×1, `plate.Lead` ×2, TL ×2 | 4 | 10 s |
+| Ranger Veteran Helmet | Combat Helmet ×1, `plate.Lead` ×2, TAN ×2 | 1 | 10 s |
+| Ranger Veteran Jacket | Combat Vest ×1, `plate.Lead` ×3, TAN ×4 | 2 | 16 s |
+| Ranger Veteran Pants | Combat Pants ×1, `plate.Lead` ×2, TAN ×4 | 3 | 14 s |
+| Ranger Veteran Boots | Combat Boots ×1, `plate.Lead` ×2, TAN ×2 | 4 | 10 s |
 
 ### Beret (1 recipe)
 
@@ -281,8 +282,7 @@ GregGuns components that these recipes consume, and the one pack item that takes
 
 | Component | Used in | Source in area 06 |
 |---|---|---|
-| Tanned Leather (`TAN`, `Backpack:tannedLeather`) | Scout, Miner, Steam, T1 Combat, T2 Combat, Beret, NVG, Ammo Pouch, Glider parts; the repair of every set but Riot and Power Armor | The pack's item, not ours: Tanned Leather is the pack's `Backpack:tannedLeather` (damage 0, no ore-dictionary name): Bound Leather dried on a Tinkers' drying rack (Stone Age), or two leather in phosphoric acid in the LV Chemical Bath. Replaces Heavy Cloth (RC-21, retired 2026-10-30) |
-| Treated Leather (`TL`, `part_treated_leather`) | Riot | same row |
+| Tanned Leather (`TAN`, `Backpack:tannedLeather`) | Scout, Miner, Steam, T1 Combat, T2 Combat, Riot, Beret, NVG, Ammo Pouch, Glider parts; the repair of every set but Power Armor | The pack's item, not ours: Tanned Leather is the pack's `Backpack:tannedLeather` (damage 0, no ore-dictionary name): Bound Leather dried on a Tinkers' drying rack (Stone Age), or two leather in phosphoric acid in the LV Chemical Bath. Replaces Heavy Cloth (RC-21, retired 2026-10-30) |
 | Mechanical Parts T3 (`MP3`, `part_mechanical_3`) | Exo Suit, Anti Gravity Device | "Mechanical Parts T1, T2, T3 ... Keep" |
 | Power Plating (`PP`, `part_power_plating`) | Power Armor | "Cybernetic Parts, Power Plating, Anti Gravity Core ... Keep" |
 | Gas Mask Filter (`part_gas_mask_filter`) | Gas Mask, refilter | "Gas Mask Filter ... Keep" |

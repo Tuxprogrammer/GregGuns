@@ -102,7 +102,7 @@ class VendingCatalogTest {
                 assertTrue(sold.contains(slot.name()), "every gun and round is sold: " + slot.name());
             }
         }
-        assertFalse(sold.contains("cell_nuclear_depleted"));
+        assertTrue(sold.contains("cell_nuclear"), "the Nuclear Power Cell is a Death Ray input and is sold");
     }
 
     @Test

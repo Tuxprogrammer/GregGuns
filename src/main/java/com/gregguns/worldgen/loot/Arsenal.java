@@ -102,10 +102,10 @@ public final class Arsenal {
 
     /** Gun parts that drop as loot (the pickup parts, not the high-end assemblies). */
     private static final String[] PARTS = { "part_barrel_stone", "part_stock_wooden", "part_mechanical_1",
-        "part_heavy_cloth", "part_barrel_iron", "part_barrel_hardened", "part_mechanical_2", "part_receiver_iron",
-        "part_pump_mechanism", "part_treated_leather", "part_stock_plastic", "part_receiver_steel",
-        "part_gas_mask_filter", "part_receiver_hardened", "part_barrel_carbon", "part_stock_carbon",
-        "part_receiver_carbon", "part_mechanical_3", "part_laser_focus", "part_power_plating" };
+        "part_barrel_iron", "part_barrel_hardened", "part_mechanical_2", "part_receiver_iron", "part_pump_mechanism",
+        "part_stock_plastic", "part_receiver_steel", "part_gas_mask_filter", "part_receiver_hardened",
+        "part_barrel_carbon", "part_stock_carbon", "part_receiver_carbon", "part_mechanical_3", "part_laser_focus",
+        "part_power_plating" };
 
     private Arsenal() {}
 

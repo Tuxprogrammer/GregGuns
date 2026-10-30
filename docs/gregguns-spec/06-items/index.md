@@ -48,7 +48,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | Energy Cell | Dropped: energy weapons are their own IC2 batteries ([0010](../../design/0010-material-remap-and-tier-additions.md)) | IC2 `IElectricItem`, GT chargers | [recipes.md](recipes.md#energy-cell-note) |
 | Bullets from nuggets | Built from GT `round` parts; `bulletGt*` prefixes unused by GT | GT `OrePrefixes` | [ammo.md](ammo.md#gregtech-bullet-prefixes-and-round) |
 | None (no recycling in Techguns) | GT `ItemData` on every stack; GT writes the Macerator, Arc Furnace and other recycling recipes | GT5-Unofficial recycling | [recycling.md](recycling.md) |
-| Nuclear Power Cell and warhead | Radioactive through GT `ItemData` | GT radiation, hazard protection | [hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items) |
+| Nuclear Power Cell, warhead, Rad Emitter and nuke rocket | Radioactive through GT `ItemData` | GT radiation, hazard protection | [hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items) |
 | Item hazards, tooltips, fuels | No entries needed | dreamcraft modules | [hazards-and-tooltips.md](hazards-and-tooltips.md) |
 | Creative-tab listing of 110 metas | Hide technical items, collapse variants | NEI 2.8.155-GTNH | [nei-visibility.md](nei-visibility.md) |
 | No aspects | Aspects through GT's bridge | Thaumcraft 4.2.3.5, GT compat | [thaumcraft-aspects.md](thaumcraft-aspects.md) |

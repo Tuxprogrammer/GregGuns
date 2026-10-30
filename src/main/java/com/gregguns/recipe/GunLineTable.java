@@ -85,8 +85,8 @@ public final class GunLineTable {
                 Input.gt("circuit", GateRule.circuitMaterial(Tier.LUV), 2),
                 Input.gt("plate", "HSSG", 4),
                 Input.gt("screw", "HSSG", 8)));
-        // GR-103 (Nuclear Death Ray, ZPM). The sheet scans the Alien Blaster. Eight item inputs: an Assembler cannot
-        // take them.
+        // GR-103 (Nuclear Death Ray, ZPM). The sheet scans the Alien Blaster. Nine item inputs, one of them a Nuclear
+        // Power Cell as the power core (D293): an Assembler cannot take them.
         list.add(
             line(
                 "GR-103",
@@ -98,6 +98,7 @@ public final class GunLineTable {
                     new FluidInput("SolderingAlloy", FluidKind.MOLTEN, 1152),
                     new FluidInput("Lubricant", FluidKind.FLUID, 500)),
                 Input.mod(ComponentItems.RAD_EMITTER, 1),
+                Input.mod(ComponentItems.CELL_NUCLEAR, 1),
                 Input.mod(ComponentItems.RECEIVER_CARBON, 1),
                 Input.mod(ComponentItems.STOCK_CARBON, 1),
                 Input.itemList("Field_Generator_LuV", 1),

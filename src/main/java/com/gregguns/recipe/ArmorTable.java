@@ -284,19 +284,19 @@ public final class ArmorTable {
         in(
             Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.HELMET), 1),
             Input.gt("plate", "Lead", 2),
-            Input.mod(ArmorCatalog.TREATED_LEATHER, 2)),
+            cloth(2)),
         in(
             Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.CHESTPLATE), 1),
             Input.gt("plate", "Lead", 3),
-            Input.mod(ArmorCatalog.TREATED_LEATHER, 4)),
+            cloth(4)),
         in(
             Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.LEGGINGS), 1),
             Input.gt("plate", "Lead", 2),
-            Input.mod(ArmorCatalog.TREATED_LEATHER, 4)),
+            cloth(4)),
         in(
             Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.BOOTS), 1),
             Input.gt("plate", "Lead", 2),
-            Input.mod(ArmorCatalog.TREATED_LEATHER, 2)));
+            cloth(2)));
 
     /** The Beret: MV, Tanned Leather, leather and an Aluminum ring as the badge. */
     public static final ProductionTable.Row BERET = new ProductionTable.Row(
@@ -347,17 +347,6 @@ public final class ArmorTable {
         // The sealed boots take an EV circuit (the shock-absorber control) and programmed circuit 5, so they differ
         // from the Combat boots, which are the same epoxy and titanium on circuit 4.
         in(epoxy(2), ti(2), evCircuit(1)));
-
-    /** Treated Leather (RC-22): LV Chemical Bath; gate-exempt (GGS-06-36). The acid fluid input is added in code. */
-    public static final ProductionTable.Row TREATED_LEATHER = new ProductionTable.Row(
-        "RC-22",
-        ArmorCatalog.TREATED_LEATHER,
-        2,
-        Tier.LV,
-        ProductionTable.Target.CHEMICAL_BATH,
-        10,
-        0,
-        Input.vanilla("leather", 2));
 
     // ---- M3 wave C: power armor and the Exo Suit (IV) -------------------------------------------------------------
 

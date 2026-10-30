@@ -31,7 +31,9 @@ import gregtech.api.util.GTUtility;
  * {@link RecyclingExclusions} (or owned by another branch), excluded stacks carry none, and no exclusion is stale.
  * {@code recycling.spot}: for guns, a plate-built part, an armor piece, machines, an ICBM item, a casing and a turret
  * plate, the Macerator and the Arc Furnace hold a recycling recipe with the outputs GT derives from the item data, and
- * two derived compositions match hand-worked figures. Dev environment only. Server side.
+ * two derived compositions match hand-worked figures. {@code recycling.radioactivity}: the four nuclear items irradiate
+ * their holder through GT, every other GregGuns stack does not, and the three with derived data still recycle into
+ * their plates with no uranium back. Dev environment only. Server side.
  */
 // Spec: docs/gregguns-spec/06-items/recycling.md (GGS-06-49 to GGS-06-55)
 public final class RecyclingScenarios {
@@ -42,6 +44,7 @@ public final class RecyclingScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Coverage());
         registry.register(new Spot());
+        registry.register(new Radioactivity());
     }
 
     /** {@code recycling.coverage}. */
@@ -205,7 +208,7 @@ public final class RecyclingScenarios {
          */
         // Source:
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeRegistrator.java#L459-L497
-        private static void checkMacerator(ScenarioResult.Builder out, String key, ItemStack stack, ItemData data) {
+        static void checkMacerator(ScenarioResult.Builder out, String key, ItemStack stack, ItemData data) {
             GTRecipe recipe = find(RecipeMaps.maceratorRecipes, stack);
             out.check(recipe != null, key + ": the Macerator should have a recycling recipe");
             if (recipe == null) {
@@ -256,7 +259,7 @@ public final class RecyclingScenarios {
                     + (ingot == null ? "?" : ingot.stackSize + " x " + ingot.getDisplayName()));
         }
 
-        private static GTRecipe find(RecipeMap<?> map, ItemStack stack) {
+        static GTRecipe find(RecipeMap<?> map, ItemStack stack) {
             return map.findRecipeQuery()
                 .items(stack.copy())
                 .voltage(TierEU.RECIPE_UV)
@@ -305,6 +308,105 @@ public final class RecyclingScenarios {
                 all.add(by);
             }
             return all;
+        }
+    }
+
+    /** {@code recycling.radioactivity}: GGS-06-23 and GGS-06-24 read back through GT itself. */
+    static final class Radioactivity implements Scenario {
+
+        /** The radioactive GregGuns items (GGS-06-23): the marked components and the hand-written nuke rocket. */
+        static final String[] HOT = { "cell_nuclear", "part_nuclear_warhead", "part_rad_emitter", "ammo_rocket_nuke" };
+
+        /**
+         * Stacks that are radioactive because their own casing material is, by GT's rules: the Tier 4 warhead and its
+         * inert casing are Naquadria plates, which GT gives a radioactivity enchantment (GGS-06-24's exception).
+         */
+        static final String[] GT_MATERIAL_HOT = { "inert_warhead_t4", "warhead_t4" };
+
+        @Override
+        public String name() {
+            return "recycling.radioactivity";
+        }
+
+        @Override
+        public String description() {
+            return "The Nuclear Power Cell, Small Nuclear Warhead, Rad Emitter and nuke rocket irradiate their holder; no other GregGuns stack does, and the marked parts recycle without uranium.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Map<String, ItemStack> catalog = RecyclingCatalog.stacks();
+            java.util.Set<String> hot = new java.util.HashSet<>(java.util.Arrays.asList(HOT));
+            for (String key : HOT) {
+                ItemStack stack = catalog.get(key);
+                out.check(stack != null, key + ": not a GregGuns stack in this run");
+                if (stack != null) {
+                    int level = GTUtility.getRadioactivityLevel(stack);
+                    out.note(
+                        key + " radioactivity "
+                            + level
+                            + ": "
+                            + RecyclingDerivation.describe(GTOreDictUnificator.getItemData(stack)));
+                    out.check(level > 0, key + " should irradiate its holder (GGS-06-23), reads " + level);
+                }
+            }
+            for (String key : RadiationMarker.NAMES) {
+                ItemStack stack = catalog.get(key);
+                ItemData data = stack == null ? null : GTOreDictUnificator.getItemData(stack);
+                if (data == null || !data.hasValidMaterialData()) {
+                    out.check(false, key + ": should carry item data");
+                    continue;
+                }
+                out.checkEquals(key + " main material", Materials.Uranium235, data.mMaterial.mMaterial);
+                Spot.checkMacerator(out, key, stack, data);
+                GTRecipe extractor = Spot.find(RecipeMaps.fluidExtractionRecipes, stack);
+                if (extractor != null) {
+                    for (net.minecraftforge.fluids.FluidStack fluid : extractor.mFluidOutputs) {
+                        out.check(
+                            fluid == null || !fluid.isFluidEqual(Materials.Uranium235.getMolten(1)),
+                            key + ": the Fluid Extractor must not return molten uranium");
+                    }
+                }
+                GTRecipe macerator = Spot.find(RecipeMaps.maceratorRecipes, stack);
+                GTRecipe arc = Spot.arcRecycling(stack);
+                for (GTRecipe recipe : new GTRecipe[] { macerator, arc }) {
+                    if (recipe == null) {
+                        continue;
+                    }
+                    for (ItemStack output : recipe.mOutputs) {
+                        ItemData outData = output == null ? null : GTOreDictUnificator.getItemData(output);
+                        out.check(
+                            outData == null || outData.mMaterial == null
+                                || outData.mMaterial.mMaterial != Materials.Uranium235,
+                            key + ": recycling must not return uranium (GGS-06-46)");
+                    }
+                }
+            }
+            // GGS-06-24's exception: radioactive by their own GT material, Naquadria, never by GregGuns' uranium.
+            for (String key : GT_MATERIAL_HOT) {
+                ItemStack stack = catalog.get(key);
+                ItemData data = stack == null ? null : GTOreDictUnificator.getItemData(stack);
+                out.check(
+                    data != null && data.hasValidMaterialData() && data.mMaterial.mMaterial == Materials.Naquadria,
+                    key + ": should be radioactive only through its Naquadria casing, carries "
+                        + RecyclingDerivation.describe(data));
+                hot.add(key);
+            }
+            // GGS-06-24: nothing else is radioactive. Every catalog stack, the non-hazard ones read 0.
+            int cold = 0;
+            for (Map.Entry<String, ItemStack> entry : catalog.entrySet()) {
+                if (hot.contains(entry.getKey())) {
+                    continue;
+                }
+                int level = GTUtility.getRadioactivityLevel(entry.getValue());
+                out.check(level == 0, entry.getKey() + " is radioactive (" + level + ") but not on GGS-06-23");
+                cold++;
+            }
+            ItemStack pistol = catalog.get("pistol_9mm");
+            out.check(pistol != null && GTUtility.getRadioactivityLevel(pistol) == 0, "pistol_9mm should read 0");
+            out.note("non-hazard stacks at 0: " + cold);
+            return out.build();
         }
     }
 }

@@ -200,8 +200,8 @@
       "title": "Dungeon Weapons",
       "tier": "LV",
       "desc": [
-        "Roguelike dungeons sink deep into the ground. They hold GregGuns gear only if your server adds it to the dungeon loot files; when it does, the upper levels hold LV gear and the deeper ones MV.",
-        "Bring back one gun and one blade from your delve: a pistol, revolver or sawed-off, and a Combat Knife or Crowbar. If the dungeon is stingy, you can always build them.",
+        "Roguelike dungeons sink deep into the ground, floor after floor of spawners, traps and chests. Go down armed: a gun for the corridors and a blade for when the ammo runs dry.",
+        "Carry one gun and one blade: a pistol, revolver or sawed-off, and a Combat Knife or Crowbar. GregGuns ruins and camps keep them in their chests, every one of them is an LV Assembler recipe, and some servers stock dungeon chests with them too.",
         "[warn]Dungeons are full of vanilla mobs and traps. Bring armor, light and an exit plan.[/warn]"
       ],
       "pre": [

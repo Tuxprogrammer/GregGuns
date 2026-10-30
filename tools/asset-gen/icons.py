@@ -969,16 +969,6 @@ def _(c, x):
     c.pix(5, 5, CYAN[HL])
 
 
-@icon("part_treated_leather")
-def _(c, x):
-    lt = ramp((52, 66, 54))
-    c.poly([(2, 4), (5, 2), (11, 3), (14, 6), (13, 12), (8, 14), (3, 12)], lt)
-    speckle(c, x, [(a, b) for a in range(2, 14) for b in range(3, 14)], lt, 10, DK)
-    speckle(c, x, [(a, b) for a in range(2, 14) for b in range(3, 14)], lt, 6, LT)
-    for yy in (5, 8, 11):
-        c.pix(4, yy, lt[HL]); c.pix(11, yy, lt[HL]) if yy < 11 else None
-
-
 @icon("part_power_plating")
 def _(c, x):
     c.rect(1, 2, 14, 13, x.m)
@@ -1272,16 +1262,6 @@ def _(c, x):
     c.hline(4, 11, 3, LEAD[DK]); c.hline(4, 11, 12, LEAD[DK])
     c.pix(5, 2, LEAD[HL]); c.pix(10, 13, LEAD[DK])
     c.pix(8, 2, (250, 210, 30)); c.pix(7, 13, (250, 210, 30))
-
-
-@icon("cell_nuclear_depleted")
-def _(c, x):
-    dull = ramp((104, 94, 82))
-    c.rect(4, 1, 11, 14, LEAD)
-    c.rect(5, 4, 10, 11, dull, bevel=False)
-    c.line(6, 5, 8, 8, dull[DK]); c.line(8, 8, 7, 10, dull[DK])
-    c.hline(4, 11, 3, LEAD[DK]); c.hline(4, 11, 12, LEAD[DK])
-    c.pix(5, 2, LEAD[HL]); c.pix(10, 13, LEAD[DK])
 
 
 # ======================================================== misc items

@@ -29,15 +29,6 @@ class ArmorTierTableTest {
         return 0;
     }
 
-    private static int countMod(ProductionTable.Row row, String name) {
-        for (ProductionTable.Input in : row.inputs()) {
-            if (in.isGregGuns() && name.equals(in.itemName())) {
-                return in.count();
-            }
-        }
-        return 0;
-    }
-
     private static int countExternal(ProductionTable.Row row, String id) {
         for (ProductionTable.Input in : row.inputs()) {
             if ((ProductionTable.Input.EXTERNAL + id).equals(in.special())) {
@@ -104,7 +95,7 @@ class ArmorTierTableTest {
             assertTrue(base.anyDamage(), "GGS-05-35: the Combat piece matches at any damage");
             assertEquals(1, base.count());
             assertEquals(lead[i], count(row, "plate", "Lead"));
-            assertEquals(leather[i], countMod(row, "part_treated_leather"));
+            assertEquals(leather[i], countExternal(row, ArmorCatalog.TANNED_LEATHER));
         }
     }
 

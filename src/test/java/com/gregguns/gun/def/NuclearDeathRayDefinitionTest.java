@@ -76,9 +76,14 @@ class NuclearDeathRayDefinitionTest {
         assertEquals(ProductionTable.Target.ASSEMBLY_LINE, row.target());
         assertEquals(60, row.seconds());
         assertEquals(
-            8,
+            9,
             row.inputs()
                 .size());
+        assertTrue(
+            row.inputs()
+                .stream()
+                .anyMatch(in -> "cell_nuclear".equals(in.itemName()) && in.count() == 1),
+            "D293: one Nuclear Power Cell is the power core");
         assertTrue(
             GateRule.satisfied(row, java.util.Collections.emptyMap(), java.util.Collections.emptySet()),
             "carries the ZPM gate");

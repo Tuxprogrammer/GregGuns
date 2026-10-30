@@ -23,9 +23,9 @@ import com.gregguns.gun.server.NuclearDeathRayScenarios;
  * rounds, one per 5 ticks) and returns a Depleted cell. GregGuns runs it on EU like every energy gun (plan Q2,
  * accepted): a full ZPM charge (10,000,000,000 EU, the GT {@code Energy_Module} baseline) is those 100 rounds at the
  * old rate, 500 ticks of beam, so one tick of beam costs 20,000,000 EU, charged as one shot per tick. There is no
- * reload (plan Q5). The Nuclear Power Cell stays a ZPM component and a radiation hazard item; it is not ammo. The
- * recipe is an Assembly Line spec ({@code GunLineTable}, GR-103), not an Assembler row, because its inputs do not fit
- * the Assembler.
+ * reload (plan Q5). The Nuclear Power Cell is not ammo: one cell goes into the gun's recipe as its power core
+ * (D293). The recipe is an Assembly Line spec ({@code GunLineTable}, GR-103), not an Assembler row, because its
+ * inputs do not fit the Assembler.
  */
 // Spec: docs/techguns-spec/02-guns/sheets-energy-special.md (Nuclear Death Ray);
 // docs/gregguns-spec/02-guns/recipes.md (LuV and ZPM table); energy-electric-items.md

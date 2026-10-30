@@ -29,6 +29,7 @@ Every GregGuns item, block and machine that is built from GT materials gives tho
 2. **Per item, rounded down**, as `setItemData` divides.
 3. **Filter (GregGuns' own):** radioactive materials and explosives never come back (GGS-06-46: no uranium from recycling; the hand-written ammo data already lets powder burn away), and a material GT can return in no form is dropped so it does not take a Macerator slot.
 4. **The cheapest recipe wins** (least material in total), so recycling never pays more than a craft costs.
+5. **Radiation marker** (also on the component data `ComponentRecipes` attaches): the Nuclear Power Cell, Small Nuclear Warhead and Rad Emitter get a Uranium-235 entry of 1/200 unit as their main material, ahead of the derived composition, so GT irradiates the holder (GGS-06-23). It is too small for any recycler to return ([hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items)).
 
 A machine recipe that makes anything besides the stack, or makes it by chance, is not used: its inputs would be split between products. Items built from other items being derived wait for them; a conversion cycle settles its cheapest member first.
 
@@ -49,7 +50,7 @@ Worn armor and other damaged stacks do not match damage-0 data, as for GT's own 
 | `irradiated_earth`, `irradiated_rubble`, `trinitite`, `trinitite_shard`, `fallout_goo`, `fallout_goo_item` | Fallout; data would turn free rubble into uranium (D84, D155) |
 | `complex_wall` | Silo complex wall; a complex must not be a casing mine (D205) |
 | `bug_nest` (both variants), `bug_nest_slime`, `bio_blob`, `camp_flag` | World blocks placed by structures; no recipe |
-| `part_treated_leather`, `part_stock_wooden` | Leather, logs: GT gives none of them material data, so GT would recover nothing |
+| `part_stock_wooden` | Logs: GT gives them no material data, so GT would recover nothing |
 | `antidote` | Consumable; its sheet gives it no data ([antidote.md](../../gregguns-icbm-spec/06-blocks-items/antidote.md)) |
 | `launcher_warhead_*` | Consumable launcher charges; their sheet gives them no data ([launcher-warheads.md](../../gregguns-icbm-spec/02-explosives/launcher-warheads.md)) |
 | `missile_chip_t*`, `missile_schematic_t*` | Guidance chips from the Circuit Assembler, engraved or not: circuits, and GT recycles no circuits |
