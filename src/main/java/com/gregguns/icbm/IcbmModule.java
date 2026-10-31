@@ -106,5 +106,10 @@ public final class IcbmModule implements GregGunsModule {
     @Override
     public void postInit(cpw.mods.fml.common.event.FMLPostInitializationEvent event) {
         com.gregguns.icbm.worldgen.SiloChests.register();
+        // Roguelike Dungeons registered its generator in preInit; swap it for the keep-out one (D303).
+        if (cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.roguelike.RoguelikeGuard.MODID)) {
+            com.gregguns.compat.roguelike.RoguelikeGuard
+                .install(com.gregguns.core.config.CompatConfig.roguelikeKeepOutOfComplexes);
+        }
     }
 }

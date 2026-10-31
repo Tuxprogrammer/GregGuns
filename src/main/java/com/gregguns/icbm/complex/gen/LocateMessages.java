@@ -44,6 +44,10 @@ final class LocateMessages {
     static IChatComponent status(StructureLocator.Candidate c, int[] arrival) {
         switch (c.status) {
             case GENERATED:
+                if (c.plan.id()
+                    .equals(com.gregguns.worldgen.ComplexWriter.ID)) {
+                    return complexBuilt(c, arrival);
+                }
                 return new ChatComponentTranslation(
                     "gregguns.locate.status.generated",
                     arrival[0],
@@ -56,6 +60,25 @@ final class LocateMessages {
             default:
                 return new ChatComponentTranslation("gregguns.locate.status.unknown");
         }
+    }
+
+    /**
+     * A built complex: its activity level (recorded at decision, D304) and, when a village or temple stands over it,
+     * how much deeper it lies (D302).
+     */
+    static IChatComponent complexBuilt(StructureLocator.Candidate c, int[] arrival) {
+        String level = ComplexPlacer.levelFor(c.decision, c.plan.chestSeedBase())
+            .name()
+            .toLowerCase(java.util.Locale.ROOT);
+        IChatComponent out = new ChatComponentTranslation(
+            "gregguns.locate.status.complex",
+            new ChatComponentTranslation("gregguns.locate.level." + level),
+            arrival[0],
+            c.groundY + 1,
+            arrival[1]);
+        int sink = c.decision == null ? 0 : c.decision.sink();
+        if (sink > 0) out.appendSibling(new ChatComponentTranslation("gregguns.locate.sunk", sink));
+        return out;
     }
 
     /** One numbered row: cell, block position, distance, status; clickable when built. */

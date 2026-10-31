@@ -48,6 +48,7 @@ public final class ComplexScenarios {
         registry.register(new Places());
         registry.register(new Skips());
         ComplexDimScenarios.registerAll(registry);
+        ComplexStartScenarios.registerAll(registry);
         com.gregguns.icbm.complex.gen.LocateScenarios.registerAll(registry);
     }
 
@@ -388,7 +389,9 @@ public final class ComplexScenarios {
         public String description() {
             return "A complex over water, over ground too low, over a steep ridge, or in a biome off the Overworld"
                 + " whitelist is rejected once with a reason, writes nothing, and leaves the terrain as it was;"
-                + " flat dry ground in the same place is placed (skip-and-log, D128).";
+                + " flat dry ground in the same place is placed (skip-and-log, D128). Under a village start the"
+                + " complex sinks 10 to 20 blocks, the same from opposite corner windows, and is skipped for the"
+                + " village only where it cannot sink (D302).";
         }
 
         @Override
@@ -396,21 +399,35 @@ public final class ComplexScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World world = ctx.world();
             StructurePlan plan = plan(world);
-            String[] names = { "water", "low", "steep", "biome", "flat" };
+            String[] names = { "water", "low", "steep", "biome", "flat", "village", "village_reverse", "village_deep" };
+            // A village start over the whole box (D302); the real start rule has its own scenario.
+            com.gregguns.worldgen.StructureStarts village = (x0, z0, x1,
+                z1) -> new com.gregguns.worldgen.StructureStarts.Blocker("village", "scenario start");
+            int villageSink = -1;
             try {
                 load(world, plan);
                 for (String c : names) {
                     if (c.equals("biome") && world.provider.dimensionId != 0) continue; // the whitelist is Overworld
                                                                                         // only
+                    boolean underVillage = c.startsWith("village");
                     java.util.function.IntBinaryOperator ground = (x, z) -> c.equals("low") ? 20
-                        : c.equals("steep") && ((x >> 3) + (z >> 3) & 1) == 0 ? GROUND + 24 : GROUND; // the check sees
-                                                                                                      // only the first
-                                                                                                      // window's slice,
-                                                                                                      // so the relief
-                                                                                                      // repeats within
-                                                                                                      // every window
-                    slab(world, plan, true);
-                    slab(world, plan, false, ground, c.equals("water") ? 4 : 0);
+                        : c.equals("village_deep") ? 34
+                            : c.equals("steep") && ((x >> 3) + (z >> 3) & 1) == 0 ? GROUND + 24 : GROUND; // the check
+                                                                                                          // sees
+                                                                                                          // only the
+                                                                                                          // first
+                                                                                                          // window's
+                                                                                                          // slice,
+                                                                                                          // so the
+                                                                                                          // relief
+                                                                                                          // repeats
+                                                                                                          // within
+                                                                                                          // every
+                                                                                                          // window
+                    // A sunk complex lies up to 20 blocks under the usual floor: the slab reaches that far down.
+                    int base = underVillage ? GROUND - ComplexPlacer.SINK_MAX : GROUND;
+                    ComplexArena.slab(world, plan, true, (x, z) -> GROUND, 0, base);
+                    ComplexArena.slab(world, plan, false, ground, c.equals("water") ? 4 : 0, base);
                     long before = snapshot(world, plan);
                     java.util.List<String> reasons = new java.util.ArrayList<String>();
                     final boolean ocean = c.equals("biome");
@@ -437,7 +454,8 @@ public final class ComplexScenarios {
                     StructureState state = new StructureState("gregguns_complex_skip_" + c);
                     StructurePopulator populator = com.gregguns.worldgen.PlacementHarnessAccess.populator();
                     int rejected = 0;
-                    for (int[] w : com.gregguns.worldgen.PlacementHarnessAccess.windowsOf(plan, false)) {
+                    for (int[] w : com.gregguns.worldgen.PlacementHarnessAccess
+                        .windowsOf(plan, c.equals("village_reverse"))) {
                         PopulateWindow window = new PopulateWindow(w[0], w[1]);
                         ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
                         try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
@@ -449,7 +467,8 @@ public final class ComplexScenarios {
                                 new WorldColumnReader(world),
                                 (x, z) -> Collections
                                     .singleton(ocean && world.provider.dimensionId == 0 ? Type.OCEAN : Type.PLAINS),
-                                state);
+                                state,
+                                underVillage ? village : com.gregguns.worldgen.StructureStarts.NONE);
                         }
                         rejected += sink.rejectedWrites();
                     }
@@ -459,6 +478,24 @@ public final class ComplexScenarios {
                     if (c.equals("flat")) {
                         out.check(d.isPlaced(), "flat dry ground is placed: " + d);
                         out.checkEquals("flat: no skip logged", 0, reasons.size());
+                        out.checkEquals("flat: not sunk", 0, d.sink());
+                    } else if (c.equals("village") || c.equals("village_reverse")) {
+                        out.check(d.isPlaced(), c + ": a complex under a village is kept: " + d);
+                        out.check(
+                            d.sink() >= ComplexPlacer.SINK_MIN && d.sink() <= ComplexPlacer.SINK_MAX,
+                            c + ": sunk 10 to 20 blocks, got " + d.sink());
+                        if (villageSink < 0) villageSink = d.sink();
+                        else out.checkEquals("the same sink from the opposite corner", villageSink, d.sink());
+                        ComplexPlan cp = ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ());
+                        int floor = ComplexPlacer.floorY(world, d.groundY(), d.sink());
+                        int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
+                        out.check(
+                            world.getBlock(ex, floor + cp.escapeTop(), ez) == Blocks.ladder,
+                            c + ": the escape ladder starts at the sunk level (floor y " + floor + ")");
+                        out.check(
+                            world.getBlock(ex, GROUND, ez) == Blocks.trapdoor,
+                            c + ": the trapdoor stays at the surface");
+                        out.note(c + " -> sunk " + d.sink() + ", floor y " + floor);
                     } else {
                         out.check(!d.isPlaced(), c + ": rejected, got " + d);
                         out.checkEquals(c + ": logged once", 1, reasons.size());
@@ -468,7 +505,7 @@ public final class ComplexScenarios {
                     out.checkEquals(c + ": writes dropped outside a window", 0, rejected);
                 }
             } finally {
-                slab(world, plan, true);
+                ComplexArena.slab(world, plan, true, (x, z) -> GROUND, 0, GROUND - ComplexPlacer.SINK_MAX);
             }
             return out.build();
         }

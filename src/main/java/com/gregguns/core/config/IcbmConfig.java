@@ -206,7 +206,7 @@ public class IcbmConfig {
 
     @Config.Comment({ "Relative weights of the activity levels a complex rolls from its seed (D36), in the order",
         "abandoned, partly abandoned, operational. Three whole numbers, 0 or more; other lists keep the default.",
-        "Default: 50, 35, 15." })
+        "Each complex rolls once, when it is first placed, and keeps that level.", "Default: 30, 40, 30." })
     @Config.Sync(false)
-    public static int[] siloComplexActivityWeights = { 50, 35, 15 };
+    public static int[] siloComplexActivityWeights = { 30, 40, 30 };
 }

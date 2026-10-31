@@ -363,7 +363,7 @@ public final class LocateScenarios {
             if (built == null) return out.build();
             final StructurePlan plan = built;
             final Decision before = state.get(PlanKey.of(plan));
-            final int floor = ComplexPlacer.floorY(world, before.groundY());
+            final int floor = ComplexPlacer.floorY(world, before.groundY(), before.sink());
             final com.gregguns.icbm.complex.ComplexRaster raster = placer.rasterOf(plan);
             final int ax = plan.anchorX(), az = plan.anchorZ();
             // Stray things the rebuild must remove: a block in an open hall cell, one under the level, a dropped item.
@@ -441,7 +441,7 @@ public final class LocateScenarios {
                 if (hs != null) {
                     net.minecraft.tileentity.TileEntity t = world
                         .getTileEntity(ax + hs[0], floor + hs[1] - 1, az + hs[2]);
-                    String want = ComplexText.get(ComplexSigns.activityNameKey(placer.levelOf(raster.plan())));
+                    String want = ComplexText.get(ComplexSigns.activityNameKey(placer.levelOf(plan)));
                     out.check(
                         t instanceof net.minecraft.tileentity.TileEntitySign
                             && "Activity Level:".equals(((net.minecraft.tileentity.TileEntitySign) t).signText[0])

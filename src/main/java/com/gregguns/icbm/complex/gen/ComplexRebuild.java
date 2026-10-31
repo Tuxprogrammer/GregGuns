@@ -247,7 +247,7 @@ final class ComplexRebuild implements LocateGeneration.Run {
         try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
             writer.write(
                 plan,
-                decision.groundY(),
+                decision,
                 window,
                 sink,
                 new WindowedHeightProbe(window, new WorldColumnReader(world)));
@@ -263,10 +263,7 @@ final class ComplexRebuild implements LocateGeneration.Run {
         ChunkProviderServer cps = world.theChunkProviderServer;
         for (int[] ch : loadedByUs) cps.unloadChunksIfNotNearSpawn(ch[0], ch[1]);
         loadedByUs.clear();
-        com.gregguns.icbm.worldgen.ActivityLevel lv = writer instanceof ComplexPlacer
-            ? ((ComplexPlacer) writer).levelOf(
-                ((ComplexPlacer) writer).rasterOf(plan)
-                    .plan())
+        com.gregguns.icbm.worldgen.ActivityLevel lv = writer instanceof ComplexPlacer ? ((ComplexPlacer) writer).levelOf(plan)
             : null;
         String level = lv == null ? "?" : lv.name();
         say(

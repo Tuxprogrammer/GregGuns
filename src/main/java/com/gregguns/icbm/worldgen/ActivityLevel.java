@@ -18,8 +18,8 @@ public enum ActivityLevel {
     /** Intact and lit, guards everywhere, the best loot. */
     OPERATIONAL;
 
-    /** Default weights in percent: abandoned, partly abandoned, operational (D36). */
-    public static final int[] DEFAULT_WEIGHTS = { 50, 35, 15 };
+    /** Default weights in percent: abandoned, partly abandoned, operational (D36, values from D304). */
+    public static final int[] DEFAULT_WEIGHTS = { 30, 40, 30 };
 
     /**
      * @param configured the weights from the config file

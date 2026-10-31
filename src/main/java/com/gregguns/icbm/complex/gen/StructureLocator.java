@@ -63,9 +63,12 @@ public final class StructureLocator {
         public final int groundY;
         /** Blocks from the search point to the center of the complex's footprint. */
         public final double distance;
+        /** The ledger's decision, or null when undecided. */
+        public final Decision decision;
 
         Candidate(StructurePlan plan, Decision d, double distance) {
             this.plan = plan;
+            this.decision = d;
             this.status = statusOf(d);
             this.reason = d == null || d.isPlaced() ? "" : d.reason();
             this.groundY = d == null ? Decision.NO_Y : d.groundY();

@@ -24,9 +24,12 @@ import com.gregguns.icbm.worldgen.ComplexContents;
 import com.gregguns.icbm.worldgen.Placement;
 import com.gregguns.icbm.worldgen.SiloCeiling;
 import com.gregguns.worldgen.ComplexWriter;
+import com.gregguns.worldgen.Decision;
 import com.gregguns.worldgen.HeightProbe;
+import com.gregguns.worldgen.PlanKey;
 import com.gregguns.worldgen.PopulateWindow;
 import com.gregguns.worldgen.StructurePlan;
+import com.gregguns.worldgen.StructureState;
 import com.gregguns.worldgen.WindowedSink;
 import com.gregguns.worldgen.layout.ResolvedBlock;
 
@@ -101,7 +104,7 @@ public final class ComplexPlacer implements ComplexWriter {
         Styles st = stylesCache.remove(key);
         if (st == null) {
             String dim = world == null ? "Overworld" : DimensionKey.of(world);
-            st = styles.of(raster, dim, levelOf(raster.plan()));
+            st = styles.of(raster, dim, levelOf(plan));
             if (stylesCache.size() >= CACHED) stylesCache.remove(
                 stylesCache.keySet()
                     .iterator()
@@ -136,6 +139,7 @@ public final class ComplexPlacer implements ComplexWriter {
         contentsCache.clear();
         stylesCache.clear();
         summaries.clear();
+        decisions.clear();
     }
 
     @Override
@@ -158,32 +162,88 @@ public final class ComplexPlacer implements ComplexWriter {
 
     @Override
     public void skipped(StructurePlan plan, String reason) {
+        skipped(plan, reason, "");
+    }
+
+    @Override
+    public void skipped(StructurePlan plan, String reason, String detail) {
         skipListener.accept(reason);
         GregGuns.LOG.info(
-            "Silo complex skipped at dimension {} cell {},{} ({}): {}",
+            "Silo complex skipped at dimension {} cell {},{} ({}): {}{}",
             plan.dimension(),
             plan.cellX(),
             plan.cellZ(),
             plan.anchorX() + "," + plan.anchorZ(),
-            reason);
+            reason,
+            detail == null || detail.isEmpty() ? "" : ", " + detail);
+    }
+
+    @Override
+    public void sunk(StructurePlan plan, int sink, String detail) {
+        GregGuns.LOG.info(
+            "Silo complex at dimension {} cell {},{} ({}) sinks {} blocks deeper: {}",
+            plan.dimension(),
+            plan.cellX(),
+            plan.cellZ(),
+            plan.anchorX() + "," + plan.anchorZ(),
+            sink,
+            detail);
     }
 
     /** Lowest level floor: clear of bedrock. */
     public static final int MIN_FLOOR = 6;
+    /** The least and most a complex sinks under a village or temple (D302, owner: "10 or 20 blocks"). */
+    public static final int SINK_MIN = 10, SINK_MAX = 20;
+    private static final long SINK_SALT = 0x5149_4E4BL;
+
+    /**
+     * How deep a complex under a village or temple goes (D302): its own roll from {@link #SINK_MIN} to
+     * {@link #SINK_MAX}, cut to what keeps the level floor at or above {@link #MIN_FLOOR}; -1 when not even
+     * {@link #SINK_MIN} fits, and the plan is skipped.
+     */
+    @Override
+    public int sinkFor(StructurePlan plan, int groundY) {
+        return sinkFor(plan.chestSeedBase(), floorY(world, groundY));
+    }
+
+    /**
+     * @param seedBase the plan's seed base
+     * @param floorY   the level floor before sinking
+     * @return the sink, or -1 when {@link #SINK_MIN} would put the floor under {@link #MIN_FLOOR}
+     */
+    public static int sinkFor(long seedBase, int floorY) {
+        int room = floorY - MIN_FLOOR;
+        if (room < SINK_MIN) return -1;
+        int roll = SINK_MIN + (int) Math.floorMod(StructureHash.mix(seedBase ^ SINK_SALT), SINK_MAX - SINK_MIN + 1L);
+        return Math.min(roll, room);
+    }
+
+    /** The activity level, rolled once with the weights in force when the plan is decided (D304). */
+    @Override
+    public int decisionVariant(StructurePlan plan) {
+        return rollLevel(plan.chestSeedBase()).ordinal();
+    }
 
     /**
      * The level floor: {@link #DEPTH} under the recorded ground, and no higher than {@link #DEPTH} under the
      * dimension's average ground level, so a plan recorded on a hilltop still lies under the lower land around it.
      * A pure function of the recorded height and the provider, so every window agrees.
+     *
+     * @param world the world (null: the recorded ground alone)
      */
-    int floorYOf(int groundY) {
-        return floorY(world, groundY);
-    }
-
-    /** @see #floorYOf the same rule for a given world (null: the recorded ground alone) */
     public static int floorY(World world, int groundY) {
         int avg = world == null ? Integer.MAX_VALUE : world.provider.getAverageGroundLevel();
         return Math.max(MIN_FLOOR, Math.min(groundY, avg) - DEPTH);
+    }
+
+    /**
+     * The level floor of a decided complex: the rule above, then {@code sink} blocks deeper when a village or
+     * temple stands over the box (D302). The sink was cut at decision time to keep the floor clear of bedrock.
+     *
+     * @param sink {@link com.gregguns.worldgen.Decision#sink()}
+     */
+    public static int floorY(World world, int groundY, int sink) {
+        return Math.max(MIN_FLOOR, floorY(world, groundY) - Math.max(0, sink));
     }
 
     /** The seed base folds in the world seed, the dimension and the cell, so no two worlds share a key. */
@@ -272,13 +332,40 @@ public final class ComplexPlacer implements ComplexWriter {
         return this;
     }
 
-    /** The activity level of a complex, rolled from its seed. */
-    public ActivityLevel levelOf(ComplexPlan cp) {
+    /** Decisions the writes in progress carry, by plan: the recorded level wins over a fresh roll (D304). */
+    private final Map<String, Decision> decisions = new LinkedHashMap<String, Decision>();
+
+    /**
+     * The activity level of a complex: the forced one (scenarios), else the one recorded with its decision (by the
+     * write in progress, or in the world's ledger), else rolled from its seed with the weights in force. A level is
+     * recorded the first time the plan is decided, so changing the weights later never splits a complex (D304).
+     */
+    public ActivityLevel levelOf(StructurePlan plan) {
         if (forcedLevel != null) {
             return forcedLevel;
         }
+        Decision d = decisions.get(cacheKey(plan));
+        if (d == null && world != null) {
+            d = StructureState.forWorld(world)
+                .get(PlanKey.of(plan));
+        }
+        return levelFor(d, plan.chestSeedBase());
+    }
+
+    /**
+     * @param d        the plan's decision, or null when undecided
+     * @param seedBase the plan's seed base
+     * @return the recorded level when {@code d} holds one, else the roll with the configured weights
+     */
+    public static ActivityLevel levelFor(Decision d, long seedBase) {
+        int v = d == null ? Decision.NO_VARIANT : d.variant();
+        if (v >= 0 && v < ActivityLevel.values().length) return ActivityLevel.values()[v];
+        return rollLevel(seedBase);
+    }
+
+    private static ActivityLevel rollLevel(long seedBase) {
         return ActivityLevel
-            .roll(cp.seed(), ActivityLevel.weightsFrom(com.gregguns.core.config.IcbmConfig.siloComplexActivityWeights));
+            .roll(seedBase, ActivityLevel.weightsFrom(com.gregguns.core.config.IcbmConfig.siloComplexActivityWeights));
     }
 
     private java.util.List<Placement> contentsOf(StructurePlan plan, ComplexPlan cp) {
@@ -289,7 +376,7 @@ public final class ComplexPlacer implements ComplexWriter {
             int[] other = world == null ? null
                 : NeighborComplex
                     .nearest(world.getSeed(), plan.dimension(), plan, settings.chancePercent(), NeighborComplex.RADIUS);
-            l = ComplexContents.build(cp, levelOf(cp), ceilingOf(plan), other);
+            l = ComplexContents.build(cp, levelOf(plan), ceilingOf(plan), other);
             if (contentsCache.size() >= CACHED) contentsCache.remove(
                 contentsCache.keySet()
                     .iterator()
@@ -300,11 +387,24 @@ public final class ComplexPlacer implements ComplexWriter {
     }
 
     @Override
-    public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
+    public int write(StructurePlan plan, Decision decision, PopulateWindow window, WindowedSink sink,
+        HeightProbe probe) {
         // The GT blocks the window places (silo concrete, hatches) start no machine-update search (D205).
         boolean before = machines.suspendUpdates();
+        String key = cacheKey(plan);
+        Decision was = decisions.put(key, decision);
+        if (was != null && !was.equals(decision)) {
+            // Another decision for the same plan (a scenario's fresh ledger): the cached contents used the old one.
+            contentsCache.remove(key);
+            stylesCache.keySet()
+                .removeIf(k -> k.startsWith(key + ":"));
+        }
+        if (decisions.size() > CACHED * 4) decisions.remove(
+            decisions.keySet()
+                .iterator()
+                .next());
         try {
-            return writeWindow(plan, groundY, window, sink, probe);
+            return writeWindow(plan, decision.groundY(), decision.sink(), window, sink, probe);
         } finally {
             machines.resumeUpdates(before);
         }
@@ -313,7 +413,7 @@ public final class ComplexPlacer implements ComplexWriter {
     /** Plans no layout grew from (never seen in 40,000 seeds), so each is logged once, not once per window. */
     private final Set<String> unbuildable = new java.util.LinkedHashSet<String>();
 
-    private int writeWindow(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink,
+    private int writeWindow(StructurePlan plan, int groundY, int sunk, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
         ComplexRaster raster;
         try {
@@ -329,7 +429,7 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         if (raster == null) return 0;
         ComplexPlan cp = raster.plan();
-        int floorY = floorYOf(groundY);
+        int floorY = floorY(world, groundY, sunk);
         int ax = plan.anchorX(), az = plan.anchorZ();
         int x0 = Math.max(ax, window.minX()), x1 = Math.min(ax + ComplexLayout.SIZE - 1, window.maxX());
         int z0 = Math.max(az, window.minZ()), z1 = Math.min(az + ComplexLayout.SIZE - 1, window.maxZ());
@@ -357,7 +457,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (RoleAudit.enabled()) {
             auditKey = System.identityHashCode(this) + ":" + cacheKey(plan);
             RoleAudit.Tracker t = RoleAudit
-                .tracker(auditKey, world, raster, st, auditWhere(plan, floorY), levelOf(cp).name(), ax, floorY, az);
+                .tracker(auditKey, world, raster, st, auditWhere(plan, floorY), levelOf(plan).name(), ax, floorY, az);
             under = tagUnder = new RoleAudit.TaggingSink(under, t);
             sink = tagSink = new RoleAudit.TaggingSink(sink, t);
         }
@@ -425,7 +525,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 applier.apply(p);
             }
             if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
-            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(cp), new QuietSink(sink));
+            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(plan), new QuietSink(sink));
         }
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;

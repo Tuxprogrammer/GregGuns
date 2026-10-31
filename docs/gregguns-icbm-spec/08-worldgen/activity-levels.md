@@ -7,7 +7,7 @@
 
 ## What changes from the ICBM baseline
 
-Nothing exists in the baseline. D36 gives each complex an activity level, rolled once from the complex's seed: **abandoned** 50%, **partly abandoned** 35%, **operational** 15% (config). The layout ([silo-layout](silo-layout.md)) is the same at every level. The level only decides which marks become what: `ComplexContents.build(plan, level, ceiling, other)` turns the layout's marks into `Placement`s.
+Nothing exists in the baseline. D36 gives each complex an activity level, rolled once from the complex's seed when the complex is first placed and recorded with its placement, so a later weight change never splits a complex (D304): **abandoned** 30%, **partly abandoned** 40%, **operational** 30% (config). The layout ([silo-layout](silo-layout.md)) is the same at every level. The level only decides which marks become what: `ComplexContents.build(plan, level, ceiling, other)` turns the layout's marks into `Placement`s.
 
 ## How the pass stays inside the populate window
 

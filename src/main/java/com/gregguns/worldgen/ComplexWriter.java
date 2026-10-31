@@ -35,11 +35,44 @@ public interface ComplexWriter {
     void skipped(StructurePlan plan, String reason);
 
     /**
+     * Called once per rejected plan with what was in the way; the implementation logs both.
+     *
+     * @param detail where the blocking structure lies (its start chunk and box), or empty
+     */
+    default void skipped(StructurePlan plan, String reason, String detail) {
+        skipped(plan, reason);
+    }
+
+    /**
+     * The variant recorded with the decision, so later config changes cannot split the complex (D304): the
+     * complex's activity level ordinal, rolled with the weights in force when the plan is first decided.
+     *
+     * @return 0 or more, or {@link Decision#NO_VARIANT} to record none
+     */
+    int decisionVariant(StructurePlan plan);
+
+    /**
+     * How much deeper the complex goes because a surface structure (a village) will stand over its box (D302): its
+     * own roll from 10 to 20, cut to what still fits above the bottom of the world.
+     *
+     * @param groundY the ground height the decision measured
+     * @return blocks to sink, 10 or more; or -1 when the complex cannot sink 10 blocks and stay clear of bedrock
+     */
+    int sinkFor(StructurePlan plan, int groundY);
+
+    /**
+     * Called once when a plan is placed sunk under a surface structure; the implementation logs it.
+     *
+     * @param detail what lies over the box (the reason tag and where), for the log
+     */
+    default void sunk(StructurePlan plan, int sink, String detail) {}
+
+    /**
      * Writes the part of the complex inside the window.
      *
-     * @param groundY the ground height recorded when the plan was decided
-     * @param probe   ground heights, readable inside the window only
+     * @param decision the placed decision: the ground height, the recorded variant and the sink
+     * @param probe    ground heights, readable inside the window only
      * @return the number of blocks the sink accepted
      */
-    int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe);
+    int write(StructurePlan plan, Decision decision, PopulateWindow window, WindowedSink sink, HeightProbe probe);
 }
