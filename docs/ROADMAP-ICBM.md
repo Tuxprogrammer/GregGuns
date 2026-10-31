@@ -379,7 +379,7 @@ The one owner review before the beta.
 **Exit gate:**
 - [ ] The fix list is closed.
 - [x] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
-- [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
+- [ ] The soak runs meet the playable bar (D332): nothing crashes or runs away, the server comes back near its baseline after every burst, and no chunk ticket or forced chunk is left. Lag while 10 or more blasts run is accepted. See [soak.md](gregguns-icbm-spec/01-core/soak.md).
 - [ ] The recipe-clash review finds no unresolved clash with ICBM content.
 - [ ] Every ICBM guide sheet matches the code after the balance pass.
 - [ ] `modules.icbm` defaults to on.

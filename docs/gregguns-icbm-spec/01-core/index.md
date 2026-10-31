@@ -7,6 +7,7 @@ Cross-cutting ICBM integration: the module flag, the Galacticraft dependency, an
 ## Contents
 
 - [golden-dome.md](golden-dome.md): OpenComputers components on every ICBM machine and the Golden Dome program floppy.
+- [soak.md](soak.md): the I7 soak runs on a real GTNH server, the playable bar they are judged by (D332), and the chunk-ticket and fake-player fixes they led to (D333).
 
 ## Integration map
 

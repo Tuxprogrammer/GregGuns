@@ -77,6 +77,8 @@ gregguns test npc.soak    # needs modules.npcs on, e.g. GG_MODULES=guns,armor,ma
 
 The result lists the baseline and load tick statistics as notes, and the same lines go to the server log with the prefix `npc.soak:`.
 
+The ICBM soaks are opt-in too: `icbm.soak.missiles`, `icbm.soak.missiles_max`, `icbm.soak.blasts`, `icbm.soak.redmatter`, `icbm.soak.emp` and `icbm.soak.salvo`. Each takes a few minutes. They run by exact name only (a prefix run such as `icbm.` skips them) and are meant for a real-pack server and are judged by the playable bar (D332). See [soak.md](../gregguns-icbm-spec/01-core/soak.md). `tools/soak/icbm_soak.py` runs them and samples the server; it also runs the long play soak and the restart check. The results are in [i7-soak.md](i7-soak.md).
+
 ## Writing a scenario
 
 Implement `com.gregguns.core.testing.Scenario` and register it on `ScenarioRegistry.SCENARIOS`. Register from a place that runs on the server before `FMLServerStartingEvent` finishes; the feature's own server-starting hook is fine.
@@ -570,6 +572,7 @@ The ICBM module has about 110 scenarios, all named `icbm.<area>.<name>`. They re
 | `icbm.complex.` | Silo complexes: places, levels, guards, loot, one scenario per dimension (`icbm.complex.dim.<key>`; each fails on a role-audit violation, and `icbm.complex.role_audit_probe` proves the audit can fail; the planet scenarios skip with a logged reason when the planet's mod is not loaded, D220) | [08-worldgen](../gregguns-icbm-spec/08-worldgen/index.md) |
 | `icbm.palette.` | Complex palette resolution: every style resolves in the live registry, lamps emit, blocks are cubes, and no set shares a block between floor, wall and ceiling (D265) | [palette.md](../gregguns-icbm-spec/08-worldgen/palette.md) |
 | `icbm.module_gate`, `icbm.content_gate` | The module switch; ICBM-only content hidden with the module off | D223 |
+| `icbm.soak.<name>` (opt-in: by exact name only; a prefix run skips them) | Soak runs: missiles in flight, large blasts, red matter, EMP over a dense base, a salvo (D332) | [soak.md](../gregguns-icbm-spec/01-core/soak.md) |
 
 Gate runs (D68): `gregguns test icbm.` with Galacticraft, and a `--no-galacticraft --boot-only` boot. The full suite (`gregguns test all`) runs at the alpha and beta checkpoints.
 
