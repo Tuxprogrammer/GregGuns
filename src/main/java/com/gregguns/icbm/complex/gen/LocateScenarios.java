@@ -214,7 +214,18 @@ public final class LocateScenarios {
                 if (d == null) continue;
                 IChatComponent outcome = (IChatComponent) a[5];
                 if (d.isPlaced()) {
-                    out.check(key(outcome).equals("gregguns.locate.status.generated"), label + ": reported built");
+                    out.check(key(outcome).equals("gregguns.locate.status.complex"), label + ": reported built");
+                    // A built complex names its recorded level (D304) and, when sunk, how deep (D302).
+                    Object[] built = args(outcome);
+                    out.checkEquals(
+                        label + ": the row names the recorded level",
+                        "gregguns.locate.level." + ComplexPlacer.levelFor(
+                            d,
+                            p.get()
+                                .chestSeedBase())
+                            .name()
+                            .toLowerCase(java.util.Locale.ROOT),
+                        key((IChatComponent) built[0]));
                     int[] at = StructureLocator.arrival(p.get());
                     out.check(
                         at[0] >= p.get()
@@ -288,6 +299,7 @@ public final class LocateScenarios {
                 if (key(l).equals("gregguns.locate.progress")) {
                     String outcome = key((IChatComponent) a[5]);
                     boolean ok = outcome.equals("gregguns.locate.status.generated")
+                        || outcome.equals("gregguns.locate.status.complex")
                         || outcome.equals("gregguns.locate.status.skipped")
                         || outcome.equals("gregguns.locate.status.undecided");
                     out.check(ok, "a generated cell reports an outcome (" + outcome + ")");
@@ -383,10 +395,18 @@ public final class LocateScenarios {
             out.check(open != null, "the hall has an open cell");
             if (open == null) return out.build();
             final int hx = ax + open[0], hz = az + open[1];
+            // The hall's chunk and its neighbors, loaded and populated: on a fresh server the generate run has queued
+            // them for unloading, and a write to a chunk that is not loaded goes nowhere.
+            for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) {
+                ((net.minecraft.world.WorldServer) world).theChunkProviderServer
+                    .loadChunk((hx >> 4) + dx, (hz >> 4) + dz);
+            }
             world.setBlock(hx, floor + 1, hz, Blocks.glowstone, 0, 2);
+            out.check(world.getBlock(hx, floor + 1, hz) == Blocks.glowstone, "a stray block stands in the hall");
             final int below = ComplexPlacer.MIN_FLOOR + 1;
             out.check(below < floor, "the level lies above the clear's floor");
             world.setBlock(hx, below, hz, Blocks.glowstone, 0, 2);
+            out.check(world.getBlock(hx, below, hz) == Blocks.glowstone, "a stray block lies under the level");
             net.minecraft.entity.item.EntityItem item = new net.minecraft.entity.item.EntityItem(
                 world,
                 hx + 0.5,
@@ -404,6 +424,7 @@ public final class LocateScenarios {
                     .loadChunk((outX >> 4) + dx, (outZ >> 4) + dz);
             }
             world.setBlock(outX, outY, outZ, Blocks.glowstone, 0, 2);
+            out.check(world.getBlock(outX, outY, outZ) == Blocks.glowstone, "a block stands just outside the box");
 
             Capture none = new Capture(world, REBUILD_AT);
             MinecraftServer.getServer()
