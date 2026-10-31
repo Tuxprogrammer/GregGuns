@@ -122,7 +122,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     @Override
     protected void entityInit() {
-        // No DataWatcher slot (GGS-01-11): phase, casing and fuel reach clients through PacketMissileState.
+        // No DataWatcher slot (GGS-01-11): phase, casing, fuel and the fried guidance reach clients through
+        // PacketMissileState.
     }
 
     /**
@@ -132,12 +133,14 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param newCasing the warhead casing
      * @param newFuel   mB in the tank
      * @param blastId   the warhead's blast id (picks the nose model and skin), or null when the server sent none
+     * @param newFried  whether an EMP fried the guidance (the engine is out)
      */
-    void applyState(FlightPhase newPhase, int newCasing, int newFuel, String blastId) {
+    void applyState(FlightPhase newPhase, int newCasing, int newFuel, String blastId, boolean newFried) {
         this.explosive = blastId == null ? WarheadData.DEFAULT_EXPLOSIVE : blastId;
         this.phase = newPhase;
         this.casing = newCasing;
         this.fuelMb = newFuel;
+        this.fried = newFried;
     }
 
     /**
@@ -704,6 +707,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             return false;
         }
         fried = true;
+        stateDirty = true; // clients stop the engine sound and flames
         fallSpeed = 0.0;
         // The last tick's step is the missile's velocity (moveTo stored it in the motion fields).
         driftX = motionX;
@@ -778,14 +782,16 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         double bx = posX - ux * 0.5;
         double by = posY - uy * 0.5;
         double bz = posZ - uz * 0.5;
-        worldObj.spawnParticle("flame", bx, by, bz, -ux * 0.1, -uy * 0.1, -uz * 0.1);
+        if (!fried) {
+            worldObj.spawnParticle("flame", bx, by, bz, -ux * 0.1, -uy * 0.1, -uz * 0.1);
+        }
         worldObj.spawnParticle("largesmoke", bx, by, bz, -ux * 0.05, -uy * 0.05, -uz * 0.05);
     }
 
     /** Client: starts the engine loop once the missile leaves the pad; it ends itself when the missile is removed. */
     @SideOnly(Side.CLIENT)
     private void clientTickSound() {
-        if (!MissileEngineMath.sounding(phase())) {
+        if (!MissileEngineMath.sounding(phase(), fried)) {
             engineSoundStarted = false; // an aborted launch ends the loop; the next launch starts a new one
             return;
         }

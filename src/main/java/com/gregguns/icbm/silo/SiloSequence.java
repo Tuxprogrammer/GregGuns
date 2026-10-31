@@ -39,6 +39,11 @@ public final class SiloSequence {
         BAD_STACK,
         /** An armed missile entity, unlaunched. */
         MISSILE,
+        /**
+         * A missile counting down or climbing out of the shaft (D342): the shaft is busy until the missile has left or
+         * stood down, so no part is placed under it.
+         */
+        LAUNCHING,
         /** Anything else: a body off the pad center, a loose warhead, a block in the way. */
         OTHER
     }
@@ -64,7 +69,9 @@ public final class SiloSequence {
         /** The warhead on the nose does not fit or is lit: a player must take it off. */
         BAD_WARHEAD,
         /** Something else is in the shaft. */
-        BLOCKED
+        BLOCKED,
+        /** A launch is under way: wait until the missile has left the shaft or stood down. */
+        WAIT_LAUNCH
     }
 
     private SiloSequence() {}
@@ -102,6 +109,9 @@ public final class SiloSequence {
      * @return the next step, before the voltage and power checks the controller adds
      */
     public static Step next(Stage stage, Shaft shaft, boolean body, boolean warhead) {
+        if (shaft == Shaft.LAUNCHING) {
+            return Step.WAIT_LAUNCH;
+        }
         if (shaft == Shaft.MISSILE) {
             return Step.PUMP;
         }

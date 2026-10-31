@@ -90,7 +90,8 @@ public final class InertWarheadTooltipFormat {
             return out;
         }
         out.add(f.payloadName != null ? l.nextFitted : f.t1 ? l.nextBareT1 : l.nextBare);
-        out.add(String.format(l.howToCharge, WarheadCharging.MAX_PER_CRAFT));
+        // A grid load is at most eight charges, and never more than the casing holds (the T1 casing holds five).
+        out.add(String.format(l.howToCharge, Math.min(WarheadCharging.MAX_PER_CRAFT, f.cap)));
         String dearm = f.payloadName != null ? l.dearmFitted : l.dearmBare;
         if (dearm != null && !dearm.isEmpty()) {
             out.add(dearm);

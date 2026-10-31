@@ -30,9 +30,11 @@ public final class MissileEngineMath {
 
     /**
      * @param phase the missile's flight phase
-     * @return true when the engine loop should be sounding: from the start of the warm-up until the missile is gone
+     * @param fried whether an EMP fried the guidance: the missile falls with no more thrust (D16), so the engine is out
+     * @return true when the engine loop should be sounding: from the start of the warm-up until the missile is gone or
+     *         its guidance is fried
      */
-    public static boolean sounding(FlightPhase phase) {
-        return phase != FlightPhase.PAD;
+    public static boolean sounding(FlightPhase phase, boolean fried) {
+        return phase != FlightPhase.PAD && !fried;
     }
 }

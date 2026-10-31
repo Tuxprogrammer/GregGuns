@@ -20,10 +20,18 @@ class MissileEngineMathTest {
 
     @Test
     void soundsFromWarmupOnNotOnThePad() {
-        assertFalse(MissileEngineMath.sounding(FlightPhase.PAD));
-        assertTrue(MissileEngineMath.sounding(FlightPhase.WARMUP));
-        assertTrue(MissileEngineMath.sounding(FlightPhase.CLIMB));
-        assertTrue(MissileEngineMath.sounding(FlightPhase.ARC));
+        assertFalse(MissileEngineMath.sounding(FlightPhase.PAD, false));
+        assertTrue(MissileEngineMath.sounding(FlightPhase.WARMUP, false));
+        assertTrue(MissileEngineMath.sounding(FlightPhase.CLIMB, false));
+        assertTrue(MissileEngineMath.sounding(FlightPhase.ARC, false));
+    }
+
+    @Test
+    void aMissileWithFriedGuidanceHasNoEngine() {
+        // An EMP leaves it falling with no more thrust (D16): the loop stops in any phase.
+        for (FlightPhase ph : FlightPhase.values()) {
+            assertFalse(MissileEngineMath.sounding(ph, true), ph.name());
+        }
     }
 
     @Test

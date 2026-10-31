@@ -96,6 +96,19 @@ class SiloSequenceTest {
     }
 
     @Test
+    void aLaunchUnderWayKeepsTheShaftUntilTheMissileHasLeft() {
+        // D342: a body waiting in the bus never goes up under a missile that is counting down or climbing out, since an
+        // abort or stand-down would leave the missile standing over it.
+        assertEquals(Step.WAIT_LAUNCH, SiloSequence.next(Stage.NONE, Shaft.LAUNCHING, true, true));
+        assertEquals(Step.WAIT_LAUNCH, SiloSequence.next(Stage.NONE, Shaft.LAUNCHING, true, false));
+        assertEquals(Stage.NONE, SiloSequence.reconcile(Stage.NONE, Shaft.LAUNCHING));
+        // Stood down: the missile is back in the shaft and is fueled as before.
+        assertEquals(Step.PUMP, SiloSequence.next(Stage.NONE, Shaft.MISSILE, true, false));
+        // Gone: the waiting body goes up.
+        assertEquals(Step.PLACE_BODY, SiloSequence.next(Stage.NONE, Shaft.EMPTY, true, false));
+    }
+
+    @Test
     void savedStagesReadBack() {
         for (Stage s : Stage.values()) {
             assertEquals(s, SiloSequence.parse(s.name()));
