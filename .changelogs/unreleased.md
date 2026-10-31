@@ -32,6 +32,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - The **Demolition Charge** quest completes: it now matches the warhead's fill as the number the warhead stores.
 - The **Dungeon Weapons** quest says where the gun and blade come from in any pack: GregGuns ruins and camps, the LV Assembler, or dungeon chests on servers that stock them.
 - The Nuclear Power Cell and Nuclear Death Ray quests describe the cell as the Death Ray's power core.
+- Antimatter (UV) and Red Matter (UHV) pay their own tier: new **Ordnance IV** and **Ordnance V** loot bags and choices of the Tier 4 and Tier 5 warhead parts (naquadria and neutronium plates, Field Generators, Quantum Eyes, UHV Emitters, Inert warheads). The ZPM chapter and the Nuclear Warhead and Fallout quests offer ZPM parts in their choices.
 
 ## Changed
 
@@ -111,6 +112,9 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - NPCs without a target carry their gun at the hip, angled forward and down with the gun arm held still while they walk; they raise it to aim as before.
 - NPCs hold their guns the right way round: the muzzle points forward along the raised arm, for every NPC and every gun, as it does on a player. Players' own guns are unchanged.
+- NPC armor follows the NPC's arms: an NPC carrying its gun at the hip or aiming it no longer shows its bare arm outside the sleeves, for every armor model. Players are unchanged.
+- GregGuns particles (muzzle flashes, smoke, sparks, blasts) no longer draw a patch of the whole block and item texture sheet with Angelica's shader support on. A particle's random turn is now a mirror, which Angelica draws correctly.
+- The Maintenance Hatch of a generated silo, and of the radar station, no longer shows a black cross over its wrench face: generated GT hatches and machines start in GT's default modes, as placed ones do.
 - Missile Bodies T1 and T2 are now built in the GT Assembler at HV and EV, with no research, instead of on the Assembly Line, which GTNH players only reach at LuV. Same inputs and times: plates, fins, engine, 2 circuits and 250 L of lubricant. The Tier 3 body stays on the LuV Assembly Line.
 - Missiles now sound like Galacticraft rockets: the engine loop starts with the countdown, rises in pitch toward ignition, follows the missile through the climb and arc, and stops on impact, interception or abort.
 
@@ -142,7 +146,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 ### Quest loot bags
 
-- GregGuns quests reward GregGuns loot bags: eight tier bags from Recruit (Steam) to General (ZPM), Spoils of War for boss kills and three ICBM Ordnance crates. They are EnhancedLootBags bags (ids 1701 to 1712), so they look, sort and take Fortune like the pack's own, and they hold GregGuns ammunition, magazines, parts, guns, armor and the materials GregGuns recipes use.
+- GregGuns quests reward GregGuns loot bags: eight tier bags from Recruit (Steam) to General (ZPM), Spoils of War for boss kills and five ICBM Ordnance crates. They are EnhancedLootBags bags (ids 1701 to 1714), so they look, sort and take Fortune like the pack's own, and they hold GregGuns ammunition, magazines, parts, guns, armor and the materials GregGuns recipes use.
 - GregGuns adds these groups to EnhancedLootBags at startup on both sides; the pack's `LootBags.xml` is not touched. `compat.lootBags` turns this off, and `config/gregguns-lootbags.xml` replaces the contents.
 - A bag whose group is missing is kept with a chat line instead of crashing, and `/lootbags reload` keeps the GregGuns groups.
 
@@ -150,7 +154,6 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - The Launch Control's target slot takes a Radar Gun: drop one that holds a target into the slot and press Load target (or right-click the block with it). The gun stays in the slot. An empty slot shows a faint Radar Gun, the screen reads "No target: use a Radar Gun" with no target set, and the tooltips, the Launch Control and Handheld Tools quests and the guide sheets lead with the gun.
 - Data sticks still work in the slot, quietly: nothing in the Launch Control advertises them any more.
-- Antimatter (UV) and Red Matter (UHV) pay their own tier: new **Ordnance IV** and **Ordnance V** loot bags and choices of the Tier 4 and Tier 5 warhead parts (naquadria and neutronium plates, Field Generators, Quantum Eyes, UHV Emitters, Inert warheads). The ZPM chapter and the Nuclear Warhead and Fallout quests offer ZPM parts in their choices.
 
 ## Changed: silo complex placement and activity levels
 
@@ -158,6 +161,22 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Roguelike Dungeons keep out of silo complexes: a dungeon that would start near a complex picks another spot, and none of its blocks are written inside one. The new switch `compat.roguelikeKeepOutOfComplexes` (default on) turns this off, and the startup log says whether it attached.
 - Activity levels now roll 30% abandoned, 40% partly abandoned and 30% operational (`icbm.siloComplexActivityWeights` default `30, 40, 30`; a server that keeps the old line in its config keeps the old odds). Each complex rolls once, when it is first placed, and keeps its level if the weights change later. Complexes placed before this update roll their level with the current weights.
 - `/gregguns locate complex` shows each built complex's activity level and how much deeper it lies under a village.
+
+## Changed: NPC drops
+
+- GregGuns NPCs no longer drop the gun they hold as a vanilla equipment drop. Instead, a player kill drops a copy of the gun at 2%, plus 1% per Looting level (never from bosses).
+- Every NPC that drops loot also drops rounds for the gun it carried: a quarter to three quarters of a magazine, at least one round, or one full tank for a tank-fed gun.
+- NPCs carrying an energy gun (Laser, Tesla, Blaster and the rest) drop parts and materials of that gun instead of ammunition: two picks from its recipe, such as plates, screws, foil, lenses, small gears, its barrel or its receiver.
+- With Mobs Info installed, each GregGuns NPC's page lists the rare gun, ammo and parts drops.
+
+## Changed: silo complex rooms
+
+- Every room of a silo complex is laid out from its own blueprint that uses the whole floor: rows, islands and aisles between the lamp rows, with wall pieces where they belong. The hub is a container yard with lanes kept clear to every portal.
+- Nine new rooms: an underground farm, a mushroom cellar, cold storage, a shooting range with wool targets downrange, a brig, a chemistry lab, showers and laundry, a recreation lounge and an incinerator.
+- A complex deals its rooms like a deck of cards: it uses every room kind that fits before it repeats one.
+- Bunks and the infirmary have real beds, in head-to-head pairs sharing a locker, with a chest at the foot of each bed facing the aisle. The infirmary has curtains and treatment bays.
+- Rooms are dressed with Chisel shipping containers, wooden crates and metal-block props, and the machine rooms hold working GT machines: Chemical Reactors in the chemistry lab, machine tools in the workshop, recyclers and arc furnaces in the incinerator.
+- Each room shows its complex's activity level. Operational (Charlie): everything lit and in place, furnaces burning, crops ripe, machines running. Partly abandoned (Bravo): lit rooms still in service, dark rooms mothballed with pieces missing and machines dead. Abandoned (Alpha): gutted rooms with rubble piles, missing furniture, dead fields and broken glass. Wear and rubble never block the way to a chest, a machine or a door.
 
 ## Changed: silo complex chests
 
