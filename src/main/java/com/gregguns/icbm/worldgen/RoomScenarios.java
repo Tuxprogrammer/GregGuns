@@ -119,6 +119,7 @@ public final class RoomScenarios {
                     out.note("operational: " + crops.size() + " crops, " + furnaces.size() + " lit furnaces");
                     return finish(out, world, plan, oldTicks);
                 } catch (RuntimeException e) {
+                    com.gregguns.GregGuns.LOG.warn("icbm.complex.rooms threw", e);
                     out.check(false, "threw " + e);
                     return finish(out, world, plan, oldTicks);
                 }
