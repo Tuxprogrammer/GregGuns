@@ -19,10 +19,22 @@ class DebugRoomDumpTest {
         ComplexRaster raster = new ComplexRaster(p);
         for (Room r : p.rooms()) {
             boolean parentOf = false;
-            for (Room c : p.rooms()) parentOf |= c.parent() == r.id() && (section >= 0 ? c.id() == section : c.kind() == kind);
+            for (Room c : p.rooms())
+                parentOf |= c.parent() == r.id() && (section >= 0 ? c.id() == section : c.kind() == kind);
             if (!parentOf && (section >= 0 ? r.id() != section : r.kind() != kind)) continue;
             Box b = r.bounds();
-            System.out.println("DEBUG " + r.kind() + " id " + r.id() + " parent " + r.parent() + " " + b + " door side " + r.doorSide() + " y " + y);
+            System.out.println(
+                "DEBUG " + r.kind()
+                    + " id "
+                    + r.id()
+                    + " parent "
+                    + r.parent()
+                    + " "
+                    + b
+                    + " door side "
+                    + r.doorSide()
+                    + " y "
+                    + y);
             for (Door d : p.doors()) if (d.joins(r.id())) System.out.println("  door " + d);
             for (int z = b.minZ; z < b.maxZ; z++) {
                 StringBuilder sb = new StringBuilder(String.format("%4d ", z));

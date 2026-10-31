@@ -13,6 +13,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
 
+import com.gregguns.core.testing.Scenario;
+import com.gregguns.core.testing.ScenarioContext;
+import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.Box;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.Door;
@@ -21,10 +25,6 @@ import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.complex.Room;
 import com.gregguns.icbm.complex.gen.ComplexPlacer;
 import com.gregguns.icbm.complex.gen.MetalProps;
-import com.gregguns.core.testing.Scenario;
-import com.gregguns.core.testing.ScenarioContext;
-import com.gregguns.core.testing.ScenarioRegistry;
-import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.worldgen.StructurePlan;
 
 /**
@@ -106,8 +106,13 @@ public final class RoomScenarios {
                     for (long[] f : furnaces) {
                         if (world.getBlock((int) f[0], (int) f[1], (int) f[2]) == Blocks.lit_furnace) burning++;
                     }
-                    out.check(crops.isEmpty() || standing == crops.size(), "crops still standing after " + RUN_TICKS
-                        + " fast-ticked ticks: " + standing + "/" + crops.size());
+                    out.check(
+                        crops.isEmpty() || standing == crops.size(),
+                        "crops still standing after " + RUN_TICKS
+                            + " fast-ticked ticks: "
+                            + standing
+                            + "/"
+                            + crops.size());
                     out.check(
                         furnaces.isEmpty() || burning == furnaces.size(),
                         "lit furnaces still burning: " + burning + "/" + furnaces.size());
@@ -179,7 +184,8 @@ public final class RoomScenarios {
                         if (p.block()
                             .startsWith("chisel:")
                             || p.block()
-                                .startsWith("gregtech:gt.blockmetal")) props++;
+                                .startsWith("gregtech:gt.blockmetal"))
+                            props++;
                     } else if (p.kind() == Placement.Kind.AIR && p.y() >= 1) {
                         blocks++;
                         if (w != Blocks.air) wrong++;
@@ -188,22 +194,27 @@ public final class RoomScenarios {
                 reach(out, world, cp, r, ax, floor, az, level);
             }
             out.note(
-                level + ": room looks " + (blocks - wrong)
+                level + ": room looks "
+                    + (blocks - wrong)
                     + "/"
                     + blocks
                     + " in place, crops "
                     + cropsHere
                     + ", metal props "
                     + props);
-            out.check(blocks == 0 || wrong * 100 <= blocks, level + ": room looks in place " + wrong + " wrong of " + blocks);
+            out.check(
+                blocks == 0 || wrong * 100 <= blocks,
+                level + ": room looks in place " + wrong + " wrong of " + blocks);
             out.checkEquals(level + ": crops in a dark room", 0, cropsDark);
             out.checkEquals(level + ": metal props above the EV ceiling", 0, propsHigh);
-            if (level == ActivityLevel.OPERATIONAL) out.check(cropsHere > 0 || !hasFarm(cp), "a staffed farm grows crops");
+            if (level == ActivityLevel.OPERATIONAL)
+                out.check(cropsHere > 0 || !hasFarm(cp), "a staffed farm grows crops");
         }
 
         private static boolean lowerHas(MetalProps.Prop p) {
             for (int t = 1; t <= SiloCeiling.EV; t++) {
-                for (MetalProps.Prop q : MetalProps.rung(t)) if (q.block.equals(p.block) && q.meta == p.meta) return true;
+                for (MetalProps.Prop q : MetalProps.rung(t))
+                    if (q.block.equals(p.block) && q.meta == p.meta) return true;
             }
             return false;
         }
@@ -243,8 +254,9 @@ public final class RoomScenarios {
             int cut = 0;
             String first = null;
             for (Mark m : r.marks()) {
-                if (m.y() != 1 || m.kind() != MarkKind.LOOT_CHEST && m.kind() != MarkKind.MACHINE
-                    && m.kind() != MarkKind.SPAWNER) continue;
+                if (m.y() != 1
+                    || m.kind() != MarkKind.LOOT_CHEST && m.kind() != MarkKind.MACHINE && m.kind() != MarkKind.SPAWNER)
+                    continue;
                 // A mark the level left empty (a stripped machine slot) is not a target.
                 if (world.isAirBlock(ax + m.x(), floor + 1, az + m.z())) continue;
                 boolean ok = false;

@@ -8,7 +8,7 @@ import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 /**
  * The warhead magazine (D305): 2 x 4 racks of inert casing frame boxes (two high) with a chest and a crate at their
  * ends, every three cells across each band, steel containers two deep on the back wall, fallout rubble marks that the
- * activity level fills (D36), guards at the front.
+ * activity level fills (D36), guards at the front (one per area step, D234).
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: Warhead magazine); D305; D17
 public final class WarheadMagazine implements RoomBlueprint {
@@ -24,8 +24,7 @@ public final class WarheadMagazine implements RoomBlueprint {
         for (int i = 0; i < Math.max(2, 2 * q); i++) {
             k.floorMark(k.pick(7, i, 0, L), 2 + k.pick(8, i, 0, Math.max(1, D - 4)), MarkKind.RUBBLE, "fallout");
         }
-        k.markNear(3, D - 3, com.gregguns.icbm.complex.blueprint.Legend.guard("room"), 'G');
-        k.markNear(L - 4, D - 3, com.gregguns.icbm.complex.blueprint.Legend.guard("room"), 'G');
+        k.guards(q, D - 3);
         Works.corners(k);
     }
 }
