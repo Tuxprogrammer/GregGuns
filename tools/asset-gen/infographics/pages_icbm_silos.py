@@ -445,23 +445,17 @@ def radar_station(formed: bool) -> Path:
 
 
 def silo_front(missing: str | None) -> Path:
-    """The front wall of a complex silo, with the controller and hatches where the complex places them. missing: None, "controller" or "hatch"."""
+    """The front wall of a complex silo, with the controller, hatches and Launch Control where the complex places them
+    (D299: hatch columns beside a 3 x 3 glass window). missing: None, "controller" or "hatch"."""
     b = SILO.silo_build()
-    cells = SILO.silo_cells()
-    for pos, _, _ in SILO.HATCHES:
-        b.blocks[pos] = {"C": "casing", "G": "glass", "B": "beam"}[cells[pos]]
-    b.hatches = []
-    gc = S._casing("gantry_casing")
     b.blocks[(2, 2, 0)] = "casing" if missing == "controller" else ("ctrl", FRONT)
-    # Seen from the front: Input Hatch and Maintenance Hatch on the left, Energy Hatch and Input Bus on the right.
-    b.hatch((1, 2, 0), "input_hatch", FRONT, gc)
-    b.hatch((1, 1, 0), "maintenance_hatch", FRONT, gc)
-    b.hatch((3, 1, 0), "input_bus", FRONT, gc)
-    if missing != "hatch":
-        b.hatch((3, 2, 0), "energy_hatch", FRONT, gc)
-    else:
-        b.blocks[(3, 2, 0)] = "glass"
-    return SILO.render(b, yaw=-22, pitch=22, ppu=84, ground=False, missile=False, marks=True, cut=lambda x, y, z: y > 3 or z > 1)
+    if missing == "hatch":
+        # The Energy Hatch's cell keeps the hatch column's concrete.
+        pos = next(p for p, k, _ in SILO.HATCHES if k == "energy_hatch")
+        b.blocks[pos] = "casing"
+        b.hatches = [h for h in b.hatches if h[1] != pos]
+    return SILO.render(b, yaw=-22, pitch=22, ppu=84, ground=False, missile=False, marks=True,
+                       cut=lambda x, y, z: y > 3 or z > 1)
 
 
 def hull_block(tier: str) -> Path:
@@ -617,6 +611,7 @@ def activity_table() -> str:
         row("Silo walkways, Launch Control", shaft, "at least this chance"),
         row("Schematic chip in a chest", [pct(p["chip"]) for p in P], "Safe, Comms or Control chest"),
         row("The silo's missing part in a chest", [pct(p["part"]) for p in P], "one part per silo"),
+        row("Hub sign, Activity Level", ["Alpha", "Bravo", "Charlie"], "under the Silo Complex sign"),
     ]
     tot = sum(ACT_WEIGHTS)
     ths = "".join(f'<th style="text-align:center;color:{LEVEL_COLOR[i]};vertical-align:top;width:25%"><span style="font-size:22px">{lv}</span>'
@@ -799,13 +794,13 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="card"><div class="pt" style="margin-bottom:10px">Every silo in a complex is a real <b>Missile Silo</b>, built from the same structure you would build yourself, with its bus and hatches in place. Each is missing <b>exactly one part</b>. Put it back and the silo forms.</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
 <div style="text-align:center"><div class="spot">{img(front[0], h=250)}</div><div class="cap"><b style="color:var(--txt)">No controller.</b> A concrete block stands in the middle of the front wall.</div></div>
-<div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A clear glass block stands where the Energy Hatch goes, beside the controller.</div></div>
-<div style="text-align:center"><div class="spot">{img(front[2], h=250)}</div><div class="cap"><b style="color:var(--txt)">Repaired.</b> The controller (blue ring) and the hatches (orange rings) in their places.</div></div></div>
+<div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A concrete block stands where the Energy Hatch goes, at the foot of the right-hand hatch column.</div></div>
+<div style="text-align:center"><div class="spot">{img(front[2], h=250)}</div><div class="cap"><b style="color:var(--txt)">Repaired.</b> The controller (blue ring), the hatches and the silo&#39;s own Launch Control (orange rings) in their places.</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:16px">
 <div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> An operational complex always has an elite post at each silo walkway, and a partly abandoned one often does. Mine their spawners (slow by hand), blow them up with a warhead, or fight what they spawn.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Find the part.</b> Check the Safe, Stockpile, Workshop and Control chests: about {pct(PROFILES[0]["part"])} of abandoned, {pct(PROFILES[1]["part"])} of partly abandoned and {pct(PROFILES[2]["part"])} of operational silos have theirs lying in one. A missing part is not lost: the controller and a GregTech Energy Hatch are both craftable.</div></div>
-<div class="step"><span class="num">3</span><div class="t"><b>Put it in.</b> Mine the concrete and set the controller facing out, or mine the glass and set the Energy Hatch in its place. The silo forms and switches itself on.</div></div>
-<div class="step"><span class="num">4</span><div class="t"><b>Power and launch.</b> Run EU to the Energy Hatch. A found hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Then add a Launch Control, fuel and a missile as for any silo.</div></div></div></div></div>
+<div class="step"><span class="num">3</span><div class="t"><b>Put it in.</b> Mine the concrete and set the controller facing out, or mine the concrete at the foot of the right-hand hatch column and set the Energy Hatch there. The silo forms and switches itself on.</div></div>
+<div class="step"><span class="num">4</span><div class="t"><b>Power and launch.</b> Run EU to the Energy Hatch. A found hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Then fuel it, load a missile and fire it from the silo&#39;s own Launch Control, on top of the right-hand hatch column: it runs on the silo&#39;s EU.</div></div></div></div></div>
 
 <div class="sec"><div style="display:grid;grid-template-columns:1.25fr 1fr;gap:20px">
 <div class="card"><h2>The radar station</h2>
@@ -822,7 +817,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="cap">Dig down under the coordinates to find it. A stick can point at a place where the terrain turned the complex away, so go prepared.</div></div></div></div>
 """
     credit = [
-        "Silo Complex Wall: Steel Bastion Plating art, with connected textures. Radar Casing, dish and radar controller overlay: derived from HBM's Nuclear Tech Mod, GNU LGPL v3; modified.",
+        "Silo Complex Wall: Steel Bastion Plating art, with connected textures. Radar Casing, dish, radar controller, Missile Silo and Launch Control overlays: derived from HBM's Nuclear Tech Mod, GNU LGPL v3; modified.",
         "Machine hulls, hatch overlays and Light and Dark Concrete Bricks: GregTech 5 Unofficial textures, LGPL-3.0. Hut casings and the Silo Complex Wall: GregGuns art, MIT. Guard posts: the Minecraft monster spawner (Mojang).",
         TP.GC_CREDIT, TP.TC_CREDIT, MOJANG_CREDIT, TP.TINT_CREDIT,
     ]

@@ -3,8 +3,8 @@
 The silo is built from GregTech's Light Concrete art (walls), GregGuns' Gantry Beam art (rim) and Tinkers' Clear Glass, the hatches from GregTech's
 overlays, and the missile from the shipped NTM OBJ models seated as the game seats them. The cells come from the
 `SiloShape` strings when the silo coder's class is present; until then (and for the DRAFT stamp) they are generated
-from the layout in the silo sheet: a 5 x 5 plan with the four corners cut off, a 3 x 3 open shaft, a 21-cell floor,
-ten wall layers, and a ring of Gantry Beams on top.
+from the layout in the silo sheet: a 5 x 5 plan with the four corners cut off (but the two front ones in the glass
+rings, the hatch columns), a 3 x 3 open shaft, a 21-cell floor, ten wall layers, and a ring of Gantry Beams on top.
 
 Run on its own:  python tools/asset-gen/infographics/pages_icbm_silo.py
 """
@@ -51,13 +51,30 @@ def silo_cells() -> dict:
             cells[(x, y, z)] = "G" if y <= 3 else "C"
         cells[(x, 11, z)] = "B"
     cells[(2, 2, 0)] = "~"
+    # The front is five wide in the glass rings (D299): a hatch column of concrete on each side of the 3 x 3 window.
+    for y in range(1, 4):
+        cells[(0, y, 0)] = "C"
+        cells[(4, y, 0)] = "C"
     return cells
 
 
-# Where the sheet shows each hatch: the two outer columns of the controller's face, two high, so the missile shows through
-# the middle. Seen from the front: Input Hatch and Maintenance Hatch on the left, Energy Hatch and Input Bus on the right.
-HATCHES = [((1, 2, 0), "input_hatch", FRONT), ((1, 1, 0), "maintenance_hatch", FRONT),
-           ((3, 2, 0), "energy_hatch", FRONT), ((3, 1, 0), "input_bus", FRONT)]
+# Where the sheet shows each hatch (D299, the owner's build): the hatch columns beside the 3 x 3 glass window, two high.
+# Seen from the front: Input Hatch over Maintenance Hatch on the left, Input Bus over Energy Hatch on the right, and the
+# Launch Control on top of the right column. The renderer draws x = 0 on the right of a viewer facing the front (z = 0)
+# face, as SiloShape's column 0 is, so the right-hand column is x = 0.
+HATCHES = [((4, 2, 0), "input_hatch", FRONT), ((4, 1, 0), "maintenance_hatch", FRONT),
+           ((0, 2, 0), "input_bus", FRONT), ((0, 1, 0), "energy_hatch", FRONT)]
+LAUNCH_CONTROL = (0, 3, 0)
+LC_DIR = "thirdparty/ntm/launch_control"
+
+
+def launch_control_tex():
+    """The Launch Control as the game draws it: an HV hull with its NTM-derived overlays (top, side, front)."""
+    faces = {}
+    for face in ("TOP", "SIDE", "FRONT"):
+        faces[face] = B.composite(gt.hull("HV", "TOP" if face == "TOP" else "SIDE"), S._ov(LC_DIR, face),
+                                  cache=K.TEXCACHE, name=f"launch_control_HV_{face}")
+    return (faces["TOP"], faces["SIDE"], faces["FRONT"])
 
 
 def silo_build() -> S.Build:
@@ -66,10 +83,14 @@ def silo_build() -> S.Build:
     b.define("casing", "Light Concrete", gt.iconset("CONCRETE_LIGHT_STONE"), "walls and the floor ring; Light or Dark Concrete, any finish")
     b.define("beam", "Gantry Beam", S._casing("gantry_beam"), "the rim")
     b.define("glass", "Clear Glass", TP.TCONSTRUCT_GLASS, "Tinkers' Clear Glass or EnderIO Quite Clear Glass")
-    b.define("ctrl", "Missile Silo", (gc, gc, gc), "controller, middle of the front wall")
+    face = B.composite(gc, S._ov("thirdparty/ntm/missile_silo", "FRONT"), cache=K.TEXCACHE, name="missile_silo_FRONT")
+    b.define("ctrl", "Missile Silo", (gc, gc, face), "controller, middle of the front wall")
     b.put(silo_cells(), {"C": "casing", "G": "glass", "B": "beam", "~": ("ctrl", FRONT)})
     for pos, kind, facing in HATCHES:
         b.hatch(pos, kind, facing, gc)
+    b.define("h_launch_control", "Launch Control", launch_control_tex(), "on top of the right hatch column; it runs on the silo's EU")
+    b.blocks[LAUNCH_CONTROL] = ("h_launch_control", FRONT)
+    b.hatches.append(("h_launch_control", LAUNCH_CONTROL))
     return b
 
 
@@ -113,11 +134,13 @@ def ground_cells(extent=range(-4, 9), bottom=-3) -> dict:
 def render(b: S.Build, yaw=-35, pitch=28, ppu=34, cut=None, missile=True, marks=True, ground=False, bottom=-3) -> Path:
     files = [NTM / "missile_body_t3.obj", NTM / "warhead_t3.obj", TP.GC_PAD]
     tex_sig = hashlib.sha1(b"".join(f.read_bytes() for f in files)).hexdigest()[:8]
-    bl = dict(b.blocks)
+    bl = {}
     tex = dict(b.tex)
     if ground:
         bl.update(ground_cells(bottom=bottom))
         tex.update(TP.terrain_textures())
+    # The silo wins over the earth it is dug into (its front hatch columns stand in the cut corners).
+    bl.update(b.blocks)
     if cut is not None:
         bl = {p: v for p, v in bl.items() if not cut(*p)}
 
@@ -130,7 +153,7 @@ def render(b: S.Build, yaw=-35, pitch=28, ppu=34, cut=None, missile=True, marks=
         return R.trim(R.render(scene, yaw=yaw, pitch=pitch, ppu=ppu, ss=2, outline=K.RIM,
                                marks={1: K.MARK_HATCH, 2: K.MARK_CONTROLLER} if marks else None), 3)
     params = dict(k=sorted(map(str, bl.items())), t=sorted(map(str, tex.items())), y=yaw, p=pitch, u=ppu, m=missile,
-                  g=marks, s=tex_sig, v=7)
+                  g=marks, s=tex_sig, v=8)
     return K._cached("silo", params, make)
 
 
@@ -189,17 +212,19 @@ def silo() -> str:
     b = silo_build()
     cells = silo_cells()
     hp = {pos: HATCH_NAME[k] for pos, k, _ in HATCHES}
-    # View 2: a viewing trench dug in front of the glass rings (x 0..4, from the grass down to the shaft floor).
-    hero = render(b, yaw=-22, pitch=36, ppu=46, ground=True, bottom=-1, cut=lambda x, y, z: z < 0 and 0 <= x <= 4 and y >= 1)
+    hp[LAUNCH_CONTROL] = "LC"
+    # View 2: a viewing trench dug in front of the glass rings (from the grass down to the shaft floor), two blocks wider
+    # on the right-hand side (x < 0) so the camera, looking in from the left, sees the right-hand hatch column too.
+    hero = render(b, yaw=-22, pitch=36, ppu=46, ground=True, bottom=-1, cut=lambda x, y, z: z < 0 and -2 <= x <= 4 and y >= 1)
     # View 1: just the top shows.
     surface = render(b, yaw=-38, pitch=30, ppu=44, ground=True, missile=False, marks=False)
     n_casing = sum(1 for v in cells.values() if v == "C")
     n_glass = sum(1 for v in cells.values() if v == "G")
     n_beam = sum(1 for v in cells.values() if v == "B")
     layers = (layer_grid(0, cells, hp, "<b>Floor</b>layer 1 &middot; 12 concrete, 9 pad")
-              + layer_grid(1, cells, hp, "<b>Glass ring</b>layer 2 &middot; 12 glass")
+              + layer_grid(1, cells, hp, "<b>Glass ring</b>layer 2 &middot; 12 glass, 2 hatches")
               + layer_grid(2, cells, hp, "<b>Glass ring</b>layer 3 &middot; controller in front")
-              + layer_grid(3, cells, hp, "<b>Glass ring</b>layer 4 &middot; 12 glass")
+              + layer_grid(3, cells, hp, "<b>Glass ring</b>layer 4 &middot; Launch Control, concrete")
               + layer_grid(4, cells, hp, "<b>Wall</b>layers 5 to 11 &middot; 12 concrete each")
               + layer_grid(11, cells, {}, "<b>Rim</b>layer 12 &middot; 12 beams"))
     hatch_rows = "".join(
@@ -222,22 +247,22 @@ def silo() -> str:
 <div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;margin-top:8px">{img(hero, h=620, style="max-width:100%")}</div>
 <div class="muted" style="font-size:16px;margin-top:8px">The silo as you find it in the world, with a trench dug in front of it so the three glass rings show. The rim is level with the grass, the shaft is open to the sky, and the missile stands on the Galacticraft launch pad, a stepped plate at the bottom of the shaft.</div></div>
 <div class="card"><div class="label" style="margin-bottom:6px">Blocks</div>
-<div class="req"><div class="t" style="grid-column:1/3"><b>{n_casing} Light or Dark Concrete</b> &middot; the seven wall rings and the floor's outer ring, any finish except cobblestone, mixed freely. You need at least 84; hatches may replace the rest</div></div>
+<div class="req"><div class="t" style="grid-column:1/3"><b>{n_casing} Light or Dark Concrete</b> &middot; the seven wall rings, the floor's outer ring and the two hatch columns beside the front window, any finish except cobblestone, mixed freely. You need at least 84; hatches may replace the rest</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>9 Galacticraft Launch Pad</b> &middot; the 3 &times; 3 floor of the shaft, a stepped plate. Place the nine pad blocks and Galacticraft joins them into the full pad</div></div>
-<div class="req"><div class="t" style="grid-column:1/3"><b>{n_glass + 1} Clear Glass</b> &middot; the three rings above the floor, so the missile shows. Use Tinkers&#39; Construct Clear Glass or EnderIO Quite Clear Glass, mixed freely; no other glass fits. Hatches and the controller replace glass panes</div></div>
+<div class="req"><div class="t" style="grid-column:1/3"><b>{n_glass} Clear Glass</b> &middot; the three rings above the floor, so the missile shows; the front is a 3 &times; 3 window around the controller. Use Tinkers&#39; Construct Clear Glass or EnderIO Quite Clear Glass, mixed freely; no other glass fits</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>{n_beam} Gantry Beam</b> &middot; the rim on top</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>1 Missile Silo controller</b> (HV) &middot; middle of the front wall, in the middle glass ring; it faces away from the shaft</div></div>
-<div class="label" style="margin:14px 0 4px">Hatches &middot; best in the face&#39;s outer columns; any wall, glass or floor-ring cell works</div>{hatch_rows}</div></div>
+<div class="label" style="margin:14px 0 4px">Hatches &middot; in the hatch columns beside the front window; any wall, glass or floor-ring cell works too</div>{hatch_rows}</div></div>
 <h2 style="margin:24px 0 12px">Layer by layer</h2>
 <div class="card" style="display:flex;justify-content:space-around;gap:10px;padding:22px 14px">{layers}</div>
-<div class="muted" style="font-size:16px;margin-top:8px">Dark squares are the open shaft; light blue is glass; silver is the launch pad. The front wall is the top row. Looking down from above.</div>
+<div class="muted" style="font-size:16px;margin-top:8px">Dark squares are the open shaft; light blue is glass; silver is the launch pad. The front wall is the top row, five wide in the glass rings. Looking down from above, so the hatch column on your right as you face the controller is on the left here.</div>
 <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:18px">
 <div class="card"><h2 style="margin-bottom:8px">Found in the world</h2><div class="spot" style="display:flex;justify-content:center;padding:10px">{img(surface, h=560, style="max-width:100%")}</div>
 <div class="muted" style="font-size:16px;margin-top:6px">Walk past a silo and you see only a ring of beams and the open shaft. The other 11 layers are underground. The missile, 8 blocks tall with its warhead, climbs out of it.</div></div>
 <div class="card"><h2 style="margin-bottom:10px">Loading and launching</h2><div style="display:flex;flex-direction:column;gap:14px">
 <div class="step"><span class="num">1</span><div class="t"><b>Feed it.</b> Put a missile body and a warhead into the Input Bus, by hand or by conveyor. The silo stands the body on the pad, then seats the warhead on its nose, each part in view before its working cycle, and arms it.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Fuel it.</b> Pipe the right fuel into the Input Hatch. A Tier 3 missile takes 8,000 mB of Purple or Green fuel. Power the Energy Hatch.</div></div>
-<div class="step"><span class="num">3</span><div class="t"><b>Link it.</b> Build a Launch Control into the silo in place of any wall, glass or floor-ring block, one per silo. It fires that silo and no other, and its screen names it.</div></div>
+<div class="step"><span class="num">3</span><div class="t"><b>Link it.</b> Build a Launch Control into the silo, on top of the right-hand hatch column or in place of any wall, glass or floor-ring block, one per silo. It fires that silo and no other, draws its EU from the silo, and its screen names it.</div></div>
 <div class="step"><span class="num">4</span><div class="t"><b>Launch.</b> Pick the target on the Launch Control and fire. You never touch the missile.</div></div></div></div></div>
 <div class="card" style="margin-top:18px"><h2 style="margin-bottom:6px">Building a Tier 3 body</h2>
 <div class="muted" style="font-size:18px;margin-bottom:12px">A Tier 3 body is built like the smaller ones, by hand on the NASA Workbench or on a LuV Assembly Line. It needs the silo: a pad refuses it. It carries every warhead casing, from Tier 1 up to antimatter and red matter.</div>
@@ -252,6 +277,7 @@ def silo() -> str:
     return page_doc("Missile Silo", "The Tier 3 launch tower: a 5 by 5 multiblock of concrete and clear glass.", body,
                     extra=CSS + TP.PART_CSS,
                     credit=["Missile and warhead models and textures © HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.",
+                            "Missile Silo and Launch Control overlays: derived from HBM's Nuclear Tech Mod, GNU LGPL v3.",
                             "Hatch overlays: GregTech 5 Unofficial textures, LGPL-3.0.", TP.GC_CREDIT, TP.CORE_CREDIT, TP.TC_CREDIT,
                             MOJANG_CREDIT, TP.TINT_CREDIT])
 
