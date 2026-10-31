@@ -376,7 +376,8 @@ public final class FurnitureStocker {
         int fuel = lit ? 16 + rand.nextInt(33) : state == RoomState.MOTHBALLED ? 4 + rand.nextInt(13) : rand.nextInt(4);
         if (fuel > 0)
             inv.setInventorySlotContents(1, new ItemStack(Items.coal, fuel, state == RoomState.GUTTED ? 1 : 0));
-        if (out != null && (lit || state == RoomState.MOTHBALLED || rand.nextBoolean())) {
+        // A cold ruin's furnace with no fuel left still holds the last thing it made, so no furnace stands empty.
+        if (out != null && (lit || state == RoomState.MOTHBALLED || fuel == 0 || rand.nextBoolean())) {
             ItemStack o = out.copy();
             o.stackSize = Math.min(o.getMaxStackSize(), Math.max(1, (lit ? 4 : 1) + rand.nextInt(12)));
             inv.setInventorySlotContents(2, o);

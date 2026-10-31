@@ -183,3 +183,12 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - A whole silo complex holds exactly **100** loot chests when abandoned, **200** when partly abandoned and **300** when operational, on every planet (config `icbm.siloComplexChestTargets`). No chest is ever empty. Chest spots left over are empty wooden crates, and caved-in rooms hold no chests. Armory display chests come on top of the count.
 - Each chest draws from its **room's own table**: the mess and cafeteria are food-heavy (Pam's HarvestCraft and vanilla meals, snacks, drinks and ingredients), the bunks armor-heavy, the shooting range gun- and ammo-heavy, and the missile assembly floor holds missile body parts and warhead components (and, rarely, a whole missile body: intact in an active complex, salvaged in an abandoned one). Every other room has its own theme, from the chem lab's chemical cells to the incinerator's ash and scrap.
 - How lived-in a room is shows in its chests: an operational complex's chests are full, a partly abandoned complex's dark rooms hold less, plus some junk and spoiled food, and an abandoned complex's chests hold a few real finds among junk, rotten food and worn armor. Canned food never spoils.
+
+## Silo complexes look lived in
+
+- BiblioCraft furniture in silo complexes is stocked to suit its room: bookcases hold crew notes and manuals, shelves and tables hold the room's own loot, medicine shelves hold potions, racks hold guns and knives in armed rooms and tools elsewhere, armor stands hold armor or stand empty, desks hold an open book, typewriters hold paper and a typed note, and clipboards carry the room's checklist.
+- Mess halls and cafeterias have dinner plates with food on their tables and cookie jars on their counters; offices and the rec lounge have flower pots; rooms have clipboards on the wall over their desks, consoles and bunks.
+- A notice hangs under every room's name sign: a duty roster or a note on the room's work in a staffed room, a closing notice in a shut one, a last log in a ruin.
+- Furnaces hold fuel and the room's work, brewing stands hold potions, and working GregTech machines hold finished outputs (never an input or a job in progress).
+- Every cauldron holds water, and a staffed farm's crops grow at mixed stages.
+- How much a room holds follows its activity level: a Charlie complex is fully stocked, Bravo's lit rooms are well stocked and its dark rooms half empty, and an Alpha ruin holds little, much of it spoiled or worn.

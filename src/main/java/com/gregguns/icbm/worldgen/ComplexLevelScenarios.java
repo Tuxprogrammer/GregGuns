@@ -103,6 +103,7 @@ public final class ComplexLevelScenarios {
         SalvageScenarios.registerAll(registry);
         ChestLootScenarios.registerAll(registry);
         RoomScenarios.registerAll(registry);
+        FurnitureFillScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
