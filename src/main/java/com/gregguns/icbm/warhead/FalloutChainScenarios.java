@@ -203,6 +203,25 @@ final class FalloutChainScenarios {
             return 40;
         }
 
+        /**
+         * A roll seed whose goo rolls land near ground zero. Goo is rare (3 percent at ground zero, D21), so about one
+         * blast in eight leaves none; drawing the seed from the world's generator made this check depend on what other
+         * code had drawn before it.
+         */
+        static long gooSeed(int ox, int oz, int disc) {
+            double inner = FalloutMath.INNER_SHARE * disc;
+            for (long s = 1;; s++) {
+                int hits = 0;
+                for (int dx = -2; dx <= 2; dx++) {
+                    for (int dz = -2; dz <= 2; dz++) {
+                        double d = Math.sqrt(dx * dx + dz * dz);
+                        if (FalloutMath.roll(s, ox + dx, oz + dz, 3) < FalloutMath.gooChance(d, inner)) hits++;
+                    }
+                }
+                if (hits >= 3) return s;
+            }
+        }
+
         private static int[] tally(World w, int ox, int oy, int oz, int span, boolean byGooChunk) {
             // {irradiated, hot, trinitite, goo, hotGoo, irradiated in goo chunks, outside inner}
             int[] t = new int[7];
@@ -273,7 +292,7 @@ final class FalloutChainScenarios {
             FalloutEngine.instance()
                 .clearGoo(w); // an earlier scenario's goo is not this one's
             FalloutEngine.clear(w);
-            if (!Fallout.start(w, ox + 0.5, oy, oz + 0.5, blast, Fallout.GRADE_ZPM)) {
+            if (!Fallout.start(w, ox + 0.5, oy, oz + 0.5, blast, Fallout.GRADE_ZPM, gooSeed(ox, oz, disc))) {
                 ExplosionsConfig.fallout = savedFallout;
                 return ScenarioResult.fail(name(), "fallout did not start");
             }

@@ -42,6 +42,18 @@ public final class Fallout {
      * @return false when fallout is off in the config or the world is a client world
      */
     public static boolean start(World world, double x, double y, double z, double blastRadius, int grade) {
+        return world.isRemote ? false : start(world, x, y, z, blastRadius, grade, world.rand.nextLong());
+    }
+
+    /**
+     * As {@link #start(World, double, double, double, double, int)}, with the seed every fallout roll is drawn from.
+     * Scenarios pass a fixed seed so a check does not depend on how much other code drew from the world's random
+     * generator first.
+     *
+     * @param seed the job's roll seed
+     * @return false when fallout is off in the config or the world is a client world
+     */
+    public static boolean start(World world, double x, double y, double z, double blastRadius, int grade, long seed) {
         if (world.isRemote || !ExplosionsConfig.fallout
             || ExplosionsConfig.falloutMaxBlocks < 1
             || FalloutBlocks.irradiated() == null) {
@@ -54,7 +66,7 @@ public final class Fallout {
         job.radius = NuclearScale.falloutRadius(blastRadius, ExplosionsConfig.falloutMaxRadius);
         job.budget = ExplosionsConfig.falloutMaxBlocks;
         job.peak = FalloutMath.peakChance(job.radius, job.budget);
-        job.seed = world.rand.nextLong();
+        job.seed = seed;
         job.wait = START_DELAY_TICKS;
         job.grade = grade;
         FalloutSavedData data = FalloutEngine.data(world, true);
