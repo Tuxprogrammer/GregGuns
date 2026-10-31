@@ -302,7 +302,23 @@ public final class ComplexFixtures {
                     break;
                 }
             }
-            if (!t.gallery()) runs(plan, raster, t, level, runs, fallen, marked);
+        }
+        // No cable or pipe touches a door piece: a GregTech pipe block can give redstone, and Carpenter's garage door
+        // takes the redstone state of a neighbor that can (shut, unpowered) when that neighbor updates, which a pipe
+        // does on its tenth tick. A run cell beside any door cell stays empty.
+        java.util.Set<Long> besideDoors = new java.util.HashSet<>();
+        int[][] faces = { { 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 1 }, { 0, 0, -1 } };
+        for (BlastDoor d : doors) {
+            for (int a = d.a0(); a <= d.a1(); a++) {
+                for (int y = d.y0(); y <= d.y1(); y++) {
+                    for (int[] f : faces) besideDoors.add(key(d.x(a) + f[0], y + f[1], d.z(a) + f[2]));
+                }
+            }
+        }
+        java.util.Set<Long> blocked = new java.util.HashSet<>(marked);
+        blocked.addAll(besideDoors);
+        for (Tunnel t : plan.tunnels()) {
+            if (!t.gallery()) runs(plan, raster, t, level, runs, fallen, blocked);
         }
         return new ComplexFixtures(doors, runs, fallen);
     }

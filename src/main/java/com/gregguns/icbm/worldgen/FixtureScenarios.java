@@ -95,6 +95,16 @@ public final class FixtureScenarios {
             ComplexFixtures f = placer.fixturesOf(plan, placer.rasterOf(plan));
             int ax = plan.anchorX(), az = plan.anchorZ(), floor = ComplexLevelScenarios.floor(world);
             Block garage = FixtureWriter.garageDoor();
+            // A second of server ticks for the cables and pipes first: a pipe sends its neighbors a block update on its
+            // tenth tick, and a door piece beside one would take the redstone state of that block (D335).
+            List<BaseMetaPipeEntity> ticked = new ArrayList<>();
+            for (Run r : f.runs()) {
+                for (int a = r.a0(); a <= r.a1(); a++) {
+                    TileEntity te = world.getTileEntity(ax + r.x(a), floor + r.y(), az + r.z(a));
+                    if (te instanceof BaseMetaPipeEntity) ticked.add((BaseMetaPipeEntity) te);
+                }
+            }
+            for (int i = 0; i < 20; i++) for (BaseMetaPipeEntity p : ticked) p.updateEntity();
             int pieces = 0, wrongPiece = 0, strayPiece = 0, rubble = 0, wrongRubble = 0, frames = 0, wrongFrame = 0;
             List<String> firstWrong = new ArrayList<>();
             ItemStack casing = FixtureWriter.tierCasing(ceiling);
@@ -207,8 +217,7 @@ public final class FixtureScenarios {
             out.checkEquals(label + " run gaps that hold a piece (" + gaps + " gaps)", 0, wrongGaps);
             out.checkEquals(label + " fallen tray sections not on the floor (" + fallen + ")", 0, wrongFallen);
             // The placed cables and pipes' own tick, as the server runs them, for the soak budget (D336).
-            // Twenty ticks first: a pipe's first ticks set it up (its first-tick work, its block update at tick 10).
-            for (int i = 0; i < 20; i++) for (BaseMetaPipeEntity p : pipes) p.updateEntity();
+            // The pipes have had their first ticks (their setup, the block update at tick 10) above.
             long t0 = System.nanoTime();
             for (int i = 0; i < 40; i++) for (BaseMetaPipeEntity p : pipes) p.updateEntity();
             long perTick = (System.nanoTime() - t0) / 40_000L;

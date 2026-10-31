@@ -196,6 +196,30 @@ class ComplexFixturesTest {
         }
     }
 
+    @Test
+    void noCableOrPipeTouchesADoorPiece() {
+        for (long s = 0; s < PLANS; s++) {
+            ComplexFixtures f = ComplexFixtures.build(raster(s), ActivityLevel.PARTLY_ABANDONED, false);
+            Set<Long> door = new HashSet<>();
+            for (BlastDoor d : f.doors()) {
+                for (int a = d.a0(); a <= d.a1(); a++) {
+                    for (int y = d.y0(); y <= d.y1(); y++) door.add(ComplexFixtures.key(d.x(a), y, d.z(a)));
+                }
+            }
+            int[][] faces = { { 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 1 }, { 0, 0, -1 } };
+            for (Run r : f.runs()) {
+                for (int a = r.a0(); a <= r.a1(); a++) {
+                    if (!r.has(a)) continue;
+                    for (int[] c : faces) {
+                        assertFalse(
+                            door.contains(ComplexFixtures.key(r.x(a) + c[0], r.y() + c[1], r.z(a) + c[2])),
+                            "seed " + s + ": a " + r.service() + " beside a door piece would shut it");
+                    }
+                }
+            }
+        }
+    }
+
     private static Tunnel tunnel(ComplexPlan plan, int id) {
         for (Tunnel t : plan.tunnels()) if (t.id() == id) return t;
         throw new AssertionError("no tunnel " + id);
