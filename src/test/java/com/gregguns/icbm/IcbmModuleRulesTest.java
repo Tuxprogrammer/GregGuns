@@ -18,9 +18,9 @@ import com.gregguns.core.module.ModuleState;
 class IcbmModuleRulesTest {
 
     @Test
-    void theModuleIsOffByDefaultAndKeyedIcbm() {
+    void theModuleIsOnByDefaultAndKeyedIcbm() {
         assertEquals("icbm", ModuleId.ICBM.configKey());
-        assertFalse(ModuleFlags.isEnabled(ModuleId.ICBM));
+        assertTrue(ModuleFlags.isEnabled(ModuleId.ICBM));
     }
 
     @Test

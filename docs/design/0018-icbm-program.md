@@ -17,7 +17,7 @@ Two facts from the pack shaped the decisions:
 1. **ICBM is a module in the GregGuns jar**, `modules.icbm`, as 0015 requires. It turns itself off without Galacticraft (D9). It shares the GregGuns blast pipeline, damage code and test harness.
 2. **It has its own roadmap**, [ROADMAP-ICBM.md](../ROADMAP-ICBM.md), with milestones I0–I7, an alpha gate and a beta gate. [ROADMAP.md](../ROADMAP.md) keeps the GregGuns final polish (M9).
 3. **The handoff moves off the roadmap** to [HANDOFF-PLAN.md](../HANDOFF-PLAN.md). It starts only once the M9 polish is done and the ICBM beta gate has passed. This supersedes the handoff part of 0015's M9.
-4. `modules.icbm` **defaults to off until the ICBM beta gate**, so `0.3.x-beta` fixes can keep shipping from master while ICBM is built.
+4. `modules.icbm` **was off by default while ICBM was built**, so `0.3.x-beta` fixes could keep shipping from master; it defaults to on from the I7 beta checkpoint (D339).
 
 ### Balance
 5. **Cost: an automatable arsenal.** At its own tier, a missile costs about what one of that tier's Galacticraft rocket launches costs in plates, circuits and fuel. GT machines can automate it (the Assembler below LuV, the Assembly Line from LuV; ICBM D281), so a player at the tier can stock dozens. The warhead is the expensive part, and cost rises steeply by tier. Missiles are never as cheap as in ICBM, and never so rare that a player launches only one or two.

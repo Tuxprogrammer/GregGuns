@@ -7,9 +7,9 @@ import com.gtnewhorizon.gtnhlib.config.Config;
  *
  * <p>
  * A flag defaults to {@code true} once its milestone's exit gate is met, as the roadmap says. The gates for M2 to M8
- * are met, so every module flag defaults to on, except {@code icbm}, which stays off until the ICBM beta gate. The pull
- * request that completes a milestone flips that milestone's
- * default (here and in {@code docs/config.md}).
+ * are met and the ICBM beta checkpoint flipped {@code icbm}, so every module flag defaults to on. The pull request that
+ * completes a milestone flips that milestone's default (here and in {@code docs/config.md}). {@code icbm} also needs
+ * Galacticraft: without it the module turns itself off and logs one warning.
  *
  * <p>
  * Fields only, no logic, and no Minecraft types, so the class loads in a plain unit test. Names must match
@@ -61,7 +61,7 @@ public class ModulesConfig {
     @Config.Comment({
         "ICBM missiles and warheads (ICBM roadmap I0 to I7). Needs 'guns' and 'machines' (behavior only),",
         "and the Galacticraft mod: without Galacticraft this module turns itself off with a log line (D9).",
-        "Default: false until the ICBM beta gate." })
+        "Default: true (ICBM beta checkpoint)." })
     @Config.RequiresMcRestart
-    public static boolean icbm = false;
+    public static boolean icbm = true;
 }

@@ -70,6 +70,23 @@ Every change GregGuns once needed outside this repo, collected from the area ind
 
 **Recipe scripts (0012).** The Laser Focus (RC-64) is a recipe in GT's `laserEngraverRecipes` and the Anti Gravity Core (RC-65) one in `assemblerRecipes`. Pack scripts that edit or remove entries from those two maps now see two more recipes. GregGuns registers no recipe map of its own for them.
 
+## ICBM module ([gregguns-icbm-spec](../gregguns-icbm-spec/README.md))
+
+The ICBM module (`modules.icbm`, on by default, Galacticraft required) needs no change to any pack file. Every row below is **Done in jar** or an optional server-owner step. The module reads other mods by registry name or reflection; none of its hooks writes another mod's config file.
+
+| File | Change | Status | Sheet |
+|---|---|---|---|
+| `config/forgeChunkLoading.cfg` | None at the pack's defaults (200 tickets, 25 chunks per ticket per mod). A missile in flight holds one `ENTITY` ticket and two chunks, so the default `icbm.maxMissilesInFlight` of 20 uses 20 tickets. A server that raises the cap past 200 adds a `gregguns` section with a larger `maximumTicketCount` | **Optional server-owner step**, only for a raised cap. A refused ticket is a refused launch (`NO_TICKET`), never a crash | [chunk-loading.md](../gregguns-icbm-spec/03-missiles/chunk-loading.md) |
+| Galacticraft (`GalacticraftCore`) landing pad blocks and rocket fuel | None. The silo's pad cells accept the Galacticraft pad by registry name, and missile fuel lists register in code. Without Galacticraft the module turns itself off and logs one warning (D9, D46) | **Done in jar** | [galacticraft-pad.md](../gregguns-icbm-spec/03-missiles/galacticraft-pad.md) |
+| `config/roguelike_dungeons/` | None. Roguelike Dungeons is kept out of silo complexes by reflection (`compat.roguelikeKeepOutOfComplexes`, on by default); the mod has no config for it | **Done in jar** | [planets-and-placement.md](../gregguns-icbm-spec/08-worldgen/planets-and-placement.md) |
+| `config/EnhancedLootBags/LootBags.xml` | None. The Ordnance groups (quest rewards) are part of the groups `compat.lootBags` adds in memory from `assets/gregguns/lootbags/groups.xml` | **Done in jar** | Loot section above |
+| GT5-Unofficial's Assembly Line achievements | None. `GtAchievementFilter` strips the achievements GT makes for any GregGuns item, ICBM items included | **Done in jar** | n/a |
+| GT recipe maps (`assemblerRecipes`, `assemblylineVisualRecipes` and the other maps ICBM adds recipes to) | None. ICBM adds its recipes in code, so a pack script that edits or removes entries from those maps sees them. [The ICBM recipe-clash review](08-machines-production/icbm-recipe-clash-review.md) checks each row against the pack | **Done in jar** | [icbm-recipe-clash-review.md](08-machines-production/icbm-recipe-clash-review.md) |
+| BiblioCraft furniture in silo complex rooms | None. Blocks are placed by registry name and nothing ships from BiblioCraft. Without BiblioCraft the rooms keep their plain fit-out | **Done in jar** | [palette.md](../gregguns-icbm-spec/08-worldgen/palette.md) |
+| OpenComputers components (radar, launch, air defense, EMP, view, the Golden Dome floppy) | None. The environments sit behind `@Optional` and the Lua programs ship in the jar | **Done in jar** | [golden-dome.md](../gregguns-icbm-spec/01-core/golden-dome.md) |
+| Quests (BetterQuesting) | None. The ICBM quests are part of the GregGuns tab in the jar (`questbook.install`) | **Done in jar** | [12-questbook](12-questbook/index.md) |
+| `config/gregguns.cfg` `modules.icbm` | A server that does not want ICBM sets it to `false`. Existing ICBM items and blocks stay intact and show the disabled tooltip line | **Optional server-owner step** | [config.md](../config.md#module-flags-modules) |
+
 ## Server settings
 
 | File | Change | Status | Sheet |
