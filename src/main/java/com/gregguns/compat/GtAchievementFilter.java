@@ -53,10 +53,14 @@ public final class GtAchievementFilter {
             Map<String, Achievement> table = GTMod.achievements.achievementList;
             int n = strip(table.values(), GtAchievementFilter::isGregGuns);
             if (n > 0) {
-                stripPages(
+                int skipped = stripPages(
                     AchievementPage.getAchievementPages(),
                     AchievementPage::getAchievements,
                     GtAchievementFilter::isGregGuns);
+                if (skipped > 0) {
+                    // KubaTech's client-only tea page is the known case; any other page is worth a look.
+                    GregGuns.LOG.info("Skipped {} achievement pages that could not be read", skipped);
+                }
                 strip(AchievementList.achievementList, GtAchievementFilter::isGregGuns);
                 GregGuns.LOG.info("Removed {} GregGuns items from GregTech's generated achievements", n);
             }

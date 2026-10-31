@@ -245,7 +245,7 @@ The targets (0018 §5, D328): a missile costs about one rocket of its tier (the 
 
 ## Tests
 
-`WarheadMathTest`, `WarheadNbtTest`, `WarheadTooltipFormatTest`, `WarheadRecipeSpecTest`, `WarheadChargingTest`, `InertWarheadTooltipFormatTest`, `WarheadDearmingTest`, `IcbmPartTest`, `PartTooltipFormatTest`, `LauncherWarheadClashTest`; recipe self-checks run at the dev boot; scenarios `icbm.warhead.item_nbt`, `icbm.recipes.assembler`, `icbm.warhead.chain.recipes`, `icbm.warhead.chain.grid`, `icbm.warhead.chain.inert`, `icbm.warhead.chain.launch`, `icbm.warhead.dearm.grid`, `icbm.warhead.dearm.round_trip`, `icbm.warhead.dearm.machine` and `icbm.silo.refusals`.
+`WarheadMathTest`, `WarheadTooltipFormatTest`, `WarheadRecipeSpecTest`, `WarheadChargingTest`, `InertWarheadTooltipFormatTest`, `WarheadDearmingTest`, `IcbmPartTest`, `PartTooltipFormatTest`, `LauncherWarheadClashTest`; recipe self-checks run at the dev boot; scenarios `icbm.warhead.item_nbt`, `icbm.recipes.assembler`, `icbm.warhead.chain.recipes`, `icbm.warhead.chain.grid`, `icbm.warhead.chain.inert`, `icbm.warhead.chain.launch`, `icbm.warhead.dearm.grid`, `icbm.warhead.dearm.round_trip`, `icbm.warhead.dearm.machine` and `icbm.silo.refusals`.
 
 ## Open questions
 

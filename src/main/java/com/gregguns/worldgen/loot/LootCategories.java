@@ -58,6 +58,12 @@ public final class LootCategories {
 
     /** Registered content to the line it came from, so {@link #fill} can apply richness weights and companions. */
     private static final Map<WeightedRandomChestContent, LootEntry> SOURCE = new IdentityHashMap<>();
+    /**
+     * The same lines by value (category, item, damage, count range). TooMuchLoot's {@code /loot reload} rebuilds every
+     * content object, so the identity lookup misses afterwards and this one keeps the companions and the top-tier
+     * weights.
+     */
+    private static final Map<String, LootEntry> BY_VALUE = new HashMap<>();
     private static final Map<String, Tier> TOP = new HashMap<>();
     private static final List<String> SKIPPED = new ArrayList<>();
     private static boolean registered;
@@ -90,6 +96,7 @@ public final class LootCategories {
                     line.weight());
                 info.addItem(content);
                 SOURCE.put(content, line);
+                BY_VALUE.put(valueKey(cat.name(), content), line);
             }
         }
         if (!SKIPPED.isEmpty()) {
@@ -133,6 +140,13 @@ public final class LootCategories {
         return false;
     }
 
+    private static String valueKey(String category, WeightedRandomChestContent c) {
+        ItemStack s = c.theItemId;
+        String name = s == null || s.getItem() == null ? "?" : String.valueOf(Item.itemRegistry.getNameForObject(s.getItem()));
+        return category + '|' + name + '|' + (s == null ? 0 : s.getItemDamage()) + '|'
+            + c.theMinimumChanceToGenerateItem + '|' + c.theMaximumChanceToGenerateItem;
+    }
+
     /** @return the references registration skipped because the pack does not have them, for scenarios */
     public static List<String> skipped() {
         synchronized (SKIPPED) {
@@ -158,6 +172,9 @@ public final class LootCategories {
         for (int i = 0; i < base.length; i++) {
             WeightedRandomChestContent c = base[i];
             LootEntry line = SOURCE.get(c);
+            if (line == null) {
+                line = BY_VALUE.get(valueKey(category, c));
+            }
             int weight = line == null || top == null ? c.itemWeight
                 : LootDraw.weight(line.withWeight(c.itemWeight), top, richness);
             LootDrop companion = line == null ? null : line.companion();

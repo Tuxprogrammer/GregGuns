@@ -43,6 +43,7 @@ public final class LootScenarios {
         registry.register(new TierCeilingScenario());
         registry.register(new MixScenario());
         registry.register(new PackItemsScenario());
+        registry.register(new RebuiltContentsScenario());
     }
 
     private static ItemStack[] drawChest(String category, int richness, Random rand) {
@@ -289,6 +290,78 @@ public final class LootScenarios {
                 }
                 if (cat.contains("supplychest")) {
                     out.check(packMods.size() >= 2, where + " only " + packMods + " supply pack items");
+                }
+            }
+            return out.build();
+        }
+    }
+
+    /** TooMuchLoot's {@code /loot reload} rebuilds every content object; guns must keep their ammo after it. */
+    private static final class RebuiltContentsScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "worldgen.loot_rebuilt";
+        }
+
+        @Override
+        public String description() {
+            return "Replaces every content of a weapon chest category with a fresh copy, as TooMuchLoot's /loot reload"
+                + " does, then fills 200 chests: guns still come with their ammo (GGS-11-26).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            String cat = LootCategoryDefs.weaponChest(4);
+            ChestGenHooks info = ChestGenHooks.getInfo(cat);
+            WeightedRandomChestContent[] originals = info.getItems(new Random(1));
+            List<WeightedRandomChestContent> copies = new ArrayList<>();
+            try {
+                for (WeightedRandomChestContent c : originals) {
+                    info.removeItem(c.theItemId);
+                }
+                for (WeightedRandomChestContent c : originals) {
+                    WeightedRandomChestContent copy = new WeightedRandomChestContent(
+                        c.theItemId.copy(),
+                        c.theMinimumChanceToGenerateItem,
+                        c.theMaximumChanceToGenerateItem,
+                        c.itemWeight);
+                    copies.add(copy);
+                    info.addItem(copy);
+                }
+                Random rand = new Random(7);
+                int guns = 0;
+                int gunsWithoutAmmo = 0;
+                for (int c = 0; c < 200; c++) {
+                    ItemStack[] stacks = drawChest(cat, 1, rand);
+                    Set<Item> items = new LinkedHashSet<>();
+                    for (ItemStack s : stacks) {
+                        items.add(s.getItem());
+                    }
+                    for (ItemStack s : stacks) {
+                        String name = GameRegistry.findUniqueIdentifierFor(s.getItem()).name;
+                        if (!"gregguns".equals(GameRegistry.findUniqueIdentifierFor(s.getItem()).modId)
+                            || Arsenal.gunName("gregguns:" + name) == null) {
+                            continue;
+                        }
+                        guns++;
+                        GunDefinition def = GunDefinitions.byName(name);
+                        String want = def == null ? null : Arsenal.ammoItem(def);
+                        Item wantItem = want == null ? null : GameRegistry.findItem("gregguns", want);
+                        if (wantItem != null && !items.contains(wantItem)) {
+                            gunsWithoutAmmo++;
+                        }
+                    }
+                }
+                out.check(guns > 0, "the rebuilt " + cat + " never drew a gun");
+                out.checkEquals("guns without their ammo after a rebuild", 0, gunsWithoutAmmo);
+            } finally {
+                for (WeightedRandomChestContent c : copies) {
+                    info.removeItem(c.theItemId);
+                }
+                for (WeightedRandomChestContent c : originals) {
+                    info.addItem(c);
                 }
             }
             return out.build();

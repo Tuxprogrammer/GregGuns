@@ -388,7 +388,6 @@ final class AutotestCommands {
         }
     }
 
-    /** {@code sync}: runs in command order, so answering it proves every earlier queued command has finished. */
     /** Angelica's particle instancer, whose static counters {@link #fxStats} reads; absent without Angelica. */
     private static final String ANGELICA_INSTANCER = "com.gtnewhorizons.angelica.rendering.particles.ParticleInstancer";
 
@@ -421,6 +420,7 @@ final class AutotestCommands {
         ClientAutotest.logLine(line.toString());
     }
 
+    /** {@code sync}: runs in command order, so answering it proves every earlier queued command has finished. */
     static void syncAck() {
         Minecraft.getMinecraft().thePlayer.sendChatMessage(AutotestSignal.format("ack", "sync", "ready", "ok"));
     }

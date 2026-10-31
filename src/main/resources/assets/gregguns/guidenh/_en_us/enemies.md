@@ -62,6 +62,6 @@ Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only mons
 
 ## What they drop
 
-Up to two picks from their loot list, plus one more per level of Looting. A player kill has a small chance to drop the gun they hold, and sometimes the armor they wear.
+Up to two picks from their loot list, plus one more per level of Looting. A player kill has a small chance to drop the gun they hold, and sometimes the armor they wear. Every kill also drops some ammo for the gun they carried (a full tank for flame and bio guns, a few parts for energy guns).
 
 With Infernal Mobs installed, any of them can spawn with an Elite, Ultra or Infernal rank and better loot: LV items for Elite, MV for Ultra, and a rare HV drop from Infernal. The helicopter and camp turrets never do.

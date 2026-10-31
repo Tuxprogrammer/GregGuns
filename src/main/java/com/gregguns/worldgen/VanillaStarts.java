@@ -377,7 +377,7 @@ public final class VanillaStarts implements StructureStarts {
     private static final Field STRUCTURE_MAP = field(MapGenStructure.class, "field_75053_d", "structureMap");
 
     /**
-     * Whether the world's village generator itself recorded a start at a chunk, once that chunk's neighbourhood has
+     * Whether the world's village generator itself recorded a start at a chunk, once that chunk's neighborhood has
      * generated (scenarios check a prediction against it).
      *
      * @return true or false, or null when the world has no village generator to ask

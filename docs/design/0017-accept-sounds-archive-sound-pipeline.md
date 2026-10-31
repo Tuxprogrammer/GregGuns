@@ -26,3 +26,6 @@ The end goal is a handoff to an adopter ([0014](0014-end-goal-beta-handoff-archi
 
 ## Amendment, 2026-10-26
 The owner moved the review records out of the repository. `SOUND-DIFFERENCES.md`, the sound gate, loudness and A/B reports, the sound contact sheet and the A/B review log (`tools/asset-gen/sound-ab-review.jsonl`) are now git-ignored and kept locally. The generators, their inputs and the review tooling stay in the repository.
+
+## Amendment, 2026-10-31
+The Minigun spin-up and spin-down sounds are an owner-requested exception to "no sound work" (an alpha playtest request). They are two real recordings (CC0), credited in `docs/assets/CREDITS.md`, and the sound pipeline stays archived. See D346 in the ICBM DECISIONS log.

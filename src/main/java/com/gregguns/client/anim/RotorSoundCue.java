@@ -12,7 +12,7 @@ package com.gregguns.client.anim;
  * </ul>
  *
  * A normal coast to rest gives no cue: the wind-down sound ends by itself. Spec: docs/gregguns-spec/02-guns/index.md
- * (Minigun, spin sounds).
+ * (PDW, Pulse Rifle and Minigun: Minigun, "Spin sounds"); D346.
  */
 public final class RotorSoundCue {
 

@@ -24,9 +24,6 @@ class ConfigDefaultsTest {
     }
 
     @Test
-    void debugKeybindsDefaultToOff() {}
-
-    @Test
     void moduleFlagsAreExactlyTheModuleIds() {
         Set<String> fields = new HashSet<>();
         for (Field field : ModulesConfig.class.getDeclaredFields()) {

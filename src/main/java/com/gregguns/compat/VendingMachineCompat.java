@@ -142,12 +142,12 @@ public final class VendingMachineCompat {
         }
     }
 
-    /** @return the catalog offers whose item is registered on this server and not a hidden technical item */
+    /** @return the catalog offers whose item is registered on this server and not a hidden technical item; spawn eggs of kinds that cannot spawn are left out */
     static List<VendingCatalog.Offer> registeredOffers() {
         List<VendingCatalog.Offer> out = new ArrayList<>();
         for (VendingCatalog.Offer offer : VendingCatalog.build()) {
             Object item = Item.itemRegistry.getObject(Naming.qualifiedName(offer.item()));
-            if (item instanceof Item && !(item instanceof HiddenFromCreativeTab)) {
+            if (item instanceof Item && !(item instanceof HiddenFromCreativeTab) && VendingCatalog.spawnable(offer)) {
                 out.add(offer);
             }
         }

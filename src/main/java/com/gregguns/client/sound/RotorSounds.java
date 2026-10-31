@@ -23,7 +23,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * lost its owner ends by itself. Client only; main thread. No packets: it plays on the client that sees the rotor
  * spin, so a dedicated server never touches it.
  */
-// Spec: docs/gregguns-spec/02-guns/index.md (Minigun, spin sounds)
+// Spec: docs/gregguns-spec/02-guns/index.md (PDW, Pulse Rifle and Minigun: Minigun, "Spin sounds"); D346
 @SideOnly(Side.CLIENT)
 public final class RotorSounds {
 
