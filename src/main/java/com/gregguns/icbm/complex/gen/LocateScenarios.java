@@ -389,7 +389,9 @@ public final class LocateScenarios {
                 floor + 2.5,
                 hz + 0.5,
                 new net.minecraft.item.ItemStack(Blocks.dirt));
-            world.spawnEntityInWorld(item);
+            item.delayBeforeCanPickup = 32767;
+            item.lifespan = Integer.MAX_VALUE;
+            out.check(world.spawnEntityInWorld(item), "a dropped item lies in the hall");
             // A block in the first chunk of the box that lies just outside it: the clear works on box columns only.
             final int outX = ax - 1, outZ = az + ComplexWriter.SIZE / 2, outY = before.groundY() + 3;
             // Its chunk and the ones around it first, so every populate that writes into that column has run.
@@ -398,7 +400,6 @@ public final class LocateScenarios {
                     .loadChunk((outX >> 4) + dx, (outZ >> 4) + dz);
             }
             world.setBlock(outX, outY, outZ, Blocks.glowstone, 0, 2);
-            final net.minecraft.entity.item.EntityItem stray = item;
 
             Capture none = new Capture(world, REBUILD_AT);
             MinecraftServer.getServer()
@@ -434,7 +435,15 @@ public final class LocateScenarios {
                 out.checkEquals("the ledger entry is the same", before, state.get(PlanKey.of(plan)));
                 out.check(world.isAirBlock(hx, floor + 1, hz), "the stray block in the hall is gone");
                 out.check(world.getBlock(hx, below, hz) != Blocks.glowstone, "the block under the level is gone");
-                out.check(stray.isDead, "the dropped item is gone");
+                // The hall's chunk may have been saved and loaded again since the item was dropped (a new entity
+                // object), so look for any dropped item there, with the chunk loaded.
+                ((net.minecraft.world.WorldServer) world).theChunkProviderServer.loadChunk(hx >> 4, hz >> 4);
+                List<?> items = world.getEntitiesWithinAABB(
+                    net.minecraft.entity.item.EntityItem.class,
+                    net.minecraft.util.AxisAlignedBB.getBoundingBox(hx - 3, 0, hz - 3, hx + 4, 256, hz + 4));
+                int left = 0;
+                for (Object o : items) if (!((net.minecraft.entity.Entity) o).isDead) left++;
+                out.checkEquals("dropped items left at the hall spot, up to the sky", 0, left);
                 out.check(
                     world.getBlock(outX, outY, outZ) == Blocks.glowstone,
                     "the block just outside the box is untouched");
