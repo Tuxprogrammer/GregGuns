@@ -143,3 +143,9 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - The Launch Control's target slot takes a Radar Gun: drop one that holds a target into the slot and press Load target (or right-click the block with it). The gun stays in the slot. An empty slot shows a faint Radar Gun, the screen reads "No target: use a Radar Gun" with no target set, and the tooltips, the Launch Control and Handheld Tools quests and the guide sheets lead with the gun.
 - Data sticks still work in the slot, quietly: nothing in the Launch Control advertises them any more.
+
+## Changed: silo complex chests
+
+- A whole silo complex holds exactly **100** loot chests when abandoned, **200** when partly abandoned and **300** when operational, on every planet (config `icbm.siloComplexChestTargets`). No chest is ever empty. Chest spots left over are empty wooden crates, and caved-in rooms hold no chests. Armory display chests come on top of the count.
+- Each chest draws from its **room's own table**: the mess and cafeteria are food-heavy (Pam's HarvestCraft and vanilla meals, snacks, drinks and ingredients), the bunks armor-heavy, the shooting range gun- and ammo-heavy, and the missile assembly floor holds missile body parts and warhead components (and, rarely, a whole missile body: intact in an active complex, salvaged in an abandoned one). Every other room has its own theme, from the chem lab's chemical cells to the incinerator's ash and scrap.
+- How lived-in a room is shows in its chests: an operational complex's chests are full, a partly abandoned complex's dark rooms hold less, plus some junk and spoiled food, and an abandoned complex's chests hold a few real finds among junk, rotten food and worn armor. Canned food never spoils.

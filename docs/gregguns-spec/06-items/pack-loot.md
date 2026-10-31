@@ -222,7 +222,7 @@ Not drafted: `strongholdLibrary`, `naturalistChest`, `railcraft:workshop` and `p
 
 GregGuns registers its own categories for its structures, so no pack file is needed for them.
 
-- **Categories (22):**
+- **Categories (22, plus the silo complex tables):**
 
 | Category | Used by | Band | Min / max items |
 |---|---|---|---|
@@ -231,6 +231,8 @@ GregGuns registers its own categories for its structures, so no pack file is nee
 | `gregguns:reinforcedchest_t1` / `_t2` / `_t3` | reinforced crates (`chest.reinforced`) | LV / MV / HV | 4/7, 4/8, 5/9 |
 | `..._t4` to `..._t7` of all three | Ross128 structures only (0019) | EV / IV / LuV / ZPM | as `_t3` |
 | `gregguns:barracks` | Military Base barracks chests | LV to MV gear | 2 / 5 |
+| `gregguns:silo_<table>_<ceiling>` | ICBM silo complex room chests: one table per room theme (`galley`, `bunks`, `range`, `assembly` and 30 more) and per ceiling `ev` to `umv` ([loot-and-ceilings](../../gregguns-icbm-spec/08-worldgen/loot-and-ceilings.md#room-tables-silolootables)) | the complex's ceiling | 5 / 8 nominal; the room's state sets the real count |
+| `gregguns:silo_junk` | the junk a ruined complex's chests hold beside their loot | none | 1 / 3 |
 
   Richness (`worldgen.lootTier<Id>`, 0 to 2) adds to both ends. The counts are about half a Roguelike top-floor chest (about 15 stacks), up from the Techguns 2 to 8, so the pack mix has room. What each category holds is in [Structure chest mix](#structure-chest-mix).
 - **Pack config:** none ships these categories. The TML loader copies the whole table at server start ([TooMuchLoot.java#L71-L104](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/TooMuchLoot.java#L71-L104)), so a category registered in code is kept unless an `OVERRIDE` file names it. A pack author can then retune ours with an `OVERRIDE` file named after the category. TML turns a category name into a file name by replacing every character outside `[a-zA-Z0-9._]` with `_` ([`generateFiles`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/chest/ChestLootLoader.java#L79-L115)), for example `gregguns_weaponchest_t1.xml`. The pack's own `railcraft_workshop.xml` (category `railcraft:workshop`) is the precedent for a namespaced category.

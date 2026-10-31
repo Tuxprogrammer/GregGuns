@@ -43,11 +43,8 @@ class ActivityLevelTest {
             assertTrue(o.spawnerChance(band) >= p.spawnerChance(band));
         }
         assertTrue(p.spawnerChance(3) > p.spawnerChance(0), "partly abandoned guards the deeper sections");
-        assertEquals(0.30, a.chestKeepChance(), 1e-9);
         assertEquals(0.20, a.absentMachineChance(), 1e-9);
         assertEquals(0.90, a.deadMachineChance(), 1e-9);
-        assertEquals(1.0, p.chestKeepChance(), 1e-9);
-        assertEquals(1.0, o.chestKeepChance(), 1e-9);
         assertEquals(0.0, p.absentMachineChance(), 1e-9);
         assertEquals(0.0, o.absentMachineChance(), 1e-9);
         assertTrue(a.flooded() && p.flooded() && !o.flooded());

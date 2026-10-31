@@ -114,10 +114,20 @@ public final class ComplexApplier {
                 break;
             }
             case CHEST:
-                if (sink.setBlock(x, y, z, Blocks.chest, 2)) {
+                if (sink.setBlock(x, y, z, Blocks.chest, CHEST_META[p.facing() & 3])) {
                     sink.setTile(x, y, z, SiloChests.filledChest(p, worldSeed, cellX, cellZ));
                 }
                 break;
+            case CRATE: {
+                // An empty wooden crate on a chest spot the budget left over (D315): Chisel's crate planks in the
+                // room's wood, vanilla planks of that wood without Chisel.
+                int wood = crateWood(p.key());
+                Block crate = cpw.mods.fml.common.registry.GameRegistry
+                    .findBlock("chisel", CRATE_WOODS[wood] + "_planks");
+                if (crate != null) sink.setBlock(x, y, z, crate, CRATE_META);
+                else sink.setBlock(x, y, z, Blocks.planks, wood);
+                break;
+            }
             case SPAWNER:
                 spawner(p.spawner(), x, y, z);
                 break;
@@ -178,6 +188,26 @@ public final class ComplexApplier {
      */
     private static final int[] FRAME_DX = { 0, -1, 0, 1 };
     private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
+
+    /** Chest metas by a mark's facing (0 south, 1 west, 2 north, 3 east): the way the chest's front looks. */
+    private static final int[] CHEST_META = { 3, 4, 2, 5 };
+
+    /**
+     * Chisel's plank blocks in vanilla's plank order (0 oak to 5 dark oak); meta 10 is the crate.
+     * Source: https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java#L4377
+     */
+    private static final String[] CRATE_WOODS = { "oak", "spruce", "birch", "jungle", "acacia", "dark_oak" };
+    private static final int CRATE_META = 10;
+
+    /** @return the wood a crate placement names, 0 to 5; spruce for a bad key */
+    static int crateWood(String key) {
+        try {
+            int w = Integer.parseInt(key);
+            return w >= 0 && w < CRATE_WOODS.length ? w : 1;
+        } catch (NumberFormatException e) {
+            return 1;
+        }
+    }
 
     private static Block rubble(int x, int y, int z) {
         return ((x * 31 + y * 17 + z * 13) & 3) == 0 ? Blocks.gravel : Blocks.cobblestone;
