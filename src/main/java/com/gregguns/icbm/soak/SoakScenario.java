@@ -206,7 +206,7 @@ public abstract class SoakScenario implements Scenario {
                     if (fresh) {
                         during.add(lastMs);
                     }
-                    if (phaseTicks % SoakCurve.BUCKET == 0) {
+                    if (phaseTicks == 1 || phaseTicks % SoakCurve.BUCKET == 0) {
                         SoakProbe now = SoakProbe.sample();
                         keepPeak(now);
                         GregGuns.LOG.info(
