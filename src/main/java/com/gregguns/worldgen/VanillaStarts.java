@@ -1,6 +1,7 @@
 package com.gregguns.worldgen;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderGenerate;
 import net.minecraft.world.gen.structure.MapGenScatteredFeature;
+import net.minecraft.world.gen.structure.MapGenStructure;
 import net.minecraft.world.gen.structure.MapGenVillage;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
@@ -36,15 +38,22 @@ import com.gregguns.GregGuns;
  * counts as on, which errs toward sinking a complex, never toward a village on top of one.
  *
  * <p>
- * <b>Per candidate.</b> {@link StartGrid} gives each region's candidate chunk; a candidate within reach of the area is
- * checked for biomes on the world chunk manager (it reads the biome layers or RWG's noise, never a chunk), then its
- * start is built exactly as the generator would build it ({@code MapGenBase}'s per-chunk seeding, then one
- * {@code nextInt}), and its piece box is tested. A village counts only when sizeable, as vanilla's own rule. A start
- * that throws counts as present. Results are cached per start chunk.
+ * <b>Per candidate.</b> {@link StartGrid} gives each region's candidate chunk from the generator's own spacing (read
+ * from its most derived class, so a replacement such as Village Names' generator, which declares its own spacing, is
+ * read right). A candidate within reach of the area is then put to the generator itself: its own
+ * {@code canSpawnStructureAtCoords} (its biome rule, any spawn-free radius) and its own {@code getStructureStart},
+ * with its Random seeded as {@code MapGenBase} seeds it for that chunk, and the start's piece box is tested. A village
+ * counts only when sizeable. When the generator cannot be asked (its world not set yet), the vanilla rule is computed
+ * instead: a biome check on the world chunk manager, then {@code MapGenVillage.Start} or
+ * {@code MapGenScatteredFeature.Start}. Neither path reads a chunk. A start that throws counts as present. Results are
+ * cached per start chunk.
  */
 // Source: Minecraft 1.7.10 (MCP stable 12): MapGenVillage#canSpawnStructureAtCoords and Start,
 // MapGenScatteredFeature#canSpawnStructureAtCoords and Start, MapGenBase#func_151539_a,
 // MapGenStructure#func_151538_a, World#setRandomSeed.
+// Source: https://github.com/GTNewHorizons/VillageNames/blob/4.5.19-GTNH/src/main/java/astrotibs/villagenames/village/MapGenVillageVN.java#L63-L76
+// (Village Names, in the pack, replaces the village generator through InitMapGenEvent with its own spacing fields,
+// median 40 and range 10 in the pack config, its own biome list and its own Start; #L106-L156, #L158-L180).
 // Source:
 // https://github.com/GTNewHorizons/Realistic-World-Gen/blob/alpha-1.5.2/src/main/java/rwg/world/ChunkGeneratorRealistic.java#L120-L123
 // (new MapGenVillage with distance 24) and #L194 (ConfigRWG.generateVillages gates villages).
@@ -55,8 +64,11 @@ public final class VanillaStarts implements StructureStarts {
     public static final int VILLAGE_MARGIN = 16;
     /** Blocks around a temple's box that still count. */
     public static final int TEMPLE_MARGIN = 8;
-    /** Village pieces stay within 112 blocks of the start chunk (StructureVillagePieces); a little more for the box. */
-    static final int VILLAGE_REACH = 128;
+    /**
+     * Vanilla village pieces stay within 112 blocks of the start chunk (StructureVillagePieces); Village Names grows
+     * larger villages, so candidates this far out are checked. Only the start's real box decides.
+     */
+    static final int VILLAGE_REACH = 192;
     /** A temple is one piece at its start chunk. */
     static final int TEMPLE_REACH = 32;
 
@@ -87,10 +99,15 @@ public final class VanillaStarts implements StructureStarts {
     private final int villageSpacing, villageSeparation, villageSize;
     private final boolean temple;
     private final int templeSpacing, templeSeparation;
+    /** The generators themselves, weakly, so their own start rule can be asked (another mod's replacement too). */
+    private final java.lang.ref.WeakReference<MapGenStructure> villageGen, templeGen;
 
     private VanillaStarts(World world, MapGenVillage village, MapGenScatteredFeature temple) {
         this.worldRef = new java.lang.ref.WeakReference<World>(world);
         this.village = village != null;
+        this.villageGen = new java.lang.ref.WeakReference<MapGenStructure>(village);
+        this.templeGen = new java.lang.ref.WeakReference<MapGenStructure>(temple);
+        // Read from the most derived class first: a replacement (Village Names) declares its own spacing fields.
         this.villageSpacing = village == null ? 32 : intField(village, MapGenVillage.class, 32, "field_82665_g");
         this.villageSeparation = village == null ? 8 : intField(village, MapGenVillage.class, 8, "field_82666_h");
         this.villageSize = village == null ? 0
@@ -105,6 +122,38 @@ public final class VanillaStarts implements StructureStarts {
                 "field_82669_g");
         this.templeSeparation = temple == null ? 8
             : intField(temple, MapGenScatteredFeature.class, 8, "minDistanceBetweenScatteredFeatures", "field_82670_h");
+    }
+
+    /** MapGenStructure#canSpawnStructureAtCoords, #getStructureStart and MapGenBase#rand, #worldObj; null if absent. */
+    private static final Method CAN_SPAWN = method("func_75047_a", "canSpawnStructureAtCoords");
+    private static final Method GET_START = method("func_75049_b", "getStructureStart");
+    private static final Field GEN_RAND = field(net.minecraft.world.gen.MapGenBase.class, "field_75038_b", "rand");
+    private static final Field GEN_WORLD = field(net.minecraft.world.gen.MapGenBase.class, "field_75039_c", "worldObj");
+
+    private static Method method(String... names) {
+        for (String n : names) {
+            try {
+                Method m = MapGenStructure.class.getDeclaredMethod(n, int.class, int.class);
+                m.setAccessible(true);
+                return m;
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                // Try the next name (SRG in the pack, MCP in the dev world).
+            }
+        }
+        return null;
+    }
+
+    private static Field field(Class<?> owner, String... names) {
+        for (String n : names) {
+            try {
+                Field f = owner.getDeclaredField(n);
+                f.setAccessible(true);
+                return f;
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                // Try the next name.
+            }
+        }
+        return null;
     }
 
     /**
@@ -157,7 +206,7 @@ public final class VanillaStarts implements StructureStarts {
         if (village == null && temple == null) return NONE;
         if (village != null && village.getClass() != MapGenVillage.class) {
             GregGuns.LOG.info(
-                "Silo complex: dimension {} builds villages with {}; its start rule is read as vanilla's",
+                "Silo complex: dimension {} builds villages with {}; its own start rule is asked",
                 world.provider.dimensionId,
                 village.getClass()
                     .getName());
@@ -179,14 +228,18 @@ public final class VanillaStarts implements StructureStarts {
         }
     }
 
+    /** Reads an int field, from the instance's own class up to {@code owner}, under any of its names. */
     private static int intField(Object o, Class<?> owner, int fallback, String... names) {
-        for (String n : names) {
-            try {
-                Field f = owner.getDeclaredField(n);
-                f.setAccessible(true);
-                return f.getInt(o);
-            } catch (ReflectiveOperationException | RuntimeException e) {
-                // Try the next name (MCP in the dev world, SRG in the pack).
+        for (Class<?> c = o.getClass(); c != null && owner.isAssignableFrom(c); c = c.getSuperclass()) {
+            for (String n : names) {
+                try {
+                    Field f = c.getDeclaredField(n);
+                    if (f.getType() != int.class) continue;
+                    f.setAccessible(true);
+                    return f.getInt(o);
+                } catch (ReflectiveOperationException | RuntimeException e) {
+                    // Try the next name (MCP in the dev world, SRG in the pack), then the superclass.
+                }
             }
         }
         GregGuns.LOG.warn("Silo complex: {} has no field {}; using {}", owner.getSimpleName(), names[0], fallback);
@@ -273,7 +326,8 @@ public final class VanillaStarts implements StructureStarts {
         if (hit != null) return hit;
         int[] box;
         try {
-            box = isVillage ? villageBox(world, cx, cz, seed) : templeBox(world, cx, cz, seed);
+            int[] own = ownRule(isVillage ? villageGen.get() : templeGen.get(), cx, cz, seed);
+            box = own != null ? own : isVillage ? villageBox(world, cx, cz, seed) : templeBox(world, cx, cz, seed);
         } catch (RuntimeException | LinkageError e) {
             // A modded piece that fails to build: count the start as there (a complex only sinks deeper for it).
             GregGuns.LOG.warn("Silo complex: the {} start at chunk {},{} failed to build: {}", kind, cx, cz, e);
@@ -282,6 +336,62 @@ public final class VanillaStarts implements StructureStarts {
         }
         cache.put(key, box);
         return box;
+    }
+
+    /**
+     * Asks the generator itself: its own {@code canSpawnStructureAtCoords} for the candidate (its biome rule, a
+     * spawn-free radius), then its own {@code getStructureStart} with its Random seeded as {@code MapGenBase} seeds it
+     * for that chunk. Exact for vanilla and for a replacement such as Village Names' generator. Its world must be set
+     * (it is, once it has generated a chunk).
+     *
+     * @return the box, {@link #NOTHING}, or null when the generator cannot be asked (the pure rule is used instead)
+     */
+    private static int[] ownRule(MapGenStructure gen, int cx, int cz, long seed) {
+        if (gen == null || CAN_SPAWN == null || GET_START == null || GEN_RAND == null || GEN_WORLD == null) return null;
+        try {
+            if (GEN_WORLD.get(gen) == null) return null;
+            if (!(Boolean) CAN_SPAWN.invoke(gen, cx, cz)) return NOTHING;
+            Random r = (Random) GEN_RAND.get(gen);
+            // MapGenBase reseeds its Random for every chunk it visits, so setting it here changes no later result.
+            r.setSeed(chunkSeed(cx, cz, seed));
+            r.nextInt();
+            StructureStart start = (StructureStart) GET_START.invoke(gen, cx, cz);
+            if (start == null || !start.isSizeableStructure() || start.getBoundingBox() == null) return NOTHING;
+            return box(start);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            // The generator's own code failed: the caller counts the start as present.
+            throw new IllegalStateException(e.getCause());
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
+    }
+
+    private static final Field STRUCTURE_MAP = field(MapGenStructure.class, "field_75053_d", "structureMap");
+
+    /**
+     * Whether the world's village generator itself recorded a start at a chunk, once that chunk's neighbourhood has
+     * generated (scenarios check a prediction against it).
+     *
+     * @return true or false, or null when the world has no village generator to ask
+     */
+    public static Boolean villageRecorded(World world, int cx, int cz) {
+        StructureStarts s = forWorld(world);
+        if (!(s instanceof VanillaStarts) || STRUCTURE_MAP == null) return null;
+        MapGenStructure gen = ((VanillaStarts) s).villageGen.get();
+        if (gen == null) return null;
+        try {
+            Map<?, ?> m = (Map<?, ?>) STRUCTURE_MAP.get(gen);
+            return m.containsKey(net.minecraft.world.ChunkCoordIntPair.chunkXZ2Int(cx, cz));
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return null;
+        }
+    }
+
+    /** The seed {@code MapGenBase#func_151539_a} gives its Random before visiting a chunk. */
+    static long chunkSeed(int cx, int cz, long seed) {
+        Random r = new Random(seed);
+        long a = r.nextLong(), b = r.nextLong();
+        return cx * a ^ cz * b ^ seed;
     }
 
     private int[] villageBox(World world, int cx, int cz, long seed) {
@@ -309,9 +419,7 @@ public final class VanillaStarts implements StructureStarts {
      * before the start is built.
      */
     static Random structureRandom(int cx, int cz, long seed) {
-        Random r = new Random(seed);
-        long a = r.nextLong(), b = r.nextLong();
-        r.setSeed(cx * a ^ cz * b ^ seed);
+        Random r = new Random(chunkSeed(cx, cz, seed));
         r.nextInt();
         return r;
     }

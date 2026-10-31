@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.BiomeDictionary.Type;
@@ -201,25 +200,17 @@ public final class ComplexStartScenarios {
             return state.get(PlanKey.of(plan));
         }
 
-        /** Loads the start chunk and its ring, and looks for the village's cobblestone, planks and gravel paths. */
+        /** Loads the start chunk and its ring; the world's own village generator must then hold that start. */
         private static void villageGrows(World world, StructureStarts.Blocker b, ScenarioResult.Builder out) {
             int cx = b.chunkX, cz = b.chunkZ;
             WorldServer ws = (WorldServer) world;
-            for (int dx = -1; dx <= 2; dx++)
+            for (int dx = -1; dx <= 2; dx++) {
                 for (int dz = -1; dz <= 2; dz++) ws.theChunkProviderServer.loadChunk(cx + dx, cz + dz);
-            int built = 0;
-            for (int x = cx * 16; x < cx * 16 + 16; x++) {
-                for (int z = cz * 16; z < cz * 16 + 16; z++) {
-                    for (int y = 50; y < 120; y++) {
-                        net.minecraft.block.Block k = world.getBlock(x, y, z);
-                        if (k == Blocks.cobblestone || k == Blocks.planks
-                            || k == Blocks.gravel && world.getBlock(x, y + 1, z) == Blocks.air) built++;
-                    }
-                }
             }
+            Boolean recorded = VanillaStarts.villageRecorded(world, cx, cz);
             out.check(
-                built > 20,
-                "the predicted start chunk " + cx + "," + cz + " holds a village (" + built + " village blocks)");
+                Boolean.TRUE.equals(recorded),
+                "the world's village generator recorded the predicted start at chunk " + cx + "," + cz + " (" + recorded + ")");
         }
     }
 
