@@ -43,7 +43,7 @@ final class ComplexFurnisher {
         ComplexFurnisher f = new ComplexFurnisher(plan, rnd);
         f.zones();
         f.lamps();
-        f.hub();
+        f.hub(branchPoints);
         for (Room r : plan.rooms()) f.room(r);
         f.halls(branchPoints);
     }
@@ -236,7 +236,7 @@ final class ComplexFurnisher {
      * straight lane kept clear across from every portal. Its sign (and the activity sign hung under it) keeps the cell
      * in front of it, and the cells either side, clear.
      */
-    private void hub() {
+    private void hub(List<int[]> branchPoints) {
         Room r = plan.hall();
         Box b = r.bounds();
         damage(r, b, r.id());
@@ -253,6 +253,10 @@ final class ComplexFurnisher {
                 k.reserve(a - 1, a + 1, dd - 1, dd + 1);
                 break;
             }
+        }
+        // The hall posts at the hub's branch points (D233) go in first, so the yard is laid around them.
+        for (int[] p : branchPoints) {
+            if (p[2] == r.id()) k.markNear(f.a(p[0], p[1]), f.d(p[0], p[1]), Legend.guard("post"), 'G');
         }
         lay(r, f, k, new Hub());
     }
@@ -342,9 +346,7 @@ final class ComplexFurnisher {
         }
         for (int[] p : branchPoints) {
             Tunnel t = plan.section(p[2]) instanceof Tunnel ? (Tunnel) plan.section(p[2]) : null;
-            if (t != null) solid(t, p[0], p[1], MarkKind.SPAWNER, "post");
-            else if (p[2] == plan.hall()
-                .id()) solid(plan.hall(), p[0], p[1], MarkKind.SPAWNER, "post");
+            if (t != null) solid(t, p[0], p[1], MarkKind.SPAWNER, "post"); // the hub's posts are its blueprint's
         }
         // D36: guards thicken with depth; each silo's walkway and the gallery's far end hold a "deep" post.
         for (SiloSlot s : plan.silos()) {

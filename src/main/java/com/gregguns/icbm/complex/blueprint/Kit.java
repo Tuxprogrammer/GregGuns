@@ -146,6 +146,11 @@ public final class Kit {
         return base[i] == FREE && entry[i] == null && !reserved[i] && !kept[i];
     }
 
+    /** @return the floor state under a cell ({@link #FREE}, {@link #DOORWAY}, {@link #TILE}, {@link #HOLE}) */
+    byte base(int a, int d) {
+        return base[i(a, d)];
+    }
+
     /** @return true for a floor light tile (the furnisher's or the shadow fill's) */
     public boolean tile(int a, int d) {
         return in(a, d) && base[i(a, d)] == TILE;
@@ -192,6 +197,9 @@ public final class Kit {
         return in(a, d) && reserved[i(a, d)];
     }
 
+    /** The width of the hub's lanes: a portal's middle cells, and the cross they meet. */
+    static final int LANE = 5;
+
     /** The door's clear path from the door wall to the back wall, and a path in from every other opening. */
     public void spine() {
         spine(0);
@@ -199,15 +207,37 @@ public final class Kit {
 
     /**
      * The door's clear path from the door wall up to depth {@code stop} (the firing line of a range, the corridor
-     * of a brig), then a path from every other opening (a child's or a loop's door, D278) to it: straight in to the
-     * nearest lamp row, along it to the spine, and the spine on down. The hub, which has no primary door, gets a
-     * straight lane across from each portal instead.
+     * of a brig), then a path from every other opening in the back or door wall (a child's or a loop's door, D278)
+     * to it: straight in to the nearest lamp row, along it to the spine, and the spine on down. A door in a side
+     * wall keeps its doorway zone, and {@link #reachable()} opens the cheapest way to it. The hub, which has no
+     * primary door, gets a cross through its middle and a lane from each portal to it.
      */
     public void spine(int stop) {
         if (primary == null) {
+            // The hub: a cross through the middle, and a lane from each portal's middle to it.
+            int ca = (L - 1) / 2, cd = (D - 1) / 2, w = LANE / 2;
+            reserve(ca - w, ca + w, 0, D - 1);
+            reserve(0, L - 1, cd - w, cd + w);
             for (Opening o : openings) {
-                if (o.wall == Opening.Wall.LEFT || o.wall == Opening.Wall.RIGHT) reserve(0, L - 1, o.lo, o.hi);
-                else reserve(o.lo, o.hi, 0, D - 1);
+                int mid = (o.lo + o.hi) / 2, lo = Math.max(o.lo, mid - w), hi = Math.min(o.hi, mid + w);
+                switch (o.wall) {
+                    case LEFT:
+                        reserve(0, ca, lo, hi);
+                        reserve(ca - w, ca + w, Math.min(lo, cd), Math.max(hi, cd));
+                        break;
+                    case RIGHT:
+                        reserve(ca, L - 1, lo, hi);
+                        reserve(ca - w, ca + w, Math.min(lo, cd), Math.max(hi, cd));
+                        break;
+                    case BACK:
+                        reserve(lo, hi, 0, cd);
+                        reserve(Math.min(lo, ca), Math.max(hi, ca), cd - w, cd + w);
+                        break;
+                    default:
+                        reserve(lo, hi, cd, D - 1);
+                        reserve(Math.min(lo, ca), Math.max(hi, ca), cd - w, cd + w);
+                        break;
+                }
             }
             return;
         }
@@ -217,12 +247,9 @@ public final class Kit {
             if (o.primary) continue;
             switch (o.wall) {
                 case LEFT:
-                    reserve(0, lo - 1, o.lo, o.hi);
-                    top = Math.min(top, o.lo);
-                    break;
                 case RIGHT:
-                    reserve(hi + 1, L - 1, o.lo, o.hi);
-                    top = Math.min(top, o.lo);
+                    // A side door keeps its doorway zone; the reachability pass opens the cheapest way to it, so a
+                    // whole band of beds is not given up for one door.
                     break;
                 case BACK: {
                     int row = aisleBelow(0);
@@ -597,7 +624,8 @@ public final class Kit {
         boolean[] seen = new boolean[L * D];
         ArrayDeque<int[]> q = new ArrayDeque<int[]>();
         for (Opening o : openings) {
-            if (primary != null && !o.primary) continue;
+            // From the doorway; in the hub, from its first portal (every other must then be reached).
+            if (primary != null ? !o.primary : o != openings.get(0)) continue;
             for (int[] c : o.inside(L, D)) {
                 if (!in(c[0], c[1]) || !walk(i(c[0], c[1])) || seen[i(c[0], c[1])]) continue;
                 seen[i(c[0], c[1])] = true;
@@ -625,8 +653,9 @@ public final class Kit {
     }
 
     /**
-     * Clears pieces that wall a chest, machine or guard off from the door, and pieces that cut another opening off
-     * (D278): from each, the shortest way through pieces to a walked cell is cleared, a grouped piece as a whole.
+     * Clears pieces that wall a chest, machine or guard off from the door, pieces that cut another opening off (D278)
+     * and pieces that wall in a pocket of open floor: from each, the shortest way through pieces to a walked cell is
+     * cleared, a grouped piece as a whole.
      */
     public void reachable() {
         boolean[] seen = flood();
@@ -643,6 +672,18 @@ public final class Kit {
                 if (!in(c[0], c[1]) || seen[i(c[0], c[1])]) continue;
                 clearPath(seen, c[0], c[1]);
                 seen = flood();
+            }
+        }
+        // Every open cell too: no pocket of floor walled in by pieces.
+        for (int a = 0; a < L; a++) {
+            for (int d = 0; d < D; d++) {
+                if (seen[i(a, d)] || !walk(i(a, d))) continue;
+                clearPath(seen, a, d);
+                seen = flood();
+                // Walled in by chests or machines alone: a crate fills the cell instead.
+                if (!seen[i(a, d)] && entry[i(a, d)] == null && base[i(a, d)] == FREE && !reserved[i(a, d)]) {
+                    set(a, d, legend.get('k'), 'k', Dir.AUTO, 0);
+                }
             }
         }
     }
@@ -725,7 +766,8 @@ public final class Kit {
             int[] light = light();
             int best = -1;
             for (int i = 0; i < L * D; i++) {
-                if (!walk(i) || light[i] >= MIN_LIGHT || base[i] != FREE || entry[i] != null) continue;
+                if (!walk(i) || light[i] >= MIN_LIGHT || entry[i] != null) continue;
+                if (base[i] != FREE && base[i] != DOORWAY) continue; // a doorway's floor may take a tile too
                 if (best < 0 || light[i] < light[best]) best = i;
             }
             if (best < 0) break;

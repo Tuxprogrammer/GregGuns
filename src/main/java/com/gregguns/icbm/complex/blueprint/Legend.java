@@ -111,7 +111,7 @@ public final class Legend {
 
         /** @return whether light passes the cell at foot height */
         boolean clear() {
-            if (kind == Kind.MARK) return mark != MarkKind.MACHINE;
+            if (kind == Kind.MARK) return mark == MarkKind.LOOT_CHEST; // machines and guard spawners are solid
             if (kind != Kind.PIECE || layers.length == 0 || layers[0] == null) return true;
             return layers[0].clear();
         }

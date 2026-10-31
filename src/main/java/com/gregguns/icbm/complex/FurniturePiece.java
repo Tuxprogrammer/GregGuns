@@ -31,21 +31,21 @@ public enum FurniturePiece {
      * A wooden table, one cell; neighbors join into a long table only on a later neighbor update (generation writes
      * them apart).
      */
-    WOOD_TABLE(Cell.FURN_TABLE, Wear.NORMAL, Flags.CLEAR),
+    WOOD_TABLE(Cell.FURN_TABLE, Wear.NORMAL, 0),
     /** A writing desk; its front faces the chair. */
-    DESK(Cell.FURN_TABLE, Wear.NORMAL, Flags.CLEAR),
+    DESK(Cell.FURN_TABLE, Wear.NORMAL, 0),
     /** A typewriter on a desk or table (the layer above it); its keys face the chair. */
     TYPEWRITER(Cell.AIR, Wear.NORMAL, Flags.CLEAR),
     /** A clipboard hung on the wall above a bunk, a desk or a console. */
     CLIPBOARD(Cell.AIR, Wear.NORMAL, Flags.CLEAR),
     /** A bookcase against a wall. */
-    BOOKCASE(Cell.FURN_SHELF, Wear.NORMAL, Flags.CLEAR),
+    BOOKCASE(Cell.FURN_SHELF, Wear.NORMAL, 0),
     /** A wall shelf. */
-    WALL_SHELF(Cell.FURN_SHELF, Wear.NORMAL, Flags.CLEAR),
+    WALL_SHELF(Cell.FURN_SHELF, Wear.NORMAL, 0),
     /** A medicine cabinet (BiblioCraft's potion shelf). */
-    MEDICINE_SHELF(Cell.FURN_SHELF, Wear.NORMAL, Flags.CLEAR),
+    MEDICINE_SHELF(Cell.FURN_SHELF, Wear.NORMAL, 0),
     /** A tool or rifle rack against a wall. */
-    TOOL_RACK(Cell.FURN_SHELF, Wear.NORMAL, Flags.CLEAR),
+    TOOL_RACK(Cell.FURN_SHELF, Wear.NORMAL, 0),
     /** An armor stand, two cells high: the lower layer. */
     ARMOR_STAND(Cell.AIR, Wear.NORMAL, Flags.CLEAR),
     /** The upper layer of an armor stand. */
@@ -166,7 +166,10 @@ public enum FurniturePiece {
         STATEFUL
     }
 
-    /** Flag bits of a piece. */
+    /**
+     * Flag bits of a piece. A piece whose raster role is a style cube is never {@link #CLEAR}: without its mod the
+     * cube stays, and it casts a shadow.
+     */
     static final class Flags {
 
         /** Light passes the piece (it does not cast a shadow over the floor at foot height). */

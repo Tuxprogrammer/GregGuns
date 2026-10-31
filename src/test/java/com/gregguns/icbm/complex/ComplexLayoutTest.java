@@ -526,10 +526,17 @@ class ComplexLayoutTest {
                         + " x "
                         + zs.size());
                 boolean tall = b.sizeY() > ComplexLayout.MINOR_HEIGHT;
-                int gap = tall ? ComplexFurnisher.TILE_GAP : ComplexFurnisher.LOW_GAP;
+                Object sec = p.section(id);
+                // D305: a room's blueprint sets its gap; the hub and the halls keep the usual one.
+                int roomGap = id != 0 && sec instanceof Room
+                    ? com.gregguns.icbm.complex.blueprint.RoomBlueprints.of(((Room) sec).kind())
+                        .lampGap()
+                    : ComplexFurnisher.TILE_GAP;
+                int gap = tall ? roomGap : ComplexFurnisher.LOW_GAP;
                 assertGrid(xs, b.minX + 1, b.maxX - 2, gap, "x of section " + id);
                 assertGrid(zs, b.minZ + 1, b.maxZ - 2, gap, "z of section " + id);
-                if (tall) assertEquals(ceiling, floor, "a light tile under every ceiling lamp");
+                // A light tile under every ceiling lamp, and the shadow fill's tiles beside them (D305).
+                if (tall) assertTrue(floor.containsAll(ceiling), "a light tile under every ceiling lamp");
                 else assertTrue(floor.isEmpty());
             }
         }
@@ -611,6 +618,11 @@ class ComplexLayoutTest {
             for (int x = 0; x < S; x++) for (int y = 0; y < Y; y++) for (int z = 0; z < S; z++) {
                 byte c = r.at(x, y, z);
                 opaque[(x * Y + y) * S + z] = !(Cell.open(c) || c == Cell.WINDOW);
+            }
+            // D305: a bed, bars, a pane, a cauldron or a rug lets light through; every other prop is opaque.
+            for (Mark m : p.allMarks()) {
+                FurniturePiece fp = m.kind() == MarkKind.FURNITURE ? FurniturePiece.of(m.key()) : null;
+                if (fp != null && fp.clear() && fp.role() == Cell.PROP) opaque[(m.x() * Y + m.y()) * S + m.z()] = false;
             }
             boolean[] occupied = new boolean[S * S];
             for (Mark m : p.allMarks()) {

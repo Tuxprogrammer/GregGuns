@@ -3,9 +3,17 @@ package com.gregguns.icbm.complex.blueprint.rooms;
 import com.gregguns.icbm.complex.LootKeys;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.complex.blueprint.Kit;
+import com.gregguns.icbm.complex.blueprint.Legend;
+import com.gregguns.icbm.complex.blueprint.Module;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 
-/** The hub (the assembly bay). */
+/**
+ * The hub, the assembly bay (D306): a container yard. A clear lane runs straight across from every portal, so the
+ * halls stay joined. Between the lanes, shipping containers (Chisel metal crates, 2 x 3, 2 high) line the walls with
+ * salvage chests between them, and the yard holds rows of containers and crate pallets with chests, a workbench near
+ * the middle, metal props and crates along the side walls, a cache in each corner and three room guards. The cell in
+ * front of the hub's signs is kept clear by the furnisher.
+ */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: the hub); D306
 public final class Hub implements RoomBlueprint {
 
@@ -14,26 +22,28 @@ public final class Hub implements RoomBlueprint {
         int L = k.lateral(), D = k.depth();
         k.defaultLoot(LootKeys.SALVAGE);
         k.spine();
-        int chests = 4 + (L + 2) * (D + 2) / 700;
-        int ring = 2 * (L + D) - 4;
-        for (int i = 0; i < chests; i++) {
-            int[] c = ringCell(L, D, (int) ((i + 0.5) * ring / chests));
-            k.putNear(c[0], c[1], 'C');
-        }
         k.machineNear(L / 2, D / 2, MachineRole.WORKBENCH);
-        k.markNear(3, 3, com.gregguns.icbm.complex.blueprint.Legend.guard("room"), 'G');
-        k.markNear(L - 4, D - 4, com.gregguns.icbm.complex.blueprint.Legend.guard("room"), 'G');
-        k.markNear(3, D - 4, com.gregguns.icbm.complex.blueprint.Legend.guard("room"), 'G');
-    }
-
-    /** @return the n-th interior cell against the walls, clockwise from the back-left corner */
-    static int[] ringCell(int L, int D, int n) {
-        if (n < L - 1) return new int[] { n, 0 };
-        n -= L - 1;
-        if (n < D - 1) return new int[] { L - 1, n };
-        n -= D - 1;
-        if (n < L - 1) return new int[] { L - 1 - n, D - 1 };
-        n -= L - 1;
-        return new int[] { 0, Math.max(0, D - 1 - n) };
+        // The back and front walls: containers two deep with a chest between them.
+        Module wall = k.module("KKK.C", "KKK..");
+        for (int a = 1; a + 4 <= L - 2; a += 6) {
+            k.anchor(a, 0, wall.rows());
+            k.anchor(a, D - 2, "KKK..", "KKK.C");
+        }
+        k.column(0, 3, D - 4, "m.k.C.");
+        k.column(L - 1, 3, D - 4, "C.k.m.");
+        // The yard: container rows and crate pallets in alternate bands.
+        Module containers = k.module("KKK", "KKK"), pallet = k.module("kkC", "kCk");
+        int i = 0;
+        for (int[] b : k.bands(3, D - 4)) {
+            int h = b[1] - b[0] + 1;
+            if (h < 2) continue;
+            Module m = i++ % 2 == 0 ? containers : pallet;
+            k.tile(m, 5, b[0] + (h - 2) / 2, 2, L - 3, 2);
+        }
+        Legend.Entry guard = Legend.guard("room");
+        k.markNear(4, 4, guard, 'G');
+        k.markNear(L - 5, D - 5, guard, 'G');
+        k.markNear(4, D - 5, guard, 'G');
+        k.corners();
     }
 }
