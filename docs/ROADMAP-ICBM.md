@@ -380,7 +380,7 @@ The one owner review before the beta.
 - [ ] The fix list is closed.
 - [x] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
 - [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
-- [ ] The recipe-clash review finds no unresolved clash with ICBM content.
+- [x] The recipe-clash review finds no unresolved clash with ICBM content. Evidence: [icbm-recipe-clash-review.md](gregguns-spec/08-machines-production/icbm-recipe-clash-review.md), exact 0 on a real-pack dump, rerun on the balance pass recipes (D340).
 - [ ] Every ICBM guide sheet matches the code after the balance pass.
 - [x] `modules.icbm` defaults to on (D339). Evidence: `IcbmModuleRulesTest`, `ModulesConfig`, and the no-Galacticraft boot still logs "turns itself off" once (D46).
 - [ ] The milestone review fix list is closed.
