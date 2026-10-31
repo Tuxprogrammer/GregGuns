@@ -27,7 +27,9 @@ class BiblioFurnitureTest {
         FurniturePiece.MEDICINE_SHELF,
         FurniturePiece.TOOL_RACK,
         FurniturePiece.ARMOR_STAND,
-        FurniturePiece.ARMOR_STAND_TOP);
+        FurniturePiece.ARMOR_STAND_TOP,
+        FurniturePiece.DINNER_PLATE,
+        FurniturePiece.COOKIE_JAR);
 
     @Test
     void everyBiblioPieceHasARegistryName() {

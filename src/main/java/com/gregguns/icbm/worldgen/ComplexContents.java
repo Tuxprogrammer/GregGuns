@@ -33,7 +33,13 @@ public final class ComplexContents {
     /** Salts, one per roll family, so two rolls on one cell are independent. */
     private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_SPAWN = 0x59A, S_ELITE = 0xE11,
         S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_ABSENT = 0xAB5,
-        S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_VARIANT = 0x7A2;
+        S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_VARIANT = 0x7A2, S_STOCK = 0x570E;
+
+    /**
+     * Share of working machines whose output slots hold finished work, by state: staffed, in service, mothballed,
+     * gutted (D323). A machine never holds an input or a job in progress.
+     */
+    static final double[] STOCKED = { 0.8, 0.6, 0.3, 0.1 };
 
     private ComplexContents() {}
 
@@ -117,6 +123,16 @@ public final class ComplexContents {
         return kind != RoomKind.GUARD_POST && kind != RoomKind.DECON_AIRLOCK && kind != RoomKind.LAUNCH_CONTROL;
     }
 
+    /**
+     * @param seed  the plan seed
+     * @param room  a room
+     * @param level the complex's level
+     * @return whether the room caves in at this level (its contents, notices and stock are then not written)
+     */
+    public static boolean collapsed(long seed, Room room, ActivityLevel level) {
+        return mayCollapse(room.kind()) && collapseRoll(seed, room.id(), ActivityProfile.of(level));
+    }
+
     /** @return whether a room's collapse roll comes up, before {@link #mayCollapse} is asked */
     static boolean collapseRoll(long seed, int roomId, ActivityProfile p) {
         return Mix.unit(Mix.of(seed, S_COLLAPSE, roomId, 0)) < p.collapseChance();
@@ -193,7 +209,25 @@ public final class ComplexContents {
         int ceiling, Box hall, List<Placement> out, Chests chests, ActivityLevel level) {
         RoomState state = roomState(seed, r.id(), level);
         // The room's look at its state (D309): worn, lit or cold, grown or bare; whole groups at a time.
+        int from = out.size();
         FurnitureWear.room(plan, r.id(), r.kind(), r.marks(), bounds, state, collapsed, seed, ceiling, out);
+        if (!collapsed) {
+            // What the standing pieces hold, by the same state (D323).
+            String table = RoomLoot.table(
+                r.kind() == null ? null
+                    : r.kind()
+                        .name(),
+                null);
+            FurnitureStock.room(
+                r.kind(),
+                r.marks(),
+                state,
+                table,
+                SiloLootTables.categoryName(table, ceiling),
+                seed,
+                new ArrayList<>(out.subList(from, out.size())),
+                out);
+        }
         marks(
             r.marks(),
             state,
@@ -528,9 +562,11 @@ public final class ComplexContents {
             return;
         }
         boolean dead = Mix.unit(Mix.of(seed, S_DEAD, cell, m.y())) < deadChance(state, p);
+        boolean stocked = !dead && Mix.unit(Mix.of(seed, S_STOCK, cell, m.y())) < STOCKED[state.ordinal()];
         out.add(
             Placement.at(Kind.MACHINE, m.x(), m.y(), m.z())
                 .machine(role, machineTier(role, ceiling, h), dead)
+                .stocked(stocked)
                 .variant((int) (Mix.of(seed, S_VARIANT, cell, m.y()) >>> 33))
                 .front(m.facing())
                 .build());

@@ -130,7 +130,7 @@ public final class ChestLootScenarios {
             List<Box> collapsed = new ArrayList<>();
             for (Placement p : ps) {
                 if (p.kind() == Kind.COLLAPSE) collapsed.add(p.box());
-                else last.put(key(p.x(), p.y(), p.z()), p);
+                else if (p.kind() != Kind.STOCK) last.put(key(p.x(), p.y(), p.z()), p);
             }
             Set<String> junkIds = ids(
                 SiloLootTables.junk()

@@ -546,7 +546,7 @@ public final class ComplexLevelScenarios {
             for (Placement p : placements) {
                 if (p.kind() == Kind.COLLAPSE) {
                     collapses.add(p);
-                } else {
+                } else if (p.kind() != Kind.STOCK) { // a piece's stock shares its cell (D323)
                     last.put(key(p.x(), p.y(), p.z()), p);
                 }
             }

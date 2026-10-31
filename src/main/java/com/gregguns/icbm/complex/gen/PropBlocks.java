@@ -150,6 +150,8 @@ public final class PropBlocks {
                 return new Ref(Blocks.tripwire_hook, f);
             case COBWEB:
                 return new Ref(Blocks.web, 0);
+            case FLOWER_POT:
+                return new Ref(Blocks.flower_pot, 0); // the plant is the contents pass's (D323)
             case FARMLAND_CROP:
                 return new Ref(Blocks.farmland, 7);
             case WATER_INLAY:

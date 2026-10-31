@@ -34,7 +34,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 // arrays (0 oak, 1 spruce, 2 birch, 3 jungle, 4 acacia, 5 dark oak;
 // typewriter metas are dye colors, 3 black), the angle rule in each block's onBlockPlacedBy, the armor stand's meta
 // (angle below, angle + 4 above), and these tile-entity NBT keys: seat "Angle", "hasBack", "backWoodType"; table
-// "leg1".."leg4", "top1".."top4", "monoleg" (a lone table: no corner legs, one center leg, all four tops); desk
+// "leg1".."leg4", "top1".."top4", "monoleg" (a lone table: no corner legs, one center leg, all four tops); dinner
+// plate "Angle" (BiblioStuffs meta 2; the cookie jar is meta 0 and has no angle); desk
 // "deskAngle"; typewriter and clipboard "angle"; bookcase "bookcaseAngle"; shelf "genericShelfAngle"; potion shelf
 // "potionshelfAngle"; tool rack "rackAngle".
 // Source: the same structure in the author's MIT-licensed 1.12 code (not the 1.7.10 code; names and keys there can
@@ -76,6 +77,9 @@ public final class BiblioFurniture {
             case ARMOR_STAND:
             case ARMOR_STAND_TOP:
                 return "Armor Stand";
+            case DINNER_PLATE:
+            case COOKIE_JAR:
+                return "BiblioStuffs";
             default:
                 return null; // the locker is GregTech's, the server rack the style's console
         }
@@ -89,9 +93,16 @@ public final class BiblioFurniture {
     /** The typewriter's color: black. */
     static final int TYPEWRITER_BLACK = 3;
 
+    /** BiblioStuffs metas: the cookie jar and the dinner plate (BlockItemStuffsMaster's names, D323). */
+    static final int STUFF_COOKIE_JAR = 0, STUFF_DINNER_PLATE = 2;
+
     /** @return the block meta of a piece */
     static int meta(FurniturePiece p, int wood, int facing) {
         switch (p) {
+            case COOKIE_JAR:
+                return STUFF_COOKIE_JAR;
+            case DINNER_PLATE:
+                return STUFF_DINNER_PLATE;
             case TYPEWRITER:
                 return TYPEWRITER_BLACK;
             case CLIPBOARD:
@@ -143,6 +154,9 @@ public final class BiblioFurniture {
                 break;
             case TOOL_RACK:
                 t.setInteger("rackAngle", angle);
+                break;
+            case DINNER_PLATE:
+                t.setInteger("Angle", angle);
                 break;
             default:
                 break; // the armor stand keeps its facing in its meta

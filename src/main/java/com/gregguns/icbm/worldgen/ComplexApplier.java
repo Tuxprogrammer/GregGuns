@@ -143,6 +143,9 @@ public final class ComplexApplier {
             case BLOCK:
                 block(p, x, y, z);
                 break;
+            case STOCK:
+                stock(p, x, y, z);
+                break;
             default:
                 break;
         }
@@ -276,8 +279,30 @@ public final class ComplexApplier {
                 .build(mteId, front, com.gregguns.icbm.complex.gen.GtMachineHook::claim);
             if (tile == null) return;
             MachineFacingAudit.check(tile, "ComplexApplier.placeMte " + p, x, y, z);
-            if (sink.setTile(x, y, z, tile)) initDefaultModes(tile);
+            if (sink.setTile(x, y, z, tile)) {
+                initDefaultModes(tile);
+                if (p.stocked()) {
+                    GtMachineStock.fill(
+                        tile,
+                        p.tier(),
+                        new java.util.Random(
+                            com.gregguns.worldgen.loot.LootPending
+                                .seed(worldSeed, cellX, cellZ, 0x6D7C0000 ^ (p.x() * 4096 + p.z()) ^ p.y() << 24)));
+                }
+            }
         }
+    }
+
+    /**
+     * A {@link Placement.Kind#STOCK}: what the piece placed in this cell holds (D323), put into its tile entity. Needs
+     * the world (the piece's tile is the world's own); a window without one, or a piece whose mod is absent, is left
+     * as placed.
+     */
+    private void stock(Placement p, int x, int y, int z) {
+        if (world == null || !sink.window()
+            .contains(x, z)) return;
+        net.minecraft.tileentity.TileEntity te = world.getTileEntity(x, y, z);
+        if (FurnitureStocker.fill(te, p, worldSeed, cellX, cellZ, ceiling)) te.markDirty();
     }
 
     /**

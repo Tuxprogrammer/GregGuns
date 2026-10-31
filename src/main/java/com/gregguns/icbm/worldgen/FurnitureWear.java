@@ -17,12 +17,12 @@ import com.gregguns.icbm.complex.gen.MetalProps;
 import com.gregguns.icbm.worldgen.Placement.Kind;
 
 /**
- * How a room's furniture looks at its {@link RoomState} (D309): what is gone, what is rubble, what is lit, grown or
- * dry. A staffed room keeps everything, with lit furnaces, full cauldrons and ripe crops. A room in service has lost a
- * few pieces and its crops are at mixed growth. A mothballed room has lost more, its furnaces are cold, its cauldrons
- * dry and its fields bare dirt with mushrooms (a crop needs light 8, and the room is dark). A gutted room has lost
- * most,
- * with rubble where pieces stood, scavenged metal, stripped containers, dead fields and fresh rubble piles.
+ * How a room's furniture looks at its {@link RoomState} (D309, D323): what is gone, what is rubble, what is lit,
+ * grown or low on water. A staffed room keeps everything, with lit furnaces, full cauldrons and crops sown in turns,
+ * half of them ripe. A room in service has lost a few pieces and its crops are at mixed growth. A mothballed room has
+ * lost more, its furnaces are cold, its cauldrons two-thirds full and its fields bare dirt with mushrooms (a crop needs
+ * light 8, and the room is dark). A gutted room has lost most, with rubble where pieces stood, scavenged metal,
+ * stripped containers, cauldrons a third full, dead fields and fresh rubble piles.
  *
  * <p>
  * Pieces wear by group ({@link FurniturePiece#groupOf}): a bed's two halves, a container prism and a piece's stacked
@@ -168,7 +168,8 @@ public final class FurnitureWear {
         int crop = Math.max(0, FurniturePiece.variantOf(m.key())) % CROPS.length;
         switch (state) {
             case STAFFED:
-                out.add(block(m, m.y() + 1, CROPS[crop], 7));
+                // A worked farm is sown in turns: half the rows ripe, the rest at every stage (owner, alpha 8).
+                out.add(block(m, m.y() + 1, CROPS[crop], v < 0.5 ? 7 : 1 + (int) (u * 7)));
                 return;
             case IN_SERVICE:
                 if (u >= 0.10) out.add(block(m, m.y() + 1, CROPS[crop], 2 + (int) (v * 6)));
@@ -193,7 +194,8 @@ public final class FurnitureWear {
         if (piece == FurniturePiece.FURNACE) {
             if (lit(state)) out.add(block(m, m.y(), "minecraft:lit_furnace", furnaceMeta(m.facing())));
         } else if (piece == FurniturePiece.CAULDRON) {
-            if (lit(state)) out.add(block(m, m.y(), "minecraft:cauldron", 3));
+            // Every cauldron holds water (owner, alpha 8): full in a lit room, lower the longer the room stood shut.
+            out.add(block(m, m.y(), "minecraft:cauldron", cauldronLevel(state)));
         } else if (piece == FurniturePiece.ANVIL) {
             int more = state == RoomState.MOTHBALLED ? 1 : state == RoomState.GUTTED ? 2 : 0;
             if (more > 0) {
@@ -206,6 +208,11 @@ public final class FurnitureWear {
                 || state == RoomState.MOTHBALLED && Mix.unit(Mix.of(seed, S_WEAR, m.x() * 4096L + m.z(), 1)) < 0.5;
             if (open) out.add(block(m, m.y(), "minecraft:iron_door", doorMeta(m.facing()) | 4));
         }
+    }
+
+    /** @return a cauldron's water level (1 to 3) in a room of this state: 3 lit, 2 mothballed, 1 gutted (D323) */
+    public static int cauldronLevel(RoomState state) {
+        return lit(state) ? 3 : state == RoomState.MOTHBALLED ? 2 : 1;
     }
 
     /** @return a furnace's meta (2 north, 3 south, 4 west, 5 east) for a hanging direction (0 S, 1 W, 2 N, 3 E) */

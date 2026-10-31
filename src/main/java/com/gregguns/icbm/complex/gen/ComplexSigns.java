@@ -12,9 +12,13 @@ import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
+import com.gregguns.icbm.complex.Room;
 import com.gregguns.icbm.complex.SiloSlot;
 import com.gregguns.icbm.worldgen.ActivityLevel;
+import com.gregguns.icbm.worldgen.ComplexContents;
 import com.gregguns.icbm.worldgen.ComplexText;
+import com.gregguns.icbm.worldgen.ComplexWriting;
+import com.gregguns.icbm.worldgen.RoomLoot;
 import com.gregguns.icbm.worldgen.SiloCeiling;
 import com.gregguns.worldgen.WindowedSink;
 
@@ -132,7 +136,63 @@ public final class ComplexSigns {
             int[] act = activitySignAt(raster, m);
             if (act != null && sign(sink, ox + act[0], oy + act[1], oz + act[2], act[3], activityText(level))) n++;
         }
+        return n + notices(plan, raster, ox, oy, oz, level, sink);
+    }
+
+    /**
+     * The notices (D324): under each standing room's name sign, a sign the crew posted, by the room's state: a duty
+     * roster or the room's own work while it is worked, a closing notice when mothballed, a last log when gutted
+     * ({@link ComplexWriting#notice}). Written only where the cell is open, holds no piece and has the wall behind it.
+     *
+     * @return how many notices were written
+     */
+    static int notices(ComplexPlan plan, ComplexRaster raster, int ox, int oy, int oz, ActivityLevel level,
+        WindowedSink sink) {
+        int n = 0;
+        for (Room r : plan.rooms()) {
+            if (r.kind() == null || ComplexContents.collapsed(plan.seed(), r, level)) continue;
+            for (Mark m : r.marks()) {
+                if (m.kind() != MarkKind.SIGN || !m.key()
+                    .startsWith("icbm.complex.sign.")) continue;
+                int[] at = noticeAt(raster, r, m);
+                if (at == null || !sink.window()
+                    .contains(ox + at[0], oz + at[2])) continue;
+                long h = plan.seed() * 0x9E3779B97F4A7C15L ^ r.id() * 0xC2B2AE3D27D4EB4FL;
+                h ^= h >>> 29;
+                h *= 0xBF58476D1CE4E5B9L;
+                h ^= h >>> 32;
+                String[] text = ComplexWriting.notice(
+                    ComplexContents.roomState(plan.seed(), r, level),
+                    RoomLoot.row(
+                        r.kind()
+                            .name())
+                        .group(),
+                    h);
+                if (sign(sink, ox + at[0], oy + at[1], oz + at[2], at[3], text)) n++;
+            }
+        }
         return n;
+    }
+
+    /**
+     * @param raster the complex's cells
+     * @param room   the room the name sign belongs to
+     * @param m      the room's name sign mark
+     * @return {x, y, z, meta} in complex-local coordinates of the notice one block under the name sign, or null when
+     *         that cell is not open, a piece stands in it, or no wall is behind it
+     */
+    public static int[] noticeAt(ComplexRaster raster, Room room, Mark m) {
+        int[] at = resolve(raster, m);
+        if (at == null) return null;
+        int y = at[1] - 1;
+        if (y < 1 || raster.at(at[0], y, at[2]) != Cell.AIR) return null;
+        for (Mark o : room.marks()) {
+            if (o.x() == at[0] && o.y() == y && o.z() == at[2]) return null;
+        }
+        int bx = at[0] + (at[3] == 4 ? 1 : at[3] == 5 ? -1 : 0);
+        int bz = at[2] + (at[3] == 2 ? 1 : at[3] == 3 ? -1 : 0);
+        if (!solid(raster.at(bx, y, bz))) return null;
+        return new int[] { at[0], y, at[2], at[3] };
     }
 
     /** @return whether the mark is the hall's own sign, the one that names the complex and its tier */

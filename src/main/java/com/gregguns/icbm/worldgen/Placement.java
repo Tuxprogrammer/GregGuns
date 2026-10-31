@@ -50,7 +50,14 @@ public final class Placement {
          * written over what the marks pass put there (a cold furnace, a crop, coarse dirt, a metal prop, a rubble
          * pile). A name that does not resolve this run tries {@link #fallback()}, then writes nothing.
          */
-        BLOCK
+        BLOCK,
+        /**
+         * What a placed piece of furniture holds (D323): {@link #key()} is the stock source
+         * ({@link FurnitureStock}), {@link #block()} the piece's name, {@link #category()} and {@link #extra()} the
+         * room's chest category and table, {@link #roomState()} the room's state, {@link #variant()} how many things
+         * and {@link #chestIndex()} the seed of its draw. Written after the piece, into its tile entity.
+         */
+        STOCK
     }
 
     /** Extra things a chest may hold beyond its table (D17, D36, D128). */
@@ -94,6 +101,8 @@ public final class Placement {
     private final String block;
     private final int meta;
     private final String fallback;
+    private final boolean stocked;
+    private final String roomKind;
 
     private Placement(Builder b) {
         this.kind = b.kind;
@@ -118,6 +127,18 @@ public final class Placement {
         this.block = b.block;
         this.meta = b.meta;
         this.fallback = b.fallback;
+        this.stocked = b.stocked;
+        this.roomKind = b.roomKind;
+    }
+
+    /** @return the {@code RoomKind.name()} of the room a {@link Kind#STOCK} stands in, else null */
+    public String roomKind() {
+        return roomKind;
+    }
+
+    /** @return for a working machine, whether its output slots hold finished work (D323) */
+    public boolean stocked() {
+        return stocked;
     }
 
     static Builder at(Kind kind, int x, int y, int z) {
@@ -298,6 +319,8 @@ public final class Placement {
         private String block;
         private int meta;
         private String fallback;
+        private boolean stocked;
+        private String roomKind;
 
         private Builder(Kind kind, int x, int y, int z) {
             this.kind = kind;
@@ -373,6 +396,16 @@ public final class Placement {
             block = ref;
             meta = m;
             fallback = fallbackRef;
+            return this;
+        }
+
+        Builder room(String kindName) {
+            roomKind = kindName;
+            return this;
+        }
+
+        Builder stocked(boolean v) {
+            stocked = v;
             return this;
         }
 
