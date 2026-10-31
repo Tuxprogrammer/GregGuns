@@ -26,7 +26,17 @@ public final class ChemLab implements RoomBlueprint {
         k.mirrorStrip(0, 1, L - 2, 1, "MgM.");
         k.column(0, 3, D - 4, "u.C.");
         k.column(L - 1, 3, D - 4, "C.g.");
-        k.bandTile(4, 2, D - 6, 1, L - 2, 1, k.module("sns", "svs", "sus", "sCs"), k.module("sns", "sCs"));
+        k.bandTile(
+            4,
+            2,
+            D - 6,
+            1,
+            L - 2,
+            1,
+            k.module("sns", "svs", "sus", "sCs"),
+            k.module("sns", "svs", "sCs"),
+            k.module("sns", "sCs"),
+            k.module("sns"));
         k.tile(k.module("JJ.JJ"), 6, D - 4, 1, L - 2, 1);
         Works.corners(k);
     }

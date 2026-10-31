@@ -39,7 +39,7 @@ public final class Kit {
 
     private final int L, D;
     private final byte[] base;
-    private final boolean[] reserved, kept;
+    private final boolean[] reserved, kept, core;
     private final Legend.Entry[] entry;
     private final char[] glyph;
     private final Dir[] facing;
@@ -70,6 +70,7 @@ public final class Kit {
         this.base = base.clone();
         this.reserved = new boolean[L * D];
         this.kept = new boolean[L * D];
+        this.core = new boolean[L * D];
         this.entry = new Legend.Entry[L * D];
         this.glyph = new char[L * D];
         this.facing = new Dir[L * D];
@@ -144,6 +145,11 @@ public final class Kit {
         if (!in(a, d)) return false;
         int i = i(a, d);
         return base[i] == FREE && entry[i] == null && !reserved[i] && !kept[i];
+    }
+
+    /** @return true for a strictly kept cell (the NASA Workbench's core, D252), which no walk crosses */
+    public boolean core(int a, int d) {
+        return in(a, d) && core[i(a, d)];
     }
 
     /** @return the floor state under a cell ({@link #FREE}, {@link #DOORWAY}, {@link #TILE}, {@link #HOLE}) */
@@ -349,6 +355,7 @@ public final class Kit {
         int i = i(a, d);
         if (e.kind == Legend.Entry.Kind.KEEP || e.kind == Legend.Entry.Kind.KEEP_STRICT) {
             kept[i] = true;
+            core[i] = e.kind == Legend.Entry.Kind.KEEP_STRICT;
             glyph[i] = c;
             return;
         }
@@ -362,6 +369,7 @@ public final class Kit {
         int i = i(a, d);
         entry[i] = null;
         kept[i] = false;
+        core[i] = false;
         glyph[i] = 0;
         facing[i] = null;
         group[i] = 0;
@@ -403,6 +411,20 @@ public final class Kit {
             }
         }
         return true;
+    }
+
+    /**
+     * Stamps a module as {@link #anchor(Module, int, int)} does, then keeps it only when {@code keep} still holds for
+     * the room with it in place (a blueprint's own rule, such as "nothing new is walled off"); otherwise the stamp is
+     * taken back whole.
+     *
+     * @return whether it was placed and kept
+     */
+    public boolean anchorIf(Module m, int a, int d, java.util.function.Predicate<Kit> keep) {
+        if (!anchor(m, a, d)) return false;
+        if (keep.test(this)) return true;
+        for (Module.Cell c : m.cells) if (c.entry != null) unset(a + c.da, d + c.dd);
+        return false;
     }
 
     /** Stamps rows of the room's legend at (a, d), all or nothing. */

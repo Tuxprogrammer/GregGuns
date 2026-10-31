@@ -339,6 +339,50 @@ class RoomBlueprintTest {
         }
     }
 
+    /**
+     * The 10th, 50th and 90th percentile interiors (by area) of each works, stores and power room over 200 real plans
+     * (cell 2, 2), lateral along the door wall by depth.
+     */
+    private static final Map<String, int[][]> WORKS_SIZES = new LinkedHashMap<String, int[][]>();
+
+    static {
+        WORKS_SIZES.put("GENERATOR_HALL", new int[][] { size(24, 11), size(29, 28), size(46, 52) });
+        WORKS_SIZES.put("AIR_HANDLING", new int[][] { size(18, 13), size(26, 21), size(44, 34) });
+        WORKS_SIZES.put("PUMP_ROOM", new int[][] { size(19, 13), size(34, 20), size(48, 40) });
+        WORKS_SIZES.put("WATER_TREATMENT", new int[][] { size(20, 13), size(30, 24), size(33, 54) });
+        WORKS_SIZES.put("WORKSHOP", new int[][] { size(24, 11), size(30, 24), size(58, 35) });
+        WORKS_SIZES.put("FUEL_DEPOT", new int[][] { size(13, 18), size(38, 18), size(53, 33) });
+        WORKS_SIZES.put("VEHICLE_BAY", new int[][] { size(17, 25), size(25, 44), size(41, 52) });
+        WORKS_SIZES.put("MISSILE_ASSEMBLY", new int[][] { size(24, 18), size(21, 35), size(35, 40) });
+        WORKS_SIZES.put("CHEM_LAB", new int[][] { size(22, 12), size(18, 38), size(57, 36) });
+        WORKS_SIZES.put("INCINERATOR", new int[][] { size(18, 12), size(26, 20), size(44, 32) });
+        WORKS_SIZES.put("STOCKPILE", new int[][] { size(18, 14), size(29, 25), size(37, 52) });
+        WORKS_SIZES.put("ARMORY", new int[][] { size(19, 12), size(29, 18), size(53, 31) });
+        WORKS_SIZES.put("WARHEAD_MAGAZINE", new int[][] { size(18, 15), size(38, 18), size(60, 35) });
+        WORKS_SIZES.put("COLD_STORAGE", new int[][] { size(19, 13), size(36, 17), size(33, 50) });
+    }
+
+    /**
+     * The owner's complaint was dead machine rooms: every works, stores and power room reads busy at the sizes the
+     * grower really makes, with C-rooms §6's typical fill (a quarter of its floor or more, and a fifth of its middle),
+     * every chest and machine reached from the door and no open cell left dark.
+     */
+    @Test
+    void everyWorksRoomIsFullAtItsRealSizes() {
+        for (Map.Entry<String, int[][]> e : WORKS_SIZES.entrySet()) {
+            String kind = e.getKey();
+            for (int[] s : e.getValue()) {
+                Kit k = laid(kind, s[0], s[1]);
+                Kit.Fill f = k.fill();
+                String where = kind + " at " + s[0] + " x " + s[1];
+                assertTrue(f.fill >= 0.25, where + " fill " + f.fill);
+                assertTrue(f.fill <= 0.65, where + " fill " + f.fill);
+                assertTrue(f.center >= 0.2, where + " center " + f.center);
+                check(kind, s[0], s[1]);
+            }
+        }
+    }
+
     /** Prints every C1 room at its drawn size, for the review. */
     @Test
     void printTheMaps() {

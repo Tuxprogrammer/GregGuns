@@ -6,13 +6,15 @@ import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.complex.blueprint.Dir;
 import com.gregguns.icbm.complex.blueprint.Kit;
 import com.gregguns.icbm.complex.blueprint.Legend;
+import com.gregguns.icbm.complex.blueprint.Module;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 
 /**
  * The armory (D289, D305): free-standing display partitions across the room every six rows while they fit, a gun in an
  * item frame every five cells on each face (staggered) with its ammo chest below, with no cap on rows or guns (the cap
  * is lifted for alpha, D309). Ammo chests and crates on the back wall, rifle racks with chests down the left wall,
- * armor stands with chests down the right, chests at the partition ends, cleaning benches at the front.
+ * armor stands with chests down the right, chests at the partition ends, ammo crate islands with a chest in the middle
+ * row between two partitions, cleaning benches at the front.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: Armory); D289; D305
 public final class Armory implements RoomBlueprint {
@@ -41,6 +43,11 @@ public final class Armory implements RoomBlueprint {
         k.anchor(3, D - 4, "TT.TT");
         k.anchor(3, D - 5, "hh.hh");
         k.guards(Works.steps(k), D - 4);
+        // Ammo crate islands with a chest in the middle row between two display partitions (and after the last),
+        // clear of both gun faces and of the cleaning benches.
+        for (int d = 4 + DISPLAY_PITCH / 2; d <= D - 4; d += DISPLAY_PITCH) {
+            Works.pack(k, d, d, 1, 2, new Module[] { k.module("kkCkk"), k.module("kCk"), k.module("k") });
+        }
         Works.corners(k);
         topUpLoot(k, MIN_CHESTS);
     }
