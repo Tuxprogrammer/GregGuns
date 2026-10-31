@@ -19,7 +19,7 @@ public final class WarheadMagazine implements RoomBlueprint {
         k.defaultLoot(LootKeys.MAGAZINE);
         k.spine();
         Works.backContainers(k);
-        k.bandTile(3, 3, D - 3, 1, L - 2, 1, k.module("CX", "XX", "XX", "Xk"), k.module("CX", "Xk"));
+        k.bandTile(3, 3, D - 3, 2, L - 3, 1, k.module("CX", "XX", "XX", "Xk"), k.module("CX", "Xk"));
         int q = Works.steps(k);
         for (int i = 0; i < Math.max(2, 2 * q); i++) {
             k.floorMark(k.pick(7, i, 0, L), 2 + k.pick(8, i, 0, Math.max(1, D - 4)), MarkKind.RUBBLE, "fallout");
