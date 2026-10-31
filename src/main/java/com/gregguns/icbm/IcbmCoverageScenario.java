@@ -45,7 +45,13 @@ final class IcbmCoverageScenario implements Scenario {
      * Registry names (without the {@code gregguns:} domain) of stacks with no recipe by design, each made only by
      * worldgen, loot or a blast. Anything else without a recipe fails the scenario.
      */
-    static final Set<String> NO_RECIPE_BY_DESIGN = new HashSet<>(Arrays.asList());
+    static final Set<String> NO_RECIPE_BY_DESIGN = new HashSet<>(
+        Arrays.asList(
+            // Silo complex walls: placed by worldgen only.
+            "complex_wall",
+            // Nuclear fallout products: a blast makes them from the ground it hits.
+            "trinitite",
+            "fallout_goo"));
 
     static void register(ScenarioRegistry registry) {
         registry.register(new IcbmCoverageScenario());
@@ -74,14 +80,20 @@ final class IcbmCoverageScenario implements Scenario {
         Set<Item> wild = new HashSet<>(ModuleContent.itemsOf(ModuleId.ICBM));
         out.note("ICBM stacks checked: " + stacks.size());
         Set<String> noRecipe = new TreeSet<>();
+        int skipped = 0;
         for (ItemStack s : stacks) {
             String label = s.getUnlocalizedName() + "/" + s.getItemDamage();
-            out.check(!technical(s), label + " is listed in NEI (not a technical item)");
+            if (technical(s)) {
+                // A placeholder or filler cell: hidden from NEI on purpose (GGS-06-26), so it has no page to check.
+                skipped++;
+                continue;
+            }
             if (!(wild.contains(s.getItem()) ? madeAnyDamage(made, s.getItem()) : made.contains(key(s)))
                 && !byDesign(s)) {
                 noRecipe.add(label + " (" + s.getDisplayName() + ")");
             }
         }
+        out.note("technical (hidden from NEI by design): " + skipped);
         for (String miss : noRecipe) {
             out.check(false, "no recipe in any crafting grid or GT map, and not on the by-design list: " + miss);
         }
