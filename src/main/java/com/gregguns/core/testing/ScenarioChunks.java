@@ -11,8 +11,7 @@ import com.gregguns.GregGuns;
 
 /**
  * Keeps a scenario's area loaded with Forge chunk tickets, so projectiles (which end at an unloaded chunk) and
- * multi-tick scenarios behave. <b>Dev environment only:</b> nothing in gameplay code calls this, and
- * {@link #registerCallback()} is reached only when {@code DevEnvironment.testHooksEnabled()}. Server side.
+ * multi-tick scenarios behave. <b>Dev environment only:</b> nothing in gameplay code calls this. Server side.
  *
  * <p>
  * Source: Forge 1.7.10-10.13.4.1614 {@code net.minecraftforge.common.ForgeChunkManager}.
@@ -20,21 +19,15 @@ import com.gregguns.GregGuns;
  * (which throws otherwise, and returns {@code null} past the mod's ticket limit, default 200). A ticket holds at most
  * {@code getMaxChunkListDepth()} chunks (default 25) and unforces the oldest beyond that, so a larger area uses
  * several tickets. {@code forceChunk} pins a chunk and {@code releaseTicket} unpins everything the ticket holds.
- * NORMAL tickets are saved with the world and handed to the callback on the next load; ours releases them all, since a
- * scenario never outlives its server.
+ * NORMAL tickets are saved with the world and handed to the callback on the next load. A mod has one callback, and
+ * GregGuns' is {@code MissileTickets}' (registered at init for every module state): it adopts the ticket of a live
+ * missile in flight and releases every other one, these holds included, since a scenario never outlives its server.
+ * Registering a second callback here would replace it, and a test server would then drop a flying missile's ticket on
+ * a restart instead of adopting it (I7 soak).
  */
 public final class ScenarioChunks {
 
     private ScenarioChunks() {}
-
-    /** Registers the loading callback for the mod. Call once, during init, in the dev environment only. */
-    public static void registerCallback() {
-        ForgeChunkManager.setForcedChunkLoadingCallback(GregGuns.instance, (tickets, world) -> {
-            for (ForgeChunkManager.Ticket t : tickets) {
-                ForgeChunkManager.releaseTicket(t);
-            }
-        });
-    }
 
     /** What {@link #hold} returns; release it when the scenario is over. */
     public static final class Hold {

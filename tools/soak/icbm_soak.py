@@ -9,6 +9,9 @@ Runs on the test box, next to the server. The server's stdin is a FIFO (console.
       the long play soak: three bots (bot.py) visit silo complex sites and sweep fresh land, a missile salvo
       (icbm.soak.salvo) runs every 10 minutes, the server is sampled every 30 s; chunk tickets are counted with no
       player online before and after
+  icbm_soak.py --root R --log L --out O --log2 L2 --start "CMD" restart SCENARIO DELAY SETTLE
+      starts SCENARIO (icbm.soak.salvo), stops the server DELAY seconds later with missiles in the air, starts it
+      again with CMD (which must log to L2), waits SETTLE seconds and checks that no GregGuns chunk ticket is left
   icbm_soak.py --log L --out O report
       writes O/summary.md from the log and O/metrics.csv
 
@@ -212,6 +215,52 @@ def play(srv, out, seconds, port, here):
     return srv.alive()
 
 
+def stat_line(srv, label):
+    """Asks for one soakstat sample and returns it as a dict."""
+    before = srv.count('SOAKSTAT label=' + label + ' ')
+    srv.con('gregguns soakstat ' + label)
+    if not srv.wait('SOAKSTAT label=' + label + ' ', before, 60):
+        return {}
+    for l in reversed(srv.lines()):
+        m = STAT.search(l)
+        if m and m.group(1) == label:
+            return dict(kv.split('=', 1) for kv in m.group(2).split())
+    return {}
+
+
+def restart(srv, out, scenario, delay, settle, start_cmd, log2):
+    """A server restart while missiles fly: their tickets come back with them and are gone once they land."""
+    srv.con('gregguns test ' + scenario)
+    # The salvo sets up, settles and takes its baseline (about 45 s) before it launches.
+    time.sleep(delay)
+    inflight = stat_line(srv, 'restart-inflight')
+    print('in flight before the stop:', inflight.get('flying'), 'tickets', inflight.get('tickets'), flush=True)
+    srv.con('save-all')
+    time.sleep(5)
+    srv.con('stop')
+    end = time.time() + 180
+    while srv.alive() and time.time() < end:
+        time.sleep(2)
+    if srv.alive():
+        print('the server did not stop', flush=True)
+        return False
+    subprocess.run(start_cmd, shell=True, timeout=60)
+    srv2 = Server(srv.root, log2)
+    if not srv2.wait(r'Done \(', 0, 600):
+        print('the server did not come back', flush=True)
+        return False
+    early = stat_line(srv2, 'restart-early')
+    time.sleep(settle)
+    after = stat_line(srv2, 'restart-after')
+    print('after the restart: early', early.get('flying'), 'flying /', early.get('tickets'), 'tickets; after',
+          settle, 's:', after.get('flying'), 'flying /', after.get('tickets'), 'tickets /', after.get('forced'),
+          'forced', flush=True)
+    ok = after.get('tickets') == '0' and after.get('forced') == '0' and after.get('flying') == '0'
+    with open(os.path.join(out, 'restart.txt'), 'w') as f:
+        f.write('inflight %s\nearly %s\nafter %s\nok %s\n' % (inflight, early, after, ok))
+    return ok
+
+
 def report(log, out):
     stats, tps, results = [], [], []
     with open(log, 'rb') as f:
@@ -282,7 +331,9 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--port', default='25690')
     ap.add_argument('--timeout', type=int, default=3600, help='seconds one scenario may take')
-    ap.add_argument('mode', choices=['scenarios', 'play', 'report'])
+    ap.add_argument('--log2', help='restart: the log of the restarted server')
+    ap.add_argument('--start', help='restart: the shell command that starts the server again')
+    ap.add_argument('mode', choices=['scenarios', 'play', 'restart', 'report'])
     ap.add_argument('args', nargs='*')
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
@@ -292,6 +343,10 @@ def main():
         ok = scenarios(Server(a.root, a.log), a.out, a.args, a.timeout)
     elif a.mode == 'play':
         ok = play(Server(a.root, a.log), a.out, float(a.args[0]), a.port, here)
+    elif a.mode == 'restart':
+        ok = restart(Server(a.root, a.log), a.out, a.args[0], float(a.args[1]), float(a.args[2]), a.start, a.log2)
+        print('restart check', 'PASS' if ok else 'FAIL', flush=True)
+        a.log = a.log2 or a.log
     report(a.log, a.out)
     open(os.path.join(a.out, 'finished'), 'w').write('%s %s\n' % (int(time.time()), ok))
     sys.exit(0 if ok else 1)

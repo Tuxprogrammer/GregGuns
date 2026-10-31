@@ -107,7 +107,10 @@ public final class MissileTickets {
         }
     }
 
-    /** Registers the loading callback: tickets loaded from disk are released, a missile asks for its own again. */
+    /**
+     * Registers GregGuns' one chunk-loading callback (a mod has one): a live missile in flight adopts its ticket, every
+     * other GregGuns ticket loaded from disk is released, the scenario holds of a test server included.
+     */
     public static void registerCallback() {
         ForgeChunkManager.setForcedChunkLoadingCallback(GregGuns.instance, MissileTickets::onTicketsLoaded);
     }
