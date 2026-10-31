@@ -40,6 +40,7 @@ import betterquesting.api2.storage.DBEntry;
 import betterquesting.api2.utils.ParticipantInfo;
 import bq_standard.rewards.RewardChoice;
 import bq_standard.rewards.RewardItem;
+import bq_standard.rewards.RewardQuestCompletion;
 import bq_standard.tasks.TaskCrafting;
 import bq_standard.tasks.TaskOptionalRetrieval;
 import bq_standard.tasks.TaskRetrieval;
@@ -61,7 +62,8 @@ import gregtech.api.util.GTRecipe;
  * {@code detect} afterwards tells a listener problem from an item mismatch). A crafting task gets the crafting
  * event the game fires;</li>
  * <li>picks a choice, claims, and checks every reward item arrived with its damage and NBT, that no task or reward
- * item is BetterQuesting's missing-item placeholder, and notes a reward whose NBT matches no recipe's output.</li>
+ * item is BetterQuesting's missing-item placeholder, that a quest-completion reward completes its quest, and notes a
+ * reward whose NBT matches no recipe's output.</li>
  * </ol>
  * Each quest logs one {@code I7Q} line.
  */
@@ -271,6 +273,7 @@ final class I7QuestWalk implements ScenarioPoller {
         }
         p.inventory.clearInventory(null, -1);
         List<ItemStack> expected = new ArrayList<>();
+        List<UUID> completes = new ArrayList<>();
         for (DBEntry<IReward> entry : q.getRewards()
             .getEntries()) {
             IReward r = entry.getValue();
@@ -288,6 +291,14 @@ final class I7QuestWalk implements ScenarioPoller {
                     c.setSelection(pid, sel);
                     expected.addAll(rewardStacks(key, c.choices.get(sel)));
                 }
+            } else if (r instanceof RewardQuestCompletion) {
+                // Reset the target first, so the check below sees this reward complete it.
+                UUID target = ((RewardQuestCompletion) r).questNum;
+                IQuest tq = target == null ? null : db().get(target);
+                if (tq != null) {
+                    tq.resetUser(pid, true);
+                }
+                completes.add(target);
             } else {
                 out.note(
                     key + ": reward type "
@@ -318,6 +329,13 @@ final class I7QuestWalk implements ScenarioPoller {
         }
         if (!missing.isEmpty()) {
             fail(key, "rewards not delivered: " + missing);
+        }
+        for (UUID done : completes) {
+            IQuest target = done == null ? null : db().get(done);
+            if (target == null || !target.isComplete(pid)) {
+                missing.add("completion of " + done);
+                fail(key, "the quest-completion reward did not complete " + done);
+            }
         }
         out.check(q.hasClaimed(pid), key + ": marked claimed");
         boolean ok = missing.isEmpty() && could && q.hasClaimed(pid);
