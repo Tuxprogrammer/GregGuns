@@ -68,8 +68,30 @@ public final class FixtureWriter {
         this.plates = plates;
     }
 
+    /** Time spent in {@link #write}, all windows together, for the cost lines of the scenarios (D236). */
+    private static final java.util.concurrent.atomic.AtomicLong SPENT = new java.util.concurrent.atomic.AtomicLong();
+
+    /** @return the nanoseconds every {@link #write} so far has taken, with the plans counted in */
+    public static long spentNanos() {
+        return SPENT.get();
+    }
+
+    /** @param nanos time spent planning a complex's fixtures ({@link ComplexFixtures#build}), counted in the total */
+    public static void addSpent(long nanos) {
+        SPENT.addAndGet(nanos);
+    }
+
     /** @param f the fixtures of the complex; each one is written where it lies inside the window */
     public void write(ComplexFixtures f) {
+        long t0 = System.nanoTime();
+        try {
+            writeAll(f);
+        } finally {
+            SPENT.addAndGet(System.nanoTime() - t0);
+        }
+    }
+
+    private void writeAll(ComplexFixtures f) {
         for (BlastDoor d : f.doors()) door(d);
         for (Run r : f.runs()) run(r);
         ItemStack frame = trayFrame();

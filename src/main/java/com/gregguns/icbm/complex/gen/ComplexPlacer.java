@@ -431,7 +431,9 @@ public final class ComplexPlacer implements ComplexWriter {
         String key = cacheKey(plan);
         ComplexFixtures f = fixturesCache.remove(key);
         if (f == null) {
+            long t0 = System.nanoTime();
             f = ComplexFixtures.build(raster, levelOf(plan), tierCasingsOf(plan));
+            FixtureWriter.addSpent(System.nanoTime() - t0);
             if (fixturesCache.size() >= CACHED) fixturesCache.remove(
                 fixturesCache.keySet()
                     .iterator()
