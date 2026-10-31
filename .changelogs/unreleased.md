@@ -162,6 +162,11 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Activity levels now roll 30% abandoned, 40% partly abandoned and 30% operational (`icbm.siloComplexActivityWeights` default `30, 40, 30`; a server that keeps the old line in its config keeps the old odds). Each complex rolls once, when it is first placed, and keeps its level if the weights change later. Complexes placed before this update roll their level with the current weights.
 - `/gregguns locate complex` shows each built complex's activity level and how much deeper it lies under a village.
 
+## Fixed: silo complex shafts and foundations
+
+- A silo's bore is open from its launch pad to the surface: no complex wall stands inside a silo, and trees, snow, glow lichen and other growth that later terrain generation puts into a bore or onto its cap is cleared once the land around the silo has generated. The concrete cap still closes the shaft, half closes it or leaves it open by the complex's activity level.
+- Every room, hall and tunnel stands on its own foundation, with solid fill behind its walls and over its ceiling, so caves never open under a floor or beside a wall.
+
 ## Changed: NPC drops
 
 - GregGuns NPCs no longer drop the gun they hold as a vanilla equipment drop. Instead, a player kill drops a copy of the gun at 2%, plus 1% per Looting level (never from bosses).

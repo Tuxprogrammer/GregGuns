@@ -85,6 +85,10 @@ public final class IcbmModule implements GregGunsModule {
         GregGuns.LOG.info("ICBM module active (Galacticraft present)");
         com.gregguns.worldgen.StructureGenerator
             .setComplexWriter(com.gregguns.icbm.complex.gen.ConfigSettings.writer());
+        // The silo mouth finish (D319) runs from the world tick, once a mouth's surroundings have populated.
+        cpw.mods.fml.common.FMLCommonHandler.instance()
+            .bus()
+            .register(new com.gregguns.icbm.complex.gen.SiloMouthKeeper.Ticker());
         WarheadRegistration.init();
         com.gregguns.icbm.missile.MissileRegistration.init();
         com.gregguns.icbm.production.MissileRecipes.init();

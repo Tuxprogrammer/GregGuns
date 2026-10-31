@@ -139,6 +139,7 @@ class ComplexPlacerTest {
             settings).withContents(false);
         Result r = new Result();
         currentMarks = r.marks;
+        if (readBack != null) readBack = r.cells;
         List<int[]> order = new ArrayList<>();
         for (int cx = Math.floorDiv(plan.anchorX() - 8, 16) - 1; cx
             <= Math.floorDiv(plan.anchorX() + 240 - 8, 16) + 1; cx++) {
@@ -197,7 +198,23 @@ class ComplexPlacerTest {
     /** A lake bed over part of the footprint: x0, z0, x1, z1 (exclusive) and its floor y, or null for none. */
     private int[] lake;
 
+    /**
+     * When set, the probe reads columns back as the windows before left them (natural ground at {@link #GROUND} under
+     * what they wrote), as the real probe does: a window then sees the bores its neighbors already opened.
+     */
+    private Map<String, String> readBack;
+
     private int seaFloorAt(int x, int z) {
+        if (readBack != null) {
+            String airId = Integer.toString(System.identityHashCode(air));
+            Block role = named.get("c" + Cell.AIR);
+            String airRole = role == null ? airId : Integer.toString(System.identityHashCode(role));
+            for (int y = GROUND; y >= 0; y--) {
+                String v = readBack.get(x + "," + y + "," + z);
+                if (v == null || !v.startsWith(airId + ":") && !v.startsWith(airRole + ":")) return y;
+            }
+            return HeightProbe.NONE;
+        }
         if (lake != null && x >= lake[0] && z >= lake[1] && x < lake[2] && z < lake[3]) return lake[4];
         return seaFloor;
     }
@@ -402,6 +419,114 @@ class ComplexPlacerTest {
         assertEquals(0, under, "nothing of the level is written under such ground");
         assertEquals(0, valley.outside);
         assertTrue(run(p, false).cells.size() > 20_000, "and the same plan writes normally on ordinary ground");
+    }
+
+    /**
+     * S3-2: a window that reads a neighbor's bore after that window opened it saw a column whose ground lay at the pad,
+     * so it took the bore for a cut-off lake bed and walled up the silo's inside beside it. A bore is never a cut-off
+     * neighbor and a silo's inside is never sealed: no wall inside any silo, in either window order, and both orders
+     * agree.
+     */
+    @Test
+    void aWrittenBoreNeverWallsUpTheSiloBesideIt() {
+        StructurePlan p = plan();
+        readBack = new HashMap<>();
+        Result fwd, back;
+        try {
+            fwd = run(p, false);
+            readBack = new HashMap<>();
+            back = run(p, true);
+        } finally {
+            readBack = null;
+        }
+        int differ = 0;
+        String firstDiffer = null;
+        java.util.Set<String> keys = new java.util.HashSet<>(fwd.cells.keySet());
+        keys.addAll(back.cells.keySet());
+        for (String k : keys) {
+            if (!java.util.Objects.equals(fwd.cells.get(k), back.cells.get(k))) {
+                differ++;
+                if (firstDiffer == null) firstDiffer = k;
+            }
+        }
+        assertEquals(0, differ, "the window order does not change the level; first cell that differs: " + firstDiffer);
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        int floor = GROUND - ComplexPlacer.DEPTH;
+        String airId = Integer.toString(System.identityHashCode(air));
+        // The level's AIR role goes through the test resolver (its own block); the bore over it is the resolver's air.
+        String airRole = Integer.toString(System.identityHashCode(named.get("c" + Cell.AIR)));
+        int checked = 0;
+        for (Result r : new Result[] { fwd, back }) {
+            for (com.gregguns.icbm.complex.SiloSlot s : cp.silos()) {
+                int sx = p.anchorX() + s.bounds().minX, sz = p.anchorZ() + s.bounds().minZ;
+                for (int x = sx + 1; x <= sx + 3; x++) {
+                    for (int z = sz + 1; z <= sz + 3; z++) {
+                        for (int y = floor + 1; y < GROUND; y++) {
+                            String v = r.cells.get(x + "," + y + "," + z);
+                            assertTrue(
+                                v != null && (v.startsWith(airId + ":") || v.startsWith(airRole + ":")),
+                                "the bore is air from the pad to the surface at " + x + "," + y + "," + z + ": " + v);
+                            checked++;
+                        }
+                    }
+                }
+            }
+        }
+        assertTrue(checked > 1000, "silos checked: " + checked);
+    }
+
+    /**
+     * S3-4: every column the level uses stands on the foundation, and every rock cell beside the level or over a
+     * ceiling is the complex's own solid, so no cave opens onto a floor, wall or ceiling.
+     */
+    @Test
+    void theLevelHasAFoundationUnderItAndSolidBesideAndOverIt() {
+        StructurePlan p = plan();
+        Result r = run(p, false);
+        ComplexRaster raster = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p);
+        ComplexPlan cp = raster.plan();
+        int floor = GROUND - ComplexPlacer.DEPTH;
+        String found = Integer.toString(System.identityHashCode(named.get("foundation")));
+        int ex = cp.escapeX(), ez = cp.escapeZ();
+        int under = 0, beside = 0, past = 0;
+        int size = com.gregguns.icbm.complex.ComplexLayout.SIZE;
+        for (int lx = -1; lx <= size; lx++) {
+            for (int lz = -1; lz <= size; lz++) {
+                int x = p.anchorX() + lx, z = p.anchorZ() + lz;
+                // A column past the box carries the skin only where its window also holds part of the box: the
+                // window beyond a box edge that falls on a window edge never runs the complex.
+                boolean outside = lx < 0 || lz < 0 || lx >= size || lz >= size;
+                if (outside && !new PopulateWindow(Math.floorDiv(x - 8, 16), Math.floorDiv(z - 8, 16))
+                    .overlapsBox(p.anchorX(), p.anchorZ(), p.anchorX() + size - 1, p.anchorZ() + size - 1)) continue;
+                boolean used = false;
+                for (int y = 0; y < ComplexRaster.LEVELS; y++) used |= raster.at(lx, y, lz) != Cell.NONE;
+                if (used) {
+                    String v = r.cells.get(x + "," + (floor - 1) + "," + z);
+                    assertTrue(v != null && v.startsWith(found + ":"), "foundation under " + lx + "," + lz);
+                    under++;
+                }
+                // The escape column and the one behind it belong to the ladder from its top up.
+                boolean ladder = Math.abs(lx - ex) + Math.abs(lz - ez) <= 1;
+                for (int y = 0; y < ComplexRaster.LEVELS; y++) {
+                    if (raster.at(lx, y, lz) != Cell.NONE || ladder && y >= cp.escapeTop()) continue;
+                    boolean next = raster.at(lx + 1, y, lz) != Cell.NONE || raster.at(lx - 1, y, lz) != Cell.NONE
+                        || raster.at(lx, y, lz + 1) != Cell.NONE
+                        || raster.at(lx, y, lz - 1) != Cell.NONE
+                        || y > 0 && raster.at(lx, y - 1, lz) != Cell.NONE;
+                    if (!next) continue;
+                    String v = r.cells.get(x + "," + (floor + y) + "," + z);
+                    assertTrue(
+                        v != null && v.startsWith(found + ":"),
+                        "solid beside the level at " + lx + "," + y + "," + lz);
+                    beside++;
+                    if (outside) past++;
+                }
+            }
+        }
+        assertTrue(under > 10_000 && beside > 5_000, "foundation " + under + ", skin " + beside);
+        assertTrue(past > 0, "sections on the box's edge get the skin past it: " + past);
+        assertEquals(0, r.duplicates, "the skin never takes a cell another pass writes");
     }
 
     @Test

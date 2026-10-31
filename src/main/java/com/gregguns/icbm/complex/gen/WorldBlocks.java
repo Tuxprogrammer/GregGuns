@@ -102,6 +102,11 @@ public final class WorldBlocks implements BlockResolver {
                 return concrete(SILO_METAS, x, y, z);
             case "ladder":
                 return new ResolvedBlock(Blocks.ladder, 2, false);
+            case "foundation":
+                // The complex's own skin under its floors, behind its walls and over its ceilings (D320): the complex
+                // wall block, so a cave beside the level shows the structure's concrete and no machine-update search
+                // starts (D205).
+                return new ResolvedBlock(BlockComplexWall.instance(), 0, false);
             case "backing":
                 // Plain stone behind the escape ladder, so it still has something to cling to where the shaft
                 // crosses a cave.
