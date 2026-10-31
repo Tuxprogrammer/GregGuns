@@ -347,16 +347,20 @@ public final class LocateScenarios {
             } finally {
                 IcbmConfig.siloComplexChancePercent = chance;
             }
+            // The nearest built complex there: the one generate just built, or one an earlier run left.
             StructurePlan built = null;
-            for (IChatComponent l : cap.lines) {
-                if (!key(l).equals("gregguns.locate.progress")) continue;
-                Object[] a = args(l);
-                java.util.Optional<StructurePlan> p = StructurePopulator
-                    .complexGridPlanAt(world.getSeed(), world.provider.dimensionId, (Integer) a[3], (Integer) a[4]);
-                Decision d = p.isPresent() ? state.get(PlanKey.of(p.get())) : null;
-                if (d != null && d.isPlaced()) {
-                    built = p.get();
-                    break;
+            int c0 = StructureLocator.cellOf(REBUILD_AT);
+            long best = Long.MAX_VALUE;
+            for (int cx = c0 - 3; cx <= c0 + 3; cx++) {
+                for (int cz = c0 - 3; cz <= c0 + 3; cz++) {
+                    java.util.Optional<StructurePlan> p = StructurePopulator
+                        .complexPlanAt(world.getSeed(), world.provider.dimensionId, cx, cz, 100);
+                    Decision d = p.isPresent() ? state.get(PlanKey.of(p.get())) : null;
+                    long dist = (long) (cx - c0) * (cx - c0) + (long) (cz - c0) * (cz - c0);
+                    if (d != null && d.isPlaced() && dist < best) {
+                        best = dist;
+                        built = p.get();
+                    }
                 }
             }
             out.check(built != null, "a complex was built near " + REBUILD_AT + " to rebuild");
