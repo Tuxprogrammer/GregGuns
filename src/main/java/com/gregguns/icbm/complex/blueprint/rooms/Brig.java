@@ -5,13 +5,15 @@ import com.gregguns.icbm.complex.LootKeys;
 import com.gregguns.icbm.complex.blueprint.Dir;
 import com.gregguns.icbm.complex.blueprint.Kit;
 import com.gregguns.icbm.complex.blueprint.Legend;
+import com.gregguns.icbm.complex.blueprint.Opening;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 
 /**
  * The brig (D305): a row of cells along the back wall, each 3 x 4 inside behind iron bars, with a bunk (a bed, no foot
  * chest), a cauldron and a closed iron door; a second row facing the first across a 3-wide corridor in a deep room.
  * Guard desks with consoles face the cells, evidence lockers and chests line the side walls, an interrogation table
- * and crates fill the front. The spine runs only from the door to the corridor.
+ * and crates fill the front. The spine runs only from the door to the corridor, and no cell stands across another
+ * door's way in.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: Brig); D305
 public final class Brig implements RoomBlueprint {
@@ -45,6 +47,31 @@ public final class Brig implements RoomBlueprint {
     }
 
     /**
+     * @return whether the cell at a0 (rows d0 to d0 + 4) would stand across another door's way in: a door in the back
+     *         wall behind it, or a door in the side wall beside it
+     */
+    static boolean blocksAnOpening(Kit k, int a0, int d0, boolean flipped) {
+        int L = k.lateral();
+        for (Opening o : k.openings()) {
+            if (o.primary) continue;
+            switch (o.wall) {
+                case BACK:
+                    if (!flipped && o.hi >= a0 - 1 && o.lo <= a0 + PITCH) return true;
+                    break;
+                case LEFT:
+                    if (a0 == 0 && o.hi >= d0 - 1 && o.lo <= d0 + 5) return true;
+                    break;
+                case RIGHT:
+                    if (a0 + PITCH >= L - 1 && o.hi >= d0 - 1 && o.lo <= d0 + 5) return true;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return false;
+    }
+
+    /**
      * A row of cells, 5 rows deep from d0: the bunk and the cauldron inside, bars between cells and along the front,
      * the door in the front bars. Facing the room's back (the first row) or its front (the second, mirrored in depth).
      */
@@ -55,6 +82,7 @@ public final class Brig implements RoomBlueprint {
             .facing(flipped ? Dir.TO_BACK : Dir.TO_DOOR);
         for (int a0 = 0; a0 + PITCH - 1 < L; a0 += PITCH) {
             int wall = a0 + PITCH - 1;
+            if (blocksAnOpening(k, a0, d0, flipped)) continue; // the way in from another door stays open
             for (int d = d0; d <= d0 + 4; d++) k.put(wall, d, 'x');
             for (int a = a0; a < wall; a++) if (a != a0 + 1) k.put(a, bars, 'x');
             // The door, or beside it when a light tile lies under its place.

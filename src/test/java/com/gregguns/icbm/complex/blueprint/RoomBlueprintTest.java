@@ -202,7 +202,8 @@ class RoomBlueprintTest {
         if (!low(kind)) {
             int[] light = k.light();
             for (int i = 0; i < L * D; i++) {
-                if (walk[i]) assertTrue(light[i] >= Kit.MIN_LIGHT, "dark cell " + where + " at " + i / D + "," + i % D);
+                if (k.lit(i))
+                    assertTrue(light[i] >= Kit.MIN_LIGHT, "dark cell " + where + " at " + i / D + "," + i % D);
             }
         }
         if ("BUNKS".equals(kind) || "INFIRMARY".equals(kind)) assertTrue(beds >= 4, where + ": beds " + beds);
