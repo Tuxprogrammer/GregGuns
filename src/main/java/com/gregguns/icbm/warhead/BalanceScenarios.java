@@ -71,12 +71,20 @@ final class BalanceScenarios {
     private static String unready(World w, EntityCow... mobs) {
         for (EntityLivingBase m : mobs) {
             if (m.isDead || !w.loadedEntityList.contains(m)) {
-                return m.getClass()
-                    .getSimpleName() + " is not in the world after "
-                    + SETTLE_TICKS
-                    + " ticks (dead "
-                    + m.isDead
-                    + ")";
+                // Removed (health left) or killed (none left), where, and what it stood in: enough to name the cause.
+                return String.format(
+                    "%s is not in the world after %d ticks (dead %s, health %.0f, ticked %d, at %.1f %.1f %.1f in %s)",
+                    m.getClass()
+                        .getSimpleName(),
+                    SETTLE_TICKS,
+                    m.isDead,
+                    m.getHealth(),
+                    m.ticksExisted,
+                    m.posX,
+                    m.posY,
+                    m.posZ,
+                    w.getBlock((int) Math.floor(m.posX), (int) Math.floor(m.posY), (int) Math.floor(m.posZ))
+                        .getUnlocalizedName());
             }
             if (m.ticksExisted <= 0) {
                 return m.getClass()
@@ -84,6 +92,25 @@ final class BalanceScenarios {
                     + SETTLE_TICKS
                     + " ticks";
             }
+        }
+        return null;
+    }
+
+    /**
+     * The vanilla server removes the measuring mobs on their first tick when its settings forbid them
+     * ({@code WorldServer} sets an animal dead under {@code spawn-animals=false}, and peaceful removes the Wither). A
+     * blast that lands before that tick deals its damage and the kill zone reads as a pass, one that lands after reads
+     * 0, so the scenarios cannot measure anything on such a server (D344).
+     *
+     * @return why this server cannot hold the measuring mobs, or null when it can
+     */
+    private static String unfitServer(World w) {
+        net.minecraft.server.MinecraftServer server = net.minecraft.server.MinecraftServer.getServer();
+        if (server != null && !server.getCanSpawnAnimals()) {
+            return "the server has spawn-animals=false, which removes the measuring cow on its first tick";
+        }
+        if (w.difficultySetting == net.minecraft.world.EnumDifficulty.PEACEFUL) {
+            return "the world is on peaceful, which removes the Wither";
         }
         return null;
     }
@@ -158,6 +185,10 @@ final class BalanceScenarios {
             final ExplosiveDef def = Explosives.get(blast.id());
             if (def == null) {
                 return ScenarioResult.fail(name(), "the ICBM content is not registered");
+            }
+            String unfit = unfitServer(ctx.world());
+            if (unfit != null) {
+                return ScenarioResult.skip(name(), unfit);
             }
             ctx.clearArea(36, 20);
             floor(ctx, 36);
@@ -277,6 +308,10 @@ final class BalanceScenarios {
             final ExplosiveDef def = Explosives.get(blast.id());
             if (def == null) {
                 return ScenarioResult.fail(name(), "the ICBM content is not registered");
+            }
+            String unfit = unfitServer(ctx.world());
+            if (unfit != null) {
+                return ScenarioResult.skip(name(), unfit);
             }
             ctx.clearArea(36, 20);
             floor(ctx, 36);
