@@ -493,7 +493,7 @@ public final class I6VisualSetups {
 
         @Override
         public String description() {
-            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, silocam, hatchradar, breakblock, shellcheck, planet, dim). Not part of test all.";
+            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, silocam, hatchradar, breakblock, shellcheck, planet, dim, complexinfo). Not part of test all.";
         }
 
         @Override
@@ -562,7 +562,10 @@ public final class I6VisualSetups {
                     break;
                 }
                 case "cut":
-                    cut(lastWorld, t);
+                    cut(lastWorld != null ? lastWorld : ctx.world(), t);
+                    break;
+                case "complexinfo":
+                    complexInfo(player(t[1]));
                     break;
                 case "sig": {
                     EntityPlayerMP p = player(t[1]);
@@ -691,6 +694,107 @@ public final class I6VisualSetups {
                     GregGuns.LOG.warn("I6C unknown op {}", t[0]);
             }
         }
+    }
+
+    /**
+     * {@code complexinfo <player>}: for the naturally generated complex over the player's chunk, logs its floor, every
+     * silo (shaft, footprint, variant, bore cells that are not air from the pad to the top of its ring) and every
+     * room's
+     * world box, and how many silo mouths still wait for their finish (D319). For shots of a real-pack world.
+     */
+    private static void complexInfo(EntityPlayerMP p) {
+        World w = p.worldObj;
+        int cx = Math.floorDiv((int) Math.floor(p.posX), 16), cz = Math.floorDiv((int) Math.floor(p.posZ), 16);
+        com.gregguns.worldgen.ComplexWriter writer = com.gregguns.worldgen.StructureGenerator.complexWriter();
+        if (!(writer instanceof ComplexPlacer)) {
+            GregGuns.LOG.info("I6C complexinfo: no complex writer");
+            return;
+        }
+        ComplexPlacer placer = (ComplexPlacer) writer;
+        StructureState state = StructureState.forWorld(w);
+        for (StructurePlan plan : StructurePopulator
+            .complexPlans(w.getSeed(), w.provider.dimensionId, cx, cz, writer.chancePercent(), state)) {
+            com.gregguns.worldgen.Decision d = state.get(com.gregguns.worldgen.PlanKey.of(plan));
+            if (d == null || !d.isPlaced()) {
+                GregGuns.LOG.info("I6C complexinfo cell {},{}: not placed ({})", plan.cellX(), plan.cellZ(), d);
+                continue;
+            }
+            placer.enabledIn(w);
+            int floor = ComplexPlacer.floorY(w, d.groundY(), d.sink());
+            ComplexPlan cp = placer.rasterOf(plan)
+                .plan();
+            int ax = plan.anchorX(), az = plan.anchorZ();
+            GregGuns.LOG.info(
+                "I6C complexinfo cell {},{} anchor {},{} floor {} sink {} level {} silos {} rooms {}",
+                plan.cellX(),
+                plan.cellZ(),
+                ax,
+                az,
+                floor,
+                d.sink(),
+                placer.levelOf(plan),
+                cp.silos()
+                    .size(),
+                cp.rooms()
+                    .size());
+            int i = 0;
+            for (SiloSlot s : cp.silos()) {
+                int sx = ax + s.bounds().minX, sz = az + s.bounds().minZ;
+                int notAir = 0, top = floor;
+                // The ring column's highest concrete is the surface the shaft was written to.
+                for (int y = floor + 12; y < 250; y++) {
+                    if (w.getBlock(sx, y, sz) == gregtech.api.GregTechAPI.sBlockConcretes) top = y;
+                }
+                StringBuilder where = new StringBuilder();
+                for (int x = sx + 1; x <= sx + 3; x++) {
+                    for (int z = sz + 1; z <= sz + 3; z++) {
+                        for (int y = floor + 1; y < top; y++) {
+                            if (w.getBlock(x, y, z) != Blocks.air) {
+                                notAir++;
+                                if (where.length() < 200) where.append(' ')
+                                    .append(x)
+                                    .append(',')
+                                    .append(y)
+                                    .append(',')
+                                    .append(z)
+                                    .append('=')
+                                    .append(Block.blockRegistry.getNameForObject(w.getBlock(x, y, z)));
+                            }
+                        }
+                    }
+                }
+                GregGuns.LOG.info(
+                    "I6C complexinfo silo {} shaft {},{} footprint {},{} facing {} variant {} ring top {} bore cells not air {}{}",
+                    ++i,
+                    ax + s.shaftX(),
+                    az + s.shaftZ(),
+                    sx,
+                    sz,
+                    s.facing(),
+                    s.variant(),
+                    top,
+                    notAir,
+                    where);
+            }
+            for (Room r : cp.rooms()) {
+                Box b = r.bounds();
+                GregGuns.LOG.info(
+                    "I6C complexinfo room {} {} x {}..{} z {}..{} h {}",
+                    r.id(),
+                    r.kind(),
+                    ax + b.minX,
+                    ax + b.maxX - 1,
+                    az + b.minZ,
+                    az + b.maxZ - 1,
+                    b.sizeY());
+            }
+        }
+        com.gregguns.icbm.complex.gen.SiloMouths m = com.gregguns.icbm.complex.gen.SiloMouths.forWorld(w, false);
+        GregGuns.LOG.info(
+            "I6C complexinfo mouths waiting for their finish: {}",
+            m == null ? 0
+                : m.pending()
+                    .size());
     }
 
     /** {@code cut x0 z0 x1 z1 y0 y1}: air in the box, direct writes (the roof cut-away for overviews). */
