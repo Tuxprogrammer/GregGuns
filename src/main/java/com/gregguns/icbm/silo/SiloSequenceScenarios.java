@@ -53,6 +53,7 @@ final class SiloSequenceScenarios {
         registry.register(new AnyOrder());
         registry.register(new BreakMidway());
         registry.register(new Shots());
+        SiloAbortScenarios.registerAll(registry);
     }
 
     // --- helpers ---------------------------------------------------------------------------------------------------
@@ -123,7 +124,7 @@ final class SiloSequenceScenarios {
                 .equals(r);
     }
 
-    private static String statusOf(MTEMissileSilo s) {
+    static String statusOf(MTEMissileSilo s) {
         CheckRecipeResult r = s.getCheckRecipeResult();
         net.minecraft.nbt.NBTTagCompound tag = r.writeToNBT(new net.minecraft.nbt.NBTTagCompound());
         return r.getID() + tag;
