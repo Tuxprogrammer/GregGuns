@@ -44,4 +44,10 @@ public class CompatConfig {
         "LootBags.xml is never written. Turn off only if the pack defines these groups itself. Needs",
         "EnhancedLootBags; ignored without it. Default: true." })
     public static boolean lootBags = true;
+
+    @Config.Comment({ "Server only. Keeps Roguelike Dungeons out of GregGuns silo complexes: a dungeon whose entrance",
+        "would lie near a complex tries another spot, and none of its blocks are written inside a complex.",
+        "Needs Roguelike Dungeons and the ICBM module; ignored without them. The log says at startup whether it",
+        "attached. Default: true." })
+    public static boolean roguelikeKeepOutOfComplexes = true;
 }

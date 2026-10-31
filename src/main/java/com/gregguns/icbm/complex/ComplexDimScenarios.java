@@ -489,11 +489,11 @@ public final class ComplexDimScenarios {
             ComplexPlacer placer = ConfigSettings.writer();
             placer.enabledIn(w);
             int ceiling = placer.ceilingOf(plan);
-            ActivityLevel level = placer.levelOf(cp);
+            ActivityLevel level = placer.levelOf(plan);
             int[] other = NeighborComplex.nearest(w.getSeed(), plan.dimension(), plan, 100, NeighborComplex.RADIUS);
             Decision d = StructureState.forWorld(w)
                 .get(PlanKey.of(plan));
-            int floor = ComplexPlacer.floorY(w, d.groundY());
+            int floor = ComplexPlacer.floorY(w, d.groundY(), d.sink());
             out.note(
                 label + ": level " + level + ", ceiling " + ceiling + ", stick -> " + java.util.Arrays.toString(other));
             int deepWanted = 0, deepFound = 0, sticks = 0, expected = 0, cut = 0;
