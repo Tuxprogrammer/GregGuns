@@ -87,27 +87,27 @@
     "1:10": {
       "choices:9": {
         "0:10": {
-          "Count:3": 4,
-          "Damage:2": 0,
-          "OreDict:8": "",
-          "id:8": "gregguns:fuze_assembly_mk3"
-        },
-        "1:10": {
-          "Count:3": 4,
-          "Damage:2": 32706,
-          "OreDict:8": "circuitMaster",
-          "id:8": "gregtech:gt.metaitem.01"
-        },
-        "2:10": {
           "Count:3": 16,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:antidote"
         },
-        "3:10": {
+        "1:10": {
           "Count:3": 8,
           "Damage:2": 17325,
           "OreDict:8": "plateNaquadahAlloy",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 32088,
+          "OreDict:8": "circuitUltimate",
+          "id:8": "gregtech:gt.metaitem.03"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 11100,
+          "OreDict:8": "ingotPlutonium",
           "id:8": "gregtech:gt.metaitem.01"
         }
       },

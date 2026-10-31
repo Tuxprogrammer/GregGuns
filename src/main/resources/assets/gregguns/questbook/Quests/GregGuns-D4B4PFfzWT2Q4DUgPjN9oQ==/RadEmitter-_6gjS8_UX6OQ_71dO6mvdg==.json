@@ -99,10 +99,10 @@
           "id:8": "gregtech:gt.metaitem.01"
         },
         "2:10": {
-          "Count:3": 8,
-          "Damage:2": 0,
+          "Count:3": 2,
+          "Damage:2": 32686,
           "OreDict:8": "",
-          "id:8": "gregguns:part_mechanical_3"
+          "id:8": "gregtech:gt.metaitem.01"
         }
       },
       "ignoreDisabled:1": 0,

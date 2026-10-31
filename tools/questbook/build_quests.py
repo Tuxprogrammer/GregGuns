@@ -55,6 +55,8 @@ BAGS = {
     'ordnance1': {'id': LOOTBAG, 'damage': 1710, 'tier': 'HV'},  # ICBM HV and EV quests
     'ordnance2': {'id': LOOTBAG, 'damage': 1711, 'tier': 'IV'},  # ICBM IV and LuV quests
     'ordnance3': {'id': LOOTBAG, 'damage': 1712, 'tier': 'LuV'},  # ICBM LuV and ZPM quests
+    'ordnance4': {'id': LOOTBAG, 'damage': 1713, 'tier': 'UV'},  # ICBM UV quests
+    'ordnance5': {'id': LOOTBAG, 'damage': 1714, 'tier': 'UHV'},  # ICBM UHV quests
 }
 # The pack's own generic tier groups (config/EnhancedLootBags/LootBags.xml), which quests written before the GregGuns
 # bags name by id and damage. Still tier-checked, but each use is a warning: write {"bag": name} instead.
@@ -65,6 +67,11 @@ PACK_BAGS = {
 # Any bag stack written out by hand (id and damage) is tier-checked the same way.
 BAG_STACKS = dict(PACK_BAGS)
 BAG_STACKS.update({(b['id'], b['damage']): b['tier'] for b in BAGS.values()})
+# What tier an item belongs to, for the reward-tier rule (GGS-12-19): item_tiers.json, shared with QuestbookResourcesTest.
+# Keys are a gregguns: id, or id@damage for a pack item; only items worth checking are listed.
+ITEM_TIERS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'item_tiers.json')
+with open(ITEM_TIERS_FILE, encoding='utf8') as _fh:
+    ITEM_TIERS = {k: v for k, v in json.load(_fh).items() if not k.startswith('_')}
 BAG_IDS = {b['id'] for b in BAGS.values()}
 LINE_FOLDER = 'GregGuns'
 LINE_FILE = '_line.json'
@@ -514,6 +521,19 @@ def check(data):
                                         % (k, s.get('damage')))
         except KeyError:
             pass  # an unknown bag name, reported above
+        if TIERS.index(q['tier']) >= TIERS.index('ZPM'):
+            for r in q['rewards']:
+                for s in (r.get('items', []) if r.get('type') in ('item', 'choice') else []):
+                    sid = str(s.get('id', ''))
+                    item = ITEM_TIERS.get(sid if sid.startswith('gregguns:') else '%s@%s' % (sid, s.get('damage')))
+                    if item is None:
+                        continue
+                    if TIERS.index(item) > TIERS.index(q['tier']):
+                        problems.append('%s: reward %s is %s, above the quest tier (GGS-12-19)'
+                                        % (k, s['id'], item))
+                    elif TIERS.index(item) < TIERS.index(q['tier']):
+                        warnings.append('%s: reward %s is %s, below the quest tier %s (GGS-12-19)'
+                                        % (k, s['id'], item, q['tier']))
         for tag in sorted(set(re.findall(r'\[/?([a-zA-Z_]+)\]', q['desc']))):
             if tag not in TEXT_TAGS:
                 problems.append('%s: [%s] is not one of the pack tags %s (GGS-12-14)' % (k, tag, sorted(TEXT_TAGS)))

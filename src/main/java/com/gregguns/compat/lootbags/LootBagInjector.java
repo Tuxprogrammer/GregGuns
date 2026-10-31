@@ -21,7 +21,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * Adds the GregGuns loot bag groups to EnhancedLootBags' group list at startup, on both sides, so quests can hand out
- * {@code enhancedlootbags:lootbag} with damage 1701 to 1712 and the pack's {@code LootBags.xml} is never edited.
+ * {@code enhancedlootbags:lootbag} with damage 1701 to 1714 and the pack's {@code LootBags.xml} is never edited.
  *
  * <p>
  * Lifecycle (GregGuns loads after ELB, {@code after:enhancedlootbags}):

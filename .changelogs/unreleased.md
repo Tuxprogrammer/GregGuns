@@ -143,3 +143,4 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - The Launch Control's target slot takes a Radar Gun: drop one that holds a target into the slot and press Load target (or right-click the block with it). The gun stays in the slot. An empty slot shows a faint Radar Gun, the screen reads "No target: use a Radar Gun" with no target set, and the tooltips, the Launch Control and Handheld Tools quests and the guide sheets lead with the gun.
 - Data sticks still work in the slot, quietly: nothing in the Launch Control advertises them any more.
+- Antimatter (UV) and Red Matter (UHV) pay their own tier: new **Ordnance IV** and **Ordnance V** loot bags and choices of the Tier 4 and Tier 5 warhead parts (naquadria and neutronium plates, Field Generators, Quantum Eyes, UHV Emitters, Inert warheads). The ZPM chapter and the Nuclear Warhead and Fallout quests offer ZPM parts in their choices.

@@ -6,6 +6,7 @@ Builds the GregGuns quest line that ships inside the jar (`src/main/resources/as
 - `build_quests.py`: writes `index.json`, the line file, and one quest file plus one position file per quest. Output is byte-identical across rebuilds.
 - `quest_doc.py`: regenerates the quest tables, reward budget, totals and trigger table of `docs/gregguns-spec/12-questbook/quest-line.md` from the data (`--check` reports a stale doc and writes nothing).
 - `validate_quests.py`: checks a quest folder (file names, prerequisites, cycles, overlaps, `index.json`); with `--data`, also the data's own checks and that the resources are not stale.
+- `item_tiers.json`: the tier of each reward item worth checking (a `gregguns:` id, or `id@damage` for a pack item). `build_quests.py` reads it for the reward-tier rule (GGS-12-19) and `QuestbookResourcesTest` reads the same file.
 - `pack_items.txt`: the pack item ids quests may name besides `gregguns:` ones (coins, Galacticraft parts, GT materials, HarvestCraft food, loot bags). `pack_items.py <pack .minecraft>` regenerates it from the pack's `DefaultQuests`, `LootBags.xml` and the HarvestCraft jar's lang.
 
 The data schema (tasks, `taskLogic`, rewards, `{"bag": "lv"}` stacks, `[questlink]`, retired keys) is in [authoring.md](../../docs/gregguns-spec/12-questbook/authoring.md#quest-data). Loot bags resolve through the `BAGS` table in `build_quests.py`; title colors come from `TIER_COLORS`.

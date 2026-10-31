@@ -48,6 +48,13 @@ class LootBagGroupsTest {
             "gregtech:gt.metaitem.01:17316", // tungstensteel plate: anti-gravity device and others
             "gregtech:gt.metaitem.01:17325", // naquadah alloy plate: nuclear rocket, nuclear cell
             "gregtech:gt.metaitem.01:17372", // HSS-G plate: alien blaster and others
+            "gregtech:gt.metaitem.01:17129", // neutronium plate: the Inert T5 Warhead (WarheadRecipes)
+            "gregtech:gt.metaitem.01:17327", // naquadria plate: the Inert T4 Warhead (WarheadRecipes)
+            "gregtech:gt.metaitem.01:11101", // plutonium-241 ingot: antimatter payload (WarheadRecipeSpec)
+            "gregtech:gt.metaitem.01:32677", // UV field generator: antimatter payload
+            "gregtech:gt.metaitem.01:32678", // UHV field generator: red matter payload
+            "gregtech:gt.metaitem.01:32688", // UHV emitter: red matter payload
+            "gregtech:gt.metaitem.01:32724", // quantum eye: antimatter and red matter payloads
             "gregtech:gt.metaitem.01:17874", // polyethylene plate: chainsaw, MAC-10
             "gregtech:gt.metaitem.01:23305", // steel rod: combat shotgun
             "gregtech:gt.metaitem.01:32540", // EV battery: laser, sonic and tesla rifles
@@ -76,9 +83,9 @@ class LootBagGroupsTest {
     }
 
     @Test
-    void idsAre1701To1712And1700StaysFree() {
+    void idsAre1701To1714And1700StaysFree() {
         Set<Integer> expected = new HashSet<>();
-        for (int i = 1701; i <= 1712; i++) {
+        for (int i = 1701; i <= 1714; i++) {
             expected.add(i);
         }
         assertEquals(expected, LootBagGroups.ids(groups));
@@ -118,9 +125,11 @@ class LootBagGroupsTest {
 
     @Test
     void tierBagsChainDownward() {
-        // Recruit stands alone; each tier bag above it merges the one below; the ordnance crates start from HV.
+        // Recruit stands alone; each tier bag above it merges the one below; the ordnance crates start from HV, and the
+        // UV and UHV crates stand alone.
         int[][] chain = { { 1701, 0 }, { 1702, 1701 }, { 1703, 1702 }, { 1704, 1703 }, { 1705, 1704 }, { 1706, 1705 },
-            { 1707, 1706 }, { 1708, 1707 }, { 1709, 0 }, { 1710, 1704 }, { 1711, 1710 }, { 1712, 1711 } };
+            { 1707, 1706 }, { 1708, 1707 }, { 1709, 0 }, { 1710, 1704 }, { 1711, 1710 }, { 1712, 1711 }, { 1713, 0 },
+            { 1714, 0 } };
         for (int[] link : chain) {
             LootBagGroups.Group g = groups.stream()
                 .filter(x -> x.id == link[0])
@@ -128,6 +137,31 @@ class LootBagGroupsTest {
                 .get();
             assertEquals(link[1] != 0, g.combineTrash, g.id + " merges a trash group");
             if (link[1] != 0) assertEquals(link[1], g.trashGroup, g.id + " trash group");
+        }
+    }
+
+    @Test
+    void uvAndUhvCratesHoldNoLowerTierLoot() {
+        // The LuV and ZPM gate items (D313): LuV Master circuit, HSS-G plate, naquadah alloy plate, ZPM circuit and
+        // motor.
+        Set<String> lower = new HashSet<>(
+            Arrays.asList(
+                "gregtech:gt.metaitem.01:32706",
+                "gregtech:gt.metaitem.01:17372",
+                "gregtech:gt.metaitem.01:17325",
+                "gregtech:gt.metaitem.03:32088",
+                "gregtech:gt.metaitem.01:32607"));
+        for (int id = 1713; id <= 1714; id++) {
+            final int want = id;
+            LootBagGroups.Group g = groups.stream()
+                .filter(x -> x.id == want)
+                .findFirst()
+                .get();
+            assertFalse(g.combineTrash, id + " takes no trash group");
+            assertTrue(g.drops.size() >= 4, id + " has enough distinct drops for its draws");
+            for (LootBagGroups.Drop d : g.drops) {
+                assertFalse(lower.contains(d.itemName), id + " holds lower-tier " + d.itemName);
+            }
         }
     }
 
