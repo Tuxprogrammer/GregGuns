@@ -21,6 +21,8 @@ import com.gregguns.icbm.complex.SurfaceVariant;
 import com.gregguns.icbm.worldgen.ActivityLevel;
 import com.gregguns.icbm.worldgen.ComplexApplier;
 import com.gregguns.icbm.worldgen.ComplexContents;
+import com.gregguns.icbm.worldgen.ComplexFixtures;
+import com.gregguns.icbm.worldgen.FixtureWriter;
 import com.gregguns.icbm.worldgen.Placement;
 import com.gregguns.icbm.worldgen.SiloCeiling;
 import com.gregguns.worldgen.ComplexWriter;
@@ -148,6 +150,7 @@ public final class ComplexPlacer implements ComplexWriter {
         world = null;
         cache.clear();
         contentsCache.clear();
+        fixturesCache.clear();
         stylesCache.clear();
         summaries.clear();
         decisions.clear();
@@ -332,6 +335,7 @@ public final class ComplexPlacer implements ComplexWriter {
     public ComplexPlacer forceCeiling(int ceiling) {
         this.forcedCeiling = ceiling;
         contentsCache.clear();
+        fixturesCache.clear();
         return this;
     }
 
@@ -339,6 +343,7 @@ public final class ComplexPlacer implements ComplexWriter {
     public ComplexPlacer forceLevel(ActivityLevel level) {
         this.forcedLevel = level;
         contentsCache.clear();
+        fixturesCache.clear();
         stylesCache.clear();
         return this;
     }
@@ -397,6 +402,47 @@ public final class ComplexPlacer implements ComplexWriter {
         return l;
     }
 
+    private final Map<String, ComplexFixtures> fixturesCache = new LinkedHashMap<String, ComplexFixtures>();
+    private Boolean forcedTierCasings;
+
+    /**
+     * @param on whether the blast-door frames are the tier's machine casings instead of the dimension's own rule
+     *           (scenarios), or null for the rule: casings on the rolled Ross128 dimensions only (D337)
+     * @return this
+     */
+    public ComplexPlacer forceTierCasings(Boolean on) {
+        this.forcedTierCasings = on;
+        fixturesCache.clear();
+        return this;
+    }
+
+    /**
+     * @return whether a complex shows its tier in its blast-door frames: on Ross128b and Ross128ba, whose ceiling is
+     *         rolled per complex (D38, D337)
+     */
+    public boolean tierCasingsOf(StructurePlan plan) {
+        if (forcedTierCasings != null) return forcedTierCasings;
+        Integer tier = world == null ? null : com.gregguns.icbm.complex.PlanetTable.tierOf(DimensionKey.of(world));
+        return tier != null && tier == com.gregguns.icbm.complex.PlanetTable.ROLLED;
+    }
+
+    /** The blast doors and service runs of a complex (D335, D336), cached like its contents. */
+    public ComplexFixtures fixturesOf(StructurePlan plan, ComplexRaster raster) {
+        String key = cacheKey(plan);
+        ComplexFixtures f = fixturesCache.remove(key);
+        if (f == null) {
+            long t0 = System.nanoTime();
+            f = ComplexFixtures.build(raster, levelOf(plan), tierCasingsOf(plan));
+            FixtureWriter.addSpent(System.nanoTime() - t0);
+            if (fixturesCache.size() >= CACHED) fixturesCache.remove(
+                fixturesCache.keySet()
+                    .iterator()
+                    .next());
+        }
+        fixturesCache.put(key, f);
+        return f;
+    }
+
     @Override
     public int write(StructurePlan plan, Decision decision, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
@@ -407,6 +453,7 @@ public final class ComplexPlacer implements ComplexWriter {
         if (was != null && !was.equals(decision)) {
             // Another decision for the same plan (a scenario's fresh ledger): the cached contents used the old one.
             contentsCache.remove(key);
+            fixturesCache.remove(key);
             stylesCache.keySet()
                 .removeIf(k -> k.startsWith(key + ":"));
         }
@@ -547,6 +594,9 @@ public final class ComplexPlacer implements ComplexWriter {
                 applier.apply(p);
             }
             if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
+            // The blast doors and service runs (D335 to D337), clipped to the window.
+            new FixtureWriter(new QuietSink(under), ax, floorY, az, ceilingOf(plan), st::doorPlate)
+                .write(fixturesOf(plan, raster));
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(plan), new QuietSink(sink));
         }
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);

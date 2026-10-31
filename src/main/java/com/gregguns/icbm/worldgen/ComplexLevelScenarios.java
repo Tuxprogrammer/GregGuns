@@ -392,7 +392,9 @@ public final class ComplexLevelScenarios {
                     slab(world, plan, false);
                     ComplexPlacer placer = placer().forceLevel(level)
                         .forceCeiling(ceiling);
+                    long fixturesBefore = FixtureWriter.spentNanos();
                     int[] r = generate(world, plan, placer, "gregguns_complex_levels");
+                    long fixturesMs = (FixtureWriter.spentNanos() - fixturesBefore) / 1_000_000L;
                     out.checkEquals(tag + ": writes dropped outside a window", 0, r[0]);
                     out.checkEquals(tag + ": PopulateGuard violations", 0, r[1]);
                     if (r[2] > 0) {
@@ -400,13 +402,14 @@ public final class ComplexLevelScenarios {
                             String.format(
                                 java.util.Locale.ROOT,
                                 "%s cost with contents: %d windows, %d blocks, %.1f ms mean and %.1f ms most per"
-                                    + " window, %.0f ms in all",
+                                    + " window, %.0f ms in all (blast doors and service runs %d ms)",
                                 tag,
                                 r[2],
                                 r[3],
                                 r[4] / 1000.0 / r[2],
                                 r[5] / 1000.0,
-                                r[4] / 1000.0));
+                                r[4] / 1000.0,
+                                fixturesMs));
                     }
                     Tally t = read(out, tag, world, plan, placer, level, ceiling);
                     tallies.put(tag, t);

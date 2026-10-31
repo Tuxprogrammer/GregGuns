@@ -43,6 +43,14 @@ public final class ComplexPalette {
     }
 
     /**
+     * @param setId a style set id
+     * @return the plates a hall of that set covers its blast door in, most fitting first (D335)
+     */
+    public static java.util.List<BlockRef> doorPlates(String setId) {
+        return PaletteSets.doorPlates(setId);
+    }
+
+    /**
      * @param major true for a major hall, false for a minor hallway
      * @return the style of a hall
      */

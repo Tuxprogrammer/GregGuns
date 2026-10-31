@@ -98,6 +98,9 @@ public final class I6VisualSetups {
         registry.register(new Gen("pa", ActivityLevel.PARTLY_ABANDONED, SiloCeiling.EV));
         registry.register(new Gen("op", ActivityLevel.OPERATIONAL, SiloCeiling.EV));
         registry.register(new Gen("op_umv", ActivityLevel.OPERATIONAL, SiloCeiling.UMV));
+        // A Ross128 complex in any dimension: the blast-door frames are the rolled tier's machine casings (D337).
+        registry.register(new Gen("op_ross", ActivityLevel.OPERATIONAL, SiloCeiling.EV + 2, true));
+        registry.register(new Gen("ab_ross", ActivityLevel.ABANDONED, SiloCeiling.UHV - 1, true));
         registry.register(new Planet("moon", 4));
         registry.register(new Planet("mars", 4));
         registry.register(new Planet("moon_fast", 100000));
@@ -154,11 +157,17 @@ public final class I6VisualSetups {
         private final String tag;
         private final ActivityLevel level;
         private final int ceiling;
+        private final boolean tierCasings;
 
         Gen(String tag, ActivityLevel level, int ceiling) {
+            this(tag, level, ceiling, false);
+        }
+
+        Gen(String tag, ActivityLevel level, int ceiling, boolean tierCasings) {
             this.tag = tag;
             this.level = level;
             this.ceiling = ceiling;
+            this.tierCasings = tierCasings;
         }
 
         @Override
@@ -178,7 +187,8 @@ public final class I6VisualSetups {
             final StructurePlan plan = planOf(world, cellX, cellZ);
             final ComplexPlacer placer = ComplexLevelScenarios.placer()
                 .forceLevel(level)
-                .forceCeiling(ceiling);
+                .forceCeiling(ceiling)
+                .forceTierCasings(tierCasings);
             placer.enabledIn(world);
             final ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
             final List<int[]> chunks = new ArrayList<int[]>();
@@ -221,13 +231,53 @@ public final class I6VisualSetups {
                         at[3] = PopulateGuard.violationCount() - before;
                         Decision d = state.get(PlanKey.of(plan));
                         GregGuns.LOG.info("I6C gen {} rejected={} violations={} decision={}", tag, at[2], at[3], d);
-                        dump(world, plan, ComplexPlacer.floorY(world, d == null ? 32 : d.groundY()), tag);
+                        int fl = ComplexPlacer.floorY(world, d == null ? 32 : d.groundY());
+                        dump(world, plan, fl, tag);
+                        fixtures(placer.fixturesOf(plan, placer.rasterOf(plan)), plan, fl);
                         return ScenarioResult.builder(name())
                             .build();
                     }
                 }
                 return null;
             });
+        }
+    }
+
+    /** Logs each blast door and service run in world coordinates, for framing the shots (D335, D336). */
+    private static void fixtures(ComplexFixtures f, StructurePlan plan, int floor) {
+        int ax = plan.anchorX(), az = plan.anchorZ();
+        for (ComplexFixtures.BlastDoor d : f.doors()) {
+            StringBuilder cols = new StringBuilder();
+            for (int a = d.a0(); a <= d.a1(); a++) cols.append(
+                d.column(a)
+                    .name()
+                    .charAt(0));
+            GregGuns.LOG.info(
+                "I6C DOOR hall={} from={},{} to={},{} y={}..{} facing={} state={} columns={} frame={}",
+                d.hall(),
+                ax + d.x(d.a0()),
+                az + d.z(d.a0()),
+                ax + d.x(d.a1()),
+                az + d.z(d.a1()),
+                floor + d.y0(),
+                floor + d.y1(),
+                d.facing(),
+                d.state(),
+                cols,
+                d.frame()
+                    .size());
+        }
+        for (ComplexFixtures.Run r : f.runs()) {
+            GregGuns.LOG.info(
+                "I6C RUN {} section={} from={},{} to={},{} y={} cells={}",
+                r.service(),
+                r.section(),
+                ax + r.x(r.a0()),
+                az + r.z(r.a0()),
+                ax + r.x(r.a1()),
+                az + r.z(r.a1()),
+                floor + r.y(),
+                r.count());
         }
     }
 
@@ -625,6 +675,16 @@ public final class I6VisualSetups {
                             }
                         }
                     }
+                    break;
+                }
+                case "nbt": {
+                    // A tile's saved data, for checks of what the world holds (a door piece's data, a pipe's
+                    // connections).
+                    int x = Integer.parseInt(t[1]), y = Integer.parseInt(t[2]), z = Integer.parseInt(t[3]);
+                    TileEntity te = lastWorld.getTileEntity(x, y, z);
+                    net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+                    if (te != null) te.writeToNBT(tag);
+                    GregGuns.LOG.info("I6C nbt {},{},{} {}", x, y, z, te == null ? "-" : tag.toString());
                     break;
                 }
                 case "ents": {

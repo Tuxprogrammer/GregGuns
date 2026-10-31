@@ -32,6 +32,7 @@ final class IcbmScenarios {
         ScenarioRegistry complex = new ScenarioRegistry();
         com.gregguns.icbm.worldgen.ComplexContentScenarios.registerAll(complex);
         com.gregguns.icbm.worldgen.ComplexLevelScenarios.registerAll(complex);
+        com.gregguns.icbm.worldgen.FixtureScenarios.registerAll(complex);
         com.gregguns.icbm.complex.gen.MachineFacingScenarios.registerAll(complex);
         com.gregguns.icbm.complex.gen.RoleAuditScenarios.registerAudited(complex, registry);
         com.gregguns.icbm.complex.palette.PaletteScenarios.registerAll(registry);

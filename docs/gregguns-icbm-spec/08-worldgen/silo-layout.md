@@ -156,9 +156,40 @@ Every room kind, and the hub, is furnished by its own **blueprint** (`complex/bl
 - **Dressing (D323):** after its blueprint, each room's dressing pass (`RoomDressing`) stands small pieces one layer over pieces the blueprint placed, in cells no other mark holds, so the floor, every path and every lamp stay as the blueprint left them: a BiblioCraft dinner plate on three in four mess galley and cafeteria tables (facing a chair), up to two cookie jars on their counters, up to four flower pots on the desks, tables and counters of the commander's office, comms and the rec lounge, and up to three BiblioCraft clipboards in any room, hung on the wall over a desk, console, counter or bed head that stands against it (never over an opening). A dressing piece wears with the piece under it. What they hold is the contents pass's ([activity levels](activity-levels.md#furniture-stock-d323-to-d325)).
 - **Wear and the activity levels** follow the room's state (D309): see [activity levels](activity-levels.md).
 - **Halls:**
-  - A blast-door mark and a sign naming the hall (`wing.<0..3>` by compass direction, or `silo_gallery`) at each mouth off the hub.
+  - A blast-door mark (see [Blast doors](#blast-doors-d335-d337)) and a sign naming the hall (`wing.<0..3>` by compass direction, or `silo_gallery`) at each mouth off the hub.
   - Roof, floor and wall damage cells, scaled by area, kept off lamps and openings.
   - A minecart rail along each major hall, one cell off its centerline: the centerline carries the middle row of floor light tiles, and a rail on glowstone drops off at the first block update beside it. A rail goes only over a FLOOR cell (D247).
+
+## Blast doors (D335, D337)
+
+The `BLAST_DOOR` mark of each major hall off the hub (the gallery included) stands for the portal between the hub and that hall. `ComplexFixtures` (pure) plans the door and `FixtureWriter` writes it, clipped to each window like every other write.
+
+- **The block:** Carpenter's Blocks' garage door (`CarpentersBlocks:blockCarpentersGarageDoor`, LGPL-2.1, in the pack), placed by name with its tile written as data: the "siding" look (steel-backed slats of the cover), not rigid (a player opens or shuts the whole door with a right-click), the top piece of each column its host. Pieces are 1/8 of a block thick and take the cover's hardness and blast resistance. Without Carpenter's Blocks the doors are left out (logged once) and the portals stay open.
+- **Where:** one piece per cell of the portal in the hall's own wall layer, the hall's full interior width (18) by the portal's height (8; 9 for the gallery), between the portal's door frames.
+- **Cover:** the hall's door plate, from its style set (`ComplexPalette.doorPlates`): Factory plating, Tyrian plate, the Laboratory's large steel, the Factory metal box, or the Technical rusty plates (`technical_works`), each with a GT concrete and a vanilla stand-in; the next plate when the first is the hall's own wall block, so a shut door reads as a door. All are cheap carvings, so a broken door pays nothing worth farming.
+- **By the hall's room state (D309):**
+
+| State | Door |
+|---|---|
+| Staffed (Charlie) | Shut: the wing is sealed. |
+| In service (Bravo, lit) | Open: rolled up into its top row. |
+| Mothballed (Bravo, dark) | Shut: a dark wing is sealed off. |
+| Gutted (Alpha) | 40%: stuck open, with up to two columns torn out. 60%: breached. The door is shut, with a run of 4 to 7 columns torn out (never at an edge), and either side of the breach a column jammed 2 to 5 pieces down, resting on a rubble pile from the floor up. Before 30% of the shut columns, a rubble block lies on the floor on one side or the other. |
+
+  A gutted door always leaves at least four columns clear. A jammed column's pile keeps Carpenter's void fill from growing it back down to the floor.
+- **Ross128 (D337):** on Ross128b and Ross128ba, whose tier is rolled per complex (D38), the door frame (both jambs and the lintel, in both wall layers of the portal) is the rolled tier's GregTech machine casing (`ItemList.MACHINE_CASINGS`), EV to UMV. The hall sign still names the class. Elsewhere the frame stays the style's accent.
+- **Rubble** is cobblestone or gravel, only on open floor cells that no mark claims.
+
+## Service runs (D336)
+
+Every major hall and minor hallway but the silo gallery carries services under its ceiling (`ComplexFixtures.Run`):
+
+- **Cable tray:** a run of GregTech Steel frame boxes in the layer right under the ceiling, along one side wall (a hash of the plan seed and the hall picks the side).
+- **Cable:** a GregTech 4x cable hung right under the tray: Aluminium at EV, Platinum at IV, Vanadium-Gallium at LuV, Naquadah at ZPM, Naquadah Alloy from UV up (a row steps down while GregTech lacks the part).
+- **Pipe** (major halls only): a GregTech large fluid pipe right under the ceiling along the other wall: Steel, Stainless Steel, Titanium, Tungstensteel, Iridium by the same tiers.
+- Cables and pipes are real GregTech pipe tiles, joined to their neighbors along the run (their saved connections), and to nothing else. A piece goes only into open air no mark claims (no lamp, ladder, sign or furniture).
+- **By the hall's room state:** staffed, in-service and mothballed runs are whole. A gutted run is broken: gaps of 1 to 3 cells every 6 to 14 cells in the tray and its cable, with half the gap cells' tray sections fallen onto the floor below (a frame box, only on open floor against a plain wall, never before an opening, on a light tile or on a floor the damage pass may hole); stretches of cable stripped (60% of stretches of 5 to 12); stretches of pipe missing (35% of stretches of 3 to 8).
+- **Cost:** the test plan holds 1,036 cable and pipe tiles when whole and 478 when gutted, with 576 door pieces (Carpenter's tiles do not tick); `icbm.complex.fixtures` reports the pipe tiles' server tick. Frame boxes have no tile entity.
 
 ## Guards (D233, D326)
 
@@ -195,5 +226,6 @@ Every room kind, and the hub, is furnished by its own **blueprint** (`complex/bl
 
 - **Unit:**
   - `ComplexLayoutTest`: coverage over 200 seeds, rooms and kinds, sizes and heights, no overlaps, silo distribution over 1000 seeds, both sides and at most two halls, Launch Control and the assembly floor, posts at branch points, the escape ladder, armory frames, door-relative furnishing over 150 seeds with every mark reachable, reachability of every section and walkway, the lamp grid, the walkway lamps, the light simulation, and determinism.
+  - `ComplexFixturesTest`: blast doors and service runs by state (D335 to D337).
   - `ComplexRasterTest`, `ComplexPlacerTest` (never cascading, order independence, a written bore never walls up its silo, the skin), `SiloMouthTest` (the finish's rules per variant, the reach, the saved record), `ComplexSignsTest`, `ComplexContentsTest` (lamps by run and section), `PaletteStylesTest` (interior pattern coordinates), `ComplexContentCountsTest` (a NASA Workbench in every missile assembly floor and workshop, room guards per area step, the lamp count printed and held in a band), `GtMachineHookTest` (who takes a generated machine over), `KitTest` (atomic stamps, thin pieces on tiles, the chest rule, beds paired, chests facing their aisle, walled-in cells opened, D305), `RoomBlueprintTest` (every crew, command and security blueprint and the hub at three sizes: nothing on a doorway, hole or tile, every mark, door and open cell reached, light 8 on every open cell, chairs seated, beds whole, the chest rule, the chest spots the loot budget needs and the fill bands; it prints the maps), `BiblioFurnitureTest` and `ComplexExportTest` (with `GREGGUNS_EXPORT_ROOMS`, each crew, command and security room and the hub at its 10th, 50th and 90th percentile size at every activity level).
-- **Scenarios:** `icbm.complex.*` (places, skips, levels, guards, dim.*, loot and machines; `bores_and_foundation`: a sunk complex over cave layers, its bores air from the pad to the surface before and after the mouth finish, caps by variant, and no void under a floor or beside a wall). The fixed-cell scenarios build on `ComplexArena`: every column cleared from the chunk's top, stone below the floor the placer really uses (D239).
+- **Scenarios:** `icbm.complex.*` (places, skips, levels, guards, dim.*, loot and machines; `fixtures`: every blast-door piece, torn column, rubble pile, Ross casing frame, tray, cable and pipe read back at each level; `bores_and_foundation`: a sunk complex over cave layers, its bores air from the pad to the surface before and after the mouth finish, caps by variant, and no void under a floor or beside a wall). The fixed-cell scenarios build on `ComplexArena`: every column cleared from the chunk's top, stone below the floor the placer really uses (D239).
