@@ -40,13 +40,13 @@ import com.gregguns.GregGuns;
  * <p>
  * <b>Per candidate.</b> {@link StartGrid} gives each region's candidate chunk from the generator's own spacing (read
  * from its most derived class, so a replacement such as Village Names' generator, which declares its own spacing, is
- * read right). A candidate within reach of the area is then put to the generator itself: its own
- * {@code canSpawnStructureAtCoords} (its biome rule, any spawn-free radius) and its own {@code getStructureStart},
- * with its Random seeded as {@code MapGenBase} seeds it for that chunk, and the start's piece box is tested. A village
- * counts only when sizeable. When the generator cannot be asked (its world not set yet), the vanilla rule is computed
- * instead: a biome check on the world chunk manager, then {@code MapGenVillage.Start} or
- * {@code MapGenScatteredFeature.Start}. Neither path reads a chunk. A start that throws counts as present. Results are
- * cached per start chunk.
+ * read right). For vanilla's own generators the rule is computed exactly: a biome check on the world chunk manager,
+ * then the start built as the generator builds it ({@code MapGenBase}'s per-chunk seed, one {@code nextInt}, then
+ * {@code MapGenVillage.Start} or {@code MapGenScatteredFeature.Start}); a village counts only when sizeable. A
+ * replacement is asked through its own {@code canSpawnStructureAtCoords}, which makes the start chunk exact, but its
+ * layout is not reproducible (Village Names draws a different village at the same start in two worlds of one seed),
+ * so a box of {@link #REPLACEMENT_HALF} blocks around the start chunk is assumed. Nothing reads a chunk. A start that
+ * throws counts as present. Results are cached per start chunk.
  */
 // Source: Minecraft 1.7.10 (MCP stable 12): MapGenVillage#canSpawnStructureAtCoords and Start,
 // MapGenScatteredFeature#canSpawnStructureAtCoords and Start, MapGenBase#func_151539_a,
@@ -54,6 +54,8 @@ import com.gregguns.GregGuns;
 // Source: https://github.com/GTNewHorizons/VillageNames/blob/4.5.19-GTNH/src/main/java/astrotibs/villagenames/village/MapGenVillageVN.java#L63-L76
 // (Village Names, in the pack, replaces the village generator through InitMapGenEvent with its own spacing fields,
 // median 40 and range 10 in the pack config, its own biome list and its own Start; #L106-L156, #L158-L180).
+// Two real-pack worlds of seed 321 held different Village Names villages at start chunk 19,19 (Village.dat boxes
+// 266..359 x 262..355 and 276..397 x 257..377).
 // Source:
 // https://github.com/GTNewHorizons/Realistic-World-Gen/blob/alpha-1.5.2/src/main/java/rwg/world/ChunkGeneratorRealistic.java#L120-L123
 // (new MapGenVillage with distance 24) and #L194 (ConfigRWG.generateVillages gates villages).
@@ -124,10 +126,8 @@ public final class VanillaStarts implements StructureStarts {
             : intField(temple, MapGenScatteredFeature.class, 8, "minDistanceBetweenScatteredFeatures", "field_82670_h");
     }
 
-    /** MapGenStructure#canSpawnStructureAtCoords, #getStructureStart and MapGenBase#rand, #worldObj; null if absent. */
+    /** MapGenStructure#canSpawnStructureAtCoords and MapGenBase#worldObj; null if absent. */
     private static final Method CAN_SPAWN = method("func_75047_a", "canSpawnStructureAtCoords");
-    private static final Method GET_START = method("func_75049_b", "getStructureStart");
-    private static final Field GEN_RAND = field(net.minecraft.world.gen.MapGenBase.class, "field_75038_b", "rand");
     private static final Field GEN_WORLD = field(net.minecraft.world.gen.MapGenBase.class, "field_75039_c", "worldObj");
 
     private static Method method(String... names) {
@@ -303,7 +303,7 @@ public final class VanillaStarts implements StructureStarts {
                     "start chunk " + c[0]
                         + ","
                         + c[1]
-                        + ", pieces "
+                        + ", box "
                         + box[0]
                         + ".."
                         + box[2]
@@ -326,7 +326,7 @@ public final class VanillaStarts implements StructureStarts {
         if (hit != null) return hit;
         int[] box;
         try {
-            int[] own = ownRule(isVillage ? villageGen.get() : templeGen.get(), cx, cz, seed);
+            int[] own = ownRule(isVillage ? villageGen.get() : templeGen.get(), cx, cz);
             box = own != null ? own : isVillage ? villageBox(world, cx, cz, seed) : templeBox(world, cx, cz, seed);
         } catch (RuntimeException | LinkageError e) {
             // A modded piece that fails to build: count the start as there (a complex only sinks deeper for it).
@@ -339,30 +339,36 @@ public final class VanillaStarts implements StructureStarts {
     }
 
     /**
-     * Asks the generator itself: its own {@code canSpawnStructureAtCoords} for the candidate (its biome rule, a
-     * spawn-free radius), then its own {@code getStructureStart} with its Random seeded as {@code MapGenBase} seeds it
-     * for that chunk. Exact for vanilla and for a replacement such as Village Names' generator. Its world must be set
-     * (it is, once it has generated a chunk).
-     *
-     * @return the box, {@link #NOTHING}, or null when the generator cannot be asked (the pure rule is used instead)
+     * Half the side of the box assumed around a replacement generator's start chunk. Its start chunk is exact (its own
+     * rule), but its layout is not: Village Names drew a different village at the same start in two worlds of the same
+     * seed, so its pieces cannot be predicted. Vanilla's pieces stay within 112 blocks of the start; the observed Village
+     * Names villages reached 106 blocks out.
      */
-    private static int[] ownRule(MapGenStructure gen, int cx, int cz, long seed) {
-        if (gen == null || CAN_SPAWN == null || GET_START == null || GEN_RAND == null || GEN_WORLD == null) return null;
+    static final int REPLACEMENT_HALF = 128;
+
+    /**
+     * Asks a replacement generator (another mod's subclass) whether a candidate is a start, through its own
+     * {@code canSpawnStructureAtCoords} (its biome rule, any spawn-free radius). Vanilla's own generators return null
+     * here: their rule is computed exactly by {@link #villageBox} and {@link #templeBox}.
+     *
+     * @return the assumed box around the start chunk, {@link #NOTHING}, or null to use the vanilla rule
+     */
+    private static int[] ownRule(MapGenStructure gen, int cx, int cz) {
+        if (gen == null || gen.getClass() == MapGenVillage.class || gen.getClass() == MapGenScatteredFeature.class) {
+            return null;
+        }
+        int x = cx * 16 + 8, z = cz * 16 + 8;
+        int[] assumed = { x - REPLACEMENT_HALF, z - REPLACEMENT_HALF, x + REPLACEMENT_HALF, z + REPLACEMENT_HALF };
+        if (CAN_SPAWN == null || GEN_WORLD == null) return assumed;
         try {
-            if (GEN_WORLD.get(gen) == null) return null;
-            if (!(Boolean) CAN_SPAWN.invoke(gen, cx, cz)) return NOTHING;
-            Random r = (Random) GEN_RAND.get(gen);
-            // MapGenBase reseeds its Random for every chunk it visits, so setting it here changes no later result.
-            r.setSeed(chunkSeed(cx, cz, seed));
-            r.nextInt();
-            StructureStart start = (StructureStart) GET_START.invoke(gen, cx, cz);
-            if (start == null || !start.isSizeableStructure() || start.getBoundingBox() == null) return NOTHING;
-            return box(start);
+            // Its world is set once it has generated a chunk; before that a candidate counts as a start.
+            if (GEN_WORLD.get(gen) == null) return assumed;
+            return (Boolean) CAN_SPAWN.invoke(gen, cx, cz) ? assumed : NOTHING;
         } catch (java.lang.reflect.InvocationTargetException e) {
             // The generator's own code failed: the caller counts the start as present.
             throw new IllegalStateException(e.getCause());
         } catch (ReflectiveOperationException e) {
-            return null;
+            return assumed;
         }
     }
 
