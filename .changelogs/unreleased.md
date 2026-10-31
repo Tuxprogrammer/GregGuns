@@ -116,6 +116,7 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - GregGuns particles (muzzle flashes, smoke, sparks, blasts) no longer draw a patch of the whole block and item texture sheet with Angelica's shader support on. A particle's random turn is now a mirror, which Angelica draws correctly.
 - The Maintenance Hatch of a generated silo, and of the radar station, no longer shows a black cross over its wrench face: generated GT hatches and machines start in GT's default modes, as placed ones do.
 - Missile Bodies T1 and T2 are now built in the GT Assembler at HV and EV, with no research, instead of on the Assembly Line, which GTNH players only reach at LuV. Same inputs and times: plates, fins, engine, 2 circuits and 250 L of lubricant. The Tier 3 body stays on the LuV Assembly Line.
+- A missile in flight when the server stops flies on after the restart and reaches its target, with no player nearby. It used to hang in the air and keep its chunk ticket for good.
 - Missiles now sound like Galacticraft rockets: the engine loop starts with the countdown, rises in pitch toward ignition, follows the missile through the climb and arc, and stops on impact, interception or abort.
 
 ## Changed: the Missile Silo builds the missile in front of you
