@@ -19,8 +19,7 @@ class ConfigDefaultsTest {
     @Test
     void everyModuleFlagHasItsExpectedDefault() {
         for (ModuleId id : ModuleId.values()) {
-            // icbm ships off until the ICBM beta gate (docs/ROADMAP-ICBM.md)
-            assertEquals(id != ModuleId.ICBM, ModuleFlags.isEnabled(id), "modules." + id.configKey());
+            assertTrue(ModuleFlags.isEnabled(id), "modules." + id.configKey());
         }
     }
 

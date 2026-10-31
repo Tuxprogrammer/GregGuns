@@ -26,7 +26,14 @@ public final class ModPresence {
      * @return whether that mod is loaded; probed once per id and cached
      */
     public static boolean isLoaded(String modId) {
-        return CACHE.computeIfAbsent(modId, Loader::isModLoaded);
+        return CACHE.computeIfAbsent(modId, id -> {
+            try {
+                return Loader.isModLoaded(id);
+            } catch (RuntimeException e) {
+                // Outside a running Forge (a plain unit test) the Loader has no mod list: nothing is loaded.
+                return false;
+            }
+        });
     }
 
     /**
