@@ -55,7 +55,7 @@ public final class ComplexContents {
         Box hall = plan.hall()
             .bounds();
 
-        mark(plan.hall(), hall, false, p, seed, ceiling, hall, out, chests, chestCounter, level);
+        mark(plan, plan.hall(), hall, false, p, seed, ceiling, hall, out, chests, chestCounter, level);
         for (Room r : plan.rooms()) {
             boolean collapsed = mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p);
             if (collapsed) {
@@ -65,7 +65,7 @@ public final class ComplexContents {
                         .box(r.bounds())
                         .build());
             }
-            mark(r, r.bounds(), collapsed, p, seed, ceiling, hall, out, chests, chestCounter, level);
+            mark(plan, r, r.bounds(), collapsed, p, seed, ceiling, hall, out, chests, chestCounter, level);
         }
         for (Tunnel t : plan.tunnels()) {
             marks(
@@ -160,11 +160,14 @@ public final class ComplexContents {
         return ((long) x << 40) ^ ((long) y << 20) ^ z;
     }
 
-    private static void mark(Room r, Box bounds, boolean collapsed, ActivityProfile p, long seed, int ceiling, Box hall,
-        List<Placement> out, List<Placement> chests, int[] counter, ActivityLevel level) {
+    private static void mark(ComplexPlan plan, Room r, Box bounds, boolean collapsed, ActivityProfile p, long seed,
+        int ceiling, Box hall, List<Placement> out, List<Placement> chests, int[] counter, ActivityLevel level) {
+        RoomState state = roomState(seed, r.id(), level);
+        // The room's look at its state (D309): worn, lit or cold, grown or bare; whole groups at a time.
+        FurnitureWear.room(plan, r.id(), r.kind(), r.marks(), bounds, state, collapsed, seed, ceiling, out);
         marks(
             r.marks(),
-            roomState(seed, r.id(), level),
+            state,
             bounds,
             r.kind() == null ? ""
                 : r.kind()
@@ -263,8 +266,7 @@ public final class ComplexContents {
                     machine(m, state, p, seed, ceiling, out);
                     break;
                 case FURNITURE:
-                    FurnitureWear.wear(m, collapsed, level, seed, out);
-                    break;
+                    break; // a room's furniture wears as a whole, in FurnitureWear.room
                 default:
                     break; // signs and blast doors are the layout's own
             }

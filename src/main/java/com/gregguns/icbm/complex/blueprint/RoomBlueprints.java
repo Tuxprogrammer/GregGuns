@@ -5,9 +5,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.gregguns.icbm.complex.RoomKind;
+import com.gregguns.icbm.complex.blueprint.rooms.AirHandling;
+import com.gregguns.icbm.complex.blueprint.rooms.Armory;
 import com.gregguns.icbm.complex.blueprint.rooms.Bunks;
+import com.gregguns.icbm.complex.blueprint.rooms.ChemLab;
+import com.gregguns.icbm.complex.blueprint.rooms.ColdStorage;
+import com.gregguns.icbm.complex.blueprint.rooms.FuelDepot;
+import com.gregguns.icbm.complex.blueprint.rooms.GeneratorHall;
 import com.gregguns.icbm.complex.blueprint.rooms.Hub;
+import com.gregguns.icbm.complex.blueprint.rooms.Incinerator;
 import com.gregguns.icbm.complex.blueprint.rooms.LegacyRoom;
+import com.gregguns.icbm.complex.blueprint.rooms.MissileAssembly;
+import com.gregguns.icbm.complex.blueprint.rooms.MushroomCellar;
+import com.gregguns.icbm.complex.blueprint.rooms.PumpRoom;
+import com.gregguns.icbm.complex.blueprint.rooms.Stockpile;
+import com.gregguns.icbm.complex.blueprint.rooms.UndergroundFarm;
+import com.gregguns.icbm.complex.blueprint.rooms.VehicleBay;
+import com.gregguns.icbm.complex.blueprint.rooms.WarheadMagazine;
+import com.gregguns.icbm.complex.blueprint.rooms.WaterTreatment;
+import com.gregguns.icbm.complex.blueprint.rooms.Workshop;
 
 /**
  * The blueprint of every room kind (D305), by the kind's name, so a kind's blueprint can be registered before the
@@ -24,6 +40,22 @@ public final class RoomBlueprints {
         put("ASSEMBLY_BAY", new Hub());
         put("BUNKS", new Bunks());
         // --- works, stores and food (C2): register each kind's class here ----------------------------------------
+        put("GENERATOR_HALL", new GeneratorHall());
+        put("AIR_HANDLING", new AirHandling());
+        put("PUMP_ROOM", new PumpRoom());
+        put("WATER_TREATMENT", new WaterTreatment());
+        put("WORKSHOP", new Workshop());
+        put("FUEL_DEPOT", new FuelDepot());
+        put("VEHICLE_BAY", new VehicleBay());
+        put("MISSILE_ASSEMBLY", new MissileAssembly());
+        put("CHEM_LAB", new ChemLab());
+        put("INCINERATOR", new Incinerator());
+        put("ARMORY", new Armory());
+        put("WARHEAD_MAGAZINE", new WarheadMagazine());
+        put("STOCKPILE", new Stockpile());
+        put("COLD_STORAGE", new ColdStorage());
+        put("UNDERGROUND_FARM", new UndergroundFarm());
+        put("MUSHROOM_CELLAR", new MushroomCellar());
     }
 
     private RoomBlueprints() {}

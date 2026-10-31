@@ -757,7 +757,8 @@ final class ComplexGrower {
                 RoomKind first = k;
                 for (RoomKind c : deck.candidates()) {
                     if (c == k) break;
-                    if ((c == RoomKind.VEHICLE_BAY) == (k == RoomKind.VEHICLE_BAY) && c.fits(lateralOf(r), depthOf(r))) {
+                    if ((c == RoomKind.VEHICLE_BAY) == (k == RoomKind.VEHICLE_BAY)
+                        && c.fits(lateralOf(r), depthOf(r))) {
                         first = c;
                         break;
                     }

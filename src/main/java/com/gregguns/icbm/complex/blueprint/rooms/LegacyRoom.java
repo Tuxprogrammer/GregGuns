@@ -36,7 +36,7 @@ public final class LegacyRoom implements RoomBlueprint {
 
     @Override
     public int lampGap() {
-        return kind == RoomKind.STOCKPILE || kind == RoomKind.ARMORY ? 4 : GAP;
+        return GAP;
     }
 
     /** @return the room's area step count: one per {@link #AREA_STEP} interior cells, at least 1 */
@@ -46,88 +46,7 @@ public final class LegacyRoom implements RoomBlueprint {
 
     @Override
     public void lay(Kit k) {
-        int L = k.lateral(), D = k.depth(), ma = L / 2, md = D / 2, last = L - 1;
-        int q = steps(k);
-        switch (kind) {
-            case WARHEAD_MAGAZINE: {
-                int n = 0;
-                for (int d = 2; d <= D - 4 && n < 4 + 2 * q; d += 3) {
-                    for (int a = 2; a <= last - 2 && n < 4 + 2 * q; a += 3) {
-                        if (k.free(a, d) && k.machineNear(a, d, MachineRole.MAGAZINE_CASING)) n++;
-                    }
-                }
-                for (int i = 0; i < Math.max(2, q); i++) {
-                    k.floorMark(
-                        k.pick(7, i, 0, L),
-                        1 + k.pick(8, i, 0, Math.max(1, D - 3)),
-                        MarkKind.RUBBLE,
-                        "fallout");
-                }
-                backRow(k, q, LootKeys.MAGAZINE);
-                k.guards(q, 2);
-                break;
-            }
-            case FUEL_DEPOT:
-                for (int d = 2, n = 0; d <= D - 4 && n < 2 + q; d += 4, n += 2) {
-                    k.machineNear(1, d, MachineRole.FUEL_TANK);
-                    k.machineNear(last - 1, d, MachineRole.FUEL_TANK);
-                }
-                backRow(k, q, LootKeys.FUEL);
-                break;
-            case GENERATOR_HALL:
-                for (int a = 2, n = 0; a <= last - 2 && n < 2 + q; a += 4, n++) {
-                    k.machineNear(a, md, MachineRole.GENERATOR);
-                }
-                k.machineNear(last, 0, MachineRole.BATTERY_BUFFER);
-                k.guards(q, 2);
-                break;
-            case AIR_HANDLING:
-                for (int i = 0; i < q; i++) k.machineNear((int) ((i + 0.5) * L / q), md, MachineRole.AIR_HANDLER);
-                break;
-            case PUMP_ROOM:
-                for (int i = 0; i < q; i++) k.machineNear((int) ((i + 0.5) * L / q), md, MachineRole.PUMP);
-                for (int a = 0; a <= last; a += 2) k.floorMark(a, md + 1, MarkKind.FLOOD_CELL, "flood");
-                break;
-            case WORKSHOP:
-                k.anchorNear(nasa(k), 1, 1);
-                k.machineNear(ma + 2, md, MachineRole.WORKBENCH);
-                if (q > 2) k.machineNear(ma + 6, md, MachineRole.WORKBENCH);
-                k.putNear(last, 0, 'C');
-                break;
-            case STOCKPILE:
-                for (int a = 1; a <= last; a += 4) wallChest(k, a, LootKeys.STOCKPILE);
-                break;
-            case ARMORY:
-                displays(k);
-                backRow(k, q, LootKeys.ARMORY);
-                k.guards(q, 2);
-                k.column(0, 3, D - 4, "rrr.");
-                k.column(last, 3, D - 4, "a.");
-                break;
-            case VEHICLE_BAY:
-                k.machineNear(0, 0, MachineRole.BATTERY_BUFFER);
-                k.machineNear(last, 0, MachineRole.BATTERY_BUFFER);
-                k.machineNear(ma, 0, MachineRole.WORKBENCH);
-                k.putNear(1, 0, 'C');
-                break;
-            case MISSILE_ASSEMBLY:
-                k.anchorNear(nasa(k), ma - 2, md - 2);
-                k.machineNear(2, md, MachineRole.WORKBENCH);
-                k.machineNear(last - 2, md, MachineRole.WORKBENCH);
-                for (int i = 0; i < 1 + q; i++) k.machineNear(3 + i * 3, 0, MachineRole.MAGAZINE_CASING);
-                k.putNear(0, 0, 'C');
-                k.putNear(last, 0, 'C');
-                k.guards(q, 2);
-                break;
-            case WATER_TREATMENT:
-                for (int a = 2; a + 2 <= last - 2; a += 6) {
-                    for (int d = 2; d <= D - 5; d++) for (int da = 0; da < 3; da++) k.put(a + da, d, 'o');
-                }
-                for (int i = 0; i < q; i++) k.machineNear((int) ((i + 0.5) * L / q), 0, MachineRole.PUMP);
-                break;
-            default:
-                break;
-        }
+        // Every works and stores kind has its own blueprint now (C2); a kind still without one stands empty.
     }
 
     /** The NASA Workbench (D252): the core 3 x 3 strictly free, the ring free or on a light tile. */
