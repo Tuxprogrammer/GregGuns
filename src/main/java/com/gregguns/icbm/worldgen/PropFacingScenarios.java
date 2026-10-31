@@ -195,11 +195,19 @@ public final class PropFacingScenarios {
                     wrongChests++;
                     if (samples.size() < 4) samples.add("chest " + x + "," + y + "," + z + " meta " + got + "/" + want);
                 }
-                int bed = bedFootBeside(pieces, p.x(), p.y(), p.z());
-                if (bed < 0) continue;
+                int f = p.facing() & 3;
+                Mark front = pieces.get(key(p.x() + DX[f], p.y(), p.z() + DZ[f]));
+                FurniturePiece fp = front == null ? null : FurniturePiece.of(front.key());
+                if (fp == FurniturePiece.BED_FOOT || fp == FurniturePiece.BED_HEAD) {
+                    // D306: a chest by a bed opens to the aisle, never into the bed.
+                    facingBed++;
+                    if (samples.size() < 8) samples.add(
+                        "chest " + p
+                            .x() + "," + p.y() + "," + p.z() + " faces a bed: " + around(pieces, p.x(), p.y(), p.z()));
+                }
+                // A foot chest: the bed's foot right behind it.
+                if (!behindIsFoot(pieces, p.x(), p.y(), p.z(), f)) continue;
                 bedFoot++;
-                // D306: the front to the aisle, so the bed foot lies behind the chest.
-                if (bed != ((p.facing() & 3) + 2 & 3)) facingBed++;
                 Room r = roomAt(cp, p.x(), p.z());
                 if (r != null && dark(ComplexContents.roomState(cp.seed(), r, level)) && got == want) {
                     t[0]++;
@@ -239,17 +247,26 @@ public final class PropFacingScenarios {
             if (!samples.isEmpty()) out.note(level + ": " + String.join("; ", samples));
             out.checkEquals(level + ": loot chests not facing their mark", 0, wrongChests);
             out.checkEquals(level + ": furnaces not facing their mark", 0, wrongFurnaces);
-            out.checkEquals(level + ": bed-foot chests facing their bed (D306: the aisle)", 0, facingBed);
+            out.checkEquals(level + ": chests facing into a bed (D306: the aisle)", 0, facingBed);
             out.check(chests > 0 && furnaces > 0, level + ": chests and furnaces were written");
         }
 
-        /** @return the direction (0 S, 1 W, 2 N, 3 E) of a bed foot beside a cell, or -1 for none */
-        private static int bedFootBeside(Map<Long, Mark> pieces, int x, int y, int z) {
+        /** @return what stands on each side of a cell (S, W, N, E): a piece's name, or - for none */
+        private static String around(Map<Long, Mark> pieces, int x, int y, int z) {
+            StringBuilder b = new StringBuilder();
             for (int d = 0; d < 4; d++) {
                 Mark n = pieces.get(key(x + DX[d], y, z + DZ[d]));
-                if (n != null && FurniturePiece.of(n.key()) == FurniturePiece.BED_FOOT) return d;
+                FurniturePiece f = n == null ? null : FurniturePiece.of(n.key());
+                b.append(d == 0 ? "" : "/")
+                    .append(f == null ? "-" : f.name());
             }
-            return -1;
+            return b.toString();
+        }
+
+        /** @return whether the cell behind a chest of this facing holds a bed foot */
+        private static boolean behindIsFoot(Map<Long, Mark> pieces, int x, int y, int z, int f) {
+            Mark n = pieces.get(key(x - DX[f], y, z - DZ[f]));
+            return n != null && FurniturePiece.of(n.key()) == FurniturePiece.BED_FOOT;
         }
 
         /** @return whether a furnace has another furnace on exactly one side along its bank (across its facing) */

@@ -583,6 +583,9 @@ public final class I6VisualSetups {
                     cellX = Integer.parseInt(t[1]);
                     cellZ = Integer.parseInt(t[2]);
                     break;
+                case "locate":
+                    locate(ctx.world(), Integer.parseInt(t[1]), Integer.parseInt(t[2]), Integer.parseInt(t[3]));
+                    break;
                 case "cam": {
                     EntityPlayerMP p = player(t[1]);
                     double[] v = new double[6];
@@ -858,6 +861,38 @@ public final class I6VisualSetups {
     }
 
     /** {@code cut x0 z0 x1 z1 y0 y1}: air in the box, direct writes (the roof cut-away for overviews). */
+    /**
+     * {@code locate <x> <z> <radius cells>}: the complex sites near a point, as {@code /gregguns locate} lists them
+     * from a player standing there, with each site's level (recorded, or the roll it will get) and its ledger status.
+     */
+    private static void locate(World w, int x, int z, int radius) {
+        com.gregguns.worldgen.ComplexWriter writer = com.gregguns.worldgen.StructureGenerator.complexWriter();
+        if (writer == null) {
+            GregGuns.LOG.info("I6C locate: no complex writer");
+            return;
+        }
+        StructureState state = StructureState.forWorld(w);
+        for (com.gregguns.icbm.complex.gen.StructureLocator.Candidate c : com.gregguns.icbm.complex.gen.StructureLocator
+            .nearest(
+                w.getSeed(),
+                w.provider.dimensionId,
+                writer.chancePercent(),
+                x,
+                z,
+                radius,
+                p -> state.get(PlanKey.of(p)))) {
+            GregGuns.LOG.info(
+                "I6C locate cell={},{} center={},{} status={} reason={} level={}",
+                c.plan.cellX(),
+                c.plan.cellZ(),
+                c.plan.anchorX() + ComplexLayout.SIZE / 2,
+                c.plan.anchorZ() + ComplexLayout.SIZE / 2,
+                c.status,
+                c.reason,
+                ComplexPlacer.levelFor(c.decision, c.plan.chestSeedBase()));
+        }
+    }
+
     private static void cut(World w, String[] t) {
         int x0 = Integer.parseInt(t[1]), z0 = Integer.parseInt(t[2]), x1 = Integer.parseInt(t[3]),
             z1 = Integer.parseInt(t[4]), y0 = Integer.parseInt(t[5]), y1 = Integer.parseInt(t[6]);

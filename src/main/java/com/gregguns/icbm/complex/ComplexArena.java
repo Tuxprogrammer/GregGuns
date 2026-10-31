@@ -40,6 +40,37 @@ public final class ComplexArena {
     }
 
     /**
+     * Asks every Carpenter's Blocks piece over the footprint (a blast door an earlier run left, D335) for its light
+     * value before the slab rewrites it. A Carpenter's tile read back from disk works its light value out, and updates
+     * the world's light, the first time it is asked; asked first by ArchaicFix while it drains a full queue (the slab's
+     * millions of writes fill it), that is a nested run the engine refuses, and the server dies (D345). Asked here, the
+     * update is an ordinary one. Taking the tile off instead does not help: the next read of the cell makes a fresh
+     * one.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/CarpentersBlocks/blob/3.7.3-GTNH/src/main/java/com/carpentersblocks/block/BlockCoverable.java#L727-L733
+    // https://github.com/GTNewHorizons/CarpentersBlocks/blob/3.7.3-GTNH/src/main/java/com/carpentersblocks/tileentity/TEBase.java#L229-L231
+    @SuppressWarnings("unchecked")
+    private static void primeCarpenters(World world, StructurePlan p) {
+        // From the chunks, not the world's ticking list: a Carpenter's tile does not tick, so only its chunk holds it.
+        for (int cx = Math.floorDiv(p.anchorX() - 4, 16); cx <= Math.floorDiv(p.anchorX() + 243, 16); cx++) {
+            for (int cz = Math.floorDiv(p.anchorZ() - 4, 16); cz <= Math.floorDiv(p.anchorZ() + 243, 16); cz++) {
+                if (!world.getChunkProvider()
+                    .chunkExists(cx, cz)) continue;
+                net.minecraft.world.chunk.Chunk c = world.getChunkFromChunkCoords(cx, cz);
+                for (TileEntity t : new java.util.ArrayList<TileEntity>(c.chunkTileEntityMap.values())) {
+                    if (t.getClass()
+                        .getName()
+                        .startsWith("com.carpentersblocks.")) {
+                        world.getBlock(t.xCoord, t.yCoord, t.zCoord)
+                            .getLightValue(world, t.xCoord, t.yCoord, t.zCoord);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Builds (or, with {@code clear}, removes) the ground over a plan's footprint and four blocks around it: stone up
      * to the column's ground with a grass top, {@code water} blocks of water over it, air above up to the chunk's top.
      *
@@ -48,6 +79,7 @@ public final class ComplexArena {
      */
     public static void slab(World world, StructurePlan p, boolean clear, IntBinaryOperator ground, int water,
         int base) {
+        primeCarpenters(world, p);
         int bottom = Math.max(1, Math.min(floor(world, base), base - ComplexPlacer.DEPTH) - 2);
         for (int x = p.anchorX() - 4; x < p.anchorX() + 244; x++) {
             for (int z = p.anchorZ() - 4; z < p.anchorZ() + 244; z++) {

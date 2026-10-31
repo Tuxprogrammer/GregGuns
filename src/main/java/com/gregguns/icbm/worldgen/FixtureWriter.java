@@ -123,6 +123,10 @@ public final class FixtureWriter {
         Block garage = garageDoor();
         if (garage == null) return;
         ItemStack cover = coverOf(plates == null ? null : plates.apply(d.hall()));
+        // A covered piece's block meta is its cover's damage, as Carpenter's sets it when a player covers a piece.
+        // Source:
+        // https://github.com/GTNewHorizons/CarpentersBlocks/blob/3.7.3-GTNH/src/main/java/com/carpentersblocks/tileentity/TEBase.java#L296-L302
+        int meta = cover == null ? 0 : cover.getItemDamage();
         for (int a = d.a0(); a <= d.a1(); a++) {
             int x = ox + d.x(a), z = oz + d.z(a);
             if (!sink.window()
@@ -133,8 +137,9 @@ public final class FixtureWriter {
             boolean open = col == Column.OPEN;
             for (int y = from; y <= d.y1(); y++) {
                 int data = pieceData(d.facing(), open, y == d.y1());
-                if (sink.setBlock(x, oy + y, z, garage, 0)) {
-                    sink.setTile(x, oy + y, z, garageTile(x, oy + y, z, data, cover));
+                if (sink.setBlock(x, oy + y, z, garage, meta)) {
+                    TileEntity tile = garageTile(x, oy + y, z, data, cover);
+                    if (sink.setTile(x, oy + y, z, tile)) primeLight(garage, tile, x, oy + y, z);
                 }
             }
         }
@@ -203,6 +208,23 @@ public final class FixtureWriter {
 
     private static final Object NONE = new Object();
     private static final Map<String, Object> BLOCKS = new ConcurrentHashMap<>();
+
+    /**
+     * Reads a placed door piece's light value once, here, so Carpenter's caches it (D345). A Carpenter's tile works its
+     * light value out the first time it is asked and then updates the world's light at its cell. When that first
+     * question comes from the pack's lighting engine (ArchaicFix) while it is working through a full queue, the light
+     * update it starts is a nested run, which the engine refuses with an exception and never recovers from: the next
+     * tick crashes the server ("Already processing updates!"). Asked here, outside the engine, the update is an
+     * ordinary one. Without a world (a test target) nothing is asked.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/CarpentersBlocks/blob/3.7.3-GTNH/src/main/java/com/carpentersblocks/block/BlockCoverable.java#L727-L733
+    // https://github.com/GTNewHorizons/CarpentersBlocks/blob/3.7.3-GTNH/src/main/java/com/carpentersblocks/tileentity/TEBase.java#L474-L533
+    // https://github.com/embeddedt/ArchaicFix/blob/0.8.0/src/main/java/org/embeddedt/archaicfix/lighting/world/lighting/LightingEngine.java#L147-L157
+    // https://github.com/embeddedt/ArchaicFix/blob/0.8.0/src/main/java/org/embeddedt/archaicfix/lighting/world/lighting/LightingEngine.java#L237-L241
+    private static void primeLight(Block garage, TileEntity tile, int x, int y, int z) {
+        if (tile != null && tile.getWorldObj() != null) garage.getLightValue(tile.getWorldObj(), x, y, z);
+    }
 
     /** @return Carpenter's garage door, or null when the mod or the block is absent (logged once) */
     public static Block garageDoor() {
