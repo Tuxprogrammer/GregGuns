@@ -634,10 +634,11 @@ public final class Kit {
      */
     public List<int[]> spawnerSpots(int n) {
         boolean[] seen = flood();
+        boolean[] bare = flood(true);
         final List<int[]> pool = new ArrayList<int[]>();
         for (int a = 0; a < L; a++) {
             for (int d = 0; d < D; d++) {
-                if (!free(a, d) || !seen[i(a, d)]) continue;
+                if (!free(a, d) || !bare[i(a, d)]) continue;
                 boolean marked = false;
                 for (Placed p : floorMarks) marked |= p.a == a && p.d == d;
                 if (!marked) pool.add(new int[] { a, d });
@@ -659,7 +660,7 @@ public final class Kit {
                     if (out.isEmpty()) far = 0;
                     long h = hash(0x59A, c[0], c[1]);
                     if (far > bestFar || far == bestFar && h < bestKey) {
-                        if (!keepsRoomOpen(c, spot, seen, light, tiled)) continue;
+                        if (!keepsRoomOpen(c, out, spot, seen, light, tiled)) continue;
                         pick = c;
                         bestFar = far;
                         bestKey = h;
@@ -682,11 +683,15 @@ public final class Kit {
      * @return whether a spawner on cell {@code c} leaves every walked cell reachable from the door and every lit cell
      *         as bright as it was
      */
-    private boolean keepsRoomOpen(int[] c, Legend.Entry spot, boolean[] seen, int[] light, boolean tiled) {
+    private boolean keepsRoomOpen(int[] c, List<int[]> chosen, Legend.Entry spot, boolean[] seen, int[] light,
+        boolean tiled) {
         int ci = i(c[0], c[1]);
         entry[ci] = spot;
         try {
             boolean[] now = flood();
+            boolean[] bare = flood(true);
+            if (!touches(bare, c[0], c[1])) return false;
+            for (int[] o : chosen) if (!touches(bare, o[0], o[1])) return false;
             for (int i = 0; i < L * D; i++) {
                 if (i != ci && seen[i] && !now[i]) return false;
             }
@@ -740,13 +745,19 @@ public final class Kit {
     }
 
     private boolean[] flood() {
+        return flood(false);
+    }
+
+    /** @param bare walk only cells with nothing on them (a door piece or a rug does not count) */
+    private boolean[] flood(boolean bare) {
         boolean[] seen = new boolean[L * D];
         ArrayDeque<int[]> q = new ArrayDeque<int[]>();
         for (Opening o : openings) {
             // From the doorway; in the hub, from its first portal (every other must then be reached).
             if (primary != null ? !o.primary : o != openings.get(0)) continue;
             for (int[] c : o.inside(L, D)) {
-                if (!in(c[0], c[1]) || !walk(i(c[0], c[1])) || seen[i(c[0], c[1])]) continue;
+                if (!in(c[0], c[1]) || !(bare ? entry[i(c[0], c[1])] == null : walk(i(c[0], c[1])))
+                    || seen[i(c[0], c[1])]) continue;
                 seen[i(c[0], c[1])] = true;
                 q.add(c);
             }
@@ -755,7 +766,7 @@ public final class Kit {
             int[] c = q.poll();
             for (Dir x : Dir.REAL) {
                 int a = c[0] + x.da, d = c[1] + x.dd;
-                if (!in(a, d) || seen[i(a, d)] || !walk(i(a, d))) continue;
+                if (!in(a, d) || seen[i(a, d)] || !(bare ? entry[i(a, d)] == null : walk(i(a, d)))) continue;
                 seen[i(a, d)] = true;
                 q.add(new int[] { a, d });
             }
