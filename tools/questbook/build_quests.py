@@ -521,19 +521,20 @@ def check(data):
                                         % (k, s.get('damage')))
         except KeyError:
             pass  # an unknown bag name, reported above
-        if TIERS.index(q['tier']) >= TIERS.index('ZPM'):
-            for r in q['rewards']:
-                for s in (r.get('items', []) if r.get('type') in ('item', 'choice') else []):
-                    sid = str(s.get('id', ''))
-                    item = ITEM_TIERS.get(sid if sid.startswith('gregguns:') else '%s@%s' % (sid, s.get('damage')))
-                    if item is None:
-                        continue
-                    if TIERS.index(item) > TIERS.index(q['tier']):
-                        problems.append('%s: reward %s is %s, above the quest tier (GGS-12-19)'
-                                        % (k, s['id'], item))
-                    elif TIERS.index(item) < TIERS.index(q['tier']):
-                        warnings.append('%s: reward %s is %s, below the quest tier %s (GGS-12-19)'
-                                        % (k, s['id'], item, q['tier']))
+        for r in q['rewards']:
+            for s in (r.get('items', []) if r.get('type') in ('item', 'choice') else []):
+                sid = str(s.get('id', ''))
+                item = ITEM_TIERS.get(sid if sid.startswith('gregguns:') else '%s@%s' % (sid, s.get('damage')))
+                if item is None:
+                    continue
+                if TIERS.index(item) > TIERS.index(q['tier']):
+                    # An above-tier reward is an error at every tier.
+                    problems.append('%s: reward %s is %s, above the quest tier (GGS-12-19)'
+                                    % (k, s['id'], item))
+                elif TIERS.index(item) < TIERS.index(q['tier']) and TIERS.index(q['tier']) >= TIERS.index('ZPM'):
+                    # Below-tier rewards are only worth a warning from ZPM up.
+                    warnings.append('%s: reward %s is %s, below the quest tier %s (GGS-12-19)'
+                                    % (k, s['id'], item, q['tier']))
         for tag in sorted(set(re.findall(r'\[/?([a-zA-Z_]+)\]', q['desc']))):
             if tag not in TEXT_TAGS:
                 problems.append('%s: [%s] is not one of the pack tags %s (GGS-12-14)' % (k, tag, sorted(TEXT_TAGS)))

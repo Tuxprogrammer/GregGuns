@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A plain warhead just goes bang. A payload changes what the bang does: steel fragments, a lead mass, napalm, a dizzying or choking gas, smoke, or a field generator that pushes everything away or pulls it in.\n\nThe Assembler fits a payload at HV: put one bare Inert T1 Warhead in with the payload\u0027s parts and the right programmed circuit, and you get the same inert warhead with that payload, ready for charges. The Shrapnel payload, for example, is one Steel Fragmentation Sleeve. Check NEI for every payload and its circuit.\n\n[note]A payload holds no explosive. You still load Plastic Explosive afterwards. Fitting a new payload to a casing that already has one replaces the old payload.[/note]",
+      "desc:8": "A plain warhead just goes bang. A payload changes what the bang does: steel fragments, a lead mass, napalm, a dizzying or choking gas, smoke, or a field generator that pushes everything away or pulls it in.\n\nThe Assembler fits a payload at HV: put one bare Inert T1 Warhead in with the payload\u0027s parts and the right programmed circuit, and you get the same inert warhead with that payload, ready for charges. The Shrapnel payload, for example, is one Steel Fragmentation Sleeve. Check NEI for every payload and its circuit.\n\n[note]A payload holds no explosive. You still load Plastic Explosive afterward. Fitting a new payload to a casing that already has one replaces the old payload.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

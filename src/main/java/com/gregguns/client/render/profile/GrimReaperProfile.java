@@ -144,7 +144,7 @@ public final class GrimReaperProfile {
         // END GENERATED BOXES
     };
 
-    // In-hand fit: first-person length, centre and muzzle and third-person length come from the gun's InHandTargets
+    // In-hand fit: first-person length, center and muzzle and third-person length come from the gun's InHandTargets
     // row. The first-person part deviates from the in-hand notes (see the row): their hold put the rear of this tall
     // launcher behind the eye, a slab over the lower right of the screen. Third person keeps the notes' figures. The
     // far tip, our +X muzzle cap, is the muzzle.
@@ -198,7 +198,7 @@ public final class GrimReaperProfile {
             .rotY((p, part) -> -30.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225, then the fitted scale and translate (the box centre on the hand). Aimed
+        // Third person: rotX180, rotY225, then the fitted scale and translate (the box center on the hand). Aimed
         // extra (0, 0.1, 0).
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
@@ -215,14 +215,14 @@ public final class GrimReaperProfile {
             .rotX((p, part) -> 40.0 * yR(p))
             .rotY((p, part) -> 60.0 * yR(p))
             .build();
-        // Ground: scale 0.6, the model centred (centre at texel 6.5, 4) so it lies flat.
+        // Ground: scale 0.6, the model centerd (center at texel 6.5, 4) so it lies flat.
         TransformProgram ground = TransformProgram.builder()
             .rotX(180)
             .rotY(90)
             .scale(0.6)
             .translate(-0.405, -0.25, 0)
             .build();
-        // Icon: side-on, scale 0.3 so the 3 block model fits the slot, centred in it.
+        // Icon: side-on, scale 0.3 so the 3 block model fits the slot, centerd in it.
         TransformProgram icon = TransformProgram.builder()
             .rotX(180)
             .rotY(180)

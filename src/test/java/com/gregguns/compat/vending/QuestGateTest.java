@@ -42,9 +42,7 @@ class QuestGateTest {
 
     @Test
     void theNamespaceIsTheQuestLines() throws IOException {
-        Path source = Files.exists(Paths.get("tools/questbook/quests/_line.json"))
-            ? Paths.get("tools/questbook/quests/_line.json")
-            : Paths.get("tools/questbook/quests.json");
+        Path source = Paths.get("tools/questbook/quests/_line.json");
         String text = new String(Files.readAllBytes(source), StandardCharsets.UTF_8);
         Matcher m = Pattern.compile("\"namespace\"\\s*:\\s*\"([0-9a-f-]+)\"")
             .matcher(text);

@@ -1284,8 +1284,8 @@ public final class Kit {
                 if (full) filled++;
                 // The middle off the aisle: the aisle is the way in, empty by design (D321).
                 boolean aisle = reserved[i(a, d)] && a >= aisleLo() && a <= aisleHi();
-                boolean centre = a >= 3 && d >= 3 && a <= L - 4 && d <= D - 4 && !aisle;
-                if (centre) {
+                boolean center = a >= 3 && d >= 3 && a <= L - 4 && d <= D - 4 && !aisle;
+                if (center) {
                     cn++;
                     if (full) cf++;
                 }

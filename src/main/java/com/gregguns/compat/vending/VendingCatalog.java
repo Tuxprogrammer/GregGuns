@@ -12,6 +12,7 @@ import com.gregguns.armor.ArmorItemOrder;
 import com.gregguns.entity.npc.NpcEggOrder;
 import com.gregguns.entity.npc.NpcMob;
 import com.gregguns.entity.npc.NpcRegistry;
+import com.gregguns.entity.npc.NpcSpawnGate;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.item.GunsItemOrder;
@@ -257,6 +258,20 @@ public final class VendingCatalog {
             }
         }
         return Collections.unmodifiableList(out);
+    }
+
+    /**
+     * @param offer a catalog offer
+     * @return false for a spawn egg whose kind cannot spawn on this server: its {@code npcs.*} flag is off, or it was
+     *         never registered (spawn weight 0). Every other offer is sellable.
+     */
+    public static boolean spawnable(Offer offer) {
+        if (!offer.key()
+            .startsWith("egg:")) {
+            return true;
+        }
+        NpcMob mob = NpcMob.byId(offer.meta());
+        return mob == null || NpcRegistry.isRegistered(mob) && NpcSpawnGate.allowed(mob);
     }
 
     private static void addGunsSlot(List<Offer> out, GunsItemOrder.Slot slot) {

@@ -36,7 +36,7 @@ import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
  * types, so it is registered only when OpenComputers is loaded.
  *
  * <pre>
- *   adapter (0,0,0); Launch Control east (1,0,0), against the pad; pad centre (3,0,0); radar west (-1,0,0);
+ *   adapter (0,0,0); Launch Control east (1,0,0), against the pad; pad center (3,0,0); radar west (-1,0,0);
  *   air defense north (0,0,-1); EMP tower south (0,0,1); case (0,1,0); screen (0,1,1) facing south;
  *   keyboard (0,2,1); disk drive (1,1,0)
  * </pre>

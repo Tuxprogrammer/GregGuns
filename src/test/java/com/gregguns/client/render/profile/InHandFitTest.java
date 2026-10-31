@@ -95,13 +95,13 @@ class InHandFitTest {
             checked++;
             boolean alongX = !InHandTestSupport.zFamily(d);
             double[][] b = InHandFit.gunFrameBounds(InHandTestSupport.fitBoxes(d), d.modelScale(), alongX);
-            double[] centre = fpCamera(d, InHandFit.mid(b));
+            double[] center = fpCamera(d, InHandFit.mid(b));
             double[] front = fpCamera(d, InHandFit.muzzlePoint(b, alongX));
             double[] rear = fpCamera(d, InHandFit.rearPoint(b, alongX));
             String n = d.gunName();
             assertEquals(t.fpLength(), dist(front, rear), 0.1 * t.fpLength(), n + " first-person length");
             for (int i = 0; i < 3; i++) {
-                assertEquals(t.fpCentre()[i], centre[i], 0.1, n + " centre axis " + i);
+                assertEquals(t.fpCentre()[i], center[i], 0.1, n + " center axis " + i);
             }
             // The muzzle: the profile's own muzzle point, which is the barrel tip rather than the box slice.
             float[] m0 = d.muzzle();
@@ -122,7 +122,7 @@ class InHandFitTest {
     void theGrimReaperSitsInTheLowerRightNotOverTheScreen() {
         // Owner review (ADS survey, hip poses): the notes' hold left the launcher's rear behind the eye, a slab over
         // the lower right third of the screen reaching the top of the frame. Every corner of every box must now be in
-        // front of the near plane, below the eye line and right of the screen centre, like the Rocket Launcher.
+        // front of the near plane, below the eye line and right of the screen center, like the Rocket Launcher.
         ClientGunDefinition d = ClientGunDefinitions.byName("grim_reaper");
         float s = d.modelScale();
         for (BoxSpec b : d.boxes()) {
@@ -133,7 +133,7 @@ class InHandFitTest {
                         String where = b.name() + " corner " + c[0] + ", " + c[1] + ", " + c[2];
                         assertTrue(c[2] > 0.1, "in front of the eye: " + where);
                         assertTrue(c[1] < -0.2, "below the crosshair: " + where);
-                        assertTrue(c[0] > 0.2, "right of the centre: " + where);
+                        assertTrue(c[0] > 0.2, "right of the center: " + where);
                     }
                 }
             }
@@ -172,7 +172,7 @@ class InHandFitTest {
             double lengthWorld = dist(front, rear) * InHandFit.TP_FRAME_SCALE;
             assertEquals(t.tpLength(), lengthWorld, 0.1 * t.tpLength(), d.gunName() + " third-person length");
             double fromHand = dist(tpHand(d, InHandFit.mid(b)), new double[3]) * InHandFit.TP_FRAME_SCALE;
-            assertTrue(fromHand < 0.25, d.gunName() + " box centre is " + fromHand + " world blocks from the hand");
+            assertTrue(fromHand < 0.25, d.gunName() + " box center is " + fromHand + " world blocks from the hand");
         }
     }
 

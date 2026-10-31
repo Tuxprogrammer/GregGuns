@@ -46,6 +46,35 @@ class VendingCatalogTest {
         assertTrue(OFFERS.size() > 150, "the shop should be big: " + OFFERS.size());
     }
 
+    /** The one number the docs quote: config.md and coins-and-vending.md say 176. */
+    @Test
+    void tradeCountIsTheDocumentedOne() {
+        int misc = 0;
+        int components = 0;
+        for (VendingCatalog.Offer o : OFFERS) {
+            if (o.category() == VendingCatalog.Category.MISC) {
+                misc++;
+            } else {
+                components++;
+            }
+        }
+        assertEquals(
+            "139 Misc + 37 Components = 176",
+            misc + " Misc + " + components + " Components = " + OFFERS.size());
+    }
+
+    @Test
+    void onlyEggsOfKindsThatCannotSpawnAreHeldBack() {
+        // Nothing is registered in a unit test, so every egg reads as unspawnable; no other offer is touched.
+        for (VendingCatalog.Offer o : OFFERS) {
+            assertEquals(
+                !o.key()
+                    .startsWith("egg:"),
+                VendingCatalog.spawnable(o),
+                o.key());
+        }
+    }
+
     @Test
     void everyItemIsAGregGunsItem() {
         Set<String> names = new HashSet<>(NeiOrder.names());

@@ -42,6 +42,11 @@ class RewardTiers(unittest.TestCase):
         problems, _ = bq.check(self.with_choice_item('gg.icbm.antimatter', UHV_PLATE))
         self.assertTrue(any('gg.icbm.antimatter' in p and 'GGS-12-19' in p for p in problems), problems)
 
+    def test_above_tier_reward_is_an_error_below_zpm_too(self):
+        nuclear = {'id': 'gregguns:part_nuclear_warhead', 'count': 1}
+        problems, _ = bq.check(self.with_choice_item('gg.icbm.radar_tower', nuclear))
+        self.assertTrue(any('gg.icbm.radar_tower' in p and 'GGS-12-19' in p for p in problems), problems)
+
     def test_uv_and_uhv_pay_their_own_crates(self):
         for key, bag in (('gg.icbm.antimatter', 'ordnance4'), ('gg.icbm.redmatter', 'ordnance5')):
             bags = [s['bag'] for r in self.quest(self.data, key)['rewards'] if r['type'] == 'item'

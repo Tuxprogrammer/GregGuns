@@ -16,7 +16,7 @@ python -I tools/questbook/build_quests.py --out src/main/resources/assets/greggu
 python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook --data tools/questbook/quests
 ```
 
-After editing a chapter file, rebuild, run `python -I tools/questbook/quest_doc.py` to regenerate the tables in `quest-line.md`, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
+After editing a chapter file, rebuild, run `python -I tools/questbook/quest_doc.py` to regenerate the tables in `quest-line.md`, and run `./gradlew test`. `QuestbookResourcesTest` fails if the quest IDs in the resources no longer match the data, or if they name something GregGuns does not register. It does not compare quest text, rewards or layout, so always rebuild after an edit.
 
 ## Layout and prerequisites
 

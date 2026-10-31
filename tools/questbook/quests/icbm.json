@@ -972,7 +972,7 @@
       "desc": [
         "A plain warhead just goes bang. A payload changes what the bang does: steel fragments, a lead mass, napalm, a dizzying or choking gas, smoke, or a field generator that pushes everything away or pulls it in.",
         "The Assembler fits a payload at HV: put one bare Inert T1 Warhead in with the payload's parts and the right programmed circuit, and you get the same inert warhead with that payload, ready for charges. The Shrapnel payload, for example, is one Steel Fragmentation Sleeve. Check NEI for every payload and its circuit.",
-        "[note]A payload holds no explosive. You still load Plastic Explosive afterwards. Fitting a new payload to a casing that already has one replaces the old payload.[/note]"
+        "[note]A payload holds no explosive. You still load Plastic Explosive afterward. Fitting a new payload to a casing that already has one replaces the old payload.[/note]"
       ],
       "pre": [
         "gg.icbm.inert_warhead"

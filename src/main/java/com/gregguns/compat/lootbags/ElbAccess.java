@@ -218,20 +218,6 @@ final class ElbAccess {
         return true;
     }
 
-    /**
-     * Replaces ELB's client list object (when it is not the local one) with a copy that has {@code add} appended.
-     *
-     * @param add groups to append
-     * @return true if the field changed
-     */
-    boolean appendClient(List<Object> add) throws ReflectiveOperationException {
-        Object old = clientGroups();
-        if (add.isEmpty()) return false;
-        if (old == null) old = groupsClass.newInstance();
-        clientField.set(handler, copyOf(old, add, new ArrayList<>()));
-        return true;
-    }
-
     private Object copyOf(Object old, List<Object> add, List<Object> remove) throws ReflectiveOperationException {
         Object fresh = groupsClass.newInstance();
         List<Object> table = table(fresh);

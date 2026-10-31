@@ -78,21 +78,21 @@ dependencies {
         runtimeOnlyNonPublishable("com.github.GTNewHorizons:Mobs-Info:0.6.0-GTNH:dev")
     }
 
-    // Dev-client CTM (design record 0023): Angelica 2.2.28 bundles MCPatcherForge, which renders our connected-texture
-    // data. Opt in with -Pgg.devAngelica=true (or env GG_DEV_ANGELICA=1); off by default, so builds, tests, runServer and the
-    // headless suite are unchanged. Runtime only, client side (Angelica is a CLIENT mod). Version is the pack's.
     // EnhancedLootBags and its YAMCore library, so dev runs and scenarios have the pack's bag item that the GregGuns loot
     // groups are added to (com.gregguns.compat.lootbags). Runtime only: GregGuns reaches ELB by reflection.
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:EnhancedLootBags:1.3.5:dev") { transitive = false }
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:Yamcl:0.7.5:dev") { transitive = false }
     // Carpenter's Blocks: the silo complex's blast doors are its garage doors (D335), placed by name; the dev runs and
     // scenarios load it so icbm.complex.fixtures can read the doors back.
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:CarpentersBlocks:3.7.3-GTNH:dev") { transitive = false }
-    runtimeOnlyNonPublishable("com.github.GTNewHorizons:Yamcl:0.7.5:dev") { transitive = false }
     // The pack's Backpack mod, so dev runs and the armor and repair scenarios have Tanned Leather (Backpack:tannedLeather),
     // the lining of the armor recipes. Runtime only: GregGuns looks the item up by name (com.gregguns.compat.PackItems).
     // Version is the pack's (MOD-INDEX.md).
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:Minecraft-Backpack-Mod:2.6.18-GTNH:dev") { transitive = false }
 
+    // Dev-client CTM (design record 0023): Angelica 2.2.28 bundles MCPatcherForge, which renders our connected-texture
+    // data. Opt in with -Pgg.devAngelica=true (or env GG_DEV_ANGELICA=1); off by default, so builds, tests, runServer and the
+    // headless suite are unchanged. Runtime only, client side (Angelica is a CLIENT mod). Version is the pack's.
     if (project.hasProperty("gg.devAngelica") || System.getenv("GG_DEV_ANGELICA") == "1") {
         runtimeOnlyNonPublishable("com.github.GTNewHorizons:Angelica:2.2.28:dev")
     }
