@@ -34,6 +34,11 @@ final class BalanceScenarios {
     static final double TANK_HEALTH = 100000.0;
     /** How close the measured ramp must follow {@link DamageRamp}, as a share of the expected damage. */
     static final double RAMP_TOLERANCE = 0.05;
+    /**
+     * Ticks the scenario waits after laying its arena and spawning the mobs before it detonates: the server works off
+     * the arena's block writes (seconds on the full pack) and the mobs tick in the world first (D344).
+     */
+    static final int SETTLE_TICKS = 40;
 
     private BalanceScenarios() {}
 
@@ -57,6 +62,67 @@ final class BalanceScenarios {
         cow.setHealth((float) TANK_HEALTH);
         cow.hurtResistantTime = 0;
         return cow.getHealth() < TANK_HEALTH - 1.0 ? null : cow;
+    }
+
+    /**
+     * @return null when every mob is alive, in the world's entity list and has ticked there; otherwise why not, so a
+     *         blast is never measured on a mob the world does not hold (it would read as 0 damage)
+     */
+    private static String unready(World w, EntityCow... mobs) {
+        for (EntityLivingBase m : mobs) {
+            if (m.isDead || !w.loadedEntityList.contains(m)) {
+                // Removed (health left) or killed (none left), where, and what it stood in: enough to name the cause.
+                return String.format(
+                    "%s is not in the world after %d ticks (dead %s, health %.0f, ticked %d, at %.1f %.1f %.1f in %s)",
+                    m.getClass()
+                        .getSimpleName(),
+                    SETTLE_TICKS,
+                    m.isDead,
+                    m.getHealth(),
+                    m.ticksExisted,
+                    m.posX,
+                    m.posY,
+                    m.posZ,
+                    w.getBlock((int) Math.floor(m.posX), (int) Math.floor(m.posY), (int) Math.floor(m.posZ))
+                        .getUnlocalizedName());
+            }
+            if (m.ticksExisted <= 0) {
+                return m.getClass()
+                    .getSimpleName() + " has not ticked in "
+                    + SETTLE_TICKS
+                    + " ticks";
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The vanilla server removes the measuring mobs on their first tick when its settings forbid them
+     * ({@code WorldServer} sets an animal dead under {@code spawn-animals=false}, and peaceful removes the Wither). A
+     * blast that lands before that tick deals its damage and the kill zone reads as a pass, one that lands after reads
+     * 0, so the scenarios cannot measure anything on such a server (D344).
+     *
+     * @return why this server cannot hold the measuring mobs, or null when it can
+     */
+    private static String unfitServer(World w) {
+        net.minecraft.server.MinecraftServer server = net.minecraft.server.MinecraftServer.getServer();
+        if (server != null && !server.getCanSpawnAnimals()) {
+            return "the server has spawn-animals=false, which removes the measuring cow on its first tick";
+        }
+        if (w.difficultySetting == net.minecraft.world.EnumDifficulty.PEACEFUL) {
+            return "the world is on peaceful, which removes the Wither";
+        }
+        return null;
+    }
+
+    /** Puts a waiting mob back on its mark, still, at full health. */
+    private static void ready(EntityLivingBase m, double x, double y, double z) {
+        m.setPositionAndUpdate(x, y, z);
+        m.motionX = 0.0;
+        m.motionY = 0.0;
+        m.motionZ = 0.0;
+        m.setHealth(m.getMaxHealth());
+        m.hurtResistantTime = 0;
     }
 
     private static void floor(ScenarioContext ctx, int r) {
@@ -120,6 +186,10 @@ final class BalanceScenarios {
             if (def == null) {
                 return ScenarioResult.fail(name(), "the ICBM content is not registered");
             }
+            String unfit = unfitServer(ctx.world());
+            if (unfit != null) {
+                return ScenarioResult.skip(name(), unfit);
+            }
             ctx.clearArea(36, 20);
             floor(ctx, 36);
             final int fill = def.maxFill();
@@ -132,27 +202,47 @@ final class BalanceScenarios {
             if (zero == null || mid == null) {
                 return ScenarioResult.fail(name(), "could not raise a mob's health to " + (int) TANK_HEALTH);
             }
-            final Runnable restore = terrainOff();
-            BlastEngine.instance()
-                .clear();
-            // The blast center sits at the mobs' feet, as a warhead on the ground or a missile's impact does.
-            if (!IcbmBlasts.detonate(
-                ctx.world(),
-                ctx.originX() + 0.5,
-                ctx.originY() + 0.1,
-                ctx.originZ() + 0.5,
-                def,
-                fill,
-                null)) {
-                restore.run();
-                return ScenarioResult.fail(name(), "the engine did not accept the blast");
-            }
-            return ScenarioResult.pending(name(), 20 * 40, ticks -> {
-                if (!BlastEngine.instance()
-                    .lastBlastDone() && ticks < 20 * 35) {
+            final Runnable[] restore = { null };
+            final int[] firedAt = { -1 };
+            return ScenarioResult.pending(name(), SETTLE_TICKS + 20 * 40, ticks -> {
+                if (firedAt[0] < 0) {
+                    if (ticks < SETTLE_TICKS) {
+                        return null;
+                    }
+                    String unready = unready(ctx.world(), zero, mid);
+                    if (unready != null) {
+                        zero.setDead();
+                        mid.setDead();
+                        return ScenarioResult.fail(name(), unready);
+                    }
+                    // A cow walks while it waits: put both back on their marks, at full health.
+                    ready(zero, ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5);
+                    ready(mid, ctx.originX() + 0.5 + half, ctx.originY(), ctx.originZ() + 0.5);
+                    restore[0] = terrainOff();
+                    BlastEngine.instance()
+                        .clear();
+                    // The blast center sits at the mobs' feet, as a warhead on the ground or a missile's impact does.
+                    if (!IcbmBlasts.detonate(
+                        ctx.world(),
+                        ctx.originX() + 0.5,
+                        ctx.originY() + 0.1,
+                        ctx.originZ() + 0.5,
+                        def,
+                        fill,
+                        null)) {
+                        restore[0].run();
+                        zero.setDead();
+                        mid.setDead();
+                        return ScenarioResult.fail(name(), "the engine did not accept the blast");
+                    }
+                    firedAt[0] = ticks;
                     return null;
                 }
-                restore.run();
+                if (!BlastEngine.instance()
+                    .lastBlastDone() && ticks - firedAt[0] < 20 * 35) {
+                    return null;
+                }
+                restore[0].run();
                 double dealt = TANK_HEALTH - zero.getHealth();
                 double dealtHalf = TANK_HEALTH - mid.getHealth();
                 double target = blast.tier()
@@ -218,6 +308,10 @@ final class BalanceScenarios {
             final ExplosiveDef def = Explosives.get(blast.id());
             if (def == null) {
                 return ScenarioResult.fail(name(), "the ICBM content is not registered");
+            }
+            String unfit = unfitServer(ctx.world());
+            if (unfit != null) {
+                return ScenarioResult.skip(name(), unfit);
             }
             ctx.clearArea(36, 20);
             floor(ctx, 36);

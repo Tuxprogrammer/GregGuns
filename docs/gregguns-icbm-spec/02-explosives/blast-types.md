@@ -76,7 +76,7 @@ Payloads (D282; the explosive is always the Plastic Explosive charges, 64 to a f
 
 ### Balance pass: measured damage (I7, D328)
 
-Measured on a real GTNH 2.9.0-RC-2 server (every pack mod loaded, Infernal Mobs included) by the scenarios `icbm.balance.damage_<type>` and `icbm.balance.kill_zone_<type>`: a full warhead set off at the feet of a mob with 100,000 health, a second mob at half the radius, terrain damage off. The health each mob lost is the damage the blast dealt after every handler in the pack.
+Measured on a real GTNH 2.9.0-RC-2 server (every pack mod loaded, Infernal Mobs included) by the scenarios `icbm.balance.damage_<type>` and `icbm.balance.kill_zone_<type>`: a full warhead set off at the feet of a mob with 100,000 health, a second mob at half the radius, terrain damage off. The health each mob lost is the damage the blast dealt after every handler in the pack. The scenarios need a server that keeps the mobs (`spawn-animals=true`, not peaceful) and skip otherwise; they let the arena settle for 40 ticks and check both mobs stand in the world before the blast (D344).
 
 | Type | Fill | Radius | Center damage, measured | Target (0018 §6) | At half the radius, measured (ramp) |
 |---|---|---|---|---|---|
