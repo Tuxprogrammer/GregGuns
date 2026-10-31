@@ -101,6 +101,7 @@ public final class ComplexLevelScenarios {
         registry.register(new Guards());
         registry.register(new Armory());
         SalvageScenarios.registerAll(registry);
+        RoomScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
