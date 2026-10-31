@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Built the wrong warhead, or want the parts back? Every step of the chain runs backwards. Put a live warhead and a Defuse Kit in a crafting grid: each craft takes out up to 8 Plastic Explosive, whole, for one use of the kit. The last charge out leaves the inert warhead with its payload, ready for a different load.\n\nThe Cutting Machine does the rest at the warhead\u0027s own tier: it empties a full warhead in one go, takes a payload out and cuts a bare casing back into its plates and Fuze Assembly. Check NEI.\n\nUnload a T1 warhead until only the inert casing is left.\n\n[note]A payload\u0027s parts come back, but any fluid it held is spent. A Macerator or Arc Furnace only gives back a warhead\u0027s metal.[/note]",
+      "desc:8": "Built the wrong warhead, or want the parts back? Every step of the chain runs backwards. Put a live warhead and a Defuse Kit in a crafting grid: each craft takes out up to 8 Plastic Explosive, whole, for one use of the kit. The last charge out leaves the inert warhead with its payload, ready for a different load.\n\nThe Cutting Machine does the rest at the warhead\u0027s own tier: it empties a full warhead in one go, takes a payload out and cuts a bare casing back into its plates, Fuze Assembly, nose cone and hull plates; its sensor, emitter and circuits are spent. Check NEI.\n\nUnload a T1 warhead until only the inert casing is left.\n\n[note]A payload\u0027s parts come back, but any fluid it held is spent. A Macerator or Arc Furnace only gives back a warhead\u0027s metal.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
