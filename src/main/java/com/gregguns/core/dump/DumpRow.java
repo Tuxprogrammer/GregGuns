@@ -63,6 +63,15 @@ public final class DumpRow {
     }
 
     /**
+     * @param key an item key, perhaps with the {@code #nbt<hash>} suffix of a tagged stack
+     * @return the key without that suffix: the item and damage
+     */
+    public static String plainKey(String key) {
+        int hash = key.indexOf('#');
+        return hash < 0 ? key : key.substring(0, hash);
+    }
+
+    /**
      * @param name an ore dictionary name
      * @return the ore key
      */

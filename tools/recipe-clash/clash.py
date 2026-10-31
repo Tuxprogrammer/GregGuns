@@ -155,9 +155,23 @@ def counts(r):
 IGNORE_COUNTS = False
 
 
+def plain(key):
+    """gregguns:x:0#nbt1f -> gregguns:x:0. The dump tags our stack's key with its NBT hash only where the recipe
+    matches NBT (outputs, NBT-sensitive GT inputs); a plain input key means the recipe takes any tag."""
+    return key.split("#", 1)[0]
+
+
 def fits(small, big):
-    """Every (key -> count) of small is in big with at least that count (just the key with IGNORE_COUNTS)."""
-    return all(k in big and (IGNORE_COUNTS or big[k] >= n) for k, n in small.items())
+    """Every (key -> count) of small is in big with at least that count (just the key with IGNORE_COUNTS).
+
+    A plain key of small also fits a tagged key of the same item in big: a recipe that ignores NBT takes the tagged
+    stack too (a payload recipe's bare inert warhead fires on a fitted one)."""
+    for k, n in small.items():
+        if k in big and (IGNORE_COUNTS or big[k] >= n):
+            continue
+        if "#" in k or not any(plain(b) == k and (IGNORE_COUNTS or c >= n) for b, c in big.items() if "#" in b):
+            return False
+    return True
 
 
 def can_fire_on(p, r):
@@ -211,7 +225,7 @@ def find_subsets(rows):
         for r in ours_rows:
             sig = input_sig(r)
             seen = set()
-            for k in row_keys(r):
+            for k in row_keys(r) | {plain(k) for k in row_keys(r)}:
                 for p in posting[k]:
                     if p is not r and id(p) not in seen and input_sig(p) != sig and can_fire_on(p, r):
                         seen.add(id(p))

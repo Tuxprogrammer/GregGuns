@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Tier 3 missile is the big one: six blocks tall, 8,000 mB of rocket fuel, 20 to 8,000 blocks of range (10,000 from a silo), and the only body that carries the heaviest casings, antimatter and red matter included. It launches only from a Missile Silo with a LuV Energy Hatch.\n\nBuild the first one by hand. The Tier 3 chip comes from the Circuit Assembler at LuV (a Multifiberglass board, 2 Master circuits and 8 fine platinum wires) and is engraved with a yellow lens. The NASA Workbench page takes four compressed titanium plates, four Heavy Duty Rocket Fins Tier 3, a Heavy Duty Rocket Engine Tier 3 and a Guidance Computer Mk III, which fits but gives no guidance steps on a body this heavy.\n\nThis is the one missile body built on GregTech\u0027s §lAssembly Line§r. Scan a hand-built Missile Body T3 onto a data stick in the Scanner (180 seconds at LuV) to unlock the recipe. The line then builds it from the same plates, fins and engine, 2 Master circuits and 250 L of lubricant in 60 seconds at LuV. Check NEI. Build two Tier 3 bodies.\n\n[note]Keep one hand-built body aside for the scan. The Tier 1 and Tier 2 bodies never need the Assembly Line: the Assembler builds those.[/note]",
+      "desc:8": "The Tier 3 missile is the big one: six blocks tall, 8,000 mB of rocket fuel, 20 to 8,000 blocks of range (10,000 from a silo), and the only body that carries the heaviest casings, antimatter and red matter included. It launches only from a Missile Silo with a LuV Energy Hatch.\n\nBuild the first one by hand. The Tier 3 chip comes from the Circuit Assembler at LuV (a Multifiberglass board, 2 Master circuits and 8 fine platinum wires) and is engraved with a yellow lens. The NASA Workbench page takes the Tier 4 rocket\u0027s hull, fins and engine (four Heavy Duty Plates Tier 4, four Heavy Rocket Fins and a Heavy Rocket Engine) and a Guidance Computer Mk III, which fits but gives no guidance steps on a body this heavy.\n\nThis is the one missile body built on GregTech\u0027s §lAssembly Line§r. Scan a hand-built Missile Body T3 onto a data stick in the Scanner (180 seconds at LuV) to unlock the recipe. The line then builds it from the same plates, fins and engine, 2 Master circuits and 250 L of lubricant in 60 seconds at LuV. Check NEI. Build two Tier 3 bodies.\n\n[note]Keep one hand-built body aside for the scan. The Tier 1 and Tier 2 bodies never need the Assembly Line: the Assembler builds those.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -144,21 +144,21 @@
         },
         "2:10": {
           "Count:3": 4,
-          "Damage:2": 6,
-          "OreDict:8": "compressedTitanium",
-          "id:8": "GalacticraftMars:item.itemBasicAsteroids"
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "dreamcraft:HeavyDutyPlateTier4"
         },
         "3:10": {
           "Count:3": 4,
-          "Damage:2": 0,
+          "Damage:2": 2,
           "OreDict:8": "",
-          "id:8": "dreamcraft:HeavyDutyRocketFinsTier3"
+          "id:8": "GalacticraftMars:item.itemBasicAsteroids"
         },
         "4:10": {
           "Count:3": 1,
-          "Damage:2": 0,
+          "Damage:2": 1,
           "OreDict:8": "",
-          "id:8": "dreamcraft:HeavyDutyRocketEngineTier3"
+          "id:8": "GalacticraftMars:item.itemBasicAsteroids"
         },
         "5:10": {
           "Count:3": 2,

@@ -53,6 +53,18 @@ class ClashTest(unittest.TestCase):
         self.assertIn("| subset | 1 |", text)
         self.assertIn("shadowed by", text)
 
+    def test_a_recipe_that_ignores_nbt_fires_on_a_tagged_stack(self):
+        # R2-06: the dump tags our stack only where the recipe matches NBT. The payload row (plain inert key) can
+        # start from a row that takes a fitted inert (tagged key) and the same other inputs.
+        asm = "gt.recipe.assembler"
+        text = run([row(asm, "gregguns", ["gregguns:inert:0#nbt1f", "b:1"], ["gregguns:filled:0"], circuit=3),
+                    row(asm, "gregguns", ["gregguns:inert:0"], ["gregguns:fitted:0#nbt1f"], circuit=3)])
+        self.assertIn("| subset | 1 |", text)
+        # Two NBT-sensitive rows with different tags never meet.
+        text = run([row(asm, "gregguns", ["gregguns:inert:0#nbt1f", "b:1"], ["gregguns:filled:0"], circuit=3),
+                    row(asm, "gregguns", ["gregguns:inert:0#nbt2e"], ["gregguns:other:0"], circuit=3)])
+        self.assertIn("| subset | 0 |", text)
+
     def test_other_circuit_removes_the_subset(self):
         asm = "gt.recipe.assembler"
         text = run([row(asm, "gregguns", ["gregguns:a:0", "b:1", "c:2"], ["gregguns:gun:0"], circuit=5),

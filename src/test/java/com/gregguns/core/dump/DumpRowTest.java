@@ -70,4 +70,12 @@ class DumpRowTest {
         assertTrue(j.contains("\"eut\":30"), j);
         assertTrue(j.contains("\"grid\":[[\"a\\\"b:0\",\"\"]]"), j);
     }
+
+    @Test
+    void plainKeyDropsTheNbtHashOnly() {
+        // R2-06: the item data of a tagged stack is the item's, so the hash must not reach the damage parse.
+        assertEquals("gregguns:inert_warhead_t1:0", DumpRow.plainKey("gregguns:inert_warhead_t1:0#nbt1a2b"));
+        assertEquals("gregtech:gt.metaitem.01:17", DumpRow.plainKey("gregtech:gt.metaitem.01:17"));
+        assertEquals("ore:plateSteel", DumpRow.plainKey("ore:plateSteel"));
+    }
 }

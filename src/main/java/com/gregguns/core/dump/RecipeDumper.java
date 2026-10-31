@@ -86,7 +86,7 @@ public final class RecipeDumper {
             DumpRow row = new DumpRow("special:" + map, map, modOf(output));
             for (ItemStack in : inputs) {
                 if (in != null && in.getItem() != null) {
-                    row.addInput(key(in), in.stackSize);
+                    row.addInput(key(in, false), in.stackSize); // a workbench page ignores tags
                 }
             }
             row.addOutput(key(output), output.stackSize);
@@ -203,7 +203,7 @@ public final class RecipeDumper {
             for (int x = 0; x < w; x++) {
                 int i = y * w + x;
                 Object in = i < cells.length ? cells[i] : null;
-                String k = in == null ? "" : keyOf(in);
+                String k = in == null ? "" : keyOf(in, false);
                 line.add(k == null ? "" : k);
                 add(row, in);
             }
@@ -214,7 +214,7 @@ public final class RecipeDumper {
     }
 
     private static void add(DumpRow row, Object in) {
-        String k = in == null ? null : keyOf(in);
+        String k = in == null ? null : keyOf(in, false);
         if (k != null) {
             row.addInput(k, in instanceof ItemStack ? ((ItemStack) in).stackSize : 1);
         }
@@ -222,8 +222,13 @@ public final class RecipeDumper {
 
     /** @return the item key of a stack, or the ore key of an ore dictionary list; null when empty */
     private static String keyOf(Object in) {
+        return keyOf(in, true);
+    }
+
+    /** As {@link #keyOf(Object)}; a crafting input ignores the stack's tag, so it passes {@code nbt} false. */
+    private static String keyOf(Object in, boolean nbt) {
         if (in instanceof ItemStack) {
-            return key((ItemStack) in);
+            return key((ItemStack) in, nbt);
         }
         if (in instanceof List) {
             List<?> list = (List<?>) in;
@@ -255,11 +260,23 @@ public final class RecipeDumper {
         return sizeMatch != null ? DumpRow.oreKey(sizeMatch) : "oreset:" + key(first) + "+" + list.size();
     }
 
+    /** @return the key of a stack as a recipe output, or as an input of a recipe that matches NBT */
     private static String key(ItemStack s) {
+        return key(s, true);
+    }
+
+    /**
+     * @param s   a stack
+     * @param nbt true when the recipe tells this stack apart by its tag: every output, and the inputs of a GT recipe
+     *            flagged NBT-sensitive. A recipe that ignores NBT (crafting, most GT recipes) matches any tag, so its
+     *            inputs keep the plain key and the clash review sees that it can take a tagged stack too.
+     * @return the item key, with {@code #nbt<hash>} appended for one of our stacks with a tag when {@code nbt}
+     */
+    private static String key(ItemStack s, boolean nbt) {
         String key = DumpRow.itemKey(nameOf(s.getItem()), s.getItemDamage());
-        // Our NBT-sensitive inputs (a warhead's payload and fill) are different recipes; the tag's hash tells them
+        // Our NBT-sensitive inputs (a warhead's de-arm and fill steps) are different recipes; the tag's hash tells them
         // apart. Pack stacks keep the plain key so a pack row that ignores NBT still compares equal.
-        if (s.hasTagCompound() && OUR_MOD.equals(modOf(s))) {
+        if (nbt && s.hasTagCompound() && OUR_MOD.equals(modOf(s))) {
             key += "#nbt" + Integer.toHexString(
                 s.getTagCompound()
                     .toString()
@@ -319,7 +336,7 @@ public final class RecipeDumper {
         DumpRow row = new DumpRow("machine", map, source);
         for (ItemStack s : orEmpty(r.mInputs)) {
             if (s != null && s.getItem() != null) {
-                row.addInput(key(s), s.stackSize);
+                row.addInput(key(s, r.isNBTSensitive), s.stackSize);
             }
         }
         for (FluidStack f : orEmpty(r.mFluidInputs)) {
@@ -442,8 +459,12 @@ public final class RecipeDumper {
             .toString();
     }
 
-    /** @return a one-item stack for an item key, or null for a wildcard, an ore key or an unknown item */
-    private static ItemStack stackOf(String key) {
+    /**
+     * @return a one-item stack for an item key (an {@code #nbt} suffix is dropped: the item data is the item's), or
+     *         null for a wildcard, an ore key or an unknown item
+     */
+    private static ItemStack stackOf(String tagged) {
+        String key = DumpRow.plainKey(tagged);
         int c = key.lastIndexOf(':');
         if (c < 0 || key.endsWith(":*")) {
             return null;

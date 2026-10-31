@@ -85,7 +85,7 @@ Short: tier line, one summary line, "Press [SHIFT]". Shift: the launchers it fit
 
 ## NEI (D227, D338)
 
-NEI shows the Assembler recipes, and a **Launcher Loading** page lists the crafting-grid load: one page per launcher and warhead of its family (`LauncherLoads`, 13 pages), the empty launcher and the warhead in a shapeless grid and the launcher with 4 charges loaded as the result. It is a shapeless crafting page (`LauncherLoadHandler`), so the "?" button fills a crafting grid. A launcher's recipes show every warhead it takes (a loaded launcher, how its warhead got there), and a warhead's uses show every launcher that takes it. The page is registered only when the ICBM module added the loading recipe.
+NEI shows the Assembler recipes, and a **Launcher Loading** page lists the crafting-grid load: one page per launcher and warhead of its family (`LauncherLoads`, 13 pages), the empty launcher and the warhead in a shapeless grid and the launcher with 4 charges loaded as the result. It is a shapeless crafting page (`LauncherLoadHandler`), so the "?" button fills a crafting grid; the recipe arrows of the crafting table and the inventory's 2x2 grid both open it. A launcher's recipes show every warhead it takes (a loaded launcher, how its warhead got there), and a warhead's uses show every launcher that takes it. The page is registered only when the ICBM module added the loading recipe.
 
 Tests: `LauncherLoadsTest` (every warhead with each launcher of its family, nothing else).
 

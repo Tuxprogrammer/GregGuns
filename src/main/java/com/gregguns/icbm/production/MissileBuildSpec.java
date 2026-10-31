@@ -40,30 +40,32 @@ public enum MissileBuildSpec {
             Ing.gt("circuit", "Advanced", 2, Tier.HV, 3.0),
             Ing.gt("wireFine", "Gold", 4, Tier.MV, 0.5))),
     /**
-     * T2 body: EV chip, four compressed titanium plates, four Galacticraft Tier 2 fins, a Galacticraft Tier 2 engine
-     * (D69). Costs: a Tier 2 fin is 2 Mars and 4 asteroid reinforced plates; the Tier 2 engine is 2 Tier 1 engines, 2
-     * boosters and 5 asteroid plates (the GTNH recipes). Built in the Assembler at EV, 45 s.
+     * T2 body: EV chip, four compressed titanium plates, four heavy rocket fins, a heavy rocket engine (D69, D343: the
+     * Tier 3 and Tier 4 rockets' parts). Costs: a heavy fin is 2 Mars and 4 asteroid reinforced plates; the heavy
+     * engine is 2 Tier 1 engines, 2 boosters and 5 asteroid plates (the GTNH recipes). The reinforced plate's heavy
+     * duty
+     * ingot needs an IV Assembler, so the body's parts need IV: the top of the T2 band (D5), accepted with the Mars
+     * trip (D329). Built in the Assembler at EV, 45 s.
      */
     T2(2, Tier.EV, 600, 600, "craftingLensBlue", Ing.gt("compressed", "Titanium", 4, Tier.EV, 2.5),
-        Ing.modItem(GalacticraftParts.FINS_T2, 4, Tier.EV, 68.0),
-        Ing.modItem(GalacticraftParts.ENGINE_T2, 1, Tier.EV, 200.0),
+        Ing.modItem(GalacticraftParts.FINS_HEAVY, 4, Tier.IV, 68.0),
+        Ing.modItem(GalacticraftParts.ENGINE_HEAVY, 1, Tier.IV, 200.0),
         Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3), 0, null, 900, 460, 520,
         Arrays.asList(
             Ing.gtItem("Circuit_Board_Epoxy_Advanced", 1, Tier.EV, 3.0),
             Ing.gt("circuit", "Data", 2, Tier.EV, 5.0),
             Ing.gt("wireFine", "Electrum", 4, Tier.HV, 0.5))),
     /**
-     * T3 body: LuV chip, four compressed titanium plates, four Heavy Duty Rocket Fins Tier 3, a Heavy Duty Rocket
-     * Engine Tier 3 (GTNH's rocket parts for the Tier 3 rocket, D70). Costs are estimates from the GTNH recipes: a fin
-     * is 2 Tier 4 and 4 Tier 5 heavy duty plates and a compressed SDHD120 plate; the engine is 2 Tier 2 boosters, 2
-     * Tier 2 engines and 5 Tier 5 heavy duty plates. The only guidance computer is Mk III (IV), below the body's tier,
-     * so a T3 body carries no guidance steps (D70). Built on the Assembly Line at LuV, 60 s, behind a 180 s research
-     * scan of a hand-built T3 body at LuV.
+     * T3 body: LuV chip, the Tier 4 rocket's hull, fins and engine (D343): four Heavy Duty Plates Tier 4 (LuV, the
+     * Assembly Line) in the plate slots, four heavy rocket fins and a heavy rocket engine. Every part is buildable at
+     * LuV; the Heavy Duty Rocket Fins and Engine Tier 3 it took before need ZPM (their Tier 5 heavy duty plate). The
+     * only guidance computer is Mk III (IV), below the body's tier, so a T3 body carries no guidance steps (D70). Built
+     * on the Assembly Line at LuV, 60 s, behind a 180 s research scan of a hand-built T3 body at LuV.
      */
-    T3(3, Tier.LUV, 800, 600, "craftingLensYellow", Ing.gt("compressed", "Titanium", 4, Tier.EV, 2.5),
-        Ing.modItem(GalacticraftParts.FINS_T3, 4, Tier.LUV, 150.0),
-        Ing.modItem(GalacticraftParts.ENGINE_T3, 1, Tier.LUV, 700.0), Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK3),
-        180, Tier.LUV, 1200, 1100, 1700,
+    T3(3, Tier.LUV, 800, 600, "craftingLensYellow", Ing.modItem(GalacticraftParts.HULL_T3, 4, Tier.LUV, 18.0),
+        Ing.modItem(GalacticraftParts.FINS_HEAVY, 4, Tier.IV, 68.0),
+        Ing.modItem(GalacticraftParts.ENGINE_HEAVY, 1, Tier.IV, 200.0), Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK3),
+        180, Tier.LUV, 1200, 530, 600,
         Arrays.asList(
             Ing.gtItem("Circuit_Board_Multifiberglass", 1, Tier.LUV, 4.0),
             Ing.gt("circuit", "Master", 2, Tier.LUV, 12.0),
@@ -129,6 +131,14 @@ public enum MissileBuildSpec {
         return tier;
     }
 
+    /**
+     * @return the highest voltage any part of the body may need: the body's own tier, except T2, whose heavy fins and
+     *         engine need IV, the top of the T2 band (D5, D343)
+     */
+    public Tier partTier() {
+        return number == 2 ? Tier.IV : tier;
+    }
+
     /** @return the Circuit Assembler recipe length, ticks */
     public int chipTicks() {
         return chipTicks;
@@ -149,7 +159,10 @@ public enum MissileBuildSpec {
         return chipInputs;
     }
 
-    /** @return the body plates (Workbench slots and the body's machine recipe) */
+    /**
+     * @return the body plates (Workbench slots and the body's machine recipe): GT compressed plates at T1 and T2, the
+     *         Tier 4 rocket's heavy duty plates at T3
+     */
     public Ing plates() {
         return plates;
     }

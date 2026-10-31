@@ -30,10 +30,12 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GTRecipe;
 
 /**
- * I7 completeness check: every ICBM item and block is visible in NEI (not a technical placeholder) and has a recipe
- * somewhere NEI shows it (a crafting recipe, or any GT recipe map including the Assembly Line and the Missile
- * Workbench), unless it is on the short list of stacks that only worldgen, loot or a blast produces. Dev environment
- * only. Server side.
+ * I7 completeness check (D340, D344): every ICBM item and block that is not a technical cell hidden from NEI on
+ * purpose has a recipe somewhere NEI shows it (a crafting recipe, or any GT recipe map including the Assembly Line and
+ * the Missile Workbench) for at least one of its damage values, unless it is on the short list of stacks that only
+ * worldgen, loot or a blast produces. A GT machine and the Radar Casing are checked at their own damage. It does not
+ * read NEI's item list (a server has none) and does not walk every damage of an item: {@code Item#getSubItems} is
+ * client-only. Dev environment only. Server side.
  */
 // Spec: docs/gregguns-spec/06-items/nei-visibility.md,
 // docs/gregguns-spec/08-machines-production/icbm-recipe-clash-review.md
@@ -64,8 +66,9 @@ final class IcbmCoverageScenario implements Scenario {
 
     @Override
     public String description() {
-        return "Every ICBM item and block is listed in NEI (not technical) and has a crafting or GT recipe, apart from"
-            + " the stacks that only loot, worldgen or a blast makes.";
+        return "Every ICBM item and block that is not a hidden technical cell has a crafting or GT recipe for at least"
+            + " one damage (machines and the casing: their own), apart from the stacks that only loot, worldgen or a"
+            + " blast makes.";
     }
 
     @Override
@@ -77,7 +80,9 @@ final class IcbmCoverageScenario implements Scenario {
         Set<String> made = outputsOfAllRecipes();
         out.note("recipe outputs indexed: " + made.size());
         List<ItemStack> stacks = icbmStacks();
-        Set<Item> wild = new HashSet<>(ModuleContent.itemsOf(ModuleId.ICBM));
+        // A module item passes when any damage of it is made; the machines and the casing share their block item
+        // with other content, so they are checked at their own damage.
+        Set<Item> anyDamage = new HashSet<>(ModuleContent.itemsOf(ModuleId.ICBM));
         out.note("ICBM stacks checked: " + stacks.size());
         Set<String> noRecipe = new TreeSet<>();
         int skipped = 0;
@@ -88,7 +93,7 @@ final class IcbmCoverageScenario implements Scenario {
                 skipped++;
                 continue;
             }
-            if (!(wild.contains(s.getItem()) ? madeAnyDamage(made, s.getItem()) : made.contains(key(s)))
+            if (!(anyDamage.contains(s.getItem()) ? madeAnyDamage(made, s.getItem()) : made.contains(key(s)))
                 && !byDesign(s)) {
                 noRecipe.add(label + " (" + s.getDisplayName() + ")");
             }
