@@ -100,12 +100,15 @@ public final class ComplexLayout {
         return plan;
     }
 
+    /** The fewest hall junctions a plan holds, each with a guard post mark (D233). */
+    static final int MIN_BRANCH_POSTS = 2;
+
     /** Regrowths tried when a plan misses its targets; each derives its seed from the plan seed and the attempt. */
     static final int ATTEMPTS = 8;
 
     /**
-     * Grows the plan's geometry. A growth that misses the coverage target (with a margin), or the room, silo or
-     * guard-post count, is grown again from a seed mixed from the plan seed and the attempt number, and the best
+     * Grows the plan's geometry. A growth that misses the coverage target (with a margin), or the room, silo,
+     * guard-post or junction count, is grown again from a seed mixed from the plan seed and the attempt number, and the best
      * attempt
      * is kept, so the result is still a pure function of the seed (D230).
      */
@@ -127,11 +130,13 @@ public final class ComplexLayout {
             boolean ok = rooms >= MIN_ROOMS && rooms <= MAX_ROOMS
                 && cover >= MIN_COVERAGE_PERCENT + 1
                 && silos >= MIN_SILOS
-                && posts >= MIN_POSTS;
+                && posts >= MIN_POSTS
+                && g.hallBranchPoints() >= MIN_BRANCH_POSTS;
             if (ok) return g;
             int score = cover - 10 * Math.max(0, MIN_ROOMS - rooms)
                 - 100 * Math.max(0, MIN_SILOS - silos)
-                - 10 * Math.max(0, MIN_POSTS - posts);
+                - 10 * Math.max(0, MIN_POSTS - posts)
+                - 10 * Math.max(0, MIN_BRANCH_POSTS - g.hallBranchPoints());
             if (score > bestScore) {
                 bestScore = score;
                 best = g;

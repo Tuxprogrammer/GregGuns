@@ -244,6 +244,13 @@ final class ComplexGrower {
         return n;
     }
 
+    /** @return the branch points on a hall (not the hub), each a guard post mark */
+    int hallBranchPoints() {
+        int n = 0;
+        for (int[] b : branchPoints) if (b[2] != 0) n++;
+        return n;
+    }
+
     int roomCount() {
         int n = 0;
         for (Node x : nodes) if (x.type == ROOM) n++;
