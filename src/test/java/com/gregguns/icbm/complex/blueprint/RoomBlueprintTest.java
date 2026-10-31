@@ -37,7 +37,7 @@ class RoomBlueprintTest {
         add("MESS_GALLEY", 13, size(18, 15), size(28, 20), size(37, 31));
         add("CAFETERIA", 16, size(23, 18), size(36, 28), size(46, 37));
         add("REC_LOUNGE", 11, size(18, 15), size(28, 20), size(37, 31));
-        add("SHOWERS_LAUNDRY", 4, size(10, 8), size(12, 10), size(16, 14));
+        add("SHOWERS_LAUNDRY", 4, size(10, 8), size(16, 12), size(16, 14));
         add("GUARD_POST", 3, size(6, 6), size(8, 8), size(11, 11));
         add("DECON_AIRLOCK", 4, size(8, 8), size(10, 10), size(14, 14));
         add("BRIG", 6, size(18, 13), size(28, 20), size(37, 28));

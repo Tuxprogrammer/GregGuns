@@ -64,7 +64,7 @@ Doors and portals get **door frames** (the DOOR role): jambs either side and a l
 `ComplexRaster` holds one role per cell (`Cell`) and, per column, the section that owns it.
 
 - Each section writes its shell: WALL on its perimeter at every layer, FLOOR in layer 0 and CEILING in its top layer inside, air between.
-- Then doors (air), door frames, window panes, lamps, furniture and rails.
+- Then doors (air), door frames, window panes, lamps, furniture and rails. A blueprint's solid prop is `PROP`: the shell writes air there and the marks pass fills it; it is not open for walking and not a floor, wall or ceiling role.
 - The silo roles stay as they were (concrete, glass, beam, pad, controller, hatches).
 
 The writer resolves the building roles through the owning section's palette style: WALL, FLOOR, CEILING, LAMP, DOOR_FRAME and furniture. Glass and water resolve by themselves. See [palette](palette.md) and D235.
@@ -74,13 +74,13 @@ The writer resolves the building roles through the owning section's palette styl
 - **Lamps are flush in the ceiling layer**, on a grid aligned to their section.
   - Lines run at most 6 apart, spread evenly so the grid is centered (`ComplexFurnisher.grid`).
   - In halls the rows run along the hall's axis. In rooms they run along the door wall.
-  - Rooms furnished with rows of tables, shelves or racks (cafeteria, mess galley, server room, stockpile) use lines at most 4 apart.
+  - A room's blueprint sets its gap (D305): 6, 7 for the head-to-head bed bands, 4 for dense racks and display walls. The shadow fill adds floor tiles where props would leave an open cell under 8 (see Furnishing).
 - **Light tiles in the floor:** a section taller than 7 also gets a lamp flush in the floor layer under every ceiling lamp. Minecraft's block light falls one level per block, so a ceiling lamp 8 or more blocks up cannot light the floor to 8. A floor light tile lights every floor cell within 6 to 8 or more. A minor hallway (7 high) has ceiling lamps only, every 3 cells along its centerline, which keeps D217's floor light of 8.
 - **Silo walkways (D296):** each silo's walkway (the niche in the gallery wall in front of the window) gets one lamp of its own, flush in the gallery wall right over the niche's middle column. The gallery's grid lamps sit up to 12 cells up and several cells out, which left the niche and the silo's window face dark. It is an ordinary light mark of the gallery, key `lamp:<gallery>:<1000 + silo index>`, so each walkway is its own run and follows the activity-level roll like any other run. The walkway floor reads 12 or more.
 - **Light marks:** a `LIGHT` mark sits at each lamp (ceiling layer or floor layer), with the key `lamp:<section>:<run>`. A run is one grid line. The shell writes the style's dark lamp; the contents pass lights it with the style's lit lamp.
 - **Activity level:** an abandoned complex lights or kills whole runs, a partly abandoned one whole sections, an operational one everything. The D36 shares stay: 5%, 45% and 100%.
 - **Proof:**
-  - `ComplexLayoutTest` simulates block light over 12 plans, with machines, guards and furniture counted solid. Every open floor cell reads 8 or more.
+  - `ComplexLayoutTest` simulates block light over 12 plans, with machines, guards, cube furniture and props counted solid (beds, bars, panes and the like let light through). Every open floor cell reads 8 or more.
   - `icbm.complex.levels` reads the saved block light of every open floor cell of every section in an operational complex.
 
 ## Marks (the seam with activity, guards and loot)
@@ -95,44 +95,43 @@ The writer resolves the building roles through the owning section's palette styl
 
 The plan is pure geometry and deterministic. It never changes by activity level.
 
-## Furnishing (D208, D234, D259)
+## Furnishing (D208, D305, D306)
 
-- **The frame:** every room is furnished in its own frame (`ComplexLayout.Frame`), not in world axes.
-  - The back wall is the wall opposite the doorway to the room's parent, whichever of the four sides that is.
-  - Chests and wall machines stand against the back wall; machines stand in the middle row.
-  - The sign hangs on the doorway's jamb, facing in.
-- **Kept clear:** the cells inside every doorway, two deep and one wider each side, any door of the room. Light tiles are kept clear too. The NASA Workbench needs a 5 x 5 block: its 3 x 3 core strictly free (no light tile under Galacticraft's fake blocks), its outer ring free from layer 1 up (a floor light tile may lie in it). It takes the fitting center nearest the wanted cell (D252). If furniture walls a chest, machine or guard off from the doorway, the shortest way through the furniture is cleared.
-- **Scaling:** chest, machine and guard counts grow by one step per 450 interior cells: a room of `q = max(1, interior / 450)` steps gets `q` room guards, `q` back-row chests and `q` repeated machines (D252).
-- **Small rooms only (D259):** furniture goes only into rooms that are not bays and whose interior is at most 1,200 cells (`RoomFurniture.MAX_AREA`, about 35 x 35).
-  - The bays never get furniture: the hub, workshop, pump room, generator hall, vehicle bay, missile assembly, air handling, water treatment and fuel depot, and the halls. Their machines, chests, guards and basins stay.
-  - The cutoff comes from the real room areas: over 300 plans the other kinds run from 64 cells (a guard post) to about 3,500, medians 580 to 930, 90th percentile 1,330 to 2,090. 83% of those rooms are at or under 1,200; the rest read as bays and stay empty. About 19 rooms of a complex are furnished.
-- **Furniture:** `FURNITURE` marks, one per layer, with the piece's facing (`Mark.facing`). The key is a style cube (TABLE, CONSOLE, BUNK, SHELF) or a `FurniturePiece` as `NAME:wood` (CHAIR, STOOL, WOOD_TABLE, DESK, TYPEWRITER, CLIPBOARD, BOOKCASE, MEDICINE_SHELF, TOOL_RACK, ARMOR_STAND and its top, LOCKER, SERVER_RACK). The raster writes the piece's style cube, or leaves its cell open; `FurnitureFiller` then sets the BiblioCraft piece, the GT Locker or a stair chair over it ([palette](palette.md#furniture-d259-d262-d263)). `BASIN` is standing water sunk into the floor layer.
-- **Placed by `RoomFurniture`:** after the room's chests, machines and guards, only on free cells (never a doorway zone, a light tile or a mark). Chairs face their table, desk or console; a chair whose table the reachability pass cleared is dropped. Typewriters, clipboards and an armor stand's top sit on the piece below.
-- **Wear (D36):** an operational complex keeps all its furniture. A partly abandoned one loses 15% of the pieces and an abandoned one 35%, whole pieces at a time. A room that caved in has its furniture crushed to rubble (`FurnitureWear`).
+Every room kind, and the hub, is furnished by its own **blueprint** (`complex/blueprint/rooms/`, registered by kind name in `RoomBlueprints`) on a pure **kit** (`Kit`), in the room's own frame (`ComplexLayout.Frame`, D208): lateral `a` along the door wall, depth `d` from the back wall (0) to the door wall. The back wall is the wall opposite the doorway to the room's parent, whichever side that is. The sign hangs on the doorway's jamb, facing in.
 
-| Kind | Furnishing |
+- **Modules:** each blueprint writes its repeating pieces as ASCII rows (the text the owner reviewed in C-blueprints), parsed through a legend (`Legend`: a character is a stack of pieces, a chest, a machine, a guard or a kept cell). A module is stamped whole or not at all: one that would cover a doorway zone, a floor light tile, a floor hole, a reserved cell or another piece is dropped, so no bed loses its head. Thin, see-through pieces (bars, panes, rugs, the NASA ring) may stand on a light tile.
+- **Lamp rows are aisles:** modules fill the bands between the rows of floor light tiles, so every tile lies in an aisle. They repeat outward from the door's spine on both sides, mirrored, so a room reads symmetric at any width.
+- **The spine:** the door's clear path to the back wall (or to a stop: a range's firing line, a brig's corridor). A door in the back or door wall gets a path in to the nearest lamp row and along it to the spine; a door in a side wall keeps its doorway zone. The hub has a cross through its middle and a lane from each portal's middle to it.
+- **Kept clear:** the cells inside every doorway, two deep and one wider each side; the NASA Workbench's 5 x 5 block (its 3 x 3 core strictly free, its ring free from layer 1 up, a floor tile allowed in the ring; the fitting place nearest the wanted cell, D252); the cells in front of the hub's signs.
+- **Reachability:** after the blueprint, the kit clears the shortest way through pieces (a grouped piece as a whole) from the doorway to every chest, machine and guard, to every other door of the room (D278) and to every open floor cell. A chest walled in by other marks takes the nearest chest in its way as a last resort; a cell sealed only by marks gets a crate.
+- **Light:** a blueprint picks its lamp gap: 6, 7 for the head-to-head bed bands (an odd gap of 7 keeps every floor cell within 3 + 3 of a tile) or 4 for dense racks and display walls. The **shadow fill** then adds a floor light tile on, or nearest to, the darkest open cell that the tiles leave under 8, counting props, cube furniture, machines and guards as shadows. The cells checked are open floor and cells under chairs, stools and stands. Each added tile takes the key of the room's nearest tile, so it lights and dies with that run (D231).
+- **Facing:** every piece faces a direction in the frame, turned into a world facing on commit. A piece left to the kit faces: for a chair, the table, desk, console or counter it sits at (a chair with none is dropped); for a desk or console, its chair; otherwise away from the wall, or away from the piece behind it into the aisle. Machines face a horizontal side.
+- **Chests:** no chest touches two chests, and no chest touches a chest that already touches one. Chest marks come last in the room's mark list, in slot order: the safe first, then outward from the spine, back to front. The loot budget reads that order (D315).
+- **Counts:** room guards keep one per 450 interior cells (D234); chests and machines are the blueprint's own.
+- **Groups:** a bed's two halves and the cells of a container prism or a pool table share a group (the key's `#group`, the packed column of the group's first cell), so they wear whole.
+- **Furniture marks:** `FURNITURE`, one per layer, `NAME:variant` (the wood for a wooden piece), with the facing; a floor inlay (water, farmland, mycelium) at y 0. The raster writes a style cube, an open cell, or `PROP` (a solid prop the marks pass fills); `FurnitureFiller` sets the real piece ([palette](palette.md#props-d305-d306-d308)).
+- **Beds (D306):** vanilla beds, the foot's meta the direction to the head and the head's that plus 8, each half written by the window that owns it. In the bunks and the infirmary they lie head to head in any band of 4 or more rows (foot chest, foot, head, head, foot, foot chest), a GT Locker between the heads (a white glass-pane curtain in the ward). A foot chest stands beyond each foot, its front to the aisle, out on the lamp row when the band has no room. A band of 3 takes one row, heads to the back.
+
+| Kind | Blueprint |
 |---|---|
-| Launch control | Launch Control machine in the middle; a console row facing the windows with a chair behind each console; control chests; guards |
-| Radar and tracking, comms | The radar or comms machine in the middle; consoles along the side walls (both for radar, one for comms) with a chair at each and a clipboard over every other one; comms adds a desk with a typewriter on the other side wall; chests on the back wall |
-| Commander's office | A safe and a stockpile chest in the back corners; a two-cell desk with a typewriter, its front toward the commander's chair at the back wall and the two visitors' chairs on the door side; two-high bookcases along a side wall; an armor stand |
-| Warhead magazine | A grid of inert Stainless Steel frame boxes 3 apart; fallout rubble marks; magazine chests; guards |
-| Fuel depot | Fuel tanks along both side walls; fuel chests |
-| Generator hall | A row of generators; a battery buffer in a back corner; guards |
-| Air handling, pump room | Their machines in the middle row; flood cells (pump) |
-| Workshop | The NASA Workbench with its free ring, near the back-left corner; workbenches; a workshop chest |
-| Bunks | Bunks along the side walls with a locker in each gap; a table with chairs in the middle; chests; guards |
-| Infirmary | Beds along the side walls, a clipboard chart over each; two-high medicine cabinets on the back wall; a desk and chair in the middle; medical chests |
-| Stockpile | Chests along the back wall; rows of two-high shelves |
-| Mess galley, cafeteria | A serving counter; rows of tables with a chair on each side, runs of 3 tables with 2-cell gaps, a 3-cell aisle between rows and 3 clear cells along each side wall; galley chests |
-| Armory | Two free-standing display walls across the room (two blocks tall, an open end and a walkway beside each), each face showing a gun in an item frame every fifth cell with its ammo chest on the floor below; a few loot chests on the back wall; tool racks along one side wall, armor stands along the other; guards |
-| Vehicle bay | Battery buffers and a workbench on the back wall; a workshop chest |
-| Server room | Rows of two-high server racks (the style's console block); the operator's desk with a typewriter on the back wall and its chair; a comms machine; a comms chest |
-| Missile assembly | The NASA Workbench in the middle, or the fitting place nearest it; two workbenches; casing frame boxes on the back wall; salvage chests; guards (no furniture: a bay) |
-| Water treatment | Basins of standing water in rows; pumps on the back wall |
-| Guard post | A `post` spawner; two lockers in a back corner; a desk with a clipboard over it in the other, its chair in front |
-| Decontamination airlock | A bench of stools along one side wall, suits on armor stands along the other |
+| Hub (assembly bay) | A container yard: shipping containers two deep along the walls with salvage chests between them; rows of containers and crate pallets with chests in the bands; metal props and crates along the side walls; a workbench near the middle; corner caches; the hall posts at its branch points and three room guards |
+| Bunks | Head-to-head bed pairs with a locker between the heads and a foot chest at each foot; kit shelves and lockers on the back wall, lockers down the left wall, rifle racks down the right; corner caches; room guards |
+| Infirmary | The bunks' bed pairs with pane curtains; every third band of treatment bays (an exam table, a brewing stand, two chairs); medicine cabinets and sinks on the back wall, cabinets down the left; the nurse's station by the door |
+| Mess galley, cafeteria | The kitchen line (furnaces, cauldrons, counters, pantry chests) on the back wall; a serving counter; runs of 3 tables with a chair each side in every band (D259's density); pantry chests and crates down the side walls; the cafeteria adds two salad bars |
+| Recreation lounge | Bands of pool tables on rugs and of card tables; a bar with stools and a sofa corner facing a screen wall in front; bookcases and jukeboxes |
+| Showers and laundry | Shower stalls on the back wall (a drain in the floor under a shower head, bar dividers); lockers and chests down the left wall with a bench; a laundry corner of wash tubs, linen piles and chests |
+| Guard post | The `post` spawner; lockers, a rifle rack and the duty desk with its chair and chest on the back wall; a card table; ammo chests and a rack on the side walls |
+| Decontamination airlock | A decon shower (cauldrons in a bar frame) in the middle; a bench and chests down one side, suits on stands and chests down the other; lockers and chests on the back wall |
+| Brig | A row of cells on the back wall (bunk, cauldron, bars, a closed iron door), a second row facing it in a deep brig, never across another door's way in; guard desks with consoles; evidence lockers and chests; an interrogation table; crates; guards |
+| Shooting range | A hay-bale backstop; a wool target on a fence post in each lane; bar lane dividers; booths at the firing line; ammo chests and rifle racks down both side walls and behind the line; the range officer's desk |
+| Launch control | The Launch Control machine in the middle; the console row with chairs along the window wall; plot tables and console pods in alternate bands; server racks with control chests down both side walls; shelves, lockers and chests on the back wall; guards |
+| Radar and tracking | The radar machine; plot tables in the first band, back-to-back console pods in the rest; a console wall with chairs on the left |
+| Comms | The comms machine at the back; four-operator pods (desks with typewriters) in every band; a console wall on the left; racks, files and comms chests |
+| Commander's office | The desk with a typewriter on the axis, the commander's chair behind and two visitors' chairs in front; bookcases on the back and left walls, armor stands on the right; the meeting table, couch corner, a map table and free-standing bookcases in the bands in front; the safe, always the first slot |
+| Server room | Two-high rack pairs in every band (lamp gap 4); UPS battery buffers and comms chests on the back wall; the comms machine and the operator's desk at the front |
+| Works, stores and food rooms | Their own blueprints (coder C2's rooms: the generator hall, air handling, pump room, water treatment, workshop, fuel depot, vehicle bay, missile assembly, chemistry lab, incinerator, armory, warhead magazine, stockpile, cold storage, underground farm and mushroom cellar), described in [activity-levels](activity-levels.md) and the rows they add here |
 
-- **The hub:** salvage chests spread along its walls, clear of every portal, plus a workbench in the middle, guards toward the corners and the hub's sign beside a portal.
+- **Wear and the activity levels** follow the room's state (D309): see [activity levels](activity-levels.md).
 - **Halls:**
   - A blast-door mark and a sign naming the hall (`wing.<0..3>` by compass direction, or `silo_gallery`) at each mouth off the hub.
   - Roof, floor and wall damage cells, scaled by area, kept off lamps and openings.
@@ -172,5 +171,5 @@ The plan is pure geometry and deterministic. It never changes by activity level.
 
 - **Unit:**
   - `ComplexLayoutTest`: coverage over 200 seeds, rooms and kinds, sizes and heights, no overlaps, silo distribution over 1000 seeds, both sides and at most two halls, Launch Control and the assembly floor, posts at branch points, the escape ladder, armory frames, door-relative furnishing over 150 seeds with every mark reachable, reachability of every section and walkway, the lamp grid, the walkway lamps, the light simulation, and determinism.
-  - `ComplexRasterTest`, `ComplexPlacerTest` (never cascading, order independence), `ComplexSignsTest`, `ComplexContentsTest` (lamps by run and section), `PaletteStylesTest` (interior pattern coordinates), `ComplexContentCountsTest` (a NASA Workbench in every missile assembly floor and workshop, room guards per area step, the lamp count printed and held in a band), `GtMachineHookTest` (who takes a generated machine over), `RoomFurnitureTest` (furniture only in small rooms, no doorway or path to a mark blocked, chairs face a table, desk or console, upper layers sit on something, every piece has a vanilla fallback, wear by level, D259), `BiblioFurnitureTest` and `ComplexExportTest`.
+  - `ComplexRasterTest`, `ComplexPlacerTest` (never cascading, order independence), `ComplexSignsTest`, `ComplexContentsTest` (lamps by run and section), `PaletteStylesTest` (interior pattern coordinates), `ComplexContentCountsTest` (a NASA Workbench in every missile assembly floor and workshop, room guards per area step, the lamp count printed and held in a band), `GtMachineHookTest` (who takes a generated machine over), `KitTest` (atomic stamps, thin pieces on tiles, the chest rule, beds paired, chests facing their aisle, walled-in cells opened, D305), `RoomBlueprintTest` (every crew, command and security blueprint and the hub at three sizes: nothing on a doorway, hole or tile, every mark, door and open cell reached, light 8 on every open cell, chairs seated, beds whole, the chest rule, the chest spots the loot budget needs and the fill bands; it prints the maps), `BiblioFurnitureTest` and `ComplexExportTest` (with `GREGGUNS_EXPORT_ROOMS`, each crew, command and security room and the hub at its 10th, 50th and 90th percentile size at every activity level).
 - **Scenarios:** `icbm.complex.*` (places, skips, levels, guards, dim.*, loot and machines). The fixed-cell scenarios build on `ComplexArena`: every column cleared from the chunk's top, stone below the floor the placer really uses (D239).
