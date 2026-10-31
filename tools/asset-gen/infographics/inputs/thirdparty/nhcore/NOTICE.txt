@@ -9,6 +9,6 @@ licensed under the GNU General Public License v3.0. The repository carries that 
 first commit and its README says the mod is released under the GPL. The full text is beside this file as
 GPL-3.0.txt (LICENSE at tag 2.9.84).
 
-These two icons are used only in the Missile Silo guide sheet (a documentation image), which paints them in and
-is therefore a combined work: that sheet is marked GPL-3.0 in docs/assets/CREDITS.md. The icons live with the
+These two icons are used only in the Missile Silo and ICBM Recipes guide sheets (documentation images), which paint
+them in and are therefore combined works: those sheets are marked GPL-3.0 in docs/assets/CREDITS.md. The icons live with the
 infographic tool inputs, not in src/main/resources, so the mod jar does not contain them.

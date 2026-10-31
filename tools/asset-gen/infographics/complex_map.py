@@ -130,7 +130,7 @@ def _label(name: str, w: float, fs: float) -> list[str]:
 
 
 def overlay(d: dict, p: dict, px: int, labels: bool = True, markers: bool = True, fs: float = 12) -> str:
-    """The SVG that sits on the raster: silo outlines, room names, chest/guard/machine marks, the ladder, the radar."""
+    """The SVG that sits on the raster: silo outlines, room names, chest/guard/machine marks, blast doors, the ladder, the radar."""
     n = d["size"] * px
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{n}" height="{n}" viewBox="0 0 {n} {n}" '
            f'style="position:absolute;left:0;top:0;font-family:\'Segoe UI\',\'Fira Sans\',\'Noto Sans\',sans-serif">']
@@ -149,6 +149,19 @@ def overlay(d: dict, p: dict, px: int, labels: bool = True, markers: bool = True
                 out.append(f'<polygon points="{cx:.1f},{cz - r:.1f} {cx + r:.1f},{cz:.1f} {cx:.1f},{cz + r:.1f} {cx - r:.1f},{cz:.1f}" fill="{color}" stroke="#0e1217" stroke-width="1.2"/>')
             else:
                 out.append(f'<circle cx="{cx:.1f}" cy="{cz:.1f}" r="{r:.1f}" fill="{color}" stroke="#0e1217" stroke-width="1.2"/>')
+    if markers:
+        # Blast doors: a bar across the hall mouth, the hall's interior width, at the mark.
+        for m in p["marks"]:
+            if m["kind"] != "BLAST_DOOR":
+                continue
+            hall = next((h["box"] for h in p["halls"] if h["box"][0] <= m["x"] <= h["box"][2] and h["box"][1] <= m["z"] <= h["box"][3]), None)
+            if hall is None:
+                continue
+            hx0, hz0, hx1, hz1 = hall
+            if hz1 - hz0 > hx1 - hx0:   # the hall runs north-south: the door spans x
+                out.append(f'<rect x="{(hx0 + 1) * px}" y="{m["z"] * px - px * .1:.1f}" width="{(hx1 - hx0 - 2) * px}" height="{px * 1.2:.1f}" fill="#1b2129" stroke="#ffd23f" stroke-width="1.6"/>')
+            else:
+                out.append(f'<rect x="{m["x"] * px - px * .1:.1f}" y="{(hz0 + 1) * px}" width="{px * 1.2:.1f}" height="{(hz1 - hz0 - 2) * px}" fill="#1b2129" stroke="#ffd23f" stroke-width="1.6"/>')
     for s in p["silos"]:
         x0, z0, x1, z1 = s["box"]
         out.append(f'<rect x="{x0 * px - 4}" y="{z0 * px - 4}" width="{(x1 - x0) * px + 8}" height="{(z1 - z0) * px + 8}" fill="none" stroke="#ff8a1f" stroke-width="3"/>')

@@ -1,10 +1,13 @@
 """The icbm-first-missile guide sheet: from a missile chip to the first launch from the Galacticraft pad (T1 and T2).
 
 The missile models are the shipped OBJ files (body plus warhead, the warhead seated on the body's nose exactly as the
-game seats it), drawn with render3d.obj_scene, the strict Forge reader. The numbers are read from the I2 code
-(MissileTier, MissileBuildSpec, EntityMissile, MTELaunchControl, IcbmConfig); the draft stamp is gone (D50).
+game seats it), drawn with render3d.obj_scene, the strict Forge reader. The numbers are read from the Java sources at
+build time (MissileTier, WarheadCasing, MissileBuildSpec, Scatter, LaunchTimer, FlightPath, MTELaunchControl,
+IcbmConfig), and `_verify` checks every recipe fact the text spells out against MissileBuildSpec and ControlMachines,
+so a changed constant or recipe stops the build instead of leaving the sheet stale (D50).
 The launch pad is Galacticraft's own stepped plate and the plates, fins and engines are its real icons, from Galacticraft
-Legacy under the MIT License (D85; the files sit in the thirdparty folders). Vanilla textures are not needed any more.
+Legacy under the MIT License (D85; the files sit in the thirdparty folders). The Launch Control is drawn with its real
+face (pages_icbm_silo.launch_control_tex).
 
 Run on its own (needs no warhead dump):  python tools/asset-gen/infographics/pages_icbm_missile.py
 """
@@ -12,6 +15,7 @@ Run on its own (needs no warhead dump):  python tools/asset-gen/infographics/pag
 from __future__ import annotations
 
 import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -27,15 +31,132 @@ from pages import gti, img, page_doc, slot  # noqa: E402
 
 NTM = K.ASSETS / "models/thirdparty/ntm"
 NTM_TEX = K.ASSETS / "textures/models/thirdparty/ntm"
+JAVA = K.REPO / "src/main/java/com/gregguns"
 
-# Numbers from the I2 code: MissileTier (fuel, range, speed, scatter), MissileBuildSpec (plates, fins, engine, caps).
+
+# ---------------------------------------------------------------- numbers, read from the code
+
+
+def src(rel: str) -> str:
+    return (JAVA / rel).read_text(encoding="utf-8")
+
+
+def const(rel: str, name: str) -> float:
+    """The numeric value of `static final <type> NAME = <number>;` in a Java file."""
+    m = re.search(rf"\b{name}\s*=\s*(-?[0-9][0-9_]*(?:\.[0-9]+)?)[FfDdLl]?\s*;", src(rel))
+    if not m:
+        raise SystemExit(f"{rel}: constant {name} not found; update {Path(__file__).name}")
+    v = float(m.group(1).replace("_", ""))
+    return int(v) if v == int(v) and "." not in m.group(1) else v
+
+
+def cfg(name: str) -> float:
+    """A default from IcbmConfig (`public static int|double name = value;`)."""
+    m = re.search(rf"public static (?:int|double) {name}\s*=\s*([0-9.]+);", src("core/config/IcbmConfig.java"))
+    if not m:
+        raise SystemExit(f"IcbmConfig.{name} not found; update {Path(__file__).name}")
+    return float(m.group(1)) if "." in m.group(1) else int(m.group(1))
+
+
+def missile_tiers() -> dict:
+    """{n: dict(fuel_mb, min, rng, speed, scatter, height, hp)} from the MissileTier enum rows."""
+    rows = re.findall(r'T(\d)\("missile_body_t\d", ExplosiveTier\.T\d, (\d+), (\d+), (\d+), ([0-9.]+), ([0-9.]+), (\d+), ([0-9.]+)F',
+                      src("icbm/missile/MissileTier.java"))
+    if len(rows) != 3:
+        raise SystemExit("MissileTier rows changed; update pages_icbm_missile.py")
+    return {int(t): dict(fuel_mb=int(f), min=int(lo), rng=int(hi), speed=float(sp), scatter=float(sc), height=int(h), hp=float(hp))
+            for t, f, lo, hi, sp, sc, h, hp in rows}
+
+
+def fill_caps() -> dict:
+    """{casing number: most charges} from WarheadCasing."""
+    rows = re.findall(r'T(\d)\("warhead_t\d", ExplosiveTier\.T\d, (\d+), ', src("icbm/warhead/WarheadCasing.java"))
+    if len(rows) < 3:
+        raise SystemExit("WarheadCasing rows changed; update pages_icbm_missile.py")
+    return {int(t): int(c) for t, c in rows}
+
+
+def build_spec(n: int) -> str:
+    """The MissileBuildSpec enum entry of tier n, as source text."""
+    m = re.search(rf"\n    T{n}\({n}, (.*?)\)\)\)[,;]", src("icbm/production/MissileBuildSpec.java"), re.S)
+    if not m:
+        raise SystemExit(f"MissileBuildSpec.T{n} not found; update pages_icbm_missile.py")
+    return m.group(1)
+
+
+def body_ticks(n: int) -> int:
+    m = re.search(r"\),\s*(\d+), (?:null|Tier\.\w+), (\d+), \d+, \d+,", build_spec(n))
+    if not m:
+        raise SystemExit(f"MissileBuildSpec.T{n}: body ticks not found")
+    return int(m.group(2))
+
+
+def need(text: str, *facts: str, where: str = "") -> None:
+    """Stops the build when a recipe fact the sheet prints is gone from the source."""
+    for f in facts:
+        if f not in text:
+            raise SystemExit(f"{where}: '{f}' not found; the sheet's text no longer matches the code")
+
+
+TIERS_SRC = missile_tiers()
+CAPS = fill_caps()
+MIN_RANGE = TIERS_SRC[1]["min"]
+COUNTDOWN_S = cfg("countdownTicks") / 20
+FLAME_S = const("icbm/missile/LaunchTimer.java", "FLAME_TICKS") / 20
+FUEL_BONUS = cfg("fuelBonusMax")
+MAX_IN_FLIGHT = cfg("maxMissilesInFlight")
+SHRINK = const("icbm/missile/Scatter.java", "SHRINK_PER_TIER")
+DIST_TERM = const("icbm/missile/Scatter.java", "DISTANCE_TERM")
+CLIMB_CLEAR = int(const("icbm/missile/FlightPath.java", "MIN_CLIMB"))
+SHOT_EU = const("icbm/control/MTELaunchControl.java", "EU_PER_SHOT")
+FIT_S = const("icbm/production/MissileBuildSpec.java", "FIT_TICKS") / 20
+LUBE_L = const("icbm/production/MissileBuildSpec.java", "LUBRICANT_LITERS")
+BODY_S = {n: body_ticks(n) / 20 for n in (1, 2)}
+
+
+def _verify() -> None:
+    """Every recipe fact the text spells out, checked against the source."""
+    t1, t2 = build_spec(1), build_spec(2)
+    need(t1, 'Tier.HV', '"craftingLensRed"', 'Ing.gt("compressed", "Steel", 3', "FINS_T1, 4", "ENGINE_T1, 1",
+         "GUIDANCE_COMPUTER_MK1, IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3",
+         '"Circuit_Board_Plastic_Advanced", 1', 'Ing.gt("circuit", "Advanced", 2', 'Ing.gt("wireFine", "Gold"', where="MissileBuildSpec.T1")
+    need(t2, 'Tier.EV', '"craftingLensBlue"', 'Ing.gt("compressed", "Titanium", 4', "FINS_T2, 4", "ENGINE_T2, 1",
+         "Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3)",
+         '"Circuit_Board_Epoxy_Advanced", 1', 'Ing.gt("circuit", "Data", 2', 'Ing.gt("wireFine", "Electrum"', where="MissileBuildSpec.T2")
+    lc = src("icbm/control/ControlMachines.java")
+    need(lc, "Hull_HV", "Sensor_HV", "Emitter_HV", "Tool_DataStick", '"Advanced", 2', "RECIPE_HV", where="ControlMachines")
+    need(src("icbm/missile/MissileTier.java"), '"nitrofuel", "fluid.rocketfuelmixb"', where="MissileTier T1 fuels")
+    lang = (K.REPO / "src/main/resources/assets/gregguns/lang/en_US.lang").read_text(encoding="utf-8")
+    need(lang, "gregguns.icbm.control.gui.mypos=Use my position", "gregguns.icbm.control.gui.save=Save target",
+         "gregguns.icbm.control.gui.load=Load target", "gregguns.icbm.control.gui.abort=Abort",
+         "gregguns.icbm.control.gui.fire=Launch", "gregguns.icbm.control.status.not_fueled=Tank is not full",
+         "item.gregguns.radar_gun.name=Radar Gun", where="en_US.lang")
+    assert COUNTDOWN_S == int(COUNTDOWN_S) and FLAME_S == 1, (COUNTDOWN_S, FLAME_S)
+    assert SHRINK == 0.25, f"Scatter.SHRINK_PER_TIER is {SHRINK}; the guidance sentence says a quarter per tier"
+
+
+_verify()
+
+
+def _minutes(seconds: float) -> str:
+    m = round(seconds / 60)
+    return "about a minute" if m <= 1 else f"about {['', 'one', 'two', 'three', 'four'][m] if m < 5 else m} minutes"
+
+
+def _words(n: int) -> str:
+    return ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"][n] if n <= 12 else str(n)
+
+
 TIERS = {
-    1: dict(body="missile_body_t1", warhead="warhead_t1", volt="HV", fuel="RP-1 or Cetane-Boosted Diesel", fuel_mb=2000, rng=1000, speed="0.8",
-            flight="about a minute", scatter=12, plates="3 compressed steel", fins="4 Galacticraft Tier 1", engine="Galacticraft Tier 1 engine", cap=5),
-    2: dict(body="missile_body_t2", warhead="warhead_t2", volt="EV", fuel="Dense Hydrazine", fuel_mb=4000, rng=3000, speed="1.2",
-            flight="about two minutes", scatter=8, plates="4 compressed titanium", fins="4 Galacticraft Tier 2", engine="Galacticraft Tier 2 engine", cap=20),
+    1: dict(body="missile_body_t1", warhead="warhead_t1", volt="HV", fuel="RP-1 or Cetane-Boosted Diesel", warheads="T1",
+            plates="3 compressed steel", fins="4 Galacticraft Tier 1", engine="Galacticraft Tier 1 engine"),
+    2: dict(body="missile_body_t2", warhead="warhead_t2", volt="EV", fuel="Dense Hydrazine", warheads="T1 or T2",
+            plates="4 compressed titanium", fins="4 Galacticraft Tier 2", engine="Galacticraft Tier 2 engine"),
 }
-MIN_RANGE = 20
+for _n, _t in TIERS.items():
+    s = TIERS_SRC[_n]
+    _t.update(fuel_mb=s["fuel_mb"], rng=s["rng"], speed=f"{s['speed']:g}", scatter=int(s["scatter"]), cap=CAPS[_n],
+              flight=_minutes(s["rng"] / s["speed"] / 20))
 PARTS = {1: dict(plate="compressed_steel", plate_n=3, plate_l="Compressed Steel Plate", fins="rocket_fins_t1", engine="rocket_engine_t1", ft="Tier 1"),
          2: dict(plate="compressed_titanium", plate_n=4, plate_l="Compressed Titanium Plate", fins="rocket_fins_t2", engine="rocket_engine_t2", ft="Tier 2")}
 
@@ -94,11 +215,17 @@ def block_icon(tag: str, tier: str, overlay: str | None) -> K.Path:
         yaw=-38, pitch=28, ppu=150)
 
 
+def launch_control_icon() -> K.Path:
+    """The Launch Control block with its real faces (an HV hull with its overlays), as the silo sheet draws it."""
+    import pages_icbm_silo as SILO  # lazy: the silo sheet imports this module's readers
+    return K.voxels("launch-control-HV", {(0, 0, 0): ("m", S.FRONT)}, {"m": SILO.launch_control_tex()}, yaw=-38, pitch=28, ppu=150)
+
+
 def _tier_card(n: int) -> str:
     t = TIERS[n]
     stats = [("Chip", f"{chip(t['volt'])} Circuit Assembler"),
-             ("Fuel", f"{esc(t['fuel'])} or better"), ("Tank", f"{t['fuel_mb']:,} mB"), ("Range", f"{MIN_RANGE} to {t['rng']:,} blocks"),
-             ("Flight", f"{t['flight']} at the longest range"), ("Warhead", f"up to {t['cap']} charges")]
+             ("Fuel", f"{esc(t['fuel'])} or better"), ("Tank", f"{t['fuel_mb']:,} mB, filled to the top"), ("Range", f"{MIN_RANGE} to {t['rng']:,} blocks"),
+             ("Flight", f"{t['flight']} at the longest range"), ("Warhead", f"{t['warheads']}, up to {t['cap']} charges")]
     rows = "".join(f'<div class="stat"><span>{k}</span><b>{v}</b></div>' for k, v in stats)
     return f"""<div class="card"><div style="display:flex;align-items:center;gap:12px"><h2>Tier {n} missile</h2>{chip(t['volt'], t['volt'] if n == 1 else 'EV to IV')}</div>
 <div class="spot">{img(missile_on_pad(n), h=520)}</div><div class="stat" style="align-items:center"><span>Body parts</span><div class="parts" style="justify-content:flex-end;flex-wrap:nowrap;gap:2px">{body_parts(n)}</div></div>{rows}</div>"""
@@ -113,8 +240,9 @@ def first_missile() -> str:
     plus = '<span class="plus">+</span>'
     ca = img(block_icon("ca", "HV", "circuitassembler"), h=92)
     le = img(block_icon("le", "HV", "laser_engraver"), h=92)
-    lc = img(block_icon("lc", "HV", None), h=92)
+    lc = img(launch_control_icon(), h=92)
     asm = img(block_icon("as", "HV", "assembler"), h=92)
+    cd = _words(int(COUNTDOWN_S))
     s1 = _step(1, "Make a missile chip",
                f"{ca}{arrow}<span class='pill'>Missile Chip T1 &middot; HV</span><span class='pill'>Missile Chip T2 &middot; EV</span>",
                "The chip comes from the GregTech <b>Circuit Assembler</b>, at the voltage of its tier: a circuit board, 2 circuits and fine wire. "
@@ -126,37 +254,45 @@ def first_missile() -> str:
     s3 = _step(3, "Build the body by hand",
                f"<div class='parts' style='gap:2px'>{body_parts(1, 44)}</div><span class='plus'>or</span><div class='parts' style='gap:2px'>{body_parts(2, 44)}</div>{plus}<span class='pill'>Guidance Computer</span>{arrow}<span class='pill'>Missile Body</span>",
                "On the NASA Workbench page: <b>compressed plates</b> in one column (T1 three steel, T2 four titanium), <b>four Galacticraft rocket fins</b> and a <b>Galacticraft rocket engine</b> of the same tier, and a "
-               "<b>Guidance Computer</b>. Make compressed plates from a plate in the Implosion Compressor. A better computer than the body asks for makes the missile land closer. There is no warhead slot: a warhead goes on at the pad.")
+               "<b>Guidance Computer</b>: Mk I, II or III for T1, Mk II or III for T2. Make compressed plates from a plate in the Implosion Compressor. There is no warhead slot: a warhead goes on at the pad.")
     s3b = _step(4, "Or automate it",
                 f"<span class='pill'>Body parts</span>{plus}<span class='pill'>2 circuits</span>{plus}<span class='pill'>Lubricant</span>{arrow}{asm}{arrow}<span class='pill'>Missile Body</span>",
-                "The GregTech <b>Assembler</b> builds the body too, with no research: the same plates, fins and engine, 2 circuits (Advanced for T1, Data for T2) in place of the computer "
-                "and 250 L of lubricant, in 30 seconds at HV (T1) or 45 seconds at EV (T2). It makes the basic body; "
-                "a better <b>Guidance Computer</b> goes in afterwards in the <b>Assembler</b> again (15 seconds, at the body's voltage).")
+                f"The GregTech <b>Assembler</b> builds the body too, with no research: the same plates, fins and engine, 2 circuits (Advanced for T1, Data for T2) in place of the computer "
+                f"and {LUBE_L:,} L of lubricant, in {BODY_S[1]:g} seconds at HV (T1) or {BODY_S[2]:g} seconds at EV (T2). It makes the basic body; "
+                f"a better <b>Guidance Computer</b> goes in afterwards in the <b>Assembler</b> again ({FIT_S:g} seconds, at the body's voltage). "
+                "<b>Each computer tier above the body's own cuts its base miss by a quarter</b>: Mk II on a T1 body by a quarter, Mk III by half.")
     s4 = _step(5, "Stack it on the launch pad",
                f"{img(missile_on_pad(1, 100), h=150)}{img(missile_on_pad(2, 100), h=150)}",
-               "Place the <b>Missile Body</b> on the middle of a Galacticraft <b>Launch Pad</b>, then set a <b>warhead</b> on its nose. It seats flush. "
+               "Place the <b>Missile Body</b> on the middle of a Galacticraft <b>Launch Pad</b>, then set a loaded <b>warhead</b> on its nose (an inert one cannot be placed). It seats flush. "
                "<b>Sneak and right-click the body with an empty hand</b> to arm it. The stack becomes the flying missile; "
                "its model does not change.")
     s5 = _step(6, "Fuel it",
-               f"<span class='pill'>Fuel Loader</span>{arrow}<span class='pill'>T1 &middot; 2,000 mB RP-1</span><span class='pill'>T2 &middot; 4,000 mB Dense Hydrazine</span>",
+               f"<span class='pill'>Fuel Loader</span>{arrow}<span class='pill'>T1 &middot; {TIERS[1]['fuel_mb']:,} mB RP-1 or Cetane-Boosted Diesel</span><span class='pill'>T2 &middot; {TIERS[2]['fuel_mb']:,} mB Dense Hydrazine</span>",
                "Attach a Galacticraft <b>Fuel Loader</b> to the pad and feed it. Each tier takes its own fuel <b>or better</b>: RP-1 or Cetane-Boosted Diesel for T1, Dense Hydrazine for T2. "
-               "A closer target burns less, and <b>whatever fuel is left makes the blast bigger</b>, up to 25 percent.")
-    s6 = _step(7, "Aim and fire",
-               f"{lc}{arrow}<span class='pill'>Radar Gun</span><span class='pill'>X and Z</span><span class='pill'>Launch</span>",
-               f"Put a <b>Launch Control</b> block (HV) against an edge of the pad, level with it (a corner does not count). Aim a <b>Radar Gun</b> at the target and right-click the Launch Control with it (or drop the gun in its slot and press <b>Load target</b>), or type the target <b>X and Z</b>, then press <b>Launch</b>. The screen shows the range and the blast radius to expect. "
-               f"The target must be at least <b>{MIN_RANGE} blocks</b> away. A <b>redstone pulse</b> or a machine-controller cover fires it too. One shot costs 300 EU.")
+               f"<b>Fill the tank to the top</b>: a missile launches only when it is full. A closer target burns less, and <b>whatever fuel is left makes the blast bigger</b>, up to {FUEL_BONUS * 100:g} percent.")
+    s6 = _step(7, "Aim it",
+               f"{lc}{arrow}<span class='pill'>Radar Gun</span><span class='pill'>X and Z</span><span class='pill'>Use my position</span>",
+               "Put a <b>Launch Control</b> block (HV) against an edge of the pad, level with it (a corner does not count). Aim a <b>Radar Gun</b> at the target and right-click the Launch Control with it, "
+               "or drop the gun in its slot and press <b>Load target</b>. You can also type the target <b>X and Z</b> or press <b>Use my position</b>; <b>Save target</b> copies the target onto the gun in the slot. "
+               f"The screen shows the range and the blast radius to expect. The target must be at least <b>{MIN_RANGE} blocks</b> away.")
+    s7 = _step(8, "Launch",
+               f"<span class='pill'>Launch</span><span class='pill'>Redstone pulse</span><span class='pill'>Cover</span>{arrow}<span class='pill'>{COUNTDOWN_S:g} s countdown</span><span class='pill'>Abort</span>",
+               f"Press <b>Launch</b>, send a <b>redstone pulse</b> or use a machine controller cover. One shot costs {SHOT_EU:,} EU. Keep the <b>{CLIMB_CLEAR} blocks above the missile&#39;s nose clear</b>: a block there stops the launch. "
+               f"A <b>{cd}-second countdown</b> runs first; <b>Abort</b> stops it and leaves the missile armed and fueled. "
+               "<b>Order of play:</b> chip, schematic, body, pad, warhead, fuel, target, launch. The warhead is the expensive part: see the warhead sheet for what each one does.")
     flight = f"""<div class="card" style="margin-top:22px"><h2>Launch, flight and impact</h2>
-<div class="tl"><div><div class="k">1 &middot; Warm-up</div><div class="v">Two seconds of countdown with the engines lit. Keep clear of the pad.</div></div>
-<div><div class="k">2 &middot; Climb and arc</div><div class="v">It climbs, then flies a high arc. Tier 1 covers 0.8 blocks a tick, Tier 2 1.2.</div></div>
-<div><div class="k">3 &middot; Scatter</div><div class="v">It never misses entirely, but it lands off target: up to {TIERS[1]['scatter']} blocks either way for T1 and {TIERS[2]['scatter']} for T2, more at long range, less with a better guidance computer.</div></div>
+<div class="tl"><div><div class="k">1 &middot; Countdown</div><div class="v">{cd.capitalize()} seconds; the engines light for the last {"second" if FLAME_S == 1 else f"{FLAME_S:g} seconds"}. Abort works until then. Keep clear of the pad.</div></div>
+<div><div class="k">2 &middot; Climb and arc</div><div class="v">It climbs straight up to the top of the world, then arcs over and down onto the target. Tier 1 covers {TIERS[1]['speed']} blocks a tick, Tier 2 {TIERS[2]['speed']}.</div></div>
+<div><div class="k">3 &middot; Scatter</div><div class="v">It never misses entirely, but it lands off target: up to {TIERS[1]['scatter']} blocks either way for T1 and {TIERS[2]['scatter']} for T2, up to {DIST_TERM:g} more at the longest range, less with a better guidance computer.</div></div>
 <div><div class="k">4 &middot; Impact</div><div class="v">It detonates on contact, never in the air. The warhead decides the blast; leftover fuel makes it bigger.</div></div>
 <div><div class="k">5 &middot; The pad</div><div class="v">The pad, the fuel loader and the launch control are never harmed. Stack the next one.</div></div></div>
-<div class="muted" style="font-size:16px;margin-top:12px">Only 20 missiles can be in the air on a server at once by default. Missiles load only the ground they are flying over.</div></div>"""
+<div class="muted" style="font-size:16px;margin-top:12px">Only {MAX_IN_FLIGHT} missiles can be in the air on a server at once by default. Missiles load only the ground they are flying over.</div></div>"""
     body = f"""<div class="hero">{_tier_card(1)}{_tier_card(2)}</div>
-<div class="steps">{s1}{s2}{s3}{s3b}{s4}{s5}{s6}<div class="card sc" style="justify-content:center"><div class="muted" style="font-size:20px;line-height:1.4"><b style="color:var(--txt)">Order of play.</b> Chip, schematic, body, pad, warhead, fuel, target, launch. The warhead is the expensive part: see the warhead sheet for what each one does.</div></div></div>
+<div class="steps">{s1}{s2}{s3}{s3b}{s4}{s5}{s6}{s7}</div>
 {flight}"""
     return page_doc("Your First Missile", "Tier 1 and Tier 2 missiles: from a chip to a launch from the Galacticraft launch pad.", body, extra=CSS + TP.PART_CSS,
                     credit=["Missile and warhead models and textures © HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.",
+                            "Launch Control overlays: derived from HBM's Nuclear Tech Mod, GNU LGPL v3.",
                             "GregTech textures from GregTech 5 Unofficial, LGPL-3.0.", TP.GC_CREDIT])
 
 

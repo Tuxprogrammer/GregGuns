@@ -65,35 +65,178 @@ _PARTS = (K.REPO / "src/main/java/com/gregguns/icbm/recipe/IcbmPart.java").read_
 _EFFECTS = (_JAVA / "effects/Effects.java").read_text(encoding="utf-8")
 _INERT = (_JAVA / "InertWarheadSpec.java").read_text(encoding="utf-8")
 _CHARGING = (_JAVA / "WarheadCharging.java").read_text(encoding="utf-8")
+_DEARM = (_JAVA / "WarheadDearming.java").read_text(encoding="utf-8")
+_GC = (K.REPO / "src/main/java/com/gregguns/icbm/compat/GalacticraftParts.java").read_text(encoding="utf-8")
+
+
+# ---------------------------------------------------------------- recipe checks
+
+
+def _split(s: str) -> list[str]:
+    """Splits a Java argument list at its top-level commas (not inside parentheses or strings)."""
+    out, depth, cur, in_str = [], 0, [], False
+    for c in s:
+        if c == '"':
+            in_str = not in_str
+        elif not in_str and c in "([{":
+            depth += 1
+        elif not in_str and c in ")]}":
+            depth -= 1
+        elif not in_str and c == "," and depth == 0:
+            out.append("".join(cur))
+            cur = []
+            continue
+        cur.append(c)
+    if "".join(cur).strip():
+        out.append("".join(cur))
+    return out
+
+
+def _norm(arg: str) -> list[str]:
+    """One argument, whitespace removed. An Ing call keeps its method and the arguments a player sees: the Tier and the
+    cost estimate (a decimal) are dropped, so a cost tweak passes and a changed input or count does not. Arrays.asList
+    is flattened into its items."""
+    a = re.sub(r"\s+", "", arg)
+    m = re.fullmatch(r"Arrays\.asList\((.*)\)", a)
+    if m:
+        return [x for part in _split(m.group(1)) for x in _norm(part)]
+    m = re.fullmatch(r"Ing\.(\w+)\((.*)\)", a)
+    if m:
+        kept = [x for x in _split(m.group(2)) if not re.fullmatch(r"Tier\.\w+|-?[0-9]+\.[0-9]+", x)]
+        return [f"{m.group(1)}({','.join(kept)})"]
+    return [a]
+
+
+def entry(src: str, name: str) -> list[str]:
+    """The arguments of the enum constant `name(...)` in a Java source, each normalized by _norm, so a check compares the
+    whole input list: an added, removed or recounted input changes it."""
+    m = re.search(rf"^\s*{name}\(", src, re.M)
+    if not m:
+        raise SystemExit(f"enum constant {name} not found; update the guide sheet checks")
+    i = j = m.end()
+    depth, in_str = 1, False
+    while depth:
+        c = src[j]
+        if c == '"':
+            in_str = not in_str
+        elif not in_str and c == "(":
+            depth += 1
+        elif not in_str and c == ")":
+            depth -= 1
+        j += 1
+    return [x for a in _split(src[i:j - 1]) for x in _norm(a) if not re.fullmatch(r"-?[0-9]+\.[0-9]+", x)]
+
+
+def check_entries(label: str, src: str, want: dict[str, list[str]]) -> None:
+    """Stops the build when an enum constant's inputs differ from what the sheet prints."""
+    bad = {n: entry(src, n) for n, w in want.items() if entry(src, n) != w}
+    if bad:
+        raise SystemExit(f"{label} changed; update the guide sheet and its checks. Now: {bad}")
+
+
+def check_snippets(label: str, need: list[tuple[str, str]]) -> None:
+    missing = [snippet for src, snippet in need if snippet not in src]
+    if missing:
+        raise SystemExit(f"{label} changed; update the guide sheet and its checks: {missing}")
+
+
+# Each casing's inert warhead, in player words (InertWarheadSpec). The nose cone and hull plates are those of the
+# casing tier's rocket, named as the game names them; the ids pin which item each name is.
+INERT = {
+    1: dict(volt=3, chip="HV", plate="StainlessSteel", plate_name="stainless steel", plates=4, plates_const="T1_PLATES",
+            fuze="MK1", fuze_name="Mk I", nose=("NOSE_T1", "GalacticraftCore:item.noseCone@0", "a Nose Cone"),
+            hull=("HULL_T1", "GalacticraftCore:item.heavyPlating@0", "12 Heavy Duty Plates"), etier="HV", circuit="Advanced"),
+    2: dict(volt=4, chip="EV", plate="Titanium", plate_name="titanium", plates=8, plates_const="T2_PLATES",
+            fuze="MK2", fuze_name="Mk II", nose=("NOSE_HEAVY", "GalacticraftMars:item.heavyNoseCone@0", "a Heavy Nose Cone"),
+            hull=("HULL_T2", "GalacticraftMars:item.null@3", "12 Heavy Duty Plates (Tier 2)"), etier="EV", circuit="Data"),
+    3: dict(volt=6, chip="LuV", plate="TungstenSteel", plate_name="tungstensteel", plates=8, plates_const="T3_PLATES",
+            fuze="MK3", fuze_name="Mk III", nose=("NOSE_HEAVY", "GalacticraftMars:item.heavyNoseCone@0", "a Heavy Nose Cone"),
+            hull=("HULL_T3", "dreamcraft:HeavyDutyPlateTier4@0", "12 Heavy Duty Plates Tier 4"), etier="LuV", circuit="Master"),
+    4: dict(volt=8, chip="UV", plate="Naquadria", plate_name="naquadria", plates=8, plates_const="T4_PLATES",
+            fuze="MK3", fuze_name="Mk III", nose=("NOSE_T4", "dreamcraft:HeavyDutyNoseConeTier3@0", "a Heavy Duty Nose Cone Tier 3"),
+            hull=("HULL_T4", "dreamcraft:HeavyDutyPlateTier6@0", "12 Heavy Duty Plates Tier 6"), etier="UV", circuit="Superconductor"),
+    5: dict(volt=9, chip="UHV", plate="Neutronium", plate_name="neutronium", plates=8, plates_const="T5_PLATES",
+            fuze="MK3", fuze_name="Mk III", nose=("NOSE_T5", "dreamcraft:HeavyDutyNoseConeTier4@0", "a Heavy Duty Nose Cone Tier 4"),
+            hull=("HULL_T5", "dreamcraft:HeavyDutyPlateTier7@0", "12 Heavy Duty Plates Tier 7"), etier="UHV", circuit="Infinite"),
+}
+
+
+def inert_words(t: int, fuze_full=True) -> str:
+    """The inputs of a casing's inert warhead in player words."""
+    c = INERT[t]
+    fuze = f"a Fuze Assembly {c['fuze_name']}" if fuze_full else f"a {c['fuze_name']}"
+    return (f"{c['plates']} {c['plate_name']} plates, {fuze}, {c['nose'][2]}, {c['hull'][2]}, "
+            f"an {c['etier']} Sensor, an {c['etier']} Emitter and 2 {c['etier']} circuits")
+
+
+def verify_inert(tiers) -> None:
+    """Each listed casing's inert warhead recipe, entry by entry, its plate count and the items its nose and hull name."""
+    want = {}
+    for t in tiers:
+        c = INERT[t]
+        want[f"T{t}"] = [f"WarheadCasing.T{t}", str(c["volt"]), f'gt("plate","{c["plate"]}",WarheadRecipes.{c["plates_const"]})',
+                         f"part(IcbmPart.FUZE_ASSEMBLY_{c['fuze']},1)", f"modItem(GalacticraftParts.{c['nose'][0]},1)",
+                         f"modItem(GalacticraftParts.{c['hull'][0]},WarheadRecipes.HULL_PLATES)",
+                         f'gtItem("Sensor_{c["etier"]}",1)', f'gtItem("Emitter_{c["etier"]}",1)', f'gt("circuit","{c["circuit"]}",2)']
+    check_entries("InertWarheadSpec", _INERT, want)
+    need = [(_RECIPES, "HULL_PLATES = 12;"), (_INERT, "RETURNED_INPUTS = 4;"), (_INERT, "CIRCUIT = 2;")]
+    for t in tiers:
+        c = INERT[t]
+        need += [(_RECIPES, f"{c['plates_const']} = {c['plates']};"),
+                 (_GC, f'{c["nose"][0]} = "{c["nose"][1]}";'), (_GC, f'{c["hull"][0]} = "{c["hull"][1]}";')]
+    check_snippets("InertWarheadSpec/WarheadRecipes/GalacticraftParts", need)
+
+
+# The payload recipe of each Tier 1 and 2 blast (WarheadRecipeSpec), as _norm writes it; PAYLOAD below says the same.
+PAYLOAD_ENTRIES = {
+    "CONDENSED": ["WarheadBlast.CONDENSED", "1"],
+    "SHRAPNEL": ["WarheadBlast.SHRAPNEL", "3", "part(IcbmPart.FRAGMENTATION_SLEEVE_STEEL,1)"],
+    "ANVIL": ["WarheadBlast.ANVIL", "4", 'gt("plate","Lead",12)'],
+    "INCENDIARY": ["WarheadBlast.INCENDIARY", "5", "part(IcbmPart.NAPALM_CANISTER,2)"],
+    "DEBILITATION": ["WarheadBlast.DEBILITATION", "6", "part(IcbmPart.DISPERSAL_CANISTER,2)", 'gas("NitrousOxide",2000)'],
+    "CHEMICAL": ["WarheadBlast.CHEMICAL", "7", "part(IcbmPart.DISPERSAL_CANISTER,2)", 'optionalMod("harvestcraft:mustardseedsItem",4)',
+                 'gas("Ammonia",2000)'],
+    "SMOKE": ["WarheadBlast.SMOKE", "8", "part(IcbmPart.DISPERSAL_CANISTER,2)", 'gt("dust","Coal",8)', 'fluid("Creosote",2000)'],
+    "REPULSIVE": ["WarheadBlast.REPULSIVE", "9", 'gtItem("Field_Generator_HV",1)'],
+    "ATTRACTIVE": ["WarheadBlast.ATTRACTIVE", "10", 'gtItem("Field_Generator_HV",1)', 'gt("stick","SteelMagnetic",4)'],
+    "FRAGMENTATION": ["WarheadBlast.FRAGMENTATION", "19", "part(IcbmPart.FRAGMENTATION_SLEEVE_TITANIUM,1)"],
+    "THERMOBARIC": ["WarheadBlast.THERMOBARIC", "24", "part(IcbmPart.DISPERSAL_CANISTER,2)", "kerosene(4000)"],
+    "SONIC": ["WarheadBlast.SONIC", "21", 'gtItem("Emitter_EV",2)'],
+    "BREACHING": ["WarheadBlast.BREACHING", "22", "part(IcbmPart.SHAPED_CHARGE_LINER_CONE,2)", 'gt("stick","Titanium",6)'],
+    "CONTAGIOUS": ["WarheadBlast.CONTAGIOUS", "23", "bioDish(4)", 'fluid("Biomass",2000)'],
+}
+
+# The parts the sheet names, with what it says they are made of (IcbmPart).
+PART_ENTRIES = {
+    "PLASTIC_EXPLOSIVE": ['"plastic_explosive"', "Tier.HV", "4", "11", 'gt("plate","Polytetrafluoroethylene",2)', "industrialTnt(2)"],
+    "FUZE_ASSEMBLY_MK1": ['"fuze_assembly_mk1"', "Tier.HV", "1", "12", 'gt("circuit","Advanced",1)', 'gt("plate","Steel",1)',
+                          'gt("wireFine","Copper",4)'],
+    "FUZE_ASSEMBLY_MK2": ['"fuze_assembly_mk2"', "Tier.EV", "1", "13", 'gt("circuit","Data",1)', 'gt("plate","Titanium",1)',
+                          'gt("wireFine","Electrum",4)'],
+    "SHAPED_CHARGE_LINER_CONE": ['"shaped_charge_liner_cone"', "Tier.HV", "2", "14", 'gt("plate","Copper",2)'],
+    "NAPALM_CANISTER": ['"napalm_canister"', "Tier.HV", "1", "18", "part(DISPERSAL_CANISTER,1)", 'fluid("Gasoline",1000)'],
+}
 
 
 def _verify_sources() -> None:
     """The recipe inputs and effect durations the sheet prints are not in the dump; each is checked against the Java source
-    here, so a change to the recipe or the effect fails the build and the sheet is fixed with it."""
-    need = [
-        (_RECIPES, "RecipeMaps.assemblerRecipes"), (_RECIPES, "T1_PLATES = 4"), (_RECIPES, "T2_PLATES = 8"),
-        (_RECIPES, ".nbtSensitive()"), (_INERT, "CIRCUIT = 2"), (_INERT, "Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1)"),
-        (_CHARGING, "MAX_PER_CRAFT = 8"), (_SPEC, "CONDENSED(WarheadBlast.CONDENSED, 1)"),
-        (_SPEC, "Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_STEEL, 1)"), (_SPEC, 'Ing.gt("plate", "Lead", 12'),
-        (_SPEC, "INCENDIARY(WarheadBlast.INCENDIARY, 5, Ing.part(IcbmPart.NAPALM_CANISTER, 2))"),
-        (_SPEC, 'Ing.gas("NitrousOxide", 2000'), (_SPEC, 'Ing.gas("Ammonia", 2000'), (_SPEC, 'Ing.optionalMod("harvestcraft:mustardseedsItem", 4)'),
-        (_SPEC, 'Ing.gt("dust", "Coal", 8'), (_SPEC, 'Ing.fluid("Creosote", 2000'), (_SPEC, 'Ing.gtItem("Field_Generator_HV", 1'),
-        (_SPEC, 'Ing.gt("stick", "SteelMagnetic", 4'), (_SPEC, "Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_TITANIUM, 1)"),
-        (_SPEC, "Ing.kerosene(4000)"), (_SPEC, 'Ing.gtItem("Emitter_EV", 2'), (_SPEC, "Ing.part(IcbmPart.SHAPED_CHARGE_LINER_CONE, 2)"),
-        (_SPEC, 'Ing.gt("stick", "Titanium", 6'), (_SPEC, "Ing.bioDish(4)"), (_SPEC, 'Ing.fluid("Biomass", 2000'),
-        (_PARTS, "Ing.gt(\"plate\", \"Polytetrafluoroethylene\", 2"), (_PARTS, "Ing.industrialTnt(2)"), (_PARTS, "PLASTIC_EXPLOSIVE(\"plastic_explosive\", Tier.HV, 1.1, 4"),
-        (_PARTS, 'Ing.fluid("Gasoline", 1000'),
-        (_EFFECTS, "new Burn(5, 0, 0)"), (_EFFECTS, "new Burn(0, 200, 2)"), (_EFFECTS, "e.setFire(10)"),
-        (_EFFECTS, "Potion.moveSlowdown.id, 60, 1"), (_EFFECTS, "Potion.weakness.id, 60, 1"), (_EFFECTS, "Potion.confusion.id, 80, 0"),
-        (_EFFECTS, "Potion.poison.id, 100, 1"), (_EFFECTS, "Potion.poison.id, 120, 3"), (_EFFECTS, "Potion.hunger.id, 120, 1"),
-        (_EFFECTS, "Potion.confusion.id, 200, 0"), (_EFFECTS, "Potion.moveSlowdown.id, 100, 2"),
-    ]
-    missing = [snippet for src, snippet in need if snippet not in src]
-    if missing:
-        raise SystemExit(f"WarheadRecipes/WarheadRecipeSpec/IcbmPart/Effects changed; update icbm-warheads and _verify_sources: {missing}")
+    here (recipes as whole entries, cost estimates aside), so a change to a recipe or an effect fails the build and the sheet is fixed with it."""
+    verify_inert((1, 2))
+    check_entries("WarheadRecipeSpec", _SPEC, PAYLOAD_ENTRIES)
+    check_entries("IcbmPart", _PARTS, PART_ENTRIES)
+    check_snippets("WarheadRecipes/WarheadCharging/WarheadDearming/Effects", [
+        (_RECIPES, "RecipeMaps.assemblerRecipes"), (_RECIPES, ".nbtSensitive()"), (_CHARGING, "MAX_PER_CRAFT = 8;"),
+        (_DEARM, "MAX_PER_CRAFT = WarheadCharging.MAX_PER_CRAFT;"), (_DEARM, "DEFUSER_WEAR_PER_CRAFT = 1;"),
+        (_EFFECTS, "new Burn(5, 0, 0)"), (_EFFECTS, "new Burn(0, 200, 2)"), (_EFFECTS, "e.setFire(10);"),
+        (_EFFECTS, "Potion.moveSlowdown.id, 60, 1)"), (_EFFECTS, "Potion.weakness.id, 60, 1)"), (_EFFECTS, "Potion.confusion.id, 80, 0)"),
+        (_EFFECTS, "Potion.poison.id, 100, 1)"), (_EFFECTS, "Potion.poison.id, 120, 3)"), (_EFFECTS, "Potion.hunger.id, 120, 1)"),
+        (_EFFECTS, "Potion.confusion.id, 200, 0)"), (_EFFECTS, "Potion.moveSlowdown.id, 100, 2)"),
+    ])
 
 
 _verify_sources()
+# The most charges one Defuse Kit craft takes out: the same as one grid load puts in (checked above).
+DEARM_PER_CRAFT = int(re.search(r"MAX_PER_CRAFT = (\d+);", _CHARGING).group(1))
 
 
 def curve(blast_id: str, fill: int) -> tuple[float, float]:
@@ -246,7 +389,7 @@ def warheads() -> str:
     def top_damage(tier):
         return max(full(b["id"])[1] for b in DUMP["blasts"] if b["tier"] == f"T{tier}")
     t1 = _tier_card(1, "HV", "HV", "StainlessSteel", "Stainless steel", "warhead_t1", CAP[1],
-                    "The starter casing: small, cheap and bounded. Takes up one block.",
+                    "The starter casing: small and bounded. Takes up one block.",
                     [("Full-fill center damage", f"{top_damage(1):,.0f}"), ("Blast radius, full", span(1))])
     t2 = _tier_card(2, "EV", "EV to IV", "Titanium", "Titanium", "warhead_t2", CAP[2],
                     f"A heavy casing that holds {CAP[2] // CAP[1]} times the charge. Still one block.",
@@ -288,6 +431,14 @@ def warheads() -> str:
 <div class="step"><span class="num">4</span><div class="t"><b>Careful.</b> Another explosion nearby sets it off with a {CHAIN_SECONDS:g}-second fuse, so keep charges apart.</div></div></div>
 <div class="muted" style="font-size:16px;margin-top:12px">On a missile body the same warhead flies instead; the blast is the same.</div></div>"""
 
+    kit_ico = slot(K.icon(K.ASSETS / "textures/items/thirdparty/ntm/defuser.png", 64), 72, "Defuse Kit")
+    cut_ico = img(S.machine_block("cutter", "HV", greg=True), h=96)
+    dearm = f"""<div class="card"><h2>Take one apart</h2>
+<div class="muted" style="font-size:18px;margin:6px 0 12px">Built the wrong warhead, or want the parts back? Every step runs backwards.</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{kit_ico}</div><div class="muted" style="font-size:17px">Put a live warhead and a <b>Defuse Kit</b> in a crafting grid: each craft takes out up to {DEARM_PER_CRAFT} <b>Plastic Explosive</b>, whole, for one use of the kit. The last charge out leaves the inert warhead with its payload, ready for a new load.</div></div>
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{cut_ico}</div><div class="muted" style="font-size:17px">The <b>Cutting Machine</b>, at the warhead's own voltage, empties a full warhead at once and takes a payload out: its parts come back, any fluid in it is spent. A bare inert warhead cuts back into its <b>plates, Fuze Assembly, nose cone and hull plates</b>; the sensor, emitter and circuits are spent.</div></div></div></div>"""
+
     asm_ico = img(S.machine_block("assembler", "HV", greg=True), h=104)
     pe_ico = slot(K.icon(K.ASSETS / "textures/items/thirdparty/ntm/plastic_explosive.png", 64), 72, "Plastic Explosive")
     ss, ti = gti("plate", "StainlessSteel", 28), gti("plate", "Titanium", 28)
@@ -301,7 +452,7 @@ def warheads() -> str:
     make = f"""<div class="card"><h2>How warheads are made</h2>
 <div class="muted" style="font-size:18px;margin:6px 0 12px">Three steps: an inert casing, a payload, then Plastic Explosive charges. One charge is one unit of fill. The casing and the payload are Assembler recipes at the casing's voltage.</div>
 <div style="display:flex;flex-direction:column;gap:12px">
-<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{asm_ico}</div><div><h3>1. Inert warhead &middot; 2. Payload {chip("HV")} {chip("EV")}</h3><div class="muted" style="font-size:17px">The Assembler makes the <b>Inert T1 Warhead</b> from {ss} 4 stainless steel plates and a Fuze Assembly Mk I, and the <b>Inert T2 Warhead</b> from {ti} 8 titanium plates and a Mk II. An inert warhead cannot be placed, launched or set off. Then it fits a <b>payload</b>, the blast type's own parts (see each card), to the inert warhead. Condensed needs none.</div></div></div>
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{asm_ico}</div><div><h3>1. Inert warhead &middot; 2. Payload {chip("HV")} {chip("EV")}</h3><div class="muted" style="font-size:17px">The warhead is the expensive part of a missile: it carries the nose cone and hull of its tier's Galacticraft rocket. The Assembler makes the <b>Inert T1 Warhead</b> from {ss} {esc(inert_words(1))}, and the <b>Inert T2 Warhead</b> from {ti} {esc(inert_words(2, fuze_full=False))}. An inert warhead cannot be placed, launched or set off. Then it fits a <b>payload</b>, the blast type's own parts (see each card), to the inert warhead. Condensed needs none.</div></div></div>
 <div class="mrow"><div class="spot" style="display:flex;justify-content:center">{pe_ico}</div><div><h3>3. Charges</h3><div class="muted" style="font-size:17px">Put the inert warhead and 1 to 8 <b>Plastic Explosive</b> in a crafting grid. It comes out as a live warhead with that many charges, up to the cap ({CAP[1]} for Tier 1, {CAP[2]} for Tier 2), and topping up works the same way. Or the Assembler fills a whole casing at once. Charges alone in a Tier 1 casing make Condensed. A Tier 2 casing needs a payload first.</div></div></div>
 <div class="mrow"><div class="spot" style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;max-width:240px">{parts_icons}</div><div><h3>The parts, each an Assembler recipe too</h3><div class="muted" style="font-size:17px"><b>Plastic Explosive</b>: PTFE plates and Industrial TNT, the charge of every warhead. <b>Fuze Assembly</b> Mk I (HV, Advanced circuit) and Mk II (EV, Data circuit). <b>Dispersal Canister</b> holds a fluid fill; the <b>Napalm Canister</b> is one filled with gasoline. <b>Fragmentation Sleeve</b> (steel or titanium) and <b>Shaped-Charge Liner Cone</b> (copper).</div></div></div></div></div>"""
 
@@ -318,7 +469,7 @@ def warheads() -> str:
 <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">{t2_cards}</div>
 <div class="muted" style="font-size:16px;margin-top:10px">Radius is in blocks at a full casing. Center damage is before armor.</div>
 <div class="grid" style="grid-template-columns:1.2fr 1fr;margin-top:26px">{fill}{falloff}</div>
-<div class="grid" style="grid-template-columns:1fr 1.15fr;margin-top:18px">{demo}{make}</div>
+<div class="grid" style="grid-template-columns:1fr 1.15fr;margin-top:18px"><div style="display:flex;flex-direction:column;gap:18px">{demo}{dearm}</div>{make}</div>
 <div style="margin-top:18px">{later}</div>"""
     return page_doc("Warheads", "Tiers 1 and 2: what each blast type does, how big the bang is, and how to make one.", body,
                     extra=CSS,

@@ -1,225 +1,167 @@
 # Unreleased
 
-Notes for the next release. Fold these into that release's changelog when it is cut.
+Draft of the 0.4.0-beta release notes. When the release is cut, rename this file to `0.4.0-beta.md`, fill in the jar name, and start a fresh `unreleased.md`.
 
-## Changed: ICBM balance pass
+---
 
-- **Warheads are the expensive part of a missile.** Every Inert Warhead now also takes the nose cone and 12 hull plates of its tier's Galacticraft rocket and its arming electronics (a Sensor, an Emitter and 2 circuits of its tier): T1 a Nose Cone and Heavy Duty Plates, T2 a Heavy Nose Cone and Heavy Duty Plates Tier 2, T3 a Heavy Nose Cone and Heavy Duty Plates Tier 4, T4 and T5 the Heavy Duty Nose Cones Tier 3 and 4 with Heavy Duty Plates Tier 6 and 7. A full missile now costs about one Galacticraft rocket of its tier.
+# GregGuns 0.4.0-beta (pre-release)
+
+> [!WARNING]
+> **This is a beta.** The ICBM module has been played on a dedicated server, soaked on the GTNH 2.9.0-RC-2 server pack, and checked with two clients and with shaders, but it has not had a long public playthrough. Back up your world before you update.
+
+GregGuns 0.4.0 brings the **ICBM module** out of alpha and turns it **on by default**: warheads, missiles that fly from Galacticraft launch pads and Missile Silos, radar and air defense, endgame warheads, fallout, and abandoned silo complexes on every planet with solid ground, all on GregTech tiers. Since the alpha it has had a balance pass, blast doors and service runs in the complexes, a rebuilt silo sequence, Radar Gun targeting, and two new guide sheets (ICBM Recipes and an ICBM banner). The rest of GregGuns gets GT recycling for nearly every item, Vending Machine trades and quest loot bags, pack loot in structure chests, and fixes.
+
+## Read this first (server owners)
+
+- **Targets GTNH 2.9.0-RC-2.** Replace the jar on the server and on every client.
+- **The ICBM module is on by default in new configs.** It needs Galacticraft, which the pack ships; without Galacticraft the module turns itself off and logs one warning, and the rest of GregGuns runs as before. OpenComputers is optional.
+- **An existing `config/gregguns.cfg` keeps the value it was written with.** A server that ran 0.3.x or the 0.4.0 alpha with the module off still has `B:icbm=false`. To switch ICBM on, set it in the `modules` block and restart:
+  ```
+  modules {
+      B:icbm=true
+  }
+  ```
+  The server's flags apply to everyone who joins. Clients should match them: a client whose `modules.*` flags differ gets one chat line naming each module that differs, because recipes and NEI follow the client's own config.
+- **Switching ICBM on in an existing world:** silo complexes generate only in new chunks, and complexes at the edge of explored land can come out half built. Explore new land (or use `/gregguns locate complex ... generate`) to find complete ones.
+- **No pack file needs changing.** See "Pack changes" below for the one optional step.
+- **Back up first.** Several items are removed outright (see Upgrading); stacks of them vanish.
+
+## Upgrading
+
+### From 0.3.3-beta
+
+Everything under "New: the ICBM module" and "Changed since the alpha" below is new to you. The config file gains an `icbm` section, new `explosions.fallout*` keys and the new `compat.*` keys, all with safe defaults. The Zombie Hole, Bug Hole, Silo Guard Post and Silo Elite Post blocks are gone; any of them in an existing world turn to air, and structures place vanilla monster spawners instead the next time they generate.
+
+### From 0.4.0-alpha
+
+- **Removed items** (stacks vanish, no refund): Heavy Cloth and its wool recipe, Treated Leather, the Depleted Nuclear Power Cell and its refill recipe. GregGuns armor and its repairs take the pack's **Tanned Leather** instead (see below).
+- **Warheads are built in steps now.** The one-step full-warhead Assembler recipes and the fill-1 condensed starter are gone. Warheads you already hold keep working.
+- **Launch Control and silos.** A Missile Silo now takes its Launch Control as part of its structure. A silo built with its Launch Control merely nearby needs it moved into a wall, glass or floor-ring position of the silo. The silo's front is five wide: a silo built with the corners of its front empty no longer forms until they hold concrete, a hatch or the Launch Control.
+- **Config keys.** `npcs.infernalAllowSpawnerNpcs` is replaced by `npcs.infernalSpawnerOptOut` (default off). `icbm.siloComplexActivityWeights` defaults to `30, 40, 30`; a config that keeps the old line keeps the old odds. Five switches flip to on (see Config), and `questbook.install` is on.
+- **Existing silo complexes keep what they were built with.** The new blast doors, service runs, room machine tiers and room fit-out appear in complexes generated after the update. `/gregguns locate rebuild <cellX> <cellZ>` regenerates one complex in place.
+
+## New: the ICBM module
+
+- **Warheads, T1 (HV) to T5 (UHV).** Built in three steps: the Assembler makes an **Inert Warhead** of the casing's tier, fits a **payload** (sleeves, canisters, field generators, a fissile core and so on), and **Plastic Explosive charges** load it, 1 to 8 at a time in a crafting grid or a whole casing in the Assembler. Condensed, Fragmentation, Incendiary, Chemical, Thermobaric and more at T1 and T2; Exothermic, Endothermic, Nuclear, EMP, Ender and Anti-Gravitational at T3; Antimatter (UV) and Red Matter (UHV). Placed alone, a warhead is a demolition charge with a fuse that grows with its blast. Nuclear, antimatter and red matter kill everything living in their kill zone, bosses included.
+- **De-arming.** A **Defuse Kit** and a live warhead in a crafting grid take out up to 8 charges, whole. The **Cutting Machine** empties a warhead, takes its payload out, and scraps a bare inert warhead into its plates, fuze, nose cone and hull plates.
+- **Missiles, T1 to T3.** Build a body in Galacticraft's NASA Workbench (with the tier's schematic), or in the Assembler at HV and EV for T1 and T2, or on the Assembly Line at LuV for T3 after a Scanner research. Stand it on a Galacticraft launch pad, seat a warhead on its nose, fill it with rocket fuel, and fire it from the **Launch Control** by coordinates, a Radar Gun, a data stick, redstone or a GT machine controller cover. A missile climbs straight up its column to the top of the world, then arcs over onto the target. Ranges: 1,000 blocks at T1, 3,000 at T2, 8,000 at T3 (10,000 from a silo). Missiles sound like Galacticraft rockets and hold at most two chunks each.
+- **Missile Silo.** A GT multiblock that builds the missile in its shaft from a body, a warhead and fuel through its hatches, opens its doors, counts down and launches. T3 missiles launch only from a silo. Its own Launch Control runs on the silo's EU.
+- **Detection and defense.** HV and EV radars (small multiblocks with a spinning dish) and the IV Radar Tower; the Air-Defense Battery and its SAMs; the EMP Tower, which drains stored EU and jams multiblocks nearby. Handheld: Radar Gun, Remote Detonator, Defuse Kit. Every machine talks redstone, data sticks and, with OpenComputers, `gg_*` components; the **Golden Dome** floppy carries `launch`, `radarwatch`, `autodefense` and `emp` programs.
+- **Fallout.** Nuclear strikes leave Irradiated Earth, and the strongest ones leave Trinitite and Fallout Goo, which GT machines process into a small share of the core's fuel. The **Antidote** clears radiation sickness and gas effects.
+- **Launcher warheads.** Craft a warhead charge onto the Rocket Launcher, Grim Reaper, Grenade Launcher or Nuke Launcher; NEI's **Launcher Loading** page shows which loads where.
+- **Abandoned silo complexes** on the Overworld and on every Galacticraft, GalaxySpace and Amun-Ra planet with solid ground: an underground base about 240 by 240 blocks across, 24 blocks down, with a 51 by 40 hub, three or four major halls behind blast doors, 35 to 40 rooms from 32 room kinds, and a silo gallery of 4 to 10 real silos, each missing one part for you to put back. Three activity levels (Alpha, Bravo, Charlie) set how ruined, lit, stocked and guarded a complex is. The loot ceiling rises with the planet's rocket tier, from EV on the Overworld and the Moon to UMV, and is rolled per complex on Ross128.
+- **Guides and quests.** Nine ICBM guide sheets (ICBM banner, Warheads, Heavy Warheads, ICBM Recipes, Your First Missile, Missile Silo, Detection and Defense, Fallout, Abandoned Silos) and the ICBM quests in the GregGuns questbook tab.
+
+## Changed since the alpha
+
+### ICBM balance pass
+
+- **Warheads are the expensive part of a missile.** Every Inert Warhead also takes the nose cone and 12 hull plates of its tier's Galacticraft rocket and its arming electronics (a Sensor, an Emitter and 2 circuits of its tier): T1 a Nose Cone and Heavy Duty Plates, T2 a Heavy Nose Cone and Heavy Duty Plates Tier 2, T3 a Heavy Nose Cone and Heavy Duty Plates Tier 4, T4 and T5 the Heavy Duty Nose Cones Tier 3 and 4 with Heavy Duty Plates Tier 6 and 7. A full missile costs about one Galacticraft rocket of its tier.
 - The **nuclear payload** also takes 2 ZPM Field Generators to hold its core.
-- Scrapping a bare inert warhead in the Cutting Machine returns its plates, fuze, nose cone and hull plates; the arming electronics are spent.
-- Silo complex room machines (generators, buffers, pumps, labs and the rest) now run mostly LV and MV, with the complex's top tier a rare find; radars and comms gear are unchanged. Inert T1 warheads are rarer in silo chests.
+- Silo complex room machines (generators, buffers, pumps, labs and the rest) run mostly LV and MV, with the complex's top tier a rare find; radars and comms gear are unchanged. Inert T1 warheads are rarer in silo chests.
 - The LuV ICBM quests pay an Ordnance III crate and HSS-G plates instead of IV rewards, and the LuV chapter's first quest offers Master circuits and LuV motors.
+- Antimatter (UV) and Red Matter (UHV) quests carry their pack tier, need the pack's Tier 8 or Tier 9 quest, and pay new **Ordnance IV** and **Ordnance V** crates and Tier 4 and 5 warhead parts. The ZPM chapter and the Nuclear Warhead and Fallout quests offer ZPM parts.
+- Blast damage was measured in the real pack against the targets (1,200 / 3,000 / 8,000 at the center for T1 / T2 / T3 types) and needed no change.
 
-## Module flag mismatch warning
+### Missiles, silos and Launch Control
 
-- When a client joins a server whose `modules.*` flags differ from the client's own `config/gregguns.cfg`, the player now gets one chat line naming each module that differs, and the log gets one warning. Recipes and NEI follow the client's own config, so set the same values there and restart. Singleplayer is unaffected.
+- **The Missile Silo builds the missile in front of you.** A body from the Input Bus stands on the pad, then its 10-second cycle runs; a warhead is seated on its nose and mated in a second 10-second cycle; fuel goes in last. Parts can arrive in any order: a warhead with no body waits in the bus ("Waiting for a missile body"), and a body stacked in the shaft by hand is taken over. The parts stand in the shaft as blocks; breaking the silo mid-sequence leaves them standing.
+- **The silo's front is five wide:** a 3 by 3 glass window around the controller with a hatch column each side. Generated silos have the Input Bus over the Energy Hatch with the Launch Control on top on the right, and the Input Hatch over the Maintenance Hatch on the left.
+- **The Launch Control belongs to its silo.** A silo takes its Launch Control as part of its structure and that Launch Control fires its own silo only, paying its 300 EU per shot from the silo's Energy Hatch. A Launch Control outside a silo pairs with a pad only when it touches one of the pad's edges, level with it, and picks the pad with a ready missile. The screen names what it is bound to.
+- **Radar Gun targeting.** The Launch Control's target slot takes a Radar Gun holding a target; press Load target, or right-click the block with the gun. Data sticks still work in the slot.
+- A launched missile climbs straight up from its pad to the top of the world before it arcs over, so it no longer flies into the silo's roof or the hills and trees around a pad.
+- The silo takes nothing without power: it shows "No power" and starts by itself once the hatch holds enough EU. A silo whose pad Galacticraft forms last now forms by itself within a couple of seconds.
+- Missile Bodies T1 and T2 are built in the GT Assembler at HV and EV, with no research, as well as in the NASA Workbench. The Tier 3 body stays on the LuV Assembly Line.
+- Missiles sound like Galacticraft rockets: the engine loop starts with the countdown, rises toward ignition, follows the flight and stops on impact, interception or abort.
+- A missile in flight across a server restart resumes its flight and releases its chunk ticket when it lands.
 
-## New: locate structures
+### Warheads
 
-- Ops get `/gregguns locate <kind> [radius_cells] [generate]` (permission level 2) for every GregGuns structure: `complex` (silo complexes), `military_base`, `big_bunker`, `factory_small`, `train_station`, `gas_station`, `house_medium`, `alien_bug_nest`, `aircraft_carrier`, `submarine` or `any`. It lists the sites near you in this dimension, nearest first, each as built, skipped (with the reason, such as ground too steep) or not generated yet. `generate` makes the nearest five undecided sites decide now, a chunk per tick, and reports which were built. A click on a built site's line teleports you to it. The log now names every structure's placed or skipped verdict.
-
-## Tanned Leather replaces Heavy Cloth
-
-- GregGuns armor is now lined with the pack's own **Tanned Leather** (`Backpack:tannedLeather`: Bound Leather on a drying rack, or two leather in phosphoric acid in the LV Chemical Bath) instead of GregGuns' Heavy Cloth, which is removed along with its wool recipe.
-- Tanned Leather takes Heavy Cloth's place one for one in the Miner, Steam, Soldier's (T1 Combat), T2 Combat and Beret recipes, the Night Vision Goggles, the Ammo Pouch and the glider parts, and in every armor repair that used cloth. The light Bandit (Scout) set is mostly plain leather now: six Tanned Leather for the whole set.
-- Zombies, bandits and soldiers drop Tanned Leather where they dropped Heavy Cloth, the Recruit loot bag holds two Tanned Leather, and the Vending Machine no longer sells Heavy Cloth.
-- The Steam chapter's Heavy Cloth quest is replaced by a Tanned Leather quest, and quest rewards that paid Heavy Cloth pay Tanned Leather.
-
-## Changed: Treated Leather and the Nuclear Power Cell
-
-- GregGuns' **Treated Leather** is removed with its Chemical Bath recipe. The Ranger Veteran (Riot) set and its repairs take the pack's **Tanned Leather** at the same counts, like every other set. The Rifleman loot bag holds four Tanned Leather in its place.
-- The **Nuclear Death Ray** recipe now takes one **Nuclear Power Cell** as its power core. The gun still runs on stored EU.
-- The Nuclear Power Cell recipe makes one cell from half the materials.
-- The Nuclear Power Cell, the Small Nuclear Warhead and the Rad Emitter are radioactive, like the tactical nuke rocket: carrying one without full radiation hazmat irradiates you. They still recycle into their plates, never into uranium.
-- The **Depleted Nuclear Power Cell** and its refill recipe are removed: nothing reloads from a cell.
-
-## Changed: quests
-
-- Quests above ZPM carry their pack tier: Antimatter is a UV quest and Red Matter a UHV quest, with the pack's UV and UHV title colors, and each now also needs the pack's Tier 8 (UV) or Tier 9 (UHV) quest.
-- The **Fuel Tanks** quest counts only full Fuel Tanks; empty or part-filled ones no longer complete it.
-- The **Demolition Charge** quest completes: it now matches the warhead's fill as the number the warhead stores.
-- The **Dungeon Weapons** quest says where the gun and blade come from in any pack: GregGuns ruins and camps, the LV Assembler, or dungeon chests on servers that stock them.
-- The Nuclear Power Cell and Nuclear Death Ray quests describe the cell as the Death Ray's power core.
-- Antimatter (UV) and Red Matter (UHV) pay their own tier: new **Ordnance IV** and **Ordnance V** loot bags and choices of the Tier 4 and Tier 5 warhead parts (naquadria and neutronium plates, Field Generators, Quantum Eyes, UHV Emitters, Inert warheads). The ZPM chapter and the Nuclear Warhead and Fallout quests offer ZPM parts in their choices.
-
-## Changed
-
-- `modules.icbm` is on by default. A server without Galacticraft still turns the ICBM module off and logs one warning. A server that does not want ICBM sets `modules.icbm=false`.
-- Five switches are on by default: `npcs.helicopter`, `npcs.alienBug`, `npcs.cyberdemon`, `worldgen.enabledAlienBugNest` and `utility.bioBlobSparesPlayers`. Camps can send the Attack Helicopter and a Camp Flag break calls one in, Alien Bugs and the Cyberdemon (Nether) may spawn, Alien Bug Nests generate in sandy biomes, and Bio Blob poison spares players (other creatures are still poisoned). Set any of them to `false` to turn it off.
-- `questbook.install` is on by default and shows in the in-game config GUI: a server with BetterQuesting gets the GregGuns quest line on start. Set it to `false` to skip the install. The Cyberdemon and Alien Bug quests are visible from the start.
-
-## Changed: the Launch Control belongs to its silo
-
-- A Launch Control between two silos no longer reports "No missile" because it picked the empty one. A Missile Silo now takes its Launch Control as part of its structure: build it in place of any wall, glass or floor-ring block (one per silo). That Launch Control fires its own silo and no other, and says so when the silo isn't formed. Silos built with a Launch Control merely nearby need it moved into the structure.
-- A Launch Control that isn't part of a silo pairs with a Galacticraft pad only when it touches one of the pad's edges, level with it, the way Galacticraft's own launch controller does. Otherwise it reads "No pad adjacent". Next to two pads it picks the one with a ready missile, and always the same one when both are ready.
-- The Launch Control screen names what it is bound to: the silo's sign ("Silo 2") or the silo or pad and its coordinates.
-- Every silo in a silo complex comes with its own Launch Control, on top of the right-hand hatch column beside its window.
-- A silo's own Launch Control runs on the silo's power: it pays its 300 EU per shot from the silo's Energy Hatch, so it needs no cable. Its screen shows the silo's EU, and "Silo has too little EU" when the hatch is short.
-
-## Changed: abandoned silo complexes
-
-- Abandoned complexes now keep one or two guard spawners (Army Soldiers and Commandos) at a hall branch or a guard post room, so a ruin is no longer empty of danger.
-- Abandoned complexes are picked clean: about 7 in 10 chests and wall frames are gone, one machine slot in five is empty, and nine in ten of the machines that remain are bare hulls. Finding a working machine in a ruin is a rare treat. Partly abandoned and operational complexes are unchanged.
-
-## GT recycling for every GregGuns item
-
-- Nearly every GregGuns item, block and machine now recycles in GregTech's Macerator and Arc Furnace (and the other GT recyclers), returning the materials of the cheapest recipe that makes it, the way GT recycles its own machines. This adds most guns (the Assembly Line guns too), the Gun Mount Hatches, every casing and Bastion Plating, turret armor plates, explosive charges, grenades, the LMG, AS50 and Minigun magazines, rockets, shotgun shells and the other press ammo, the chainsaw and power hammers. Circuits, gunpowder and other explosives, and radioactive materials do not come back.
-- Not recyclable on purpose: coins, spawn eggs, fallout, silo complex walls, world blocks from structures, cloth, leather and wooden parts (GT gives those materials no recycling value), the antidote, launcher warheads and guidance chips.
-
-## Structure loot
-
-- Chests in GregGuns structures now hold a range of pack loot as well as GregGuns gear, modeled on the top floors of Roguelike Dungeons: food (HarvestCraft meals included), torches, string and other everyday materials, ores and GT ingots, tools and Forestry bags, potions and bandages, bows, swords and TConstruct parts, armor and trinkets, books and enchanted books. Plain chests are mostly this general loot with a little GregGuns ammo and gear; weapon crates lean toward weapons; reinforced crates toward GT materials; barracks toward armor, food and ammo.
-- Guns are rarer and ammo is common. A weapon crate holds ammo almost every time and a gun about one time in four, a plain chest a gun about one time in eight, and a gun always comes with some of its own ammo. Richer structures give more ammo and gear, not more guns.
-- Fuel and Bio Tanks found in chests are full.
-- Every item rolled for a structure chest lands in it; items no longer replace each other in the same slot.
-- Items from a mod the pack does not have are left out of the chests.
-
-## Structures: calmer palettes
-
-- Newly generated structures are built from one material family each, matching the Techguns originals: the Small Factory is rusted steel on a concrete base, the Train Station weathered red brick under a gray stone roof, the Gas Station an asphalt forecourt with a stone-brick shop under a steel canopy, the Medium House gray stone under its dark red roof, the Big Bunker plain concrete, and the carrier and submarine gray and dark steel. Walls no longer speckle concrete with dark bricks and purple metal, roofs no longer checker gray and sandstone stairs, and no wall or deck repeats Chisel's radiation sign, glowing hex plating or flame lanterns: hazard trim is a hazard stripe and lights are light panels.
-- Military Bases and the Big Bunker: containers and sandbags are Chisel hempcrete in red and brown (GregTech's stone layers no longer eat into either), crates are Chisel crates, and desert tents use Chisel's desert camo.
-- The Gas Station canopy now carries a whole iron-bar railing; before, only a fence, an iron bar and a fence stood in one corner of its roof.
-
-## Silo signs
-
-- Every silo in a complex now has a sign reading "Silo 1", "Silo 2" and so on (north to south, then west to east), hanging on the silo's concrete over its glass window, centered on the controller and facing the gallery. A silo with its controller missing gets the same sign. The Launch Control's screen reads the silo's name from a sign in that spot, on a silo you build too.
-- The hub's "Silo Complex / Class" sign now has a second sign under it naming the complex's activity level: Alpha (abandoned), Bravo (partly abandoned) or Charlie (operational).
-
-## Changed: silo complex armories
-
-- The guns of a complex's armory no longer hang on the outer walls. Two short display walls (two blocks tall, open above) stand across the room with walkways between them, each showing a gun in an item frame every fifth block. A chest on the floor directly below each gun holds that gun's ammo: loaded magazines and loose rounds, or the rockets, grenades or fuel it burns. The armory shows about as many guns as before and holds far more ammo. Abandoned complexes keep fewer of the displays.
-
-## Fixed
-
-- Missiles no longer fly into the roof or walls around a Missile Silo, or the hills and trees around a launch pad. A launched missile now climbs straight up from its pad to the top of the world, then arcs over and down onto its target. Range and accuracy are as before; the flight takes a few seconds longer. A short shot from that height comes down at a steadier speed, so air defense can still catch it.
-
-- The Missile Silo no longer starts a mating cycle or a fuel pump without power. With no EU in its Energy Hatch it used to take the body, warhead or fuel, power-fail on the first tick and switch itself back on, over and over. It now takes nothing, shows "No power" in its status line, and starts by itself once the hatch holds enough EU.
-
-- Silo complex lights are always light-emitting blocks. A lit lamp is Chisel light stone or glowstone and is checked to give light when the palette resolves it, and a dead lamp is never a Chisel Technical vent. The vents are a sparse accent in the ceilings of plant rooms, halls, bunkers and granite halls, never a light. The role audit now reports a lit lamp that gives no light.
-
-## Changed: the Missile Silo's front is five wide
-
-- The silo's front, in its three glass rings, is now five wide: a clear 3 by 3 glass window around the controller, with a hatch column on each side, flush with the glass. The two hatch columns are part of the structure and must hold concrete, a hatch or the Launch Control; a silo built with the corners of its front left empty no longer forms until they are filled. Concrete inside the window no longer counts.
-- Generated silos use this layout. From the gallery: on the right, the Input Bus over the Energy Hatch with the Launch Control on top; on the left, the Input Hatch over the Maintenance Hatch with concrete on top. A silo missing its Energy Hatch has a concrete block at the foot of the right-hand column.
-- The walkway in front of each silo is now five wide and four high, so the whole face shows from the gallery.
-
-## New: rebuild a silo complex
-
-- Ops get `/gregguns locate rebuild <cellX> <cellZ>`: it clears a built silo complex's box (from just above the bedrock up to the surface, its surface buildings included) and generates it again with the current rooms, at the activity level and depth it was first given. It works one chunk per tick and reports its progress. The rock and caves under the box come back as the terrain generator makes them; ores and other things chunk population adds there do not.
-
-## Fixed
-
-- A Missile Silo whose pad Galacticraft forms after the rest is built now forms by itself within a couple of seconds. It used to stay "incomplete" until the player clicked Update Structure.
-- Picking up a GregGuns item that GT builds on the Assembly Line (a Tier 3 Missile Body, a gun, armor) no longer awards an unnamed `achievement.tile.gregguns...` achievement. GregGuns items are taken out of GregTech's auto-generated achievements at startup; GT's recipe unlock on pickup still works.
-- Abandoned houses and other structures no longer place Chisel glass panes (and gold blocks) at a variant Chisel does not define, which showed the ERROR texture. They use Chisel's borderless pane and large-ingot gold now, and any Chisel block at an undefined variant is replaced by its vanilla stand-in.
-
-- GT machines in generated silo complexes (pumps, generators, battery buffers, workbenches and the rest) now face the room's door side instead of straight down, and a pump's output side is its back, so the machines read and plug in like ones you placed yourself.
-- Aiming down the sights now lines up on the screen center for the Golden Gun, the 9mm Pistol and the Mac10 (they sat well left of it at every field of view), and the LMG now aims through its red dot instead of through its muzzle sight, which put the view on the buttstock.
-- The Thompson and the Combat Shotgun now aim through their front blade sight, with the muzzle tipped up a few degrees so the tall rear sight drops out of the line of sight, instead of filling the middle of the screen. Any gun can carry such a tilt in its aim data (`AdsTable`).
-- The Minigun's barrels now whine as they wind up before the first shot and wind down after the last, with real CC0 recordings that follow the shooter and stop cleanly when you let go, switch away, reload or die.
-- GregGuns NPCs from structure spawners (silo and bunker guards, room guards) can now spawn as Elite, Ultra or Infernal mobs, like every other GregGuns NPC. Spawner NPCs were skipped by default; the new `npcs.infernalSpawnerOptOut` (default off) restores that as a farm guard, and replaces `npcs.infernalAllowSpawnerNpcs`.
-
-- NPCs without a target carry their gun at the hip, angled forward and down with the gun arm held still while they walk; they raise it to aim as before.
-- NPCs hold their guns the right way round: the muzzle points forward along the raised arm, for every NPC and every gun, as it does on a player. Players' own guns are unchanged.
-- NPC armor follows the NPC's arms: an NPC carrying its gun at the hip or aiming it no longer shows its bare arm outside the sleeves, for every armor model. Players are unchanged.
-- GregGuns particles (muzzle flashes, smoke, sparks, blasts) no longer draw a patch of the whole block and item texture sheet with Angelica's shader support on. A particle's random turn is now a mirror, which Angelica draws correctly.
-- The Maintenance Hatch of a generated silo, and of the radar station, no longer shows a black cross over its wrench face: generated GT hatches and machines start in GT's default modes, as placed ones do.
-- Missile Bodies T1 and T2 are now built in the GT Assembler at HV and EV, with no research, instead of on the Assembly Line, which GTNH players only reach at LuV. Same inputs and times: plates, fins, engine, 2 circuits and 250 L of lubricant. The Tier 3 body stays on the LuV Assembly Line.
-- Missiles now sound like Galacticraft rockets: the engine loop starts with the countdown, rises in pitch toward ignition, follows the missile through the climb and arc, and stops on impact, interception or abort.
-
-## Changed: the Missile Silo builds the missile in front of you
-
-- The Missile Silo now assembles the missile in its shaft one part at a time, each part appearing before its working cycle starts. A missile body in the Input Bus is stood on the launch pad, then its cycle runs; a warhead is then seated on the body's nose and mated in a second cycle, which ends with the armed missile; fuel from the Input Hatch goes in last. The two cycles take 10 seconds each, the same 20 seconds as before.
-- Parts can arrive in any order or all at once: a warhead with no body waits in the bus ("Waiting for a missile body"), and fuel waits in the hatch. A body alone goes up and waits for its warhead.
-- The parts stand in the shaft as blocks, never inside the controller. Breaking the silo mid-sequence leaves them standing; breaking a body under a seated warhead stops the cycle and drops each part once.
-- A body stacked in the shaft by hand is now taken over by the silo, which mates a warhead from the bus onto it. Arming by hand still works.
-
-## Changed: building an ICBM warhead
-
-- A warhead is now built in steps. First the Assembler makes an **Inert Warhead** of its casing tier from the casing plates and the Fuze Assembly. The Assembler then fits a **payload** (shrapnel sleeve, napalm, gas canisters, field generators, a fissile core and so on). Last, **Plastic Explosive charges** go in, one charge per unit of fill. Load 1 to 8 at a time in a crafting grid (top-ups work), or fill the whole casing in the Assembler. Charges alone in a T1 casing make a Condensed warhead.
-- An inert warhead cannot be placed, launched or set off, and a silo with one in its Input Bus says it is inert.
-- No recipe takes both Industrial TNT and Plastic Explosive any more: the warhead payloads carry no explosive, and the launcher warheads take only Plastic Explosive (the HE, HEAT, Phosphorus and Grenade HE ones no longer take vanilla TNT beside it).
-- The one-step full-warhead Assembler recipes and the fill-1 condensed starter recipe are gone. Existing warheads keep working.
-
-## New: de-arming a warhead
-
-- Put a live warhead and a **Defuse Kit** in a crafting grid to take out up to 8 Plastic Explosive per craft. The charges come back whole and the kit loses one use. The last charge out leaves the inert warhead with its payload, ready to be loaded again.
-- The **Cutting Machine** runs the rest of the chain backwards at the warhead's own tier: it empties a full warhead at once, takes a payload out (its parts come back, its fluid does not) and cuts a bare inert warhead back into its plates and Fuze Assembly. Check NEI.
-- Macerating or arc smelting a warhead now also returns its fuze's metal.
+- A warhead is built in steps (inert casing, payload, charges); see "New: the ICBM module". An inert warhead cannot be placed, launched or set off, and a silo with one in its bus says so.
+- No recipe takes both Industrial TNT and Plastic Explosive: payloads carry no explosive, and the launcher warheads take only Plastic Explosive.
+- Scrapping a bare inert warhead in the Cutting Machine returns its plates, fuze, nose cone and hull plates; the arming electronics are spent. Macerating or arc smelting a warhead also returns its fuze's metal.
 - New ICBM quest: De-arming.
 
-## New: GregGuns Coins and the Vending Machine
+### Silo complexes
 
-- **GregGuns Coin** (`gregguns:coin`), GregGuns' own currency, in five values like the pack's coins: 1, 10, 100, 1000 and 10K (damage 0 to 4). One coin breaks into ten of the next lower value in a crafting grid; ten coins and programmed circuit 10 make one of the next higher value in any GT Assembler.
-- **GregGuns trades in the pack's Vending Machine.** 177 trades with every module on: guns, akimbo pairs, melee tools, loaded magazines, rounds, grenades, gun parts and components, armor, special-slot gear, flight devices, armor parts, turret plates and a spawn egg for every NPC, the Attack Helicopter, Cyberdemon, Alien Bug and Dictator Dave included. All are priced in GregGuns Coins by tier. With the GregGuns quest line installed, each tier's trades open with that tier's intro quest. The trades are added in memory when the server starts; `config/vendingmachine/tradeDatabase.json` is not touched. New key `compat.vendingTrades` (default on).
+- **Blast doors.** Every hall off the hub is closed by a Carpenter's Blocks garage door in the hall's own plating, as wide and tall as the hall's mouth. Right-click to open or shut the whole door. Charlie keeps its wings sealed; Bravo leaves its worked wings open and its dark wings shut; in Alpha a door is stuck open or breached, with columns torn out and jammed slats on rubble. Without Carpenter's Blocks the mouths stay open. On Ross128b and Ross128ba the door frames are the GregTech machine casing of the complex's tier.
+- **Service runs.** Halls carry a cable tray of steel frame boxes with a real GregTech 4x cable under it, and the wide halls a large fluid pipe on the other wall, in metals that follow the complex's tier. In Alpha the runs are broken: gaps, fallen tray sections, stripped cable and missing pipe.
+- **Rooms.** Every room is laid out from its own blueprint, with rows, islands and aisles between the lamp rows. Nine new rooms: an underground farm, a mushroom cellar, cold storage, a shooting range, a brig, a chemistry lab, showers and laundry, a recreation lounge and an incinerator. A complex deals its rooms like a deck of cards, every kind that fits before any repeats. Bunks and the infirmary have real beds; the pump room has two pools three blocks deep; brig cells are walled in on every side; machine rooms hold working GT machines.
+- **Lived-in rooms.** BiblioCraft furniture is stocked to suit its room (books, the room's loot, potions, racks of guns or tools, typed notes); tables carry plates of food; a notice hangs under every room sign; furnaces, brewing stands and working GT machines hold finished goods; cauldrons hold water. How much a room holds follows its activity level.
+- **Chests.** A whole complex holds exactly 100, 200 or 300 loot chests (Alpha, Bravo, Charlie) on every planet (`icbm.siloComplexChestTargets`). No chest is empty; leftover spots are empty crates. Each chest draws its room's own table, and its activity level decides how much is real loot and how much is junk and spoiled food.
+- **Guards.** Every room, the hub included, rolls its own spawners: about one room in five in Alpha, zero to two per room (mostly one) in Bravo, one or two in every room in Charlie. Elite spawners (Commandos and Stormtroopers) turn up in rooms 30 or more blocks from the hub, never in Alpha. Halls hold none.
+- **Ruins are picked clean.** In Alpha about 7 in 10 chests and wall frames are gone, one machine slot in five is empty, and nine in ten remaining machines are bare hulls.
+- **Armories** show their guns on two display walls across the room, each gun in an item frame over a chest of its ammo.
+- **Silo signs** ("Silo 1", "Silo 2"...) hang over each silo's window, and the hub's class sign has an activity sign under it (Alpha, Bravo or Charlie). Every silo in a complex comes with its own Launch Control.
+- **Placement.** A complex under a village or temple generates 10 to 20 blocks deeper instead of being skipped. Roguelike Dungeons keep out of complexes. A silo's bore is open from its pad to the surface, and every room and hall stands on its own foundation, so caves never open under a floor.
+- Lights are always light-emitting blocks; GT machines in complexes face the room's door side; generated Maintenance Hatches start in GT's default mode.
 
-### Quest loot bags
+### NEI and tooltips
 
-- GregGuns quests reward GregGuns loot bags: eight tier bags from Recruit (Steam) to General (ZPM), Spoils of War for boss kills and five ICBM Ordnance crates. They are EnhancedLootBags bags (ids 1701 to 1714), so they look, sort and take Fortune like the pack's own, and they hold GregGuns ammunition, magazines, parts, guns, armor and the materials GregGuns recipes use.
-- GregGuns adds these groups to EnhancedLootBags at startup on both sides; the pack's `LootBags.xml` is not touched. `compat.lootBags` turns this off, and `config/gregguns-lootbags.xml` replaces the contents.
-- A bag whose group is missing is kept with a chat line instead of crashing, and `/lootbags reload` keeps the GregGuns groups.
+- NEI has a **Launcher Loading** page for the launcher warheads.
+- The Radar Casing's tooltip says what it builds and where the hatches go.
 
-## ICBM: Radar Gun targeting
+### Everything else
 
-- The Launch Control's target slot takes a Radar Gun: drop one that holds a target into the slot and press Load target (or right-click the block with it). The gun stays in the slot. An empty slot shows a faint Radar Gun, the screen reads "No target: use a Radar Gun" with no target set, and the tooltips, the Launch Control and Handheld Tools quests and the guide sheets lead with the gun.
-- Data sticks still work in the slot, quietly: nothing in the Launch Control advertises them any more.
+- **GT recycling for nearly every GregGuns item, block and machine,** returning the materials of the cheapest recipe that makes it. Not recyclable on purpose: coins, spawn eggs, fallout, silo complex walls, world blocks from structures, cloth, leather and wooden parts, the Antidote, launcher warheads and guidance chips.
+- **GregGuns Coins and the Vending Machine.** A GregGuns Coin in five values, and 177 trades in the pack's Vending Machine priced in coins by tier, unlocked by each tier's intro quest when the quest line is installed.
+- **Quest loot bags.** GregGuns quests reward GregGuns EnhancedLootBags bags (ids 1701 to 1714): eight tier bags, Spoils of War and the ICBM Ordnance crates.
+- **Tanned Leather.** GregGuns armor, its repairs, the Night Vision Goggles, the Ammo Pouch and the glider parts take the pack's Tanned Leather; mobs and loot bags drop it.
+- **Nuclear Power Cell.** The Nuclear Death Ray takes one as its power core; the cell recipe makes one cell from half the materials. The cell, the Small Nuclear Warhead and the Rad Emitter are radioactive to carry without full hazmat.
+- **Structure loot.** Structure chests hold a range of pack loot as well as GregGuns gear; guns are rarer and ammo common, and a gun always comes with some of its ammo. Fuel and Bio Tanks in chests are full.
+- **Structures: calmer palettes.** Each structure is built from one material family; no more speckled walls or radiation-sign trim.
+- **NPC drops.** A player kill drops a copy of the NPC's gun at 2% plus 1% per Looting level (never from bosses), and every NPC drops rounds for its gun, or parts of an energy gun. Mobs Info lists the drops.
+- **NPCs** carry their gun at the hip when idle, hold it muzzle forward, and their armor follows their arms. Structure spawner NPCs can roll Elite, Ultra or Infernal.
+- **Aim down sights** lines up on the Golden Gun, 9mm Pistol, Mac10, LMG, Thompson and Combat Shotgun.
+- The Minigun's barrels whine as they wind up and down.
+- GregGuns particles no longer draw a patch of the texture sheet with Angelica's shaders on.
+- Abandoned structures no longer show Chisel's ERROR texture on glass panes.
+- Picking up an Assembly Line item no longer awards an unnamed GT achievement.
+- **Quests:** the Fuel Tanks quest counts only full tanks, the Demolition Charge quest completes, and the Cyberdemon and Alien Bug quests are visible from the start.
 
-## Changed: silo complex placement and activity levels
+## Config
 
-- A silo complex under a village or temple is no longer skipped: it generates 10 to 20 blocks deeper, and its shafts and escape ladder reach the surface where they always would. The village is found from where the world will put it, so the result is the same whichever chunk you reach first. A complex is skipped only where it cannot go that deep above bedrock.
-- Roguelike Dungeons keep out of silo complexes: a dungeon that would start near a complex picks another spot, and none of its blocks are written inside one. The new switch `compat.roguelikeKeepOutOfComplexes` (default on) turns this off, and the startup log says whether it attached.
-- Activity levels now roll 30% abandoned, 40% partly abandoned and 30% operational (`icbm.siloComplexActivityWeights` default `30, 40, 30`; a server that keeps the old line in its config keeps the old odds). Each complex rolls once, when it is first placed, and keeps its level if the weights change later. Complexes placed before this update roll their level with the current weights.
-- `/gregguns locate complex` shows each built complex's activity level and how much deeper it lies under a village.
+Every key is documented in `docs/config.md`.
 
-## Fixed: silo complex shafts and foundations
+- **Defaults now on:** `modules.icbm`, `questbook.install`, `npcs.helicopter`, `npcs.alienBug`, `npcs.cyberdemon`, `worldgen.enabledAlienBugNest`, `utility.bioBlobSparesPlayers`. An existing config keeps its old values; set any of them yourself.
+- **New keys:** `compat.vendingTrades`, `compat.lootBags` (and `config/gregguns-lootbags.xml` to replace the bag contents), `compat.roguelikeKeepOutOfComplexes`, `compat.enderioSpawnerBlacklist`, `npcs.infernalSpawnerOptOut` (replaces `npcs.infernalAllowSpawnerNpcs`), `icbm.siloComplexChestTargets`.
+- **The `icbm` section** covers blast budgets and radii (`icbm.blastBudgetMs`, `icbm.maxActiveBlasts`, `icbm.maxBlastRadius`, `icbm.maxGridMemoryMb`, `icbm.maxBlastTier`), per-tier terrain damage (`icbm.terrainDamageT1` to `T4`, which replace `explosions.blockDamage` for ICBM blasts), missiles (`icbm.maxMissilesInFlight`, fuel, range, scatter and silo factors, timeout, countdown and door timing), the EMP (`icbm.empMaxDevices`, `icbm.empMaxRadius` and the missile chances), the ender and anti-gravitational limits, and the silo complexes (`icbm.siloComplexEnabled`, `...Dimensions`, `...ChancePercent`, `...ActivityWeights`, `...Ross128Weights`, `...OverworldBiomes`, `...ChestTargets`). Claims and protection mods are always respected.
+- **Commands (ops):** `/gregguns locate <kind> [radius_cells] [generate]` lists and generates GregGuns structures near you, silo complexes included, with their activity level; `/gregguns locate rebuild <cellX> <cellZ>` regenerates one silo complex in place.
 
-- A silo's bore is open from its launch pad to the surface: no complex wall stands inside a silo, and trees, snow, glow lichen and other growth that later terrain generation puts into a bore or onto its cap is cleared once the land around the silo has generated. The concrete cap still closes the shaft, half closes it or leaves it open by the complex's activity level.
-- Every room, hall and tunnel stands on its own foundation, with solid fill behind its walls and over its ceiling, so caves never open under a floor or beside a wall.
+## Pack changes
 
-## Changed: NPC drops
+No pack file needs changing. The ICBM module reads other mods by registry name or reflection and writes no other mod's config: Galacticraft pads and fuel, Roguelike Dungeons, EnhancedLootBags, BiblioCraft furniture, OpenComputers components, the quests, the Vending Machine trades and GT's recipe maps are all handled in the jar. A recipe-clash review against the full pack found no clash with ICBM content.
 
-- GregGuns NPCs no longer drop the gun they hold as a vanilla equipment drop. Instead, a player kill drops a copy of the gun at 2%, plus 1% per Looting level (never from bosses).
-- Every NPC that drops loot also drops rounds for the gun it carried: a quarter to three quarters of a magazine, at least one round, or one full tank for a tank-fed gun.
-- NPCs carrying an energy gun (Laser, Tesla, Blaster and the rest) drop parts and materials of that gun instead of ammunition: two picks from its recipe, such as plates, screws, foil, lenses, small gears, its barrel or its receiver.
-- With Mobs Info installed, each GregGuns NPC's page lists the rare gun, ammo and parts drops.
+- **Optional:** `config/forgeChunkLoading.cfg` needs no change at the pack's defaults. A missile in flight holds one ticket and at most two chunks, so the default cap of 20 missiles uses 20 of the pack's 200 tickets. A server that raises `icbm.maxMissilesInFlight` past that adds a `gregguns` section with a larger `maximumTicketCount`. A refused ticket is a refused launch, never a crash.
+- **Optional:** a server that does not want ICBM sets `modules.icbm=false`. ICBM items and blocks in the world stay intact and show a "disabled" tooltip line.
 
-## Changed: silo complex rooms
+## Performance
 
-- Every room of a silo complex is laid out from its own blueprint that uses the whole floor: rows, islands and aisles between the lamp rows, with wall pieces where they belong. The hub is a container yard with lanes kept clear to every portal.
-- Nine new rooms: an underground farm, a mushroom cellar, cold storage, a shooting range with wool targets downrange, a brig, a chemistry lab, showers and laundry, a recreation lounge and an incinerator.
-- A complex deals its rooms like a deck of cards: it uses every room kind that fits before it repeats one.
-- Bunks and the infirmary have real beds, in head-to-head pairs sharing a locker, with a chest at the foot of each bed facing the aisle. The infirmary has curtains and treatment bays.
-- Every room's way in runs as wide as its doorway with the frame either side, from the door to the back wall, and a floor strip in the room's design lies under it.
-- The pump room has two large pools, three blocks deep and lined in concrete, either side of the aisle, with the pumps standing along the aisle between them. An abandoned pump room's pools have overflowed onto the floor.
-- Brig cells are walled in on every side in the room's own wall block: walls between the cells and behind the second row, and a solid jamb beside each iron door, with iron bars on the rest of the front. No cell is ever left open.
-- Rooms are dressed with Chisel shipping containers, wooden crates and metal-block props, and the machine rooms hold working GT machines: Chemical Reactors in the chemistry lab, machine tools in the workshop, recyclers and arc furnaces in the incinerator.
-- Each room shows its complex's activity level. Operational (Charlie): everything lit and in place, furnaces burning, crops ripe, machines running. Partly abandoned (Bravo): lit rooms still in service, dark rooms mothballed with pieces missing and machines dead. Abandoned (Alpha): gutted rooms with rubble piles, missing furniture, dead fields and broken glass. Wear and rubble never block the way to a chest, a machine or a door.
+Soaked on the GTNH 2.9.0-RC-2 server pack with every module on, at the default caps (20 missiles in flight, 16 active blasts, a 12 ms blast budget, a 64-device EMP cap). Every run stayed playable and recovered, with no crash and no leaked chunk ticket:
 
-## Changed: silo complex chests
+- **20 missiles in flight** averaged 7 ms a tick; **100** (the highest allowed cap) ran 36 to 58 ms a tick for about 20 seconds while they generated terrain, then settled.
+- **16 large blasts at once** (antimatter, nuclear, exothermic, endothermic, thermobaric) held about 14 TPS for the minute they ran, and the server was back to its baseline 8 seconds after the last crater. Expect lag spikes with 10 or more large blasts.
+- **Red matter** and an **EMP over a GT base of 8,200 machine tiles** cost almost nothing past their first tick.
+- A silo complex takes about one second of server time to generate, spread over the chunks it covers. Its GT cables and pipes tick like any GT pipe.
+- Lower `icbm.blastBudgetMs` or `icbm.maxActiveBlasts` to trade blast speed for a steadier tick.
 
-- A whole silo complex holds exactly **100** loot chests when abandoned, **200** when partly abandoned and **300** when operational, on every planet (config `icbm.siloComplexChestTargets`). No chest is ever empty. Chest spots left over are empty wooden crates, and caved-in rooms hold no chests. Armory display chests come on top of the count.
-- Each chest draws from its **room's own table**: the mess and cafeteria are food-heavy (Pam's HarvestCraft and vanilla meals, snacks, drinks and ingredients), the bunks armor-heavy, the shooting range gun- and ammo-heavy, and the missile assembly floor holds missile body parts and warhead components (and, rarely, a whole missile body: intact in an active complex, salvaged in an abandoned one). Every other room has its own theme, from the chem lab's chemical cells to the incinerator's ash and scrap.
-- How lived-in a room is shows in its chests: an operational complex's chests are full, a partly abandoned complex's dark rooms hold less, plus some junk and spoiled food, and an abandoned complex's chests hold a few real finds among junk, rotten food and worn armor. Canned food never spoils.
+## Known issues
 
-## Changed: silo complex spawners
+- Silo complexes on distant planets (GalaxySpace and Amun-Ra worlds) have been generated and checked on a test server, not played.
+- **T Ceti E** (an ocean world) has no complexes.
+- **Spawners are slow to mine.** GregTech makes every mob spawner very hard, so a guard spawner takes a long time to break by hand. A warhead destroys it.
+- **Blast doors stop a walk, not a pickaxe.** Their slats are thin and break quickly. A GT cable or lever placed beside a door can open or shut it, as with any Carpenter's door.
+- The T1 chemical gas cloud is faint against grass.
+- The T3 conventional warheads share the T1 model at full size.
+- Everything listed for [0.3.3-beta](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) still applies.
 
-- Every room of a silo complex, the middle assembly bay included, rolls its own mob spawners, so the guards spread through the whole complex, the outer rooms and far wings among them, instead of gathering around the middle. An abandoned complex puts one in about one room in five. A partly abandoned complex puts zero, one or two in a room, mostly one. An operational complex puts one or two in every room. The spawners stand on bare floor, and the halls hold none.
-## Silo complexes look lived in
+## Feedback
 
-- BiblioCraft furniture in silo complexes is stocked to suit its room: bookcases hold crew notes and manuals, shelves and tables hold the room's own loot, medicine shelves hold potions, racks hold guns and knives in armed rooms and tools elsewhere, armor stands hold armor or stand empty, desks hold an open book, typewriters hold paper and a typed note, and clipboards carry the room's checklist.
-- Mess halls and cafeterias have dinner plates with food on their tables and cookie jars on their counters; offices and the rec lounge have flower pots; rooms have clipboards on the wall over their desks, consoles and bunks.
-- A notice hangs under every room's name sign: a duty roster or a note on the room's work in a staffed room, a closing notice in a shut one, a last log in a ruin.
-- Furnaces hold fuel and the room's work, brewing stands hold potions, and working GregTech machines hold finished outputs (never an input or a job in progress).
-- Every cauldron holds water, and a staffed farm's crops grow at mixed stages.
-- How much a room holds follows its activity level: a Charlie complex is fully stocked, Bravo's lit rooms are well stocked and its dark rooms half empty, and an Alpha ruin holds little, much of it spoiled or worn.
+Bug reports are very welcome on [Issues](https://github.com/Tuxprogrammer/GregGuns/issues). Please include your GTNH version, Java version, whether the ICBM module is on, the crash report or `fml-client-latest.log`, and what you were doing at the time.
 
-## Silo complexes: blast doors and service runs
+## Files
 
-- Every hall off a complex's central hub is closed by a blast door: a Carpenter's Blocks garage door in the hall's own plating, as wide and tall as the hall's mouth. Right-click it to open or shut the whole door. An operational complex keeps its wings sealed; a partly abandoned one leaves its worked wings open and its dark wings shut; in an abandoned complex a door is stuck open or breached, with columns torn out, jammed slats on rubble and debris on the floor. Without Carpenter's Blocks the mouths stay open.
-- On Ross128b and Ross128ba the blast-door frames are the GregTech machine casing of the complex's tier, so you can read a complex's class from its doors.
-- Halls and hallways carry services under the ceiling: a cable tray of steel frame boxes with a real GregTech cable hung under it, and in the wide halls a large fluid pipe on the other wall. The cable and pipe follow the complex's tier. In an abandoned complex the runs are broken: gaps in the tray, fallen tray sections, stripped cable and missing pipe.
+- `gregguns-0.4.0-beta.jar`: the mod. Put it in your instance's `mods/` folder, on the server and every client.
+- `-dev` and `-sources` jars: for developers only.
 
-## ICBM: NEI and tooltips
-
-- NEI has a **Launcher Loading** page: look up a Rocket Launcher, Grim Reaper, Grenade Launcher or Nuke Launcher, or a launcher warhead, to see which warheads load into which launcher in the crafting grid.
-- The Radar Casing's tooltip says what it builds (the Radar and the Radar Tower) and where their hatches go.
+MIT licensed, except the third-party art listed in `THIRD-PARTY-NOTICES.md` and `docs/assets/CREDITS.md`. The license doesn't cover Techguns, which isn't included.

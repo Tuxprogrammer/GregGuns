@@ -65,27 +65,25 @@ LAUNCH = P.DUMP["launchers"]
 LCH = P.DUMP["launcherCharges"]
 
 
+# The payload recipe of each heavy blast (WarheadRecipeSpec), as pages_icbm._norm writes it; PAY below says the same.
+PAY_ENTRIES = {
+    "EXOTHERMIC": ["WarheadBlast.EXOTHERMIC", "1", "part(IcbmPart.NAPALM_CANISTER,4)", "kerosene(8000)"],
+    "ENDOTHERMIC": ["WarheadBlast.ENDOTHERMIC", "2", "part(IcbmPart.DISPERSAL_CANISTER,4)", 'gas("Helium",8000)'],
+    "NUCLEAR": ["WarheadBlast.NUCLEAR", "3", 'gt("ingot","Uranium235",8)', 'gt("ingot","Plutonium",4)', 'gtItem("Field_Generator_ZPM",2)'],
+    "ANTIMATTER": ["WarheadBlast.ANTIMATTER", "1", 'gtItem("Field_Generator_UV",2)', 'gtItem("QuantumEye",1)', 'gt("ingot","Plutonium241",4)'],
+    "REDMATTER": ["WarheadBlast.REDMATTER", "2", 'gtItem("Field_Generator_UHV",2)', 'gtItem("QuantumEye",2)', 'gtItem("Emitter_UHV",2)'],
+    "EMP": ["WarheadBlast.EMP", "4", 'gtItem("Field_Generator_LuV",2)', 'gtItem("Emitter_LuV",2)'],
+    "ENDER": ["WarheadBlast.ENDER", "5", 'gtItem("Emitter_LuV",1)', 'gt("gem","EnderEye",16)'],
+    "ANTIGRAV": ["WarheadBlast.ANTIGRAV", "6", 'gtItem("Field_Generator_LuV",2)', 'gt("gem","NetherStar",4)'],
+}
+
+
 def _verify() -> None:
-    """The payload text printed below, checked against the recipe source."""
-    spec = P._SPEC
-    need = [
-        "ENDER(WarheadBlast.ENDER, 5,",
-        'Ing.gtItem("Emitter_LuV", 1, Tier.LUV, 10.0)', 'Ing.gt("gem", "EnderEye", 16',
-        "ANTIGRAV(WarheadBlast.ANTIGRAV, 6,",
-        'Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0)', 'Ing.gt("gem", "NetherStar", 4',
-        "EMP(WarheadBlast.EMP, 4,", 'Ing.gtItem("Emitter_LuV", 2',
-        "NUCLEAR(WarheadBlast.NUCLEAR, 3,",
-        'Ing.gt("ingot", "Uranium235", 8, Tier.HV, 6.0)', 'Ing.gt("ingot", "Plutonium", 4',
-        "EXOTHERMIC(WarheadBlast.EXOTHERMIC, 1, Ing.part(IcbmPart.NAPALM_CANISTER, 4), Ing.kerosene(8000))",
-        "Ing.part(IcbmPart.DISPERSAL_CANISTER, 4),", 'Ing.gas("Helium", 8000',
-        "ANTIMATTER(WarheadBlast.ANTIMATTER, 1,",
-        'Ing.gtItem("Field_Generator_UV", 2', 'Ing.gtItem("QuantumEye", 1', 'Ing.gt("ingot", "Plutonium241", 4',
-        "REDMATTER(WarheadBlast.REDMATTER, 2,",
-        'Ing.gtItem("Field_Generator_UHV", 2', 'Ing.gtItem("QuantumEye", 2', 'Ing.gtItem("Emitter_UHV", 2',
-    ]
-    missing = [n for n in need if n not in spec]
-    if missing:
-        raise SystemExit(f"WarheadRecipeSpec changed; update icbm-warheads-heavy: {missing}")
+    """The payload and casing text printed below, checked against the recipe source as whole entries."""
+    P.check_entries("WarheadRecipeSpec", P._SPEC, PAY_ENTRIES)
+    P.verify_inert((3, 4, 5))
+    P.check_entries("IcbmPart", P._PARTS, {"FUZE_ASSEMBLY_MK3": [
+        '"fuze_assembly_mk3"', "Tier.LUV", "1", "20", 'gt("circuit","Master",1)', 'gt("plate","TungstenSteel",1)', 'gt("wireFine","Platinum",4)']})
 
 
 _verify()
@@ -99,7 +97,7 @@ TIER_NAME = {"HV": "HV", "EV": "EV", "LUV": "LuV"}
 PAY = {
     "exothermic": "4 Napalm Canisters, 8,000 L kerosene; then 64 Plastic Explosive",
     "endothermic": "4 Dispersal Canisters, 8,000 L helium; then 64 Plastic Explosive",
-    "nuclear": "8 uranium-235 ingots, 4 plutonium ingots; then 64 Plastic Explosive as its implosion lens",
+    "nuclear": "8 uranium-235 ingots, 4 plutonium ingots, 2 ZPM Field Generators; then 64 Plastic Explosive as its implosion lens",
     "emp": "2 LuV Field Generators, 2 LuV Emitters; then 64 Plastic Explosive",
     "ender": "a LuV Emitter, 16 Eyes of Ender; then 64 Plastic Explosive",
     "antigrav": "2 LuV Field Generators, 4 Nether Stars; then 64 Plastic Explosive",
@@ -123,6 +121,11 @@ CSS = P.CSS + """
 .lw b { font-weight: 700; }
 .bt .pay span.chip { color: #0e1217; font-size: 14px; letter-spacing: 0; text-transform: none; margin: 0 4px 0 0; padding: 2px 9px 1px; }
 .bt .pay span.t-EV, .bt .pay span.t-IV { color: #fff; }
+.ct { width: 100%; border-collapse: collapse; font-size: 17px; }
+.ct th { text-align: left; color: var(--dim); font-size: 14px; letter-spacing: .1em; text-transform: uppercase; padding: 5px 8px; border-bottom: 2px solid var(--line); font-weight: 600; }
+.ct td { padding: 7px 8px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: middle; }
+.ct tr:last-child td { border-bottom: 0; }
+.ct td:first-child { color: var(--txt); font-weight: 600; white-space: nowrap; }
 .tl { position: relative; height: 34px; margin: 10px 0 4px; }
 .tl .seg { position: absolute; top: 0; height: 30px; display: flex; align-items: center; padding: 0 10px; font-size: 15.5px; font-weight: 700; color: #11151a; white-space: nowrap; overflow: hidden; }
 .tl .tk { position: absolute; top: 34px; font-size: 14.5px; color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
@@ -159,7 +162,7 @@ def _casing(tier, label, tier_chip, mesh, tex, plate_html, cap, extra, blurb, pp
     return f"""<div class="card cas-card"><div class="spot">{pic}</div><div>
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><h2>{label}</h2>{tier_chip}</div>
 <div class="muted" style="font-size:17px;margin-bottom:6px">{blurb}</div>
-<div class="stat"><span>Casing plates</span><b style="white-space:nowrap">{plate_html}</b></div><div class="stat"><span>Fill cap</span><b>{cap} charges</b></div>
+<div class="stat"><span>Plates</span><b style="white-space:nowrap">{plate_html}</b></div><div class="stat"><span>Fill cap</span><b>{cap} charges</b></div>
 <div class="stat"><span>Size</span><b>1 &times; 1 &times; 2 blocks</b></div>{stats}</div></div>"""
 
 
@@ -167,7 +170,7 @@ def heavy() -> str:
     # ----- casings
     nuke_r, nuke_d = P.full("nuclear")
     kill = nuke_r * KILL
-    t3 = _casing(3, "Tier 3", tchip("LuV") + " " + tchip("ZPM"), "warhead_t3", "warhead_t3", f'{gti("plate", "Tungstensteel", 28)} Tungsten steel',
+    t3 = _casing(3, "Tier 3", tchip("LuV") + " " + tchip("ZPM"), "warhead_t3", "warhead_t3", f'{gti("plate", "Tungstensteel", 28)} Tungstensteel',
                  P.CAP[3], [], "Two blocks tall, for the silo. Fill and radius work as on the smaller casings.")
     t4 = _casing(4, "Tier 4", tchip("UV"), "warhead_antimatter", "warhead_antimatter", f'{gti("plate", "Naquadria", 28)} Naquadria',
                  P.CAP[4], [], "Antimatter only. The Tier 3 missile body carries it.", ppu=190)
@@ -233,10 +236,20 @@ def heavy() -> str:
     lp = f"""<div class="card"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><h2>Launcher warheads</h2><span style="display:flex;gap:6px">{icons}</span></div>
 <div class="muted" style="font-size:18px;margin:6px 0 10px">No new launcher: the guns you already have can carry a blast type. A <b>launcher warhead</b> gives {LCH["perItem"]} charges. Craft it with a matching launcher (shapeless, in the crafting grid) to load it, up to {LCH["max"]} charges. The same type adds more; a different type or a load past {LCH["max"]} is refused, so nothing is ever lost. Each shot still uses the launcher's own rocket or grenade, spends <b>one charge</b>, and goes off as a small blast instead of the normal one. It changes <b>what</b> the shot does, not how hard it hits: center damage is capped at <b>{LCH["capFactor"]:g} times the launcher's own damage</b> ({P._n(caps["ROCKET"])} Rocket Launcher and Grim Reaper, {P._n(caps["GRENADE"])} Grenade Launcher, {P._n(caps["NUKE"])} Nuke Launcher). The radius is always the smallest-fill radius. Walls only break if the server allows explosion damage.</div>
 <div class="lw hd"><span></span><span>Warhead</span><span>Fits</span><span>Radius</span><span>Center</span><span>Made at</span></div>{rows}
-<div class="muted" style="font-size:16px;margin-top:10px">Made in the Assembler. Gas, push, smoke and the Tier 2 specials are left out on purpose, and the Nuke Launcher keeps its own tactical nuke. Needs the missile add-on switched on; with it off a loaded launcher fires normally.</div></div>"""
+<div class="muted" style="font-size:16px;margin-top:10px">Made in the Assembler. Gas, push, smoke and the Tier 2 specials are left out on purpose, and the Nuke Launcher keeps its own tactical nuke. Needs the missile add-on switched on; with it off a loaded launcher fires normally. NEI's <b>Launcher Loading</b> page shows which warheads load into which launcher: look up a launcher or a warhead.</div></div>"""
+
+    # ----- how a heavy casing is made
+    def _row(t):
+        c = P.INERT[t]
+        return (f'<tr><td>Inert T{t} Warhead</td><td>{tchip(c["chip"])}</td><td>{gti("plate", c["plate"].replace("TungstenSteel", "Tungstensteel"), 24)} {c["plates"]} {esc(c["plate_name"])}</td>'
+                f'<td>{esc(c["nose"][2][2:])}</td><td>{esc(c["hull"][2])}</td><td>{esc(c["etier"])} Sensor, {esc(c["etier"])} Emitter, 2 {esc(c["etier"])} circuits</td></tr>')
+    made = f"""<div class="card" style="margin-top:18px"><h2>How a heavy casing is made</h2>
+<div class="muted" style="font-size:18px;margin:6px 0 10px">Each starts as an inert warhead from the Assembler: its casing plates, a <b>Fuze Assembly Mk III</b> (an Assembler part at {tchip("LuV")}, from a Master circuit), the nose cone and 12 hull plates of its tier's Galacticraft rocket, and its arming electronics. Then it takes its payload and its Plastic Explosive charges, as on the Warheads sheet. The Cutting Machine takes it apart again the same way.</div>
+<table class="ct"><tr><th>Makes</th><th>Assembler</th><th>Casing plates</th><th>Nose cone</th><th>Hull plates</th><th>Electronics</th></tr>{"".join(_row(t) for t in (3, 4, 5))}</table></div>"""
 
     body = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">{t3}{t4}{t5}</div>
 <div class="muted" style="font-size:17px;margin:12px 0 0">All three fly only on a Tier 3 missile launched from the missile silo. Radius and center damage are at a full casing, before armor; a part-filled casing is a smaller blast, as on the other sheet.</div>
+{made}
 <div class="label" style="margin:26px 0 10px">Tier 3 blast types &middot; LuV to ZPM</div>
 <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">{cards}</div>
 <div class="label" style="margin:26px 0 10px">Tier 4 and Tier 5 &middot; everything in the zone dies</div>
