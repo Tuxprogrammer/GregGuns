@@ -1261,6 +1261,9 @@ public final class SiloScenarios {
      */
     private static final class LcPower implements Scenario {
 
+        /** EU put in the silo's Energy Hatch: well under a LuV hatch's capacity, and enough for the shot. */
+        private static final long SILO_EU = 100_000L;
+
         @Override
         public String name() {
             return "icbm.silo.lc_power";
@@ -1312,7 +1315,9 @@ public final class SiloScenarios {
                         c.setXText(Integer.toString(ctx.originX()));
                         c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
                         cb.decreaseStoredEnergyUnits(cb.getStoredEU(), true);
-                        power(ctx);
+                        // An exact amount under the hatch's capacity: GT reports at most the capacity, so the 50M EU
+                        // of power(ctx) would hide the payment.
+                        ((gregtech.api.metatileentity.BaseMetaTileEntity) energy).setStoredEU(SILO_EU);
                         stage[0] = 1;
                         return null;
                     }
@@ -1325,15 +1330,15 @@ public final class SiloScenarios {
                         out.checkEquals("it fires", ControlStatus.FIRED, c.fire(null));
                         long paid = before - energy.getStoredEU();
                         out.check(
-                            paid >= MTELaunchControl.EU_PER_SHOT,
-                            "the shot came out of the silo's Energy Hatch: " + paid + " EU");
+                            paid >= MTELaunchControl.EU_PER_SHOT && before <= SILO_EU,
+                            "the shot came out of the silo's Energy Hatch: " + paid + " EU of " + before);
                         out.checkEquals("its own buffer is still empty", 0L, cb.getStoredEU());
                         out.check(
                             silo.site()
                                 .abort(),
                             "the countdown aborts");
                         // No EU in the silo, a full own buffer: the bound block still asks the silo.
-                        energy.decreaseStoredEnergyUnits(energy.getStoredEU(), true);
+                        ((gregtech.api.metatileentity.BaseMetaTileEntity) energy).setStoredEU(0L);
                         cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
                         stage[0] = 2;
                         return null;
