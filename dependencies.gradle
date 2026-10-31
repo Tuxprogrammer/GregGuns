@@ -69,6 +69,15 @@ dependencies {
     // Version is the pack's (MOD-INDEX.md).
     runtimeOnlyNonPublishable("com.cubefury.vendingmachine:VendingMachine:0.4.101:dev") { transitive = false }
 
+    // Optional integration (D312): Mobs Info's NEI mob page shows the NPC gun drops through IMobExtraInfoProvider on our
+    // LivingDropsEvent handler (com.gregguns.entity.npc.NpcGunDropsHandler). compileOnly, so the mod is absent from the
+    // default runs and its types load only behind @Optional. Opt in to a dev run with -Pgg.devMobsInfo=true (or env
+    // GG_DEV_MOBSINFO=1): its all-mob drop simulation is slow at boot. Version is the pack's (MOD-INDEX.md).
+    compileOnly("com.github.GTNewHorizons:Mobs-Info:0.6.0-GTNH:dev") { transitive = false }
+    if (project.hasProperty("gg.devMobsInfo") || System.getenv("GG_DEV_MOBSINFO") == "1") {
+        runtimeOnlyNonPublishable("com.github.GTNewHorizons:Mobs-Info:0.6.0-GTNH:dev")
+    }
+
     // Dev-client CTM (design record 0023): Angelica 2.2.28 bundles MCPatcherForge, which renders our connected-texture
     // data. Opt in with -Pgg.devAngelica=true (or env GG_DEV_ANGELICA=1); off by default, so builds, tests, runServer and the
     // headless suite are unchanged. Runtime only, client side (Angelica is a CLIENT mod). Version is the pack's.

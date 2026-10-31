@@ -19,13 +19,18 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.entity.npc.GunSalvage;
+import com.gregguns.entity.npc.NpcDrops;
 import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.NpcItems;
 import com.gregguns.entity.npc.loot.EquipmentProfile;
 import com.gregguns.entity.npc.loot.LootDrop;
 import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.entity.npc.loot.NpcProfiles;
+import com.gregguns.item.gun.ItemGun;
+import com.gregguns.worldgen.loot.LootCategories;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
@@ -67,8 +72,21 @@ final class NpcLootScenarios {
         }
 
         void killByPlayer() {
-            recentlyHit = 100;
-            onDeath(DamageSource.generic);
+            kill(DamageSource.generic, true);
+        }
+
+        /**
+         * @param source       what killed it; a player source carries the player's Looting
+         * @param playerHitNow whether a player hit it in the last 100 ticks (vanilla's player-kill flag)
+         */
+        void kill(DamageSource source, boolean playerHitNow) {
+            recentlyHit = playerHitNow ? 100 : 0;
+            onDeath(source);
+        }
+
+        /** @return the vanilla equipment drop chance of the held item */
+        float heldDropChance() {
+            return equipmentDropChances[0];
         }
     }
 
@@ -77,7 +95,8 @@ final class NpcLootScenarios {
 
         final List<List<ItemStack>> kills = new ArrayList<>();
 
-        @SubscribeEvent
+        /** LOWEST, so it sees what every other drops handler (the NPC gun drops among them) added. */
+        @SubscribeEvent(priority = EventPriority.LOWEST)
         public void onDrops(LivingDropsEvent event) {
             if (event.entityLiving instanceof ProfiledNpc) {
                 List<ItemStack> stacks = new ArrayList<>();
@@ -104,6 +123,40 @@ final class NpcLootScenarios {
 
     private static Item itemOf(ItemStack s) {
         return s == null ? null : s.getItem();
+    }
+
+    /**
+     * @param held the NPC's held item
+     * @return every item its gun's own death drop can give (ammo, tank or salvage, D312); empty for no gun
+     */
+    static Set<Item> gunDropItems(ItemStack held) {
+        Set<Item> out = new HashSet<>();
+        if (held == null || !(held.getItem() instanceof ItemGun)) {
+            return out;
+        }
+        ItemGun gun = (ItemGun) held.getItem();
+        NpcDrops.GunDrop rule = NpcDrops.gunDrop(
+            gun.definition()
+                .name(),
+            gun.stats());
+        if (rule == null) {
+            return out;
+        }
+        List<String> refs = new ArrayList<>();
+        if (rule.kind() == NpcDrops.GunDropKind.SALVAGE) {
+            for (GunSalvage.Entry e : rule.salvage()) {
+                refs.add(e.ref());
+            }
+        } else {
+            refs.add(rule.ref());
+        }
+        for (String ref : refs) {
+            ItemStack s = LootCategories.stack(ref, 1);
+            if (s != null) {
+                out.add(s.getItem());
+            }
+        }
+        return out;
     }
 
     /** 1000 kills per mob: every drop is in the table, fixed drops always fall, no empty stack, bosses never rare. */
@@ -175,9 +228,11 @@ final class NpcLootScenarios {
                         out.check(false, id + " kill " + i + " posted no LivingDropsEvent");
                         return;
                     }
+                    Set<Item> fromGun = gunDropItems(npc.getHeldItem());
                     for (ItemStack s : log.kills.get(before)) {
                         Item item = itemOf(s);
-                        if (!allowed.contains(item) && !gear.contains(item) || s.stackSize < 1) {
+                        if (!allowed.contains(item) && !gear.contains(item) && !fromGun.contains(item)
+                            || s.stackSize < 1) {
                             out.check(false, id + " dropped unexpected " + s);
                             return;
                         }
@@ -195,7 +250,7 @@ final class NpcLootScenarios {
                     }
                 }
                 if (!profile.rareDrop() && profile.equipment() != null) {
-                    // A boss's only held-item drop is the 8.5% equipment one: never a bare copy at the rare rate.
+                    // A boss has no rare drop and its weapon never drops through vanilla's equipment roll (D312).
                     int guns = 0;
                     for (List<ItemStack> kill : log.kills) {
                         for (ItemStack s : kill) {
@@ -209,8 +264,8 @@ final class NpcLootScenarios {
                             }
                         }
                     }
-                    // Fixed Golden Revolver for Dave and Chainsaw for Steve make one per kill; extras are equipment.
-                    out.check(guns >= KILLS, id + " should drop its fixed weapon every kill, saw " + guns);
+                    // Fixed Golden Revolver for Dave and Chainsaw for Steve: exactly one per kill.
+                    out.checkEquals(id + " fixed weapon drops", KILLS, guns);
                 }
                 out.note(id + ": " + KILLS + " kills ok");
             } finally {

@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.entity.Entity;
+
+import com.gregguns.client.mob.ArmorPose;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -46,6 +49,14 @@ public final class HelmetModels {
             bipedHead.cubeList.clear();
             bipedHeadwear.cubeList.clear();
             bipedHead.addChild(accessory.root());
+        }
+
+        /** Vanilla's pose, or the NPC's while an NPC wears the helmet ({@link ArmorPose}). */
+        @Override
+        public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
+            float headPitch, float scale, Entity entity) {
+            super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+            ArmorPose.follow(this);
         }
     }
 }

@@ -9,12 +9,19 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldSettings;
 
+import com.gregguns.armor.ArmorItems;
+import com.gregguns.armor.ItemGregGunsArmor;
+import com.gregguns.armor.logic.ArmorCatalog;
+import com.gregguns.armor.logic.ArmorSlot;
+import com.gregguns.armor.logic.SetDef;
+import com.gregguns.armor.slots.ItemGasMask;
 import com.gregguns.core.testing.AutotestSignal;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -22,6 +29,8 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.entity.npc.NpcMob;
 import com.gregguns.item.gun.GunItems;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * {@code npc.hold_showcase}: a visual check of how NPCs hold guns, for a connected client (see
@@ -31,6 +40,12 @@ import com.gregguns.item.gun.GunItems;
  * the player holds each gun and is shot from the front and the back
  * ({@code player-<gun>-<front|back>}) as the reference for what a held gun looks like. Not part of {@code test all}:
  * it needs a connected client. Dev environment only, server side.
+ *
+ * <p>
+ * Every NPC wears a full set of its profile's first armor (camo 0), so the shots also check that the armor follows the
+ * posed arms (D310): the sleeve covers the arm in the hip carry and the aim. An armor sweep then puts the Army Soldier
+ * with an AK-47 in each custom-model set, one vanilla-layer set and a mask helmet:
+ * {@code armor-<set>-<idle|aim>-<side|front>}.
  */
 // Spec: docs/techguns-spec/03-gun-visuals-audio/ (framework section 6.3, the aimed pre-rotation)
 final class NpcHoldShowcaseScenario implements Scenario {
@@ -38,8 +53,17 @@ final class NpcHoldShowcaseScenario implements Scenario {
     private static final String NAME = "npc.hold_showcase";
     /** Ticks between two steps: the client needs the teleport and the entity update before the frame is shot. */
     private static final int STEP = 30;
-    private static final NpcMob[] MOBS = { NpcMob.ZOMBIE_SOLDIER, NpcMob.SKELETON_SOLDIER, NpcMob.BANDIT,
-        NpcMob.ARMY_SOLDIER, NpcMob.COMMANDO, NpcMob.OUTCAST };
+    /** Every kind drawn with the biped or skeleton model, with the first armor set of its profile. */
+    private static final NpcMob[] MOBS = { NpcMob.ZOMBIE_SOLDIER, NpcMob.ZOMBIE_FARMER, NpcMob.ZOMBIE_MINER,
+        NpcMob.ZOMBIE_PIGMAN_SOLDIER, NpcMob.SKELETON_SOLDIER, NpcMob.BANDIT, NpcMob.ARMY_SOLDIER, NpcMob.COMMANDO,
+        NpcMob.OUTCAST, NpcMob.STORMTROOPER, NpcMob.PSYCHO_STEVE, NpcMob.DICTATOR_DAVE };
+    /** The armor of each kind in {@link #MOBS}, from NpcProfiles; t1_combat for the kinds with none. */
+    private static final String[] MOB_ARMOR = { "t1_combat", "t1_combat", "t1_combat", "t2_combat", "t1_combat",
+        "t1_scout", "t2_combat", "t2_commando", "t3_power", "t3_hev", "t1_miner", "t2_beret" };
+    /** The armor sweep: every custom-model set, one vanilla-layer set, and a mask helmet over it. */
+    private static final String[] SWEEP = { "t3_exo", "t3_power", "steam", "t2_riot", "t2_beret", "t2_combat",
+        "t2_combat+" + ItemGasMask.NAME };
+    private static final String SWEEP_GUN = "ak47";
     private static final String[] GUNS = { "pistol_9mm", "ak47", "minigun", "rocket_launcher" };
 
     static void register(ScenarioRegistry registry) {
@@ -70,13 +94,20 @@ final class NpcHoldShowcaseScenario implements Scenario {
         private final boolean front;
         private final boolean aim;
         private final String label;
+        private final String armor;
 
-        Shot(NpcMob mob, String gun, boolean front, boolean aim, String label) {
+        Shot(NpcMob mob, String gun, boolean front, boolean aim, String label, String armor) {
             this.mob = mob;
             this.gun = gun;
             this.front = front;
             this.aim = aim;
             this.label = label;
+            this.armor = armor;
+        }
+
+        /** @return the armor set id, with {@code +<mask>} for a mask helmet in place of the set's helmet; or null */
+        String armor() {
+            return armor;
         }
 
         NpcMob mob() {
@@ -115,18 +146,31 @@ final class NpcHoldShowcaseScenario implements Scenario {
             }
         }
         List<Shot> shots = new ArrayList<>();
-        for (NpcMob mob : MOBS) {
+        for (int m = 0; m < MOBS.length; m++) {
+            NpcMob mob = MOBS[m];
             for (String gun : GUNS) {
                 for (boolean aim : new boolean[] { false, true }) {
                     String stem = "npc-" + mob.name() + "-" + gun + (aim ? "-aim" : "-idle");
-                    shots.add(new Shot(mob, gun, false, aim, stem + "-side"));
-                    shots.add(new Shot(mob, gun, true, aim, stem + "-front"));
+                    shots.add(new Shot(mob, gun, false, aim, stem + "-side", MOB_ARMOR[m]));
+                    shots.add(new Shot(mob, gun, true, aim, stem + "-front", MOB_ARMOR[m]));
                 }
             }
         }
+        for (String armor : SWEEP) {
+            for (boolean aim : new boolean[] { false, true }) {
+                String stem = "armor-" + armor.replace('+', '-') + (aim ? "-aim" : "-idle");
+                shots.add(new Shot(NpcMob.ARMY_SOLDIER, SWEEP_GUN, false, aim, stem + "-side", armor));
+                shots.add(new Shot(NpcMob.ARMY_SOLDIER, SWEEP_GUN, true, aim, stem + "-front", armor));
+            }
+        }
         for (String gun : GUNS) {
-            shots.add(new Shot(null, gun, true, true, "player-" + gun + "-front"));
-            shots.add(new Shot(null, gun, false, true, "player-" + gun + "-back"));
+            shots.add(new Shot(null, gun, true, true, "player-" + gun + "-front", null));
+            shots.add(new Shot(null, gun, false, true, "player-" + gun + "-back", null));
+        }
+        for (Shot s : shots) {
+            if (s.armor() != null && wear(null, s.armor()) != null) {
+                return ScenarioResult.fail(NAME, wear(null, s.armor()));
+            }
         }
         ctx.clearArea(8, 4);
         for (int dx = -6; dx <= 6; dx++) {
@@ -142,6 +186,8 @@ final class NpcHoldShowcaseScenario implements Scenario {
         // Hostile mobs despawn at once in a peaceful world; the scenario puts it back when it ends.
         EnumDifficulty prior = player.worldObj.difficultySetting;
         player.worldObj.difficultySetting = EnumDifficulty.NORMAL;
+        // Noon for every shot, so the before and after runs of a change compare in the same light.
+        long priorTime = player.worldObj.getWorldTime();
         signal(player, "hud", "off");
         EntityLiving[] current = { null };
         EntityLiving[] decoy = { null };
@@ -156,6 +202,7 @@ final class NpcHoldShowcaseScenario implements Scenario {
                     decoy[0].setDead();
                 }
                 player.worldObj.difficultySetting = prior;
+                player.worldObj.setWorldTime(priorTime);
                 signal(player, "view", "0");
                 signal(player, "hud", "on");
                 player.inventory.clearInventory(null, -1);
@@ -165,6 +212,7 @@ final class NpcHoldShowcaseScenario implements Scenario {
                     .build();
             }
             Shot s = shots.get(index);
+            player.worldObj.setWorldTime(6000L);
             if (phase == 0) {
                 if (current[0] != null) {
                     current[0].setDead();
@@ -191,6 +239,7 @@ final class NpcHoldShowcaseScenario implements Scenario {
                         player.worldObj);
                     npc.setLocationAndAngles(cx, cy, cz, 0.0F, 0.0F);
                     npc.setCurrentItemOrArmor(0, gun);
+                    wear(npc, s.armor());
                     player.worldObj.spawnEntityInWorld(npc);
                     current[0] = npc;
                     if (s.aim()) {
@@ -235,6 +284,50 @@ final class NpcHoldShowcaseScenario implements Scenario {
             }
             return null;
         });
+    }
+
+    /**
+     * Puts every piece of an armor set on an NPC, or only checks that they are registered.
+     *
+     * @param npc   the NPC, or null to check only
+     * @param armor a set id, optionally {@code <set>+<mask item>} for a mask in the helmet slot
+     * @return null when every piece exists, else what is missing
+     */
+    private static String wear(EntityLiving npc, String armor) {
+        int plus = armor.indexOf('+');
+        String setId = plus < 0 ? armor : armor.substring(0, plus);
+        SetDef set = ArmorCatalog.find(setId);
+        if (set == null) {
+            return "no armor set " + setId;
+        }
+        for (int type = 0; type < 4; type++) {
+            ItemStack stack;
+            if (type == 0 && plus >= 0) {
+                Item mask = GameRegistry.findItem("gregguns", armor.substring(plus + 1));
+                if (mask == null) {
+                    return "no mask " + armor.substring(plus + 1);
+                }
+                stack = new ItemStack(mask);
+            } else {
+                ArmorSlot slot = ArmorSlot.fromArmorType(type);
+                if (set.pieces()
+                    .get(slot) == null) {
+                    // A set without this piece (the Beret is a helmet only): the slot stays empty.
+                    continue;
+                }
+                ItemGregGunsArmor piece = ArmorItems.get(set, slot);
+                if (piece == null) {
+                    return "armor set " + setId + " has no piece " + type;
+                }
+                stack = new ItemStack(piece);
+                piece.setCamo(stack, 0);
+            }
+            if (npc != null) {
+                // Vanilla equipment slot: 1 boots to 4 helmet.
+                npc.setCurrentItemOrArmor(4 - type, stack);
+            }
+        }
+        return null;
     }
 
     private static void signal(EntityPlayerMP player, String command, String... args) {

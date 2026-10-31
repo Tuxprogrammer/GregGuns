@@ -254,6 +254,7 @@ Branch `m3/armor-models`. Replaces the "no 3D models" decision for the five sets
 - UVs are packed by a shelf packer in the generator and written into the JSON, so the game never computes layout. `ArmorModelDefTest` checks that every box fits its sheet, that unwrap rectangles do not overlap, that each camo's sheet exists at the model's size and that every worn piece has boxes.
 - Textures follow the review's style rules: flat metal with edge highlights and a few panel seams, no dot grids, accents on about a tenth of the surface. A variant recolors every material (the generator asserts that no non-black region of a variant equals the base color; this fixes the Exo green that used to recolor one band).
 - The 128 x 64 vanilla-layout sets are untouched: they keep the vanilla biped model and `_1`/`_2` sheets (see ARM-DEV-12).
+- On a GregGuns NPC the parts take the NPC's own pose (D310): `BoxArmorModel` and the mask helmets call `ArmorPose.follow` after vanilla's `setRotationAngles`, which copies the posed body model's angles and pivots while that NPC renders. A player wearing the same cached model keeps vanilla's pose.
 
 ## Silhouette check (offline)
 

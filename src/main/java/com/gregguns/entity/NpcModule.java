@@ -11,6 +11,7 @@ import com.gregguns.entity.npc.EnderIoSpawners;
 import com.gregguns.entity.npc.InfernalDropsHandler;
 import com.gregguns.entity.npc.InfernalHooks;
 import com.gregguns.entity.npc.NpcCampPort;
+import com.gregguns.entity.npc.NpcGunDropsHandler;
 import com.gregguns.entity.npc.NpcRegistry;
 import com.gregguns.entity.npc.spawn.NpcSpawnHandler;
 import com.gregguns.utility.camp.CampSpawnPorts;
@@ -47,6 +48,8 @@ public final class NpcModule implements GregGunsModule {
         if (Loader.isModLoaded(InfernalHooks.MOD_ID)) {
             MinecraftForge.EVENT_BUS.register(new InfernalDropsHandler());
         }
+        // D312: the carried gun's own drops (rare gun, ammo or salvage); also the Mobs Info NEI page's provider.
+        MinecraftForge.EVENT_BUS.register(new NpcGunDropsHandler());
         // D273: keep EnderIO's Broken Spawner drop and break burst off GregGuns NPCs (IMC, only when EnderIO is
         // loaded).
         EnderIoSpawners.send();

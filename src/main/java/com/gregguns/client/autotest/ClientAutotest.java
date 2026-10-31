@@ -338,6 +338,7 @@ public final class ClientAutotest {
             case "see" -> holdWait = new AutotestCommands.SeeWait(args[0]);
             case "cblock" -> AutotestCommands.logBlock(args);
             case "sync" -> AutotestCommands.syncAck();
+            case "fxstats" -> AutotestCommands.fxStats(args);
             case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);
             case "scope" -> com.gregguns.client.render.GunRenderers
                 .setDebugScope("off".equals(args[0]) ? null : args[0]);
