@@ -151,6 +151,12 @@ final class ComplexRebuild implements LocateGeneration.Run {
     }
 
     private void clearChunk(int[] ch) {
+        clearColumns(ch);
+        // At once, before an item, a creature or a player stuck in the new rock is pushed up out of it.
+        sweep((ch[0] << 4), (ch[1] << 4), (ch[0] << 4) + 15, (ch[1] << 4) + 15);
+    }
+
+    private void clearColumns(int[] ch) {
         load(ch[0], ch[1]);
         // The dimension's own generator makes the chunk's terrain afresh (no populate): the natural blocks to restore.
         Chunk fresh = world.theChunkProviderServer.currentChunkProvider.provideChunk(ch[0], ch[1]);
@@ -215,11 +221,17 @@ final class ComplexRebuild implements LocateGeneration.Run {
     }
 
     /**
-     * After the clear: dropped items, item frames and every creature under the natural surface of the box go; players
-     * there are moved up onto it.
+     * Dropped items, item frames and every creature under the natural surface of the box go; players there are moved up
+     * onto it. Run after each chunk's clear and once more after the last.
      */
     private void sweep() {
-        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x0, 0, z0, x1 + 1, 256, z1 + 1);
+        sweep(x0, z0, x1, z1);
+    }
+
+    /** {@link #sweep()} over the box columns from (ax, az) to (bx, bz), inclusive. */
+    private void sweep(int ax, int az, int bx, int bz) {
+        AxisAlignedBB box = AxisAlignedBB
+            .getBoundingBox(Math.max(ax, x0), 0, Math.max(az, z0), Math.min(bx, x1) + 1, 256, Math.min(bz, z1) + 1);
         for (Object o : new ArrayList<Object>(world.getEntitiesWithinAABB(Entity.class, box))) {
             Entity e = (Entity) o;
             int x = (int) Math.floor(e.posX), z = (int) Math.floor(e.posZ);

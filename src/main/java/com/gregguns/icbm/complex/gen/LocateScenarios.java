@@ -392,6 +392,11 @@ public final class LocateScenarios {
             world.spawnEntityInWorld(item);
             // A block in the first chunk of the box that lies just outside it: the clear works on box columns only.
             final int outX = ax - 1, outZ = az + ComplexWriter.SIZE / 2, outY = before.groundY() + 3;
+            // Its chunk and the ones around it first, so every populate that writes into that column has run.
+            for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) {
+                ((net.minecraft.world.WorldServer) world).theChunkProviderServer
+                    .loadChunk((outX >> 4) + dx, (outZ >> 4) + dz);
+            }
             world.setBlock(outX, outY, outZ, Blocks.glowstone, 0, 2);
             final net.minecraft.entity.item.EntityItem stray = item;
 
