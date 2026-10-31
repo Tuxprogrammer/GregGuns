@@ -55,6 +55,7 @@ final class SiloGuiShots {
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new ControlStates());
         registry.register(new SequenceScreen());
+        registry.register(new FrontShot());
     }
 
     private static EntityPlayerMP firstPlayer() {
@@ -92,6 +93,86 @@ final class SiloGuiShots {
         for (int i = 0; i < frames; i++) {
             String frame = label + "-" + (char) ('a' + i);
             plan.after(i == 0 ? 0 : BURST_GAP, () -> MissileShotsScenario.signal(p, "shot", frame));
+        }
+    }
+
+    /**
+     * The dev-built silo's front as the owner built it (D299), framed like the owner's 02:34 shot: from a corridor in
+     * front of it, through a five-wide, three-high opening in a dark wall, at standing eye height, with a missile in
+     * the shaft. Label {@code silo-front-built}.
+     */
+    private static final class FrontShot implements Scenario {
+
+        @Override
+        public String name() {
+            return "testing.icbm_silo_front";
+        }
+
+        @Override
+        public String description() {
+            return "Builds the owner's silo layout with a missile in it behind a dark corridor wall with a five-wide opening, and shoots its front from the corridor at eye height. Needs 1 client; not part of test all.";
+        }
+
+        @Override
+        public boolean includedInAll() {
+            return false;
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (SiloScenarios.gate() != null) {
+                return ScenarioResult.skip(name(), SiloScenarios.gate());
+            }
+            final EntityPlayerMP p = firstPlayer();
+            if (p == null) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            prepare(ctx, p);
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            out.note("build: " + SiloScenarios.build(ctx, ItemList.Hatch_Energy_LuV));
+            // The corridor: a floor level with the silo's floor ring, and a dark wall in the face's plane in front of
+            // it, open over the five-wide face's three glass rows, as in the owner's build.
+            int cy = SiloScenarios.CY;
+            for (int dx = -7; dx <= 7; dx++) {
+                for (int dz = -9; dz <= -1; dz++) {
+                    ctx.setBlock(dx, cy - 2, dz, net.minecraft.init.Blocks.stone, 0);
+                }
+                for (int dy = -1; dy <= 5; dy++) {
+                    boolean opening = Math.abs(dx) <= 2 && dy <= 1;
+                    if (!opening) ctx.setBlock(dx, cy + dy, -1, net.minecraft.init.Blocks.stonebrick, 3);
+                }
+            }
+            final int x = ctx.originX(), y = ctx.originY() + cy, z = ctx.originZ();
+            final MissileShotsScenario.Plan plan = new MissileShotsScenario.Plan();
+            final com.gregguns.icbm.missile.EntityMissile[] m = { null };
+            plan.after(5, () -> MissileShotsScenario.signal(p, "hud", "off"));
+            plan.after(SYNC_TICKS, () -> {
+                out.check(SiloScenarios.formed(ctx), "the owner's layout forms");
+                m[0] = SiloScenarios.stand(ctx, com.gregguns.icbm.missile.MissileTier.T3);
+                // Standing in the corridor four blocks out, eyes level with the controller, looking at it.
+                MissileShotsScenario.cam(p, x + 0.5, y + 0.62, z - 4.5, x + 0.5, y + 0.5, z + 0.5);
+            });
+            plan.after(60, () -> MissileShotsScenario.signal(p, "shot", "silo-front-built"));
+            plan.after(10, () -> MissileShotsScenario.cam(p, x - 2.5, y + 0.9, z - 5.5, x + 0.5, y + 0.3, z + 0.5));
+            plan.after(40, () -> MissileShotsScenario.signal(p, "shot", "silo-front-built-angle"));
+            return ScenarioResult.pending(name(), 1200, t -> {
+                plan.run(t);
+                if (!plan.idle()) {
+                    return null;
+                }
+                if (m[0] != null) {
+                    m[0].setDead();
+                }
+                MissileShotsScenario.signal(p, "hud", "on");
+                ctx.clearArea(14, SiloScenarios.CLEAR_HEIGHT);
+                return out.note("read the silo-front-*.png shots")
+                    .build();
+            });
         }
     }
 
