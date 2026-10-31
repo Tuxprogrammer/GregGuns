@@ -108,7 +108,11 @@ final class ShaftChunkScenario implements Scenario {
             }
             MTEMissileSilo silo = (MTEMissileSilo) base.getMetaTileEntity();
             // Power the whole time; fuel in the windows where the chunk is loaded and the silo is meant to work.
-            IGregTechTileEntity energy = tile(ctx, ox, -1, oz);
+            IGregTechTileEntity energy = tile(
+                ctx,
+                ox + DevStructureBuilder.SILO_ENERGY[0],
+                DevStructureBuilder.SILO_ENERGY[1],
+                oz);
             if (energy != null) {
                 energy.increaseStoredEnergyUnits(50_000_000L, true);
             }
@@ -130,7 +134,11 @@ final class ShaftChunkScenario implements Scenario {
                         return ticks > mark[0] + UNLOAD_WAIT ? stuck(world, shaftCx, shaftCz) : null;
                     }
                     if (!stocked[0]) {
-                        IGregTechTileEntity bus = tile(ctx, ox - 1, 0, oz);
+                        IGregTechTileEntity bus = tile(
+                            ctx,
+                            ox + DevStructureBuilder.SILO_BUS[0],
+                            DevStructureBuilder.SILO_BUS[1],
+                            oz);
                         bus.setInventorySlotContents(0, MissileBodies.body(MissileTier.T3));
                         bus.setInventorySlotContents(
                             1,
@@ -263,7 +271,7 @@ final class ShaftChunkScenario implements Scenario {
             + silo.checkProcessing()
                 .getDisplayString()
             + " energy="
-            + tile(ctx, ox, -1, oz).getStoredEU()
+            + tile(ctx, ox + DevStructureBuilder.SILO_ENERGY[0], DevStructureBuilder.SILO_ENERGY[1], oz).getStoredEU()
             + " stage="
             + silo.stage();
     }
@@ -316,7 +324,7 @@ final class ShaftChunkScenario implements Scenario {
     }
 
     private static int busItems(ScenarioContext ctx, int ox, int oz) {
-        IGregTechTileEntity bus = tile(ctx, ox - 1, 0, oz);
+        IGregTechTileEntity bus = tile(ctx, ox + DevStructureBuilder.SILO_BUS[0], DevStructureBuilder.SILO_BUS[1], oz);
         int n = 0;
         for (int i = 0; i < bus.getSizeInventory(); i++) {
             if (bus.getStackInSlot(i) != null) {
@@ -327,7 +335,11 @@ final class ShaftChunkScenario implements Scenario {
     }
 
     private static int hatchMb(ScenarioContext ctx, int ox, int oz) {
-        IGregTechTileEntity hatch = tile(ctx, ox + 1, -1, oz);
+        IGregTechTileEntity hatch = tile(
+            ctx,
+            ox + DevStructureBuilder.SILO_FUEL[0],
+            DevStructureBuilder.SILO_FUEL[1],
+            oz);
         if (hatch == null || !(hatch.getMetaTileEntity() instanceof MTEHatchInput)) {
             return 0;
         }
@@ -336,7 +348,11 @@ final class ShaftChunkScenario implements Scenario {
     }
 
     private static void fill(ScenarioContext ctx, int ox, int oz) {
-        IGregTechTileEntity hatch = tile(ctx, ox + 1, -1, oz);
+        IGregTechTileEntity hatch = tile(
+            ctx,
+            ox + DevStructureBuilder.SILO_FUEL[0],
+            DevStructureBuilder.SILO_FUEL[1],
+            oz);
         Fluid f = FluidRegistry.getFluid(FUEL);
         if (hatch != null && f != null
             && hatch.getMetaTileEntity() instanceof MTEHatchInput

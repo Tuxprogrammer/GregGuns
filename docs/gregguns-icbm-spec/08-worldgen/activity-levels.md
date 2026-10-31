@@ -1,13 +1,13 @@
 # Activity levels and the damage pass
 
 - **Baseline:** none (the ICBM baseline has no worldgen).
-- **Decisions:** [D36](../DECISIONS.md#d36-in-detail), [D128](../DECISIONS.md), [D17](../DECISIONS.md#d17-in-detail), D180 to D186, D229, D231
+- **Decisions:** [D36](../DECISIONS.md#d36-in-detail), [D128](../DECISIONS.md), [D17](../DECISIONS.md#d17-in-detail), D180 to D186, D229, D231, [D301](../DECISIONS.md)
 - **Pack mods:** none beyond the layout's (GregTech, Galacticraft)
 - **Roadmap:** [I6](../../ROADMAP-ICBM.md#i6--world-missile-silos-on-every-planet)
 
 ## What changes from the ICBM baseline
 
-Nothing exists in the baseline. D36 gives each complex an activity level, rolled once from the complex's seed: **abandoned** 50%, **partly abandoned** 35%, **operational** 15% (config). The layout ([silo-layout](silo-layout.md)) is the same at every level. The level only decides which marks become what: `ComplexContents.build(plan, level, ceiling, other)` turns the layout's marks into `Placement`s.
+Nothing exists in the baseline. D36 gives each complex an activity level, rolled once from the complex's seed when the complex is first placed and recorded with its placement, so a later weight change never splits a complex (D304): **abandoned** 30%, **partly abandoned** 40%, **operational** 30% (config). The layout ([silo-layout](silo-layout.md)) is the same at every level. The level only decides which marks become what: `ComplexContents.build(plan, level, ceiling, other)` turns the layout's marks into `Placement`s.
 
 ## How the pass stays inside the populate window
 
@@ -36,6 +36,18 @@ Depth band: 0 is the hub, then one band per 30 blocks of distance from it, up to
 
 **Lamps die by circuit, not one by one (D231).** A lamp's mark carries its section and its run (one line of the section's lamp grid, ceiling lamps and the floor light tiles under them together). An abandoned complex rolls once per run, so a few runs still burn and most are dead. A partly abandoned complex rolls once per section, so whole rooms and halls are dark or lit. An operational complex lights everything. The share lit stays the D36 rate. A dead lamp stays in place as the style's dark lamp, flush in the ceiling or floor.
 
+## The sign (D301)
+
+The hub names its level. Under the hub's `Silo Complex / Class X` sign hangs a second wall sign, one block lower in the same column, facing the same way on the same wall: **Activity Level:** over the level's code name.
+
+| Level | Code name | Lang key |
+|---|---|---|
+| Abandoned | **Alpha** (a gutted ruin) | `icbm.complex.activity.abandoned` |
+| Partly abandoned | **Bravo** (half-staffed) | `icbm.complex.activity.partly_abandoned` |
+| Operational | **Charlie** (fully staffed) | `icbm.complex.activity.operational` |
+
+The sign's text is `icbm.complex.sign.activity` (`Activity Level:|%s`). Two lines, because a sign line holds 15 characters and "Activity Level:" is 15. The key is the level's enum name, so a change of the level weights never changes a name. It is written only where the cell under the tier sign is open and the wall behind it is solid (`ComplexSigns.activitySignAt`); the hub's furniture keeps that cell clear.
+
 ## Damage by mark
 
 | Mark | Placement |
@@ -59,7 +71,7 @@ Depth band: 0 is the hub, then one band per 30 blocks of distance from it, up to
 
 ## Tests
 
-Unit: `ActivityLevelTest`, `ComplexContentsTest` (the holdout count of 1 or 2 per abandoned plan, working machines and chests against the other levels; lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.levels` (each level, plus Operational at UMV, generated onto a slab one window at a time and read back: spawner count (1 or 2 abandoned), working machines and chests (abandoned far below operational), each spawner's mobs and danger floor (its vanilla mob spawner NBT); the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
+Unit: `ActivityLevelTest`, `ComplexContentsTest` (the holdout count of 1 or 2 per abandoned plan, working machines and chests against the other levels; lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.levels` (each level, its tier and activity signs read back, plus Operational at UMV, generated onto a slab one window at a time and read back: spawner count (1 or 2 abandoned), working machines and chests (abandoned far below operational), each spawner's mobs and danger floor (its vanilla mob spawner NBT); the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
 
 ## Open questions
 

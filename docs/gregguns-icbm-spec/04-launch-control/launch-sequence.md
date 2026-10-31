@@ -21,9 +21,9 @@ From "fire" to the missile leaving the pad. Flight, fuel and the entity are in [
 
 1. A trigger arrives ([launch-control-block](launch-control-block.md#triggers)).
 2. The block takes a snapshot: target, pad found, EU, cooldown, then the pad's `MissileStatus` and range.
-3. `LaunchGate.check` returns the first problem in a fixed order: **no target, no pad, no power, cooling down, no missile, not armed, not fueled, too close, out of range**. Not READY ends here and the status is shown.
+3. `LaunchGate.check` returns the first problem in a fixed order: **no target, no pad, no power, cooling down, no missile, not armed, not fueled, too close, out of range**. Not READY ends here and the status is shown. A silo's own Launch Control checks the silo's EU, and too little reads `silo_no_power` ("Silo has too little EU") in the power slot of the order (D300).
 4. The block calls `PadMissiles.launch`. The API re-checks everything (including the in-flight cap, D11) and returns a `LaunchResult`.
-5. `OK` becomes FIRED: the block takes 300 EU and starts its cooldown. Any other result becomes the matching status and nothing is charged.
+5. `OK` becomes FIRED: the block takes 300 EU (a silo's own Launch Control from the silo's Energy Hatches, D300) and starts its cooldown. Any other result becomes the matching status and nothing is charged.
 
 The minimum range (20) and the tier's maximum come from the missile body tier; the distance is the horizontal circle from the pad's center to the center of the target block.
 

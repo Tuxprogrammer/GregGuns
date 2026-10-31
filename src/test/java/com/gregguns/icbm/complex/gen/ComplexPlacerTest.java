@@ -126,8 +126,13 @@ class ComplexPlacerTest {
         int windowsWithWrites;
     }
 
+    /** The decision {@link #run} writes with. */
+    private com.gregguns.worldgen.Decision decision = com.gregguns.worldgen.Decision.placed(GROUND);
+    /** The placer of the last {@link #run}. */
+    private ComplexPlacer lastPlacer;
+
     private Result run(StructurePlan plan, boolean reverse) {
-        ComplexPlacer placer = new ComplexPlacer(
+        ComplexPlacer placer = lastPlacer = new ComplexPlacer(
             resolver,
             MachineHook.NONE,
             (p, m, x, y, z, s) -> marks(m, x, y, z),
@@ -176,7 +181,7 @@ class ComplexPlacerTest {
                     return near ? seaFloorAt(x, z) : NONE;
                 }
             };
-            if (placer.write(plan, GROUND, w, sink, probe) > 0) r.windowsWithWrites++;
+            if (placer.write(plan, decision, w, sink, probe) > 0) r.windowsWithWrites++;
             r.outside += world.writesOutsideWindow()
                 .size();
             r.rejected += sink.rejectedWrites();
@@ -397,5 +402,25 @@ class ComplexPlacerTest {
         assertEquals(0, under, "nothing of the level is written under such ground");
         assertEquals(0, valley.outside);
         assertTrue(run(p, false).cells.size() > 20_000, "and the same plan writes normally on ordinary ground");
+    }
+
+    @Test
+    void aSunkDecisionWritesTheLevelDeeperAndItsLevelIsTheRecordedOne() {
+        StructurePlan plan = plan();
+        Result flat = run(plan, false);
+        decision = com.gregguns.worldgen.Decision.placed(GROUND, 2, 15);
+        Result sunk = run(plan, false);
+        assertEquals(minY(flat) - 15, minY(sunk), "the whole level lies 15 blocks deeper");
+        assertEquals(0, sunk.outside);
+        assertEquals(
+            com.gregguns.icbm.worldgen.ActivityLevel.OPERATIONAL,
+            lastPlacer.levelOf(plan),
+            "the level recorded with the decision");
+    }
+
+    private static int minY(Result r) {
+        int min = Integer.MAX_VALUE;
+        for (String k : r.cells.keySet()) min = Math.min(min, Integer.parseInt(k.split(",")[1]));
+        return min;
     }
 }

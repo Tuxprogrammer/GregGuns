@@ -18,7 +18,7 @@ public final class LaunchGate {
     /**
      * @param target      the stored target
      * @param padFound    whether a pad is within reach
-     * @param energyOk    whether the block holds a full shot of EU
+     * @param energyOk    whether the block (or its silo) holds a full shot of EU
      * @param coolingDown whether the block is in its cooldown
      * @param present     whether a missile entity stands on the pad
      * @param armed       whether it is armed
@@ -30,10 +30,34 @@ public final class LaunchGate {
      */
     public static ControlStatus check(LaunchTarget target, boolean padFound, boolean energyOk, boolean coolingDown,
         boolean present, boolean armed, boolean fueled, double distance, double minRange, double maxRange) {
+        return check(
+            target,
+            padFound,
+            energyOk,
+            false,
+            coolingDown,
+            present,
+            armed,
+            fueled,
+            distance,
+            minRange,
+            maxRange);
+    }
+
+    /**
+     * As {@link #check(LaunchTarget, boolean, boolean, boolean, boolean, boolean, boolean, double, double, double)}
+     * for a block that may be part of a silo.
+     *
+     * @param siloPowered whether the shot is paid from the bound silo's Energy Hatches (D300), so too little EU reads
+     *                    {@link ControlStatus#SILO_NO_POWER}
+     */
+    public static ControlStatus check(LaunchTarget target, boolean padFound, boolean energyOk, boolean siloPowered,
+        boolean coolingDown, boolean present, boolean armed, boolean fueled, double distance, double minRange,
+        double maxRange) {
         if (!target.isSet()) {
             return ControlStatus.NO_TARGET;
         }
-        ControlStatus site = checkSite(padFound, energyOk, coolingDown, present, armed, fueled);
+        ControlStatus site = checkSite(padFound, energyOk, siloPowered, coolingDown, present, armed, fueled);
         if (site != ControlStatus.READY) {
             return site;
         }
@@ -52,7 +76,7 @@ public final class LaunchGate {
      * below it does not.
      *
      * @param padFound    whether a pad is within reach
-     * @param energyOk    whether the block holds a full shot of EU
+     * @param energyOk    whether the block (or its silo) holds a full shot of EU
      * @param coolingDown whether the block is in its cooldown
      * @param present     whether a missile entity stands on the pad
      * @param armed       whether it is armed
@@ -61,11 +85,22 @@ public final class LaunchGate {
      */
     public static ControlStatus checkSite(boolean padFound, boolean energyOk, boolean coolingDown, boolean present,
         boolean armed, boolean fueled) {
+        return checkSite(padFound, energyOk, false, coolingDown, present, armed, fueled);
+    }
+
+    /**
+     * As {@link #checkSite(boolean, boolean, boolean, boolean, boolean, boolean)} for a block that may be part of a
+     * silo.
+     *
+     * @param siloPowered whether the shot is paid from the bound silo's Energy Hatches (D300)
+     */
+    public static ControlStatus checkSite(boolean padFound, boolean energyOk, boolean siloPowered, boolean coolingDown,
+        boolean present, boolean armed, boolean fueled) {
         if (!padFound) {
             return ControlStatus.NO_PAD;
         }
         if (!energyOk) {
-            return ControlStatus.NO_POWER;
+            return siloPowered ? ControlStatus.SILO_NO_POWER : ControlStatus.NO_POWER;
         }
         if (coolingDown) {
             return ControlStatus.COOLDOWN;

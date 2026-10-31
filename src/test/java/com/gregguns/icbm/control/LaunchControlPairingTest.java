@@ -211,8 +211,8 @@ class LaunchControlPairingTest {
     void theBuiltSilosLaunchControlStandsInAHatchPositionOfTheFrontFace() {
         String row = SiloShape.piece()[0][SiloShape.CONTROLLER_ROW - SiloShape.LAUNCH_CONTROL_RISE];
         char at = row.charAt(SiloShape.LAUNCH_CONTROL_COLUMN);
-        assertTrue("CGFW".indexOf(at) >= 0, "the position must take a hatch, it is '" + at + "'");
-        assertTrue(
-            SiloShape.LAUNCH_CONTROL_COLUMN != SiloShape.CONTROLLER_COLUMN || SiloShape.LAUNCH_CONTROL_RISE != 0);
+        assertEquals('H', at, "the Launch Control stands in a hatch column (D299)");
+        // Outside the 3x3 glass window around the controller.
+        assertTrue(Math.abs(SiloShape.LAUNCH_CONTROL_COLUMN - SiloShape.CONTROLLER_COLUMN) > 1);
     }
 }

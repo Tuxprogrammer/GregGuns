@@ -572,7 +572,8 @@ class ComplexLayoutTest {
                 for (int y = d.y1; y >= d.y0; y--) {
                     assertTrue(Cell.open(r.at(x, y, z)), "seed " + s + " walkway " + d + " open at y " + y);
                 }
-                assertTrue(15 - (d.y1 + 1 - d.y0) >= 12, "the walkway floor reads 12 or more");
+                // D299: the niche is four high (the "Silo N" sign hangs in its top row), so the lamp sits at y 5.
+                assertTrue(15 - (d.y1 + 1 - d.y0) >= 11, "the walkway floor reads 11 or more");
             }
         }
         assertTrue(walkways > 100, "the seeds hold silos: " + walkways);

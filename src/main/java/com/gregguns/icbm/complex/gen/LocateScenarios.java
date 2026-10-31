@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
@@ -18,6 +19,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.icbm.worldgen.ComplexText;
 import com.gregguns.worldgen.ComplexWriter;
 import com.gregguns.worldgen.Decision;
 import com.gregguns.worldgen.PlanKey;
@@ -37,6 +39,7 @@ public final class LocateScenarios {
 
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Locate());
+        registry.register(new Rebuild());
     }
 
     /** A sender that records what the command prints. */
@@ -44,9 +47,15 @@ public final class LocateScenarios {
 
         final World world;
         final List<IChatComponent> lines = new ArrayList<IChatComponent>();
+        private final int at;
 
         Capture(World world) {
+            this(world, FAR);
+        }
+
+        Capture(World world, int at) {
             this.world = world;
+            this.at = at;
         }
 
         @Override
@@ -71,7 +80,7 @@ public final class LocateScenarios {
 
         @Override
         public ChunkCoordinates getPlayerCoordinates() {
-            return new ChunkCoordinates(FAR, 64, FAR);
+            return new ChunkCoordinates(at, 64, at);
         }
 
         @Override
@@ -205,7 +214,18 @@ public final class LocateScenarios {
                 if (d == null) continue;
                 IChatComponent outcome = (IChatComponent) a[5];
                 if (d.isPlaced()) {
-                    out.check(key(outcome).equals("gregguns.locate.status.generated"), label + ": reported built");
+                    out.check(key(outcome).equals("gregguns.locate.status.complex"), label + ": reported built");
+                    // A built complex names its recorded level (D304) and, when sunk, how deep (D302).
+                    Object[] built = args(outcome);
+                    out.checkEquals(
+                        label + ": the row names the recorded level",
+                        "gregguns.locate.level." + ComplexPlacer.levelFor(
+                            d,
+                            p.get()
+                                .chestSeedBase())
+                            .name()
+                            .toLowerCase(java.util.Locale.ROOT),
+                        key((IChatComponent) built[0]));
                     int[] at = StructureLocator.arrival(p.get());
                     out.check(
                         at[0] >= p.get()
@@ -279,6 +299,7 @@ public final class LocateScenarios {
                 if (key(l).equals("gregguns.locate.progress")) {
                     String outcome = key((IChatComponent) a[5]);
                     boolean ok = outcome.equals("gregguns.locate.status.generated")
+                        || outcome.equals("gregguns.locate.status.complex")
                         || outcome.equals("gregguns.locate.status.skipped")
                         || outcome.equals("gregguns.locate.status.undecided");
                     out.check(ok, "a generated cell reports an outcome (" + outcome + ")");
@@ -287,6 +308,205 @@ public final class LocateScenarios {
             }
             out.note("kind 'any' around " + FAR + ": " + rows + " rows, " + decided + " cells generated");
             out.check(rows > 0, "'any' lists at least one site");
+        }
+    }
+
+    /** Far from {@link #FAR} and from every other scenario's chunks: the rebuild's own fresh area. */
+    private static final int REBUILD_AT = -2_000_000;
+
+    /**
+     * {@code /gregguns locate rebuild}: a built complex, with stray blocks and an item left in it, is cleared and
+     * written again from its ledger entry.
+     */
+    private static final class Rebuild implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.complex.rebuild";
+        }
+
+        @Override
+        public String description() {
+            return "/gregguns locate rebuild <cellX> <cellZ> on a built complex runs one chunk, then one window, per"
+                + " tick with progress lines; afterwards a stray block in the hall and one under the level are gone, a"
+                + " dropped item is gone, a block just outside the box is untouched, the ledger entry is the same,"
+                + " the hall's signs name its class and level, and a silo has its five-wide front; a cell with no"
+                + " complex is refused.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (!ModuleState.isActive(ModuleId.ICBM)) {
+                return ScenarioResult.skip(name(), com.gregguns.icbm.IcbmAvailability.offReason());
+            }
+            World world = MinecraftServer.getServer()
+                .worldServerForDimension(0);
+            ComplexWriter writer = StructureGenerator.complexWriter();
+            if (writer == null || !writer.enabledIn(world) || !(writer instanceof ComplexPlacer)) {
+                return ScenarioResult.skip(name(), "complexes are not enabled in the overworld");
+            }
+            ComplexPlacer placer = (ComplexPlacer) writer;
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            StructureState state = StructureState.forWorld(world);
+            Capture cap = new Capture(world, REBUILD_AT);
+            int chance = IcbmConfig.siloComplexChancePercent;
+            IcbmConfig.siloComplexChancePercent = 100;
+            try {
+                MinecraftServer.getServer()
+                    .getCommandManager()
+                    .executeCommand(cap, "gregguns locate complex 3 generate");
+                LocateGeneration.drain();
+            } finally {
+                IcbmConfig.siloComplexChancePercent = chance;
+            }
+            // The nearest built complex there: the one generate just built, or one an earlier run left.
+            StructurePlan built = null;
+            int c0 = StructureLocator.cellOf(REBUILD_AT);
+            long best = Long.MAX_VALUE;
+            for (int cx = c0 - 3; cx <= c0 + 3; cx++) {
+                for (int cz = c0 - 3; cz <= c0 + 3; cz++) {
+                    java.util.Optional<StructurePlan> p = StructurePopulator
+                        .complexPlanAt(world.getSeed(), world.provider.dimensionId, cx, cz, 100);
+                    Decision d = p.isPresent() ? state.get(PlanKey.of(p.get())) : null;
+                    long dist = (long) (cx - c0) * (cx - c0) + (long) (cz - c0) * (cz - c0);
+                    if (d != null && d.isPlaced() && dist < best) {
+                        best = dist;
+                        built = p.get();
+                    }
+                }
+            }
+            out.check(built != null, "a complex was built near " + REBUILD_AT + " to rebuild");
+            if (built == null) return out.build();
+            final StructurePlan plan = built;
+            final Decision before = state.get(PlanKey.of(plan));
+            final int floor = ComplexPlacer.floorY(world, before.groundY(), before.sink());
+            final com.gregguns.icbm.complex.ComplexRaster raster = placer.rasterOf(plan);
+            final int ax = plan.anchorX(), az = plan.anchorZ();
+            // Stray things the rebuild must remove: a block in an open hall cell, one under the level, a dropped item.
+            com.gregguns.icbm.complex.Box hall = raster.plan()
+                .hall()
+                .bounds();
+            int[] open = null;
+            for (int x = hall.minX + 1; x < hall.maxX && open == null; x++) {
+                for (int z = hall.minZ + 1; z < hall.maxZ && open == null; z++) {
+                    if (raster.at(x, 1, z) == com.gregguns.icbm.complex.Cell.AIR) open = new int[] { x, z };
+                }
+            }
+            out.check(open != null, "the hall has an open cell");
+            if (open == null) return out.build();
+            final int hx = ax + open[0], hz = az + open[1];
+            // The hall's chunk and its neighbors, loaded and populated: on a fresh server the generate run has queued
+            // them for unloading, and a write to a chunk that is not loaded goes nowhere.
+            for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) {
+                ((net.minecraft.world.WorldServer) world).theChunkProviderServer
+                    .loadChunk((hx >> 4) + dx, (hz >> 4) + dz);
+            }
+            world.setBlock(hx, floor + 1, hz, Blocks.glowstone, 0, 2);
+            out.check(world.getBlock(hx, floor + 1, hz) == Blocks.glowstone, "a stray block stands in the hall");
+            final int below = ComplexPlacer.MIN_FLOOR + 1;
+            out.check(below < floor, "the level lies above the clear's floor");
+            world.setBlock(hx, below, hz, Blocks.glowstone, 0, 2);
+            out.check(world.getBlock(hx, below, hz) == Blocks.glowstone, "a stray block lies under the level");
+            net.minecraft.entity.item.EntityItem item = new net.minecraft.entity.item.EntityItem(
+                world,
+                hx + 0.5,
+                floor + 2.5,
+                hz + 0.5,
+                new net.minecraft.item.ItemStack(Blocks.dirt));
+            item.delayBeforeCanPickup = 32767;
+            item.lifespan = Integer.MAX_VALUE;
+            out.check(world.spawnEntityInWorld(item), "a dropped item lies in the hall");
+            // A block in the first chunk of the box that lies just outside it: the clear works on box columns only.
+            final int outX = ax - 1, outZ = az + ComplexWriter.SIZE / 2, outY = before.groundY() + 3;
+            // Its chunk and the ones around it first, so every populate that writes into that column has run.
+            for (int dx = -1; dx <= 1; dx++) for (int dz = -1; dz <= 1; dz++) {
+                ((net.minecraft.world.WorldServer) world).theChunkProviderServer
+                    .loadChunk((outX >> 4) + dx, (outZ >> 4) + dz);
+            }
+            world.setBlock(outX, outY, outZ, Blocks.glowstone, 0, 2);
+            out.check(world.getBlock(outX, outY, outZ) == Blocks.glowstone, "a block stands just outside the box");
+
+            Capture none = new Capture(world, REBUILD_AT);
+            MinecraftServer.getServer()
+                .getCommandManager()
+                .executeCommand(none, "gregguns locate rebuild 999999 999999");
+            out.check(
+                !none.lines.isEmpty() && key(none.lines.get(0)).equals("gregguns.locate.rebuild.none"),
+                "a cell with no built complex is refused");
+            out.check(!LocateGeneration.busy(), "and nothing starts");
+
+            final Capture run = new Capture(world, REBUILD_AT);
+            MinecraftServer.getServer()
+                .getCommandManager()
+                .executeCommand(run, "gregguns locate rebuild " + plan.cellX() + " " + plan.cellZ());
+            out.check(LocateGeneration.busy(), "the rebuild starts without finishing in the same tick");
+            return ScenarioResult.pending(name(), 6000, ticks -> {
+                if (LocateGeneration.busy()) return null;
+                IChatComponent start = null, cleared = null, done = null;
+                int progress = 0;
+                for (IChatComponent l : run.lines) {
+                    String k = key(l);
+                    if (k.equals("gregguns.locate.rebuild.start")) start = l;
+                    if (k.equals("gregguns.locate.rebuild.cleared")) cleared = l;
+                    if (k.equals("gregguns.locate.rebuild.done")) done = l;
+                    if (k.equals("gregguns.locate.rebuild.clearing") || k.equals("gregguns.locate.rebuild.writing"))
+                        progress++;
+                }
+                out.check(start != null && cleared != null && done != null, "start, cleared and done lines");
+                out.check(progress > 0, "progress lines while it runs: " + progress);
+                if (done != null) {
+                    out.checkEquals("every window was written", args(done)[3], args(done)[2]);
+                }
+                out.checkEquals("the ledger entry is the same", before, state.get(PlanKey.of(plan)));
+                out.check(world.isAirBlock(hx, floor + 1, hz), "the stray block in the hall is gone");
+                out.check(world.getBlock(hx, below, hz) != Blocks.glowstone, "the block under the level is gone");
+                // The hall's chunk may have been saved and loaded again since the item was dropped (a new entity
+                // object), so look for any dropped item there, with the chunk loaded.
+                ((net.minecraft.world.WorldServer) world).theChunkProviderServer.loadChunk(hx >> 4, hz >> 4);
+                List<?> items = world.getEntitiesWithinAABB(
+                    net.minecraft.entity.item.EntityItem.class,
+                    net.minecraft.util.AxisAlignedBB.getBoundingBox(hx - 3, 0, hz - 3, hx + 4, 256, hz + 4));
+                int left = 0;
+                for (Object o : items) if (!((net.minecraft.entity.Entity) o).isDead) left++;
+                out.checkEquals("dropped items left at the hall spot, up to the sky", 0, left);
+                out.check(
+                    world.getBlock(outX, outY, outZ) == Blocks.glowstone,
+                    "the block just outside the box is untouched");
+                world.setBlockToAir(outX, outY, outZ);
+                // The hall's signs, written by the running code.
+                com.gregguns.icbm.complex.Mark hallSign = ComplexSigns.hallSign(raster.plan());
+                int[] hs = hallSign == null ? null : ComplexSigns.resolve(raster, hallSign);
+                out.check(hs != null, "the hall has its sign");
+                if (hs != null) {
+                    net.minecraft.tileentity.TileEntity t = world
+                        .getTileEntity(ax + hs[0], floor + hs[1] - 1, az + hs[2]);
+                    String want = ComplexText.get(ComplexSigns.activityNameKey(placer.levelOf(plan)));
+                    out.check(
+                        t instanceof net.minecraft.tileentity.TileEntitySign
+                            && "Activity Level:".equals(((net.minecraft.tileentity.TileEntitySign) t).signText[0])
+                            && want.equals(((net.minecraft.tileentity.TileEntitySign) t).signText[1]),
+                        "the activity sign under the hall's sign reads " + want);
+                }
+                // A silo's five-wide front: its Launch Control tops the right hatch column, outside the window.
+                com.gregguns.icbm.complex.SiloSlot s = raster.plan()
+                    .silos()
+                    .get(0);
+                int col = com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_COLUMN;
+                net.minecraft.tileentity.TileEntity lc = world
+                    .getTileEntity(ax + s.x(col, 0), floor + 3, az + s.z(col, 0));
+                out.check(
+                    lc instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                        && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) lc)
+                            .getMetaTileEntity() instanceof com.gregguns.icbm.control.MTELaunchControl,
+                    "silo 1 has its Launch Control on top of the right hatch column");
+                int dx = s.frontX() - s.controllerX(), dz = s.frontZ() - s.controllerZ();
+                for (int c = 0; c <= 4; c++) {
+                    out.check(
+                        world.isAirBlock(ax + s.x(c, 0) + dx, floor + 1, az + s.z(c, 0) + dz),
+                        "silo 1's walkway is open in front of column " + c);
+                }
+                return out.build();
+            });
         }
     }
 }

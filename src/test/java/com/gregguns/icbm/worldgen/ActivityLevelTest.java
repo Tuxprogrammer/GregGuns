@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 class ActivityLevelTest {
 
     @Test
-    void defaultWeightsGiveAboutFiftyThirtyFiveFifteen() {
+    void defaultWeightsGiveAboutThirtyFortyThirty() {
         int[] n = new int[3];
-        for (long s = 0; s < 40000; s++) {
+        for (long s = 0; s < 100000; s++) {
             n[ActivityLevel.roll(s, ActivityLevel.DEFAULT_WEIGHTS)
                 .ordinal()]++;
         }
-        assertEquals(0.50, n[0] / 40000.0, 0.02);
-        assertEquals(0.35, n[1] / 40000.0, 0.02);
-        assertEquals(0.15, n[2] / 40000.0, 0.02);
+        assertEquals(0.30, n[0] / 100000.0, 0.01);
+        assertEquals(0.40, n[1] / 100000.0, 0.01);
+        assertEquals(0.30, n[2] / 100000.0, 0.01);
     }
 
     @Test

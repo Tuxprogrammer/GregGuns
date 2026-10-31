@@ -255,26 +255,46 @@ public final class StructurePopulator {
 
     /** True when an ordinary structure's box meets a complex that exists (or may be rolled) in its dimension. */
     public static boolean meetsComplex(StructurePlan plan, long worldSeed, int chancePercent, StructureState state) {
+        // The low side reaches one block further, as this check always has (the box's far edge counted as SIZE + 1).
+        return !complexBoxesNear(
+            worldSeed,
+            plan.dimension(),
+            plan.anchorX() - COMPLEX_MARGIN - 1,
+            plan.anchorZ() - COMPLEX_MARGIN - 1,
+            plan.maxX() + COMPLEX_MARGIN,
+            plan.maxZ() + COMPLEX_MARGIN,
+            chancePercent,
+            state).isEmpty();
+    }
+
+    /**
+     * The complex boxes that exist, or may still be rolled, and meet a block area: a plan the ledger placed counts
+     * whatever the chance now says, one it rejected never counts, and an undecided one counts when its chance roll
+     * passes. Pure apart from the ledger read; loads nothing. Used to keep ordinary structures and Roguelike
+     * Dungeons out of complexes (D303).
+     *
+     * @param chancePercent the complex chance in force (0: ledger-placed plans only)
+     * @param state         the dimension's ledger, or null for the roll alone
+     * @return {@code {minX, minZ, maxX, maxZ}} per box, inclusive; empty when none
+     */
+    public static List<int[]> complexBoxesNear(long worldSeed, int dimension, int minX, int minZ, int maxX, int maxZ,
+        int chancePercent, StructureState state) {
+        List<int[]> out = new java.util.ArrayList<int[]>();
         int cell = COMPLEX_SPACING_CHUNKS * 16;
-        int x0 = Math.floorDiv(plan.anchorX() - ComplexWriter.SIZE - COMPLEX_MARGIN, cell);
-        int x1 = Math.floorDiv(plan.maxX() + COMPLEX_MARGIN, cell);
-        int z0 = Math.floorDiv(plan.anchorZ() - ComplexWriter.SIZE - COMPLEX_MARGIN, cell);
-        int z1 = Math.floorDiv(plan.maxZ() + COMPLEX_MARGIN, cell);
+        int x0 = Math.floorDiv(minX - ComplexWriter.SIZE, cell), x1 = Math.floorDiv(maxX, cell);
+        int z0 = Math.floorDiv(minZ - ComplexWriter.SIZE, cell), z1 = Math.floorDiv(maxZ, cell);
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 java.util.Optional<StructurePlan> c = COMPLEX_GRID
-                    .planAt(worldSeed ^ COMPLEX_SALT, plan.dimension(), SizeClass.BIG, x, z);
+                    .planAt(worldSeed ^ COMPLEX_SALT, dimension, SizeClass.BIG, x, z);
                 if (!c.isPresent() || !complexWanted(c.get(), chancePercent, state)) continue;
                 StructurePlan k = c.get();
-                if (plan.anchorX() <= k.anchorX() + ComplexWriter.SIZE + COMPLEX_MARGIN
-                    && plan.maxX() >= k.anchorX() - COMPLEX_MARGIN
-                    && plan.anchorZ() <= k.anchorZ() + ComplexWriter.SIZE + COMPLEX_MARGIN
-                    && plan.maxZ() >= k.anchorZ() - COMPLEX_MARGIN) {
-                    return true;
-                }
+                int[] box = { k.anchorX(), k.anchorZ(), k.anchorX() + ComplexWriter.SIZE - 1,
+                    k.anchorZ() + ComplexWriter.SIZE - 1 };
+                if (minX <= box[2] && maxX >= box[0] && minZ <= box[3] && maxZ >= box[1]) out.add(box);
             }
         }
-        return false;
+        return out;
     }
 
     /**
@@ -283,6 +303,24 @@ public final class StructurePopulator {
      */
     public int populate(long worldSeed, int dimension, PopulateWindow window, WindowedSink sink, ColumnReader reader,
         BiomeSource biomes, StructureState state, Marks marks, ComplexWriter complex, boolean general) {
+        return populate(
+            worldSeed,
+            dimension,
+            window,
+            sink,
+            reader,
+            biomes,
+            state,
+            marks,
+            complex,
+            general,
+            StructureStarts.NONE);
+    }
+
+    /** As above, with where the world's villages and temples will stand (D302): a complex under one sinks. */
+    public int populate(long worldSeed, int dimension, PopulateWindow window, WindowedSink sink, ColumnReader reader,
+        BiomeSource biomes, StructureState state, Marks marks, ComplexWriter complex, boolean general,
+        StructureStarts starts) {
         int n = 0;
         if (general) {
             List<StructurePlan> ordinary = grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ());
@@ -304,14 +342,27 @@ public final class StructurePopulator {
                 window.chunkZ(),
                 complex.chancePercent(),
                 state)) {
-                n += populateComplex(plan, complex, window, sink, reader, biomes, state);
+                n += populateComplex(plan, complex, window, sink, reader, biomes, state, starts);
             }
         }
         return n;
     }
 
+    /** As below with no village or temple anywhere (scenarios that place a complex at a prepared area). */
     public int populateComplex(StructurePlan plan, ComplexWriter writer, PopulateWindow window, WindowedSink sink,
         ColumnReader reader, BiomeSource biomes, StructureState state) {
+        return populateComplex(plan, writer, window, sink, reader, biomes, state, StructureStarts.NONE);
+    }
+
+    /**
+     * The complex slice of one window. The first window over the box decides, once: biome, terrain, ground high
+     * enough; then, from the structure start rule alone (so the same from any window), whether a village or temple
+     * will stand over the box. Under one the complex sinks 10 to 20 blocks deeper ({@link ComplexWriter#sinkFor}),
+     * and is skipped only when it cannot sink that far above the bottom of the world (D302). The activity level is
+     * rolled then too and recorded with the decision (D304).
+     */
+    public int populateComplex(StructurePlan plan, ComplexWriter writer, PopulateWindow window, WindowedSink sink,
+        ColumnReader reader, BiomeSource biomes, StructureState state, StructureStarts starts) {
         String key = PlanKey.of(plan);
         PlacedFootprint fp = new PlacedFootprint(
             plan.anchorX(),
@@ -323,17 +374,36 @@ public final class StructurePopulator {
         Decision d = state.decideOnce(key, () -> {
             Set<Type> types = biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2);
             Decision r;
+            String detail = "";
             if (!writer.biomeOk(plan.dimension(), types)) {
                 r = Decision.rejected("biome");
             } else {
-                r = decide(ComplexWriter.ABOVE, null, false, fp, window, reader, probe, biomes);
+                // No village block scan: the start rule below sees every village, built yet or not.
+                r = decide(ComplexWriter.ABOVE, null, false, false, fp, window, reader, probe, biomes);
                 if (r.isPlaced() && r.groundY() < writer.minGroundY()) r = Decision.rejected("low");
             }
-            if (!r.isPlaced()) writer.skipped(plan, r.reason());
+            if (r.isPlaced()) {
+                StructureStarts.Blocker b = starts.blocking(
+                    fp.minX() - COMPLEX_MARGIN,
+                    fp.minZ() - COMPLEX_MARGIN,
+                    fp.maxX() + COMPLEX_MARGIN,
+                    fp.maxZ() + COMPLEX_MARGIN);
+                int sinkBy = 0;
+                if (b != null) {
+                    sinkBy = writer.sinkFor(plan, r.groundY());
+                    detail = b.toString();
+                    if (sinkBy < 0) r = Decision.rejected(b.reason);
+                }
+                if (r.isPlaced()) {
+                    r = Decision.placed(r.groundY(), writer.decisionVariant(plan), sinkBy);
+                    if (sinkBy > 0) writer.sunk(plan, sinkBy, detail);
+                }
+            }
+            if (!r.isPlaced()) writer.skipped(plan, r.reason(), detail);
             return r;
         });
         if (!d.isPlaced()) return 0;
-        return writer.write(plan, d.groundY(), window, sink, probe) > 0 ? 1 : 0;
+        return writer.write(plan, d, window, sink, probe) > 0 ? 1 : 0;
     }
 
     /**
@@ -478,6 +548,14 @@ public final class StructurePopulator {
 
     private Decision decide(int height, StructureId id, boolean water, PlacedFootprint fp, PopulateWindow window,
         ColumnReader reader, HeightProbe probe, BiomeSource biomes) {
+        return decide(height, id, water, true, fp, window, reader, probe, biomes);
+    }
+
+    /**
+     * @param villageScan whether village blocks already in the window reject the plan (every structure but complexes)
+     */
+    private Decision decide(int height, StructureId id, boolean water, boolean villageScan, PlacedFootprint fp,
+        PopulateWindow window, ColumnReader reader, HeightProbe probe, BiomeSource biomes) {
         Set<Type> types = biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2);
         Set<Type> blacklist = id == null ? Collections.<Type>emptySet() : rules.biomeBlacklist(id);
         boolean biomeOk;
@@ -504,7 +582,7 @@ public final class StructurePopulator {
                 r.reason.name()
                     .toLowerCase(Locale.ROOT));
         }
-        if (!water && VillageScan.containsVillageBlocks(window, reader, fp, r.y, height)) {
+        if (villageScan && !water && VillageScan.containsVillageBlocks(window, reader, fp, r.y, height)) {
             return Decision.rejected("village");
         }
         return Decision.placed(r.y);

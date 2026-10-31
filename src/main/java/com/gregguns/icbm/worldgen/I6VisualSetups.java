@@ -493,7 +493,7 @@ public final class I6VisualSetups {
 
         @Override
         public String description() {
-            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, hatchradar, breakblock, shellcheck, planet, dim). Not part of test all.";
+            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, silocam, hatchradar, breakblock, shellcheck, planet, dim). Not part of test all.";
         }
 
         @Override
@@ -576,6 +576,13 @@ public final class I6VisualSetups {
                     break;
                 case "placepart":
                     placePart(Integer.parseInt(t[1]));
+                    break;
+                case "silocam":
+                    siloCam(
+                        player(t[1]),
+                        Integer.parseInt(t[2]),
+                        Double.parseDouble(t[3]),
+                        t.length > 4 ? Double.parseDouble(t[4]) : 0);
                     break;
                 case "hatchradar":
                     hatchRadar(Integer.parseInt(t[1]));
@@ -742,6 +749,24 @@ public final class I6VisualSetups {
         GregGuns.LOG.info("I6C part silo={} missing={}: NO chest of this complex holds it", silo, s.missing());
     }
 
+    /**
+     * The camera in the gallery in front of a silo's face, {@code back} blocks out from the face, at standing eye
+     * height, looking at the controller (the owner's view of a silo front, D299); {@code side} moves it along the face
+     * to the viewer's right.
+     */
+    private static void siloCam(EntityPlayerMP p, int silo, double back, double side) {
+        SiloSlot s = lastCp.silos()
+            .get(silo);
+        int cx = lastPlan.anchorX() + s.controllerX(), cz = lastPlan.anchorZ() + s.controllerZ();
+        int fx = s.frontX() - s.controllerX(), fz = s.frontZ() - s.controllerZ();
+        // The viewer looks along (-fx, -fz); their right is (fz, -fx) (looking north, the right is east).
+        double rx = fz, rz = -fx;
+        double ex = cx + 0.5 + fx * back + rx * side, ez = cz + 0.5 + fz * back + rz * side;
+        com.gregguns.icbm.missile.MissileShotsScenario
+            .cam(p, ex, lastFloor + 2.62, ez, cx + 0.5, lastFloor + 2.5, cz + 0.5);
+        GregGuns.LOG.info("I6C silocam silo={} eye={},{} facing={} missing={}", silo, ex, ez, s.facing(), s.missing());
+    }
+
     /** Places the silo's missing part the way the scenarios do and checks the structure. */
     private static void placePart(int silo) {
         SiloSlot s = lastCp.silos()
@@ -749,7 +774,7 @@ public final class I6VisualSetups {
         ItemStack part = partFor(s);
         int cx = lastPlan.anchorX() + s.controllerX(), cz = lastPlan.anchorZ() + s.controllerZ();
         boolean noController = s.missing() == MissingPart.CONTROLLER;
-        // A missing Energy Hatch goes where the complex leaves its gap: the window's right column (D290).
+        // A missing Energy Hatch goes where the complex leaves its concrete: the foot of the right hatch column (D299).
         int[] at = noController ? new int[] { s.controllerX(), 2, s.controllerZ() }
             : s.hatchCell(com.gregguns.icbm.complex.Cell.HATCH_ENERGY);
         GtMachineHook.placeMte(

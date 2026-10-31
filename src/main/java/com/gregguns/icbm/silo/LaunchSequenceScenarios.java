@@ -102,7 +102,6 @@ public final class LaunchSequenceScenarios {
             c = (MTELaunchControl) cb.getMetaTileEntity();
             m = SiloScenarios.stand(ctx, MissileTier.T1);
             m.fill(m.capacityMb(), true);
-            cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 20L, true);
             c.setXText(Integer.toString(x()));
             c.setZText(Integer.toString(z() + TARGET));
             player = new FakePlayer(

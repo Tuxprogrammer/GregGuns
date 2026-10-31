@@ -69,4 +69,17 @@ class LocateArgsTest {
     private static String thrown(String... words) {
         return assertThrows(IllegalArgumentException.class, () -> LocateArgs.parse(words)).getMessage();
     }
+
+    @Test
+    void rebuildTakesACell() {
+        LocateArgs a = LocateArgs.parse(new String[] { "rebuild", "12", "-3" });
+        assertEquals(LocateArgs.Mode.REBUILD, a.mode);
+        assertEquals(12, a.cellX);
+        assertEquals(-3, a.cellZ);
+        assertEquals("silo_complex", a.kind);
+        assertEquals("gregguns.locate.rebuild.usage", thrown("rebuild"));
+        assertEquals("gregguns.locate.rebuild.usage", thrown("rebuild", "1"));
+        assertEquals("gregguns.locate.rebuild.usage", thrown("rebuild", "1", "x"));
+        assertEquals("gregguns.locate.rebuild.usage", thrown("rebuild", "1", "2", "3"));
+    }
 }

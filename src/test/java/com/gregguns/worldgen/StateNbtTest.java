@@ -214,4 +214,55 @@ class StateNbtTest {
             b.decideOnce("SMALL:1:1", () -> Decision.placed(1))
                 .groundY());
     }
+
+    @Test
+    void variantAndSinkRoundTripAndOlderEntriesReadAsNone() {
+        PlanLedger in = new PlanLedger();
+        in.decideOnce("silo_complex:BIG:1:2", () -> Decision.placed(70, 2, 15));
+        in.addFlag("silo_complex:BIG:1:2", new FlagPos(1, 2, 3));
+        in.decideOnce("plain", () -> Decision.placed(64));
+        NBTTagCompound tag = new NBTTagCompound();
+        StateNbt.write(in, tag);
+        PlanLedger out = StateNbt.read(tag);
+        Decision d = out.get("silo_complex:BIG:1:2");
+        assertEquals(2, d.variant());
+        assertEquals(15, d.sink());
+        assertEquals(
+            1,
+            d.flags()
+                .size(),
+            "a flag keeps the variant and sink");
+        assertEquals(in.all(), out.all());
+        // An entry written before D302/D304 has neither tag.
+        NBTTagCompound plain = entry(in, 1);
+        assertFalse(plain.hasKey(StateNbt.VARIANT), "unrecorded variants are not written");
+        assertFalse(plain.hasKey(StateNbt.SINK));
+        assertEquals(
+            Decision.NO_VARIANT,
+            out.get("plain")
+                .variant());
+        assertEquals(
+            0,
+            out.get("plain")
+                .sink());
+    }
+
+    @Test
+    void rejectionsCarryNoVariantOrSink() {
+        Decision r = Decision.rejected("village");
+        assertEquals(Decision.NO_VARIANT, r.variant());
+        assertEquals(0, r.sink());
+        assertEquals(
+            Decision.NO_VARIANT,
+            Decision.placed(60, -5, -3)
+                .variant());
+        assertEquals(
+            0,
+            Decision.placed(60, -5, -3)
+                .sink());
+        assertFalse(
+            Decision.placed(60, 1, 0)
+                .equals(Decision.placed(60, 2, 0)),
+            "the variant is part of the decision");
+    }
 }

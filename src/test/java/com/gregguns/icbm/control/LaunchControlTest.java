@@ -85,6 +85,29 @@ class LaunchControlTest {
         assertEquals(ControlStatus.READY, check(t, true, true, false, true, true, true, 1000.0));
     }
 
+    /** D300: a silo's own Launch Control short of EU says the silo is, after the same pad check. */
+    @Test
+    void aSiloPoweredBlockShortOfEuBlamesTheSilo() {
+        LaunchTarget t = LaunchTarget.of(100, 100);
+        assertEquals(
+            ControlStatus.SILO_NO_POWER,
+            LaunchGate.check(t, true, false, true, false, true, true, true, 100, 20, 1000));
+        assertEquals(
+            ControlStatus.NO_POWER,
+            LaunchGate.check(t, true, false, false, false, true, true, true, 100, 20, 1000));
+        assertEquals(ControlStatus.SILO_NO_POWER, LaunchGate.checkSite(true, false, true, false, true, true, true));
+        assertEquals(ControlStatus.NO_POWER, LaunchGate.checkSite(true, false, false, false, true, true, true));
+        // The pad and the target still come first, and enough EU is enough wherever it comes from.
+        assertEquals(ControlStatus.NO_PAD, LaunchGate.checkSite(false, false, true, false, true, true, true));
+        assertEquals(
+            ControlStatus.NO_TARGET,
+            LaunchGate.check(LaunchTarget.NONE, true, false, true, false, true, true, true, 100, 20, 1000));
+        assertEquals(
+            ControlStatus.READY,
+            LaunchGate.check(t, true, true, true, false, true, true, true, 100, 20, 1000));
+        assertEquals(ControlStatus.READY, LaunchGate.checkSite(true, true, true, false, true, true, true));
+    }
+
     @Test
     void theSiteCheckIsTheGateWithoutTheTarget() {
         LaunchTarget t = LaunchTarget.of(100, 100);

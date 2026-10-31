@@ -43,7 +43,8 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - A Launch Control between two silos no longer reports "No missile" because it picked the empty one. A Missile Silo now takes its Launch Control as part of its structure: build it in place of any wall, glass or floor-ring block (one per silo). That Launch Control fires its own silo and no other, and says so when the silo isn't formed. Silos built with a Launch Control merely nearby need it moved into the structure.
 - A Launch Control that isn't part of a silo pairs with a Galacticraft pad only when it touches one of the pad's edges, level with it, the way Galacticraft's own launch controller does. Otherwise it reads "No pad adjacent". Next to two pads it picks the one with a ready missile, and always the same one when both are ready.
 - The Launch Control screen names what it is bound to: the silo's sign ("Silo 2") or the silo or pad and its coordinates.
-- Every silo in a silo complex comes with its own Launch Control, in the top row of its window.
+- Every silo in a silo complex comes with its own Launch Control, on top of the right-hand hatch column beside its window.
+- A silo's own Launch Control runs on the silo's power: it pays its 300 EU per shot from the silo's Energy Hatch, so it needs no cable. Its screen shows the silo's EU, and "Silo has too little EU" when the hatch is short.
 
 ## Changed: abandoned silo complexes
 
@@ -71,7 +72,8 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 ## Silo signs
 
-- Every silo in a complex now has a sign reading "Silo 1", "Silo 2" and so on (north to south, then west to east), hanging on the silo wall directly above the controller, centered on it and facing the gallery. It sits above rather than on the controller so the controller stays clickable. A silo with its controller missing gets the same sign.
+- Every silo in a complex now has a sign reading "Silo 1", "Silo 2" and so on (north to south, then west to east), hanging on the silo's concrete over its glass window, centered on the controller and facing the gallery. A silo with its controller missing gets the same sign. The Launch Control's screen reads the silo's name from a sign in that spot, on a silo you build too.
+- The hub's "Silo Complex / Class" sign now has a second sign under it naming the complex's activity level: Alpha (abandoned), Bravo (partly abandoned) or Charlie (operational).
 
 ## Changed: silo complex armories
 
@@ -85,10 +87,15 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - Silo complex lights are always light-emitting blocks. A lit lamp is Chisel light stone or glowstone and is checked to give light when the palette resolves it, and a dead lamp is never a Chisel Technical vent. The vents are a sparse accent in the ceilings of plant rooms, halls, bunkers and granite halls, never a light. The role audit now reports a lit lamp that gives no light.
 
-## Silo hatches moved to the outer columns
+## Changed: the Missile Silo's front is five wide
 
-- A generated silo's four hatches now stand in the two outer columns of the controller's face, two high, and the rest of the glass window is clear glass, so the missile shows through the middle. From the gallery: the Input Hatch over the Maintenance Hatch on the left, the Energy Hatch over the Input Bus on the right.
-- A Missile Silo you build accepts the same layout: the cells either side of the controller in the three front glass rings take clear glass, a hatch or the wall's concrete.
+- The silo's front, in its three glass rings, is now five wide: a clear 3 by 3 glass window around the controller, with a hatch column on each side, flush with the glass. The two hatch columns are part of the structure and must hold concrete, a hatch or the Launch Control; a silo built with the corners of its front left empty no longer forms until they are filled. Concrete inside the window no longer counts.
+- Generated silos use this layout. From the gallery: on the right, the Input Bus over the Energy Hatch with the Launch Control on top; on the left, the Input Hatch over the Maintenance Hatch with concrete on top. A silo missing its Energy Hatch has a concrete block at the foot of the right-hand column.
+- The walkway in front of each silo is now five wide and four high, so the whole face shows from the gallery.
+
+## New: rebuild a silo complex
+
+- Ops get `/gregguns locate rebuild <cellX> <cellZ>`: it clears a built silo complex's box (from just above the bedrock up to the surface, its surface buildings included) and generates it again with the current rooms, at the activity level and depth it was first given. It works one chunk per tick and reports its progress. The rock and caves under the box come back as the terrain generator makes them; ores and other things chunk population adds there do not.
 
 ## Fixed
 
@@ -144,3 +151,10 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - The Launch Control's target slot takes a Radar Gun: drop one that holds a target into the slot and press Load target (or right-click the block with it). The gun stays in the slot. An empty slot shows a faint Radar Gun, the screen reads "No target: use a Radar Gun" with no target set, and the tooltips, the Launch Control and Handheld Tools quests and the guide sheets lead with the gun.
 - Data sticks still work in the slot, quietly: nothing in the Launch Control advertises them any more.
 - Antimatter (UV) and Red Matter (UHV) pay their own tier: new **Ordnance IV** and **Ordnance V** loot bags and choices of the Tier 4 and Tier 5 warhead parts (naquadria and neutronium plates, Field Generators, Quantum Eyes, UHV Emitters, Inert warheads). The ZPM chapter and the Nuclear Warhead and Fallout quests offer ZPM parts in their choices.
+
+## Changed: silo complex placement and activity levels
+
+- A silo complex under a village or temple is no longer skipped: it generates 10 to 20 blocks deeper, and its shafts and escape ladder reach the surface where they always would. The village is found from where the world will put it, so the result is the same whichever chunk you reach first. A complex is skipped only where it cannot go that deep above bedrock.
+- Roguelike Dungeons keep out of silo complexes: a dungeon that would start near a complex picks another spot, and none of its blocks are written inside one. The new switch `compat.roguelikeKeepOutOfComplexes` (default on) turns this off, and the startup log says whether it attached.
+- Activity levels now roll 30% abandoned, 40% partly abandoned and 30% operational (`icbm.siloComplexActivityWeights` default `30, 40, 30`; a server that keeps the old line in its config keeps the old odds). Each complex rolls once, when it is first placed, and keeps its level if the weights change later. Complexes placed before this update roll their level with the current weights.
+- `/gregguns locate complex` shows each built complex's activity level and how much deeper it lies under a village.

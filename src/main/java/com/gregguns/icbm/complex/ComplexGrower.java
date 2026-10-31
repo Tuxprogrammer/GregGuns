@@ -524,6 +524,9 @@ final class ComplexGrower {
         return placed;
     }
 
+    /** The top layer of a silo's walkway: the row over the window, where its "Silo N" sign hangs (D299). */
+    static final int WALKWAY_TOP = 2 + com.gregguns.icbm.silo.SiloShape.NAME_SIGN_RISE;
+
     private void silo(Node g, int side, int[] b) {
         int facing = (side + 2) & 3;
         SiloSlot s = new SiloSlot(
@@ -533,17 +536,18 @@ final class ComplexGrower {
             facing);
         claim(b[0], b[1], b[2], b[3], SILO);
         silos.add(s);
-        // The walkway: the hall's wall cells in front of the silo's three middle columns.
+        // The walkway (D299): the hall's wall cells in front of the silo's whole five-wide face, from the floor up to
+        // the row over the window, so the hatch columns, the Launch Control and the "Silo N" sign all face the hall.
         int dx = s.frontX() - s.controllerX(), dz = s.frontZ() - s.controllerZ();
         doors.add(
             new Door(
                 Door.Kind.WALKWAY,
-                s.x(1, 0) + dx,
-                s.x(3, 0) + dx,
-                s.z(1, 0) + dz,
-                s.z(3, 0) + dz,
+                Math.min(s.x(0, 0), s.x(4, 0)) + dx,
+                Math.max(s.x(0, 0), s.x(4, 0)) + dx,
+                Math.min(s.z(0, 0), s.z(4, 0)) + dz,
+                Math.max(s.z(0, 0), s.z(4, 0)) + dz,
                 1,
-                3,
+                WALKWAY_TOP,
                 g.id,
                 -1,
                 side));

@@ -5,14 +5,17 @@ import java.util.Locale;
 /**
  * The arguments of {@code /gregguns locate}: {@code <kind> [radius_cells] [generate]} lists (and optionally
  * generates), {@code tp <structure_id> <small|medium|big> <cellX> <cellZ>} teleports to a built site (what a click on a
- * row runs). The kind is {@code complex}, a structure id ({@code military_base}...) or {@code any}. Parsing is separate
+ * row runs), {@code rebuild <cellX> <cellZ>} clears a built silo complex and writes it again. The kind is
+ * {@code complex}, a structure id ({@code military_base}...) or {@code any}. Parsing is separate
  * from the command so it is unit tested without a server.
  */
 final class LocateArgs {
 
     enum Mode {
         LIST,
-        TP
+        TP,
+        /** {@code rebuild <cellX> <cellZ>}: clear a built silo complex and write it again ({@link ComplexRebuild}). */
+        REBUILD
     }
 
     final Mode mode;
@@ -41,6 +44,21 @@ final class LocateArgs {
      */
     static LocateArgs parse(String[] args) {
         if (args.length == 0) throw new IllegalArgumentException("gregguns.locate.usage");
+        if (args[0].equalsIgnoreCase("rebuild")) {
+            if (args.length != 3) throw new IllegalArgumentException("gregguns.locate.rebuild.usage");
+            try {
+                return new LocateArgs(
+                    Mode.REBUILD,
+                    StructureLocator.COMPLEX,
+                    0,
+                    false,
+                    Integer.parseInt(args[1]),
+                    Integer.parseInt(args[2]),
+                    null);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("gregguns.locate.rebuild.usage");
+            }
+        }
         if (args[0].equalsIgnoreCase("tp")) {
             if (args.length != 5) throw new IllegalArgumentException("gregguns.locate.usage");
             String id = StructureLocator.kindOf(args[1]);

@@ -212,7 +212,8 @@ public final class StructureGenerator implements IWorldGenerator {
                 StructureState.forWorld(world),
                 new WorldMarks(world, sink),
                 complex,
-                general);
+                general,
+                complex == null ? StructureStarts.NONE : VanillaStarts.forWorld(world));
             STAMPED.addAndGet(n);
             ACCEPTED.addAndGet(sink.acceptedWrites());
             REJECTED.addAndGet(sink.rejectedWrites());
@@ -257,8 +258,19 @@ public final class StructureGenerator implements IWorldGenerator {
         }
 
         @Override
-        public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
-            return inner.write(plan, groundY, window, sink, probe);
+        public int decisionVariant(StructurePlan plan) {
+            return inner.decisionVariant(plan);
+        }
+
+        @Override
+        public int sinkFor(StructurePlan plan, int groundY) {
+            return inner.sinkFor(plan, groundY);
+        }
+
+        @Override
+        public int write(StructurePlan plan, Decision decision, PopulateWindow window, WindowedSink sink,
+            HeightProbe probe) {
+            return inner.write(plan, decision, window, sink, probe);
         }
     }
 

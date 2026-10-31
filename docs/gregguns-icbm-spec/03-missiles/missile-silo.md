@@ -2,7 +2,7 @@
 
 - **ICBM baseline:** [launcher platform](../../icbm-spec/03-missiles/index.md) (ICBM launches from a launcher block; GregGuns builds a multiblock)
 - **Design records:** [0018 §8](../../design/0018-icbm-program.md), [0011](../../design/0011-machine-policy.md)
-- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D19](../DECISIONS.md), [D22](../DECISIONS.md), [D32](../DECISIONS.md), [D70 to D75](../DECISIONS.md), [D286](../DECISIONS.md)
+- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D19](../DECISIONS.md), [D22](../DECISIONS.md), [D32](../DECISIONS.md), [D70 to D75](../DECISIONS.md), [D286](../DECISIONS.md), [D288](../DECISIONS.md), [D299](../DECISIONS.md), [D300](../DECISIONS.md)
 - **Pack mods:** GT5-Unofficial (`5.09.54.205`): multiblock base, StructureLib, hatches; Galacticraft (`3.4.34-GTNH`): the pad block, `RocketFuels`; NewHorizonsCoreMod (`2.9.84`): the Tier 3 rocket parts
 - **Roadmap:** [I3](../../ROADMAP-ICBM.md#i3--the-silo-and-heavy-warheads-t3-nuclear)
 - **MTE id:** 20141 (`GregGunsMTEIDs.MISSILE_SILO`)
@@ -13,24 +13,35 @@ ICBM's launchers are single blocks that take a missile item. GregGuns' T3 missil
 
 ## Structure
 
-One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns cut (so it is not a cube). Source of truth: `SiloShape`.
+One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns cut (so it is not a cube), except in the front face's three glass rings, where the face is five wide. Source of truth: `SiloShape`.
 
 | Layer (1 = floor) | Cells |
 |---|---|
 | 12, the rim | ring of 12 Gantry Beam |
 | 5 to 11 | ring of 12 **Light or Dark Concrete** per layer (84); hatches allowed (D117) |
-| 2, 3, 4 | ring of 12 **glass** per layer, so the missile shows (36 cells with the controller) |
+| 2, 3, 4 | ring of 12 **glass** per layer, so the missile shows, plus the two front corners (the **hatch columns**, `H`) |
 | 1, the floor | outer ring of 12 **Light or Dark Concrete** (hatches allowed), inner 3x3 **Galacticraft launch pad** |
+
+**The front face (D299, the owner's build):** a clear 3x3 glass window around the controller, with a hatch column on each side, flush with the glass. Seen by a viewer facing the controller:
+
+```
+ layer   viewer's left                                      viewer's right
+   5     (cut)   concrete  concrete  concrete   (cut)        the "Silo N" sign hangs on the middle concrete
+   4     H       glass     glass     glass      H
+   3     H       glass     [ctrl]    glass      H
+   2     H       glass     glass     glass      H
+```
 
 - **Glass (D115):** purely visual, so the missile can be seen: it never gates a launch, and there is no glass tier or effect on range, tiers or anything else; the Energy Hatch alone sets the silo's tier. The glass rings accept **Tinkers' Construct Clear Glass** (`TConstruct:GlassBlock`) and **EnderIO Quite Clear Glass** (`EnderIO:blockFusedQuartz` meta 1) or its **Enlightened Clear Glass** (meta 3, the same glass giving off light), mixed freely, and nothing else: GT's borosilicate frames made a Tier 3 missile hard to see. Dark Clear Glass and the Fused Quartz metas are refused. Blocks are found by registry name (`SiloGlass`), so no Tinkers' or EnderIO class loads. The hologram and auto-build place Tinkers' Clear Glass, or EnderIO's when Tinkers' is absent. When neither mod is loaded (the dev environment) the rings accept vanilla glass instead, with one logged warning. The ring no longer shares the `BOROGLASS` structure channel.
 - **Walls and floor ring (D116):** GT's concrete block `gregtech:gt.blockconcretes` (`GregTechAPI.sBlockConcretes`), metas 0 to 7 Dark and 8 to 15 Light, mixed freely. Accepted: stone (0, 8), bricks (3, 11), cracked bricks (4, 12), mossy bricks (5, 13), chiseled (6, 14), smooth (7, 15). Cobblestone and mossy cobblestone (1, 2, 9, 10) are refused: they are the rubble form the plain stone drops as. The hologram and auto-build place Light Concrete (meta 8). GT gives concrete no casing texture index, so a hatch in the silo still wears the Gantry Casing texture.
-- **Hatches (D117, amends D71):** the Input Bus, Input Hatch, Energy Hatch and Maintenance Hatch may replace any wall block (layers 5 to 11), any glass pane (layers 2 to 4) or any outer-ring cell of the floor. Never the rim (layer 12, Gantry Beam), and never the inner 3x3 pad floor, which a hatch would break. At least 84 of the 96 concrete positions must stay concrete.
+- **Hatches (D117, amends D71):** the Input Bus, Input Hatch, Energy Hatch and Maintenance Hatch may replace any wall block (layers 5 to 11), any hatch-column cell, any glass pane (layers 2 to 4) or any outer-ring cell of the floor. Never the rim (layer 12, Gantry Beam), and never the inner 3x3 pad floor, which a hatch would break. At least 84 of the 102 concrete positions must stay concrete.
 - **Controller:** the middle of the front wall, in the middle glass ring (layer 3).
-- **Window edges (D290, owner 2026-10-30):** the two cells either side of the controller in each of the three front-face glass rings (six cells, `W` in `SiloShape`) accept clear glass, a hatch **or the wall's concrete**, so the hatches can stand in the face's two outer columns and leave the middle column clear glass. Every other glass cell still takes glass or a hatch only.
-- **Generated layout:** a silo in a complex has its four hatches in those two outer columns, two high, and glass everywhere else in the window. Seen by a viewer standing in front of the controller (looking at it, so the controller faces them): left column Input Hatch (controller row) over Maintenance Hatch; right column Energy Hatch (controller row) over Input Bus. The silo missing its Energy Hatch has glass in its place. A player-built silo may use the same layout or any other the structure accepts.
-- **Launch Control (D288):** optional, at most one, in any hatch position (a wall, glass or floor-ring cell; `SiloLaunchControl`, a hatch element in every hatch adder). The structure check binds it, so the silo fires through its own Launch Control and no other; a second one fails its position. It keeps its own texture. Generated and dev-built silos put it in the front face's window, top row (layer 4), in the outer column on a viewer's right (`SiloShape.LAUNCH_CONTROL_COLUMN`, `LAUNCH_CONTROL_RISE`). The controller's tooltip lists it.
+- **Hatch columns (D299, owner 2026-10-30):** the six front-face cells beside the window (`H` in `SiloShape`, shape columns 0 and 4 of the front aisle, layers 2 to 4) are required: the wall's concrete, a hatch or the Launch Control, and they count as casing. A front with those cells empty (the cut-corner, three-wide front) does not form. The window itself is clear glass or hatches only: concrete in a window cell does not form.
+- **Generated and dev-built layout:** seen by a viewer standing in front of the controller (looking at it, so the controller faces them): the **right** hatch column holds the Input Bus (controller row) over the Energy Hatch, with the Launch Control on top; the **left** one holds the Input Hatch (controller row) over the Maintenance Hatch, with concrete on top. All eight window cells around the controller are clear glass. Shape column 0 is on that viewer's right (`SiloShape.HATCH_COLUMN_RIGHT`; column 4 is `HATCH_COLUMN_LEFT`). A generated silo missing its Energy Hatch has the column's concrete in its place. A player-built silo may put its hatches in any hatch position.
+- **Launch Control (D288, D299):** optional, at most one, in any hatch position (a wall, hatch-column, glass or floor-ring cell; `SiloLaunchControl`, a hatch element in every hatch adder). The structure check binds it, so the silo fires through its own Launch Control and no other; a second one fails its position. It keeps its own texture. Generated and dev-built silos put it on top of the right hatch column, level with the window's top row (`SiloShape.LAUNCH_CONTROL_COLUMN`, `LAUNCH_CONTROL_RISE`), outside the window. It runs on the silo's EU (D300, [launch-control-block](../04-launch-control/launch-control-block.md#power)). The controller's tooltip lists it.
+- **Name sign:** the Launch Control's screen names the silo by the first written line of a wall sign hanging on the silo's face two blocks above the controller (`SiloShape.NAME_SIGN_RISE`), on the concrete over the window, where the generated complex hangs `Silo N`. With no sign there the screen says `Silo at x, z`.
 - **Pad:** the nine blocks accept either the unformed Galacticraft pad blocks (`tile.landingPad`) or the formed pad (`tile.landingPadFull` at the center and `tile.dummyblock` meta 2 on the other eight), found by registry name through `GalacticraftPads` so no Galacticraft class loads. Without Galacticraft the module is off and the silo inert. The launch never removes or damages the pad (D32): a missile does not extend `EntityAutoRocket`.
-- **Counts:** 96 concrete positions (84 needed, the rest may be hatches), 35 glass-ring cells (29 glass-only, 6 window edges) plus the controller, 12 beams, 9 pad blocks.
+- **Counts:** 102 concrete positions (84 walls, 12 floor ring, 6 hatch columns; 84 needed, the rest may be hatches), 35 glass cells plus the controller, 12 beams, 9 pad blocks.
 - **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out and on up to the build height before it turns (D287, [flight.md](flight.md#the-climb)), so a roof or a chimney built around the opening is safe; keep the opening itself free of blocks for 12 blocks above the pad plus the body, or the launch is `BLOCKED`.
 
 ## The doors (D89, D90)
