@@ -44,14 +44,12 @@ class ModuleResolverTest {
                 ModuleId.ENERGY_WEAPONS,
                 ModuleId.UTILITY,
                 ModuleId.NPCS,
-                ModuleId.WORLDGEN),
+                ModuleId.WORLDGEN,
+                ModuleId.ICBM),
             result.enabled());
-        // icbm ships off until its beta gate; nothing else is skipped
-        assertEquals(
-            Arrays.asList(ModuleId.ICBM),
-            new java.util.ArrayList<>(
-                result.skipped()
-                    .keySet()));
+        assertTrue(
+            result.skipped()
+                .isEmpty());
     }
 
     @Test

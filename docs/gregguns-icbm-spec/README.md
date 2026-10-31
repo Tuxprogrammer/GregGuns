@@ -25,7 +25,7 @@ In short:
 - Clean room, with MIT hard-math ports allowed.
 - Baseline is ICBM-Classic 1.12.
 - Tiers run HV to UHV; red matter is the UHV missile.
-- Built next, on [ROADMAP-ICBM](../ROADMAP-ICBM.md), as a module in the GregGuns jar behind `modules.icbm` (off by default until the ICBM beta).
+- Built next, on [ROADMAP-ICBM](../ROADMAP-ICBM.md), as a module in the GregGuns jar behind `modules.icbm` (on by default from the ICBM beta checkpoint; it needs Galacticraft).
 - Nuclear and every warhead above it kill every living entity in the kill zone, bosses included. Conventional missiles have center-damage targets sized against Infernal Mobs health pools.
 - Missiles are an automatable arsenal: about one of their tier's rocket launches in cost, and automatable in GT machines (the Assembler below LuV, the Assembly Line from LuV, D281).
 - The player stacks the missile body and a warhead block on the pad; the Galacticraft pad is never removed.

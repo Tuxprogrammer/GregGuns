@@ -9,7 +9,7 @@ GregGuns' own final polish stays on [ROADMAP.md](ROADMAP.md) (M9). The handoff c
 - **Milestones I0–I7** are delivered in order, with an entry gate and an exit gate each, as on the main roadmap. The universal [definition of done](../CONTRIBUTING.md#definition-of-done) applies to every change.
 - **Spec first.** Each milestone's first task writes or finishes its GregGuns-side sheets in [gregguns-icbm-spec](gregguns-icbm-spec/README.md), following the [GregGuns spec conventions](gregguns-spec/CONVENTIONS.md). Builders work from those sheets and the ICBM baseline, never from the ICBM source, except for `MIT-portable` sections (D2).
 - **Two gates involve the owner:** the alpha gate (one review) and the beta gate (playthrough and feedback). Everything between them is autonomous.
-- **The module stays off by default** (`modules.icbm=false`) until the beta gate, so GregGuns `0.3.x-beta` fixes keep shipping from master.
+- **The module defaults to on** (`modules.icbm=true`) from the beta checkpoint (I7). Until then it was off, so GregGuns `0.3.x-beta` fixes kept shipping from master. Without Galacticraft it turns itself off (D9, D46).
 
 ```
 I0 Foundation ──► I1 Warheads & blast engine ──► I2 Missiles & the GC pad (T1–T2)
@@ -380,9 +380,9 @@ The one owner review before the beta.
 - [ ] The fix list is closed.
 - [x] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
 - [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
-- [ ] The recipe-clash review finds no unresolved clash with ICBM content.
+- [x] The recipe-clash review finds no unresolved clash with ICBM content. Evidence: [icbm-recipe-clash-review.md](gregguns-spec/08-machines-production/icbm-recipe-clash-review.md), exact 0 on a real-pack dump, rerun on the balance pass recipes (D340).
 - [ ] Every ICBM guide sheet matches the code after the balance pass.
-- [ ] `modules.icbm` defaults to on.
+- [x] `modules.icbm` defaults to on (D339). Evidence: `IcbmModuleRulesTest`, `ModulesConfig`, and the no-Galacticraft boot still logs "turns itself off" once (D46).
 - [ ] The milestone review fix list is closed.
 
 ## Beta gate · 0.4.0-beta

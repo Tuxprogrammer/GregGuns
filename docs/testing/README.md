@@ -552,6 +552,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `lootbag.reload` | Loot bags | After `/lootbags reload` on the console every GregGuns group is back at once, and bag 1704 still opens. |
 | `lootbag.guard` | Loot bags | With the groups taken out and re-adding held off, an unguarded use throws inside EnhancedLootBags (noted), while the guarded click is denied: no error, the bag is kept, nothing drops. With re-adding back on, the next click puts the groups back and the bag opens. |
 | `icbm.module_gate` | ICBM module (I0) | Registered whatever the module flag says, and passes on both the Galacticraft and the `--no-galacticraft` branch: the module's reported state (`ModuleState`) agrees with the resolver's verdict for `modules.icbm` and the required mods (`ModPresence`, `ModuleId.requiredMods()`, `SkipReason.MISSING_MOD`). Needs `GG_MODULES=all` to see the active branch (icbm needs `guns` and `machines`). Unit twin: `ModuleResolverTest`. |
+| `icbm.pack.nei_coverage` | ICBM completeness (I7) | Every item and block the ICBM module registered, every ICBM machine and the Radar Casing is listed in NEI (technical cells excepted) and is the output of a crafting recipe or a GT recipe map (the Assembly Line and the Missile Workbench included), apart from a by-design list (complex walls, trinitite, fallout goo). A new ICBM item without a recipe fails it |
 
 ## ICBM scenarios
 
