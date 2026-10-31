@@ -23,6 +23,7 @@ public final class NpcScenarios {
         registry.register(new ModuleConfigScenario());
         NpcEntityScenarios.registerAll(registry);
         NpcLootScenarios.registerAll(registry);
+        NpcGunDropScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
         NpcHoldShowcaseScenario.register(registry);
         NpcSuperMutantScenarios.registerAll(registry);

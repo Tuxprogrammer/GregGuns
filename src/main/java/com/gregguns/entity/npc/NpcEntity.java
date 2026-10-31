@@ -97,6 +97,21 @@ public class NpcEntity extends EntityMob
                     && NpcTargetRules.canSeekPlayer(((EntityPlayer) e).capabilities.disableDamage)));
         // The held item is empty here, so this installs the melee task; setting a gun re-runs it.
         setCombatTask();
+        noHeldItemDrop();
+    }
+
+    /**
+     * The held item's vanilla equipment drop chance: below anything Looting can lift it to. Vanilla drops slot
+     * {@code j} when {@code nextFloat() - looting * 0.01 < chance}, so a chance of 0 still drops 1% per Looting level.
+     */
+    public static final float NO_HELD_DROP = -Float.MAX_VALUE;
+
+    /**
+     * The carried weapon never drops through vanilla's equipment roll (D312): {@link NpcGunDropsHandler} drops the gun
+     * at its own rare rate. Armor keeps vanilla's chance.
+     */
+    private void noHeldItemDrop() {
+        equipmentDropChances[0] = NO_HELD_DROP;
     }
 
     @Override
@@ -146,7 +161,7 @@ public class NpcEntity extends EntityMob
     public static final int DANGER_UNSET = -1;
 
     private static final String DANGER_TAG = "GGDanger";
-    private static final int EGG_DANGER_RANGE = 4;
+    static final int EGG_DANGER_RANGE = 4;
 
     private int danger = DANGER_UNSET;
 
@@ -215,13 +230,12 @@ public class NpcEntity extends EntityMob
         }
     }
 
+    /**
+     * Vanilla's rare drop (5 in 200 on a player kill) drops nothing: the rare gun drop is {@link NpcGunDropsHandler}'s,
+     * at {@link NpcDrops#rareGunChance} (D312).
+     */
     @Override
-    protected void dropRareDrop(int stage) {
-        NpcProfile profile = npcProfile();
-        if (profile != null) {
-            NpcDrops.dropRareDrop(this, profile);
-        }
-    }
+    protected void dropRareDrop(int stage) {}
 
     @Override
     public void writeEntityToNBT(NBTTagCompound tag) {
@@ -274,6 +288,8 @@ public class NpcEntity extends EntityMob
     @Override
     public void readEntityFromNBT(NBTTagCompound tag) {
         super.readEntityFromNBT(tag);
+        // Vanilla reads the saved DropChances list back over the constructor value; the held-item rule is a constant.
+        noHeldItemDrop();
         danger = tag.hasKey(DANGER_TAG) ? tag.getInteger(DANGER_TAG) : DANGER_UNSET;
         setCombatTask();
         if (SpawnerData.isFromSpawner(tag) && worldObj != null && !worldObj.isRemote) {
