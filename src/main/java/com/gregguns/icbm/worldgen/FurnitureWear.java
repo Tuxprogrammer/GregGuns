@@ -479,14 +479,20 @@ public final class FurnitureWear {
             boolean allOpen = true;
             for (int k = 0; k < 8; k++) allOpen &= open(x + RX[k], z + RZ[k]);
             if (runs > 1 || runs == 0 && !allOpen && hasOpenSide(x, z)) return false;
-            for (int[] t : targets) {
-                if (Math.abs(t[0] - x) + Math.abs(t[1] - z) != 1) continue;
-                boolean other = false;
-                for (int k = 0; k < 4; k++) {
-                    int nx = t[0] + DX[k], nz = t[1] + DZ[k];
-                    if ((nx != x || nz != z) && open(nx, nz)) other = true;
+            boolean besideTarget = false;
+            for (int[] t : targets) besideTarget |= Math.abs(t[0] - x) + Math.abs(t[1] - z) == 1;
+            if (besideTarget) {
+                // Beside a chest, machine or guard: check the walk itself, so its last way in is never closed.
+                boolean[] before = reach();
+                blocked[i(x, z)] = true;
+                boolean[] now = reach();
+                for (int[] t : targets) {
+                    if (touches(before, t) && !touches(now, t)) {
+                        blocked[i(x, z)] = false;
+                        return false;
+                    }
                 }
-                if (!other) return false;
+                return true;
             }
             blocked[i(x, z)] = true;
             return true;

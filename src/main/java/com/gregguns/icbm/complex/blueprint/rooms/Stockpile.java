@@ -17,8 +17,7 @@ public final class Stockpile implements RoomBlueprint {
         int L = k.lateral(), D = k.depth();
         k.defaultLoot(LootKeys.STOCKPILE);
         k.spine();
-        k.mirrorStrip(0, 1, L - 2, 1, "KKK.");
-        k.mirrorStrip(1, 1, L - 2, 1, "KKK.");
+        Works.backContainers(k);
         k.column(0, 3, D - 4, "m.");
         k.bandTile(8, 3, D - 3, 1, L - 2, 1, k.module("CkkCkkC", "kkCkkCk"), k.module("CkkCkkC"));
         k.anchor(2, D - 3, "mmk");

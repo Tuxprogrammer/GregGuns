@@ -24,8 +24,7 @@ public final class MissileAssembly implements RoomBlueprint {
         Works.machine(k, 'M', MachineRole.WORKBENCH);
         k.anchorNear(LegacyRoom.nasa(k), ma - 2, md - 2);
         k.spine(Math.min(D - 1, md + 3));
-        k.mirrorStrip(0, 1, L - 2, 1, "KKK.");
-        k.mirrorStrip(1, 1, L - 2, 1, "KKK.");
+        Works.backContainers(k);
         k.machineNear(ma - 5, md, MachineRole.WORKBENCH);
         k.machineNear(ma + 5, md, MachineRole.WORKBENCH);
         k.bandTile(5, 3, D - 3, 1, L - 2, 4, k.module("XXXXC", "XXXX."), k.module("XXXXC"));

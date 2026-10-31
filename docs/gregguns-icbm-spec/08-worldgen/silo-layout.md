@@ -23,7 +23,9 @@ The layout is grown, not stamped (`ComplexGrower`, D230). Every choice comes fro
   - A hall stops 20 blocks short of the edge, so rooms can cap it. A free far end grows toward the edge.
 - **Minor hallways:** up to 15 hallways, 30 to 70 long, leave a hall's side. Over 10,000 seeds a plan has 0 to 15, median 5 (mean 5.5), and 3 to 8 in three plans in four (D246). Some leave another minor hallway's side as sub-hallways between branches. Their sides and far end take rooms.
 - **Rooms:** 35 to 40 rooms in all, the hub not counted.
-  - Every mandatory kind is always present: launch control, comms, commander's office, warhead magazine, generator hall, armory and missile assembly. The rest come from the optional kinds, repeated as needed.
+  - Every mandatory kind is always present: launch control, comms, commander's office, warhead magazine, generator hall, armory and missile assembly. The rest come from the 22 optional kinds: radar and tracking, fuel depot, air handling, pump room, workshop, bunks, stockpile, mess galley, infirmary, vehicle bay, server room, cafeteria, water treatment, underground farm, mushroom cellar, cold storage, shooting range, brig, chemistry lab, showers and laundry, recreation lounge and incinerator.
+  - **The deck (D307):** the kinds are dealt like cards. Round 1 holds every mandatory and optional kind once, shuffled together; each later round holds every optional kind again, freshly shuffled. A slot takes the first card in deck order that fits it, and a room just placed goes to the first card that fits its real size, so no kind repeats while a kind that fits is missing. The mandatory kinds always get a slot.
+  - **Sizes:** the farm needs a slot of at least 20 x 16 walls; the range at least 12 x 22, with its door on a short wall (it never grows wider than it is deep); the showers never grow past 18 x 16.
   - Rooms hang off halls side by side, each touching the last.
   - Rooms also hang off rooms, up to three deep, so not every room has a direct line to the hub.
   - About one in seven pairs of rooms that end up side by side gets an extra door, so the plan is a graph, not just a tree.

@@ -18,8 +18,7 @@ public final class FuelDepot implements RoomBlueprint {
         k.defaultLoot(LootKeys.FUEL);
         Works.machine(k, 'M', MachineRole.FUEL_TANK);
         k.spine();
-        k.mirrorStrip(0, 1, L - 2, 1, "KKK.");
-        k.mirrorStrip(1, 1, L - 2, 1, "KKK.");
+        Works.backContainers(k);
         k.column(0, 3, D - 4, "u");
         k.bandTile(4, 3, D - 3, 1, L - 2, 1, k.module("uMu", "Cuu"));
         Works.corners(k);

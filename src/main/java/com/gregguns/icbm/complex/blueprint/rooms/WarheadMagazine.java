@@ -18,8 +18,7 @@ public final class WarheadMagazine implements RoomBlueprint {
         int L = k.lateral(), D = k.depth();
         k.defaultLoot(LootKeys.MAGAZINE);
         k.spine();
-        k.mirrorStrip(0, 1, L - 2, 1, "KKK.");
-        k.mirrorStrip(1, 1, L - 2, 1, "KKK.");
+        Works.backContainers(k);
         k.bandTile(3, 3, D - 3, 1, L - 2, 1, k.module("CX", "XX", "XX", "Xk"), k.module("CX", "Xk"));
         int q = Works.steps(k);
         for (int i = 0; i < Math.max(2, 2 * q); i++) {

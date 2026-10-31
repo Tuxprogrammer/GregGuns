@@ -38,6 +38,14 @@ final class Works {
         }
     }
 
+    /**
+     * Container prisms (2 x 3 footprint, two high) two deep along the back wall, every four cells outward from the
+     * spine; each prism is stamped whole, so it is one group that wears together (D308).
+     */
+    static void backContainers(Kit k) {
+        k.tile(k.module("KKK", "KKK"), 4, 0, 1, k.lateral() - 2, 1);
+    }
+
     /** The corner caches of every room of 16 x 14 interior or more. */
     static void corners(Kit k) {
         if (k.lateral() >= 16 && k.depth() >= 14) k.corners();

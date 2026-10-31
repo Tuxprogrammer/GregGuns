@@ -24,8 +24,7 @@ public final class GeneratorHall implements RoomBlueprint {
         Works.machine(k, 'M', MachineRole.GENERATOR);
         Works.machine(k, 'U', MachineRole.BATTERY_BUFFER);
         k.spine();
-        k.mirrorStrip(0, 0, L - 1, 1, "UU.KKK.");
-        k.mirrorStrip(1, 0, L - 1, 1, "...KKK.");
+        k.tile(k.module("UU.KKK", "...KKK"), 7, 0, 0, L - 1, 1);
         Module[] sets = { k.module("VVVM", "VVV."), k.module("KKK.", "KKK."), k.module("VVVM", "VVV."),
             k.module("mkCm", "....") };
         int i = 0;

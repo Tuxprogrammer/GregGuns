@@ -27,8 +27,7 @@ public final class ColdStorage implements RoomBlueprint {
                     .grouped()
                     .variant(REEFER));
         k.spine();
-        k.mirrorStrip(0, 1, L - 2, 1, "KKK.");
-        k.mirrorStrip(1, 1, L - 2, 1, "KKK.");
+        Works.backContainers(k);
         k.column(0, 3, D - 4, "I.");
         k.column(L - 1, 3, D - 4, "I.");
         k.bandTile(8, 3, D - 3, 1, L - 2, 1, k.module("IICIICI", "ICIICII"), k.module("IICIICI"));

@@ -1,7 +1,7 @@
 # Activity levels and the damage pass
 
 - **Baseline:** none (the ICBM baseline has no worldgen).
-- **Decisions:** [D36](../DECISIONS.md#d36-in-detail), [D128](../DECISIONS.md), [D17](../DECISIONS.md#d17-in-detail), D180 to D186, D229, D231
+- **Decisions:** [D36](../DECISIONS.md#d36-in-detail), [D128](../DECISIONS.md), [D17](../DECISIONS.md#d17-in-detail), D180 to D186, D229, D231, D284, D309
 - **Pack mods:** none beyond the layout's (GregTech, Galacticraft)
 - **Roadmap:** [I6](../../ROADMAP-ICBM.md#i6--world-missile-silos-on-every-planet)
 
@@ -23,7 +23,7 @@ Every roll is a hash of the plan's seed and the mark's own cell, never of call o
 | Floor hole per floor cell | 12% | 3% | 0% |
 | Light lit (by run, by section, all) | 5% | 45% | 100% |
 | Machine slot left empty (D284) | 20% | 0% | 0% |
-| Machine is a dead husk (of the rest) | 90% | 45% | 0% |
+| Machine is a dead husk (of the rest) | 90% | by room: 10% in service, 90% mothballed | 0% |
 | Chest or loot frame is placed (D284) | 30% | 100% | 100% |
 | Pump room flooded | yes | yes | no |
 | Fallout rubble in the magazine | all marks | 40% | none |
@@ -35,6 +35,27 @@ Every roll is a hash of the plan's seed and the mark's own cell, never of call o
 Depth band: 0 is the hub, then one band per 30 blocks of distance from it, up to 3. Rooms and tunnels are judged by their box. A guard post gets +25% when the level is not abandoned, and the launch control room and every "deep" mark use at least the shaft chance (100% operational). Collapses hit rooms only, never the hub or a hall (the silo gallery among them), so the complex stays walkable. Guard posts, the decontamination airlock and Launch Control never collapse at any level; Launch Control's lamps, rubble and breaches still follow the level (D252). A collapsed room turns its floor and wall damage cells to rubble, opens its roof cells, and the world side fills part of its box with rubble.
 
 **Lamps die by circuit, not one by one (D231).** A lamp's mark carries its section and its run (one line of the section's lamp grid, ceiling lamps and the floor light tiles under them together). An abandoned complex rolls once per run, so a few runs still burn and most are dead. A partly abandoned complex rolls once per section, so whole rooms and halls are dark or lit. An operational complex lights everything. The share lit stays the D36 rate. A dead lamp stays in place as the style's dark lamp, flush in the ceiling or floor.
+
+## Room looks (D309)
+
+Each room has one state, `ComplexContents.roomState(seed, room, level)`, and everything in the room follows it, in every populate window.
+
+| Level | State | How the room reads |
+|---|---|---|
+| Charlie (operational) | `STAFFED` | Lit, every piece in place, every machine working, furnaces burning, cauldrons full, crops ripe |
+| Bravo (partly abandoned) | `IN_SERVICE` when the room's lamps burn (the section roll above, 45%) | Lit and worked: 5% of pieces gone, 10% of machines husks, crops at mixed growth (10% bare), furnaces burning |
+| Bravo | `MOTHBALLED` when they are dark | Shut: 30% of pieces gone, half the metal props taken, 90% of machines husks, furnaces cold, cauldrons dry, anvils damaged, fields bare with dirt patches and mushrooms, half the brig doors open |
+| Alpha (abandoned) | `GUTTED` | A ruin: 35% of pieces gone, 40% of those leave rubble, 70% of metal props and coal taken, a quarter of the containers lose their top layer, machines as D284, fields dead (dirt, mushrooms, cobwebs, dry channels), glass broken, a huge mushroom cap on some cellar stems, doors open, one rubble pile per 40 floor cells |
+
+**Wear by piece** (`FurnitureWear`, from the piece's wear class): a whole group goes or stays (a bed's two halves, a container prism, a piece's stacked layers). Rugs, water inlays, basins and partitions never wear.
+
+**Crops grow only in lit rooms.** A vanilla crop pops off below light 8 on its first random tick, so the contents pass plants crops only in a staffed or in-service room. A dark field gets no crop: mushrooms grow there instead, which live in the dark. Mycelium beds keep their mushrooms at every level.
+
+**Lit furnaces** are written with a tile that burns for a long while, coal in the fuel slot and sand to smelt, so a staffed room's furnaces are still lit when a player walks in.
+
+**Rubble piles never cut anything off.** A pile cell stays only where the open cells around it stay joined without it and every chest, machine or guard beside it keeps another open side, so the reachability of every chest, machine and door holds at every level.
+
+A collapsed room is filled as before, and its pieces are crushed to rubble.
 
 ## Damage by mark
 
@@ -59,7 +80,7 @@ Depth band: 0 is the hub, then one band per 30 blocks of distance from it, up to
 
 ## Tests
 
-Unit: `ActivityLevelTest`, `ComplexContentsTest` (the holdout count of 1 or 2 per abandoned plan, working machines and chests against the other levels; lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.levels` (each level, plus Operational at UMV, generated onto a slab one window at a time and read back: spawner count (1 or 2 abandoned), working machines and chests (abandoned far below operational), each spawner's mobs and danger floor (its vanilla mob spawner NBT); the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
+Unit: `ActivityLevelTest`, `RoomStateTest` (lamps and machines agree per room), `RoomLooksTest` (no chest, machine or guard cut off by wear at any level; crops and lit furnaces only in lit rooms; Bravo keeps at least three quarters of Charlie's pieces, Alpha half, rubble counted; metal props under the ceiling), `ComplexContentsTest` (the holdout count of 1 or 2 per abandoned plan, working machines and chests against the other levels; lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.levels` (each level, plus Operational at UMV, generated onto a slab one window at a time and read back: spawner count (1 or 2 abandoned), working machines and chests (abandoned far below operational), each spawner's mobs and danger floor (its vanilla mob spawner NBT); the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
 
 ## Open questions
 
