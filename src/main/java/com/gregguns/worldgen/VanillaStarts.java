@@ -51,7 +51,8 @@ import com.gregguns.GregGuns;
 // Source: Minecraft 1.7.10 (MCP stable 12): MapGenVillage#canSpawnStructureAtCoords and Start,
 // MapGenScatteredFeature#canSpawnStructureAtCoords and Start, MapGenBase#func_151539_a,
 // MapGenStructure#func_151538_a, World#setRandomSeed.
-// Source: https://github.com/GTNewHorizons/VillageNames/blob/4.5.19-GTNH/src/main/java/astrotibs/villagenames/village/MapGenVillageVN.java#L63-L76
+// Source:
+// https://github.com/GTNewHorizons/VillageNames/blob/4.5.19-GTNH/src/main/java/astrotibs/villagenames/village/MapGenVillageVN.java#L63-L76
 // (Village Names, in the pack, replaces the village generator through InitMapGenEvent with its own spacing fields,
 // median 40 and range 10 in the pack config, its own biome list and its own Start; #L106-L156, #L158-L180).
 // Two real-pack worlds of seed 321 held different Village Names villages at start chunk 19,19 (Village.dat boxes
@@ -280,8 +281,8 @@ public final class VanillaStarts implements StructureStarts {
         return b;
     }
 
-    private Blocker scan(World world, String kind, int minX, int minZ, int maxX, int maxZ, int reach, int spacing, int separation,
-        int salt, int margin) {
+    private Blocker scan(World world, String kind, int minX, int minZ, int maxX, int maxZ, int reach, int spacing,
+        int separation, int salt, int margin) {
         long seed = world.getSeed();
         List<int[]> cands = StartGrid.candidatesIn(
             seed,
@@ -341,7 +342,8 @@ public final class VanillaStarts implements StructureStarts {
     /**
      * Half the side of the box assumed around a replacement generator's start chunk. Its start chunk is exact (its own
      * rule), but its layout is not: Village Names drew a different village at the same start in two worlds of the same
-     * seed, so its pieces cannot be predicted. Vanilla's pieces stay within 112 blocks of the start; the observed Village
+     * seed, so its pieces cannot be predicted. Vanilla's pieces stay within 112 blocks of the start; the observed
+     * Village
      * Names villages reached 106 blocks out.
      */
     static final int REPLACEMENT_HALF = 128;
