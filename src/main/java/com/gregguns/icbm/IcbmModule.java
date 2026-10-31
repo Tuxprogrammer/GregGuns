@@ -106,6 +106,8 @@ public final class IcbmModule implements GregGunsModule {
         com.gregguns.icbm.tools.ToolRegistration.init();
         com.gregguns.icbm.launcher.LauncherWarheadRegistration.init();
         com.gregguns.icbm.antidote.AntidoteRegistration.init();
+        // Every Carpenter's piece learns its light value as its chunk loads, so a blast's light drain never asks first.
+        com.gregguns.compat.carpenters.CarpentersLightPrimer.install();
     }
 
     /** After every mod's items exist: the silo complex loot tables (GT parts resolve through the unificator). */

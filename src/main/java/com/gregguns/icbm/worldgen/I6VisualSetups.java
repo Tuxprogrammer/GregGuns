@@ -583,6 +583,39 @@ public final class I6VisualSetups {
                     cellX = Integer.parseInt(t[1]);
                     cellZ = Integer.parseInt(t[2]);
                     break;
+                case "blast": {
+                    // blast <explosive id> <x> <y> <z> <fill>: sets one off, as a warhead would
+                    boolean ok = com.gregguns.icbm.explosive.IcbmBlasts.detonate(
+                        ctx.world(),
+                        Double.parseDouble(t[2]),
+                        Double.parseDouble(t[3]),
+                        Double.parseDouble(t[4]),
+                        com.gregguns.icbm.explosive.Explosives.get(t[1]),
+                        Integer.parseInt(t[5]),
+                        null);
+                    GregGuns.LOG.info("I6C blast {} at {},{},{} fill {} accepted={}", t[1], t[2], t[3], t[4], t[5], ok);
+                    break;
+                }
+                case "lightpeak":
+                    // lightpeak start|stop: the largest light queue ArchaicFix held at a tick's start or end
+                    if ("start".equals(t[1])) LightPeak.start(ctx.world());
+                    else GregGuns.LOG.info("I6C lightpeak {}", LightPeak.stop());
+                    break;
+                case "primerstats": {
+                    com.gregguns.compat.carpenters.CarpentersLightPrimer p = com.gregguns.compat.carpenters.CarpentersLightPrimer
+                        .installed();
+                    long[] st = p == null ? null : p.stats();
+                    GregGuns.LOG.info(
+                        "I6C primer {}",
+                        st == null ? "not installed"
+                            : "chunk loads " + st[0]
+                                + ", pieces primed "
+                                + st[1]
+                                + ", "
+                                + st[2]
+                                + " ns per chunk load");
+                    break;
+                }
                 case "locate":
                     locate(ctx.world(), Integer.parseInt(t[1]), Integer.parseInt(t[2]), Integer.parseInt(t[3]));
                     break;
@@ -890,6 +923,63 @@ public final class I6VisualSetups {
                 c.status,
                 c.reason,
                 ComplexPlacer.levelFor(c.decision, c.plan.chestSeedBase()));
+        }
+    }
+
+    /**
+     * Samples the size of ArchaicFix's queued light updates (both light types) at the start and end of every server
+     * tick, and keeps the largest: how close a blast comes to the queue size at which the engine drains mid-tick.
+     */
+    // Source:
+    // https://github.com/embeddedt/ArchaicFix/blob/0.8.0/src/main/java/org/embeddedt/archaicfix/lighting/world/lighting/LightingEngine.java#L25-L36
+    public static final class LightPeak {
+
+        private static LightPeak active;
+        private final World world;
+        private long max, samples;
+
+        private LightPeak(World world) {
+            this.world = world;
+        }
+
+        static void start(World world) {
+            if (active != null) return;
+            active = new LightPeak(world);
+            cpw.mods.fml.common.FMLCommonHandler.instance()
+                .bus()
+                .register(active);
+        }
+
+        static String stop() {
+            if (active == null) return "not running";
+            cpw.mods.fml.common.FMLCommonHandler.instance()
+                .bus()
+                .unregister(active);
+            String r = "max=" + active.max + " of 4194304 over " + active.samples + " samples";
+            active = null;
+            return r;
+        }
+
+        @cpw.mods.fml.common.eventhandler.SubscribeEvent
+        public void onTick(cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent e) {
+            try {
+                Object engine = world.getClass()
+                    .getMethod("getLightingEngine")
+                    .invoke(world);
+                java.lang.reflect.Field f = engine.getClass()
+                    .getDeclaredField("queuedLightUpdates");
+                f.setAccessible(true);
+                long n = 0;
+                for (Object q : (Object[]) f.get(engine)) {
+                    n += (Integer) q.getClass()
+                        .getMethod("size")
+                        .invoke(q);
+                }
+                max = Math.max(max, n);
+                samples++;
+            } catch (ReflectiveOperationException | RuntimeException ex) {
+                samples = -1;
+            }
         }
     }
 
