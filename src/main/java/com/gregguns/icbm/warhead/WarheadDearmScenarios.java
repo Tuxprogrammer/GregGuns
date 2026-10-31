@@ -427,7 +427,7 @@ public final class WarheadDearmScenarios {
                 ItemStack bare = InertWarheads.stack(spec.casing(), null);
                 out.check(
                     sameStacks(outputs(cut(spec.voltageIndex(), bare)), parts),
-                    spec + ": a bare casing scraps into its plates and fuze");
+                    spec + ": a bare casing scraps into its plates, fuze, nose cone and hull");
                 out.check(cut(spec.voltageIndex() - 1, bare) == null, spec + ": one voltage tier lower scraps nothing");
             }
             // A bare casing must not match a payload's removal and hand out a payload it never had.

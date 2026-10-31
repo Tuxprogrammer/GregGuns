@@ -136,7 +136,7 @@ public final class WarheadChainScenarios {
                 out.check(
                     InertWarheads.is(made) && InertWarheads.casing(made) == spec.casing()
                         && InertWarheads.payload(made) == null,
-                    spec + ": plates and fuze make the bare inert warhead at its tier");
+                    spec + ": plates, fuze, nose, hull and electronics make the bare inert warhead at its tier");
                 ItemStack below = assemble(spec.voltageIndex() - 1, items);
                 out.check(!InertWarheads.is(below), spec + ": one voltage tier lower makes no inert warhead");
             }
