@@ -71,12 +71,14 @@ final class IcbmCoverageScenario implements Scenario {
         Set<String> made = outputsOfAllRecipes();
         out.note("recipe outputs indexed: " + made.size());
         List<ItemStack> stacks = icbmStacks();
+        Set<Item> wild = new HashSet<>(ModuleContent.itemsOf(ModuleId.ICBM));
         out.note("ICBM stacks checked: " + stacks.size());
         Set<String> noRecipe = new TreeSet<>();
         for (ItemStack s : stacks) {
             String label = s.getUnlocalizedName() + "/" + s.getItemDamage();
             out.check(!technical(s), label + " is listed in NEI (not a technical item)");
-            if (!made.contains(key(s)) && !byDesign(s)) {
+            if (!(wild.contains(s.getItem()) ? madeAnyDamage(made, s.getItem()) : made.contains(key(s)))
+                && !byDesign(s)) {
                 noRecipe.add(label + " (" + s.getDisplayName() + ")");
             }
         }
@@ -84,6 +86,16 @@ final class IcbmCoverageScenario implements Scenario {
             out.check(false, "no recipe in any crafting grid or GT map, and not on the by-design list: " + miss);
         }
         return out.build();
+    }
+
+    private static boolean madeAnyDamage(Set<String> made, Item item) {
+        String prefix = Item.itemRegistry.getNameForObject(item) + "/";
+        for (String m : made) {
+            if (m.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean byDesign(ItemStack s) {
@@ -108,24 +120,12 @@ final class IcbmCoverageScenario implements Scenario {
     }
 
     /** @return every stack the ICBM module registered: items and blocks with their sub-items, machines, the casing */
-    @SuppressWarnings("unchecked")
     private static List<ItemStack> icbmStacks() {
         List<ItemStack> out = new ArrayList<>();
         for (Item item : ModuleContent.itemsOf(ModuleId.ICBM)) {
-            List<ItemStack> subs = new ArrayList<>();
-            try {
-                item.getSubItems(item, null, subs);
-            } catch (RuntimeException e) {
-                subs.clear();
-            }
-            if (subs.isEmpty()) {
-                subs.add(new ItemStack(item));
-            }
-            for (ItemStack sub : subs) {
-                if (ModuleContent.moduleOf(sub) == ModuleId.ICBM) {
-                    out.add(sub);
-                }
-            }
+            // Item#getSubItems is client-only (stripped on a dedicated server), so an item is checked by its
+            // first damage value with a recipe: the item has a recipe when any damage of it is made.
+            out.add(new ItemStack(item));
         }
         if (GregTechAPI.sBlockMachines != null) {
             for (int id : GregGunsMTEIDs.icbm()) {
