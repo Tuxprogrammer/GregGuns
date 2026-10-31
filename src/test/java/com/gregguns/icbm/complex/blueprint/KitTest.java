@@ -77,6 +77,28 @@ class KitTest {
     }
 
     @Test
+    void aChestWalledInByMarksIsReachedAtTheCostOfAnotherChest() {
+        Kit k = room(12, 10, 6);
+        k.legend()
+            .set('M', Legend.machine(com.gregguns.icbm.complex.MachineRole.WORKBENCH));
+        assertTrue(k.put(0, 0, 'C'));
+        assertTrue(k.put(1, 0, 'M'));
+        assertTrue(k.put(0, 1, 'C'));
+        assertTrue(k.put(1, 1, 'M'));
+        k.reachable();
+        assertNotNull(k.at(0, 0), "the corner chest stays");
+        assertNull(k.at(0, 1), "the chest in its way gave way");
+    }
+
+    @Test
+    void anOpenPocketIsNeverLeftWalledIn() {
+        Kit k = room(12, 10, 6);
+        assertTrue(k.anchor(0, 0, ".k", "kk"));
+        k.reachable();
+        assertTrue(k.at(1, 0) == null || k.at(0, 1) == null, "a crate gave way to the corner cell");
+    }
+
+    @Test
     void mirroredModulesSwapSides() {
         Legend l = Legend.defaults();
         Module m = Module.of(l, "kC.");

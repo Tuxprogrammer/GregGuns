@@ -663,14 +663,19 @@ public final class Kit {
             for (int d = 0; d < D; d++) {
                 Legend.Entry e = entry[i(a, d)];
                 if (e == null || e.kind != Legend.Entry.Kind.MARK || touches(seen, a, d)) continue;
-                clearPath(seen, a, d);
+                clearPath(seen, a, d, false);
                 seen = flood();
+                // Walled in by other chests: the nearest of them gives way (a last resort; stamps rarely do it).
+                if (!touches(seen, a, d)) {
+                    clearPath(seen, a, d, true);
+                    seen = flood();
+                }
             }
         }
         for (Opening o : openings) {
             for (int[] c : o.inside(L, D)) {
                 if (!in(c[0], c[1]) || seen[i(c[0], c[1])]) continue;
-                clearPath(seen, c[0], c[1]);
+                clearPath(seen, c[0], c[1], false);
                 seen = flood();
             }
         }
@@ -678,7 +683,7 @@ public final class Kit {
         for (int a = 0; a < L; a++) {
             for (int d = 0; d < D; d++) {
                 if (seen[i(a, d)] || !walk(i(a, d))) continue;
-                clearPath(seen, a, d);
+                clearPath(seen, a, d, false);
                 seen = flood();
                 // Walled in by chests or machines alone: a crate fills the cell instead.
                 if (!seen[i(a, d)] && entry[i(a, d)] == null && base[i(a, d)] == FREE && !reserved[i(a, d)]) {
@@ -688,7 +693,11 @@ public final class Kit {
         }
     }
 
-    private void clearPath(boolean[] seen, int a0, int d0) {
+    /**
+     * Clears the shortest way from (a0, d0) through pieces to a walked cell; with {@code throughChests} a chest on the
+     * way gives way too (never a machine or a guard).
+     */
+    private void clearPath(boolean[] seen, int a0, int d0, boolean throughChests) {
         int[] prev = new int[L * D];
         java.util.Arrays.fill(prev, -2);
         ArrayDeque<int[]> q = new ArrayDeque<int[]>();
@@ -700,7 +709,7 @@ public final class Kit {
                 int a = c[0] + x.da, d = c[1] + x.dd;
                 if (!in(a, d) || prev[i(a, d)] != -2) continue;
                 Legend.Entry e = entry[i(a, d)];
-                if (e != null && e.kind == Legend.Entry.Kind.MARK) continue;
+                if (e != null && e.kind == Legend.Entry.Kind.MARK && !(throughChests && e.chest())) continue;
                 prev[i(a, d)] = i(c[0], c[1]);
                 if (seen[i(a, d)]) {
                     for (int at = prev[i(a, d)]; at >= 0 && at != i(a0, d0); at = prev[at]) remove(at / D, at % D);
@@ -711,10 +720,10 @@ public final class Kit {
         }
     }
 
-    /** Removes the piece on a cell, and every cell of its group. */
+    /** Removes the piece (or a chest) on a cell, and every cell of its group. */
     private void remove(int a, int d) {
         Legend.Entry e = entry[i(a, d)];
-        if (e == null || e.kind != Legend.Entry.Kind.PIECE) return;
+        if (e == null || e.kind != Legend.Entry.Kind.PIECE && !e.chest()) return;
         int g = group[i(a, d)];
         if (g == 0) {
             unset(a, d);
