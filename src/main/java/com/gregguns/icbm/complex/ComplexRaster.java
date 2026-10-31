@@ -100,18 +100,12 @@ public final class ComplexRaster {
     }
 
     private static byte furniture(String key) {
-        // A small room's furniture piece (D259): its style cube, or open where it has none.
+        // A room's piece (D259, D305): its style cube, a prop cell the marks pass fills, or open where it has none.
         FurniturePiece piece = FurniturePiece.of(key);
-        if (piece != null) return piece.fallbackRole();
+        if (piece != null) return piece.role();
         switch (key) {
-            case RoomFurniture.PARTITION:
-                return Cell.WALL; // an armory display wall: the room's wall block
             case "TABLE":
                 return Cell.FURN_TABLE;
-            case "CONSOLE":
-                return Cell.FURN_CONSOLE;
-            case "BUNK":
-                return Cell.FURN_BUNK;
             case "BASIN":
                 return Cell.BASIN;
             default:

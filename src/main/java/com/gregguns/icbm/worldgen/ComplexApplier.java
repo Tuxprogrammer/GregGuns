@@ -114,10 +114,20 @@ public final class ComplexApplier {
                 break;
             }
             case CHEST:
-                if (sink.setBlock(x, y, z, Blocks.chest, 2)) {
+                if (sink.setBlock(x, y, z, Blocks.chest, CHEST_META[p.facing() & 3])) {
                     sink.setTile(x, y, z, SiloChests.filledChest(p, worldSeed, cellX, cellZ));
                 }
                 break;
+            case CRATE: {
+                // An empty wooden crate on a chest spot the budget left over (D315): Chisel's crate planks in the
+                // room's wood, vanilla planks of that wood without Chisel.
+                int wood = crateWood(p.key());
+                Block crate = cpw.mods.fml.common.registry.GameRegistry
+                    .findBlock("chisel", CRATE_WOODS[wood] + "_planks");
+                if (crate != null) sink.setBlock(x, y, z, crate, CRATE_META);
+                else sink.setBlock(x, y, z, Blocks.planks, wood);
+                break;
+            }
             case SPAWNER:
                 spawner(p.spawner(), x, y, z);
                 break;
@@ -129,6 +139,9 @@ public final class ComplexApplier {
                 break;
             case FRAME_WALL:
                 frameWall(p);
+                break;
+            case BLOCK:
+                block(p, x, y, z);
                 break;
             default:
                 break;
@@ -179,6 +192,26 @@ public final class ComplexApplier {
     private static final int[] FRAME_DX = { 0, -1, 0, 1 };
     private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
 
+    /** Chest metas by a mark's facing (0 south, 1 west, 2 north, 3 east): the way the chest's front looks. */
+    private static final int[] CHEST_META = { 3, 4, 2, 5 };
+
+    /**
+     * Chisel's plank blocks in vanilla's plank order (0 oak to 5 dark oak); meta 10 is the crate. Source:
+     * https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java#L4377
+     */
+    private static final String[] CRATE_WOODS = { "oak", "spruce", "birch", "jungle", "acacia", "dark_oak" };
+    private static final int CRATE_META = 10;
+
+    /** @return the wood a crate placement names, 0 to 5; spruce for a bad key */
+    static int crateWood(String key) {
+        try {
+            int w = Integer.parseInt(key);
+            return w >= 0 && w < CRATE_WOODS.length ? w : 1;
+        } catch (NumberFormatException e) {
+            return 1;
+        }
+    }
+
     private static Block rubble(int x, int y, int z) {
         return ((x * 31 + y * 17 + z * 13) & 3) == 0 ? Blocks.gravel : Blocks.cobblestone;
     }
@@ -220,7 +253,7 @@ public final class ComplexApplier {
             placeCasing(x, y, z);
             return;
         } else {
-            MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead());
+            MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead(), p.variant());
             if (pick == null) {
                 GregGuns.LOG.warn("No GT machine for {} at tier {}", role, p.tier());
                 return;
@@ -243,8 +276,26 @@ public final class ComplexApplier {
                 .build(mteId, front, com.gregguns.icbm.complex.gen.GtMachineHook::claim);
             if (tile == null) return;
             MachineFacingAudit.check(tile, "ComplexApplier.placeMte " + p, x, y, z);
-            sink.setTile(x, y, z, tile);
+            if (sink.setTile(x, y, z, tile)) initDefaultModes(tile);
         }
+    }
+
+    /**
+     * Gives a generated machine its default modes, as GT's own placement does: owner first (the claim in
+     * {@link MachineFacing#build}), then the front, then the modes. A hatch left without them draws GT's inactive
+     * face. A basic machine's default modes only set its main facing to its front and read its owner's client
+     * preferences (none for a generated machine), and {@link MachineFacing#build} already set the main facing the
+     * room wants (D208), so a basic machine is left as built: its modes would turn the main facing to the output side.
+     * Needs the tile in its world, so it runs after the tile is set; a window without a world skips it.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/blocks/ItemMachines.java#L286-L305
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEBasicMachine.java#L517-L534
+    static void initDefaultModes(gregtech.api.metatileentity.BaseMetaTileEntity tile) {
+        IMetaTileEntity mte = tile.getMetaTileEntity();
+        if (mte == null || tile.getWorld() == null
+            || mte instanceof gregtech.api.metatileentity.implementations.MTEBasicMachine) return;
+        mte.initDefaultModes(null);
     }
 
     /**
@@ -269,7 +320,55 @@ public final class ComplexApplier {
 
     /** @return one machine item for a placement, for scenarios that check what would be placed */
     public static ItemStack stackFor(Placement p) {
-        MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead());
+        MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead(), p.variant());
         return pick == null ? null : pick.stack();
+    }
+
+    /**
+     * A {@link Placement.Kind#BLOCK}: the named block at its meta, else its fallback at meta 0, else nothing (logged
+     * once per name). A lit furnace gets a tile that burns for a long while with coal in the fuel slot and sand to
+     * smelt, so it is still lit when a player walks in (D309). A furnace re-aims itself by its neighbors when placed,
+     * so its meta is written again afterwards, inside the window only.
+     */
+    private void block(Placement p, int x, int y, int z) {
+        Block b = resolve(p.block());
+        int meta = p.meta();
+        if (b == null) {
+            b = resolve(p.fallback());
+            meta = 0;
+        }
+        if (b == null) {
+            if (MISSING.add(p.block())) {
+                GregGuns.LOG.info("Complex block {} is absent this run; left as built", p.block());
+            }
+            return;
+        }
+        if (!sink.setBlock(x, y, z, b, meta)) {
+            return;
+        }
+        if (b == Blocks.lit_furnace) {
+            net.minecraft.tileentity.TileEntityFurnace f = new net.minecraft.tileentity.TileEntityFurnace();
+            f.furnaceBurnTime = LIT_BURN_TICKS;
+            f.currentItemBurnTime = LIT_BURN_TICKS;
+            f.setInventorySlotContents(0, new ItemStack(Blocks.sand, 64));
+            f.setInventorySlotContents(1, new ItemStack(net.minecraft.init.Items.coal, 32));
+            sink.setTile(x, y, z, f);
+        }
+        if ((b == Blocks.lit_furnace || b == Blocks.furnace) && world != null
+            && sink.window()
+                .contains(x, z)) {
+            world.setBlockMetadataWithNotify(x, y, z, meta, 2);
+        }
+    }
+
+    /** Ticks a placed lit furnace burns before it needs its fuel slot (the most a furnace saves: a short). */
+    static final int LIT_BURN_TICKS = Short.MAX_VALUE;
+
+    private static final java.util.Set<String> MISSING = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static Block resolve(String name) {
+        if (name == null) return null;
+        Block b = Block.getBlockFromName(name);
+        return b == null || b == Blocks.air && !"minecraft:air".equals(name) ? null : b;
     }
 }

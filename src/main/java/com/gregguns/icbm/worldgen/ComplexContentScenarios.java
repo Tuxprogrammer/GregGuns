@@ -37,7 +37,7 @@ public final class ComplexContentScenarios {
     }
 
     private static String id(ItemStack s) {
-        return net.minecraft.item.Item.itemRegistry.getNameForObject(s.getItem()) + "@" + s.getItemDamage();
+        return SiloChests.itemId(s);
     }
 
     private static final class LootCeiling implements Scenario {
@@ -245,7 +245,8 @@ public final class ComplexContentScenarios {
                     for (Placement p : ComplexContents.build(plan, level, ceiling, new int[] { 100, 200 })) {
                         if (p.kind() == Placement.Kind.MACHINE) {
                             out.check(p.tier() <= ceiling, dim + " machine tier " + p.tier() + " > " + ceiling);
-                            MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead());
+                            MachinePicker.Pick pick = MachinePicker
+                                .pick(p.role(), Math.max(1, p.tier()), p.dead(), p.variant());
                             if (pick != null && p.role() != MachineRole.NASA_WORKBENCH
                                 && p.role() != MachineRole.LAUNCH_CONTROL
                                 && p.role() != MachineRole.MAGAZINE_CASING) {
@@ -270,12 +271,7 @@ public final class ComplexContentScenarios {
                                     a.add(id(st)); // an armory display chest holds its gun's ammo
                                 }
                             }
-                            for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {
-                                ItemStack st = LootCategories.stack(l.ref(), 1);
-                                if (st != null) {
-                                    a.add(id(st));
-                                }
-                            }
+                            a.addAll(SiloChests.allowedIds(p.key(), ceiling)); // lines, junk, spoil (D317)
                             return a;
                         });
                         Set<String> own = new HashSet<>(allowed);

@@ -66,10 +66,14 @@ public enum StyleGroup {
                 return CREW;
             case "MESS_GALLEY":
             case "CAFETERIA":
+            case "REC_LOUNGE":
                 return CAFETERIA;
             case "INFIRMARY":
             case "DECON_AIRLOCK":
+            case "CHEM_LAB":
+            case "SHOWERS_LAUNDRY":
                 return MEDICAL;
+            case "INCINERATOR":
             case "GENERATOR_HALL":
             case "AIR_HANDLING":
             case "PUMP_ROOM":
@@ -80,6 +84,7 @@ public enum StyleGroup {
             case "WARHEAD_MAGAZINE":
             case "STOCKPILE":
             case "ARMORY":
+            case "COLD_STORAGE":
                 return STORAGE;
             case "VEHICLE_BAY":
                 return VEHICLE_BAY;
@@ -88,6 +93,8 @@ public enum StyleGroup {
             case "MISSILE_ASSEMBLY":
                 return MISSILE_ASSEMBLY;
             case "WATER_TREATMENT":
+            case "UNDERGROUND_FARM":
+            case "MUSHROOM_CELLAR":
                 return WATER_TREATMENT;
             default:
                 return GUARD;

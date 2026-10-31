@@ -100,14 +100,16 @@ public final class ComplexLayout {
         return plan;
     }
 
+    /** The fewest hall junctions a plan holds, each with a guard post mark (D233). */
+    static final int MIN_BRANCH_POSTS = 2;
+
     /** Regrowths tried when a plan misses its targets; each derives its seed from the plan seed and the attempt. */
     static final int ATTEMPTS = 8;
 
     /**
-     * Grows the plan's geometry. A growth that misses the coverage target (with a margin), or the room, silo or
-     * guard-post count, is grown again from a seed mixed from the plan seed and the attempt number, and the best
-     * attempt
-     * is kept, so the result is still a pure function of the seed (D230).
+     * Grows the plan's geometry. A growth that misses the coverage target (with a margin), or the room, silo,
+     * guard-post or junction count, is grown again from a seed mixed from the plan seed and the attempt number, and the
+     * best attempt is kept, so the result is still a pure function of the seed (D230).
      */
     static ComplexGrower grown(long seed) {
         ComplexGrower best = null;
@@ -127,11 +129,13 @@ public final class ComplexLayout {
             boolean ok = rooms >= MIN_ROOMS && rooms <= MAX_ROOMS
                 && cover >= MIN_COVERAGE_PERCENT + 1
                 && silos >= MIN_SILOS
-                && posts >= MIN_POSTS;
+                && posts >= MIN_POSTS
+                && g.hallBranchPoints() >= MIN_BRANCH_POSTS;
             if (ok) return g;
             int score = cover - 10 * Math.max(0, MIN_ROOMS - rooms)
                 - 100 * Math.max(0, MIN_SILOS - silos)
-                - 10 * Math.max(0, MIN_POSTS - posts);
+                - 10 * Math.max(0, MIN_POSTS - posts)
+                - 10 * Math.max(0, MIN_BRANCH_POSTS - g.hallBranchPoints());
             if (score > bestScore) {
                 bestScore = score;
                 best = g;
@@ -180,6 +184,41 @@ public final class ComplexLayout {
             Door d = r.door();
             doorLo = nsDoor ? d.x0 - b.minX - 1 : d.z0 - b.minZ - 1;
             doorHi = nsDoor ? d.x1 - b.minX - 1 : d.z1 - b.minZ - 1;
+        }
+
+        /**
+         * A frame with no doorway of its own (the hub): {@code side} picks the frame's turn, and the doorway range is
+         * empty (-1).
+         */
+        public Frame(Box b, int side) {
+            this.b = b;
+            this.side = side;
+            boolean nsDoor = side == 0 || side == 2;
+            lateral = (nsDoor ? b.sizeX() : b.sizeZ()) - 2;
+            depth = (nsDoor ? b.sizeZ() : b.sizeX()) - 2;
+            doorLo = -1;
+            doorHi = -1;
+        }
+
+        /** @return the lateral index of the column (x, z); -1 or {@code lateral} for a side wall's column */
+        public int a(int x, int z) {
+            return side == 0 || side == 2 ? x - b.minX - 1 : z - b.minZ - 1;
+        }
+
+        /**
+         * @return the depth index of the column (x, z); -1 for the back wall's column, {@code depth} the door wall's
+         */
+        public int d(int x, int z) {
+            switch (side) {
+                case 0:
+                    return b.maxZ - 2 - z;
+                case 2:
+                    return z - b.minZ - 1;
+                case 1:
+                    return x - b.minX - 1;
+                default:
+                    return b.maxX - 2 - x;
+            }
         }
 
         public int x(int a, int d) {

@@ -36,17 +36,60 @@ public enum RoomKind {
     /** A big mess hall: rows of tables and a counter. */
     CAFETERIA(32, 26, false),
     /** Basins of standing water and pumps. */
-    WATER_TREATMENT(30, 24, false);
+    WATER_TREATMENT(30, 24, false),
+    /** Lit crop fields between water channels; dealt only to a slot of at least 20 x 16 walls. */
+    UNDERGROUND_FARM(44, 34, false, 20, 16, 0, 0),
+    /** Mycelium beds framed by mushroom stems. */
+    MUSHROOM_CELLAR(22, 18, false),
+    /** Freezer racks, packed ice and reefer containers. */
+    COLD_STORAGE(26, 22, false),
+    /** Firing lanes down to wool targets; the door is on a short wall, and it needs at least 12 x 22 walls. */
+    SHOOTING_RANGE(18, 36, false, 12, 22, 0, 0),
+    /** Barred cells and a guard desk. */
+    BRIG(26, 20, false),
+    /** Lab benches and working GT chemical reactors. */
+    CHEM_LAB(26, 22, false),
+    /** Shower stalls and wash tubs; a small room that never grows past 18 x 16 walls. */
+    SHOWERS_LAUNDRY(14, 12, false, 0, 0, 18, 16),
+    /** Pool tables, a bar and sofas. */
+    REC_LOUNGE(26, 22, false),
+    /** A furnace bank, GT recyclers and ash heaps. */
+    INCINERATOR(22, 20, false);
 
     public final int length;
     public final int depth;
     /** Always present in every complex. */
     public final boolean mandatory;
+    /** The smallest walls-included size (along the door wall, away from it) the kind is dealt to; 0 for no minimum. */
+    public final int minLateral, minDepth;
+    /** The largest walls-included size the kind is placed at or grows to; 0 for the usual caps. */
+    public final int maxLateral, maxDepth;
 
     RoomKind(int length, int depth, boolean mandatory) {
+        this(length, depth, mandatory, 0, 0, 0, 0);
+    }
+
+    RoomKind(int length, int depth, boolean mandatory, int minLateral, int minDepth, int maxLateral, int maxDepth) {
         this.length = length;
         this.depth = depth;
         this.mandatory = mandatory;
+        this.minLateral = minLateral;
+        this.minDepth = minDepth;
+        this.maxLateral = maxLateral;
+        this.maxDepth = maxDepth;
+    }
+
+    /**
+     * @param lateral walls-included size along the door wall
+     * @param depth   walls-included size away from it
+     * @return whether a room of this kind may stand at that size (its minimum and maximum, D307); a kind deeper than
+     *         wide (the range) also keeps its door on a short wall
+     */
+    public boolean fits(int lateral, int depth) {
+        return lateral >= minLateral && depth >= minDepth
+            && (maxLateral == 0 || lateral <= maxLateral)
+            && (maxDepth == 0 || depth <= maxDepth)
+            && (this.length >= this.depth || lateral <= depth);
     }
 
     /** @return true for the small annex rooms (guard post, airlock), which keep the minor hallways' height */

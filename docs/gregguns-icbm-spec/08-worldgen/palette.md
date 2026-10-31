@@ -95,7 +95,7 @@ Not used, on purpose: GT machine casings, GT frame boxes, GT metal and storage b
 
 ## Furniture (D259, D262, D263)
 
-The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) get real furniture from BiblioCraft 1.11.7 when it is loaded, and the cube furniture above when it is not. Each piece is a tile entity, so only the small rooms hold them: about 17 rooms of a complex, and about 535 tile-entity pieces (BiblioCraft and lockers) over 300 plans.
+Every room's blueprint (see [silo-layout](silo-layout.md#furnishing-d208-d305-d306)) gets real furniture from BiblioCraft 1.11.7 when it is loaded, and the cube furniture above when it is not. The props are in [Props](#props-d305-d306-d308).
 
 | Piece | BiblioCraft block (registry name) | Meta | Facing (tile NBT) | Without BiblioCraft |
 |---|---|---|---|---|
@@ -114,7 +114,35 @@ The small rooms (see [silo-layout](silo-layout.md#furnishing-d208-d234-d259)) ge
 - **Wood:** one per room, spruce, dark oak, birch or oak, from the plan seed and the room id.
 - **Facing:** BiblioCraft turns a piece to face the player who places it, storing `(playerFacing + 1) % 4` (player facing 0 south, 1 west, 2 north, 3 east). A piece whose front faces `f` gets `(f + 3) % 4`. The real-pack renders confirm it (a typewriter set at each of the four angles shows its keys west, north, east and south), and that chairs face their tables, desks and typewriters face their chairs, and shelves, bookcases, cabinets, clipboards and lockers face into the room.
 - **How it is placed:** `FurnitureFiller` (the complex's mark filler) sets the block through the window's sink by registry name (`GameRegistry.findBlock`, guarded by `Loader.isModLoaded("BiblioCraft")`), then writes the facing into the tile's own NBT (`writeToNBT`, set the keys, `readFromNBT`). No BiblioCraft class is linked and none of its assets ship (D262).
-- **Worth:** BiblioCraft furniture is wood and drops itself; a GT ULV Locker is a cheap machine. Nothing here is a material sink worth farming.
+- **Worth:** BiblioCraft furniture is wood and drops itself; a GT ULV Locker is a cheap machine.
+
+## Props (D305, D306, D308)
+
+A blueprint's props are written by `FurnitureFiller` through `PropBlocks`: the pack block where the pack has one, else the vanilla block, so a pack without Chisel or GT still reads. The raster writes `PROP` (air) under each, and the marks pass fills it. The filler writes the state-free look; the contents pass sets what the room's state changes (a lit furnace, a full cauldron, crops, an open door; D309) and places the metal props, whose rung follows the ceiling (D308).
+
+| Piece | Block (pack, then vanilla) | Meta |
+|---|---|---|
+| Bed (foot, head) | `minecraft:bed` | foot: the direction to the head (0 south, 1 west, 2 north, 3 east); head: that + 8 |
+| Wooden crate | Chisel `<wood>_planks` (oak, spruce, birch, jungle, acacia, dark oak) meta 10, 11 or 12 (crate, fancy crate, crate extra); `minecraft:planks` | the room's wood |
+| Container prism cell | Chisel `steelblock` meta 1 or `aluminumblock` meta 1 (crate faces, joined by their connected textures), `iron_block` meta 10 for a reefer; `minecraft:iron_block` | |
+| Metal prop | placed by the contents pass (`MetalProps`, D308) | |
+| Furnace | `minecraft:furnace`, cold | front: 2 north, 3 south, 4 west, 5 east |
+| Cauldron, brewing stand | `minecraft:cauldron` (empty), `minecraft:brewing_stand` | |
+| Iron bars, pane curtain, glass | `minecraft:iron_bars`, `minecraft:stained_glass_pane` meta 0 (white), `minecraft:glass` | |
+| Vent riser | Chisel `factoryblock2` meta 1; `minecraft:iron_bars` | |
+| Casing frame | GT's Stainless Steel frame box (as the magazine casing); `minecraft:iron_bars` | |
+| Coal bunker, ash heap | `minecraft:coal_block`; `minecraft:gravel` or `soul_sand` | |
+| Crafting table, anvil | `minecraft:crafting_table`; `minecraft:anvil` (its damage in the high bits) | |
+| Mushroom stem | `minecraft:brown_mushroom_block` meta 10 | |
+| Jukebox, screen | `minecraft:jukebox`; Chisel `futura` meta 0, `minecraft:stained_hardened_clay` meta 15 | |
+| Pool table | `minecraft:planks` meta 5 (dark oak) under `minecraft:carpet` meta 13 (green felt) | |
+| Rug, laundry | `minecraft:carpet` (its color); `minecraft:wool` meta 0 or 8 | |
+| Target | `minecraft:wool` meta 14 (red) on `minecraft:fence` | |
+| Iron door (two halves) | `minecraft:iron_door`, closed | lower: the edge it stands on (0 west, 1 north, 2 east, 3 south); upper: 8 |
+| Shower head | `minecraft:tripwire_hook` on the back wall | the way it faces |
+| Floor inlays | `minecraft:water`; `minecraft:farmland` meta 7 (the crop is the contents pass's); `minecraft:mycelium` with a brown or red mushroom on it | |
+
+The Chisel ids are from Chisel 2.17.34-GTNH's `Features.java` (the pack's version); `chisel.cfg` in the pack has each of these features on.
 
 The Ztones ids come from the jar (Ztones 2.2.2 has no public source): each metal set block is named `<set>Block` and registers under its unlocalized name, so its id is `Ztones:tile.<set>Block`, as the live pack's FML registry lists it. Each set has 16 metas; the ones used were checked against the jar's textures (`sets/<set>/<set>_ (n).png`). `icbm.palette.resolve` fails when any chain entry of a loaded mod is missing, so a wrong id cannot fall back silently (D272).
 

@@ -632,7 +632,6 @@ public final class ComplexPlacer implements ComplexWriter {
             case Cell.DOOR_FRAME:
             case Cell.FURN_TABLE:
             case Cell.FURN_CONSOLE:
-            case Cell.FURN_BUNK:
             case Cell.FURN_SHELF:
                 return true;
             default:

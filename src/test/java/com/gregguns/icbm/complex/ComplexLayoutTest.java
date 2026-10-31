@@ -320,12 +320,13 @@ class ComplexLayoutTest {
                 if (r.kind() == RoomKind.ARMORY) {
                     armories++;
                     displays += here;
-                    assertTrue(here >= 1 && here <= 24, "an armory shows about sixteen guns: " + here);
+                    assertTrue(here >= 1, "an armory shows guns: " + here);
                 }
             }
         }
         assertTrue(armories > 100, "armories are mandatory: " + armories);
-        assertTrue(displays / armories >= 12 && displays / armories <= 20, "about as many guns as before");
+        // The 24-gun cap is lifted for alpha (D309): rows every six cells while they fit.
+        assertTrue(displays / armories >= 12, "an armory shows a dozen guns or more: " + displays / armories);
     }
 
     private static long key(int x, int z) {
@@ -395,10 +396,7 @@ class ComplexLayoutTest {
                     assertTrue(d >= 0, "inside the room, not on a wall: " + what);
                     assertEquals(Cell.AIR, raster.at(m.x(), 1, m.z()), what);
                     assertFalse(f.blocksDoor(a, d), "doorway stays clear: " + what);
-                    if (m.kind() == MarkKind.LOOT_CHEST && r.kind() == RoomKind.STOCKPILE) {
-                        assertEquals(0, d, "stockpile chests stand on the far wall: " + what);
-                        stock++;
-                    }
+                    if (m.kind() == MarkKind.LOOT_CHEST && r.kind() == RoomKind.STOCKPILE) stock++;
                     int reach = m.key()
                         .equals(MachineRole.NASA_WORKBENCH.name()) ? 2 : 1;
                     boolean ok = false;
@@ -526,10 +524,17 @@ class ComplexLayoutTest {
                         + " x "
                         + zs.size());
                 boolean tall = b.sizeY() > ComplexLayout.MINOR_HEIGHT;
-                int gap = tall ? ComplexFurnisher.TILE_GAP : ComplexFurnisher.LOW_GAP;
+                Object sec = p.section(id);
+                // D305: a room's blueprint sets its gap; the hub and the halls keep the usual one.
+                int roomGap = id != 0 && sec instanceof Room
+                    ? com.gregguns.icbm.complex.blueprint.RoomBlueprints.of(((Room) sec).kind())
+                        .lampGap()
+                    : ComplexFurnisher.TILE_GAP;
+                int gap = tall ? roomGap : ComplexFurnisher.LOW_GAP;
                 assertGrid(xs, b.minX + 1, b.maxX - 2, gap, "x of section " + id);
                 assertGrid(zs, b.minZ + 1, b.maxZ - 2, gap, "z of section " + id);
-                if (tall) assertEquals(ceiling, floor, "a light tile under every ceiling lamp");
+                // A light tile under every ceiling lamp, and the shadow fill's tiles beside them (D305).
+                if (tall) assertTrue(floor.containsAll(ceiling), "a light tile under every ceiling lamp");
                 else assertTrue(floor.isEmpty());
             }
         }
@@ -612,6 +617,11 @@ class ComplexLayoutTest {
             for (int x = 0; x < S; x++) for (int y = 0; y < Y; y++) for (int z = 0; z < S; z++) {
                 byte c = r.at(x, y, z);
                 opaque[(x * Y + y) * S + z] = !(Cell.open(c) || c == Cell.WINDOW);
+            }
+            // D305: a bed, bars, a pane, a cauldron or a rug lets light through; every other prop is opaque.
+            for (Mark m : p.allMarks()) {
+                FurniturePiece fp = m.kind() == MarkKind.FURNITURE ? FurniturePiece.of(m.key()) : null;
+                if (fp != null && fp.clear() && fp.role() == Cell.PROP) opaque[(m.x() * Y + m.y()) * S + m.z()] = false;
             }
             boolean[] occupied = new boolean[S * S];
             for (Mark m : p.allMarks()) {

@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.LootKeys;
+import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.complex.Room;
 import com.gregguns.icbm.complex.RoomKind;
@@ -145,18 +147,37 @@ class ComplexContentsTest {
     }
 
     @Test
-    void everyChestMarkBecomesAChestWithAStableIndexAndACeilingTable() {
+    void everyChestSpotBecomesAChestOrACrateAndDisplaysAreExtra() {
         for (long s = 0; s < 30; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 0, 0);
-            long marks = plan.allMarks()
-                .stream()
-                .filter(m -> m.kind() == MarkKind.LOOT_CHEST || m.kind() == MarkKind.GUN_DISPLAY)
-                .count();
             for (ActivityLevel level : ActivityLevel.values()) {
                 List<Placement> ps = ComplexContents.build(plan, level, 6, null);
-                // Displays in a collapsed room or an abandoned complex's stripped slots are not placed.
-                if (level == ActivityLevel.OPERATIONAL) assertEquals(marks, count(ps, Kind.CHEST));
-                else assertTrue(count(ps, Kind.CHEST) <= marks);
+                long spots = 0, displays = 0;
+                java.util.Set<Long> collapsedCells = new HashSet<>();
+                for (Placement p : ps) {
+                    if (p.kind() == Kind.COLLAPSE) {
+                        collapsedCells.add((long) p.box().minX << 32 | p.box().minZ & 0xFFFFFFFFL);
+                    }
+                }
+                for (Room r : roomsWithHall(plan)) {
+                    boolean down = collapsedCells.contains((long) r.bounds().minX << 32 | r.bounds().minZ & 0xFFFFFFFFL)
+                        && r.id() != plan.hall()
+                            .id();
+                    for (Mark m : r.marks()) {
+                        if (down) continue;
+                        if (m.kind() == MarkKind.LOOT_CHEST) spots++;
+                        if (m.kind() == MarkKind.GUN_DISPLAY) displays++;
+                    }
+                }
+                long roomChests = ps.stream()
+                    .filter(p -> p.kind() == Kind.CHEST && !LootKeys.ARMORY_AMMO.equals(p.key()))
+                    .count();
+                long displayChests = ps.stream()
+                    .filter(p -> p.kind() == Kind.CHEST && LootKeys.ARMORY_AMMO.equals(p.key()))
+                    .count();
+                assertEquals(Math.min(ChestBudget.target(level), spots), roomChests, "room chests, " + level);
+                assertEquals(spots, roomChests + count(ps, Kind.CRATE), "every spot is a chest or a crate");
+                assertEquals(displays, displayChests, "every standing display is placed, outside the budget");
                 Set<Integer> idx = new HashSet<>();
                 for (Placement p : ps) {
                     if (p.kind() == Kind.CHEST) {
@@ -165,14 +186,22 @@ class ComplexContentsTest {
                             p.category()
                                 .endsWith("_luv"),
                             p.category());
+                        assertNotNull(p.roomState(), "a room chest knows its room's state");
                         assertEquals(
-                            ActivityProfile.of(level)
+                            RoomLootDraw.profile(p.roomState())
                                 .richness(),
                             p.richness());
                     }
                 }
             }
         }
+    }
+
+    private static List<Room> roomsWithHall(ComplexPlan plan) {
+        List<Room> out = new java.util.ArrayList<>();
+        out.add(plan.hall());
+        out.addAll(plan.rooms());
+        return out;
     }
 
     @Test
@@ -358,18 +387,6 @@ class ComplexContentsTest {
     }
 
     @Test
-    void armoryDisplaysKeepTheChestKeepChanceOfTheirLevel() {
-        // One knob: a display slot survives with the same chance as any other chest of its level (ActivityProfile).
-        assertEquals(
-            1.0,
-            ActivityProfile.of(ActivityLevel.OPERATIONAL)
-                .chestKeepChance());
-        assertTrue(
-            ActivityProfile.of(ActivityLevel.ABANDONED)
-                .chestKeepChance() < 1.0);
-    }
-
-    @Test
     void guardChancesGrowByAtMostHalfFromEvToUmv() {
         assertEquals(1.0, ComplexContents.guardScale(SiloCeiling.EV));
         assertEquals(1.5, ComplexContents.guardScale(SiloCeiling.UMV), 1e-9);
@@ -406,14 +423,14 @@ class ComplexContentsTest {
     }
 
     @Test
-    void abandonedComplexesHoldFarFewerWorkingMachinesAndChests() {
+    void abandonedComplexesHoldFarFewerWorkingMachines() {
         long[] ab = machinesAndChests(ActivityLevel.ABANDONED);
         long[] pa = machinesAndChests(ActivityLevel.PARTLY_ABANDONED);
         long[] op = machinesAndChests(ActivityLevel.OPERATIONAL);
         assertTrue(op[0] > 0 && ab[0] * 5 < pa[0], "working machines " + ab[0] + " vs " + pa[0]);
         assertTrue(ab[0] * 10 < op[0], "working machines " + ab[0] + " vs " + op[0]);
-        assertTrue(ab[1] * 2 < op[1], "chests " + ab[1] + " vs " + op[1]);
-        assertTrue(ab[1] > 0, "a few chests remain");
+        // the chest totals are the budget's (D315): never more in a ruin than in a staffed complex
+        assertTrue(ab[1] > 0 && ab[1] <= op[1], "chests " + ab[1] + " vs " + op[1]);
     }
 
     private static int spawners(java.util.List<Placement> placements) {

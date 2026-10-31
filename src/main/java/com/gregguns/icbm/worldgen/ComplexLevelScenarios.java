@@ -101,6 +101,8 @@ public final class ComplexLevelScenarios {
         registry.register(new Guards());
         registry.register(new Armory());
         SalvageScenarios.registerAll(registry);
+        ChestLootScenarios.registerAll(registry);
+        RoomScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
@@ -463,8 +465,9 @@ public final class ComplexLevelScenarios {
                 "an abandoned complex holds one or two guard spawners (D284): " + ab.spawners);
             out.checkEquals("abandoned elite spawners", 0, ab.elite);
             out.check(
-                ab.machinesWorking * 4 <= op.machinesWorking && ab.chests * 2 <= op.chests,
-                "an abandoned complex has far fewer working machines and chests (D284): machines " + ab.machinesWorking
+                ab.machinesWorking * 4 <= op.machinesWorking && ab.chests <= op.chests,
+                "an abandoned complex has far fewer working machines (D284) and no more chests (D315): machines "
+                    + ab.machinesWorking
                     + " vs "
                     + op.machinesWorking
                     + ", chests "
@@ -540,6 +543,25 @@ public final class ComplexLevelScenarios {
                     collapses.add(p);
                 } else {
                     last.put(key(p.x(), p.y(), p.z()), p);
+                }
+            }
+            // The magazine's casing racks are furniture (CASING_FRAME pieces, D308): GT frame boxes, never a warhead
+            // block (D17); a collapsed or worn rack counts only where its frame still stands.
+            ItemStack casing = ComplexApplier.casingFrame();
+            if (casing != null) {
+                Block cf = Block.getBlockFromItem(casing.getItem());
+                for (com.gregguns.icbm.complex.Room room : cp.rooms()) {
+                    if (room.kind() != com.gregguns.icbm.complex.RoomKind.WARHEAD_MAGAZINE) continue;
+                    for (com.gregguns.icbm.complex.Mark m : room.marks()) {
+                        if (m.kind() != com.gregguns.icbm.complex.MarkKind.FURNITURE
+                            || com.gregguns.icbm.complex.FurniturePiece.of(m.key())
+                                != com.gregguns.icbm.complex.FurniturePiece.CASING_FRAME)
+                            continue;
+                        int x = ax + m.x(), y = floor + m.y(), z = az + m.z();
+                        Block b = world.getBlock(x, y, z);
+                        if (b == cf && world.getBlockMetadata(x, y, z) == casing.getItemDamage()
+                            && !(b instanceof BlockWarhead)) t.casings++;
+                    }
                 }
             }
             SpawnerCheck spawners = new SpawnerCheck();
@@ -687,7 +709,7 @@ public final class ComplexLevelScenarios {
         }
 
         private static String id(ItemStack s) {
-            return net.minecraft.item.Item.itemRegistry.getNameForObject(s.getItem()) + "@" + s.getItemDamage();
+            return SiloChests.itemId(s);
         }
 
         /** @return stacks in the chest that are neither on the chest's table at the ceiling nor one of its bonuses */
@@ -700,10 +722,7 @@ public final class ComplexLevelScenarios {
                     if (s != null) allowed.add(id(s));
                 }
             }
-            for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {
-                ItemStack s = LootCategories.stack(l.ref(), 1);
-                if (s != null) allowed.add(id(s));
-            }
+            allowed.addAll(SiloChests.allowedIds(p.key(), ceiling)); // lines, junk, spoil (D317)
             for (Placement.Bonus b : p.bonuses()) {
                 ItemStack s = SiloBonusItems.stack(b, p);
                 if (s != null) allowed.add(id(s));
@@ -812,7 +831,7 @@ public final class ComplexLevelScenarios {
                     .getItemDamage();
                 tier = 0;
             } else {
-                MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead());
+                MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead(), p.variant());
                 if (pick == null) {
                     t.machinesSkipped++;
                     return;
