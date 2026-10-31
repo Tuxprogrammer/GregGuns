@@ -39,6 +39,8 @@ public final class SoakVerdict {
         public double recoveryMs;
         /** Ticks in the recovery window. */
         public int recoveryTicks;
+        /** The longest the recovery could wait for the window to come back, ticks; 0 when it judged at once. */
+        public int recoveryLimitTicks;
         /** Whether everything the burst started ended inside its time limit. */
         public boolean ended;
         /** The burst's time limit, ticks. */
@@ -79,7 +81,9 @@ public final class SoakVerdict {
                 out.add(
                     String.format(
                         Locale.ROOT,
-                        "did not recover: the tick stayed %.2f ms over the baseline (%.2f -> %.2f ms), margin %.1f ms",
+                        "did not recover%s: the tick stayed %.2f ms over the baseline (%.2f -> %.2f ms), margin %.1f ms",
+                        m.recoveryLimitTicks > 0 ? String.format(Locale.ROOT, " in %d s", m.recoveryLimitTicks / 20)
+                            : "",
                         rise,
                         m.baselineMs,
                         m.recoveryMs,

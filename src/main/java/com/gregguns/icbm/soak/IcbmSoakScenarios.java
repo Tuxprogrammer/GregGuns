@@ -73,11 +73,45 @@ public final class IcbmSoakScenarios {
         registry.register(new Emp());
     }
 
+    /** The name and id the soak acts and owns machines under. */
+    static final String OWNER_NAME = "[GG Soak]";
+    static final UUID OWNER_UUID = UUID.nameUUIDFromBytes("gregguns_soak".getBytes(StandardCharsets.UTF_8));
+
     /** @return the player a soak acts as: a fake player that never joins the world, so its blasts break terrain */
     static FakePlayer owner(World world) {
-        return FakePlayerFactory.get(
-            (WorldServer) world,
-            new GameProfile(UUID.nameUUIDFromBytes("gregguns_soak".getBytes(StandardCharsets.UTF_8)), "[GG Soak]"));
+        return FakePlayerFactory.get((WorldServer) world, new GameProfile(OWNER_UUID, OWNER_NAME));
+    }
+
+    /**
+     * @param world the world
+     * @param box   where to look
+     * @param top   how many item kinds to name
+     * @return the item entities in the box, counted by item, most first: "name xN, ..."
+     */
+    static String itemCensus(World world, net.minecraft.util.AxisAlignedBB box, int top) {
+        Map<String, Integer> byName = new java.util.HashMap<>();
+        int total = 0;
+        for (Object o : world.getEntitiesWithinAABB(EntityItem.class, box)) {
+            ItemStack st = ((EntityItem) o).getEntityItem();
+            String n = st == null || st.getItem() == null ? "?"
+                : net.minecraft.item.Item.itemRegistry.getNameForObject(st.getItem()) + ":" + st.getItemDamage();
+            byName.merge(n, 1, Integer::sum);
+            total++;
+        }
+        List<Map.Entry<String, Integer>> sorted = new ArrayList<>(byName.entrySet());
+        sorted.sort((a, b) -> b.getValue() - a.getValue());
+        StringBuilder sb = new StringBuilder(total + " item entities");
+        for (int i = 0; i < Math.min(top, sorted.size()); i++) {
+            sb.append(i == 0 ? ": " : ", ")
+                .append(
+                    sorted.get(i)
+                        .getKey())
+                .append(" x")
+                .append(
+                    sorted.get(i)
+                        .getValue());
+        }
+        return sb.toString();
     }
 
     /** Holds chunks a few at a time; what every burst with a far region shares. */
@@ -496,6 +530,18 @@ public final class IcbmSoakScenarios {
                     String.format(Locale.ROOT, " %s@%d,%d,%d", explosives[i], sites[i][0], sites[i][1], sites[i][2]));
             }
             out.note("sites:" + s);
+            int last = sites.length - 1;
+            out.note(
+                "items around the sites after the burst: " + itemCensus(
+                    world,
+                    net.minecraft.util.AxisAlignedBB.getBoundingBox(
+                        regionX - 128,
+                        0,
+                        regionZ - 128,
+                        sites[last][0] + 128,
+                        256,
+                        sites[last][2] + 128),
+                    6));
         }
 
         @Override
@@ -691,7 +737,10 @@ public final class IcbmSoakScenarios {
                     if (t[3] < 0) {
                         continue;
                     }
-                    EmpScenarios.placeAbs(world, x0 + t[0], Y + t[1], z0 + t[2], t[3]);
+                    IGregTechTileEntity base = EmpScenarios.placeAbs(world, x0 + t[0], Y + t[1], z0 + t[2], t[3]);
+                    // A multiblock with no owner throws in GT's power-fail tracker when it is removed (D239).
+                    base.setOwnerName(OWNER_NAME);
+                    base.setOwnerUuid(OWNER_UUID);
                     placed.add(t);
                 }
                 return false;

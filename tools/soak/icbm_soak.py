@@ -240,14 +240,16 @@ def report(log, out):
         w = csv.writer(f)
         w.writerow(['time', 'overall_mean_tick_ms', 'overall_tps'])
         w.writerows(tps)
-    lines = ['| Soak | Verdict | Baseline ms | Burst mean / p95 / max ms | Burst s (server s) | Back at 20 TPS after s'
-             ' | Recovery ms | Tickets before -> after | Peak tickets / forced chunks | Peak heap MB | Peak entities |',
-             '|---|---|---|---|---|---|---|---|---|---|---|']
+    lines = ['| Soak | Verdict | Baseline ms | Burst mean / p95 / max ms | Burst s (server s) | 20 TPS again after s'
+             ' | First 30 s after ms | Back near baseline after s (ms) | Tickets before -> after | Peak tickets / forced'
+             ' chunks | Peak heap MB | Peak entities |',
+             '|---|---|---|---|---|---|---|---|---|---|---|---|']
     for r in results:
-        lines.append('| %s | %s | %s | %s / %s / %s | %s (%s) | %s | %s | %s | %s / %s | %s | %s |' % (
+        lines.append('| %s | %s | %s | %s / %s / %s | %s (%s) | %s | %s | %s (%s) | %s | %s / %s | %s | %s |' % (
             r['name'], r['verdict'], r['baseline_ms'], r['burst_mean_ms'], r['burst_p95_ms'], r['burst_max_ms'],
-            r['burst_s'], r['burst_server_s'], r['recovered_after_s'], r['recovery_ms'], r['tickets'],
-            r['peak_tickets'], r['peak_forced'], r['peak_heap_mb'], r['peak_entities']))
+            r['burst_s'], r['burst_server_s'], r['at20tps_after_s'], r['first30s_ms'], r['back_after_s'],
+            r['recovery_ms'], r['tickets'], r['peak_tickets'], r['peak_forced'], r['peak_heap_mb'],
+            r['peak_entities']))
     play = [s for s in stats if s['label'].startswith('play')]
     if play:
         idle0 = [s for s in play if s['label'] == 'play-idle']

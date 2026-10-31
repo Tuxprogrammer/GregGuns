@@ -27,8 +27,15 @@ public abstract class SoakScenario implements Scenario {
     static final int SETTLE_TICKS = 200;
     /** Ticks in the baseline. */
     static final int BASELINE_TICKS = 600;
-    /** Ticks in the recovery window, right after the burst ends. */
+    /** Ticks in the recovery window: the last 30 seconds, judged against the baseline. */
     static final int RECOVERY_TICKS = 600;
+    /**
+     * Ticks the recovery may take after the burst ends: until the last {@link #RECOVERY_TICKS} are back near the
+     * baseline. A large blast leaves work behind for minutes (leaves decaying around a crater, fallout converting,
+     * items settling), and the owner's bar is that the server comes back, not that it is back the moment the last
+     * block breaks.
+     */
+    static final int RECOVERY_LIMIT = 20 * 60 * 10;
     /** Ticks the setup may take. */
     static final int SETUP_LIMIT = 6000;
     /** Buckets of the curve printed in the result note. */
@@ -100,7 +107,7 @@ public abstract class SoakScenario implements Scenario {
         }
         final Burst burst = plan(ctx);
         final Run run = new Run(this, ctx, server, burst);
-        int timeout = SETUP_LIMIT + SETTLE_TICKS + BASELINE_TICKS + burstLimit() + RECOVERY_TICKS + 400;
+        int timeout = SETUP_LIMIT + SETTLE_TICKS + BASELINE_TICKS + burstLimit() + RECOVERY_LIMIT + 400;
         return ScenarioResult.pending(name(), timeout, ticks -> {
             try {
                 return run.step();
@@ -131,6 +138,8 @@ public abstract class SoakScenario implements Scenario {
         final SoakCurve baseline = new SoakCurve(BASELINE_TICKS);
         final SoakCurve during;
         final SoakCurve recovery = new SoakCurve(RECOVERY_TICKS);
+        double margin;
+        double firstWindowMs = -1.0;
         final SoakProbe peak = new SoakProbe();
         Phase phase = Phase.SETUP;
         int phaseTicks;
@@ -146,6 +155,17 @@ public abstract class SoakScenario implements Scenario {
             this.out = ScenarioResult.builder(scenario.name());
             this.during = new SoakCurve(scenario.burstLimit());
             this.lastCounter = server.getTickCounter();
+            this.margin = Double
+                .parseDouble(System.getProperty(MARGIN_PROPERTY, Double.toString(SoakVerdict.RECOVERY_MARGIN_MS)));
+        }
+
+        /** @return the trimmed mean of the newest {@link #RECOVERY_TICKS} recovery ticks */
+        private double windowMs() {
+            SoakCurve w = new SoakCurve(RECOVERY_TICKS);
+            for (double v : recovery.tail(RECOVERY_TICKS)) {
+                w.add(v);
+            }
+            return w.trimmedMean(SoakVerdict.TRIM);
         }
 
         /** One server tick; the final result on the last one, otherwise null. */
@@ -210,7 +230,27 @@ public abstract class SoakScenario implements Scenario {
                     if (fresh) {
                         recovery.add(lastMs);
                     }
-                    if (recovery.size() < RECOVERY_TICKS) {
+                    boolean atLimit = phaseTicks >= RECOVERY_LIMIT;
+                    if (!atLimit && (recovery.size() < RECOVERY_TICKS || phaseTicks % SoakCurve.BUCKET != 0)) {
+                        return null;
+                    }
+                    double window = windowMs();
+                    if (firstWindowMs < 0.0) {
+                        firstWindowMs = window;
+                    }
+                    if (phaseTicks % (SoakCurve.BUCKET * 10) == 0) {
+                        GregGuns.LOG.info(
+                            "SOAK {} recovering t={}s window={} ms baseline={} ms | {}",
+                            scenario.name(),
+                            phaseTicks / SoakCurve.BUCKET,
+                            fmt(window),
+                            fmt(baseline.trimmedMean(SoakVerdict.TRIM)),
+                            SoakProbe.sample()
+                                .line());
+                    }
+                    boolean back = window < SoakVerdict.PLAYABLE_MEAN_MS
+                        && window - baseline.trimmedMean(SoakVerdict.TRIM) <= margin;
+                    if (!back && !atLimit) {
                         return null;
                     }
                     try {
@@ -266,8 +306,10 @@ public abstract class SoakScenario implements Scenario {
             SoakVerdict.Measured m = new SoakVerdict.Measured();
             m.baselineMs = baseline.trimmedMean(SoakVerdict.TRIM);
             m.baselineTicks = baseline.size();
-            m.recoveryMs = recovery.trimmedMean(SoakVerdict.TRIM);
-            m.recoveryTicks = recovery.size();
+            m.recoveryMs = windowMs();
+            m.recoveryTicks = Math.min(RECOVERY_TICKS, recovery.size());
+            m.recoveryLimitTicks = RECOVERY_LIMIT;
+            int recoveredAfter = Math.max(0, recovery.size() - RECOVERY_TICKS);
             m.ended = ended;
             m.limitTicks = scenario.burstLimit();
             m.ticketsBefore = before.tickets;
@@ -292,14 +334,24 @@ public abstract class SoakScenario implements Scenario {
                         during.totalMs() / 1000.0,
                         recoveredAt / 20.0));
             out.note("burst curve, mean/max ms per second: " + during.buckets(NOTE_BUCKETS));
-            out.note("recovery: " + recovery.stats() + String.format(Locale.ROOT, ", trimmed %.2f ms", m.recoveryMs));
+            out.note(
+                String.format(
+                    Locale.ROOT,
+                    "recovery: the first 30 s after the burst %.2f ms; the last 30 s %.2f ms, back near the baseline"
+                        + " %.1f s after the burst ended (all %d recovery ticks: %s)",
+                    firstWindowMs,
+                    m.recoveryMs,
+                    recoveredAfter / 20.0,
+                    recovery.size(),
+                    recovery.stats()));
             out.note("before: " + before.line());
             out.note("peak: " + peak.line());
             out.note("after: " + after.line());
             ScenarioResult result = out.build();
             GregGuns.LOG.info(
                 "SOAKRESULT name={} verdict={} baseline_ms={} burst_mean_ms={} burst_p95_ms={} burst_max_ms={}"
-                    + " burst_s={} burst_server_s={} recovered_after_s={} recovery_ms={} tickets={}->{} forced={}->{}"
+                    + " burst_s={} burst_server_s={} at20tps_after_s={} first30s_ms={} back_after_s={} recovery_ms={}"
+                    + " tickets={}->{} forced={}->{}"
                     + " loaded_chunks={}->{} peak_loaded_chunks={} peak_heap_mb={} peak_entities={} peak_flying={}"
                     + " peak_tickets={} peak_forced={} peak_blasts={} peak_flying_blocks={} peak_items={}",
                 scenario.name(),
@@ -317,6 +369,8 @@ public abstract class SoakScenario implements Scenario {
                 fmt(during.size() / 20.0),
                 fmt(during.totalMs() / 1000.0),
                 fmt(recoveredAt / 20.0),
+                fmt(firstWindowMs),
+                fmt(recoveredAfter / 20.0),
                 fmt(m.recoveryMs),
                 before.tickets,
                 after.tickets,
