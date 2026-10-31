@@ -1,7 +1,6 @@
 package com.gregguns.worldgen;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -79,20 +78,24 @@ public final class VanillaStarts implements StructureStarts {
     };
     private static final int[] NOTHING = new int[0];
 
-    private final World world;
-    private final MapGenVillage village;
+    /**
+     * Weak, like the cache's key: the generators hold the world too, so nothing here may keep it alive. Only numbers
+     * are kept from the generators.
+     */
+    private final java.lang.ref.WeakReference<World> worldRef;
+    private final boolean village;
     private final int villageSpacing, villageSeparation, villageSize;
-    private final MapGenScatteredFeature temple;
+    private final boolean temple;
     private final int templeSpacing, templeSeparation;
 
     private VanillaStarts(World world, MapGenVillage village, MapGenScatteredFeature temple) {
-        this.world = world;
-        this.village = village;
+        this.worldRef = new java.lang.ref.WeakReference<World>(world);
+        this.village = village != null;
         this.villageSpacing = village == null ? 32 : intField(village, MapGenVillage.class, 32, "field_82665_g");
         this.villageSeparation = village == null ? 8 : intField(village, MapGenVillage.class, 8, "field_82666_h");
         this.villageSize = village == null ? 0
             : intField(village, MapGenVillage.class, 0, "terrainType", "field_75054_f");
-        this.temple = temple;
+        this.temple = temple != null;
         this.templeSpacing = temple == null ? 32
             : intField(
                 temple,
@@ -192,8 +195,11 @@ public final class VanillaStarts implements StructureStarts {
 
     @Override
     public Blocker blocking(int minX, int minZ, int maxX, int maxZ) {
-        Blocker b = village == null ? null
+        World world = worldRef.get();
+        if (world == null) return null;
+        Blocker b = !village ? null
             : scan(
+                world,
                 "village",
                 minX,
                 minZ,
@@ -204,8 +210,9 @@ public final class VanillaStarts implements StructureStarts {
                 villageSeparation,
                 StartGrid.VILLAGE_SALT,
                 VILLAGE_MARGIN);
-        if (b == null && temple != null) {
+        if (b == null && temple) {
             b = scan(
+                world,
                 "temple",
                 minX,
                 minZ,
@@ -220,7 +227,7 @@ public final class VanillaStarts implements StructureStarts {
         return b;
     }
 
-    private Blocker scan(String kind, int minX, int minZ, int maxX, int maxZ, int reach, int spacing, int separation,
+    private Blocker scan(World world, String kind, int minX, int minZ, int maxX, int maxZ, int reach, int spacing, int separation,
         int salt, int margin) {
         long seed = world.getSeed();
         List<int[]> cands = StartGrid.candidatesIn(
@@ -233,7 +240,7 @@ public final class VanillaStarts implements StructureStarts {
             separation,
             salt);
         for (int[] c : cands) {
-            int[] box = boxOf(kind, c[0], c[1], seed);
+            int[] box = boxOf(world, kind, c[0], c[1], seed);
             if (box == NOTHING) continue;
             if (box[0] - margin <= maxX && box[2] + margin >= minX
                 && box[1] - margin <= maxZ
@@ -259,14 +266,14 @@ public final class VanillaStarts implements StructureStarts {
     }
 
     /** @return the structure's box {@code minX, minZ, maxX, maxZ} at a candidate chunk, or {@link #NOTHING} */
-    private int[] boxOf(String kind, int cx, int cz, long seed) {
+    private int[] boxOf(World world, String kind, int cx, int cz, long seed) {
         boolean isVillage = kind.equals("village");
         long key = ((long) cx << 32) ^ (cz & 0xFFFFFFFFL) ^ (isVillage ? 0 : 0x4000_0000_0000_0000L);
         int[] hit = cache.get(key);
         if (hit != null) return hit;
         int[] box;
         try {
-            box = isVillage ? villageBox(cx, cz, seed) : templeBox(cx, cz, seed);
+            box = isVillage ? villageBox(world, cx, cz, seed) : templeBox(world, cx, cz, seed);
         } catch (RuntimeException | LinkageError e) {
             // A modded piece that fails to build: count the start as there (a complex only sinks deeper for it).
             GregGuns.LOG.warn("Silo complex: the {} start at chunk {},{} failed to build: {}", kind, cx, cz, e);
@@ -277,14 +284,14 @@ public final class VanillaStarts implements StructureStarts {
         return box;
     }
 
-    private int[] villageBox(int cx, int cz, long seed) {
+    private int[] villageBox(World world, int cx, int cz, long seed) {
         if (!world.getWorldChunkManager()
             .areBiomesViable(cx * 16 + 8, cz * 16 + 8, 0, MapGenVillage.villageSpawnBiomes)) return NOTHING;
         MapGenVillage.Start s = new MapGenVillage.Start(world, structureRandom(cx, cz, seed), cx, cz, villageSize);
         return s.isSizeableStructure() ? box(s) : NOTHING;
     }
 
-    private int[] templeBox(int cx, int cz, long seed) {
+    private int[] templeBox(World world, int cx, int cz, long seed) {
         BiomeGenBase b = world.getWorldChunkManager()
             .getBiomeGenAt(cx * 16 + 8, cz * 16 + 8);
         if (!TEMPLE_BIOMES.contains(b)) return NOTHING;
@@ -307,19 +314,5 @@ public final class VanillaStarts implements StructureStarts {
         r.setSeed(cx * a ^ cz * b ^ seed);
         r.nextInt();
         return r;
-    }
-
-    /** @return the candidate start chunks the scan would check for a block area (scenarios, the locate command) */
-    public List<int[]> villageCandidates(int minX, int minZ, int maxX, int maxZ) {
-        if (village == null) return new ArrayList<int[]>();
-        return StartGrid.candidatesIn(
-            world.getSeed(),
-            (minX - VILLAGE_REACH) >> 4,
-            (minZ - VILLAGE_REACH) >> 4,
-            (maxX + VILLAGE_REACH) >> 4,
-            (maxZ + VILLAGE_REACH) >> 4,
-            villageSpacing,
-            villageSeparation,
-            StartGrid.VILLAGE_SALT);
     }
 }
