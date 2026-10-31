@@ -644,32 +644,68 @@ public final class Kit {
             }
         }
         List<int[]> out = new ArrayList<int[]>();
-        if (pool.isEmpty() || n <= 0) return out;
-        int[] first = pool.get(0);
-        long best = Long.MAX_VALUE;
-        for (int[] c : pool) {
-            long h = hash(0x59A, c[0], c[1]);
-            if (h < best || h == best && (c[0] < first[0] || c[0] == first[0] && c[1] < first[1])) {
-                best = h;
-                first = c;
-            }
-        }
-        out.add(first);
-        while (out.size() < n) {
-            int[] far = null;
-            int farDist = -1;
-            for (int[] c : pool) {
-                int near = Integer.MAX_VALUE;
-                for (int[] o : out) near = Math.min(near, Math.abs(c[0] - o[0]) + Math.abs(c[1] - o[1]));
-                if (near > farDist) {
-                    farDist = near;
-                    far = c;
+        Legend.Entry spot = Legend.mark(MarkKind.SPAWNER, "spot");
+        int[] light = light();
+        boolean tiled = false;
+        for (byte b : base) tiled |= b == TILE;
+        try {
+            while (out.size() < n && !pool.isEmpty()) {
+                int[] pick = null;
+                long bestKey = Long.MAX_VALUE;
+                int bestFar = -1;
+                for (int[] c : pool) {
+                    int far = Integer.MAX_VALUE;
+                    for (int[] o : out) far = Math.min(far, Math.abs(c[0] - o[0]) + Math.abs(c[1] - o[1]));
+                    if (out.isEmpty()) far = 0;
+                    long h = hash(0x59A, c[0], c[1]);
+                    if (far > bestFar || far == bestFar && h < bestKey) {
+                        if (!keepsRoomOpen(c, spot, seen, light, tiled)) continue;
+                        pick = c;
+                        bestFar = far;
+                        bestKey = h;
+                    }
                 }
+                if (pick == null) break;
+                entry[i(pick[0], pick[1])] = spot;
+                out.add(pick);
+                pool.remove(pick);
+                seen = flood();
+                light = light();
             }
-            if (far == null || farDist <= 0) break;
-            out.add(far);
+        } finally {
+            for (int[] c : out) entry[i(c[0], c[1])] = null;
         }
         return out;
+    }
+
+    /**
+     * @return whether a spawner on cell {@code c} leaves every walked cell reachable from the door and every lit cell
+     *         as bright as it was
+     */
+    private boolean keepsRoomOpen(int[] c, Legend.Entry spot, boolean[] seen, int[] light, boolean tiled) {
+        int ci = i(c[0], c[1]);
+        entry[ci] = spot;
+        try {
+            boolean[] now = flood();
+            for (int i = 0; i < L * D; i++) {
+                if (i != ci && seen[i] && !now[i]) return false;
+            }
+            for (int a = 0; a < L; a++) {
+                for (int d = 0; d < D; d++) {
+                    Legend.Entry e = entry[i(a, d)];
+                    if (e != null && e.kind == Legend.Entry.Kind.MARK && !touches(now, a, d)) return false;
+                }
+            }
+            if (tiled) {
+                int[] after = light();
+                for (int i = 0; i < L * D; i++) {
+                    if (i != ci && lit(i) && light[i] >= MIN_LIGHT && after[i] < MIN_LIGHT) return false;
+                }
+            }
+            return true;
+        } finally {
+            entry[ci] = null;
+        }
     }
 
     private final List<Placed> floorMarks = new ArrayList<Placed>();
