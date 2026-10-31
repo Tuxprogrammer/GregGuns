@@ -54,16 +54,22 @@ class ClashTest(unittest.TestCase):
         self.assertIn("shadowed by", text)
 
     def test_a_recipe_that_ignores_nbt_fires_on_a_tagged_stack(self):
-        # R2-06: the dump tags our stack only where the recipe matches NBT. The payload row (plain inert key) can
-        # start from a row that takes a fitted inert (tagged key) and the same other inputs.
+        # R2-06 (D344): a row not flagged "nbt" takes any tag, so the payload row (bare inert) can start from a row
+        # that takes a fitted inert (tagged key) and the same other inputs.
         asm = "gt.recipe.assembler"
-        text = run([row(asm, "gregguns", ["gregguns:inert:0#nbt1f", "b:1"], ["gregguns:filled:0"], circuit=3),
-                    row(asm, "gregguns", ["gregguns:inert:0"], ["gregguns:fitted:0#nbt1f"], circuit=3)])
-        self.assertIn("| subset | 1 |", text)
-        # Two NBT-sensitive rows with different tags never meet.
-        text = run([row(asm, "gregguns", ["gregguns:inert:0#nbt1f", "b:1"], ["gregguns:filled:0"], circuit=3),
-                    row(asm, "gregguns", ["gregguns:inert:0#nbt2e"], ["gregguns:other:0"], circuit=3)])
-        self.assertIn("| subset | 0 |", text)
+        fill = row(asm, "gregguns", ["gregguns:inert:0#nbt1f", "b:1"], ["gregguns:filled:0"], circuit=3)
+        fill["nbt"] = True
+        payload = row(asm, "gregguns", ["gregguns:inert:0"], ["gregguns:fitted:0#nbt1f"], circuit=3)
+        self.assertIn("| subset | 1 |", run([fill, payload]))
+        # An NBT-sensitive row takes only its own tag: a bare-casing scrap row never fires on a fitted casing, and
+        # two tags never meet. Nor do the rows of a display-only fake map.
+        scrap = dict(payload, nbt=True)
+        self.assertIn("| subset | 0 |", run([fill, scrap]))
+        other = row(asm, "gregguns", ["gregguns:inert:0#nbt2e"], ["gregguns:other:0"], circuit=3)
+        other["nbt"] = True
+        self.assertIn("| subset | 0 |", run([fill, other]))
+        fake = "gt.recipe.fakecuttingsaw"
+        self.assertIn("| subset | 0 |", run([dict(fill, map=fake), dict(payload, map=fake)]))
 
     def test_other_circuit_removes_the_subset(self):
         asm = "gt.recipe.assembler"

@@ -1,6 +1,7 @@
 package com.gregguns.core.dump;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,6 +69,11 @@ class DumpRowTest {
         assertTrue(j.contains("\"inputs\":[{\"k\":\"a\\\"b:0\",\"n\":1}]"), j);
         assertTrue(j.contains("\"outputs\":[{\"k\":\"gregguns:x:0\",\"n\":2}]"), j);
         assertTrue(j.contains("\"eut\":30"), j);
+        assertFalse(j.contains("\"nbt\""), j);
+        a.nbtSensitive = true;
+        assertTrue(
+            a.toJson()
+                .contains("\"nbt\":true"));
         assertTrue(j.contains("\"grid\":[[\"a\\\"b:0\",\"\"]]"), j);
     }
 

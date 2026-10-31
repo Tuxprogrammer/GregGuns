@@ -35,6 +35,11 @@ public final class DumpRow {
     public int eut;
     /** Machine duration in ticks, 0 for crafting recipes. */
     public int duration;
+    /**
+     * True for a GT recipe flagged NBT-sensitive: it takes only a stack whose tag equals its input's, so a plain key
+     * of it does not match a tagged stack. Written as {@code "nbt":true} only when set.
+     */
+    public boolean nbtSensitive;
     /** Crafting grid for shaped recipes: row-major keys, {@code ""} for an empty cell; null otherwise. */
     public List<List<String>> grid;
 
@@ -163,6 +168,9 @@ public final class DumpRow {
             .append(eut)
             .append(",\"duration\":")
             .append(duration);
+        if (nbtSensitive) {
+            sb.append(",\"nbt\":true");
+        }
         if (grid != null) {
             sb.append(",\"grid\":[");
             for (int r = 0; r < grid.size(); r++) {

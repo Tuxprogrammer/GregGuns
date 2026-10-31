@@ -267,9 +267,9 @@ public final class RecipeDumper {
 
     /**
      * @param s   a stack
-     * @param nbt true when the recipe tells this stack apart by its tag: every output, and the inputs of a GT recipe
-     *            flagged NBT-sensitive. A recipe that ignores NBT (crafting, most GT recipes) matches any tag, so its
-     *            inputs keep the plain key and the clash review sees that it can take a tagged stack too.
+     * @param nbt false for a crafting grid or NASA Workbench input, which matches any tag: it keeps the plain key. A GT
+     *            row keeps the hash on every stack and says whether it matches NBT ({@link DumpRow#nbtSensitive}), so
+     *            the clash review compares a recipe that ignores NBT on the plain key (D344).
      * @return the item key, with {@code #nbt<hash>} appended for one of our stacks with a tag when {@code nbt}
      */
     private static String key(ItemStack s, boolean nbt) {
@@ -336,7 +336,7 @@ public final class RecipeDumper {
         DumpRow row = new DumpRow("machine", map, source);
         for (ItemStack s : orEmpty(r.mInputs)) {
             if (s != null && s.getItem() != null) {
-                row.addInput(key(s, r.isNBTSensitive), s.stackSize);
+                row.addInput(key(s), s.stackSize);
             }
         }
         for (FluidStack f : orEmpty(r.mFluidInputs)) {
@@ -362,6 +362,7 @@ public final class RecipeDumper {
         }
         row.eut = r.mEUt;
         row.duration = r.mDuration;
+        row.nbtSensitive = r.isNBTSensitive;
         return row;
     }
 
