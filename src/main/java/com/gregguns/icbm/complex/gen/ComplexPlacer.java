@@ -83,6 +83,17 @@ public final class ComplexPlacer implements ComplexWriter {
     }
 
     private Styles.Factory styles = Styles.Factory.NONE;
+    private SiloMouthKeeper mouths;
+
+    /**
+     * @param keeper where each silo's mouth is recorded for its finish (D319): {@link SiloMouthKeeper#game()} in the
+     *               game, an in-memory one in a scenario, none (null) in unit tests
+     * @return this
+     */
+    public ComplexPlacer withMouths(SiloMouthKeeper keeper) {
+        this.mouths = keeper;
+        return this;
+    }
 
     /**
      * @param factory where each section's look comes from: {@link PaletteStyles#FACTORY} in the game, none in unit
@@ -433,21 +444,25 @@ public final class ComplexPlacer implements ComplexWriter {
         int ax = plan.anchorX(), az = plan.anchorZ();
         int x0 = Math.max(ax, window.minX()), x1 = Math.min(ax + ComplexLayout.SIZE - 1, window.maxX());
         int z0 = Math.max(az, window.minZ()), z1 = Math.min(az + ComplexLayout.SIZE - 1, window.maxZ());
+        // The skin (D320) reaches one column past the box, behind a section wall on the box's edge, wherever that
+        // column lies in a window that runs the complex.
+        int sx0 = Math.max(ax - 1, window.minX()), sx1 = Math.min(ax + ComplexLayout.SIZE, window.maxX());
+        int sz0 = Math.max(az - 1, window.minZ()), sz1 = Math.min(az + ComplexLayout.SIZE, window.maxZ());
         int n = 0;
         Block air = blocks.air();
         // The recorded ground comes from one window; this window's own columns may lie lower (a valley, a lake bed).
         // A column whose ground is within a few blocks of the level's top is cut off, so nothing breaks the surface.
         boolean[] mask = new boolean[PopulateWindow.SIZE * PopulateWindow.SIZE];
         boolean masked = false;
-        for (int x = x0; x <= x1; x++) {
-            for (int z = z0; z <= z1; z++) {
+        for (int x = sx0; x <= sx1; x++) {
+            for (int z = sz0; z <= sz1; z++) {
                 if (cutOff(probe, floorY, x, z)) {
                     mask[ColumnMaskSink.index(window, x, z)] = true;
                     masked = true;
                 }
             }
         }
-        int[] seal = sealFloors(probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
+        int[] seal = sealFloors(raster, probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
         WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
         Styles st = stylesOf(plan);
         // The role audit (D267): tag every write with the pass that made it, then read the complex back once its
@@ -470,8 +485,15 @@ public final class ComplexPlacer implements ComplexWriter {
             int[] at = ComplexSigns.siloSignAt(s);
             signCells.add(((long) at[0] << 40) ^ ((long) at[1] << 32) ^ (at[2] & 0xFFFFFFFFL));
         }
-        for (int x = x0; x <= x1; x++) {
-            for (int z = z0; z <= z1; z++) {
+        // The escape ladder's column and the one behind it belong to the ladder pass from the top of its section up.
+        int ex = cp.escapeX(), ez = cp.escapeZ(), em = cp.escapeMeta();
+        int bx = ex + (em == 4 ? 1 : em == 5 ? -1 : 0), bz = ez + (em == 2 ? 1 : em == 3 ? -1 : 0);
+        for (int x = sx0; x <= sx1; x++) {
+            for (int z = sz0; z <= sz1; z++) {
+                int clx = x - ax, clz = z - az;
+                boolean escape = clx == ex && clz == ez || clx == bx && clz == bz;
+                n += skin(raster, clx, clz, x, z, floorY, escape ? cp.escapeTop() : Integer.MAX_VALUE, under);
+                if (x < x0 || x > x1 || z < z0 || z > z1) continue; // past the box: the skin only
                 for (int y = 0; y < ComplexRaster.LEVELS; y++) {
                     int lx = x - ax, lz = z - az;
                     byte c = raster.at(lx, y, lz);
@@ -553,18 +575,23 @@ public final class ComplexPlacer implements ComplexWriter {
      * ({@link Integer#MAX_VALUE} when no neighbor is cut off). A neighbor outside the window is read through
      * {@link HeightProbe#seaFloorYBeside}: one column past the window still lies in a loaded chunk.
      */
-    private static int[] sealFloors(HeightProbe probe, PopulateWindow window, int floorY, boolean[] mask, int x0,
-        int x1, int z0, int z1, int ax, int az) {
+    private static int[] sealFloors(ComplexRaster raster, HeightProbe probe, PopulateWindow window, int floorY,
+        boolean[] mask, int x0, int x1, int z0, int z1, int ax, int az) {
         int[] seal = new int[PopulateWindow.SIZE * PopulateWindow.SIZE];
         java.util.Arrays.fill(seal, Integer.MAX_VALUE);
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 int i = ColumnMaskSink.index(window, x, z);
                 if (mask[i]) continue;
+                // A silo's inside is its own shaft, open to the bore above: never walled up (S3-2).
+                if (siloColumn(raster, x - ax, z - az)) continue;
                 for (int d = 0; d < 4; d++) {
                     int nx = x + (d == 1 ? 1 : d == 3 ? -1 : 0), nz = z + (d == 2 ? 1 : d == 0 ? -1 : 0);
                     // Outside the complex nothing is written next to an open cell: every section ends in its wall.
                     if (nx < ax || nz < az || nx >= ax + ComplexLayout.SIZE || nz >= az + ComplexLayout.SIZE) continue;
+                    // A bore column is the complex's own air from the pad up once its window has run, so reading it
+                    // from the next window would depend on which ran first (D319): it is never a cut-off neighbor.
+                    if (boreColumn(raster, nx - ax, nz - az)) continue;
                     int g;
                     if (window.contains(nx, nz)) {
                         if (!mask[ColumnMaskSink.index(window, nx, nz)]) continue;
@@ -578,6 +605,56 @@ public final class ComplexPlacer implements ComplexWriter {
             }
         }
         return seal;
+    }
+
+    /** @return whether a complex-local column belongs to a silo's 5 x 5 footprint */
+    static boolean siloColumn(ComplexRaster raster, int lx, int lz) {
+        return raster.ownerAt(lx, lz) < 0 && raster.at(lx, 0, lz) != Cell.NONE;
+    }
+
+    /** @return whether a complex-local column is one of a silo's nine bore columns (open over the pad) */
+    static boolean boreColumn(ComplexRaster raster, int lx, int lz) {
+        return siloColumn(raster, lx, lz) && raster.at(lx, 1, lz) == Cell.AIR;
+    }
+
+    /**
+     * The complex's own skin around its level (D320): a foundation under every column the level uses, and solid fill
+     * in every rock cell beside a section's or silo's cell and over a section's ceiling, so a cave or loose terrain
+     * never opens onto a floor, a wall or a ceiling, nor shows through a floor or wall that wear breaks open. Pure
+     * raster arithmetic, so each window writes its own columns the same whatever ran before. Written through the
+     * shell's (cut-off) sink before the marks pass, so marks that reach below the floor (a pool) overwrite it.
+     *
+     * @param ownedFrom the layer from which another pass writes the column (the escape ladder and its backing)
+     * @return blocks written
+     */
+    private int skin(ComplexRaster r, int lx, int lz, int x, int z, int floorY, int ownedFrom, WindowedSink sink) {
+        int top = -1;
+        for (int y = ComplexRaster.LEVELS - 1; y >= 0; y--) {
+            if (r.at(lx, y, lz) != Cell.NONE) {
+                top = y;
+                break;
+            }
+        }
+        int n = 0;
+        if (top >= 0 && floorY - 1 >= 1) n += solid(x, floorY - 1, z, sink);
+        for (int y = 0; y < Math.min(ComplexRaster.LEVELS, ownedFrom); y++) {
+            if (r.at(lx, y, lz) != Cell.NONE) continue;
+            boolean beside = r.at(lx + 1, y, lz) != Cell.NONE || r.at(lx - 1, y, lz) != Cell.NONE
+                || r.at(lx, y, lz + 1) != Cell.NONE
+                || r.at(lx, y, lz - 1) != Cell.NONE;
+            boolean over = y > 0 && r.at(lx, y - 1, lz) != Cell.NONE;
+            if (beside || over) n += solid(x, floorY + y, z, sink);
+        }
+        // Over the tallest sections; a silo's column above the level is the shaft pass's ring and bore.
+        if (top == ComplexRaster.LEVELS - 1 && ComplexRaster.LEVELS < ownedFrom && !siloColumn(r, lx, lz)) {
+            n += solid(x, floorY + ComplexRaster.LEVELS, z, sink);
+        }
+        return n;
+    }
+
+    private int solid(int x, int y, int z, WindowedSink sink) {
+        ResolvedBlock b = blocks.named("foundation", x, y, z);
+        return b != null && sink.setBlock(x, y, z, b.block, b.meta) ? 1 : 0;
     }
 
     /** How far above the ground a surface opening is cleared of leaves, logs and snow. */
@@ -721,14 +798,18 @@ public final class ComplexPlacer implements ComplexWriter {
         HeightProbe probe) {
         int n = 0;
         Block air = blocks.air();
+        int index = 0;
         for (SiloSlot s : cp.silos()) {
+            String id = plan.chestSeedBase() + "#" + index++;
             int sx = plan.anchorX() + s.bounds().minX, sz = plan.anchorZ() + s.bounds().minZ;
             for (int x = Math.max(sx, window.minX()); x <= Math.min(sx + 4, window.maxX()); x++) {
                 for (int z = Math.max(sz, window.minZ()); z <= Math.min(sz + 4, window.maxZ()); z++) {
                     int g = probe.landY(x, z);
+                    int top = g == HeightProbe.NONE ? HeightProbe.NONE : Math.min(g, BUILD_HEIGHT - 8);
+                    // The finish (D319) puts the mouth back to this once everything around it has populated.
+                    if (mouths != null) mouths.record(world, id, sx, sz, floorY, s.variant(), x, z, top);
                     if (g == HeightProbe.NONE) continue;
                     boolean bore = x > sx && x < sx + 4 && z > sz && z < sz + 4;
-                    int top = Math.min(g, BUILD_HEIGHT - 8);
                     // The mouth writes the top cell itself (cap, or air up to build height), so the bore stops under
                     // it.
                     boolean mouthOwnsTop = bore && (s.variant() == SurfaceVariant.CLOSED
@@ -739,7 +820,11 @@ public final class ComplexPlacer implements ComplexWriter {
                             : b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
                     }
                     n += mouth(s.variant(), bore, x, z, sx, sz, top, sink);
-                    if (!(bore && s.variant() == SurfaceVariant.CLOSED)) n += clearAbove(sink, x, z, Math.max(top, g));
+                    // A closed mouth's open cells are air to build height already; its capped cells lose their cover
+                    // like every other cell (snow and trunks on the old ground would stand on the cap, S3-2).
+                    boolean hole = bore && s.variant() == SurfaceVariant.CLOSED
+                        && !SiloMouth.capped(s.variant(), sx, sz, x, z);
+                    if (!hole) n += clearAbove(sink, x, z, Math.max(top, g));
                 }
             }
         }
@@ -757,12 +842,7 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         // Closed: nine cells capped, two of the eight non-center cells stay air all the way up (D17).
         int n = 0;
-        int cell = (x - sx - 1) * 3 + (z - sz - 1);
-        long h = StructureHash.mix(sx * 31L + sz);
-        int hole1 = (int) Math.floorMod(h, 8), hole2 = (int) Math.floorMod(h >>> 8, 8);
-        int idx = cell > 4 ? cell - 1 : cell; // index among the eight non-center cells
-        boolean center = cell == 4;
-        if (!center && (idx == hole1 || idx == hole2)) {
+        if (!SiloMouth.capped(v, sx, sz, x, z)) {
             for (int y = top; y <= BUILD_HEIGHT; y++) if (sink.setBlock(x, y, z, blocks.air(), 0)) n++;
         } else if (cap != null && sink.setBlock(x, top, z, cap.block, cap.meta)) {
             n++;
