@@ -620,8 +620,12 @@ public class QuestbookResourcesTest {
         .asList("Steam", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV");
     /** The tier of each loot bag group by GroupMetaID (GregGuns 1701 to 1714, then the pack's generic groups). */
     private static final Map<Integer, String> BAG_TIERS = new HashMap<>();
-    /** Reward items that carry a tier (mirrors {@code ITEM_TIERS} in build_quests.py): key is {@code id@damage}. */
+    /**
+     * Reward items that carry a tier (tools/questbook/item_tiers.json, shared with build_quests.py): a gregguns: id, or
+     * {@code id@damage}.
+     */
     private static final Map<String, String> ITEM_TIERS = new HashMap<>();
+    private static final String ITEM_TIERS_FILE = "tools/questbook/item_tiers.json";
 
     static {
         int[] gg = { 1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709, 1710, 1711, 1712, 1713, 1714 };
@@ -634,18 +638,18 @@ public class QuestbookResourcesTest {
         for (int i = 0; i < pack.length; i++) {
             BAG_TIERS.put(pack[i], packTier[i]);
         }
-        String m1 = "gregtech:gt.metaitem.01@";
-        String[][] items = { { "gregguns:part_mechanical_3@0", "EV" }, { "gregguns:part_receiver_carbon@0", "EV" },
-            { "gregguns:ammo_rocket@0", "HV" }, { "gregguns:fuze_assembly_mk3@0", "LuV" },
-            { "gregguns:part_rad_emitter@0", "ZPM" }, { "gregguns:part_nuclear_warhead@0", "ZPM" },
-            { "gregguns:cell_nuclear@0", "ZPM" }, { "gregguns:ammo_rocket_nuke@0", "ZPM" },
-            { "gregguns:inert_warhead_t4@0", "UV" }, { "gregguns:inert_warhead_t5@0", "UHV" }, { m1 + "32706", "LuV" },
-            { m1 + "17372", "LuV" }, { m1 + "17325", "ZPM" }, { "gregtech:gt.metaitem.03@32088", "ZPM" },
-            { m1 + "32607", "ZPM" }, { m1 + "32686", "ZPM" }, { m1 + "17327", "UV" }, { m1 + "11101", "UV" },
-            { m1 + "32677", "UV" }, { m1 + "32724", "UV" }, { m1 + "17129", "UHV" }, { m1 + "32678", "UHV" },
-            { m1 + "32688", "UHV" } };
-        for (String[] e : items) {
-            ITEM_TIERS.put(e[0], e[1]);
+        try {
+            for (Map.Entry<String, JsonElement> e : readData(Paths.get(ITEM_TIERS_FILE)).entrySet()) {
+                if (!e.getKey()
+                    .startsWith("_")) {
+                    ITEM_TIERS.put(
+                        e.getKey(),
+                        e.getValue()
+                            .getAsString());
+                }
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -664,7 +668,7 @@ public class QuestbookResourcesTest {
             int damage = s.get("Damage:2")
                 .getAsInt();
             String tier = id.equals(LootBagGroups.BAG_ITEM) ? BAG_TIERS.get(damage)
-                : ITEM_TIERS.get(id + "@" + (id.startsWith("gregguns:") ? 0 : damage));
+                : ITEM_TIERS.get(id.startsWith("gregguns:") ? id : id + "@" + damage);
             if (tier == null) {
                 continue;
             }

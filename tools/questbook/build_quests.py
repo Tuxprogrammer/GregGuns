@@ -67,28 +67,11 @@ PACK_BAGS = {
 # Any bag stack written out by hand (id and damage) is tier-checked the same way.
 BAG_STACKS = dict(PACK_BAGS)
 BAG_STACKS.update({(b['id'], b['damage']): b['tier'] for b in BAGS.values()})
-# What tier an item belongs to, for the reward-tier rule (GGS-12-19): the GregGuns parts and ammo that gate a tier, and the
-# GT parts and materials its recipes consume. Only items worth checking are listed; an unlisted item is never checked.
-# Keys are (id, damage) for pack items and the bare id for GregGuns items.
-ITEM_TIERS = {
-    'gregguns:part_mechanical_3': 'EV', 'gregguns:part_receiver_carbon': 'EV', 'gregguns:part_stock_carbon': 'EV',
-    'gregguns:part_power_plating': 'IV', 'gregguns:ammo_rocket': 'HV', 'gregguns:fuze_assembly_mk3': 'LuV',
-    'gregguns:part_rad_emitter': 'ZPM', 'gregguns:part_nuclear_warhead': 'ZPM', 'gregguns:cell_nuclear': 'ZPM',
-    'gregguns:ammo_rocket_nuke': 'ZPM', 'gregguns:inert_warhead_t3': 'LuV', 'gregguns:inert_warhead_t4': 'UV',
-    'gregguns:inert_warhead_t5': 'UHV',
-    ('gregtech:gt.metaitem.01', 32706): 'LuV',  # Master circuit
-    ('gregtech:gt.metaitem.01', 17372): 'LuV',  # HSS-G plate
-    ('gregtech:gt.metaitem.01', 17325): 'ZPM',  # Naquadah alloy plate
-    ('gregtech:gt.metaitem.03', 32088): 'ZPM',  # Quantum Mainframe (circuitUltimate)
-    ('gregtech:gt.metaitem.01', 32607): 'ZPM',  # ZPM Electric Motor
-    ('gregtech:gt.metaitem.01', 32686): 'ZPM',  # ZPM Emitter
-    ('gregtech:gt.metaitem.01', 11097): 'ZPM', ('gregtech:gt.metaitem.01', 11100): 'ZPM',  # U-235, plutonium
-    ('gregtech:gt.metaitem.01', 17327): 'UV',  # Naquadria plate
-    ('gregtech:gt.metaitem.01', 11101): 'UV',  # Plutonium-241 ingot
-    ('gregtech:gt.metaitem.01', 32677): 'UV', ('gregtech:gt.metaitem.01', 32724): 'UV',  # UV Field Gen, Quantum Eye
-    ('gregtech:gt.metaitem.01', 17129): 'UHV',  # Neutronium plate
-    ('gregtech:gt.metaitem.01', 32678): 'UHV', ('gregtech:gt.metaitem.01', 32688): 'UHV',  # UHV Field Gen, Emitter
-}
+# What tier an item belongs to, for the reward-tier rule (GGS-12-19): item_tiers.json, shared with QuestbookResourcesTest.
+# Keys are a gregguns: id, or id@damage for a pack item; only items worth checking are listed.
+ITEM_TIERS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'item_tiers.json')
+with open(ITEM_TIERS_FILE, encoding='utf8') as _fh:
+    ITEM_TIERS = {k: v for k, v in json.load(_fh).items() if not k.startswith('_')}
 BAG_IDS = {b['id'] for b in BAGS.values()}
 LINE_FOLDER = 'GregGuns'
 LINE_FILE = '_line.json'
@@ -541,8 +524,8 @@ def check(data):
         if TIERS.index(q['tier']) >= TIERS.index('ZPM'):
             for r in q['rewards']:
                 for s in (r.get('items', []) if r.get('type') in ('item', 'choice') else []):
-                    item = ITEM_TIERS.get(s.get('id')) if str(s.get('id', '')).startswith('gregguns:') \
-                        else ITEM_TIERS.get((s.get('id'), s.get('damage')))
+                    sid = str(s.get('id', ''))
+                    item = ITEM_TIERS.get(sid if sid.startswith('gregguns:') else '%s@%s' % (sid, s.get('damage')))
                     if item is None:
                         continue
                     if TIERS.index(item) > TIERS.index(q['tier']):
