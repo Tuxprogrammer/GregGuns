@@ -732,6 +732,17 @@ public final class Kit {
         for (int i = 0; i < L * D; i++) if (group[i] == g) unset(i / D, i % D);
     }
 
+    /**
+     * @return whether a cell must read light 8: open floor, a walked piece, or a piece the raster leaves open (a
+     *         chair, a stool, an armor stand), which a player stands beside or in
+     */
+    boolean lit(int i) {
+        Legend.Entry e = entry[i];
+        if (e == null || e.walkable()) return true;
+        FurniturePiece p = e.bottom();
+        return e.kind == Legend.Entry.Kind.PIECE && p != null && p.role() == com.gregguns.icbm.complex.Cell.AIR;
+    }
+
     /** @return the light at foot height over each cell from the floor tiles, through cells light passes */
     int[] light() {
         int[] light = new int[L * D];
@@ -761,9 +772,9 @@ public final class Kit {
     }
 
     /**
-     * The shadow fill (D305): in a room lit by floor tiles, adds a floor light tile on the darkest walked cell the
-     * light from the tiles leaves under 8, until none is left, so tall props never leave an aisle dark. Rooms with
-     * no floor tiles (the low annexes, lit from the ceiling) are left alone.
+     * The shadow fill (D305): in a room lit by floor tiles, adds a floor light tile on (or nearest to) the darkest
+     * open cell the light from the tiles leaves under 8, until none is left, so tall props never leave an aisle or a
+     * chair dark. Rooms with no floor tiles (the low annexes, lit from the ceiling) are left alone.
      *
      * @return the cells turned into light tiles, as {a, d}
      */
@@ -773,11 +784,21 @@ public final class Kit {
         if (!any) return Collections.emptyList();
         for (int round = 0; round < 64; round++) {
             int[] light = light();
-            int best = -1;
+            int dark = -1;
             for (int i = 0; i < L * D; i++) {
-                if (!walk(i) || light[i] >= MIN_LIGHT || entry[i] != null) continue;
-                if (base[i] != FREE && base[i] != DOORWAY) continue; // a doorway's floor may take a tile too
-                if (best < 0 || light[i] < light[best]) best = i;
+                if (!lit(i) || light[i] >= MIN_LIGHT) continue;
+                if (dark < 0 || light[i] < light[dark]) dark = i;
+            }
+            if (dark < 0) break;
+            // The tile goes on the dark cell, or on the nearest empty floor to it (a dark chair keeps its place).
+            int best = -1, bestDist = Integer.MAX_VALUE;
+            for (int i = 0; i < L * D; i++) {
+                if (entry[i] != null || base[i] != FREE && base[i] != DOORWAY) continue;
+                int dist = Math.abs(i / D - dark / D) + Math.abs(i % D - dark % D);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = i;
+                }
             }
             if (best < 0) break;
             base[best] = TILE;

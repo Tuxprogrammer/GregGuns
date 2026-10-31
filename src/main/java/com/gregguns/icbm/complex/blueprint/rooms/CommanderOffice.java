@@ -34,15 +34,22 @@ public final class CommanderOffice implements RoomBlueprint {
         k.strip(0, 1, L - 2, "SSS.");
         k.column(0, 3, D - 4, "SS.");
         k.column(L - 1, 3, D - 4, "a.");
-        int meet = 9;
-        if (D >= 22) {
-            // A larger office: free-standing bookcases and a map table in the middle, the meeting corner further front.
-            meet = D - 11;
-            k.mirrorStrip(8, 2, L - 3, 2, "SSS.");
-            k.anchorNear(k.module("hhhh", "TTTT", "hhhh"), L / 2 - 2, 11);
+        // The bands in front of the desk alternate a meeting table and a couch corner with, in a larger office,
+        // free-standing bookcases and a map table.
+        int i = 0;
+        for (int[] b : k.bands(8, D - 5)) {
+            int h = b[1] - b[0] + 1;
+            if (h >= 4 && i % 3 == 0) {
+                k.anchorNear(k.module(".hhh.", "hTTTh", "hTTTh", ".hhh."), 2, b[0] + (h - 4) / 2);
+                k.anchorNear(k.module("sss", "~T~", "sss"), L - 7, b[0] + (h - 3) / 2);
+            } else if (h >= 3 && i % 3 == 1) {
+                k.anchorNear(k.module("hhhh", "TTTT", "hhhh"), L / 2 - 2, b[0] + (h - 3) / 2);
+                k.mirrorStrip(b[0] + (h - 1) / 2, 2, L - 3, 6, "SSS.");
+            } else if (h >= 1) {
+                k.mirrorStrip(b[0] + (h - 1) / 2, 2, L - 3, 2, "SSS.");
+            }
+            if (h >= 1) i++;
         }
-        k.anchorNear(k.module(".hhh.", "hTTTh", "hTTTh", ".hhh."), 2, meet);
-        k.anchorNear(k.module("sss", "~T~", "sss"), L - 7, meet);
         k.put(2, D - 4, 'C');
         k.put(L - 3, D - 4, 'C');
         if (L >= 16 && D >= 14) k.corners();
