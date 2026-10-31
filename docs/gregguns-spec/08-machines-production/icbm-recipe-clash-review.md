@@ -28,13 +28,13 @@ The warhead de-arm recipes in the Cutting Machine (D283) are NBT-sensitive: the 
 | subset | 1 | 22 |
 | superset | 0 | 0 |
 
-- **ICBM rows by map** (rows whose output is an ICBM part, warhead, missile or machine): Assembler about 100, Cutting Machine 172 (de-arm rows) plus 43 in its fake map, Missile Workbench 6, crafting 6, Ammo Press 7 (the launcher-warhead charge items), Laser Engraver 4, Circuit Assembler 3, Assembly Line 3, Scanner 3. The counts are by output name, so they can be a few rows off.
+- **ICBM rows by map** (rows whose output is an ICBM part, warhead, missile or machine): Assembler about 100, Cutting Machine 172 (de-arm rows) plus 43 in its fake map, Missile Workbench 6, crafting 6, Ammo Press 7, Laser Engraver 4, Circuit Assembler 3, Assembly Line 3, Scanner 3. The counts are by output name, so they can be a few rows off.
 - **Default flags: nothing of ICBM is in the one subset row.** It is the Bacterial Vat row (S5, Biomass to E. coli culture against BartWorks' Biomass to Fermented Biomass row), which is a special-slot map and was confirmed in game by `gun.bio_gun.vat_recipe_selected`.
 - **`--ignore-counts`:** the 22 subset rows are near misses that need a pack row to want fewer items than ours; none fires on ours. The ICBM ones, checked by hand:
 
 | Our row | Near pack row | Why it is not a clash |
 |---|---|---|
-| Fuze Assembly Mk3 (1 EV plate, circuit 20, LuV circuit, 4 foil) | Railcraft Zeta machine (2 of the same plate, circuit 20) | The pack row needs 2 plates; ours holds 1, so the pack row cannot fire on our inputs, and ours has more inputs than the pack's, so it cannot be stolen |
+| Fuze Assembly Mk3 (1 plate, circuit 20, a LuV circuit and 4 more of one other item) | Railcraft Zeta machine (2 of the same plate, circuit 20) | The pack row needs 2 plates; ours holds 1, so the pack row cannot fire on our inputs, and ours has more inputs than the pack's, so it cannot be stolen |
 | Incendiary Launcher Warhead (circuit 8, 2 plates) | GT casing (8 plates, circuit 8) | The pack row needs 8 plates; ours has 2 |
 
   The rest are armor, ammo and machine rows of the earlier reviews (S1 to S8) or GT casing rows that need 8 plates.
