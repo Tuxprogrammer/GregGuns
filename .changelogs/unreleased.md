@@ -190,3 +190,11 @@ Notes for the next release. Fold these into that release's changelog when it is 
 ## Changed: silo complex spawners
 
 - Every room of a silo complex, the middle assembly bay included, rolls its own mob spawners, so the guards spread through the whole complex, the outer rooms and far wings among them, instead of gathering around the middle. An abandoned complex puts one in about one room in five. A partly abandoned complex puts zero, one or two in a room, mostly one. An operational complex puts one or two in every room. The spawners stand on bare floor, and the halls hold none.
+## Silo complexes look lived in
+
+- BiblioCraft furniture in silo complexes is stocked to suit its room: bookcases hold crew notes and manuals, shelves and tables hold the room's own loot, medicine shelves hold potions, racks hold guns and knives in armed rooms and tools elsewhere, armor stands hold armor or stand empty, desks hold an open book, typewriters hold paper and a typed note, and clipboards carry the room's checklist.
+- Mess halls and cafeterias have dinner plates with food on their tables and cookie jars on their counters; offices and the rec lounge have flower pots; rooms have clipboards on the wall over their desks, consoles and bunks.
+- A notice hangs under every room's name sign: a duty roster or a note on the room's work in a staffed room, a closing notice in a shut one, a last log in a ruin.
+- Furnaces hold fuel and the room's work, brewing stands hold potions, and working GregTech machines hold finished outputs (never an input or a job in progress).
+- Every cauldron holds water, and a staffed farm's crops grow at mixed stages.
+- How much a room holds follows its activity level: a Charlie complex is fully stocked, Bravo's lit rooms are well stocked and its dark rooms half empty, and an Alpha ruin holds little, much of it spoiled or worn.

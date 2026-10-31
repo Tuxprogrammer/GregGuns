@@ -139,12 +139,26 @@ public final class SiloChests {
 
     /** The draw of a room chest, made into stacks. */
     private static void fillRoom(IInventory inv, Placement p, Random rand) {
-        WeightedRandomChestContent[] table = ChestGenHooks.getInfo(p.category())
+        fillRoom(inv, p.category(), p.key(), stateOf(p), rand);
+    }
+
+    /**
+     * The draw of a room chest of a category, table key and state into any inventory (a chest, or a shelf's slots,
+     * D323); it stops when the inventory is full and never leaves it without a real find.
+     *
+     * @param inv      the inventory
+     * @param category the chest category ({@link SiloLootTables#categoryName})
+     * @param key      the table key
+     * @param state    the room's state
+     * @param rand     the draw's random
+     */
+    static void fillRoom(IInventory inv, String category, String key, RoomState state, Random rand) {
+        WeightedRandomChestContent[] table = ChestGenHooks.getInfo(category)
             .getItems(rand);
         WeightedRandomChestContent[] junk = ChestGenHooks.getInfo(SiloLootTables.JUNK)
             .getItems(rand);
         List<RoomLootDraw.Pick> picks = RoomLootDraw
-            .draw(lines(table), lines(junk), stateOf(p), RoomLoot.pickOffset(p.key()), rand);
+            .draw(lines(table), lines(junk), state, RoomLoot.pickOffset(key), rand);
         boolean real = false;
         for (RoomLootDraw.Pick pick : picks) {
             ItemStack s = make(pick, pick.junk() ? junk : table);
@@ -160,7 +174,7 @@ public final class SiloChests {
             if (torch != null) {
                 put(inv, torch, rand);
             }
-            GregGuns.LOG.debug("Silo chest {} drew nothing real; it holds the fallback", p.category());
+            GregGuns.LOG.debug("Silo chest {} drew nothing real; it holds the fallback", category);
         }
     }
 

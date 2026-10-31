@@ -345,6 +345,7 @@ final class ComplexFurnisher {
         ComplexLayout.Frame f = new ComplexLayout.Frame(r);
         sign(r, f);
         lay(r, f, kit(r, f), RoomBlueprints.of(r.kind()));
+        RoomDressing.dress(plan, r); // plates, jars, pots and clipboards on what the blueprint stood (D323)
     }
 
     /**

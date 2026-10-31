@@ -147,7 +147,7 @@ public final class RoomScenarios {
                     for (Room r : cp.rooms()) {
                         if (r.bounds().minX == p.box().minX && r.bounds().minZ == p.box().minZ) collapsed.add(r.id());
                     }
-                } else {
+                } else if (p.kind() != Placement.Kind.STOCK) { // a piece's stock shares its cell (D323)
                     last.put(key(p.x(), p.y(), p.z()), p);
                 }
             }

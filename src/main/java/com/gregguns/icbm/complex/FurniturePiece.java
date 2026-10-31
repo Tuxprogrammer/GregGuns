@@ -52,6 +52,15 @@ public enum FurniturePiece {
     ARMOR_STAND_TOP(Cell.AIR, Wear.NORMAL, Flags.CLEAR),
     /** A GT Locker (it holds a suit of armor); the style's shelf without GT. */
     LOCKER(Cell.FURN_SHELF, Wear.NORMAL, 0),
+    /**
+     * A BiblioCraft dinner plate on a mess table (the layer above it, D323), food on it by the room's state; nothing
+     * without BiblioCraft. Its front faces a chair.
+     */
+    DINNER_PLATE(Cell.AIR, Wear.NORMAL, Flags.CLEAR),
+    /** A BiblioCraft cookie jar on a mess counter (the layer above it, D323); nothing without BiblioCraft. */
+    COOKIE_JAR(Cell.AIR, Wear.NORMAL, Flags.CLEAR),
+    /** A flower pot on an office or lounge desk or table (the layer above it, D323); its plant follows the room. */
+    FLOWER_POT(Cell.AIR, Wear.NORMAL, Flags.CLEAR),
     /** A server rack, two high: the style's console block (no mod piece). */
     SERVER_RACK(Cell.FURN_CONSOLE, Wear.NORMAL, 0),
     /** A console: the style's console cube. A chair may face it. */

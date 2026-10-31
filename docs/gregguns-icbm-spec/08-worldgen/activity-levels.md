@@ -54,10 +54,10 @@ Each room has one state, `ComplexContents.roomState(seed, room, level)`, and eve
 
 | Level | State | How the room reads |
 |---|---|---|
-| Charlie (operational) | `STAFFED` | Lit, every piece in place, every machine working, furnaces burning, cauldrons full, crops ripe |
+| Charlie (operational) | `STAFFED` | Lit, every piece in place, every machine working, furnaces burning, cauldrons full, crops sown in turns (half ripe, the rest at every stage) |
 | Bravo (partly abandoned) | `IN_SERVICE` when the room's lamps burn (the section roll above, 45%) | Lit and worked: 5% of pieces gone, 10% of machines husks, crops at mixed growth (10% bare), furnaces burning |
-| Bravo | `MOTHBALLED` when they are dark | Shut: 30% of pieces gone, half the metal props taken, 90% of machines husks, furnaces cold, cauldrons dry, anvils damaged, fields bare with dirt patches and mushrooms, half the brig doors open |
-| Alpha (abandoned) | `GUTTED` | A ruin: 35% of pieces gone, 40% of those leave rubble, 70% of metal props and coal taken, a quarter of the containers lose their top layer, machines as D284, fields dead (dirt, mushrooms, cobwebs, dry channels), glass broken, a huge mushroom cap on some cellar stems, doors open, one rubble pile per 40 floor cells |
+| Bravo | `MOTHBALLED` when they are dark | Shut: 30% of pieces gone, half the metal props taken, 90% of machines husks, furnaces cold, cauldrons two-thirds full, anvils damaged, fields bare with dirt patches and mushrooms, half the brig doors open |
+| Alpha (abandoned) | `GUTTED` | A ruin: 35% of pieces gone, 40% of those leave rubble, 70% of metal props and coal taken, a quarter of the containers lose their top layer, machines as D284, cauldrons a third full, fields dead (dirt, mushrooms, cobwebs, dry channels), glass broken, a huge mushroom cap on some cellar stems, doors open, one rubble pile per 40 floor cells |
 
 **Wear by piece** (`FurnitureWear`, from the piece's wear class): a whole group goes or stays (a bed's two halves, a container prism, a piece's stacked layers). Rugs, water inlays, basins and partitions never wear.
 
@@ -68,6 +68,45 @@ Each room has one state, `ComplexContents.roomState(seed, room, level)`, and eve
 **Rubble piles never cut anything off.** A pile cell stays only where the open cells around it stay joined without it and every chest, machine or guard beside it keeps another open side, so the reachability of every chest, machine and door holds at every level.
 
 A collapsed room is filled as before, and its pieces are crushed to rubble.
+
+## Furniture stock (D323 to D325)
+
+Owner, play session 3: the furniture stood empty. Every piece that holds things holds them, by the room's state, so the levels read as Alpha a gutted ruin, Bravo half-staffed and Charlie fully staffed. `FurnitureStock` decides it (pure, one `STOCK` placement per stocked piece) and `FurnitureStocker` makes the items in the piece's own tile, after the piece is written.
+
+**Who holds anything** (`FurnitureStock.FILLED`): every piece in a staffed room, 90% in service, 55% mothballed, 30% gutted. A furnace and a flower pot always hold something. A piece the wear pass removed and every piece in a caved-in room hold nothing.
+
+| Piece | Source | What it holds | Staffed / in service / mothballed / gutted |
+|---|---|---|---|
+| BiblioCraft bookcase | `books` | Crew notes and manuals as written books ([crew writing](#crew-writing-d324)), some plain books | 9-15 / 6-12 / 3-8 / 1-4 |
+| BiblioCraft shelf | `room` | A draw of the room's chest table at the room's state (D316, D317), junk and spoiled food in a ruin | up to 4 slots |
+| BiblioCraft table | `room` | One thing from the room's table, shown on its top; none under a plate or a pot | 1 |
+| BiblioCraft potion shelf | `medicine` | Healing, regeneration, fire resistance and swiftness potions; empties and water bottles once shut | 6-11 / 4-9 / 2-6 / 1-3 |
+| BiblioCraft tool rack | `weapons` in the armory, guard post, brig, range and hub, else `tools` | The complex's issue guns and sidearms and combat knives, or hand tools; gear worn in a ruin | 3-4 / 2-4 / 1-3 / 1-2 |
+| BiblioCraft armor stand | `armor_combat` (armory, guard post, brig, range, hub, commander), `armor_hazmat` (decon airlock, warhead magazine), else `armor_crew` | A piece made for each filled slot, from the bunk, combat or hazmat pool at the ceiling; worn in a ruin; or the stand stands empty | 3-4 / 2-4 / 1-3 / 1-2 slots |
+| BiblioCraft writing desk | `desk` | A note or a manual open on it, books stacked beside it | open book plus 3-8 / 2-6 / 1-4 / 0-2 |
+| BiblioCraft typewriter | `typewriter` | Paper in the tray and a typed crew note | 8-32 / 8-32 / 4-15 / 1-4 sheets |
+| BiblioCraft clipboard | `clipboard` | A clipboard with one page of the room's list; worked rooms part done, a mothballed room's shutdown list all done, a ruin's list stopped part way with a few crossed out | 1 |
+| BiblioCraft dinner plate | `plate` | Meals and snacks; spoiled to rotten flesh at the state's D317 spoil chance | 2-3 / 1-3 / 1-2 / 1 |
+| BiblioCraft cookie jar | `cookies` | Cookies | 5-8 / 3-7 / 1-4 / 1-2 |
+| Flower pot | `plant` | A flower, fern, sapling or cactus in a lit room; a dead bush or a mushroom in a dark one | 1 |
+| Furnace | `furnace` | Lit: the room's input (meat in a galley, iron ore or cobblestone in a works room, clay in the chem lab, sand elsewhere), coal, and what that input makes. Cold: coal and the last output. A ruin: a little charcoal, or none and its last output | |
+| Brewing stand | `brewing` | Finished potions in the bottle slots and a reagent waiting while worked; water bottles mixed in once shut | 2-3 / 1-3 / 1-2 / 1 bottles |
+
+**Dressing** (D323, [silo-layout](silo-layout.md#furnishing-d208-d305-d306)): plates, cookie jars, flower pots and clipboards are pieces the room's dressing pass stands on what its blueprint placed.
+
+**GT machines hold finished work only** (D325): a working basic machine with a recipe map holds the outputs of one of its own recipes its tier can run, one to six batches, in its output slots, at 80% staffed, 60% in service, 30% mothballed and 10% gutted (`ComplexContents.STOCKED`). Never an input, a fluid or a job in progress: the machine stands idle until a player feeds it. Husks, generators, buffers and hatches hold nothing.
+
+**Every cauldron holds water** (D325): full (3) in a lit room, two-thirds (2) mothballed, a third (1) gutted.
+
+**Not placed** (orchestrator, alpha 8): item frames (entities, more per-chunk entity load, and they look staged) and dropped-item litter (it despawns after five minutes).
+
+### Crew writing (D324)
+
+All of it is fiction about the complex's own crew, every text a lang key (`icbm.complex.notice.*`, `icbm.complex.clip.*`, `icbm.complex.book.*`), numbered from 1; `ComplexWriting` finds a family's size by looking keys up, so adding a text needs no code.
+
+- **Notices:** under each standing room's name sign (one block down, on the same jamb, where the cell is open, holds no piece and has the wall behind it). A worked room shows a duty roster or a note on its own work (food, crew, arms, missile, command, works or stores, from the room's D316 theme group), half and half; a mothballed room a closing notice; a gutted room a last log. Four lines of 15 characters.
+- **Clipboards:** a title of up to 26 characters and up to nine tasks of 23, by the room's group while worked, a shutdown list when mothballed, a ruin's last list when gutted.
+- **Books:** the group's manual or the site orientation (while worked, four in ten) or a crew note of the room's state. Pages of up to 256 characters.
 
 ## Damage by mark
 
@@ -91,6 +130,8 @@ A collapsed room is filled as before, and its pieces are crushed to rubble.
 6. GGI-08-25: no placement reads or writes outside its own cell or box.
 
 ## Tests
+
+Furniture stock (D323 to D325): `FurnitureStockTest` (a staffed room stocks every piece, the share falls with the state, nothing in a caved-in room or on a removed piece, counts in range, every cauldron holds water, only working machines hold work, a staffed farm at mixed stages), `RoomDressingTest`, `ComplexWritingTest` (every text fits its medium, every state and group has text) and the real-pack scenario `icbm.complex.furniture_fill` (each level written and every stocked piece opened: it holds the right kind of thing, Charlie's furniture is full and the share falls to Bravo and Alpha, stocked machines hold outputs and none holds an input or a job, every cauldron has water, every notice is written, crops at mixed stages).
 
 Unit: `ActivityLevelTest`, `RoomStateTest` (lamps and machines agree per room), `RoomLooksTest` (no chest, machine or guard cut off by wear at any level; crops and lit furnaces only in lit rooms; Bravo keeps at least three quarters of Charlie's pieces, Alpha half, rubble counted; metal props under the ceiling), `ComplexContentsTest` (the per-room spawner weights over many seeds, the placed spawners on layout spots, working machines against the other levels, every chest spot a chest or a crate with the budget's count and the displays on top; lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.rooms` (each level written and read back room by room: the room looks in place, crops only in lit rooms and still standing after fast random ticks, lit furnaces still burning, metal props under the ceiling, every chest, machine and guard reachable from the door over passable blocks), `icbm.complex.levels` (each level, its tier and activity signs read back, plus Operational at UMV, generated onto a slab one window at a time and read back: spawners per room (none over two, the outer rooms reached), working machines and chests (abandoned far below operational), each spawner's mobs and danger floor (its vanilla mob spawner NBT); the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
 

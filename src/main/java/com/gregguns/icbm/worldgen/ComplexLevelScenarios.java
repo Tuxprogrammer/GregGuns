@@ -103,6 +103,7 @@ public final class ComplexLevelScenarios {
         SalvageScenarios.registerAll(registry);
         ChestLootScenarios.registerAll(registry);
         RoomScenarios.registerAll(registry);
+        FurnitureFillScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
@@ -544,7 +545,7 @@ public final class ComplexLevelScenarios {
             for (Placement p : placements) {
                 if (p.kind() == Kind.COLLAPSE) {
                     collapses.add(p);
-                } else {
+                } else if (p.kind() != Kind.STOCK) { // a piece's stock shares its cell (D323)
                     last.put(key(p.x(), p.y(), p.z()), p);
                 }
             }
