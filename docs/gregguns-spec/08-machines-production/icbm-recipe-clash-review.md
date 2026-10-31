@@ -45,7 +45,13 @@ The warhead de-arm recipes in the Cutting Machine (D283) are NBT-sensitive: the 
 
 None. No ICBM recipe needed to change for the pack. The by-hand rows above are recorded so a later recipe change (balance pass) can be rechecked against them.
 
-## Rerun on the balance pass
+## Rerun on the balance pass (P1, `icbm/i7-p1` at 69b9fdb0)
 
-Coder P1's recipe changes (D328 to D331) are rechecked with the same tool before the integration branch. The result is added below by the coder who reruns it.
+The same tool, on a dump from the real pack with the I7 jar merged with coder P1's recipe changes (D328 to D331): the five inert-warhead Assembler recipes (nose cone, 12 hull plates, Sensor, Emitter and two circuits of the tier), the nuclear payload recipe (two ZPM Field Generators) and the Cutting Machine scrap and payload-out rows that return them. The dump now also holds the NASA Workbench rocket lists (40 more rows, all pack rows).
 
+| Category | Default flags | `--ignore-counts` |
+|---|---|---|
+| exact, shadow, grid, shapeless, duplicate, superset | 0 | 0 |
+| subset | 1 (the Bacterial Vat row above) | 22 (the same rows as before) |
+
+No new finding: the changed rows add inputs, so none became a subset of a pack row, and the new de-arm rows differ by NBT. **No unresolved ICBM clash.** Any later recipe change reruns the tool the same way.
