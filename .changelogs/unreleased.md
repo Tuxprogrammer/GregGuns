@@ -143,3 +143,10 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 - The Launch Control's target slot takes a Radar Gun: drop one that holds a target into the slot and press Load target (or right-click the block with it). The gun stays in the slot. An empty slot shows a faint Radar Gun, the screen reads "No target: use a Radar Gun" with no target set, and the tooltips, the Launch Control and Handheld Tools quests and the guide sheets lead with the gun.
 - Data sticks still work in the slot, quietly: nothing in the Launch Control advertises them any more.
+
+## Changed: silo complex placement and activity levels
+
+- A silo complex under a village or temple is no longer skipped: it generates 10 to 20 blocks deeper, and its shafts and escape ladder reach the surface where they always would. The village is found from where the world will put it, so the result is the same whichever chunk you reach first. A complex is skipped only where it cannot go that deep above bedrock.
+- Roguelike Dungeons keep out of silo complexes: a dungeon that would start near a complex picks another spot, and none of its blocks are written inside one. The new switch `compat.roguelikeKeepOutOfComplexes` (default on) turns this off, and the startup log says whether it attached.
+- Activity levels now roll 30% abandoned, 40% partly abandoned and 30% operational (`icbm.siloComplexActivityWeights` default `30, 40, 30`; a server that keeps the old line in its config keeps the old odds). Each complex rolls once, when it is first placed, and keeps its level if the weights change later. Complexes placed before this update roll their level with the current weights.
+- `/gregguns locate complex` shows each built complex's activity level and how much deeper it lies under a village.
