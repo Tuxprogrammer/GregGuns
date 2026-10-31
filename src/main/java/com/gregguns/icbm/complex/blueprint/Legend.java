@@ -109,9 +109,13 @@ public final class Legend {
             return layers[0].walkable();
         }
 
-        /** @return whether light passes the cell at foot height */
+        /**
+         * @return whether light passes the cell at foot height, whatever the contents pass later stands there: every
+         *         mark is solid (a machine, a guard spawner, and a chest spot, which the chest budget may leave as an
+         *         opaque wooden crate, D315)
+         */
         boolean clear() {
-            if (kind == Kind.MARK) return mark == MarkKind.LOOT_CHEST; // machines and guard spawners are solid
+            if (kind == Kind.MARK) return false;
             if (kind != Kind.PIECE || layers.length == 0 || layers[0] == null) return true;
             return layers[0].clear();
         }

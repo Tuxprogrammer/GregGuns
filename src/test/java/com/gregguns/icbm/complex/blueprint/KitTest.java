@@ -98,6 +98,28 @@ class KitTest {
         assertTrue(k.at(1, 0) == null || k.at(0, 1) == null, "a crate gave way to the corner cell");
     }
 
+    /** A 6 x 6 floor with one light tile at 3,3 and no openings: the corner 0,0 is 6 steps away and reads 8. */
+    private static Kit oneTile() {
+        byte[] base = new byte[6 * 6];
+        base[3 * 6 + 3] = Kit.TILE;
+        return new Kit(6, 6, base, new ArrayList<Opening>(), 1L, 1);
+    }
+
+    @Test
+    void aChestSpotCastsAShadowTheShadowFillLights() {
+        Kit k = oneTile();
+        assertEquals(8, k.light()[0], "the open corner reads 8");
+        // A spot the chest budget leaves over is an opaque wooden crate (D315): two of them shut the corner off.
+        assertTrue(k.put(1, 0, 'C'));
+        assertTrue(k.put(0, 1, 'C'));
+        assertTrue(k.light()[0] < 8, "the chest spots shade the corner");
+        assertFalse(
+            k.shadowFill()
+                .isEmpty(),
+            "the shadow fill adds a tile");
+        assertTrue(k.light()[0] >= 8, "the corner reads 8 again");
+    }
+
     @Test
     void mirroredModulesSwapSides() {
         Legend l = Legend.defaults();

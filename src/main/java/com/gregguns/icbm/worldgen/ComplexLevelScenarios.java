@@ -331,9 +331,10 @@ public final class ComplexLevelScenarios {
         int lightsPlaced;
         int lightMarks;
         int lightsLit;
-        /** Lowest block light on an open floor cell of any section (15 when nothing was read), and where. */
+        /** Lowest block light on an open floor cell of any section (15 when nothing was read). */
         int floorMinLight = 15;
-        String darkest = "";
+        /** Every open floor cell under light 8, as "light at section id (kind) local x,z", in section order. */
+        final List<String> darkCells = new ArrayList<>();
         int floodMarks;
         int floodWet;
         int collapses;
@@ -488,11 +489,15 @@ public final class ComplexLevelScenarios {
                 "an abandoned complex is dark: " + ab.lightsLit + "/" + ab.lightMarks);
             out.checkEquals("operational lights lit", op.lightMarks, op.lightsLit);
             out.check(
-                op.floorMinLight >= 8,
+                op.darkCells.isEmpty(),
                 "an operational complex reads block light 8 or more on every open floor cell of every hall and room: "
+                    + op.darkCells.size()
+                    + " dark (lowest "
                     + op.floorMinLight
-                    + " at "
-                    + op.darkest);
+                    + ")"
+                    + (op.darkCells.isEmpty() ? ""
+                        : ": " + String.join("; ", op.darkCells.subList(0, Math.min(12, op.darkCells.size())))
+                            + (op.darkCells.size() > 12 ? "; ..." : "")));
             out.check(ab.floodMarks > 0 ? ab.floodWet == ab.floodMarks : true, "abandoned pump room is flooded");
             out.checkEquals("operational flooding", 0, op.floodWet);
         }
@@ -772,6 +777,7 @@ public final class ComplexLevelScenarios {
                 }
             }
             // Every open floor cell of every section: the lamp grid keeps it at 8 or more when lit (D217, D230).
+            // Every dark cell is listed, so one fix never hides another.
             for (int id = 0; id < cp.sectionCount(); id++) {
                 com.gregguns.icbm.complex.Box b = cp.sectionBox(id);
                 for (int x = b.minX + 1; x <= b.maxX - 2; x++) {
@@ -779,13 +785,23 @@ public final class ComplexLevelScenarios {
                         if (!world.isAirBlock(ax + x, floor + 1, az + z)) continue;
                         int l = world
                             .getSavedLightValue(net.minecraft.world.EnumSkyBlock.Block, ax + x, floor + 1, az + z);
-                        if (l < t.floorMinLight) {
-                            t.floorMinLight = l;
-                            t.darkest = "section " + id + " local " + x + "," + z;
+                        t.floorMinLight = Math.min(t.floorMinLight, l);
+                        if (l < 8) {
+                            t.darkCells
+                                .add(l + " at section " + id + " (" + sectionName(cp, id) + ") local " + x + "," + z);
                         }
                     }
                 }
             }
+        }
+
+        /** @return a section's kind for a report: the hub, a room's kind, or a major hall or minor hallway */
+        private static String sectionName(ComplexPlan cp, int id) {
+            Object o = cp.section(id);
+            if (o == cp.hall()) return "hub";
+            if (o instanceof com.gregguns.icbm.complex.Room) return ((com.gregguns.icbm.complex.Room) o).kind()
+                .name();
+            return ((com.gregguns.icbm.complex.Tunnel) o).major() ? "major hall" : "minor hallway";
         }
 
         private void machine(Tally t, World world, Placement p, int x, int y, int z) {

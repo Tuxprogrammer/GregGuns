@@ -603,7 +603,8 @@ class ComplexLayoutTest {
 
     /**
      * D217 adapted (D230): with every lamp lit, Minecraft's block light (15 at a lamp, one less per step through air,
-     * stopped by solid blocks; furniture and machines counted solid) reads 8 or more on every open floor cell.
+     * stopped by solid blocks; furniture, machines and chest spots, which may be left as crates, counted solid) reads
+     * 8 or more on every open floor cell.
      */
     @Test
     void everyOpenFloorCellReadsLightEightWhenTheLampsBurn() {
@@ -638,6 +639,8 @@ class ComplexLayoutTest {
                 }
                 if (m.kind() == MarkKind.LOOT_CHEST || m.kind() == MarkKind.GUN_DISPLAY)
                     occupied[m.x() * S + m.z()] = true;
+                // A chest spot the chest budget leaves over is an opaque wooden crate (D315).
+                if (m.kind() == MarkKind.LOOT_CHEST) opaque[(m.x() * Y + m.y()) * S + m.z()] = true;
             }
             ArrayDeque<int[]> q = new ArrayDeque<int[]>();
             for (int x = 0; x < S; x++) for (int y = 0; y < Y; y++) for (int z = 0; z < S; z++) {
