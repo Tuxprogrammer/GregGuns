@@ -31,9 +31,9 @@ import com.gregguns.worldgen.spawner.SpawnerKind;
 public final class ComplexContents {
 
     /** Salts, one per roll family, so two rolls on one cell are independent. */
-    private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_SPAWN = 0x59A, S_ELITE = 0xE11,
+    private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_ELITE = 0xE11, S_SPAWN_N = 0x59B,
         S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_ABSENT = 0xAB5,
-        S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_VARIANT = 0x7A2;
+        S_VARIANT = 0x7A2;
 
     private ComplexContents() {}
 
@@ -97,9 +97,6 @@ public final class ComplexContents {
                 out,
                 c,
                 level);
-        }
-        if (level == ActivityLevel.ABANDONED) {
-            holdouts(plan, seed, collapsedRooms, out);
         }
         bonuses(plan, p, seed, other, ceiling, chests);
         List<Placement> all = new ArrayList<>(collapses);
@@ -227,7 +224,6 @@ public final class ComplexContents {
         boolean collapsed, ActivityProfile p, long seed, int ceiling, Box hall, List<Placement> out, Chests chests,
         ActivityLevel level) {
         int band = depthBand(bounds, hall);
-        boolean controlRoom = "LAUNCH_CONTROL".equals(owner);
         for (Mark m : marks) {
             long h = Mix.of(seed, S_CELL, m.x() * 4096L + m.z(), m.y());
             double u = Mix.unit(h);
@@ -309,8 +305,7 @@ public final class ComplexContents {
                     }
                     break;
                 case SPAWNER:
-                    spawner(m, band, controlRoom, p, seed, ceiling, out);
-                    break;
+                    break; // a room's spawners are rolled as a set, in spawners()
                 case MACHINE:
                     machine(m, state, p, seed, ceiling, out);
                     break;
@@ -319,6 +314,9 @@ public final class ComplexContents {
                 default:
                     break; // signs and blast doors are the layout's own
             }
+        }
+        if (roomId >= 0) {
+            spawners(marks, band, collapsed, p, seed, roomId, out);
         }
     }
 
@@ -395,71 +393,53 @@ public final class ComplexContents {
     }
 
     /**
-     * @param ceiling the complex's ceiling
-     * @return the factor guard spawner chances grow by: 1 at EV, 1.5 at the top (UMV), in even steps
+     * How many spawners a room holds (D326): a roll per room from the plan seed and the room, against the level's
+     * weights ({@link ActivityProfile#spawnerWeights()}). The same in every populate window.
+     *
+     * @param seed   the plan seed
+     * @param roomId the room's section id (the hub included)
+     * @param level  the complex's level
+     * @return 0 to 2
      */
-    public static double guardScale(int ceiling) {
-        int c = Math.max(SiloCeiling.EV, Math.min(SiloCeiling.UMV, ceiling));
-        return 1.0 + 0.5 * (c - SiloCeiling.EV) / (SiloCeiling.UMV - SiloCeiling.EV);
-    }
-
-    private static void spawner(Mark m, int band, boolean controlRoom, ActivityProfile p, long seed, int ceiling,
-        List<Placement> out) {
-        double chance = Math.min(1.0, p.spawnerChance(band) * guardScale(ceiling));
-        if ("post".equals(m.key()) && p.level() != ActivityLevel.ABANDONED) {
-            chance = Math.min(1.0, chance + 0.25);
+    public static int spawnersIn(long seed, int roomId, ActivityLevel level) {
+        double u = Mix.unit(Mix.of(seed, S_SPAWN_N, roomId, 0));
+        double[] w = ActivityProfile.of(level)
+            .spawnerWeights();
+        double acc = 0;
+        for (int n = 0; n < w.length; n++) {
+            acc += w[n];
+            if (u < acc) {
+                return n;
+            }
         }
-        if (controlRoom || "deep".equals(m.key())) {
-            chance = Math.max(chance, p.shaftSpawnerChance());
-        }
-        if (Mix.unit(Mix.of(seed, S_SPAWN, m.x() * 4096L + m.z(), m.y())) >= chance) {
-            return;
-        }
-        boolean elite = "deep".equals(m.key()) || "room".equals(m.key()) && band >= 2
-            && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
-        out.add(
-            Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
-                .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
-                .build());
+        return w.length - 1;
     }
 
     /**
-     * The abandoned level's few holdouts (D284): one or two guard spawners at hashed "post" marks (guard posts and
-     * corridor junctions), never in a collapsed room, so a ruin still bites a little. Every other spawner mark is
-     * silent at this level. The pick is a hash of the plan's seed and each mark's cell, so it is the same in every
-     * populate window.
+     * The spawners of one room (D326): the first {@link #spawnersIn} of its spawner spots, in the spots' order (the
+     * layout lists the farthest-apart first). A caved-in room holds none. A spot makes an elite spawner at the deeper
+     * bands 40% of the time, never at the abandoned level (D284's weaker holdouts).
      */
-    private static void holdouts(ComplexPlan plan, long seed, java.util.Set<Integer> collapsed, List<Placement> out) {
-        List<Mark> pool = new ArrayList<>();
-        addPosts(
-            plan.hall()
-                .marks(),
-            pool);
-        for (Room r : plan.rooms()) {
-            if (!collapsed.contains(r.id())) {
-                addPosts(r.marks(), pool);
+    private static void spawners(List<Mark> marks, int band, boolean collapsed, ActivityProfile p, long seed,
+        int roomId, List<Placement> out) {
+        if (collapsed) {
+            return;
+        }
+        int n = spawnersIn(seed, roomId, p.level());
+        for (Mark m : marks) {
+            if (n <= 0) {
+                break;
             }
-        }
-        for (Tunnel t : plan.tunnels()) {
-            addPosts(t.marks(), pool);
-        }
-        pool.sort(
-            java.util.Comparator.comparingDouble(m -> Mix.unit(Mix.of(seed, S_HOLD, m.x() * 4096L + m.z(), m.y()))));
-        int n = Math.min(pool.size(), 1 + (int) (Mix.of(seed, S_HOLD_N, 0, 0) & 1L));
-        for (int i = 0; i < n; i++) {
-            Mark m = pool.get(i);
+            if (m.kind() != com.gregguns.icbm.complex.MarkKind.SPAWNER) {
+                continue;
+            }
+            n--;
+            boolean elite = p.level() != ActivityLevel.ABANDONED && band >= 2
+                && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
             out.add(
                 Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
-                    .spawner(SpawnerKind.SILO_GUARD)
+                    .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
                     .build());
-        }
-    }
-
-    private static void addPosts(List<Mark> marks, List<Mark> pool) {
-        for (Mark m : marks) {
-            if (m.kind() == com.gregguns.icbm.complex.MarkKind.SPAWNER && "post".equals(m.key())) {
-                pool.add(m);
-            }
         }
     }
 

@@ -623,10 +623,94 @@ public final class Kit {
         return false;
     }
 
-    /** {@code n} room guards spread along row d (D234: room guards keep the area step), each near its spot. */
-    public void guards(int n, int d) {
-        Legend.Entry g = Legend.guard("room");
-        for (int k = 0; k < n; k++) markNear((int) ((k + 0.5) * L / n), d, g, 'G');
+    /**
+     * Where a spawner may stand (D326): up to {@code n} bare floor cells that a walk from the doorway reaches, far
+     * apart.
+     * Call it after the commit, when nothing else will stand in the room. The first cell is a hash of the room, each
+     * next one the cell farthest from those chosen. A cell holding a floor mark is not offered.
+     *
+     * @param n the most cells wanted
+     * @return {a, d} cells, fewer than {@code n} (or none) when the room has no such floor
+     */
+    public List<int[]> spawnerSpots(int n) {
+        boolean[] seen = flood();
+        boolean[] bare = flood(true);
+        final List<int[]> pool = new ArrayList<int[]>();
+        for (int a = 0; a < L; a++) {
+            for (int d = 0; d < D; d++) {
+                if (!free(a, d) || !bare[i(a, d)]) continue;
+                boolean marked = false;
+                for (Placed p : floorMarks) marked |= p.a == a && p.d == d;
+                if (!marked) pool.add(new int[] { a, d });
+            }
+        }
+        List<int[]> out = new ArrayList<int[]>();
+        Legend.Entry spot = Legend.mark(MarkKind.SPAWNER, "spot");
+        int[] light = light();
+        boolean tiled = false;
+        for (byte b : base) tiled |= b == TILE;
+        try {
+            while (out.size() < n && !pool.isEmpty()) {
+                int[] pick = null;
+                long bestKey = Long.MAX_VALUE;
+                int bestFar = -1;
+                for (int[] c : pool) {
+                    int far = Integer.MAX_VALUE;
+                    for (int[] o : out) far = Math.min(far, Math.abs(c[0] - o[0]) + Math.abs(c[1] - o[1]));
+                    if (out.isEmpty()) far = 0;
+                    long h = hash(0x59A, c[0], c[1]);
+                    if (far > bestFar || far == bestFar && h < bestKey) {
+                        if (!keepsRoomOpen(c, out, spot, seen, light, tiled)) continue;
+                        pick = c;
+                        bestFar = far;
+                        bestKey = h;
+                    }
+                }
+                if (pick == null) break;
+                entry[i(pick[0], pick[1])] = spot;
+                out.add(pick);
+                pool.remove(pick);
+                seen = flood();
+                light = light();
+            }
+        } finally {
+            for (int[] c : out) entry[i(c[0], c[1])] = null;
+        }
+        return out;
+    }
+
+    /**
+     * @return whether a spawner on cell {@code c} leaves every walked cell reachable from the door and every lit cell
+     *         as bright as it was
+     */
+    private boolean keepsRoomOpen(int[] c, List<int[]> chosen, Legend.Entry spot, boolean[] seen, int[] light,
+        boolean tiled) {
+        int ci = i(c[0], c[1]);
+        entry[ci] = spot;
+        try {
+            boolean[] now = flood();
+            boolean[] bare = flood(true);
+            if (!touches(bare, c[0], c[1])) return false;
+            for (int[] o : chosen) if (!touches(bare, o[0], o[1])) return false;
+            for (int i = 0; i < L * D; i++) {
+                if (i != ci && seen[i] && !now[i]) return false;
+            }
+            for (int a = 0; a < L; a++) {
+                for (int d = 0; d < D; d++) {
+                    Legend.Entry e = entry[i(a, d)];
+                    if (e != null && e.kind == Legend.Entry.Kind.MARK && !touches(now, a, d)) return false;
+                }
+            }
+            if (tiled) {
+                int[] after = light();
+                for (int i = 0; i < L * D; i++) {
+                    if (i != ci && lit(i) && light[i] >= MIN_LIGHT && after[i] < MIN_LIGHT) return false;
+                }
+            }
+            return true;
+        } finally {
+            entry[ci] = null;
+        }
     }
 
     private final List<Placed> floorMarks = new ArrayList<Placed>();
@@ -661,13 +745,19 @@ public final class Kit {
     }
 
     private boolean[] flood() {
+        return flood(false);
+    }
+
+    /** @param bare walk only cells with nothing on them (a door piece or a rug does not count) */
+    private boolean[] flood(boolean bare) {
         boolean[] seen = new boolean[L * D];
         ArrayDeque<int[]> q = new ArrayDeque<int[]>();
         for (Opening o : openings) {
             // From the doorway; in the hub, from its first portal (every other must then be reached).
             if (primary != null ? !o.primary : o != openings.get(0)) continue;
             for (int[] c : o.inside(L, D)) {
-                if (!in(c[0], c[1]) || !walk(i(c[0], c[1])) || seen[i(c[0], c[1])]) continue;
+                if (!in(c[0], c[1]) || !(bare ? entry[i(c[0], c[1])] == null : walk(i(c[0], c[1])))
+                    || seen[i(c[0], c[1])]) continue;
                 seen[i(c[0], c[1])] = true;
                 q.add(c);
             }
@@ -676,7 +766,7 @@ public final class Kit {
             int[] c = q.poll();
             for (Dir x : Dir.REAL) {
                 int a = c[0] + x.da, d = c[1] + x.dd;
-                if (!in(a, d) || seen[i(a, d)] || !walk(i(a, d))) continue;
+                if (!in(a, d) || seen[i(a, d)] || !(bare ? entry[i(a, d)] == null : walk(i(a, d)))) continue;
                 seen[i(a, d)] = true;
                 q.add(new int[] { a, d });
             }

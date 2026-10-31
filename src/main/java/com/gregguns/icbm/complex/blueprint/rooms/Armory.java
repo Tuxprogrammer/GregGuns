@@ -42,7 +42,6 @@ public final class Armory implements RoomBlueprint {
         k.column(L - 1, 3, D - 4, "aC");
         k.anchor(3, D - 4, "TT.TT");
         k.anchor(3, D - 5, "hh.hh");
-        k.guards(Works.steps(k), D - 4);
         // Ammo crate islands with a chest in the middle row between two display partitions (and after the last),
         // clear of both gun faces and of the cleaning benches.
         for (int d = 4 + DISPLAY_PITCH / 2; d <= D - 4; d += DISPLAY_PITCH) {

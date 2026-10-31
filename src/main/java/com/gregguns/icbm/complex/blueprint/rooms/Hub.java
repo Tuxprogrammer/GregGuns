@@ -3,7 +3,6 @@ package com.gregguns.icbm.complex.blueprint.rooms;
 import com.gregguns.icbm.complex.LootKeys;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.complex.blueprint.Kit;
-import com.gregguns.icbm.complex.blueprint.Legend;
 import com.gregguns.icbm.complex.blueprint.Module;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 
@@ -11,7 +10,7 @@ import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
  * The hub, the assembly bay (D306): a container yard. A clear lane runs straight across from every portal, so the
  * halls stay joined. Between the lanes, shipping containers (Chisel metal crates, 2 x 3, 2 high) line the walls with
  * salvage chests between them, and the yard holds rows of containers and crate pallets with chests, a workbench near
- * the middle, metal props and crates along the side walls, a cache in each corner and three room guards. The cell in
+ * the middle, metal props and crates along the side walls, and a cache in each corner. The cell in
  * front of the hub's signs is kept clear by the furnisher.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: the hub); D306
@@ -40,10 +39,6 @@ public final class Hub implements RoomBlueprint {
             Module m = i++ % 2 == 0 ? containers : pallet;
             k.tile(m, 5, b[0] + (h - 2) / 2, 2, L - 3, 2);
         }
-        Legend.Entry guard = Legend.guard("room");
-        k.markNear(4, 4, guard, 'G');
-        k.markNear(L - 5, D - 5, guard, 'G');
-        k.markNear(4, D - 5, guard, 'G');
         k.corners();
     }
 }

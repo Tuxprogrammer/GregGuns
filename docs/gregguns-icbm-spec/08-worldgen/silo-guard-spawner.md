@@ -10,8 +10,8 @@ A guard post is the vanilla `minecraft:mob_spawner`, placed by `ComplexApplier` 
 
 | Kind | Layout tag | NPCs | Where |
 |---|---|---|---|
-| `SILO_GUARD` | `spawner.silo_guard` | Army Soldier, Commando | `post` and `room` marks, and `room` marks nearer the hall |
-| `SILO_ELITE` | `spawner.silo_elite` | Commando, Stormtrooper | `deep` marks, and 40% of `room` marks at depth band 2 or more |
+| `SILO_GUARD` | `spawner.silo_guard` | Army Soldier, Commando | the spawner spots (D326), except the elite share |
+| `SILO_ELITE` | `spawner.silo_elite` | Commando, Stormtrooper | 40% of the spots in rooms at depth band 2 or more, never at the abandoned level |
 
 `SpawnPotentials` lists the registered NPCs of the kind with weight 1 each, so vanilla picks evenly, one type per cycle. A kind with no registered NPC this run places no spawner (a spawner must never name a missing entity: the vanilla client draws it).
 

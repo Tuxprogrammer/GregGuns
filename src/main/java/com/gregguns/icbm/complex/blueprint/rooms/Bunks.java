@@ -9,7 +9,7 @@ import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
  * chest; see {@link BedRows}), a GT Locker between the heads, a foot chest beyond each foot facing the aisle; a band
  * of 3 rows takes one row with the heads to the back. Kit shelves and lockers on the back wall, lockers down the left
  * wall,
- * rifle racks down the right, a chest-and-crate cache in each corner, room guards by the back wall.
+ * rifle racks down the right, a chest-and-crate cache in each corner.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: Bunks); D305; D306
 public final class Bunks implements RoomBlueprint {
@@ -28,7 +28,6 @@ public final class Bunks implements RoomBlueprint {
         k.column(0, 3, D - 4, "L.");
         k.column(L - 1, 3, D - 4, "r.");
         for (int[] b : k.bands(2, D - 3)) BedRows.band(k, b[0], b[1], 'L', 1, L - 2);
-        k.guards(LegacyRoom.steps(k), 1);
         if (L >= 16 && D >= 14) k.corners();
     }
 }

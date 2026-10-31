@@ -252,29 +252,28 @@ class ComplexLayoutTest {
     }
 
     @Test
-    void guardPostsStandAtBranchPointsAndSilosAreGuardedFromDeepIn() {
+    void spawnerSpotsReachTheFarRoomsAndNoMarkLiesInTheHalls() {
         for (long s = 0; s < 120; s++) {
             ComplexPlan p = plan(s);
-            int deep = 0;
-            for (Mark m : p.allMarks()) if (m.kind() == MarkKind.SPAWNER && "deep".equals(m.key())) deep++;
-            assertTrue(
-                deep >= p.silos()
-                    .size() + 1,
-                "a post per silo walkway and one at the gallery's end: " + deep);
-            int posts = 0;
             for (Tunnel t : p.tunnels()) {
                 for (Mark m : t.marks()) {
-                    if (m.kind() != MarkKind.SPAWNER || !"post".equals(m.key())) continue;
-                    posts++;
-                    boolean nearBranch = false;
-                    for (Door d : p.doors()) {
-                        if (d.kind != Door.Kind.PORTAL || !d.joins(t.id())) continue;
-                        nearBranch |= m.x() >= d.x0 - 8 && m.x() <= d.x1 + 8 && m.z() >= d.z0 - 8 && m.z() <= d.z1 + 8;
-                    }
-                    assertTrue(nearBranch, "seed " + s + ": a hall post stands by a branch point: " + m);
+                    assertTrue(m.kind() != MarkKind.SPAWNER, "seed " + s + ": halls hold no spawner marks");
                 }
             }
-            assertTrue(posts >= 2, "seed " + s + ": posts at branch points " + posts);
+            int far = 0;
+            Box hub = p.hall()
+                .bounds();
+            for (Room r : p.rooms()) {
+                int dist = Math.abs(
+                    r.bounds()
+                        .centerX() - hub.centerX())
+                    + Math.abs(
+                        r.bounds()
+                            .centerZ() - hub.centerZ());
+                if (dist < 60) continue;
+                for (Mark m : r.marks()) if (m.kind() == MarkKind.SPAWNER) far++;
+            }
+            assertTrue(far >= 2, "seed " + s + ": the outer rooms carry spawner spots: " + far);
         }
     }
 

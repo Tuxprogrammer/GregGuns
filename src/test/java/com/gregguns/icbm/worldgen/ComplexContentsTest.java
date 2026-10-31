@@ -53,32 +53,69 @@ class ComplexContentsTest {
                 .toString());
     }
 
+    /** D326: the per-room roll follows each level's weights over many seeds and rooms. */
     @Test
-    void abandonedHasOneOrTwoHoldoutsAndOperationalHasMany() {
-        boolean one = false;
-        boolean two = false;
-        for (long s = 0; s < 60; s++) {
-            ComplexPlan plan = ComplexLayout.generate(s, 1, 2);
-            List<Placement> ps = ComplexContents.build(plan, ActivityLevel.ABANDONED, 4, null);
-            long n = count(ps, Kind.SPAWNER);
-            assertTrue(n >= 1 && n <= 2, "seed " + s + " has " + n + " spawners");
-            one |= n == 1;
-            two |= n == 2;
-            for (Placement p : ps) {
-                if (p.kind() == Kind.SPAWNER) {
-                    assertEquals(SpawnerKind.SILO_GUARD, p.spawner(), "holdouts are the weaker guards");
+    void spawnersPerRoomFollowTheLevelWeights() {
+        double[][] want = { { 0.80, 0.20, 0.0 }, { 0.25, 0.55, 0.20 }, { 0.0, 0.75, 0.25 } };
+        ActivityLevel[] levels = { ActivityLevel.ABANDONED, ActivityLevel.PARTLY_ABANDONED, ActivityLevel.OPERATIONAL };
+        for (int l = 0; l < 3; l++) {
+            int[] hist = new int[3];
+            int rolls = 0;
+            for (long seed = 0; seed < 4000; seed++) {
+                for (int room = 0; room < 25; room++) {
+                    int n = ComplexContents.spawnersIn(seed * 7919L, room, levels[l]);
+                    assertTrue(n >= 0 && n <= 2);
+                    hist[n]++;
+                    rolls++;
+                    assertEquals(n, ComplexContents.spawnersIn(seed * 7919L, room, levels[l]), "deterministic");
                 }
             }
-            assertEquals(
-                ps.toString(),
-                ComplexContents.build(plan, ActivityLevel.ABANDONED, 4, null)
-                    .toString());
+            for (int n = 0; n < 3; n++) {
+                assertEquals(want[l][n], hist[n] / (double) rolls, 0.01, levels[l] + " rooms with " + n);
+            }
         }
-        assertTrue(one && two, "both counts occur");
+    }
+
+    /** D326: placed spawners follow the room rolls, sit on layout spots, never in a collapsed room. */
+    @Test
+    void placedSpawnersAreTheRoomsRolledSpots() {
+        for (ActivityLevel level : ActivityLevel.values()) {
+            for (long s = 0; s < 30; s++) {
+                ComplexPlan plan = ComplexLayout.generate(s, 1, 2);
+                List<Placement> ps = ComplexContents.build(plan, level, 4, null);
+                java.util.Set<Long> spots = new java.util.HashSet<>();
+                int expected = 0;
+                List<com.gregguns.icbm.complex.Room> all = new java.util.ArrayList<>(plan.rooms());
+                all.add(plan.hall());
+                for (com.gregguns.icbm.complex.Room r : all) {
+                    int have = 0;
+                    for (com.gregguns.icbm.complex.Mark m : r.marks()) {
+                        if (m.kind() == com.gregguns.icbm.complex.MarkKind.SPAWNER) {
+                            have++;
+                            spots.add(m.x() * 4096L + m.z());
+                        }
+                    }
+                    expected += Math.min(have, ComplexContents.spawnersIn(plan.seed(), r.id(), level));
+                }
+                long n = count(ps, Kind.SPAWNER);
+                assertTrue(n <= expected, level + " seed " + s + ": " + n + " placed, " + expected + " rolled");
+                for (Placement p : ps) {
+                    if (p.kind() != Kind.SPAWNER) continue;
+                    assertTrue(spots.contains(p.x() * 4096L + p.z()), "a spawner stands on a layout spot");
+                    if (level == ActivityLevel.ABANDONED) {
+                        assertEquals(SpawnerKind.SILO_GUARD, p.spawner(), "ruins hold the weaker guards");
+                    }
+                }
+                assertEquals(
+                    ps.toString(),
+                    ComplexContents.build(plan, level, 4, null)
+                        .toString());
+            }
+        }
+        long ab = sum(ActivityLevel.ABANDONED, 4, Kind.SPAWNER)[0];
         long partly = sum(ActivityLevel.PARTLY_ABANDONED, 4, Kind.SPAWNER)[0];
         long op = sum(ActivityLevel.OPERATIONAL, 4, Kind.SPAWNER)[0];
-        assertTrue(partly > 0, "partly abandoned has some guards");
-        assertTrue(op > partly, "operational has the most: " + op + " vs " + partly);
+        assertTrue(ab < partly && partly < op, "spawners by level: " + ab + ", " + partly + ", " + op);
     }
 
     @Test
@@ -220,7 +257,7 @@ class ComplexContentsTest {
     }
 
     @Test
-    void spawnerKindsAreTheSiloPostsAndDeepOnesAreElite() {
+    void spawnerKindsAreTheSiloPosts() {
         for (long s = 0; s < 40; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 9, 9);
             for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 4, null)) {
@@ -386,30 +423,6 @@ class ComplexContentsTest {
         assertTrue(pairs > 300, "display pairs: " + pairs);
     }
 
-    @Test
-    void guardChancesGrowByAtMostHalfFromEvToUmv() {
-        assertEquals(1.0, ComplexContents.guardScale(SiloCeiling.EV));
-        assertEquals(1.5, ComplexContents.guardScale(SiloCeiling.UMV), 1e-9);
-        assertEquals(1.0, ComplexContents.guardScale(0));
-        assertEquals(1.5, ComplexContents.guardScale(99), 1e-9);
-        for (int c = SiloCeiling.EV; c < SiloCeiling.UMV; c++) {
-            assertTrue(ComplexContents.guardScale(c) < ComplexContents.guardScale(c + 1));
-        }
-    }
-
-    @Test
-    void partlyAbandonedComplexesHaveMoreGuardsAtTheTop() {
-        int low = 0;
-        int high = 0;
-        for (long s = 0; s < 60; s++) {
-            ComplexPlan plan = ComplexLayout.generate(s, 2, 2);
-            low += spawners(ComplexContents.build(plan, ActivityLevel.PARTLY_ABANDONED, SiloCeiling.EV, null));
-            high += spawners(ComplexContents.build(plan, ActivityLevel.PARTLY_ABANDONED, SiloCeiling.UMV, null));
-        }
-        assertTrue(high > low, "guards " + low + " at EV, " + high + " at UMV");
-        assertTrue(high <= low * 1.5 + 1, "no more than half again: " + low + " vs " + high);
-    }
-
     private static long[] machinesAndChests(ActivityLevel level) {
         long working = 0;
         long chests = 0;
@@ -431,14 +444,6 @@ class ComplexContentsTest {
         assertTrue(ab[0] * 10 < op[0], "working machines " + ab[0] + " vs " + op[0]);
         // the chest totals are the budget's (D315): never more in a ruin than in a staffed complex
         assertTrue(ab[1] > 0 && ab[1] <= op[1], "chests " + ab[1] + " vs " + op[1]);
-    }
-
-    private static int spawners(java.util.List<Placement> placements) {
-        int n = 0;
-        for (Placement p : placements) {
-            n += p.kind() == Kind.SPAWNER ? 1 : 0;
-        }
-        return n;
     }
 
     @Test

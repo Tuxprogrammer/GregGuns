@@ -40,7 +40,6 @@ public final class GeneratorHall implements RoomBlueprint {
         k.anchorNear(k.module("cccc", "hhhh"), L / 2 + 3, D - 4);
         k.anchorNear(k.module("KKK", "KKK"), 2, D - 4);
         k.anchorNear(k.module("KKK", "KKK"), L - 5, D - 4);
-        k.guards(Works.steps(k), D - 3);
         Works.corners(k);
         Works.topUp(k, MIN_CHESTS);
     }
