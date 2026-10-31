@@ -55,3 +55,14 @@ The same tool, on a dump from the real pack with the I7 jar merged with coder P1
 | subset | 1 (the Bacterial Vat row above) | 22 (the same rows as before) |
 
 No new finding: the changed rows add inputs, so none became a subset of a pack row, and the new de-arm rows differ by NBT. **No unresolved ICBM clash.** Any later recipe change reruns the tool the same way.
+
+## Rerun on the tier fixes (F2, D343 and D344)
+
+The same tool on a fresh dump from the real pack with the F2 jar: the Inert T2 Warhead takes the Nose Cone in place of the Heavy Nose Cone, the T2 scrap row returns it, and the T3 body (its Assembly Line recipe, its NASA Workbench rows and its research) takes 4 Heavy Duty Plates Tier 4, 4 heavy fins and a heavy engine. The dump now flags the NBT-sensitive GT rows, and `clash.py` compares rows that ignore NBT on the plain key (D344).
+
+| Category | Default flags | `--ignore-counts` |
+|---|---|---|
+| exact, shadow, grid, shapeless, duplicate, superset | 0 | 0 |
+| subset | 1 (the Bacterial Vat row above) | 22 (the same rows as before) |
+
+No new finding. **No unresolved ICBM clash.**
