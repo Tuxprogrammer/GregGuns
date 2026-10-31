@@ -210,7 +210,12 @@ public final class ComplexStartScenarios {
             Boolean recorded = VanillaStarts.villageRecorded(world, cx, cz);
             out.check(
                 Boolean.TRUE.equals(recorded),
-                "the world's village generator recorded the predicted start at chunk " + cx + "," + cz + " (" + recorded + ")");
+                "the world's village generator recorded the predicted start at chunk " + cx
+                    + ","
+                    + cz
+                    + " ("
+                    + recorded
+                    + ")");
         }
     }
 
