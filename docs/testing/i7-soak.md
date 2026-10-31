@@ -8,7 +8,7 @@ Run on 2026-10-31 (server time) on the Linux test box. Real hosts and paths stay
 - Nothing crashed.
 - No burst ran away.
 - The server came back near its baseline after every burst: at once for missiles, red matter and the EMP, and 8 seconds after the last crater for sixteen large blasts.
-- No GregGuns chunk ticket or forced chunk was left.
+- No GregGuns chunk ticket or forced chunk was left, including after 2.5 hours of play with silo complexes generating.
 
 The soaks found three bugs, all fixed on this branch:
 1. **A missile in flight across a restart hung in the air and kept its chunk ticket for good.** Forge saves a ticket without its chunks, so the adopted ticket forced nothing and the missile never ticked again. It now forces its window again when it adopts the ticket. This fix also freed the three missiles a first restart run had stranded.
@@ -106,7 +106,30 @@ The first boot of the fixed build loaded the world the failed run had left. Its 
 
 ## Long play soak
 
-PLAY-SOAK-RESULTS
+`icbm_soak.py play 9000`: 2.5 hours on a fresh world, with three bots in creative.
+
+- **What the bots did:**
+  - Alice and Bob toured the eight silo complex sites `gregguns locate complex` listed. They spent 2 minutes at each, then ringed it with four stops 160 blocks out, then swept fresh land further out each round.
+  - Carol did the same, with five minutes on the Moon now and then.
+  - A missile salvo (`icbm.soak.salvo`) ran every 10 minutes, 15 in all.
+- **Traffic:** 340,000 chunk packets reached the bots, about 1.7 GB of chunk data. No bot was kicked or lost its connection.
+- **Complexes:** silo complex sites decided while the bots moved. The log names 6 built under a village (sunk deeper, D302) and 7 skipped (terrain, biome or water).
+
+| Play soak | Value |
+|---|---|
+| `forge tps` overall, every 30-second sample | 20.000 TPS in all of them |
+| Mean tick, 100-tick means: median / max | 11.88 / 45.67 ms |
+| `Can't keep up` warnings in 2.5 h | 2 |
+| GregGuns tickets with nobody online, before -> after | 0 -> 0 |
+| Forced chunks with nobody online, before -> after | 0 -> 0 |
+| Loaded chunks with nobody online, before -> after | 445 -> 444 |
+| Peak tickets / forced chunks while playing (a salvo in the air) | 7 / 59 |
+| Peak heap / process RSS | 5.0 GB / 7.8 GB |
+| G1: full collections / longest pause | 0 / 50 ms |
+
+**The salvos' own verdicts are informational here.** 13 passed and 2 failed, both on "did not recover". The play server's baseline wandered from 6 to 27 ms as the bots generated terrain, so a 30-second baseline is no reference for the next 30 seconds. On top of that, this server ran the build from before the bounded recovery wait. Every salvo left its tickets as it found them.
+
+This server ran the branch at its first soak commit. The later fixes do not touch what this run exercises: the restart adoption acts only at world load, and the rest is test code.
 
 ## Fake players and Witchery (log noise)
 
