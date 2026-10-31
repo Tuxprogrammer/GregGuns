@@ -533,6 +533,24 @@ public final class Kit {
     }
 
     /**
+     * Fills one band with the first of {@code options} that fits it and places at least one copy, so a narrow or
+     * shallow room falls back to smaller modules instead of staying empty.
+     *
+     * @param pitches the pitch of each option, in order
+     * @return how many copies were placed
+     */
+    public int fillBand(int b0, int b1, int aMin, int aMax, int gap, Module[] options, int[] pitches) {
+        int h = b1 - b0 + 1;
+        for (int i = 0; i < options.length; i++) {
+            Module m = options[i];
+            if (m.height > h) continue;
+            int n = tile(m, pitches[i], b0 + (h - m.height) / 2, aMin, aMax, gap);
+            if (n > 0) return n;
+        }
+        return 0;
+    }
+
+    /**
      * The chest-and-crate caches in the free corners (every room of 16 x 14 interior or more): a crate and a chest
      * against the back wall's corners, and a crate pair with a chest in each front corner, clear of the door.
      */

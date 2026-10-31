@@ -27,26 +27,29 @@ class RoomBlueprintTest {
         return new int[] { L, D };
     }
 
-    /** Small, drawn and large interiors per kind (C-rooms §3), and the chest spots asked at the drawn size. */
+    /**
+     * Small, drawn and large interiors per kind (C-rooms §3), then odd real shapes (narrow or shallow rooms the grower
+     * makes), and the chest spots asked at the drawn size.
+     */
     private static final Map<String, int[][]> SIZES = new LinkedHashMap<String, int[][]>();
     private static final Map<String, Integer> MIN_CHESTS = new HashMap<String, Integer>();
 
     static {
-        add("BUNKS", 30, size(18, 15), size(28, 20), size(40, 31));
-        add("INFIRMARY", 20, size(16, 14), size(28, 20), size(34, 28));
-        add("MESS_GALLEY", 13, size(18, 15), size(28, 20), size(37, 31));
-        add("CAFETERIA", 16, size(23, 18), size(36, 28), size(46, 37));
-        add("REC_LOUNGE", 11, size(18, 15), size(28, 20), size(37, 31));
+        add("BUNKS", 30, size(18, 15), size(28, 20), size(40, 31), size(23, 11));
+        add("INFIRMARY", 20, size(16, 14), size(28, 20), size(34, 28), size(13, 28));
+        add("MESS_GALLEY", 13, size(18, 15), size(28, 20), size(37, 31), size(13, 28));
+        add("CAFETERIA", 16, size(23, 18), size(36, 28), size(46, 37), size(14, 30));
+        add("REC_LOUNGE", 11, size(18, 15), size(28, 20), size(37, 31), size(13, 28));
         add("SHOWERS_LAUNDRY", 4, size(10, 8), size(16, 12), size(16, 14));
         add("GUARD_POST", 3, size(6, 6), size(8, 8), size(11, 11));
         add("DECON_AIRLOCK", 4, size(8, 8), size(10, 10), size(14, 14));
-        add("BRIG", 6, size(18, 13), size(28, 20), size(37, 28));
+        add("BRIG", 6, size(18, 13), size(28, 20), size(37, 28), size(23, 11));
         add("SHOOTING_RANGE", 15, size(10, 20), size(16, 34), size(25, 44));
-        add("LAUNCH_CONTROL", 12, size(22, 15), size(28, 20), size(43, 31));
-        add("RADAR_TRACKING", 12, size(18, 15), size(28, 20), size(37, 31));
-        add("COMMS", 15, size(16, 13), size(28, 20), size(34, 28));
-        add("COMMANDER_OFFICE", 6, size(15, 13), size(20, 18), size(31, 28));
-        add("SERVER_ROOM", 10, size(18, 15), size(28, 20), size(37, 31));
+        add("LAUNCH_CONTROL", 12, size(22, 15), size(28, 20), size(43, 31), size(17, 13));
+        add("RADAR_TRACKING", 12, size(18, 15), size(28, 20), size(37, 31), size(17, 13));
+        add("COMMS", 15, size(16, 13), size(28, 20), size(34, 28), size(17, 13));
+        add("COMMANDER_OFFICE", 6, size(15, 13), size(20, 18), size(31, 28), size(23, 11));
+        add("SERVER_ROOM", 10, size(18, 15), size(28, 20), size(37, 31), size(13, 28));
         add("ASSEMBLY_BAY", 9, size(49, 38), size(49, 38), size(49, 38));
     }
 

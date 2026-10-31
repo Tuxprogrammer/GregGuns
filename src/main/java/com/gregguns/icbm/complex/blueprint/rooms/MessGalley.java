@@ -28,7 +28,28 @@ public final class MessGalley implements RoomBlueprint {
         k.put(1, 1, 'C');
         k.put(L - 2, 1, 'C');
         int last = saladBars ? D - 6 : D - 3;
-        k.bandTile(5, 4, last, 3, L - 4, 1, k.module("hhh", "TTT", "hhh"));
+        // Runs of three tables (D259's density), falling back to two and one in a narrow room.
+        com.gregguns.icbm.complex.blueprint.Module three = k.module("hhh", "TTT", "hhh"),
+            two = k.module("hh", "TT", "hh"), one = k.module("h", "T", "h");
+        for (int[] b : k.bands(4, last)) {
+            if (k.fillBand(
+                b[0],
+                b[1],
+                3,
+                L - 4,
+                1,
+                new com.gregguns.icbm.complex.blueprint.Module[] { three },
+                new int[] { 5 }) == 0) {
+                k.fillBand(
+                    b[0],
+                    b[1],
+                    2,
+                    L - 3,
+                    1,
+                    new com.gregguns.icbm.complex.blueprint.Module[] { two, one },
+                    new int[] { 4, 3 });
+            }
+        }
         if (saladBars) {
             k.anchor(2, D - 5, "uTTu");
             k.anchor(L - 6, D - 5, "uTTu");
