@@ -29,8 +29,8 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
  * client's world holds in a box, so a two-client session can check that both players see the same state. The line
  * carries a hash of every block and its metadata, the tile entities (with a GregTech machine's id, active flag and
  * facing, or any other tile's client-side NBT), and every entity in the box (dropped items with their stack, living
- * things with their health and worn and
- * held items, a radar dish with its spin state). Positions are floored to whole blocks. Client only, dev only.
+ * things with their health and worn and held items, a radar dish with its spin state). Positions are floored to whole
+ * blocks. Client only, dev only.
  */
 @SideOnly(Side.CLIENT)
 final class StateProbe {
