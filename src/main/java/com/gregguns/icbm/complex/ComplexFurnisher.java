@@ -95,8 +95,6 @@ final class ComplexFurnisher {
 
     /** Longest gap between floor light tiles (each floor cell then lies within 3 + 3 cells of one). */
     static final int TILE_GAP = 6;
-    /** Gap of the light tiles in rooms full of furniture rows, whose shadows a light has to reach around. */
-    static final int DENSE_GAP = 4;
 
     /** Gap of the ceiling-only lamp rows of low sections (a lamp five cells over the floor reaches two cells). */
     static final int LOW_GAP = 3;

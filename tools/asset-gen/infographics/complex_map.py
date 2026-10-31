@@ -30,14 +30,15 @@ DUMP = K.WORK / "complex.json"
 
 # Cell bytes (Cell.java): 0 rock, 1 wall, 2 air, 3/4 rail, 5 silo concrete, 6 silo glass, 7 gantry beam, 8 pad,
 # 9 controller, 10 to 13 hatches, 14 ladder, 15 radar controller, 16 floor, 17 ceiling, 18 lamp, 19 door frame,
-# 20 window, 21 to 24 furniture (table, console, bunk, shelf), 25 basin.
+# 20 window, 21, 22 and 24 furniture (table, console, shelf; 23 unused), 25 basin, 26 the silo's launch control,
+# 27 a blueprint prop (bed, crate, container, furnace ...).
 CELL = {
     0: (14, 18, 24), 1: (96, 112, 132), 2: (184, 194, 206), 3: (214, 168, 92), 4: (214, 168, 92),
     5: (138, 150, 164), 6: (126, 214, 240), 7: (236, 170, 44), 8: (230, 232, 236), 9: (56, 198, 217),
     10: (255, 138, 31), 11: (255, 138, 31), 12: (255, 138, 31), 13: (255, 138, 31), 14: (150, 110, 60),
     15: (56, 198, 217), 16: (120, 126, 136), 17: (120, 126, 136), 18: (255, 240, 170), 19: (150, 160, 176),
     20: (126, 214, 240), 21: (122, 92, 64), 22: (70, 84, 104), 23: (92, 110, 84), 24: (104, 88, 70),
-    25: (60, 120, 200),
+    25: (60, 120, 200), 26: (56, 198, 217), 27: (150, 116, 84),
 }
 
 # Hall tints: the floor color of the hub's halls, so the network reads at a glance.
@@ -47,11 +48,12 @@ HALLS = {"major": (206, 212, 222), "minor": (160, 168, 180), "gallery": (255, 21
 ROLES = [
     ("Command", (122, 168, 255), ["LAUNCH_CONTROL", "RADAR_TRACKING", "COMMS", "COMMANDER_OFFICE", "SERVER_ROOM"]),
     ("Weapons and stores", (255, 128, 112), ["WARHEAD_MAGAZINE", "ARMORY", "STOCKPILE", "FUEL_DEPOT",
-                                             "MISSILE_ASSEMBLY"]),
+                                             "MISSILE_ASSEMBLY", "COLD_STORAGE"]),
     ("Power and works", (255, 184, 72), ["GENERATOR_HALL", "AIR_HANDLING", "PUMP_ROOM", "WORKSHOP", "VEHICLE_BAY",
-                                         "WATER_TREATMENT"]),
-    ("Crew", (126, 218, 140), ["BUNKS", "MESS_GALLEY", "INFIRMARY", "CAFETERIA"]),
-    ("Guard posts and airlock", (196, 150, 240), ["GUARD_POST", "DECON_AIRLOCK"]),
+                                         "WATER_TREATMENT", "CHEM_LAB", "INCINERATOR"]),
+    ("Crew", (126, 218, 140), ["BUNKS", "MESS_GALLEY", "INFIRMARY", "CAFETERIA", "REC_LOUNGE", "SHOWERS_LAUNDRY",
+                               "UNDERGROUND_FARM", "MUSHROOM_CELLAR"]),
+    ("Security", (196, 150, 240), ["GUARD_POST", "DECON_AIRLOCK", "BRIG", "SHOOTING_RANGE"]),
     ("Assembly bay (hall)", (236, 240, 246), ["ASSEMBLY_BAY"]),
 ]
 ROLE_OF = {k: (name, rgb) for name, rgb, kinds in ROLES for k in kinds}
@@ -65,6 +67,9 @@ NAMES = {
     "MESS_GALLEY": "Mess Galley", "INFIRMARY": "Infirmary", "ARMORY": "Armory", "DECON_AIRLOCK": "Airlock",
     "GUARD_POST": "Guard", "VEHICLE_BAY": "Vehicle Bay", "SERVER_ROOM": "Server Room",
     "MISSILE_ASSEMBLY": "Missile Assembly", "CAFETERIA": "Cafeteria", "WATER_TREATMENT": "Water Treatment",
+    "UNDERGROUND_FARM": "Farm", "MUSHROOM_CELLAR": "Mushroom Cellar", "COLD_STORAGE": "Cold Storage",
+    "SHOOTING_RANGE": "Shooting Range", "BRIG": "Brig", "CHEM_LAB": "Chem Lab", "SHOWERS_LAUNDRY": "Showers",
+    "REC_LOUNGE": "Lounge", "INCINERATOR": "Incinerator",
 }
 
 MARKS = {  # kind -> (css color, shape)
