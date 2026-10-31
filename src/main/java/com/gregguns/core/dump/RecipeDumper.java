@@ -48,7 +48,62 @@ public final class RecipeDumper {
 
     private static final String OUR_MOD = "gregguns";
 
+    /** GT's material unit: one ingot, plate or dust holds this many units of its material. */
+    private static final double MATERIAL_UNIT = 3628800.0;
+
+    private static final List<Source> SOURCES = new ArrayList<>();
+
     private RecipeDumper() {}
+
+    /**
+     * Rows from outside the crafting manager and the GT maps, such as Galacticraft's NASA Workbench (added by the ICBM
+     * module's Galacticraft compat, so this class names no Galacticraft type).
+     */
+    public interface Source {
+
+        /** @param sink where to add the rows */
+        void collect(Sink sink);
+    }
+
+    /** Collects a {@link Source}'s rows in the dump's own format. */
+    public static final class Sink {
+
+        private final List<DumpRow> rows;
+
+        private Sink(List<DumpRow> rows) {
+            this.rows = rows;
+        }
+
+        /**
+         * @param map    the map name the row is filed under, e.g. {@code gc.nasa_workbench.t1}
+         * @param output the recipe output
+         * @param inputs the inputs, nulls skipped
+         */
+        public void add(String map, ItemStack output, Iterable<ItemStack> inputs) {
+            if (output == null || output.getItem() == null) {
+                return;
+            }
+            DumpRow row = new DumpRow("special:" + map, map, modOf(output));
+            for (ItemStack in : inputs) {
+                if (in != null && in.getItem() != null) {
+                    row.addInput(key(in), in.stackSize);
+                }
+            }
+            row.addOutput(key(output), output.stackSize);
+            rows.add(row);
+        }
+    }
+
+    /**
+     * Adds a row source; idempotent per instance.
+     *
+     * @param source the source
+     */
+    public static synchronized void addSource(Source source) {
+        if (source != null && !SOURCES.contains(source)) {
+            SOURCES.add(source);
+        }
+    }
 
     /**
      * @param file where to write: a JSON object with a {@code rows} array (one row per line) and an {@code oredict}
@@ -60,6 +115,7 @@ public final class RecipeDumper {
         List<DumpRow> rows = new ArrayList<>();
         collectCrafting(rows);
         collectMachines(rows);
+        collectSources(rows);
         Files.createDirectories(
             file.toAbsolutePath()
                 .getParent());
@@ -73,9 +129,22 @@ public final class RecipeDumper {
             }
             w.write("],\"oredict\":");
             w.write(oredictJson(rows));
+            w.write(",\"itemdata\":");
+            w.write(itemDataJson(rows));
             w.write("}\n");
         }
         return rows.size();
+    }
+
+    private static synchronized void collectSources(List<DumpRow> rows) {
+        Sink sink = new Sink(rows);
+        for (Source s : SOURCES) {
+            try {
+                s.collect(sink);
+            } catch (RuntimeException e) {
+                GregGuns.LOG.warn("recipe dump: source {} failed: {}", s, e.toString());
+            }
+        }
     }
 
     private static void collectCrafting(List<DumpRow> rows) {
@@ -281,6 +350,105 @@ public final class RecipeDumper {
 
     private static <T> List<T> orEmpty(T[] a) {
         return a == null ? Collections.<T>emptyList() : Arrays.asList(a);
+    }
+
+    /**
+     * GT's unification data and the ore names of every item key in the dump, for cost tools: {@code key: {"p":
+     * prefix, "m": material, "u": amount in material units (1 = one ingot), "by": [[material, units], ...], "ores":
+     * [...]}}. Items with neither are left out.
+     */
+    // Source: GT5-Unofficial 5.09.54.205 GTOreDictUnificator#getItemData, ItemData.mPrefix/mMaterial/mByProducts,
+    // MaterialStack.mAmount in units of GTValues.M (3628800):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java
+    private static String itemDataJson(List<DumpRow> rows) {
+        TreeSet<String> keys = new TreeSet<>();
+        for (DumpRow r : rows) {
+            for (String k : r.inputs()
+                .keySet()) {
+                if (!k.startsWith("ore:")) {
+                    keys.add(k);
+                }
+            }
+            for (String[] o : r.outputs()) {
+                if (!o[0].startsWith("fluid:")) {
+                    keys.add(o[0]);
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder("{");
+        boolean first = true;
+        for (String k : keys) {
+            ItemStack s = stackOf(k);
+            if (s == null) {
+                continue;
+            }
+            StringBuilder e = new StringBuilder();
+            try {
+                gregtech.api.objects.ItemData d = gregtech.api.util.GTOreDictUnificator.getItemData(s);
+                if (d != null && d.mMaterial != null && d.mMaterial.mMaterial != null) {
+                    e.append("\"p\":\"")
+                        .append(d.mPrefix == null ? "" : d.mPrefix.name())
+                        .append("\",\"m\":\"")
+                        .append(d.mMaterial.mMaterial.mName)
+                        .append("\",\"u\":")
+                        .append(d.mMaterial.mAmount / MATERIAL_UNIT)
+                        .append(",\"by\":[");
+                    boolean firstBy = true;
+                    for (gregtech.api.objects.MaterialStack by : d.mByProducts) {
+                        if (by == null || by.mMaterial == null) {
+                            continue;
+                        }
+                        e.append(firstBy ? "" : ",")
+                            .append("[\"")
+                            .append(by.mMaterial.mName)
+                            .append("\",")
+                            .append(by.mAmount / MATERIAL_UNIT)
+                            .append(']');
+                        firstBy = false;
+                    }
+                    e.append("],");
+                }
+            } catch (RuntimeException ex) {
+                // An item whose unification lookup throws is dumped with its ore names only.
+            }
+            int[] ids = OreDictionary.getOreIDs(s);
+            if (e.length() == 0 && ids.length == 0) {
+                continue;
+            }
+            e.append("\"ores\":[");
+            for (int i = 0; i < ids.length; i++) {
+                e.append(i == 0 ? "\"" : ",\"")
+                    .append(OreDictionary.getOreName(ids[i]))
+                    .append('"');
+            }
+            e.append(']');
+            sb.append(first ? "\"" : ",\"")
+                .append(k)
+                .append("\":{")
+                .append(e)
+                .append('}');
+            first = false;
+        }
+        return sb.append('}')
+            .toString();
+    }
+
+    /** @return a one-item stack for an item key, or null for a wildcard, an ore key or an unknown item */
+    private static ItemStack stackOf(String key) {
+        int c = key.lastIndexOf(':');
+        if (c < 0 || key.endsWith(":*")) {
+            return null;
+        }
+        Object item = GameData.getItemRegistry()
+            .getObject(key.substring(0, c));
+        if (!(item instanceof Item)) {
+            return null;
+        }
+        try {
+            return new ItemStack((Item) item, 1, Integer.parseInt(key.substring(c + 1)));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /** The ore dictionary members for every ore name that one of our rows uses. */
