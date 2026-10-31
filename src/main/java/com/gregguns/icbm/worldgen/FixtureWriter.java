@@ -205,7 +205,7 @@ public final class FixtureWriter {
     private static final Map<String, Object> BLOCKS = new ConcurrentHashMap<>();
 
     /** @return Carpenter's garage door, or null when the mod or the block is absent (logged once) */
-    static Block garageDoor() {
+    public static Block garageDoor() {
         Object o = BLOCKS.get(GARAGE_DOOR);
         if (o == null) {
             Block b = GameRegistry.findBlock(CARPENTERS, GARAGE_DOOR);
@@ -219,7 +219,7 @@ public final class FixtureWriter {
     }
 
     /** @return the GregTech machine casing of a voltage tier (D337), or null */
-    static ItemStack tierCasing(int voltage) {
+    public static ItemStack tierCasing(int voltage) {
         ItemList[] casings = ItemList.MACHINE_CASINGS;
         int i = Math.max(0, Math.min(casings.length - 1, voltage));
         return casings[i].get(1);
