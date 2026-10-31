@@ -7,9 +7,8 @@ import com.gregguns.icbm.complex.blueprint.Legend;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 
 /**
- * Cold storage (D305, D307): freezer racks of packed ice with chests set in them every eight cells in each band
- * (packed ice never melts), packed ice down both side walls, reefer containers (light iron crates) two deep on the back
- * wall.
+ * Cold storage (D305, D307): freezer racks of packed ice with chests set in them every eight cells in each band (packed
+ * ice never melts), packed ice down both side walls, reefer containers (light iron crates) two deep on the back wall.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: Cold storage); D305; D307
 public final class ColdStorage implements RoomBlueprint {

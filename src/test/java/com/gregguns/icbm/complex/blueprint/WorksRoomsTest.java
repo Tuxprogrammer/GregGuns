@@ -11,8 +11,7 @@ import com.gregguns.icbm.complex.RoomKind;
 
 /**
  * D305 and D315: the works, stores and food blueprints at their drawn sizes and at the small and large ends: chest
- * spots
- * at least the loot budget's minimums, a filled middle, machines in every works room, and every chest and machine
+ * spots at least the loot budget's minimums, a filled middle, machines in every works room, and every chest and machine
  * reachable.
  */
 class WorksRoomsTest {
