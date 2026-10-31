@@ -90,7 +90,8 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 // Spec: docs/gregguns-icbm-spec/08-worldgen/activity-levels.md (Tests), loot-and-ceilings.md
 public final class ComplexLevelScenarios {
 
-    private static final int GROUND = 63;
+    /** The slab's ground height. */
+    static final int GROUND = 63;
     private static final long SEED = 0x51105L;
 
     private ComplexLevelScenarios() {}
@@ -104,12 +105,18 @@ public final class ComplexLevelScenarios {
         ChestLootScenarios.registerAll(registry);
         RoomScenarios.registerAll(registry);
         FurnitureFillScenarios.registerAll(registry);
+        PropFacingScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
 
     /** The plan of the fixed test cell. */
     static StructurePlan plan(World world) {
+        return planAt(world, 3, 4);
+    }
+
+    /** @return the plan of a test cell, or null when the grid places none there */
+    static StructurePlan planAt(World world, int cellX, int cellZ) {
         StructureGrid g = new StructureGrid(
             64,
             64,
@@ -117,8 +124,8 @@ public final class ComplexLevelScenarios {
             Collections.singletonMap(
                 SizeClass.BIG,
                 Collections.singletonList(new PoolEntry(ComplexWriter.ID, 1, 1, new Footprint(240, 12, 240)))));
-        return g.planAt(SEED, world.provider.dimensionId, SizeClass.BIG, 3, 4)
-            .get();
+        return g.planAt(SEED, world.provider.dimensionId, SizeClass.BIG, cellX, cellZ)
+            .orElse(null);
     }
 
     static void load(World world, StructurePlan p) {
