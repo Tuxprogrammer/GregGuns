@@ -28,7 +28,8 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
  * The dev autotest's {@code cstate <label> <x0> <y0> <z0> <x1> <y1> <z1>} command: logs one line that sums up what this
  * client's world holds in a box, so a two-client session can check that both players see the same state. The line
  * carries a hash of every block and its metadata, the tile entities (with a GregTech machine's id, active flag and
- * facing), and every entity in the box (dropped items with their stack, living things with their health and worn and
+ * facing, or any other tile's client-side NBT), and every entity in the box (dropped items with their stack, living
+ * things with their health and worn and
  * held items, a radar dish with its spin state). Positions are floored to whole blocks. Client only, dev only.
  */
 @SideOnly(Side.CLIENT)
@@ -143,9 +144,19 @@ final class StateProbe {
         return s.toString();
     }
 
+    /**
+     * A GregTech machine's id, active flag and facing; for any other tile, its client-side NBT (a Carpenter's Blocks
+     * garage door keeps its open state there), so a door one client sees open and the other shut differs.
+     */
     private static String gtState(TileEntity te) {
         if (!(te instanceof IGregTechTileEntity)) {
-            return "";
+            try {
+                net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+                te.writeToNBT(tag);
+                return " nbt=" + tag;
+            } catch (RuntimeException e) {
+                return " nbt=?";
+            }
         }
         IGregTechTileEntity g = (IGregTechTileEntity) te;
         return " mte=" + g.getMetaTileID() + " active=" + g.isActive() + " facing=" + g.getFrontFacing();
