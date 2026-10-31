@@ -349,5 +349,9 @@ public final class DevStructureBuilder {
         base.setFrontFacing(facing);
         base.setOwnerName(OWNER);
         base.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
+        // GT's placement order: owner and front, then the default modes (a Maintenance Hatch switches itself active,
+        // or it shows the duct-tape cross; a bus or hatch reads its owner's preferences). See GtMachineHook.placeMte.
+        base.getMetaTileEntity()
+            .initDefaultModes(null);
     }
 }

@@ -408,6 +408,10 @@ public final class SiloScenarios {
                                 && part(ctx, DevStructureBuilder.SILO_MAINTENANCE)
                                     .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance,
                             "the Maintenance Hatch stands under the Input Hatch");
+                        out.check(
+                            part(ctx, DevStructureBuilder.SILO_MAINTENANCE) != null
+                                && part(ctx, DevStructureBuilder.SILO_MAINTENANCE).isActive(),
+                            "the Maintenance Hatch is switched on as a placed one is (no duct-tape cross on its face)");
                         MTEMissileSilo silo = silo(ctx);
                         int[] lc = DevStructureBuilder.SILO_LC;
                         out.check(

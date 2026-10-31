@@ -115,6 +115,11 @@ public final class ComplexScenarios {
             "Energy Hatch under the Input Bus, or concrete where it is the missing part (" + s.missing() + ")");
         out.check(hatchIs(world, cx - 2 * rx, y, cz - 2 * rz, 'H'), "Input Hatch in the left hatch column");
         out.check(hatchIs(world, cx - 2 * rx, y - 1, cz - 2 * rz, 'M'), "Maintenance Hatch under the Input Hatch");
+        TileEntity mt = world.getTileEntity(cx - 2 * rx, y - 1, cz - 2 * rz);
+        out.check(
+            mt instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) mt).isActive(),
+            "the Maintenance Hatch is switched on as a placed one is (no duct-tape cross on its face)");
         out.check(hatchIs(world, cx + 2 * rx, y + 1, cz + 2 * rz, 'L'), "the Launch Control tops the right column");
         out.check(world.getBlock(cx - 2 * rx, y + 1, cz - 2 * rz) == conc, "concrete tops the left column");
         for (int a = -1; a <= 1; a++) {
