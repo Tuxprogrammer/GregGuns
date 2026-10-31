@@ -11,6 +11,7 @@ import com.gregguns.icbm.complex.FurniturePiece;
 import com.gregguns.icbm.worldgen.ComplexApplier;
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import gregtech.api.GregTechAPI;
 
 /**
  * The block of each blueprint prop (D305, D306, D308): a pack block where the pack has one (Chisel's crates and
@@ -100,6 +101,7 @@ public final class PropBlocks {
             case BREWING_STAND:
                 return new Ref(Blocks.brewing_stand, 0);
             case IRON_BARS:
+            case CELL_BARS:
                 return new Ref(Blocks.iron_bars, 0);
             case PANE:
                 return new Ref(Blocks.stained_glass_pane, 0);
@@ -156,6 +158,11 @@ public final class PropBlocks {
                 return new Ref(Blocks.water, 0);
             case MYCELIUM_BED:
                 return new Ref(Blocks.mycelium, 0);
+            case POOL_WATER:
+                return new Ref(Blocks.water, 0);
+            case POOL_LINER:
+                // GT Light Concrete, the silo's own finish: a clean, pale tank lining (D321).
+                return new Ref(GregTechAPI.sBlockConcretes, 8);
             default:
                 return null;
         }

@@ -29,10 +29,10 @@ public final class ShowersLaundry implements RoomBlueprint {
         k.strip(0, 0, L - 1, "o.x");
         k.strip(1, 0, L - 1, "..x");
         k.spine(2);
+        // Wash tubs and linen piles either side of the aisle (D321: the doorway and its jambs) in a room wide enough.
+        k.tile(k.module("ulu", "...", "lul"), 5, D / 2 - 1, 2, L - 2, 1);
         k.column(2, 3, D - 3, "s");
         k.column(0, 3, D - 3, "LC");
         k.anchorNear(k.module("uuC", "ll.", "l.C"), L - 3, 3);
-        // Wash tubs and linen piles in the middle of a room wide enough.
-        k.tile(k.module("ulu", "...", "lul"), 5, D / 2 - 1, 3, L - 2, 0);
     }
 }

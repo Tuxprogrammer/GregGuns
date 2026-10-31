@@ -34,7 +34,7 @@ public final class CommanderOffice implements RoomBlueprint {
         k.put(L - 2, 0, '$');
         k.put(1, 0, 'C');
         k.anchorNear(k.module("hh", "ee", "hh"), L / 2 - 1, 3);
-        k.reserve(k.spineLo(), k.spineHi(), 6, D - 1);
+        k.reserve(k.aisleLo(), k.aisleHi(), 6, D - 1); // the aisle: the doorway and its jambs (D321)
         k.strip(0, 1, L - 2, "SSS.");
         k.column(0, 3, D - 4, "SSC");
         k.column(L - 1, 3, D - 4, "aS.");

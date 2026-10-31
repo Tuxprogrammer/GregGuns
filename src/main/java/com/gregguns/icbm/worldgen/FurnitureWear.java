@@ -342,6 +342,8 @@ public final class FurnitureWear {
                         FurniturePiece piece = FurniturePiece.of(m.key());
                         boolean walk = piece != null && (piece.walkable() || piece.inlay());
                         if (!walk && m.y() >= 1 && !gone.containsKey(m.x() * 4096L + m.z())) g.set(m.x(), m.z());
+                        // A sunk pool (D321) is no floor: no one walks it and no pile falls in it.
+                        if (piece == FurniturePiece.POOL_WATER && m.y() == 0) g.set(m.x(), m.z());
                         if (piece != null && piece.inlay() && !piece.walkable()) g.clear(m.x(), m.z());
                         break;
                     }

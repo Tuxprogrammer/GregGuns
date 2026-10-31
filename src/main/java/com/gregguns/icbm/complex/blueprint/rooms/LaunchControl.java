@@ -18,8 +18,9 @@ public final class LaunchControl implements RoomBlueprint {
     public void lay(Kit k) {
         int L = k.lateral(), D = k.depth();
         k.defaultLoot(LootKeys.CONTROL);
-        k.machineNear(L / 2, D / 2, MachineRole.LAUNCH_CONTROL);
+        // The aisle first (D321), so the console stands in the middle beside it, never in the way in.
         k.spine();
+        k.machineNear(L / 2, D / 2, MachineRole.LAUNCH_CONTROL);
         k.mirrorStrip(0, 1, L - 2, 1, "SC.LC.");
         k.column(0, 3, D - 5, "RRC.");
         k.column(L - 1, 3, D - 5, "RRC.");

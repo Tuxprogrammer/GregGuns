@@ -19,6 +19,16 @@ public interface CellPattern {
      */
     BlockRef at(int x, int z, int sizeX, int sizeZ);
 
+    /**
+     * The block at a cell of a room with an aisle (D321): a center strip follows the aisle, under the doorway and its
+     * frame, instead of the room's middle; every other pattern ignores it.
+     *
+     * @param aisle the room's aisle, or null for a section with none (the hub, a hall)
+     */
+    default BlockRef at(int x, int z, int sizeX, int sizeZ, Aisle aisle) {
+        return at(x, z, sizeX, sizeZ);
+    }
+
     /** @return every chain {@link #at} can return, in any room size; never empty */
     List<BlockRef> refs();
 }

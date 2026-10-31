@@ -180,9 +180,11 @@ class RoomBlueprintTest {
             assertNotEquals(Dir.AUTO, p.facing, at);
             // Never a doorway or a hole; a light tile only under a thin piece.
             assertNotEquals(Kit.DOORWAY, floor.base(p.a, p.d), "on a doorway: " + at);
-            assertNotEquals(Kit.HOLE, floor.base(p.a, p.d), "over a hole: " + at);
+            // D322: a brig cell's wall or a pool fills the hole it stands on (the furnisher drops its damage mark).
+            if (!filled(k, p.a, p.d)) assertNotEquals(Kit.HOLE, floor.base(p.a, p.d), "over a hole: " + at);
             boolean wasTile = floor.tile(p.a, p.d);
-            if (wasTile) assertTrue(p.entry.overTile(), "a solid piece on a light tile: " + at);
+            // D321: a pool or a brig cell's wall builds over a tile and drops it (the shadow fill relights the floor).
+            if (wasTile) assertTrue(p.entry.overTile() || dropped(k, p.a, p.d), "a solid piece on a light tile: " + at);
             if (p.entry.kind == Legend.Entry.Kind.MARK) {
                 assertTrue(touches(seen, p.a, p.d, L, D), "unreached: " + at);
                 if (p.entry.chest()) assertTrue(chestsAround(k, p.a, p.d) <= 1, "a chest touching two: " + at);
@@ -219,6 +221,18 @@ class RoomBlueprintTest {
             }
         }
         if ("BUNKS".equals(kind) || "INFIRMARY".equals(kind)) assertTrue(beds >= 4, where + ": beds " + beds);
+    }
+
+    /** @return whether the blueprint built over the floor hole on (a, d) and filled it */
+    private static boolean filled(Kit k, int a, int d) {
+        for (int[] t : k.filledHoles()) if (t[0] == a && t[1] == d) return true;
+        return false;
+    }
+
+    /** @return whether the blueprint built over the light tile on (a, d) and dropped it */
+    private static boolean dropped(Kit k, int a, int d) {
+        for (int[] t : k.droppedTiles()) if (t[0] == a && t[1] == d) return true;
+        return false;
     }
 
     private static boolean[] flood(Kit k, boolean[] walk, int L, int D) {
@@ -369,18 +383,20 @@ class RoomBlueprintTest {
      */
     @Test
     void everyWorksRoomIsFullAtItsRealSizes() {
+        List<String> short_ = new ArrayList<String>();
         for (Map.Entry<String, int[][]> e : WORKS_SIZES.entrySet()) {
             String kind = e.getKey();
             for (int[] s : e.getValue()) {
                 Kit k = laid(kind, s[0], s[1]);
                 Kit.Fill f = k.fill();
                 String where = kind + " at " + s[0] + " x " + s[1];
-                assertTrue(f.fill >= 0.25, where + " fill " + f.fill);
-                assertTrue(f.fill <= 0.65, where + " fill " + f.fill);
-                assertTrue(f.center >= 0.2, where + " center " + f.center);
+                if (f.fill < 0.25 || f.fill > 0.65 || f.center < 0.2) {
+                    short_.add(String.format("%s fill %.3f center %.3f%n%s", where, f.fill, f.center, k.render()));
+                }
                 check(kind, s[0], s[1]);
             }
         }
+        assertTrue(short_.isEmpty(), "rooms outside the fill bands:\n" + String.join("\n", short_));
     }
 
     /** Prints every C1 room at its drawn size, for the review. */

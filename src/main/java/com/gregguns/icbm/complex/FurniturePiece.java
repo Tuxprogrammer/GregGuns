@@ -98,6 +98,11 @@ public enum FurniturePiece {
     BREWING_STAND(Cell.PROP, Wear.NORMAL, Flags.CLEAR),
     /** Iron bars: a cell wall, a stall divider, a chimney. Light passes; it may stand on a light tile. */
     IRON_BARS(Cell.PROP, Wear.NORMAL, Flags.CLEAR | Flags.OVER_TILE),
+    /**
+     * The iron bars of a brig cell's front (D322): built into the cell, so wear never takes them and no cell stands
+     * open. Light passes; they may stand on a light tile.
+     */
+    CELL_BARS(Cell.PROP, Wear.KEEP, Flags.CLEAR | Flags.OVER_TILE),
     /** A white stained-glass pane: a ward curtain. Light passes; it may stand on a light tile. */
     PANE(Cell.PROP, Wear.NORMAL, Flags.CLEAR | Flags.OVER_TILE),
     /** A glass block between machines. */
@@ -148,7 +153,17 @@ public enum FurniturePiece {
     /** Water sunk into the floor layer: a channel, a sump or a drain (the raster's basin). */
     WATER_INLAY(Cell.BASIN, Wear.KEEP, Flags.INLAY | Flags.WALKABLE),
     /** A mycelium bed with a mushroom on it, one layer up; variant 0 brown, 1 red. */
-    MYCELIUM_BED(Cell.FLOOR, Wear.KEEP, Flags.INLAY);
+    MYCELIUM_BED(Cell.FLOOR, Wear.KEEP, Flags.INLAY),
+
+    // --- sunk pools (D321: the furnisher writes them down to Kit.POOL_DEPTH under the floor) ----------------------
+
+    /**
+     * Pool water, from the floor layer down: no one walks over it, light passes it. The furnisher writes it at y 0 and
+     * on down under the floor, a {@link #POOL_LINER} under it and around it.
+     */
+    POOL_WATER(Cell.BASIN, Wear.KEEP, Flags.INLAY | Flags.CLEAR),
+    /** The solid lining under and around a pool, below the floor layer only. */
+    POOL_LINER(Cell.FLOOR, Wear.KEEP, Flags.INLAY);
 
     /** How a piece wears with the room's state (C2's {@code FurnitureWear} reads it; D309). */
     public enum Wear {

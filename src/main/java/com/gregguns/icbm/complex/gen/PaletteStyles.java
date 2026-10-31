@@ -2,10 +2,12 @@ package com.gregguns.icbm.complex.gen;
 
 import com.gregguns.icbm.complex.Box;
 import com.gregguns.icbm.complex.Cell;
+import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Room;
 import com.gregguns.icbm.complex.Tunnel;
+import com.gregguns.icbm.complex.palette.Aisle;
 import com.gregguns.icbm.complex.palette.ComplexPalette;
 import com.gregguns.icbm.complex.palette.Furniture;
 import com.gregguns.icbm.complex.palette.RoomStyle;
@@ -30,6 +32,9 @@ public final class PaletteStyles implements Styles {
     private final ComplexRaster raster;
     private final ComplexPlan plan;
     private final RoomStyle[] bySection;
+    /** Each section's aisle (D321), looked up once; {@link #NO_AISLE} for none. */
+    private final Aisle[] aisles;
+    private static final Aisle NO_AISLE = new Aisle(-1, -1, false);
     private final String dimensionKey;
     private final ActivityLevel level;
 
@@ -37,6 +42,7 @@ public final class PaletteStyles implements Styles {
         this.raster = raster;
         this.plan = raster.plan();
         this.bySection = new RoomStyle[plan.sectionCount()];
+        this.aisles = new Aisle[plan.sectionCount()];
         this.dimensionKey = dimensionKey;
         this.level = level;
     }
@@ -82,8 +88,12 @@ public final class PaletteStyles implements Styles {
             case Cell.WALL:
                 return s.wall();
             case Cell.FLOOR:
-                return s
-                    .floor(inner(x, b.minX, b.sizeX()), inner(z, b.minZ, b.sizeZ()), span(b.sizeX()), span(b.sizeZ()));
+                return s.floor(
+                    inner(x, b.minX, b.sizeX()),
+                    inner(z, b.minZ, b.sizeZ()),
+                    span(b.sizeX()),
+                    span(b.sizeZ()),
+                    aisle(id));
             case Cell.CEILING:
                 return s.ceiling(
                     inner(x, b.minX, b.sizeX()),
@@ -105,6 +115,27 @@ public final class PaletteStyles implements Styles {
             default:
                 return null;
         }
+    }
+
+    private Aisle aisle(int section) {
+        Aisle a = aisles[section];
+        if (a == null) {
+            a = aisleOf(plan, section);
+            aisles[section] = a == null ? NO_AISLE : a;
+        }
+        return a == NO_AISLE ? null : a;
+    }
+
+    /**
+     * @return a room's aisle in interior coordinates (D321): its doorway and the jamb either side, from the door wall
+     *         to the back; null for the hub, a hall or a tunnel
+     */
+    public static Aisle aisleOf(ComplexPlan plan, int section) {
+        Object o = plan.section(section);
+        if (!(o instanceof Room) || o == plan.hall() || ((Room) o).door() == null) return null;
+        ComplexLayout.Frame f = new ComplexLayout.Frame((Room) o);
+        // Lateral runs along x for a door in a north or south wall, so the aisle runs along z there.
+        return new Aisle(f.doorLo - 1, f.doorHi + 1, f.side == 1 || f.side == 3);
     }
 
     /**
