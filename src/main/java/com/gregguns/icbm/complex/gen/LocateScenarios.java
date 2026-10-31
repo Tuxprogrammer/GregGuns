@@ -205,7 +205,18 @@ public final class LocateScenarios {
                 if (d == null) continue;
                 IChatComponent outcome = (IChatComponent) a[5];
                 if (d.isPlaced()) {
-                    out.check(key(outcome).equals("gregguns.locate.status.generated"), label + ": reported built");
+                    out.check(key(outcome).equals("gregguns.locate.status.complex"), label + ": reported built");
+                    // A built complex names its recorded level (D304) and, when sunk, how deep (D302).
+                    Object[] built = args(outcome);
+                    out.checkEquals(
+                        label + ": the row names the recorded level",
+                        "gregguns.locate.level." + ComplexPlacer.levelFor(
+                            d,
+                            p.get()
+                                .chestSeedBase())
+                            .name()
+                            .toLowerCase(java.util.Locale.ROOT),
+                        key((IChatComponent) built[0]));
                     int[] at = StructureLocator.arrival(p.get());
                     out.check(
                         at[0] >= p.get()
@@ -279,6 +290,7 @@ public final class LocateScenarios {
                 if (key(l).equals("gregguns.locate.progress")) {
                     String outcome = key((IChatComponent) a[5]);
                     boolean ok = outcome.equals("gregguns.locate.status.generated")
+                        || outcome.equals("gregguns.locate.status.complex")
                         || outcome.equals("gregguns.locate.status.skipped")
                         || outcome.equals("gregguns.locate.status.undecided");
                     out.check(ok, "a generated cell reports an outcome (" + outcome + ")");
