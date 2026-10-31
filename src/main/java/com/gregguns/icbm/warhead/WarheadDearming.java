@@ -117,10 +117,32 @@ public final class WarheadDearming {
 
     /**
      * @param spec an inert warhead recipe
-     * @return what scrapping the bare casing gives back: its plates and its Fuze Assembly, all of them
+     * @return what scrapping the bare casing gives back: its plates, its Fuze Assembly, its nose cone and its hull
+     *         plates, all of them; the arming electronics are spent (D328)
      */
     public static List<Ing> casingReturns(InertWarheadSpec spec) {
-        return spec.inputs();
+        return spec.inputs()
+            .subList(
+                0,
+                Math.min(
+                    InertWarheadSpec.RETURNED_INPUTS,
+                    spec.inputs()
+                        .size()));
+    }
+
+    /**
+     * @param spec an inert warhead recipe
+     * @return what scrapping the bare casing spends: its arming electronics
+     */
+    public static List<Ing> casingLosses(InertWarheadSpec spec) {
+        return spec.inputs()
+            .subList(
+                Math.min(
+                    InertWarheadSpec.RETURNED_INPUTS,
+                    spec.inputs()
+                        .size()),
+                spec.inputs()
+                    .size());
     }
 
     /**

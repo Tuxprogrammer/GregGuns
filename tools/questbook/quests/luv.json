@@ -55,14 +55,15 @@
               "ore": "plateHSSG"
             },
             {
-              "id": "gregguns:part_barrel_laser",
+              "id": "gregtech:gt.metaitem.01",
               "count": 4,
-              "damage": 0
+              "damage": 32706,
+              "ore": "circuitMaster"
             },
             {
-              "id": "gregguns:part_mechanical_3",
-              "count": 8,
-              "damage": 0
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 32606
             }
           ]
         }

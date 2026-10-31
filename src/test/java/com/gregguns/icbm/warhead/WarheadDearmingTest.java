@@ -101,6 +101,30 @@ class WarheadDearmingTest {
     }
 
     @Test
+    void scrappingSpendsOnlyTheArmingElectronics() {
+        for (InertWarheadSpec spec : InertWarheadSpec.values()) {
+            List<Ing> lost = WarheadDearming.casingLosses(spec);
+            assertEquals(
+                spec.inputs()
+                    .size(),
+                WarheadDearming.casingReturns(spec)
+                    .size() + lost.size(),
+                spec + ": every input is either returned or spent");
+            for (Ing in : lost) {
+                assertTrue(
+                    in.id()
+                        .startsWith("Sensor_")
+                        || in.id()
+                            .startsWith("Emitter_")
+                        || in.id()
+                            .startsWith("circuit:"),
+                    spec + " spends " + in.id());
+            }
+            assertEquals(3, lost.size(), spec + ": a sensor, an emitter and the circuits are spent");
+        }
+    }
+
+    @Test
     void thePayloadGivesBackItsItemsAndSpendsOnlyItsFluid() {
         for (WarheadRecipeSpec spec : WarheadRecipeSpec.values()) {
             List<Ing> back = WarheadDearming.payloadReturns(spec);
@@ -162,6 +186,8 @@ class WarheadDearmingTest {
         assertEquals(0, fill, spec + ": the grid empties the warhead");
         book(ledger, WarheadDearming.payloadReturns(spec), -1);
         book(ledger, WarheadDearming.casingReturns(casing), -1);
+        // The arming electronics are spent by the scrap step (D328): booked as spent, so only a dupe shows.
+        book(ledger, WarheadDearming.casingLosses(casing), -1);
         return ledger;
     }
 

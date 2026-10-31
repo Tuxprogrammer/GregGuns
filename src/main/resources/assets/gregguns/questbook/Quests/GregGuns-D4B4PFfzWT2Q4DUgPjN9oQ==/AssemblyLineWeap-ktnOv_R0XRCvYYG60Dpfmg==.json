@@ -106,15 +106,15 @@
         },
         "1:10": {
           "Count:3": 4,
-          "Damage:2": 0,
-          "OreDict:8": "",
-          "id:8": "gregguns:part_barrel_laser"
+          "Damage:2": 32706,
+          "OreDict:8": "circuitMaster",
+          "id:8": "gregtech:gt.metaitem.01"
         },
         "2:10": {
-          "Count:3": 8,
-          "Damage:2": 0,
+          "Count:3": 2,
+          "Damage:2": 32606,
           "OreDict:8": "",
-          "id:8": "gregguns:part_mechanical_3"
+          "id:8": "gregtech:gt.metaitem.01"
         }
       },
       "ignoreDisabled:1": 0,

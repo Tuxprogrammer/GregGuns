@@ -101,6 +101,8 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.compat.oc.OcCompat.register();
         }
         com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
+        // The balance pass prices missiles against the pack's rockets from the recipe dump.
+        com.gregguns.icbm.compat.NasaWorkbenchDump.register();
         com.gregguns.icbm.tools.ToolRegistration.init();
         com.gregguns.icbm.launcher.LauncherWarheadRegistration.init();
         com.gregguns.icbm.antidote.AntidoteRegistration.init();

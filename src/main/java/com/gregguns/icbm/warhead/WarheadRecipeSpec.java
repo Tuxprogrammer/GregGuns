@@ -56,9 +56,12 @@ public enum WarheadRecipeSpec {
     /** The cold T3 blast: helium in dispersal canisters (LuV). */
     ENDOTHERMIC(WarheadBlast.ENDOTHERMIC, 2, Ing.part(IcbmPart.DISPERSAL_CANISTER, 4),
         Ing.gas("Helium", 8000, Tier.IV)),
-    /** A fission core of uranium-235 and plutonium; the charges are its implosion lens (ZPM). */
+    /**
+     * A fission core of uranium-235 and plutonium held in two ZPM field generators; the charges are its implosion lens
+     * (ZPM). The field generators carry the steep cost rise from T3 to nuclear (D328).
+     */
     NUCLEAR(WarheadBlast.NUCLEAR, 3, Ing.gt("ingot", "Uranium235", 8, Tier.HV, 6.0),
-        Ing.gt("ingot", "Plutonium", 4, Tier.EV, 8.0)),
+        Ing.gt("ingot", "Plutonium", 4, Tier.EV, 8.0), Ing.gtItem("Field_Generator_ZPM", 2, Tier.ZPM, 30.0)),
     /**
      * The antimatter payload (UV, D134): two UV field generators to contain it, a Quantum Eye and a plutonium-241
      * seed.

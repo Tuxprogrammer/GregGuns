@@ -18,10 +18,11 @@ import gregtech.api.recipe.RecipeMaps;
 /**
  * GT's Cutting Machine de-arms a warhead (D283), the Assembler's steps run backwards at the same voltage: it empties a
  * full warhead (the inert warhead with its payload, and every charge), takes a payload out (the bare inert warhead and
- * the payload's items; its fluid is spent) and scraps a bare inert warhead (its plates and Fuze Assembly). Every input
- * is NBT-sensitive, so a bare casing never matches a payload's removal and a partly filled warhead never matches the
- * full one; partial loads go back through the crafting grid ({@link WarheadUnloadRecipe}). GT's cutter adds its water,
- * distilled water, lubricant and superfluid variants. Called from {@link WarheadRecipes} on GT's before-postload hook.
+ * the payload's items; its fluid is spent) and scraps a bare inert warhead (its plates, Fuze Assembly, nose cone and
+ * hull plates; the arming electronics are spent, D328). Every input is NBT-sensitive, so a bare casing never matches a
+ * payload's removal and a partly filled warhead never matches the full one; partial loads go back through the crafting
+ * grid ({@link WarheadUnloadRecipe}). GT's cutter adds its water, distilled water, lubricant and superfluid variants.
+ * Called from {@link WarheadRecipes} on GT's before-postload hook.
  * Common side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (De-arming)

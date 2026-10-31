@@ -556,8 +556,10 @@ public final class ComplexContents {
      * @param role    the machine role
      * @param ceiling the ceiling
      * @param h       a hash of the cell
-     * @return the voltage index asked for: 0 for roles with no tier, else the ceiling or one or two below it, at least
-     *         HV (3); never above the ceiling. The world side steps down further when GT has no machine that high.
+     * @return the voltage index asked for: 0 for roles with no tier; the radar and comms gear at the ceiling or one or
+     *         two below it, at least HV (3); every other room machine from the same tier ladder as the metal props
+     *         (D330, after D308): LV and MV common, the ceiling's own tier a find. Never above the ceiling. The world
+     *         side steps down further when GT has no machine that high.
      */
     public static int machineTier(MachineRole role, int ceiling, long h) {
         switch (role) {
@@ -565,10 +567,35 @@ public final class ComplexContents {
             case LAUNCH_CONTROL:
             case MAGAZINE_CASING:
                 return 0;
-            default:
+            case RADAR:
+            case COMMS:
                 int below = (int) Long.remainderUnsigned(h, 3);
                 return Math.max(Math.min(3, ceiling), ceiling - below);
+            default:
+                return roomMachineTier(ceiling, h);
         }
+    }
+
+    /**
+     * The balance pass's limit on the free machines of a complex (D330): a room machine's tier is drawn from the metal
+     * props' ladder ({@link com.gregguns.icbm.complex.gen.MetalProps#weight}), so most are LV and MV and the ceiling's
+     * own tier is a find, while the room keeps every machine its activity level gives it.
+     *
+     * @param ceiling the complex's ceiling (voltage index)
+     * @param h       a hash of the cell
+     * @return 1 to the ceiling
+     */
+    static int roomMachineTier(int ceiling, long h) {
+        int c = Math.max(1, ceiling);
+        int total = 0;
+        for (int t = 1; t <= c; t++) total += com.gregguns.icbm.complex.gen.MetalProps.weight(t, c);
+        if (total <= 0) return c;
+        long r = Long.remainderUnsigned(h, total);
+        for (int t = 1; t <= c; t++) {
+            r -= com.gregguns.icbm.complex.gen.MetalProps.weight(t, c);
+            if (r < 0) return t;
+        }
+        return c;
     }
 
     /** @return depth band 0 (the hall) to 3 from the box's distance to the hall, 30 blocks per band */

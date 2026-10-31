@@ -2,6 +2,14 @@
 
 Notes for the next release. Fold these into that release's changelog when it is cut.
 
+## Changed: ICBM balance pass
+
+- **Warheads are the expensive part of a missile.** Every Inert Warhead now also takes the nose cone and 12 hull plates of its tier's Galacticraft rocket and its arming electronics (a Sensor, an Emitter and 2 circuits of its tier): T1 a Nose Cone and Heavy Duty Plates, T2 a Heavy Nose Cone and Heavy Duty Plates Tier 2, T3 a Heavy Nose Cone and Heavy Duty Plates Tier 4, T4 and T5 the Heavy Duty Nose Cones Tier 3 and 4 with Heavy Duty Plates Tier 6 and 7. A full missile now costs about one Galacticraft rocket of its tier.
+- The **nuclear payload** also takes 2 ZPM Field Generators to hold its core.
+- Scrapping a bare inert warhead in the Cutting Machine returns its plates, fuze, nose cone and hull plates; the arming electronics are spent.
+- Silo complex room machines (generators, buffers, pumps, labs and the rest) now run mostly LV and MV, with the complex's top tier a rare find; radars and comms gear are unchanged. Inert T1 warheads are rarer in silo chests.
+- The LuV ICBM quests pay an Ordnance III crate and HSS-G plates instead of IV rewards, and the LuV chapter's first quest offers Master circuits and LuV motors.
+
 ## Module flag mismatch warning
 
 - When a client joins a server whose `modules.*` flags differ from the client's own `config/gregguns.cfg`, the player now gets one chat line naming each module that differs, and the log gets one warning. Recipes and NEI follow the client's own config, so set the same values there and restart. Singleplayer is unaffected.

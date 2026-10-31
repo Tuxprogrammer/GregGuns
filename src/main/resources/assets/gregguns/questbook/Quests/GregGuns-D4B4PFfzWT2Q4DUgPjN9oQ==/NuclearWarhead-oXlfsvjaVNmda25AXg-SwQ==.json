@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The nuclear warhead is a Tier 3 casing, two blocks tall. Start with an Inert T3 Warhead (the Assembler at LuV: 8 tungstensteel plates and a Fuze Assembly Mk III), fit the nuclear payload at ZPM (8 uranium-235 ingots and 4 plutonium ingots), then load 64 Plastic Explosive, its implosion lens. It flies only on a Tier 3 missile, from the silo. Check NEI.\n\nA full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour.\n\n[warn]Cross the blast zone only in full hazmat armor, and stand well back from the launch target. There is no safe distance inside the inner radius.[/warn]",
+      "desc:8": "The nuclear warhead is a Tier 3 casing, two blocks tall. Start with an Inert T3 Warhead (the Assembler at LuV: 8 tungstensteel plates, a Fuze Assembly Mk III, a Heavy Nose Cone, 12 Heavy Duty Plates Tier 4, a LuV Sensor, a LuV Emitter and 2 Master circuits), fit the nuclear payload at ZPM (8 uranium-235 ingots, 4 plutonium ingots and 2 ZPM Field Generators to hold the core), then load 64 Plastic Explosive, its implosion lens. It flies only on a Tier 3 missile, from the silo. Check NEI.\n\nA full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour.\n\n[warn]Cross the blast zone only in full hazmat armor, and stand well back from the launch target. There is no safe distance inside the inner radius.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

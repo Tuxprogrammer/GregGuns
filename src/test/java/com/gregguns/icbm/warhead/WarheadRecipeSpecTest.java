@@ -92,7 +92,7 @@ class WarheadRecipeSpecTest {
     }
 
     @Test
-    void theInertWarheadIsTheCasingPlatesAndTheFuze() {
+    void theInertWarheadIsTheCasingPlatesTheFuzeTheRocketNoseAndHullAndItsElectronics() {
         String[] plates = { "plate:StainlessSteel", "plate:Titanium", "plate:TungstenSteel", "plate:Naquadria",
             "plate:Neutronium" };
         int[] counts = { WarheadRecipes.T1_PLATES, WarheadRecipes.T2_PLATES, WarheadRecipes.T3_PLATES,
@@ -102,7 +102,7 @@ class WarheadRecipeSpecTest {
         for (InertWarheadSpec spec : InertWarheadSpec.values()) {
             int i = spec.ordinal();
             assertEquals(
-                2,
+                7,
                 spec.inputs()
                     .size(),
                 spec + " inputs");
@@ -115,6 +115,47 @@ class WarheadRecipeSpecTest {
                 .get(1);
             assertEquals(Ing.Src.PART, fuze.src());
             assertEquals(fuzes[i].name(), fuze.id());
+            // D328: the rocket nose cone and twelve hull plates of the casing tier's rocket, then the electronics.
+            assertEquals(
+                Ing.Src.MOD_ITEM,
+                spec.inputs()
+                    .get(2)
+                    .src(),
+                spec + " nose cone");
+            assertEquals(
+                1,
+                spec.inputs()
+                    .get(2)
+                    .count());
+            assertEquals(
+                Ing.Src.MOD_ITEM,
+                spec.inputs()
+                    .get(3)
+                    .src(),
+                spec + " hull");
+            assertEquals(
+                12,
+                spec.inputs()
+                    .get(3)
+                    .count());
+            assertTrue(
+                spec.inputs()
+                    .get(4)
+                    .id()
+                    .startsWith("Sensor_"),
+                spec + " sensor");
+            assertTrue(
+                spec.inputs()
+                    .get(5)
+                    .id()
+                    .startsWith("Emitter_"),
+                spec + " emitter");
+            assertEquals(
+                2,
+                spec.inputs()
+                    .get(6)
+                    .count(),
+                spec + " circuits");
         }
     }
 
@@ -204,27 +245,19 @@ class WarheadRecipeSpecTest {
     }
 
     @Test
-    void costsMeetD34() {
-        // The estimate in warheads-and-fill.md: a T1 launch is about 20 plate equivalents, a T2 launch about 27; a T1
-        // warhead is about one launch and a T2 about one and a half to two. The cost counts the inert warhead, the
-        // payload and a full casing of Plastic Explosive charges.
+    void costsMeetD328() {
+        // The in-code estimate (plate equivalents, about ingots; electronics counted low), which guards the recipe
+        // data against an accidental change. The balance itself is measured by tools/icbm-balance/cost.py over the
+        // pack's recipe dump (D328): there a full warhead is about its body or more and each tier's cheapest warhead
+        // at least doubles the one below; that table lives in warheads-and-fill.md.
         for (WarheadRecipeSpec spec : WarheadRecipeSpec.values()) {
             double cost = spec.cost();
-            if (spec.blast()
-                .tier() == ExplosiveTier.T4
-                || spec.blast()
-                    .tier() == ExplosiveTier.T5) {
-                // T4 and T5 (D134): the endgame warheads, a few T3 launches' worth.
-                assertTrue(cost >= 100.0 && cost <= 400.0, spec + " costs " + cost);
-            } else if (spec.blast()
-                .tier() == ExplosiveTier.T3) {
-                    // T3 (D80): the warhead is the expensive part; about two to four T3 launches.
-                    assertTrue(cost >= 90.0 && cost <= 180.0, spec + " costs " + cost);
-                } else if (spec.outputTier() == Tier.HV) {
-                    assertTrue(cost >= 14.0 && cost <= 26.0, spec + " costs " + cost);
-                } else {
-                    assertTrue(cost >= 38.0 && cost <= 52.0, spec + " costs " + cost);
-                }
+            ExplosiveTier t = spec.blast()
+                .tier();
+            double[] band = t == ExplosiveTier.T1 ? new double[] { 260.0, 290.0 }
+                : t == ExplosiveTier.T2 ? new double[] { 495.0, 515.0 }
+                    : t == ExplosiveTier.T3 ? new double[] { 475.0, 620.0 } : new double[] { 950.0, 1250.0 };
+            assertTrue(cost >= band[0] && cost <= band[1], spec + " costs " + cost);
         }
     }
 

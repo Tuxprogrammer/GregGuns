@@ -70,7 +70,7 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 1711,
+          "Damage:2": 1712,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
         },
@@ -110,8 +110,8 @@
         },
         "3:10": {
           "Count:3": 16,
-          "Damage:2": 17316,
-          "OreDict:8": "plateTungstenSteel",
+          "Damage:2": 17372,
+          "OreDict:8": "plateHSSG",
           "id:8": "gregtech:gt.metaitem.01"
         }
       },
