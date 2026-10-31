@@ -376,6 +376,15 @@ public final class ComplexDimScenarios {
                     .getMetaTileEntity() instanceof com.gregguns.icbm.defense.MTERadar;
             out.check(controller, label + ": an HV radar controller in the station");
             if (!controller) return;
+            // The station's Maintenance Hatch (RadarStation.cellAt: dx 1, dz -1, one over the roof) is switched on as a
+            // placed one is, so it shows its wrench face, not GT's duct-tape cross.
+            TileEntity mh = w.getTileEntity(cx + 1, roof + 1, cz - 1);
+            out.check(
+                mh instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                    && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) mh)
+                        .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance
+                    && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) mh).isActive(),
+                label + ": the radar's Maintenance Hatch is switched on (no duct-tape cross)");
             out.check(
                 !com.gregguns.machine.DevStructureBuilder.check(w, cx + c[0], roof + c[1], cz + c[2]),
                 label + ": the station is inert without an Energy Hatch");
