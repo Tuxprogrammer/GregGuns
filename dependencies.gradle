@@ -84,6 +84,9 @@ dependencies {
     // EnhancedLootBags and its YAMCore library, so dev runs and scenarios have the pack's bag item that the GregGuns loot
     // groups are added to (com.gregguns.compat.lootbags). Runtime only: GregGuns reaches ELB by reflection.
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:EnhancedLootBags:1.3.5:dev") { transitive = false }
+    // Carpenter's Blocks: the silo complex's blast doors are its garage doors (D335), placed by name; the dev runs and
+    // scenarios load it so icbm.complex.fixtures can read the doors back.
+    runtimeOnlyNonPublishable("com.github.GTNewHorizons:CarpentersBlocks:3.7.3-GTNH:dev") { transitive = false }
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:Yamcl:0.7.5:dev") { transitive = false }
     // The pack's Backpack mod, so dev runs and the armor and repair scenarios have Tanned Leather (Backpack:tannedLeather),
     // the lining of the armor recipes. Runtime only: GregGuns looks the item up by name (com.gregguns.compat.PackItems).
