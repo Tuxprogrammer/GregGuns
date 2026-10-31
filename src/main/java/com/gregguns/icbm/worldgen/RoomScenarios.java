@@ -260,8 +260,11 @@ public final class RoomScenarios {
                     continue;
                 // A mark the level left empty (a stripped machine slot) is not a target.
                 if (world.isAirBlock(ax + m.x(), floor + 1, az + m.z())) continue;
+                // The NASA Workbench is 3 x 3 around its mark: its ring is one cell further out.
+                int reachOut = com.gregguns.icbm.complex.MachineRole.NASA_WORKBENCH.name()
+                    .equals(m.key()) ? 2 : 1;
                 boolean ok = false;
-                for (int[] n : nb) ok |= seen.contains(key(m.x() + n[0], 0, m.z() + n[1]));
+                for (int[] n : nb) ok |= seen.contains(key(m.x() + reachOut * n[0], 0, m.z() + reachOut * n[1]));
                 if (!ok) {
                     cut++;
                     if (first == null) first = r.kind() + " " + m;
