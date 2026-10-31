@@ -68,12 +68,34 @@ class MissileBuildSpecTest {
                 assertTrue(
                     in.tier()
                         .voltageIndex()
-                        <= s.tier()
+                        <= s.partTier()
                             .voltageIndex(),
-                    s + " takes " + in.id() + " above its tier");
+                    s + " takes " + in.id() + " above its band");
             }
             assertTrue(s.bodyTicks() > 0);
         }
+    }
+
+    @Test
+    void aBodysPartsStayInsideItsTierBand() {
+        // D343, from the real pack: T1 and T3 bodies are buildable at their own tier; the T2 body's heavy fins and
+        // engine need IV, the top of the T2 band (D5); the T3 body is the Tier 4 rocket's plates, fins and engine.
+        assertEquals(MissileBuildSpec.T1.tier(), MissileBuildSpec.T1.partTier());
+        assertEquals(com.gregguns.api.Tier.IV, MissileBuildSpec.T2.partTier());
+        assertEquals(MissileBuildSpec.T3.tier(), MissileBuildSpec.T3.partTier());
+        assertEquals(
+            GalacticraftParts.HULL_T3,
+            MissileBuildSpec.T3.plates()
+                .id());
+        assertEquals(
+            GalacticraftParts.FINS_HEAVY,
+            MissileBuildSpec.T3.fins()
+                .id());
+        assertEquals(
+            GalacticraftParts.ENGINE_HEAVY,
+            MissileBuildSpec.T3.engine()
+                .id());
+        assertEquals(4, MissileBenchRules.plateSlots(MissileBuildSpec.T3));
     }
 
     @Test
@@ -176,7 +198,7 @@ class MissileBuildSpecTest {
         // wrong engine, empty slot, wrong plates, wrong fins, a computer the body does not take
         assertEquals(
             -1,
-            MissileBenchRules.match(s, plates, fins, GalacticraftParts.ENGINE_T2, "guidance_computer_mk1"));
+            MissileBenchRules.match(s, plates, fins, GalacticraftParts.ENGINE_HEAVY, "guidance_computer_mk1"));
         assertEquals(-1, MissileBenchRules.match(s, plates, fins, null, "guidance_computer_mk1"));
         assertEquals(-1, MissileBenchRules.match(s, plates, fins, engine, null));
         assertEquals(
@@ -184,7 +206,8 @@ class MissileBuildSpecTest {
             MissileBenchRules.match(s, repeat("plate:Steel", plates.size()), fins, engine, "guidance_computer_mk1"));
         assertEquals(
             -1,
-            MissileBenchRules.match(s, plates, repeat(GalacticraftParts.FINS_T2, 4), engine, "guidance_computer_mk1"));
+            MissileBenchRules
+                .match(s, plates, repeat(GalacticraftParts.FINS_HEAVY, 4), engine, "guidance_computer_mk1"));
         assertEquals(-1, MissileBenchRules.match(s, plates, fins, engine, "fuze_assembly_mk1"));
         List<String> short3 = fins.subList(0, 3);
         assertEquals(-1, MissileBenchRules.match(s, plates, short3, engine, "guidance_computer_mk1"));
@@ -194,8 +217,8 @@ class MissileBuildSpecTest {
     void t2BenchRejectsTheMkOneComputer() {
         MissileBuildSpec s = MissileBuildSpec.T2;
         List<String> plates = repeat("compressed:Titanium", MissileBenchRules.plateSlots(s));
-        List<String> fins = repeat(GalacticraftParts.FINS_T2, 4);
-        String engine = GalacticraftParts.ENGINE_T2;
+        List<String> fins = repeat(GalacticraftParts.FINS_HEAVY, 4);
+        String engine = GalacticraftParts.ENGINE_HEAVY;
         assertEquals(0, MissileBenchRules.match(s, plates, fins, engine, "guidance_computer_mk2"));
         assertEquals(-1, MissileBenchRules.match(s, plates, fins, engine, "guidance_computer_mk1"));
     }
@@ -208,7 +231,7 @@ class MissileBuildSpecTest {
         assertTrue(MissileBenchRules.accepts(s, GalacticraftParts.ENGINE_T1));
         assertTrue(MissileBenchRules.accepts(s, "guidance_computer_mk3"));
         assertFalse(MissileBenchRules.accepts(s, "plate:StainlessSteel"));
-        assertFalse(MissileBenchRules.accepts(s, GalacticraftParts.ENGINE_T2));
+        assertFalse(MissileBenchRules.accepts(s, GalacticraftParts.ENGINE_HEAVY));
         assertFalse(MissileBenchRules.accepts(s, null));
         assertFalse(MissileBenchRules.accepts(MissileBuildSpec.T2, "guidance_computer_mk1"));
     }
@@ -232,7 +255,7 @@ class MissileBuildSpecTest {
             MissileBuildSpec.T1.engine()
                 .id());
         assertEquals(
-            GalacticraftParts.ENGINE_T2,
+            GalacticraftParts.ENGINE_HEAVY,
             MissileBuildSpec.T2.engine()
                 .id());
         assertEquals(
@@ -240,7 +263,7 @@ class MissileBuildSpecTest {
             MissileBuildSpec.T1.fins()
                 .id());
         assertEquals(
-            GalacticraftParts.FINS_T2,
+            GalacticraftParts.FINS_HEAVY,
             MissileBuildSpec.T2.fins()
                 .id());
     }

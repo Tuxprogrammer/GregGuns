@@ -31,8 +31,8 @@
 | Chip recipe | Circuit Assembler, HV (480 EU/t), 20 s: Advanced Plastic Circuit Board, 2 Advanced circuits, 4 fine gold wire | Circuit Assembler, EV (1,920 EU/t), 30 s: Advanced Epoxy Circuit Board, 2 Data circuits, 4 fine electrum wire |
 | Schematic recipe | Laser Engraver, HV, 30 s: chip + non-consumed red lens (`craftingLensRed`) | Laser Engraver, EV, 30 s: chip + non-consumed blue lens (`craftingLensBlue`) |
 | Body plates (one column, D69) | 3 compressed steel plates (Galacticraft's, GT prefix `compressed`) | 4 compressed titanium plates |
-| Fins (4 slots, one each, D69) | Galacticraft Tier 1 rocket fins (`GalacticraftCore:item.rocketFins`) | Galacticraft Tier 2 rocket fins (`GalacticraftMars:item.itemBasicAsteroids` damage 2) |
-| Engine (D69) | Galacticraft Tier 1 engine (`GalacticraftCore:item.engine` damage 0) | Galacticraft Tier 2 engine (`GalacticraftMars:item.itemBasicAsteroids` damage 1) |
+| Fins (4 slots, one each, D69) | Galacticraft Tier 1 rocket fins (`GalacticraftCore:item.rocketFins`) | heavy rocket fins, the Tier 3 and 4 rockets' (`GalacticraftMars:item.itemBasicAsteroids` damage 2; IV, D343) |
+| Engine (D69) | Galacticraft Tier 1 engine (`GalacticraftCore:item.engine` damage 0) | heavy rocket engine (`GalacticraftMars:item.itemBasicAsteroids` damage 1; IV, D343) |
 | Guidance computers accepted | Mk I (0 steps), Mk II (1), Mk III (2) | Mk II (0), Mk III (1) |
 | Machine body (guidance 0, D281) | Assembler, HV, 30 s, no research: plates + fins + engine + 2 Advanced circuits, 250 L lubricant | Assembler, EV, 45 s, no research: plates + fins + engine + 2 Data circuits, 250 L lubricant |
 | Guidance fit (Assembler) | HV, 15 s, circuit 1: body + Mk II (1 step) or Mk III (2 steps) | EV, 15 s, circuit 2: body + Mk III (1 step) |
@@ -62,7 +62,7 @@ Three more `IcbmPart`s (the two engines were retired in D69: bodies take Galacti
 
 ### The T3 row (I3, D74)
 
-LuV chip (Multifiberglass board, 2 Master circuits, 8 platinum fine wire), a yellow-lens schematic, four compressed titanium plates, four Heavy Duty Rocket Fins Tier 3 and a Heavy Duty Rocket Engine Tier 3 (NewHorizonsCoreMod). The machine body is the one **Assembly Line** recipe of the missile chain: LuV, 60 s, the same parts plus 2 Master circuits and 250 L lubricant, behind a 180 s research scan of a hand-built T3 body at LuV. The only guidance computer is Mk III, below the body's tier, so a T3 body has no guidance steps. See [missile-silo](missile-silo.md).
+LuV chip (Multifiberglass board, 2 Master circuits, 8 platinum fine wire), a yellow-lens schematic, and the Tier 4 rocket's hull, fins and engine (D343): four Heavy Duty Plates Tier 4 (NewHorizonsCoreMod, made on the Assembly Line at LuV) in the plate slots, four heavy rocket fins and a heavy rocket engine. Every part is buildable at LuV. Without NewHorizonsCoreMod (the dev environment) the plates fall back to Galacticraft's reinforced plate. The machine body is the one **Assembly Line** recipe of the missile chain: LuV, 60 s, the same parts plus 2 Master circuits and 250 L lubricant, behind a 180 s research scan of a hand-built T3 body at LuV. The only guidance computer is Mk III, below the body's tier, so a T3 body has no guidance steps. See [missile-silo](missile-silo.md).
 
 ## Cost (D328)
 
@@ -70,15 +70,17 @@ The target is "about one Galacticraft rocket launch of the tier in plates, circu
 
 | | Ingots | Circuits | Units | Reference rocket (no lander), units | Body / rocket |
 |---|---|---|---|---|---|
-| Missile Body T1 (HV) | 377 | none | 407 | Tier 1 (HV), 799 | 0.51 |
-| Missile Body T2 (EV) | 882 | none | 1,081 | Tier 2 (EV), 2,264 | 0.48 |
-| Missile Body T3 (LuV) | 2,998 | 1 IV | 3,519 | Tier 4 (LuV), 5,082 | 0.69 |
+| Missile Body T1 (HV) | 378 | 1 HV | 420 | Tier 1 (HV), 799 | 0.53 |
+| Missile Body T2 (EV; its parts need IV, D343) | 1,230 | 1 EV | 1,373 | Tier 2 (EV), 2,264 | 0.61 |
+| Missile Body T3 (LuV) | 1,823 | 1 IV | 2,102 | Tier 4 (LuV), 5,082 | 0.41 |
 
-The parts: a Galacticraft Tier 1 engine is 131 units and a Tier 1 fin 66; the "Tier 2" engine (`itemBasicAsteroids` 1) 516 at EV and its fin 137; the Heavy Duty Rocket Engine Tier 3 2,093 at LuV and its fin 204. The machine body (Assembler or Assembly Line) pays the same parts, two circuits instead of the computer and 250 L of lubricant, so automation gives no discount. With the warhead (D328, [warheads-and-fill](../02-explosives/warheads-and-fill.md#cost-d328)), a missile costs 0.8 to 1.4 rockets of its tier and the warhead is about as costly as the body or more (0.7 to 1.6 at T1 and T2, up to 22 times at red matter). No body changed in the balance pass (D329): the T2 body's "Tier 2" parts are the pack's Tier 3 and 4 rocket parts, made with desh, so the first T2 missile needs a trip to Mars on the EV Tier 2 rocket; the T3 body's engine is a ZPM-rocket part that a LuV player can build. Fuel is not in the units: a missile burns one tank (2,000, 4,000 or 8,000 mB by tier), as a rocket burns its own.
+The numbers are F2's remeasure (D343, D344) on a fresh dump: `cost.py` no longer prices an above-tier part as a raw item, which had made the T1 body cheaper (a raw EV computer) and the T2 and T3 bodies far cheaper (their IV and ZPM heavy duty ingots). The circuits are the cheapest guidance computer's. P1's first table read 407, 1,081 and 3,519 with the old T3 parts.
+
+The parts: a Galacticraft Tier 1 engine is 131 units and a Tier 1 fin 66; the heavy engine (`itemBasicAsteroids` 1) 660 and the heavy fin 252, priced at LuV; a Heavy Duty Plate Tier 4 92 at LuV. The Heavy Duty Rocket Engine and Fins Tier 3 the T3 body took before need ZPM (2,392 and 576 units even then). The machine body (Assembler or Assembly Line) pays the same parts, two circuits instead of the computer and 250 L of lubricant, so automation gives no discount. With the cheapest warhead of each tier (D328, [warheads-and-fill](../02-explosives/warheads-and-fill.md#cost-d328)), a missile costs 0.9 to 1.4 rockets of its tier; the warhead is 0.9 to 1.5 of the body at T1, 0.5 to 0.6 at T2 and 1.5 to 37 from T3 up. The T2 body's heavy parts are the pack's Tier 3 and 4 rocket parts, made with desh, so the first T2 missile needs a trip to Mars on the EV Tier 2 rocket, and their reinforced plates need an IV Assembler: the T2 body is the IV step of the T2 band (D5, D329, D343). The T3 body is the Tier 4 rocket's own hull, fins and engine, all buildable at LuV (D343). Fuel is not in the units: a missile burns one tank (2,000, 4,000 or 8,000 mB by tier), as a rocket burns its own.
 
 ## Recycling (D44)
 
-Each body returns its compressed plates as metal (`MissileRecipes.recycle`; the Galacticraft fins and engine carry no GT data); each part returns its metal through `PartRecipes`; the launch control returns its casing. Circuits, motors and pumps are not returned. Chips and schematics return nothing.
+A T1 or T2 body returns its compressed plates as metal (`MissileRecipes.recycle`; the Galacticraft fins and engine and the T3 body's heavy duty plates carry no GT data, so a T3 body returns nothing); each part returns its metal through `PartRecipes`; the launch control returns its casing. Circuits, motors and pumps are not returned. Chips and schematics return nothing.
 
 ## NEI
 
@@ -90,7 +92,7 @@ Each body returns its compressed plates as metal (`MissileRecipes.recycle`; the 
 - **GGS-I2-02** The machine body recipe (guidance 0) and the Assembler guidance fit are the only automatic route to a body. Below LuV the body recipe is in the Assembler with no research, and GT's lookup on its inputs finds it; from LuV it is on the Assembly Line, and each line recipe has its own research item that GT's scanner resolves.
 - **GGS-I2-06** (D281) No GregGuns Assembly Line recipe runs below LuV: `AssemblyLineTierTest` for the tables and bodies, `icbm.production.recipes` for the live map.
 - **GGS-I2-03** A bench slot refuses an item of the wrong kind; the result is the body of that tier with the computer's guidance and nothing from an incomplete set.
-- **GGS-I2-04** Each recipe runs at its tier's voltage and every input is at or below that tier.
+- **GGS-I2-04** Each recipe runs at its tier's voltage and every input is at or below that tier, checked on the real pack (D343). The one exception is inside a band: the T2 body's heavy fins and engine need IV, the top of the T2 band (`MissileBuildSpec.partTier`).
 - **GGS-I2-05** (D69) No ICBM recipe runs below HV: `MissileBuildSpecTest.noIcbmRecipeRunsBelowHv` fails for any part, body or warhead recipe under HV.
 
 ## Tests

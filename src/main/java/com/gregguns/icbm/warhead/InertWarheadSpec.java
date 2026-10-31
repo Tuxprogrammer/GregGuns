@@ -25,9 +25,12 @@ public enum InertWarheadSpec {
         Ing.modItem(GalacticraftParts.HULL_T1, WarheadRecipes.HULL_PLATES, Tier.HV, 14.0),
         Ing.gtItem("Sensor_HV", 1, Tier.HV, 6.0), Ing.gtItem("Emitter_HV", 1, Tier.HV, 6.0),
         Ing.gt("circuit", "Advanced", 2, Tier.HV, 3.0)),
-    /** EV: eight titanium plates, a Fuze Mk II, the heavy nose cone, the Tier 2 rocket's hull, EV electronics. */
+    /**
+     * EV: eight titanium plates, a Fuze Mk II, the Tier 2 rocket's nose cone and hull, EV electronics (D343: every
+     * part buildable at EV).
+     */
     T2(WarheadCasing.T2, 4, Ing.gt("plate", "Titanium", WarheadRecipes.T2_PLATES, Tier.EV, 1.0),
-        Ing.part(IcbmPart.FUZE_ASSEMBLY_MK2, 1), Ing.modItem(GalacticraftParts.NOSE_HEAVY, 1, Tier.EV, 123.0),
+        Ing.part(IcbmPart.FUZE_ASSEMBLY_MK2, 1), Ing.modItem(GalacticraftParts.NOSE_T2, 1, Tier.HV, 69.0),
         Ing.modItem(GalacticraftParts.HULL_T2, WarheadRecipes.HULL_PLATES, Tier.EV, 26.0),
         Ing.gtItem("Sensor_EV", 1, Tier.EV, 6.0), Ing.gtItem("Emitter_EV", 1, Tier.EV, 6.0),
         Ing.gt("circuit", "Data", 2, Tier.EV, 5.0)),
@@ -35,7 +38,7 @@ public enum InertWarheadSpec {
      * LuV: eight tungstensteel plates, a Fuze Mk III, the heavy nose cone, the Tier 4 rocket's hull, LuV electronics.
      */
     T3(WarheadCasing.T3, 6, Ing.gt("plate", "TungstenSteel", WarheadRecipes.T3_PLATES, Tier.IV, 1.0),
-        Ing.part(IcbmPart.FUZE_ASSEMBLY_MK3, 1), Ing.modItem(GalacticraftParts.NOSE_HEAVY, 1, Tier.EV, 123.0),
+        Ing.part(IcbmPart.FUZE_ASSEMBLY_MK3, 1), Ing.modItem(GalacticraftParts.NOSE_HEAVY, 1, Tier.IV, 123.0),
         Ing.modItem(GalacticraftParts.HULL_T3, WarheadRecipes.HULL_PLATES, Tier.LUV, 18.0),
         Ing.gtItem("Sensor_LuV", 1, Tier.LUV, 10.0), Ing.gtItem("Emitter_LuV", 1, Tier.LUV, 10.0),
         Ing.gt("circuit", "Master", 2, Tier.LUV, 8.0)),

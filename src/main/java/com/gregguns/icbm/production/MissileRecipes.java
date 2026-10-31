@@ -194,13 +194,14 @@ public final class MissileRecipes {
     }
 
     /**
-     * The metal of the compressed plates comes back from a body (GT's own amount for the item); the Galacticraft fins
-     * and engine and the computer have no GT metal data.
+     * The metal of the compressed plates comes back from a T1 or T2 body (GT's own amount for the item); the
+     * Galacticraft fins and engine, the T3 body's heavy duty plates and the computer have no GT metal data.
      */
     private static void recycle(MissileBuildSpec spec) {
         Item body = MissileBodies.item(MissileTier.byNumber(spec.number()));
-        if (body == null) {
-            return;
+        if (body == null || spec.plates()
+            .src() != Ing.Src.GT) {
+            return; // the T3 body's heavy duty plates carry no GT metal data, as the fins and engine do not
         }
         Materials main = Materials.get(
             spec.plates()

@@ -40,8 +40,11 @@ public class LauncherLoadHandler extends ShapelessRecipeHandler {
 
     @Override
     public void loadCraftingRecipes(String outputId, Object... results) {
-        // Every page for our own id and for the crafting table's "recipes" arrow; the item lookups go through super.
-        if (ID.equals(outputId) || "crafting".equals(outputId)) {
+        // Every page for our own id and for the crafting table's and the inventory grid's "recipes" arrows (the load
+        // is two items, so it fits the 2x2 grid); the item lookups go through super.
+        // Source: NEI 2.8.155-GTNH ShapelessRecipeHandler answers "crafting" and "crafting2x2" only for its own class:
+        // https://github.com/GTNewHorizons/NotEnoughItems/blob/2.8.155-GTNH/src/main/java/codechicken/nei/recipe/ShapelessRecipeHandler.java#L84-L116
+        if (ID.equals(outputId) || "crafting".equals(outputId) || "crafting2x2".equals(outputId)) {
             add(null, null);
         } else {
             super.loadCraftingRecipes(outputId, results);

@@ -56,6 +56,24 @@ class CostTest(unittest.TestCase):
         c = cost.Pricer(dump(rows, DATA)).price('m:a:0')
         self.assertEqual(sum(c.raw.values()), 1)
 
+    def test_an_item_made_only_above_the_tier_is_flagged_not_raw(self):
+        # The only recipe of m:a runs at IV: at HV it is above tier, priced at its real cost and flagged (R2-04).
+        rows = [row('gt.recipe.assembler', {'gt:plate:0': 6}, {'m:a:0': 1}, eut=7680, dur=1),
+                row('gt.recipe.assembler', {'m:a:0': 1, 'gt:plate:0': 1}, {'m:b:0': 1}, eut=480, dur=1)]
+        c = cost.Pricer(dump(rows, DATA), 'HV').price('m:b:0')
+        self.assertEqual(sum(c.raw.values()), 0)
+        self.assertEqual(dict(c.above), {'m:a:0': 1})
+        self.assertAlmostEqual(c.ingots(), 7.0)
+        self.assertEqual(sum(cost.Pricer(dump(rows, DATA), 'IV').price('m:b:0').above.values()), 0)
+
+    def test_a_route_at_the_tier_beats_a_cheaper_one_above_it(self):
+        rows = [row('gt.recipe.assembler', {'gt:plate:0': 1}, {'m:a:0': 1}, eut=7680, dur=1),
+                row('gt.recipe.assembler', {'m:a:0': 1}, {'m:b:0': 1}, eut=30, dur=1),
+                row('gt.recipe.assembler', {'gt:plate:0': 9}, {'m:b:0': 1}, eut=30, dur=1)]
+        c = cost.Pricer(dump(rows, DATA), 'HV').price('m:b:0')
+        self.assertEqual(sum(c.above.values()), 0)
+        self.assertAlmostEqual(c.ingots(), 9.0)
+
     def test_molten_metal_is_ingots_and_tools_are_free(self):
         rows = [row('crafting', {'ore:craftingToolSaw': 1, 'gt:plate:0': 1}, {'m:a:0': 1}, kind='shaped'),
                 row('gt.recipe.assembler', {'m:a:0': 1}, {'m:b:0': 1}, fluids={'fluid:molten.tin': 288})]
