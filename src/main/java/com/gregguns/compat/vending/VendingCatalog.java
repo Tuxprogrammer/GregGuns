@@ -266,7 +266,8 @@ public final class VendingCatalog {
      *         never registered (spawn weight 0). Every other offer is sellable.
      */
     public static boolean spawnable(Offer offer) {
-        if (!offer.key().startsWith("egg:")) {
+        if (!offer.key()
+            .startsWith("egg:")) {
             return true;
         }
         NpcMob mob = NpcMob.byId(offer.meta());

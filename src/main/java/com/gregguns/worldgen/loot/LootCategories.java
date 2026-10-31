@@ -142,9 +142,16 @@ public final class LootCategories {
 
     private static String valueKey(String category, WeightedRandomChestContent c) {
         ItemStack s = c.theItemId;
-        String name = s == null || s.getItem() == null ? "?" : String.valueOf(Item.itemRegistry.getNameForObject(s.getItem()));
-        return category + '|' + name + '|' + (s == null ? 0 : s.getItemDamage()) + '|'
-            + c.theMinimumChanceToGenerateItem + '|' + c.theMaximumChanceToGenerateItem;
+        String name = s == null || s.getItem() == null ? "?"
+            : String.valueOf(Item.itemRegistry.getNameForObject(s.getItem()));
+        return category + '|'
+            + name
+            + '|'
+            + (s == null ? 0 : s.getItemDamage())
+            + '|'
+            + c.theMinimumChanceToGenerateItem
+            + '|'
+            + c.theMaximumChanceToGenerateItem;
     }
 
     /** @return the references registration skipped because the pack does not have them, for scenarios */

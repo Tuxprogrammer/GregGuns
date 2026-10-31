@@ -67,7 +67,11 @@ class VendingCatalogTest {
     void onlyEggsOfKindsThatCannotSpawnAreHeldBack() {
         // Nothing is registered in a unit test, so every egg reads as unspawnable; no other offer is touched.
         for (VendingCatalog.Offer o : OFFERS) {
-            assertEquals(!o.key().startsWith("egg:"), VendingCatalog.spawnable(o), o.key());
+            assertEquals(
+                !o.key()
+                    .startsWith("egg:"),
+                VendingCatalog.spawnable(o),
+                o.key());
         }
     }
 

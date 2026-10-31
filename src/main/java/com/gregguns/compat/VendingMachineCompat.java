@@ -142,7 +142,10 @@ public final class VendingMachineCompat {
         }
     }
 
-    /** @return the catalog offers whose item is registered on this server and not a hidden technical item; spawn eggs of kinds that cannot spawn are left out */
+    /**
+     * @return the catalog offers whose item is registered on this server and not a hidden technical item; spawn eggs of
+     *         kinds that cannot spawn are left out
+     */
     static List<VendingCatalog.Offer> registeredOffers() {
         List<VendingCatalog.Offer> out = new ArrayList<>();
         for (VendingCatalog.Offer offer : VendingCatalog.build()) {
