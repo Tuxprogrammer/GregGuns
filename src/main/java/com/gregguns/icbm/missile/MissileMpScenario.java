@@ -192,6 +192,37 @@ public final class MissileMpScenario implements Scenario {
                         MissileShotsScenario.signal(p, "shot", "icbm-mp-impact");
                     }
                 });
+                plan.after(20, () -> {
+                    // I7: every client logs the crater as it sees it, so a session can compare them (cstate, dev only).
+                    out.note(String.format("impact near %d,%d,%d", (int) tx, gy, (int) tz));
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(
+                            p,
+                            "cstate",
+                            "icbm-mp-impact",
+                            String.valueOf((int) tx - 40),
+                            String.valueOf(gy - 30),
+                            String.valueOf((int) tz - 40),
+                            String.valueOf((int) tx + 40),
+                            String.valueOf(gy + 20),
+                            String.valueOf((int) tz + 40));
+                    }
+                });
+                plan.after(600, () -> {
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(p, "shot", "icbm-mp-later");
+                        MissileShotsScenario.signal(
+                            p,
+                            "cstate",
+                            "icbm-mp-later",
+                            String.valueOf((int) tx - 40),
+                            String.valueOf(gy - 30),
+                            String.valueOf((int) tz - 40),
+                            String.valueOf((int) tx + 40),
+                            String.valueOf(gy + 20),
+                            String.valueOf((int) tz + 40));
+                    }
+                });
             }
         });
         return ScenarioResult.pending(NAME, 6000, t -> {

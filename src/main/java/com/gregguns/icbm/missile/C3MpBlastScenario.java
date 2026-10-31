@@ -16,7 +16,6 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.IcbmAvailability;
-import com.gregguns.icbm.warhead.WarheadCasing;
 
 import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
 
@@ -37,7 +36,10 @@ public final class C3MpBlastScenario implements Scenario {
     private final int distance;
     private static final int STEP = 30;
 
-    /** Dev-only (C3 real-pack pass): the same two-client watch as mp_launch for a chosen warhead; T3 leaves by the entity path. */
+    /**
+     * Dev-only (C3 real-pack pass): the same two-client watch as mp_launch for a chosen warhead; T3 leaves by the
+     * entity path.
+     */
     C3MpBlastScenario(String name, MissileTier tier, int casingNo, String explosive, int fill, int distance) {
         this.name = name;
         this.tier = tier;
@@ -54,7 +56,10 @@ public final class C3MpBlastScenario implements Scenario {
 
     @Override
     public String description() {
-        return "C3 dev: two clients watch one " + tier + " " + explosive + " launch, flight and impact. Not part of test all.";
+        return "C3 dev: two clients watch one " + tier
+            + " "
+            + explosive
+            + " launch, flight and impact. Not part of test all.";
     }
 
     @Override
@@ -211,6 +216,37 @@ public final class C3MpBlastScenario implements Scenario {
                 plan.after(107, () -> {
                     for (EntityPlayerMP p : players) {
                         MissileShotsScenario.signal(p, "shot", "icbm-mp-impact");
+                    }
+                });
+                plan.after(20, () -> {
+                    // I7: every client logs the crater as it sees it, so a session can compare them (cstate, dev only).
+                    out.note(String.format("impact near %d,%d,%d", (int) tx, gy, (int) tz));
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(
+                            p,
+                            "cstate",
+                            "icbm-mp-impact",
+                            String.valueOf((int) tx - 40),
+                            String.valueOf(gy - 30),
+                            String.valueOf((int) tz - 40),
+                            String.valueOf((int) tx + 40),
+                            String.valueOf(gy + 20),
+                            String.valueOf((int) tz + 40));
+                    }
+                });
+                plan.after(600, () -> {
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(p, "shot", "icbm-mp-later");
+                        MissileShotsScenario.signal(
+                            p,
+                            "cstate",
+                            "icbm-mp-later",
+                            String.valueOf((int) tx - 40),
+                            String.valueOf(gy - 30),
+                            String.valueOf((int) tz - 40),
+                            String.valueOf((int) tx + 40),
+                            String.valueOf(gy + 20),
+                            String.valueOf((int) tz + 40));
                     }
                 });
             }
