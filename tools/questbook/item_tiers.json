@@ -27,5 +27,10 @@
   "gregtech:gt.metaitem.01@32724": "UV",
   "gregtech:gt.metaitem.01@17129": "UHV",
   "gregtech:gt.metaitem.01@32678": "UHV",
-  "gregtech:gt.metaitem.01@32688": "UHV"
+  "gregtech:gt.metaitem.01@32688": "UHV",
+  "gregtech:gt.metaitem.01@17316": "IV",
+  "gregguns:guidance_computer_mk3": "IV",
+  "gregguns:part_barrel_laser": "EV",
+  "gregtech:gt.metaitem.01@32606": "LuV",
+  "dreamcraft:HeavyDutyPlateTier4@0": "LuV"
 }

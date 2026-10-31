@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A warhead is built in steps, and the first is an empty one. The Inert T1 Warhead is a stainless steel casing with a Fuze Assembly Mk I wired into it. There is no explosive inside yet, so it is perfectly safe: it can\u0027t be placed, launched or set off, and a silo won\u0027t take it.\n\nThe Assembler makes it at HV from 4 stainless steel plates and a Fuze Assembly Mk I, on programmed circuit 2. Check NEI. Every heavier casing follows the same pattern at its own tier: titanium and a Mk II fuze at EV, then tungstensteel, naquadria and neutronium with a Mk III.\n\nFrom here you customize it. Fit a payload in the Assembler if you want a special blast, then load Plastic Explosive charges to make it live. A Tier 1 casing takes up to 5 charges.\n\n[note]An inert warhead looks like the real thing, only darker. Read the tooltip: it shows the payload and Charges: 0.[/note]",
+      "desc:8": "A warhead is built in steps, and the first is an empty one. The Inert T1 Warhead is the missile\u0027s nose: a Tier 1 rocket\u0027s nose cone and hull plating around a stainless steel casing, with a Fuze Assembly Mk I and the arming electronics wired into it. There is no explosive inside yet, so it is perfectly safe: it can\u0027t be placed, launched or set off, and a silo won\u0027t take it.\n\nThe Assembler makes it at HV, on programmed circuit 2, from 4 stainless steel plates, a Fuze Assembly Mk I, a Nose Cone, 12 Heavy Duty Plates, an HV Sensor, an HV Emitter and 2 Advanced circuits. Check NEI. The warhead is the expensive part of a missile. Every heavier casing follows the same pattern at its own tier, with that tier\u0027s rocket nose cone and hull: titanium and a Mk II fuze at EV, then tungstensteel, naquadria and neutronium with a Mk III.\n\nFrom here you customize it. Fit a payload in the Assembler if you want a special blast, then load Plastic Explosive charges to make it live. A Tier 1 casing takes up to 5 charges.\n\n[note]An inert warhead looks like the real thing, only darker. Read the tooltip: it shows the payload and Charges: 0.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -137,6 +137,18 @@
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:fuze_assembly_mk1"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.noseCone"
+        },
+        "3:10": {
+          "Count:3": 12,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.heavyPlating"
         }
       },
       "taskID:8": "bq_standard:optional_retrieval"

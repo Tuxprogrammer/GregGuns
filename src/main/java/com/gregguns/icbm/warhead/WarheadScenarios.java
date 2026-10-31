@@ -52,6 +52,7 @@ public final class WarheadScenarios {
             registry.register(new BlastType(blast));
         }
         registry.register(new BlockDamageOff());
+        BalanceScenarios.registerAll(registry);
         registry.register(new WarheadShotsScenario());
         WarheadChainScenarios.registerAll(registry);
         WarheadDearmScenarios.registerAll(registry);

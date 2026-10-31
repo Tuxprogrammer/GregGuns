@@ -595,9 +595,13 @@ public final class SiloPools {
         return tier <= 1 ? EV : tier == 2 ? IV : LUV;
     }
 
-    /** @return inert warhead parts, fuzes, liners, sleeves and launcher warheads; never a live warhead (D17) */
+    /**
+     * @return inert warhead parts, fuzes, liners, sleeves and launcher warheads; never a live warhead (D17). An inert
+     *         casing carries its rocket's nose cone and hull since D328, so the T1 casing weighs 1, as the others do
+     *         (D330)
+     */
     public static LootPools.Pool warheadparts() {
-        return new B(WARHEADPARTS).one(G + "inert_warhead_t1", 3, HV)
+        return new B(WARHEADPARTS).one(G + "inert_warhead_t1", 1, HV)
             .one(G + "inert_warhead_t2", 1, EV)
             .add(G + "plastic_explosive", 2, 8, 4, HV)
             .add(G + "fuze_assembly_mk1", 1, 2, 3, HV)

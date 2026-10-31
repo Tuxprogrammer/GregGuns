@@ -2,7 +2,7 @@
 
 - **ICBM baseline:** [missile-item](../../icbm-spec/03-missiles/index.md) (ICBM crafts a missile from one recipe; nothing here is ported)
 - **Design records:** [0018 §8](../../design/0018-icbm-program.md)
-- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D27](../DECISIONS.md), [D31](../DECISIONS.md#d31-in-detail), [D34](../DECISIONS.md), [D41](../DECISIONS.md), [D44](../DECISIONS.md), [D57](../DECISIONS.md), [D64](../DECISIONS.md), [D281](../DECISIONS.md)
+- **Decisions:** [D328, D329](../DECISIONS.md) (balance pass), [D8](../DECISIONS.md#d8-in-detail), [D27](../DECISIONS.md), [D31](../DECISIONS.md#d31-in-detail), [D34](../DECISIONS.md), [D41](../DECISIONS.md), [D44](../DECISIONS.md), [D57](../DECISIONS.md), [D64](../DECISIONS.md), [D281](../DECISIONS.md)
 - **Pack mods:** GregTech (Circuit Assembler, Laser Engraver, Assembler, Assembly Line from LuV), Galacticraft `3.4.34-GTNH` (`SchematicRegistry`, NASA Workbench)
 - **Roadmap:** [I2](../../ROADMAP-ICBM.md#i2--missiles-and-the-galacticraft-pad-t1t2)
 
@@ -36,7 +36,7 @@
 | Guidance computers accepted | Mk I (0 steps), Mk II (1), Mk III (2) | Mk II (0), Mk III (1) |
 | Machine body (guidance 0, D281) | Assembler, HV, 30 s, no research: plates + fins + engine + 2 Advanced circuits, 250 L lubricant | Assembler, EV, 45 s, no research: plates + fins + engine + 2 Data circuits, 250 L lubricant |
 | Guidance fit (Assembler) | HV, 15 s, circuit 1: body + Mk II (1 step) or Mk III (2 steps) | EV, 15 s, circuit 2: body + Mk III (1 step) |
-| Body cost, cheapest computer (D34 plate equivalents, D69) | 161 (test band 150 to 175) | 490 (band 460 to 520) |
+| Body cost, cheapest computer (in-code estimate, plate equivalents; measured in [Cost](#cost-d328)) | 161 (test band 150 to 175) | 490 (band 460 to 520) |
 
 **Tier rule (D1).** The dev self-check refuses a recipe whose GregGuns input is of a higher tier than its output. A better guidance computer than its body is the point of D24, so the three computers implement the marker `TierUpgrade` and the check skips them as inputs. Chips and schematics are one item per tier (`missile_chip_t1`, `missile_chip_t2`, and the same for schematics), each Tiered at its own voltage, so the Laser Engraver and Circuit Assembler rows pass the machine-voltage rule.
 
@@ -64,9 +64,17 @@ Three more `IcbmPart`s (the two engines were retired in D69: bodies take Galacti
 
 LuV chip (Multifiberglass board, 2 Master circuits, 8 platinum fine wire), a yellow-lens schematic, four compressed titanium plates, four Heavy Duty Rocket Fins Tier 3 and a Heavy Duty Rocket Engine Tier 3 (NewHorizonsCoreMod). The machine body is the one **Assembly Line** recipe of the missile chain: LuV, 60 s, the same parts plus 2 Master circuits and 250 L lubricant, behind a 180 s research scan of a hand-built T3 body at LuV. The only guidance computer is Mk III, below the body's tier, so a T3 body has no guidance steps. See [missile-silo](missile-silo.md).
 
-## Cost (D34, D63, D69)
+## Cost (D328)
 
-The target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". D69 builds the body from Galacticraft's own rocket parts, so the body is priced from the GTNH recipes for those parts (plate equivalents, an estimate): a compressed plate is 2 (plate plus implosion charge); a Tier 1 fin is 28 (2 compressed steel and 4 heavy-duty plates); the Tier 1 engine 38 (2 SDHD120 plates, 4 heavy-duty plates, a canister, a firebox casing, a detector); a Tier 2 fin 68; the Tier 2 engine 200 (2 Tier 1 engines, 2 boosters, 5 asteroid plates). **T1 body: 6 + 112 + 38 + 5 (Mk I computer) = 161. T2 body: 10 + 272 + 200 + 8 = 490.** A Galacticraft launch of the same tier needs the same engine, four of the same fins and a nose cone, so body plus fuel is about one launch (fuel adds a little, the cone is not in our body). The warhead stays the expensive part (D34). The machine body (Assembler or Assembly Line) pays the same parts, two circuits in place of the computer and 250 L of lubricant, so automation gives no discount. If the full-pack review finds it dear, trim the fins first (D63).
+The target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel" (0018 §5). The I7 balance pass measured it in the real pack: `/gregguns dumprecipes` on a GTNH 2.9.0-RC-2 server writes every recipe, GT's unification data and the NASA Workbench rocket pages, and `tools/icbm-balance/cost.py` prices each item by its cheapest recipe a player at the item's tier can run (only recipes at or below that voltage), down to GT materials in ingots, circuits by tier and fluids. **Units** = ingots + circuits (16 per HV circuit, doubling per tier: EV 32, IV 64, LuV 128) + 1 per 1,000 L + 4 per raw item. The reference is the rocket of the tier without its lander module, since a missile does not come back. The earlier estimates (161 and 490 plate equivalents, D69) were far off: the pack's rocket parts are built from compressed heavy duty plates and cost hundreds of ingots each.
+
+| | Ingots | Circuits | Units | Reference rocket (no lander), units | Body / rocket |
+|---|---|---|---|---|---|
+| Missile Body T1 (HV) | 377 | none | 407 | Tier 1 (HV), 799 | 0.51 |
+| Missile Body T2 (EV) | 882 | none | 1,081 | Tier 2 (EV), 2,264 | 0.48 |
+| Missile Body T3 (LuV) | 2,998 | 1 IV | 3,519 | Tier 4 (LuV), 5,082 | 0.69 |
+
+The parts: a Galacticraft Tier 1 engine is 131 units and a Tier 1 fin 66; the "Tier 2" engine (`itemBasicAsteroids` 1) 516 at EV and its fin 137; the Heavy Duty Rocket Engine Tier 3 2,093 at LuV and its fin 204. The machine body (Assembler or Assembly Line) pays the same parts, two circuits instead of the computer and 250 L of lubricant, so automation gives no discount. With the warhead (D328, [warheads-and-fill](../02-explosives/warheads-and-fill.md#cost-d328)), a missile costs 0.8 to 1.4 rockets of its tier and the warhead is about as costly as the body or more (0.7 to 1.6 at T1 and T2, up to 22 times at red matter). No body changed in the balance pass (D329): the T2 body's "Tier 2" parts are the pack's Tier 3 and 4 rocket parts, made with desh, so the first T2 missile needs a trip to Mars on the EV Tier 2 rocket; the T3 body's engine is a ZPM-rocket part that a LuV player can build. Fuel is not in the units: a missile burns one tank (2,000, 4,000 or 8,000 mB by tier), as a rocket burns its own.
 
 ## Recycling (D44)
 

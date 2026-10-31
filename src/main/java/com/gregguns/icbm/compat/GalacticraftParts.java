@@ -34,6 +34,38 @@ public final class GalacticraftParts {
     /** GTNH's Heavy Duty Rocket Fins Tier 3, the fins of the Tier 3 rocket. */
     public static final String FINS_T3 = "dreamcraft:HeavyDutyRocketFinsTier3@0";
 
+    /**
+     * The nose cones and hull plates of each tier's rocket, which a warhead casing of that tier takes (D328): the
+     * warhead is the missile's nose, so it carries the rocket's nose cone and its hull. The tier pairs follow the
+     * rockets of the pack's NASA Workbench pages: the Tier 1 rocket (HV) for T1, Tier 2 (EV) for T2, Tier 4 (LuV) for
+     * T3, Tier 6 (UV) for T4 and Tier 7 (UHV) for T5.
+     */
+    // Source: the recipe dump of the GTNH 2.9.0-RC-2 pack (GalaxySpace RocketRecipes, `/gregguns dumprecipes`): the
+    // Tier 1 rocket takes item.noseCone and 8 item.heavyPlating; Tier 2 item.null@3 (Heavy Duty Plate Tier 2); Tier 4
+    // item.heavyNoseCone and 12 HeavyDutyPlateTier4; Tier 6 HeavyDutyNoseConeTier3 and 12 HeavyDutyPlateTier6; Tier 7
+    // HeavyDutyNoseConeTier4 and 12 HeavyDutyPlateTier7.
+    public static final String NOSE_T1 = "GalacticraftCore:item.noseCone@0";
+    /** The Tier 1 rocket's hull plate, Galacticraft's Heavy Duty Plate. */
+    public static final String HULL_T1 = "GalacticraftCore:item.heavyPlating@0";
+    /** The heavy nose cone of the Tier 3 and Tier 4 rockets, which the T2 and T3 casings take. */
+    public static final String NOSE_HEAVY = "GalacticraftMars:item.heavyNoseCone@0";
+    /** The Tier 2 rocket's hull plate, Heavy Duty Plate Tier 2. */
+    public static final String HULL_T2 = "GalacticraftMars:item.null@3";
+    /** The Tier 4 rocket's hull plate (NewHorizonsCoreMod). */
+    public static final String HULL_T3 = "dreamcraft:HeavyDutyPlateTier4@0";
+    /** The Tier 5 and Tier 6 rockets' nose cone (NewHorizonsCoreMod). */
+    public static final String NOSE_T4 = "dreamcraft:HeavyDutyNoseConeTier3@0";
+    /** The Tier 6 rocket's hull plate (NewHorizonsCoreMod). */
+    public static final String HULL_T4 = "dreamcraft:HeavyDutyPlateTier6@0";
+    /** The Tier 7 and Tier 8 rockets' nose cone (NewHorizonsCoreMod). */
+    public static final String NOSE_T5 = "dreamcraft:HeavyDutyNoseConeTier4@0";
+    /** The Tier 7 rocket's hull plate (NewHorizonsCoreMod). */
+    public static final String HULL_T5 = "dreamcraft:HeavyDutyPlateTier7@0";
+    /**
+     * Galacticraft's reinforced plate (the Tier 3 rocket's hull), the dev stand-in for the NewHorizonsCoreMod hulls.
+     */
+    public static final String HULL_REINFORCED = "GalacticraftMars:item.itemBasicAsteroids@0";
+
     /** The unformed Galacticraft launch pad block (eight of the nine blocks of a pad; meta 0 is the rocket pad). */
     public static final String PAD = "GalacticraftCore:tile.landingPad";
     /** The 8 outer blocks of a formed pad: Galacticraft's multi-block dummy, meta 2 for a launch pad. */
@@ -46,8 +78,9 @@ public final class GalacticraftParts {
     private static boolean warned;
 
     /**
-     * The Tier 3 parts belong to NewHorizonsCoreMod, which every GTNH pack has but the GregGuns dev environment does
-     * not load. Without it the Tier 3 body is built from the Tier 2 parts, so the recipes, the bench and the scenarios
+     * The Tier 3 parts and the heavy casings' nose cones and hulls belong to NewHorizonsCoreMod, which every GTNH pack
+     * has but the GregGuns dev environment does not load. Without it the Tier 3 body is built from the Tier 2 parts and
+     * the casings from Galacticraft's heavy nose cone and reinforced plate, so the recipes, the bench and the scenarios
      * still exist in development. In a pack this returns the id unchanged.
      *
      * @param id a part id
@@ -66,11 +99,14 @@ public final class GalacticraftParts {
         if (present) {
             return id;
         }
-        String fallback = id.equals(ENGINE_T3) ? ENGINE_T2 : id.equals(FINS_T3) ? FINS_T2 : id;
+        String fallback = id.equals(ENGINE_T3) ? ENGINE_T2
+            : id.equals(FINS_T3) ? FINS_T2
+                : id.equals(NOSE_T4) || id.equals(NOSE_T5) ? NOSE_HEAVY
+                    : id.startsWith("dreamcraft:HeavyDutyPlateTier") ? HULL_REINFORCED : id;
         if (!fallback.equals(id) && !warned) {
             warned = true;
-            com.gregguns.GregGuns.LOG
-                .warn("NewHorizonsCoreMod (dreamcraft) is not loaded: building the Tier 3 body from Tier 2 parts");
+            com.gregguns.GregGuns.LOG.warn(
+                "NewHorizonsCoreMod (dreamcraft) is not loaded: building the Tier 3 body and heavy casings from Galacticraft parts");
         }
         return fallback;
     }

@@ -25,7 +25,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Tier 2 casing is titanium and holds up to 20 charges, four times the Tier 1 casing. The Assembler makes the Inert T2 Warhead at EV from 8 titanium plates and a Fuze Assembly Mk II. The Mk II fuze is itself an EV Assembler recipe from a Data circuit, a titanium plate and 4 fine electrum wires.\n\nA Tier 2 casing needs a payload before it takes charges: Fragmentation (a titanium Fragmentation Sleeve), Thermobaric (canisters of kerosene), Sonic, Breaching or Contagious, each fitted in the Assembler at EV. Then load 20 Plastic Explosive, in the Assembler or a few at a time in a crafting grid. Check NEI. Make a Tier 2 warhead.\n\n[warn]Tier 2 blasts reach much farther than Tier 1. Read the tooltip\u0027s radius before you place one.[/warn]",
+      "desc:8": "The Tier 2 casing is titanium and holds up to 20 charges, four times the Tier 1 casing. The Assembler makes the Inert T2 Warhead at EV from 8 titanium plates, a Fuze Assembly Mk II, a Heavy Nose Cone, 12 Heavy Duty Plates Tier 2, an EV Sensor, an EV Emitter and 2 Data circuits. The Mk II fuze is itself an EV Assembler recipe from a Data circuit, a titanium plate and 4 fine electrum wires.\n\nA Tier 2 casing needs a payload before it takes charges: Fragmentation (a titanium Fragmentation Sleeve), Thermobaric (canisters of kerosene), Sonic, Breaching or Contagious, each fitted in the Assembler at EV. Then load 20 Plastic Explosive, in the Assembler or a few at a time in a crafting grid. Check NEI. Make a Tier 2 warhead.\n\n[warn]Tier 2 blasts reach much farther than Tier 1. Read the tooltip\u0027s radius before you place one.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

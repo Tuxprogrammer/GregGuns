@@ -862,8 +862,8 @@
       "title": "Inert Warhead",
       "tier": "HV",
       "desc": [
-        "A warhead is built in steps, and the first is an empty one. The Inert T1 Warhead is a stainless steel casing with a Fuze Assembly Mk I wired into it. There is no explosive inside yet, so it is perfectly safe: it can't be placed, launched or set off, and a silo won't take it.",
-        "The Assembler makes it at HV from 4 stainless steel plates and a Fuze Assembly Mk I, on programmed circuit 2. Check NEI. Every heavier casing follows the same pattern at its own tier: titanium and a Mk II fuze at EV, then tungstensteel, naquadria and neutronium with a Mk III.",
+        "A warhead is built in steps, and the first is an empty one. The Inert T1 Warhead is the missile's nose: a Tier 1 rocket's nose cone and hull plating around a stainless steel casing, with a Fuze Assembly Mk I and the arming electronics wired into it. There is no explosive inside yet, so it is perfectly safe: it can't be placed, launched or set off, and a silo won't take it.",
+        "The Assembler makes it at HV, on programmed circuit 2, from 4 stainless steel plates, a Fuze Assembly Mk I, a Nose Cone, 12 Heavy Duty Plates, an HV Sensor, an HV Emitter and 2 Advanced circuits. Check NEI. The warhead is the expensive part of a missile. Every heavier casing follows the same pattern at its own tier, with that tier's rocket nose cone and hull: titanium and a Mk II fuze at EV, then tungstensteel, naquadria and neutronium with a Mk III.",
         "From here you customize it. Fit a payload in the Assembler if you want a special blast, then load Plastic Explosive charges to make it live. A Tier 1 casing takes up to 5 charges.",
         "[note]An inert warhead looks like the real thing, only darker. Read the tooltip: it shows the payload and Charges: 0.[/note]"
       ],
@@ -883,6 +883,16 @@
             {
               "id": "gregguns:fuze_assembly_mk1",
               "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "GalacticraftCore:item.noseCone",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "GalacticraftCore:item.heavyPlating",
+              "count": 12,
               "damage": 0
             }
           ]
@@ -1928,7 +1938,7 @@
           "type": "item",
           "items": [
             {
-              "bag": "ordnance2",
+              "bag": "ordnance3",
               "count": 1
             },
             {
@@ -1947,7 +1957,7 @@
           "type": "choice",
           "items": [
             {
-              "id": "gregguns:guidance_computer_mk3",
+              "id": "gregguns:fuze_assembly_mk3",
               "count": 2,
               "damage": 0
             },
@@ -1958,16 +1968,15 @@
               "ore": "circuitMaster"
             },
             {
-              "id": "GalacticraftMars:item.itemBasicAsteroids",
-              "count": 8,
-              "damage": 6,
-              "ore": "compressedTitanium"
+              "id": "dreamcraft:HeavyDutyPlateTier4",
+              "count": 12,
+              "damage": 0
             },
             {
               "id": "gregtech:gt.metaitem.01",
               "count": 16,
-              "damage": 17316,
-              "ore": "plateTungstenSteel"
+              "damage": 17372,
+              "ore": "plateHSSG"
             }
           ]
         }
@@ -2190,7 +2199,7 @@
       "title": "Titanium Casing",
       "tier": "EV",
       "desc": [
-        "The Tier 2 casing is titanium and holds up to 20 charges, four times the Tier 1 casing. The Assembler makes the Inert T2 Warhead at EV from 8 titanium plates and a Fuze Assembly Mk II. The Mk II fuze is itself an EV Assembler recipe from a Data circuit, a titanium plate and 4 fine electrum wires.",
+        "The Tier 2 casing is titanium and holds up to 20 charges, four times the Tier 1 casing. The Assembler makes the Inert T2 Warhead at EV from 8 titanium plates, a Fuze Assembly Mk II, a Heavy Nose Cone, 12 Heavy Duty Plates Tier 2, an EV Sensor, an EV Emitter and 2 Data circuits. The Mk II fuze is itself an EV Assembler recipe from a Data circuit, a titanium plate and 4 fine electrum wires.",
         "A Tier 2 casing needs a payload before it takes charges: Fragmentation (a titanium Fragmentation Sleeve), Thermobaric (canisters of kerosene), Sonic, Breaching or Contagious, each fitted in the Assembler at EV. Then load 20 Plastic Explosive, in the Assembler or a few at a time in a crafting grid. Check NEI. Make a Tier 2 warhead.",
         "[warn]Tier 2 blasts reach much farther than Tier 1. Read the tooltip's radius before you place one.[/warn]"
       ],
@@ -2863,7 +2872,7 @@
       "title": "Nuclear Warhead",
       "tier": "ZPM",
       "desc": [
-        "The nuclear warhead is a Tier 3 casing, two blocks tall. Start with an Inert T3 Warhead (the Assembler at LuV: 8 tungstensteel plates and a Fuze Assembly Mk III), fit the nuclear payload at ZPM (8 uranium-235 ingots and 4 plutonium ingots), then load 64 Plastic Explosive, its implosion lens. It flies only on a Tier 3 missile, from the silo. Check NEI.",
+        "The nuclear warhead is a Tier 3 casing, two blocks tall. Start with an Inert T3 Warhead (the Assembler at LuV: 8 tungstensteel plates, a Fuze Assembly Mk III, a Heavy Nose Cone, 12 Heavy Duty Plates Tier 4, a LuV Sensor, a LuV Emitter and 2 Master circuits), fit the nuclear payload at ZPM (8 uranium-235 ingots, 4 plutonium ingots and 2 ZPM Field Generators to hold the core), then load 64 Plastic Explosive, its implosion lens. It flies only on a Tier 3 missile, from the silo. Check NEI.",
         "A full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour.",
         "[warn]Cross the blast zone only in full hazmat armor, and stand well back from the launch target. There is no safe distance inside the inner radius.[/warn]"
       ],
@@ -3152,7 +3161,7 @@
       "title": "Antimatter",
       "tier": "UV",
       "desc": [
-        "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes the Inert T4 Warhead at UV from 8 naquadria plates and a Fuze Assembly Mk III, fits the antimatter payload at UV (2 UV Field Generators, a Quantum Eye and 4 plutonium-241 ingots), and fills it with 128 Plastic Explosive. Check NEI.",
+        "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes the Inert T4 Warhead at UV from 8 naquadria plates, a Fuze Assembly Mk III, a Heavy Duty Nose Cone Tier 3, 12 Heavy Duty Plates Tier 6, a UV Sensor, a UV Emitter and 2 UV circuits, fits the antimatter payload at UV (2 UV Field Generators, a Quantum Eye and 4 plutonium-241 ingots), and fills it with 128 Plastic Explosive. Check NEI.",
         "A full warhead blasts 80 blocks, and nothing living in the inner 48 survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.",
         "[warn]Bosses are not safe and neither are you. Launch it from far away.[/warn]"
       ],
@@ -3238,7 +3247,7 @@
       "title": "Red Matter",
       "tier": "UHV",
       "desc": [
-        "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes the Inert T5 Warhead at UHV from 8 neutronium plates and a Fuze Assembly Mk III, fits the red matter payload at UHV (2 UHV Field Generators, 2 Quantum Eyes and 2 UHV Emitters), and fills it with 128 Plastic Explosive. Check NEI.",
+        "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes the Inert T5 Warhead at UHV from 8 neutronium plates, a Fuze Assembly Mk III, a Heavy Duty Nose Cone Tier 4, 12 Heavy Duty Plates Tier 7, a UHV Sensor, a UHV Emitter and 2 UHV circuits, fits the red matter payload at UHV (2 UHV Field Generators, 2 Quantum Eyes and 2 UHV Emitters), and fills it with 128 Plastic Explosive. Check NEI.",
         "It digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. An Antimatter blast ends it at once. Make one.",
         "[warn]Nothing inside the ball survives. Keep an Antimatter warhead ready if you ever need to stop one.[/warn]"
       ],
@@ -3378,7 +3387,7 @@
           "type": "item",
           "items": [
             {
-              "bag": "ordnance2",
+              "bag": "ordnance3",
               "count": 1
             },
             {
@@ -3415,8 +3424,8 @@
             {
               "id": "gregtech:gt.metaitem.01",
               "count": 16,
-              "damage": 17316,
-              "ore": "plateTungstenSteel"
+              "damage": 17372,
+              "ore": "plateHSSG"
             }
           ]
         }
@@ -3489,7 +3498,7 @@
           "type": "item",
           "items": [
             {
-              "bag": "ordnance2",
+              "bag": "ordnance3",
               "count": 1
             },
             {
@@ -3526,8 +3535,8 @@
             {
               "id": "gregtech:gt.metaitem.01",
               "count": 16,
-              "damage": 17316,
-              "ore": "plateTungstenSteel"
+              "damage": 17372,
+              "ore": "plateHSSG"
             }
           ]
         }

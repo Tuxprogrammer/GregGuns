@@ -2,7 +2,7 @@
 
 - **ICBM baseline:** [explosive-registry](../../icbm-spec/02-explosives/explosive-registry.md) (catalog and tiers), [explosive-block](../../icbm-spec/02-explosives/explosive-block.md) (the block item and its NBT). ICBM 2's modular warhead sizes (1/5/20/64/128) are in the ICBM 2 appendix.
 - **Design records:** [0018 §5-8](../../design/0018-icbm-program.md), [0001 tier map](../../design/0001-tier-map.md)
-- **Decisions:** [D5](../DECISIONS.md#decided), [D56, D57](../DECISIONS.md#decided), [D282](../DECISIONS.md#decided) (the warhead chain), [D283](../DECISIONS.md#decided) (de-arming), [D20](../DECISIONS.md#d20-in-detail), [D23](../DECISIONS.md#d23-in-detail), [D34](../DECISIONS.md#decided), [D41](../DECISIONS.md#decided), [D44](../DECISIONS.md#decided)
+- **Decisions:** [D5](../DECISIONS.md#decided), [D56, D57](../DECISIONS.md#decided), [D282](../DECISIONS.md#decided) (the warhead chain), [D283](../DECISIONS.md#decided) (de-arming), [D328](../DECISIONS.md) (the balance pass), [D20](../DECISIONS.md#d20-in-detail), [D23](../DECISIONS.md#d23-in-detail), [D34](../DECISIONS.md#decided), [D41](../DECISIONS.md#decided), [D44](../DECISIONS.md#decided)
 - **Pack mods:** GregTech (`gregtech`, 5.09.54.205): recipe maps, `TierEU`, `GTOreDictUnificator`; NotEnoughItems for recipe display
 - **Roadmap:** [I1](../../ROADMAP-ICBM.md#i1--warheads-and-the-blast-engine); extended in I3 (T3, nuclear) and I5 (antimatter, red matter)
 
@@ -47,7 +47,7 @@ Every step of the chain runs backwards, so a warhead can be repurposed or taken 
 | 1. Unload charges | crafting grid | one live warhead and a **Defuse Kit**, nothing else | the same warhead with up to 8 fewer charges, or, once the last charge is out, the inert warhead with the payload it was built with (bare for Condensed). The charges go to the player's inventory (dropped at their feet when it is full) | none; the kit loses one use per craft |
 | 1. Unload charges (bulk) | Cutting Machine, the blast's voltage | one **full** warhead (NBT-exact) | the inert warhead with its payload, and the full casing of Plastic Explosive (5, 20, 64, 128 or 128; 128 as two stacks) | the cutting fluid |
 | 2. Remove the payload | Cutting Machine, the blast's voltage | one inert warhead with that payload (NBT-exact) | the bare inert warhead and every item of the payload recipe at its count (the sleeve, canisters, field generators, fissile core, dishes, and the mustard seeds when HarvestCraft gave them) | the payload's fluid (nitrous oxide, ammonia, creosote, kerosene, helium, biomass) and the cutting fluid |
-| 3. Scrap the casing | Cutting Machine, the casing's voltage | one bare inert warhead (NBT-exact, no tag) | its casing plates and its Fuze Assembly | the cutting fluid |
+| 3. Scrap the casing | Cutting Machine, the casing's voltage | one bare inert warhead (NBT-exact, no tag) | its casing plates, its Fuze Assembly, its nose cone and its hull plates | the cutting fluid and the arming electronics (sensor, emitter, circuits; D328) |
 | (GT default) | Macerator, Arc Furnace | a live or inert warhead | the casing metal and the fuze's metal, from GT recycling data (D44) | charges, payload and fluid |
 
 - **Partial unloads mirror loading.** A grid load adds 1 to 8 charges; a grid unload takes out up to 8 (all of them when 8 or fewer remain). A Thermobaric T2 warhead with 20 charges unloads to 12, then 4, then the inert Thermobaric casing. To get an exact smaller fill, unload and load again: both directions are lossless. A partly filled warhead never matches the Cutting Machine's full-warhead recipe; the grid handles it.
@@ -123,12 +123,12 @@ Decisions: D56 (realistic, pack-made inputs), D57 (the parts) and D282 (the chai
 
 | Step | Inputs | Circuit | Output | Time |
 |---|---|---|---|---|
-| Inert warhead | the casing plates (4 stainless steel for T1; 8 titanium, tungstensteel, naquadria or neutronium for T2 to T5) and the casing's Fuze Assembly (Mk I, Mk II, then Mk III for T3 to T5) | 2 | Inert T*n* Warhead | 400 ticks |
+| Inert warhead | the casing plates (4 stainless steel for T1; 8 titanium, tungstensteel, naquadria or neutronium for T2 to T5), the casing's Fuze Assembly (Mk I, Mk II, then Mk III for T3 to T5), the nose cone and 12 hull plates of the rocket of the casing's tier, and the arming electronics: a Sensor, an Emitter and 2 circuits of the casing's tier (D328, table below) | 2 | Inert T*n* Warhead | 400 ticks |
 | Payload | one bare Inert T*n* Warhead and the payload (table below) | the blast's | Inert *Blast* T*n* Warhead | 400 ticks |
 | Fill (full) | one Inert *Blast* T*n* Warhead (bare T1 for Condensed) and a full casing of Plastic Explosive (5, 20, 64, 128 or 128; past 64 in two stacks) | the blast's | the live warhead, full | 200 ticks |
 | Fill (any amount) | crafting grid: one inert or live warhead and 1 to 8 Plastic Explosive | none | the live warhead with that many more charges | n/a |
 | Unload (any amount) | crafting grid: one live warhead and a Defuse Kit | none | the warhead with up to 8 fewer charges (inert with its payload once empty), and the charges | n/a |
-| Unload (full), payload out, scrap | Cutting Machine (see [De-arming](#de-arming-d283)) | none | the inverse of the fill, payload and inert warhead steps | 200 ticks (400 with water) |
+| Unload (full), payload out, scrap | Cutting Machine (see [De-arming](#de-arming-d283)) | none | the inverse of the fill, payload and inert warhead steps (the scrap step spends the arming electronics) | 200 ticks (400 with water) |
 
 ### The parts
 
@@ -152,39 +152,79 @@ The Fuze Assembly Mk III (LuV: a Master circuit, a tungstensteel plate and four 
 
 ### The payloads
 
-| Blast | Tier | Circuit | Payload (besides the inert warhead) | Full warhead cost (plate eq.) |
+| Blast | Tier | Circuit | Payload (besides the inert warhead) | Full warhead, in-code estimate (plate eq.) |
 |---|---|---|---|---|
-| Condensed | HV | 1 | none: Plastic Explosive alone | 14.5 |
-| Shrapnel | HV | 3 | 1 Fragmentation Sleeve (Steel) | 18.5 |
-| Anvil | HV | 4 | 12 lead plates | 20.5 |
-| Incendiary | HV | 5 | 2 Napalm Canisters | 21.5 |
-| Debilitation | HV | 6 | 2 Dispersal Canisters, 2,000 L nitrous oxide | 20.5 |
-| Chemical | HV | 7 | 2 Dispersal Canisters, 2,000 L ammonia gas, 4 HarvestCraft mustard seeds (only when HarvestCraft is loaded) | 20.5 |
-| Smoke | HV | 8 | 2 Dispersal Canisters, 8 coal dust, 2,000 L creosote | 22.1 |
-| Repulsive | HV | 9 | 1 Field Generator (HV) | 22.5 |
-| Attractive | HV | 10 | 1 Field Generator (HV), 4 magnetic steel rods | 24.5 |
-| Fragmentation | EV | 19 | 1 Fragmentation Sleeve (Titanium) | 45 |
-| Thermobaric | EV | 24 | 2 Dispersal Canisters, 4,000 L GT++ kerosene | 45 |
-| Sonic | EV | 21 | 2 Emitters (EV) | 50 |
-| Breaching | EV | 22 | 2 Liner Cones, 6 titanium rods | 46 |
-| Contagious | EV | 23 | 4 Escherichia (rotten-flesh) petri dishes from the Bio Lab, 2,000 L biomass | 51 |
-| Exothermic | LuV | 1 | 4 Napalm Canisters, 8,000 L kerosene | 108 |
-| Endothermic | LuV | 2 | 4 Dispersal Canisters, 8,000 L helium | 104 |
-| Nuclear | ZPM | 3 | 8 uranium-235 ingots, 4 plutonium ingots (the charges are its implosion lens) | 170 |
-| EMP | LuV | 4 | 2 Field Generators (LuV), 2 Emitters (LuV) | 134 |
-| Ender | LuV | 5 | 1 Emitter (LuV), 16 Eyes of Ender | 132 |
-| Anti-gravitational | LuV | 6 | 2 Field Generators (LuV), 4 Nether Stars | 138 |
-| [Antimatter](antimatter.md) | UV | 1 | 2 Field Generators (UV), 1 Quantum Eye, 4 plutonium-241 ingots | 256 |
-| [Red matter](red-matter.md) | UHV | 2 | 2 Field Generators (UHV), 2 Quantum Eyes, 2 Emitters (UHV) | 315 |
+| Condensed | HV | 1 | none: Plastic Explosive alone | 269.5 |
+| Shrapnel | HV | 3 | 1 Fragmentation Sleeve (Steel) | 273.5 |
+| Anvil | HV | 4 | 12 lead plates | 275.5 |
+| Incendiary | HV | 5 | 2 Napalm Canisters | 276.5 |
+| Debilitation | HV | 6 | 2 Dispersal Canisters, 2,000 L nitrous oxide | 275.5 |
+| Chemical | HV | 7 | 2 Dispersal Canisters, 2,000 L ammonia gas, 4 HarvestCraft mustard seeds (only when HarvestCraft is loaded) | 275.5 |
+| Smoke | HV | 8 | 2 Dispersal Canisters, 8 coal dust, 2,000 L creosote | 277.1 |
+| Repulsive | HV | 9 | 1 Field Generator (HV) | 277.5 |
+| Attractive | HV | 10 | 1 Field Generator (HV), 4 magnetic steel rods | 279.5 |
+| Fragmentation | EV | 19 | 1 Fragmentation Sleeve (Titanium) | 502 |
+| Thermobaric | EV | 24 | 2 Dispersal Canisters, 4,000 L GT++ kerosene | 502 |
+| Sonic | EV | 21 | 2 Emitters (EV) | 507 |
+| Breaching | EV | 22 | 2 Liner Cones, 6 titanium rods | 503 |
+| Contagious | EV | 23 | 4 Escherichia (rotten-flesh) petri dishes from the Bio Lab, 2,000 L biomass | 508 |
+| Exothermic | LuV | 1 | 4 Napalm Canisters, 8,000 L kerosene | 483.4 |
+| Endothermic | LuV | 2 | 4 Dispersal Canisters, 8,000 L helium | 479.4 |
+| Nuclear | ZPM | 3 | 8 uranium-235 ingots, 4 plutonium ingots, 2 ZPM Field Generators to hold the core (the charges are its implosion lens) | 605.4 |
+| EMP | LuV | 4 | 2 Field Generators (LuV), 2 Emitters (LuV) | 509.4 |
+| Ender | LuV | 5 | 1 Emitter (LuV), 16 Eyes of Ender | 507.4 |
+| Anti-gravitational | LuV | 6 | 2 Field Generators (LuV), 4 Nether Stars | 513.4 |
+| [Antimatter](antimatter.md) | UV | 1 | 2 Field Generators (UV), 1 Quantum Eye, 4 plutonium-241 ingots | 976.8 |
+| [Red matter](red-matter.md) | UHV | 2 | 2 Field Generators (UHV), 2 Quantum Eyes, 2 Emitters (UHV) | 1,237.8 |
 
 - **Circuits.** The T1 and T2 payload and fill recipes share the circuit space with the inert warhead (2) and the parts (11 to 18). The T3, T4 and T5 recipes take inert warheads that no other recipe has, so their circuits only differ among themselves. A payload recipe and the fill recipe of the same blast share a circuit: one takes payload materials and the other takes Plastic Explosive, so they never match each other's inputs.
 - **Gas-effect fills are general industrial pack fluids, chosen by in-game theme** (D56 amended): nitrous oxide, ammonia, creosote, biomass and kerosene, held in Dispersal Canisters. No chemical-warfare agent is used or named anywhere. The mustard seeds are a pun and nothing more: the item is HarvestCraft's `harvestcraft:mustardseedsItem` ("Mustard Seeds"); the recipe omits them when the mod is not loaded.
 - **Item names** checked in the pack source: `ItemList.Field_Generator_HV` and `Emitter_EV` (GT5-Unofficial 5.09.54.205 `ItemList`, used by the machine recipes in `MTERecipeLoader`; the parts' own recipes live in the pack's scripts), the `circuit` prefix with the material `Data` (the repo's tables use it already), and `BioCultureLoader.rottenFleshBacteria` with `BioCultureEnum.getPetriDish`.
 - **The payload recipe is not NBT-sensitive.** The Bio Lab's petri dish carries NBT. Because of that, an inert warhead that already has a payload can be refitted, and the old payload is lost. The fill recipe is NBT-sensitive. GT's `nbtSensitive` matching compares the item, damage and the whole tag (`GTRecipe.RecipeItemInput.matchesRecipe`). Inputs of the same item are summed across slots, so 128 charges can sit in two stacks.
-- **Cost (D34).** A full warhead costs the inert warhead (casing plates and fuze), plus the payload, plus a full casing of Plastic Explosive at 1.1 each. The comparison is an estimate: the pack's rocket recipes live in the GTNH scripts, which this repository does not carry. GTNH's tier 1 and tier 2 rockets have a nose cone, an engine, fins, a stack of tier heavy-duty plates, a chip, and fuel worth several buckets. That comes to about 15 to 25 plate-equivalents of HV-class materials for a T1 rocket (call it 20), and about 1.5 to 2 times that at EV for T2 (call it 27). Weights, in plate equivalents: plate 1, Plastic Explosive 1.1, Fuze Mk I 5, Mk II 8 and Mk III 12, Steel and Titanium Sleeves 4 and 7, Dispersal Canister 2.5, Napalm Canister 3.5, Field Generator 8, Emitter 6, a petri dish 3, and 1 per 2,000 L of fluid. `WarheadRecipeSpecTest` holds the bands: T1 14 to 26 (about one T1 launch), T2 38 to 52 (about one and a half to two T2 launches), T3 90 to 180, and T4 and T5 100 to 400. If the pack's real rocket costs turn out higher, scale the casing constants `T1_PLATES` to `T5_PLATES` in `WarheadRecipes` (the recycling data follows them) or the payload counts in `WarheadRecipeSpec`.
+- **Cost (D328).** A full warhead costs the inert warhead (casing plates, fuze, the rocket's nose cone and hull, the arming electronics), plus the payload, plus a full casing of Plastic Explosive. The measured numbers are in [Cost (D328)](#cost-d328) below. The last column of the payload table is the in-code estimate (`WarheadRecipeSpec.cost`, plate equivalents: about ingots, with electronics counted low); `WarheadRecipeSpecTest` holds it in bands (T1 260 to 290, T2 495 to 515, T3 475 to 620, T4 and T5 950 to 1,250) to guard the data against an accidental change.
 - **Tier ladder.** The explosive climbs with the casing through the charge count: 5, 20, 64, then 128 Plastic Explosive, each made from Industrial TNT and PTFE. The payloads climb from steel to titanium to tungstensteel-era field generators and exotics.
 - GT recycling data (D44, D283): each live warhead and each inert warhead recycles into its casing plates and its Fuze Assembly's metal; a fitted inert warhead recycles the same, so its payload is lost. Each part recycles into its metal and plastic. Explosives and fluids are lost. The Cutting Machine's de-arm is the lossless way back.
 - NEI: every machine step is an Assembler recipe, so NEI shows each one with its programmed circuit and its fluid, and NEI can follow the chain from the inert warhead to the live warhead. The crafting-grid load is a custom recipe and is not listed in NEI (as for the launcher warheads, D150). The inert warhead's tooltip explains it.
+
+## Cost (D328)
+
+Measured in the real GTNH 2.9.0-RC-2 pack by `tools/icbm-balance/cost.py` over the server's recipe dump: each item priced by its cheapest recipe at the warhead's own tier (nuclear at ZPM), in units = ingots + circuits (HV 16, doubling per tier) + 1 per 1,000 L + 4 per raw item. See [build-and-recipes](../03-missiles/build-and-recipes.md#cost-d328) for the bodies and the rockets.
+
+| Full warhead | Before: ingots | Before: units | After: ingots | After: circuits | After: units |
+|---|---|---|---|---|---|
+| condensed T1 | 14 | 31 | 260 | 6 HV | 371 |
+| shrapnel T1 | 16 | 34 | 263 | 6 HV | 374 |
+| anvil T1 | 26 | 43 | 272 | 6 HV | 383 |
+| incendiary T1 | 17 | 36 | 263 | 6 HV | 377 |
+| debilitation T1 | 17 | 36 | 263 | 6 HV | 377 |
+| chemical T1 | 17 | 52 | 263 | 6 HV | 393 |
+| smoke T1 | 25 | 44 | 271 | 6 HV | 385 |
+| repulsive T1 | 19 | 292 | 265 | 6 HV, 4 IV | 633 |
+| attractive T1 | 21 | 294 | 267 | 6 HV, 4 IV | 635 |
+| fragmentation T2 | 45 | 81 | 483 | 6 EV | 743 |
+| thermobaric T2 | 46 | 86 | 484 | 6 EV | 748 |
+| sonic T2 | 50 | 215 | 488 | 10 EV | 877 |
+| breaching T2 | 47 | 84 | 485 | 6 EV | 745 |
+| contagious T2 | 63 | 102 | 501 | 6 EV | 763 |
+| exothermic T3 | 120 | 275 | 1,496 | 11 LuV | 3,103 |
+| endothermic T3 | 120 | 271 | 1,496 | 11 LuV | 3,099 |
+| nuclear T3 (ZPM) | 126 | 268 | 2,560 | 11 LuV, 32 ZPM, 8 UV | 16,473 |
+| EMP T3 | 1,044 | 8,374 | 2,419 | 51 LuV, 8 ZPM | 11,202 |
+| ender T3 | 212 | 868 | 1,588 | 15 LuV | 3,697 |
+| anti-gravitational T3 | 882 | 7,185 | 2,257 | 43 LuV, 8 ZPM | 10,013 |
+| antimatter T4 | 1,899 | 26,693 | 5,393 | 1 LuV, 42 UV, 8 UHV | 35,795 |
+| red matter T5 | 3,147 | 60,798 | 8,727 | 1 LuV, 50 UHV, 8 UEV | 77,348 |
+
+| Missile (body + full warhead) | Reference rocket, no lander | Before: missile / rocket | After: missile / rocket | After: warhead / body |
+|---|---|---|---|---|
+| T1 conventional | Tier 1 (HV), 799 | 0.55 - 0.88 | 0.97 - 1.30 | 0.91 - 1.56 |
+| T2 conventional | Tier 2 (EV), 2,264 | 0.51 - 0.57 | 0.81 - 0.86 | 0.69 - 0.81 |
+| T3 conventional | Tier 4 (LuV), 5,082 | 0.75 - 2.34 | 1.30 - 2.90 | 0.88 - 3.18 |
+| Nuclear | Tier 5 (ZPM), 20,874 | 0.18 | 0.96 | 4.68 |
+| Antimatter | Tier 6 (UV), 27,988 | 1.08 | 1.40 | 10.17 |
+| Red matter | Tier 7 (UHV), 84,284 | 0.76 | 0.96 | 21.98 |
+
+The targets (0018 §5, D328): a missile costs about one rocket of its tier (the band is 0.8 to 1.4 for the cheapest warhead of each tier; the special blasts cost more and are balanced on their effect), the warhead is the expensive part (at least 0.7 of its body; the T2 body is dear because it takes Tier 3 and 4 rocket parts, D329), and the cheapest warhead at least doubles each step: 371, 743, 3,099, 16,473, 35,795, 77,348. The EMP and anti-gravitational warheads are dear because their LuV Field Generators are.
 
 ## Requirements
 
@@ -199,7 +239,7 @@ The Fuze Assembly Mk III (LuV: a Master circuit, a tungstensteel plate and four 
 - GGS-ICBM-02-09 (D282): an inert warhead cannot be placed, a silo does not mate it, and a warhead made by the chain arms into a missile that carries its explosive.
 - GGS-ICBM-02-38 (D283): a crafting grid of one live warhead and one Defuse Kit gives the warhead with `min(8, fill)` fewer charges, or the inert warhead with its payload (bare for Condensed) once empty, and hands exactly those charges to the player; the kit stays in the grid one use down and breaks after its last use.
 - GGS-ICBM-02-39 (D283): the grid unload refuses a missing kit, two kits, two warheads, an inert warhead, any other item, a warhead with no `explosive` or `fill` tag, and an explosive its casing cannot carry.
-- GGS-ICBM-02-40 (D283): the Cutting Machine, at the build step's voltage and not one tier below, empties a full warhead into its inert warhead and its charges, takes a payload out into the bare inert warhead and the payload recipe's items, and scraps a bare inert warhead into its plates and fuze; every input is NBT-exact, so a partial warhead or a bare casing matches no fuller recipe.
+- GGS-ICBM-02-40 (D283): the Cutting Machine, at the build step's voltage and not one tier below, empties a full warhead into its inert warhead and its charges, takes a payload out into the bare inert warhead and the payload recipe's items, and scraps a bare inert warhead into its plates, fuze, nose cone and hull plates (the Cutting Machine has four outputs; the arming electronics are spent, D328); every input is NBT-exact, so a partial warhead or a bare casing matches no fuller recipe.
 - GGS-ICBM-02-41 (D283): a build followed by a de-arm, through any sequence of grid loads, returns every item and charge that went in; only the payload's fluid and the cutting fluid are spent.
 - GGS-ICBM-02-18 (D282): no warhead payload takes TNT, dynamite, Industrial TNT, Plastic Explosive or a fuze, and no launcher warhead takes vanilla TNT, Industrial TNT or dynamite alongside Plastic Explosive.
 

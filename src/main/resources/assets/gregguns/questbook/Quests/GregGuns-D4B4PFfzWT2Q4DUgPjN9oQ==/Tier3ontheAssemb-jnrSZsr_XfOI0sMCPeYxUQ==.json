@@ -70,7 +70,7 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 1711,
+          "Damage:2": 1712,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
         },
@@ -94,7 +94,7 @@
           "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:guidance_computer_mk3"
+          "id:8": "gregguns:fuze_assembly_mk3"
         },
         "1:10": {
           "Count:3": 2,
@@ -103,15 +103,15 @@
           "id:8": "gregtech:gt.metaitem.01"
         },
         "2:10": {
-          "Count:3": 8,
-          "Damage:2": 6,
-          "OreDict:8": "compressedTitanium",
-          "id:8": "GalacticraftMars:item.itemBasicAsteroids"
+          "Count:3": 12,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "dreamcraft:HeavyDutyPlateTier4"
         },
         "3:10": {
           "Count:3": 16,
-          "Damage:2": 17316,
-          "OreDict:8": "plateTungstenSteel",
+          "Damage:2": 17372,
+          "OreDict:8": "plateHSSG",
           "id:8": "gregtech:gt.metaitem.01"
         }
       },

@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes the Inert T5 Warhead at UHV from 8 neutronium plates and a Fuze Assembly Mk III, fits the red matter payload at UHV (2 UHV Field Generators, 2 Quantum Eyes and 2 UHV Emitters), and fills it with 128 Plastic Explosive. Check NEI.\n\nIt digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. An Antimatter blast ends it at once. Make one.\n\n[warn]Nothing inside the ball survives. Keep an Antimatter warhead ready if you ever need to stop one.[/warn]",
+      "desc:8": "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes the Inert T5 Warhead at UHV from 8 neutronium plates, a Fuze Assembly Mk III, a Heavy Duty Nose Cone Tier 4, 12 Heavy Duty Plates Tier 7, a UHV Sensor, a UHV Emitter and 2 UHV circuits, fits the red matter payload at UHV (2 UHV Field Generators, 2 Quantum Eyes and 2 UHV Emitters), and fills it with 128 Plastic Explosive. Check NEI.\n\nIt digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. An Antimatter blast ends it at once. Make one.\n\n[warn]Nothing inside the ball survives. Keep an Antimatter warhead ready if you ever need to stop one.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

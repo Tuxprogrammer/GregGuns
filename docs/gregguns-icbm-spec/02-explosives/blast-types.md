@@ -2,7 +2,7 @@
 
 - **ICBM baseline:** [blast-types](../../icbm-spec/02-explosives/blast-types.md), [gas-and-status](../../icbm-spec/02-explosives/gas-and-status.md), [explosive-registry](../../icbm-spec/02-explosives/explosive-registry.md) §3
 - **Design records:** [0018 §5-7](../../design/0018-icbm-program.md)
-- **Decisions:** [D10](../DECISIONS.md#d10-in-detail), [D11](../DECISIONS.md#decided), [D12](../DECISIONS.md#decided), [D34](../DECISIONS.md#decided)
+- **Decisions:** [D10](../DECISIONS.md#d10-in-detail), [D11](../DECISIONS.md#decided), [D12](../DECISIONS.md#decided), [D34](../DECISIONS.md#decided), [D328](../DECISIONS.md)
 - **Pack mods:** GregGuns pipeline (`ExplosionRules`, `BlockBreakGuard`, `ExplosionEvent.Detonate`); no pack mod
 - **Roadmap:** [I1](../../ROADMAP-ICBM.md#i1--warheads-and-the-blast-engine) (T1 and T2); T3 and up in I3 and I5
 
@@ -69,10 +69,28 @@ Casing T3 (LuV to ZPM, fill cap 64). Radius and damage are at a full casing; the
 | ender | T3 (LuV) | none | 24 | none | pulls living things for 8 s; those that reach the middle are sent to one landing spot, see below |
 | anti-gravitational | T3 (LuV) | none (blocks are lifted, not destroyed) | 20 | none | lifts up to 512 plain blocks as flying blocks and floats living things, see below |
 
-Payloads (D282; the explosive is always the Plastic Explosive charges, 64 to a full T3 casing): exothermic is four Napalm Canisters and kerosene; endothermic is four Dispersal Canisters and helium; nuclear is a core of eight uranium-235 and four plutonium ingots, with the charges as its implosion lens. Ender is a LuV Emitter and sixteen Eyes of Ender; anti-gravitational is two LuV Field Generators and four Nether Stars. EMP shipped in I4.
+Payloads (D282; the explosive is always the Plastic Explosive charges, 64 to a full T3 casing): exothermic is four Napalm Canisters and kerosene; endothermic is four Dispersal Canisters and helium; nuclear is a core of eight uranium-235 and four plutonium ingots held in two ZPM Field Generators (D328), with the charges as its implosion lens. Ender is a LuV Emitter and sixteen Eyes of Ender; anti-gravitational is two LuV Field Generators and four Nether Stars. EMP shipped in I4.
 
 - **Damage targets (D34):** the damaging T1 types deal at least 1,200 at ground zero at full fill, and T2 at least 3,000, before armor. The unit test `WarheadBlastTest` pins the numbers, and scenario `icbm.blast.condensed` (and the T2 ones) kills a target in the zone. Partial fills deal `D * sqrt(fill / cap)`.
 - **Special types** (gas, fire, push, sonic, breaching, smoke) are balanced on their own effect, not on the damage table (0018 §6).
+
+### Balance pass: measured damage (I7, D328)
+
+Measured on a real GTNH 2.9.0-RC-2 server (every pack mod loaded, Infernal Mobs included) by the scenarios `icbm.balance.damage_<type>` and `icbm.balance.kill_zone_<type>`: a full warhead set off at the feet of a mob with 100,000 health, a second mob at half the radius, terrain damage off. The health each mob lost is the damage the blast dealt after every handler in the pack.
+
+| Type | Fill | Radius | Center damage, measured | Target (0018 §6) | At half the radius, measured (ramp) |
+|---|---|---|---|---|---|
+| condensed | 5 | 9.0 | 1,200 | 1,200 | 741 at 4 blocks (741) |
+| shrapnel | 5 | 10.0 | 1,200 | 1,200 | 667 at 5 blocks (667) |
+| anvil | 5 | 8.0 | 1,200 | 1,200 | 666 at 4 blocks (667) |
+| fragmentation | 20 | 14.0 | 3,000 | 3,000 | 1,667 at 7 blocks (1,667) |
+| thermobaric | 20 | 20.0 | 3,000 | 3,000 | 1,667 at 10 blocks (1,667) |
+| exothermic | 64 | 28.0 | 8,000 | 8,000 | 4,444 at 14 blocks (4,444) |
+| endothermic | 64 | 28.0 | 8,000 | 8,000 | 4,444 at 14 blocks (4,444) |
+| nuclear | 1 | 16.0 | kill zone: a Wither and the 100,000-health mob die | everything dies | |
+| antimatter | 1 | 15.9 | kill zone: a Wither and the 100,000-health mob die | everything dies | |
+
+Every target is met exactly at full fill, and nothing in the pack reduces the blast's damage (no mod handler cuts it; the measured ramp matches `DamageRamp` within 1). No damage number changed in the balance pass: before and after are the same. Red matter's kill is its own body's (D132), covered by `icbm.redmatter.lifecycle`. Two limits are left as designed: a partial fill deals `D * sqrt(fill / cap)`, so a T1 warhead with one charge deals 537; and an Infernal mob with the Bulwark modifier halves the damage it takes, so a Bulwark mini-boss of about 2,700 health survives a T2 hit at ground zero. The target is set before armor and modifiers (0018 §6).
 - **Thermobaric** is a plain crater here; ICBM's threaded thermobaric energy model is a later refinement if play shows the need.
 - **Dropped:** colors gas.
 
@@ -113,11 +131,11 @@ Payloads (D282; the explosive is always the Plastic Explosive charges, 64 to a f
 - GGS-ICBM-02-20: every type in the table is a registry entry with the table's radius and damage at full fill.
 - GGS-ICBM-02-21: a blast type's block changes respect `icbm.terrainDamageT<n>` and the break guard.
 - GGS-ICBM-02-22: gas effects end after 30 s and are bounded by the radius.
-- GGS-ICBM-02-23: a conventional type meets its tier's D34 damage at full fill.
+- GGS-ICBM-02-23: a conventional type meets its tier's D34 damage at full fill, measured on a live mob in the real pack (D328).
 
 ## Tests
 
-`WarheadBlastTest` (catalog, targets), `EnderRulesTest` (pull curve, targets, range), `WarheadMathTest` (curve against the registry definition), scenarios `icbm.blast.<type>` (one per type), `icbm.blast.ender_teleport` (the send, the landing spot, a far cow stays) and `icbm.blast.antigrav_flight` (the cap, a chest stays, conservation, NBT round trip) and `icbm.blast.block_damage_off`.
+`WarheadBlastTest` (catalog, targets), `EnderRulesTest` (pull curve, targets, range), `WarheadMathTest` (curve against the registry definition), scenarios `icbm.blast.<type>` (one per type), `icbm.blast.ender_teleport` (the send, the landing spot, a far cow stays) and `icbm.blast.antigrav_flight` (the cap, a chest stays, conservation, NBT round trip) and `icbm.blast.block_damage_off`; the balance scenarios `icbm.balance.damage_<type>` (measured center and ramp damage on a live mob) and `icbm.balance.kill_zone_nuclear` / `_antimatter` (D328).
 
 ## Open questions
 

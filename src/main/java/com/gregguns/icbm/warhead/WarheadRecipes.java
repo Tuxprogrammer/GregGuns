@@ -52,6 +52,8 @@ public final class WarheadRecipes {
     private static final int MAX_STACK = 64;
     /** Casing plates of a T1 and a T2 warhead (D34 cost review: the warhead is the expensive part). */
     static final int T1_PLATES = 4;
+    /** How many hull plates a casing takes: the twelve of the Tier 3 and later rockets' hulls (D328). */
+    static final int HULL_PLATES = 12;
     static final int T2_PLATES = 8;
     /** Casing plates of a T3 warhead (tungstensteel). */
     static final int T3_PLATES = 8;

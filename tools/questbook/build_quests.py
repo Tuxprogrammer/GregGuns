@@ -53,7 +53,7 @@ BAGS = {
     'zpm': {'id': LOOTBAG, 'damage': 1708, 'tier': 'ZPM'},  # General
     'spoils': {'id': LOOTBAG, 'damage': 1709, 'tier': 'HV'},  # Spoils of War: boss kills
     'ordnance1': {'id': LOOTBAG, 'damage': 1710, 'tier': 'HV'},  # ICBM HV and EV quests
-    'ordnance2': {'id': LOOTBAG, 'damage': 1711, 'tier': 'IV'},  # ICBM IV and LuV quests
+    'ordnance2': {'id': LOOTBAG, 'damage': 1711, 'tier': 'IV'},  # ICBM IV quests
     'ordnance3': {'id': LOOTBAG, 'damage': 1712, 'tier': 'LuV'},  # ICBM LuV and ZPM quests
     'ordnance4': {'id': LOOTBAG, 'damage': 1713, 'tier': 'UV'},  # ICBM UV quests
     'ordnance5': {'id': LOOTBAG, 'damage': 1714, 'tier': 'UHV'},  # ICBM UHV quests
