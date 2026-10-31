@@ -7,10 +7,16 @@ import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 /**
  * The mushroom cellar (D305, D307): mycelium beds three wide framed by mushroom-stem logs every six cells in each band
  * (mushrooms live in the dark, so a cellar looks the same lit or not), crate-and-chest racks along the front band and
- * down the side walls.
+ * down the side walls. Lamp rows every 4 cells (the stems cast shadows).
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing: Mushroom cellar); D305; D307
 public final class MushroomCellar implements RoomBlueprint {
+
+    /** Close lamp rows: the two-high stems shade the beds and the corners, and a staffed cellar still reads light 8. */
+    @Override
+    public int lampGap() {
+        return 4;
+    }
 
     @Override
     public void lay(Kit k) {
