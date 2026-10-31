@@ -43,7 +43,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  * {@code look <yaw> <pitch>} (sets the player's rotation, which a server {@code tp} cannot), {@code use} (a real
  * right-click with the held item), {@code usesneak} (the same while sneaking, which StructureLib needs to build),
  * {@code scope <texturePath|off>} (draws a scope
- * overlay on the HUD, loaded at the bounded size), {@code close}, {@code quit}. Dev autotest only.
+ * overlay on the HUD, loaded at the bounded size), {@code cstate <label> <x0> <y0> <z0> <x1> <y1> <z1>} (logs this
+ * client's blocks, tiles and entities in a box, see {@link StateProbe}), {@code close}, {@code quit}. Dev autotest
+ * only.
  * Client only.
  */
 @SideOnly(Side.CLIENT)

@@ -36,6 +36,7 @@ final class IcbmScenarios {
         com.gregguns.icbm.complex.gen.RoleAuditScenarios.registerAudited(complex, registry);
         com.gregguns.icbm.complex.palette.PaletteScenarios.registerAll(registry);
         com.gregguns.icbm.worldgen.I6VisualSetups.registerAll(registry);
+        I7PlayChecks.registerAll(registry);
     }
 
     /**

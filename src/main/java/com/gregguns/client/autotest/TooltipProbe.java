@@ -42,18 +42,49 @@ public final class TooltipProbe {
         }
     }
 
-    /** Writes the key state the way LWJGL's own poll does; it is rewritten on every poll, so redo it per draw. */
+    /**
+     * Writes the Shift state where {@code Keyboard.isKeyDown} reads it. LWJGL 2 rewrites its buffer on every poll, so
+     * this is redone per draw.
+     */
     private static void press(boolean down) {
         try {
             ByteBuffer keys = (ByteBuffer) ReflectionHelper.findField(Keyboard.class, "keyDownBuffer")
                 .get(null);
             keys.put(Keyboard.KEY_LSHIFT, (byte) (down ? 1 : 0));
+            return;
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            // Not LWJGL 2: try lwjgl3ify below.
+        }
+        try {
+            pressLwjgl3ify(down);
         } catch (ReflectiveOperationException | RuntimeException e) {
             if (!pressWarned) {
                 pressWarned = true;
-                GregGuns.LOG.warn("[gregguns] AUTOTEST cannot set the shift key here (lwjgl3ify has no key buffer)", e);
+                GregGuns.LOG.warn("[gregguns] AUTOTEST cannot set the shift key here (no known key buffer)", e);
             }
         }
+    }
+
+    /**
+     * Under lwjgl3ify, {@code org.lwjgl.input.Keyboard.isKeyDown} forwards to {@code org.lwjglx.input.Keyboard}, which
+     * reads SDL's key-state array by SDL scancode. SDL only rewrites an entry on a key event, so the written state
+     * holds
+     * until {@code shift off} clears it.
+     */
+    // Source: lwjgl3ify 3.0.37 org.lwjglx.input.Keyboard#isKeyDown and #sdlKeyPressedArray,
+    // https://github.com/GTNewHorizons/lwjgl3ify/blob/3.0.37/src/main/java/org/lwjglx/input/Keyboard.java#L281-L291
+    // and org.lwjglx.input.KeyCodes#lwjglToSdlScancode (same tag).
+    private static void pressLwjgl3ify(boolean down) throws ReflectiveOperationException {
+        Class<?> keyboard = Class.forName("org.lwjglx.input.Keyboard");
+        ByteBuffer keys = (ByteBuffer) keyboard.getField("sdlKeyPressedArray")
+            .get(null);
+        if (keys == null) {
+            throw new IllegalStateException("lwjgl3ify has no key state array yet");
+        }
+        int scancode = (Integer) Class.forName("org.lwjglx.input.KeyCodes")
+            .getMethod("lwjglToSdlScancode", int.class)
+            .invoke(null, Keyboard.KEY_LSHIFT);
+        keys.put(scancode, (byte) (down ? 1 : 0));
     }
 
     @SubscribeEvent

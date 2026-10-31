@@ -23,8 +23,9 @@ import gregtech.api.enums.ItemList;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 
 /**
- * Screenshot setups for the two silo screens, for one connected client (the client hooks of {@code docs/testing}). The
- * panel is opened by the client's own right-click ({@code gui press}), so it is the screen a player sees. Neither is
+ * Screenshot setups for the two silo screens (the client hooks of {@code docs/testing}). The panel is opened by the
+ * client's own right-click ({@code gui press}), so it is the screen a player sees; the two GUI setups drive every
+ * connected client, so a two-client session shows whether both screens agree (I7). Neither is
  * part of {@code test all}. Dev environment only, server side.
  * <ul>
  * <li>{@code testing.icbm_control_gui_states}: the silo's own Launch Control with no target and no missile, a target
@@ -66,6 +67,27 @@ final class SiloGuiShots {
         return players.isEmpty() ? null : players.get(0);
     }
 
+    /** @return every connected player: the GUI shots go to each, so two clients can be compared (I7) */
+    private static List<EntityPlayerMP> everyone() {
+        @SuppressWarnings("unchecked")
+        List<EntityPlayerMP> players = new ArrayList<>(
+            MinecraftServer.getServer()
+                .getConfigurationManager().playerEntityList);
+        return players;
+    }
+
+    private static void signalAll(String command, String... args) {
+        for (EntityPlayerMP q : everyone()) {
+            MissileShotsScenario.signal(q, command, args);
+        }
+    }
+
+    private static void camAll(double ex, double ey, double ez, double tx, double ty, double tz) {
+        for (EntityPlayerMP q : everyone()) {
+            MissileShotsScenario.cam(q, ex, ey, ez, tx, ty, tz);
+        }
+    }
+
     /** Creative, empty hands, full health, noon: the same light for every shot. */
     private static void prepare(ScenarioContext ctx, EntityPlayerMP p) {
         p.setGameType(WorldSettings.GameType.CREATIVE);
@@ -92,7 +114,7 @@ final class SiloGuiShots {
     private static void burst(MissileShotsScenario.Plan plan, EntityPlayerMP p, String label, int frames) {
         for (int i = 0; i < frames; i++) {
             String frame = label + "-" + (char) ('a' + i);
-            plan.after(i == 0 ? 0 : BURST_GAP, () -> MissileShotsScenario.signal(p, "shot", frame));
+            plan.after(i == 0 ? 0 : BURST_GAP, () -> signalAll("shot", frame));
         }
     }
 
@@ -186,7 +208,7 @@ final class SiloGuiShots {
 
         @Override
         public String description() {
-            return "Opens the silo's own Launch Control with a client right-click and shoots it with no target and no missile, a target and no missile, a target and a ready missile, and a ready missile with no target. Needs 1 client; not part of test all.";
+            return "Opens the silo's own Launch Control with a client right-click and shoots it with no target and no missile, a target and no missile, a target and a ready missile, and a ready missile with no target. Every connected client opens it and shoots; not part of test all.";
         }
 
         @Override
@@ -216,7 +238,9 @@ final class SiloGuiShots {
             cb.setOwnerName(p.getCommandSenderName());
             cb.setOwnerUuid(p.getUniqueID());
             final MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
-            prepare(ctx, p);
+            for (EntityPlayerMP q : everyone()) {
+                prepare(ctx, q);
+            }
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final MissileShotsScenario.Plan plan = new MissileShotsScenario.Plan();
             final EntityMissile[] m = { null };
@@ -224,17 +248,17 @@ final class SiloGuiShots {
             final int by = ctx.originY() + SiloScenarios.CY + com.gregguns.machine.DevStructureBuilder.SILO_LC[1];
             final int bz = ctx.originZ();
 
-            plan.after(5, () -> MissileShotsScenario.signal(p, "hud", "off"));
+            plan.after(5, () -> signalAll("hud", "off"));
             plan.after(SYNC_TICKS, () -> {
                 out.check(SiloScenarios.formed(ctx), "the silo forms");
                 SiloScenarios.power(ctx);
                 // Beside the block, looking at it, the way a player stands to use it.
-                MissileShotsScenario.cam(p, bx - 1.5, by + 1.8, bz + 0.5, bx + 0.5, by + 0.5, bz + 0.5);
+                camAll(bx - 1.5, by + 1.8, bz + 0.5, bx + 0.5, by + 0.5, bz + 0.5);
             });
-            plan.after(30, () -> MissileShotsScenario.signal(p, "gui", "press", str(bx), str(by), str(bz)));
+            plan.after(30, () -> signalAll("gui", "press", str(bx), str(by), str(bz)));
             plan.after(60, () -> {
                 out.checkEquals("1: no target", ControlStatus.NO_TARGET, c.currentStatus());
-                MissileShotsScenario.signal(p, "shot", "lcgui-1-no-target-no-missile");
+                signalAll("shot", "lcgui-1-no-target-no-missile");
             });
             plan.after(10, () -> {
                 c.setXText(Integer.toString(ctx.originX()));
@@ -242,7 +266,7 @@ final class SiloGuiShots {
             });
             plan.after(40, () -> {
                 out.checkEquals("2: target, no missile", ControlStatus.NO_MISSILE, c.currentStatus());
-                MissileShotsScenario.signal(p, "shot", "lcgui-2-target-no-missile");
+                signalAll("shot", "lcgui-2-target-no-missile");
             });
             plan.after(10, () -> {
                 m[0] = EntityMissile.create(MissileTier.T3, ctx.world());
@@ -259,14 +283,14 @@ final class SiloGuiShots {
             });
             plan.after(40, () -> {
                 out.checkEquals("3: target and a ready missile", ControlStatus.READY, c.currentStatus());
-                MissileShotsScenario.signal(p, "shot", "lcgui-3-target-missile-ready");
+                signalAll("shot", "lcgui-3-target-missile-ready");
             });
             plan.after(10, () -> c.setXText(""));
             plan.after(40, () -> {
                 out.checkEquals("4: the target cleared", ControlStatus.NO_TARGET, c.currentStatus());
-                MissileShotsScenario.signal(p, "shot", "lcgui-4-no-target-missile-ready");
+                signalAll("shot", "lcgui-4-no-target-missile-ready");
             });
-            plan.after(20, () -> MissileShotsScenario.signal(p, "close"));
+            plan.after(20, () -> signalAll("close"));
             return ScenarioResult.pending(name(), 2000, t -> {
                 plan.run(t);
                 if (!plan.idle()) {
@@ -275,7 +299,7 @@ final class SiloGuiShots {
                 if (m[0] != null) {
                     m[0].setDead();
                 }
-                MissileShotsScenario.signal(p, "hud", "on");
+                signalAll("hud", "on");
                 ctx.clearArea(14, SiloScenarios.CLEAR_HEIGHT);
                 return out.note("read the lcgui-*.png shots")
                     .build();
@@ -293,7 +317,7 @@ final class SiloGuiShots {
 
         @Override
         public String description() {
-            return "Opens the silo controller with a client right-click and shoots bursts of its screen while the silo stands a body, runs the body cycle, seats the warhead, arms it and fuels it. Needs 1 client; not part of test all.";
+            return "Opens the silo controller with a client right-click and shoots bursts of its screen while the silo stands a body, runs the body cycle, seats the warhead, arms it and fuels it. Every connected client opens it and shoots; not part of test all.";
         }
 
         @Override
@@ -321,7 +345,9 @@ final class SiloGuiShots {
                 controller.setOwnerName(p.getCommandSenderName());
                 controller.setOwnerUuid(p.getUniqueID());
             }
-            prepare(ctx, p);
+            for (EntityPlayerMP q : everyone()) {
+                prepare(ctx, q);
+            }
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final MissileShotsScenario.Plan plan = new MissileShotsScenario.Plan();
             final int cx = ctx.originX();
@@ -329,13 +355,13 @@ final class SiloGuiShots {
             final int cz = ctx.originZ();
             final int burstTicks = (BURST - 1) * BURST_GAP;
 
-            plan.after(5, () -> MissileShotsScenario.signal(p, "hud", "off"));
+            plan.after(5, () -> signalAll("hud", "off"));
             plan.after(SYNC_TICKS, () -> {
                 out.check(SiloScenarios.formed(ctx), "the silo forms");
                 // In front of the controller, outside the shaft, looking at it.
-                MissileShotsScenario.cam(p, cx + 0.5, cy + 1.1, cz - 2.0, cx + 0.5, cy + 0.5, cz + 0.5);
+                camAll(cx + 0.5, cy + 1.1, cz - 2.0, cx + 0.5, cy + 0.5, cz + 0.5);
             });
-            plan.after(30, () -> MissileShotsScenario.signal(p, "gui", "press", str(cx), str(cy), str(cz)));
+            plan.after(30, () -> signalAll("gui", "press", str(cx), str(cy), str(cz)));
             plan.after(60, () -> {});
             burst(plan, p, "silogui-0-idle");
             plan.after(10, () -> SiloScenarios.putBus(ctx, MissileBodies.body(MissileTier.T1)));
@@ -363,7 +389,7 @@ final class SiloGuiShots {
             burst(plan, p, "silogui-9-fueling");
             plan.after(100, () -> {});
             burst(plan, p, "silogui-10-fueling-later");
-            plan.after(20, () -> MissileShotsScenario.signal(p, "close"));
+            plan.after(20, () -> signalAll("close"));
             return ScenarioResult.pending(name(), 3000, t -> {
                 SiloScenarios.power(ctx);
                 plan.run(t);
@@ -376,7 +402,7 @@ final class SiloGuiShots {
                     m.setDead();
                 }
                 SiloSequenceScenarios.removeBody(ctx);
-                MissileShotsScenario.signal(p, "hud", "on");
+                signalAll("hud", "on");
                 ctx.clearArea(14, SiloScenarios.CLEAR_HEIGHT);
                 return out.note("read the silogui-*.png bursts")
                     .build();
