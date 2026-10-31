@@ -100,7 +100,7 @@ public final class I6VisualSetups {
         registry.register(new Gen("op_umv", ActivityLevel.OPERATIONAL, SiloCeiling.UMV));
         // A Ross128 complex in any dimension: the blast-door frames are the rolled tier's machine casings (D337).
         registry.register(new Gen("op_ross", ActivityLevel.OPERATIONAL, SiloCeiling.EV + 2, true));
-        registry.register(new Gen("ab_ross", ActivityLevel.ABANDONED, SiloCeiling.UV, true));
+        registry.register(new Gen("ab_ross", ActivityLevel.ABANDONED, SiloCeiling.UHV - 1, true));
         registry.register(new Planet("moon", 4));
         registry.register(new Planet("mars", 4));
         registry.register(new Planet("moon_fast", 100000));
