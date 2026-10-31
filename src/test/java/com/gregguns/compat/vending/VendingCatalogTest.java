@@ -58,7 +58,9 @@ class VendingCatalogTest {
                 components++;
             }
         }
-        assertEquals("139 Misc + 37 Components = 176", misc + " Misc + " + components + " Components = " + OFFERS.size());
+        assertEquals(
+            "139 Misc + 37 Components = 176",
+            misc + " Misc + " + components + " Components = " + OFFERS.size());
     }
 
     @Test
