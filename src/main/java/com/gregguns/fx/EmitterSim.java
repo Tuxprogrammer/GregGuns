@@ -226,6 +226,7 @@ public final class EmitterSim {
         s.animationSpeed = def.animationSpeed.pick(rng);
         s.velocityDamping = def.velocityDamping.pick(rng);
         s.variationFrame = rng.nextInt(def.frames);
+        // RandomRotation picks one of the four mirror orientations, not a quarter turn (D311, QuadMath#uv).
         s.rotation = def.randomRotation ? rng.nextInt(4) : 0;
         return s;
     }

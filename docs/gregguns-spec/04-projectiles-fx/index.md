@@ -27,6 +27,7 @@ No integration point; see [techguns-spec](../../techguns-spec/04-projectiles-fx/
 | Muzzle flash and projectile glow (sprites only) | Optional dynamic light from held guns and slow projectiles; off with shader packs | Angelica dynamic lights | [dynamic-lights.md](dynamic-lights.md) |
 | `EntityParticle` with its own texture bind and draw per particle | One quad through the given `Tessellator`, so Angelica can instance it | Angelica particle batching | [particle-rendering.md](particle-rendering.md) |
 | Unbounded particle bursts | Global ceiling below the pack's cap of 8000 | Hodgepodge (`particleLimit`) | [particle-rendering.md](particle-rendering.md) |
+| `RandomRotation` turns the sprite 0, 90, 180 or 270° | Picks one of four mirrors (none, U, U and V, V), which keep vanilla's UV layout; a quarter-turned quad fails Angelica's decoder and drew the atlas (D311, GGS-04-17) | Angelica particle decoder | [particle-rendering.md](particle-rendering.md) |
 | Part B block destruction ([explosions.md](../../techguns-spec/04-projectiles-fx/explosions.md#part-b-sound-block-destruction-and-fire)) | Break only blocks left in the affected list after `ExplosionEvent.Detonate` | ServerUtilities | [explosions-pack.md](explosions-pack.md) |
 | `MiningDummyProjectile` and other block breakers (PFX-14) | Post `BlockEvent.BreakEvent` for the owner | ServerUtilities claims | [explosions-pack.md](explosions-pack.md) |
 | `block.onBlockExploded` on a dummy explosion | Kept. GT machines may chain a second explosion. | GT5-Unofficial | [explosions-pack.md](explosions-pack.md) |

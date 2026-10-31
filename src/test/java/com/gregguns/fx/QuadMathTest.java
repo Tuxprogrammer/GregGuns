@@ -2,6 +2,9 @@ package com.gregguns.fx;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,13 +34,60 @@ class QuadMathTest {
         assertEquals(0.5F, uv[5], 1.0E-6F); // v0 = 1/2
     }
 
+    /**
+     * Every orientation keeps the layout Angelica's particle decoder instances: u shared by vertices 0-1 and 2-3, v by
+     * vertices 1-2 and 3-0, and the four pairs span exactly the cell (GGS-04-17).
+     */
     @Test
-    void aQuarterTurnRotatesTheCornersAmongThemselves() {
-        float[] a = QuadMath.uv(0, 2, 2, 0);
-        float[] b = QuadMath.uv(0, 2, 2, 1);
-        assertEquals(a[2], b[0], 1.0E-6F);
-        assertEquals(a[3], b[1], 1.0E-6F);
-        assertArrayEquals(a, QuadMath.uv(0, 2, 2, 4), 1.0E-6F);
+    void everyOrientationIsADecodableLayoutOfTheCell() {
+        int[][] sheets = { { 1, 1 }, { 2, 2 }, { 5, 5 }, { 4, 2 } };
+        for (int[] sheet : sheets) {
+            int columns = sheet[0], rows = sheet[1];
+            for (int frame : new int[] { 0, 3, 7, 24 }) {
+                if (frame >= columns * rows) {
+                    continue;
+                }
+                float u0 = (float) (frame % columns) / columns, u1 = (float) (frame % columns + 1) / columns;
+                float v0 = (float) (frame / columns) / rows, v1 = (float) (frame / columns + 1) / rows;
+                for (int o = 0; o < 4; o++) {
+                    float[] uv = QuadMath.uv(frame, columns, rows, o);
+                    String at = columns + "x" + rows + " frame " + frame + " orientation " + o;
+                    assertEquals(uv[0], uv[2], 0.0F, at + ": u of vertices 0 and 1");
+                    assertEquals(uv[3], uv[5], 0.0F, at + ": v of vertices 1 and 2");
+                    assertEquals(uv[4], uv[6], 0.0F, at + ": u of vertices 2 and 3");
+                    assertEquals(uv[7], uv[1], 0.0F, at + ": v of vertices 3 and 0");
+                    assertEquals(Math.min(u0, u1), Math.min(uv[0], uv[4]), 1.0E-6F, at);
+                    assertEquals(Math.max(u0, u1), Math.max(uv[0], uv[4]), 1.0E-6F, at);
+                    assertEquals(Math.min(v0, v1), Math.min(uv[1], uv[3]), 1.0E-6F, at);
+                    assertEquals(Math.max(v0, v1), Math.max(uv[1], uv[3]), 1.0E-6F, at);
+                }
+            }
+        }
+    }
+
+    @Test
+    void theFourOrientationsAreMirrorsAndWrap() {
+        float[] none = QuadMath.uv(0, 2, 2, 0);
+        float[] mirrorU = QuadMath.uv(0, 2, 2, 1);
+        float[] both = QuadMath.uv(0, 2, 2, 2);
+        float[] mirrorV = QuadMath.uv(0, 2, 2, 3);
+        // Mirror U swaps u and keeps v.
+        assertEquals(none[4], mirrorU[0], 1.0E-6F);
+        assertEquals(none[1], mirrorU[1], 1.0E-6F);
+        // Mirror V keeps u and swaps v.
+        assertEquals(none[0], mirrorV[0], 1.0E-6F);
+        assertEquals(none[3], mirrorV[1], 1.0E-6F);
+        // Both swapped is a half turn: vertex 0 takes vertex 2's pair.
+        assertEquals(none[4], both[0], 1.0E-6F);
+        assertEquals(none[5], both[1], 1.0E-6F);
+        float[][] all = { none, mirrorU, both, mirrorV };
+        for (int i = 0; i < 4; i++) {
+            for (int j = i + 1; j < 4; j++) {
+                assertNotEquals(Arrays.toString(all[i]), Arrays.toString(all[j]), i + " vs " + j);
+            }
+        }
+        assertArrayEquals(none, QuadMath.uv(0, 2, 2, 4), 1.0E-6F);
+        assertArrayEquals(mirrorV, QuadMath.uv(0, 2, 2, -1), 1.0E-6F);
     }
 
     @Test

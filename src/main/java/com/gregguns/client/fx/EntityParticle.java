@@ -104,7 +104,11 @@ final class EntityParticle extends EntityFX {
             // Angelica 2.2.28 (shaders on) captures this quad instead of drawing it: it samples the bound texture,
             // blend function and depth mask at the first addVertex (so the state set below is the state the instanced
             // draw uses), and ignores alphaFunc, which comes from the layer's own state. So depth mask must be off
-            // before the quad is emitted, and our alpha test would not help there.
+            // before the quad is emitted, and our alpha test would not help there. Angelica must also be able to
+            // decode the quad (vanilla's UV layout, which every QuadMath.uv orientation keeps): a quad it can't decode
+            // is replayed into the layer batch without this state and drew the block atlas (GGS-04-17, D311).
+            // Source:
+            // https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/rendering/particles/ParticleInstancer.java#L156-L157
             // Source:
             // https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/rendering/particles/ParticleCaptureTessellator.java
             // Source:
