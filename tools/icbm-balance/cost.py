@@ -6,10 +6,13 @@ The dump comes from `/gregguns dumprecipes` (see tools/recipe-clash/README.md); 
 ("itemdata") and the NASA Workbench rows. An item is priced by expanding the cheapest recipe that makes it, down to:
 - metal and other GT materials, in ingot units (a plate is 1, a rod 0.5, molten metal 144 L = 1);
 - circuits, counted by tier and never expanded (the pack's circuit chains are their own economy);
-- fluids, in litres, never expanded;
-- raw items with neither a recipe nor GT data.
+- fluids, in liters, never expanded;
+- raw items: items with no recipe at any voltage and no GT data.
+An item whose recipes all run above the pricer's voltage (or need such an item) is "above tier": it is priced at the
+cheapest route at any voltage and listed in the report's "Above tier" column, never hidden as a raw item.
 EU is summed over every machine step. The single "score" used to pick between recipes, and printed as "units", is
-ingots + circuit weight (2 ** tier index, LV circuit = 2, HV = 8, LuV = 64) + 1 per 1,000 L of fluid.
+ingots + circuit weight (2 ** (tier index + 1): LV 4, HV 16, EV 32, LuV 128) + 1 per 1,000 L of fluid + 4 per raw item.
+Between two recipes, one with no above-tier item always wins.
 """
 import gzip
 import json
@@ -46,7 +49,7 @@ def load(path):
 
 
 class Cost:
-    __slots__ = ('mats', 'circ', 'fluid', 'eu', 'raw')
+    __slots__ = ('mats', 'circ', 'fluid', 'eu', 'raw', 'above')
 
     def __init__(self):
         self.mats = defaultdict(float)
@@ -54,10 +57,11 @@ class Cost:
         self.fluid = defaultdict(float)
         self.eu = 0.0
         self.raw = defaultdict(float)
+        self.above = defaultdict(float)  # items made only above the pricer's voltage, by count
 
     def add(self, other, n=1.0):
         for d, o in ((self.mats, other.mats), (self.circ, other.circ), (self.fluid, other.fluid),
-                     (self.raw, other.raw)):
+                     (self.raw, other.raw), (self.above, other.above)):
             for k, v in o.items():
                 d[k] += v * n
         self.eu += other.eu * n
@@ -74,6 +78,10 @@ class Cost:
 
     def score(self):
         return self.ingots() + self.circuit_units() + sum(self.fluid.values()) / 1000.0 + 4 * sum(self.raw.values())
+
+    def rank(self):
+        """The key recipes are chosen by: any route at the player's voltage beats one that needs an above-tier item."""
+        return (1 if any(v > 0 for v in self.above.values()) else 0, self.score())
 
 
 INF = None  # marks a cycle
@@ -103,6 +111,8 @@ class Pricer:
     """Prices items for a player at one voltage tier: only machine recipes at or below its voltage count."""
 
     def __init__(self, dump, tier='UHV'):
+        self.dump = dump
+        self.tier = tier
         self.max_eut = VOLTAGE[tier]
         self.rows = dump['rows'] if dump.get('_normalized') else [normalize(r) for r in dump['rows']]
         dump['rows'] = self.rows
@@ -110,21 +120,36 @@ class Pricer:
         self.oredict = dump.get('oredict', {})
         self.itemdata = dump.get('itemdata', {})
         self.makers = defaultdict(list)
+        self.made_above = set()  # items with a recipe, but only above this voltage
+        self.top = None  # the uncapped pricer that prices above-tier items, made on first use
         for r in self.rows:
-            if SKIP_MAPS.search(r.get('map', '')) or abs(r.get('eut', 0)) > self.max_eut:
+            if SKIP_MAPS.search(r.get('map', '')):
                 continue
             if r.get('kind', '').startswith('special:') and not r['map'].startswith(('gc.', 'gs.')):
                 continue  # custom IRecipe rows carry outputs only
+            above = abs(r.get('eut', 0)) > self.max_eut
             ins = set(r.get('inputs', {}))
             for o in r.get('outputs', []):
                 key, n = o[0], int(o[1])
                 if key in ins or key.rsplit(':', 1)[0] + ':*' in ins:
                     continue  # an NBT reset or a refit of the same item
                 if n > 0 and not key.startswith('fluid:'):
-                    self.makers[key].append((r, n))
+                    if above:
+                        self.made_above.add(key)
+                    else:
+                        self.makers[key].append((r, n))
+        self.made_above.difference_update(self.makers)
         self.memo = {}
         self.busy = set()
         self.choice = {}
+
+    def above_tier(self, key):
+        """An item made only above this voltage: priced at its cheapest route at any voltage, and flagged."""
+        if self.top is None:
+            self.top = self if self.tier == VOLTS[-1] else Pricer(self.dump, VOLTS[-1])
+        c = Cost().add(self.top.price(key))
+        c.above[key] += 1
+        return c
 
     # ---- leaves ----
     def circuit_of(self, key):
@@ -182,7 +207,7 @@ class Pricer:
             best = None
             for m in members[:6]:
                 got = self.price(m, depth + 1)
-                if got is not INF and (best is None or got.score() < best.score()):
+                if got is not INF and (best is None or got.rank() < best.rank()):
                     best = got
             if best is None:
                 c.raw[key] = 1
@@ -197,10 +222,12 @@ class Pricer:
             got = self.price_row(r, n, depth)
             if got is INF:
                 continue
-            if best is None or got.score() < best.score():
+            if best is None or got.rank() < best.rank():
                 best, best_row = got, r
         self.busy.discard(key)
-        if best is None:
+        if best is None and key in self.made_above:
+            best = self.above_tier(key)
+        elif best is None:
             c.raw[key] = 1
             best = c
         else:
@@ -307,13 +334,17 @@ def warhead_costs(p, only_tier=None):
     return out
 
 
+def fmt_above(c):
+    return ', '.join('%g %s' % (round(v, 2), k) for k, v in sorted(c.above.items()) if v > 0) or '-'
+
+
 def row(label, c, extra=''):
-    return '| %s | %.0f | %s | %s | %s | %.1fM | %.0f |%s' % (
-        label, c.ingots(), fmt_mats(c), fmt_circ(c), fmt_fluid(c), c.eu / 1e6, c.score(), extra)
+    return '| %s | %.0f | %s | %s | %s | %.1fM | %.0f | %s |%s' % (
+        label, c.ingots(), fmt_mats(c), fmt_circ(c), fmt_fluid(c), c.eu / 1e6, c.score(), fmt_above(c), extra)
 
 
-HEAD = '| Item | Ingots | Main materials | Circuits | Fluids | EU | Units |'
-SEP = '|---|---|---|---|---|---|---|'
+HEAD = '| Item | Ingots | Main materials | Circuits | Fluids | EU | Units | Above tier |'
+SEP = '|---|---|---|---|---|---|---|---|'
 
 
 ROCKETS = [('t1', 'HV'), ('t2', 'EV'), ('t3', 'IV'), ('t4', 'LuV'), ('t5', 'ZPM'), ('t6', 'UV'), ('t7', 'UHV')]
@@ -334,6 +365,7 @@ def report(dump):
              'From the recipe dump of the real pack (`/gregguns dumprecipes`), priced by `tools/icbm-balance/cost.py`',
              'for a player at the item\'s own tier (only recipes at or below that voltage).',
              'Units = ingots + circuits (2^(tier+1) each: HV 16, EV 32, IV 64, LuV 128) + 1 per 1,000 L + 4 per raw item.',
+             '"Above tier" lists the items in the chain that no recipe at that voltage makes (priced at any voltage).',
              '']
     data = {}
     lines += ['## Rockets (GalaxySpace NASA Workbench, no chest), priced at the rocket\'s tier', '', HEAD, SEP]
@@ -378,7 +410,8 @@ def report(dump):
         data[k] = c
         lines.append(row('%s (%s)' % (k, tier), c))
     lines += ['', '## Summary: a missile against the rocket of its tier (without the lander)', '',
-              '| Missile | Body units | Full warhead units | Missile / rocket | Warhead / body |', '|---|---|---|---|---|']
+              '| Missile | Body units | Full warhead units | Missile / rocket | Warhead / body | Above tier |',
+              '|---|---|---|---|---|---|']
     pairs = [('T1 conventional vs Rocket T1 (HV)', 1, 'rocketref_t1', [b for b, t, _ in WARHEADS if t == 1]),
              ('T2 conventional vs Rocket T2 (EV)', 2, 'rocketref_t2', [b for b, t, _ in WARHEADS if t == 2]),
              ('T3 conventional vs Rocket T4 (LuV)', 3, 'rocketref_t4',
@@ -393,12 +426,16 @@ def report(dump):
         ws = [data['warhead_' + b].score() for b in blasts if 'warhead_' + b in data]
         if not ws:
             continue
+        flagged = Cost().add(data['body_t%d' % t])
+        for b in blasts:
+            if 'warhead_' + b in data:
+                flagged.above.update({k: 1 for k, v in data['warhead_' + b].above.items() if v > 0})
         lo, hi = min(ws), max(ws)
         rocket = data[rk].score()
         rng = (lambda a, b, f='%.2f': (f % a) if abs(a - b) < 1e-9 else (f + ' - ' + f) % (a, b))
-        lines.append('| %s | %.0f | %s | %s | %s |' % (label, body, rng(lo, hi, '%.0f'), rng((body + lo) / rocket,
-                                                                                         (body + hi) / rocket),
-                                                       rng(lo / body, hi / body)))
+        lines.append('| %s | %.0f | %s | %s | %s | %s |' % (
+            label, body, rng(lo, hi, '%.0f'), rng((body + lo) / rocket, (body + hi) / rocket), rng(lo / body, hi / body),
+            ', '.join(sorted(k for k, v in flagged.above.items() if v > 0)) or '-'))
     return lines, data, pricers
 
 
@@ -412,7 +449,8 @@ def main(argv):
         f.write('\n'.join(lines) + '\n')
     if '--json' in argv:
         out = {k: {'ingots': c.ingots(), 'units': c.score(), 'eu': c.eu, 'circuits': dict(c.circ),
-                   'fluids': dict(c.fluid), 'mats': dict(c.mats), 'raw': dict(c.raw)} for k, c in data.items()}
+                   'fluids': dict(c.fluid), 'mats': dict(c.mats), 'raw': dict(c.raw), 'above': dict(c.above)}
+               for k, c in data.items()}
         with open(argv[argv.index('--json') + 1], 'w') as f:
             json.dump(out, f, indent=1, sort_keys=True)
     print('\n'.join(lines))

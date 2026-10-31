@@ -248,14 +248,14 @@ class WarheadRecipeSpecTest {
     void costsMeetD328() {
         // The in-code estimate (plate equivalents, about ingots; electronics counted low), which guards the recipe
         // data against an accidental change. The balance itself is measured by tools/icbm-balance/cost.py over the
-        // pack's recipe dump (D328): there a full warhead is about its body or more and each tier's cheapest warhead
-        // at least doubles the one below; that table lives in warheads-and-fill.md.
+        // pack's recipe dump (D328, D343): there the cheapest warhead of each tier costs more than the one below (1.8
+        // times from T1 to T2, at least twice from T2 up); that table lives in warheads-and-fill.md.
         for (WarheadRecipeSpec spec : WarheadRecipeSpec.values()) {
             double cost = spec.cost();
             ExplosiveTier t = spec.blast()
                 .tier();
             double[] band = t == ExplosiveTier.T1 ? new double[] { 260.0, 290.0 }
-                : t == ExplosiveTier.T2 ? new double[] { 495.0, 515.0 }
+                : t == ExplosiveTier.T2 ? new double[] { 440.0, 465.0 }
                     : t == ExplosiveTier.T3 ? new double[] { 475.0, 620.0 } : new double[] { 950.0, 1250.0 };
             assertTrue(cost >= band[0] && cost <= band[1], spec + " costs " + cost);
         }

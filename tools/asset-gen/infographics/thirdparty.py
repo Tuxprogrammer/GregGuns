@@ -1,5 +1,5 @@
 """Third-party art for the ICBM guide sheets: Galacticraft's launch pad and rocket parts (MIT, D85), the core mod's
-Tier 3 rocket parts (GPL-3.0, D86), the formed launch pad, and the tinted vanilla grass, leaves and logs the worldgen views need.
+Heavy Duty Plate Tier 4 (GPL-3.0, D86), the formed launch pad, and the tinted vanilla grass, leaves and logs the worldgen views need.
 Also the Backpack mod's Tanned Leather icon (LGPL-3.0), which the recipes sheet shows as an armor ingredient.
 
 The Galacticraft, core-mod and Backpack files are read from inputs/thirdparty/ beside this script, never from a jar and never
@@ -31,7 +31,7 @@ BACKPACK_TANNED_LEATHER = INPUTS / "backpack/tanned_leather.png"
 PAD_HEIGHT = 0.4   # the formed launch pad's top tier ends 0.4 of a block above the floor; a missile stands on it
 
 GC_CREDIT = ("Launch pad and rocket part textures © Team Galacticraft (Galacticraft Legacy), MIT License.")
-CORE_CREDIT = ("Heavy Duty Rocket Engine and Fins Tier 3 icons © NewHorizonsCoreMod contributors (GT New Horizons), "
+CORE_CREDIT = ("Heavy Duty Plate Tier 4 icon © NewHorizonsCoreMod contributors (GT New Horizons), "
                "GNU GPL v3. This sheet is a combined work and is released under the GPL-3.0.")
 TC_CREDIT = ("Clear Glass texture © the Tinkers' Construct authors (GT New Horizons fork), GNU LGPL v3.")
 BACKPACK_CREDIT = ("Tanned Leather icon \u00a9 the Backpack mod authors (Eydamos, GT New Horizons fork), GNU LGPL v3.")

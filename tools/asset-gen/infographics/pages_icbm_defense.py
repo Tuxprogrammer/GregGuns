@@ -2,7 +2,8 @@
 tower and the T3 EMP warhead, the handheld tools, and the redstone, cover and OpenComputers outputs.
 
 Every number is read from the Java sources at build time (`_const`), so a changed constant moves the sheet instead of
-leaving it stale (D50). Blocks are drawn from the GregTech hulls with the committed NTM overlays; the tower from the
+leaving it stale (D50), and `_verify` checks the hand-written facts (tool tiers, the EMP payload, the de-arming and the
+radar station) against the code and the lang file. Blocks are drawn from the GregTech hulls with the committed NTM overlays; the tower from the
 cells of `RadarTowerShape`; the SAM and the T3 warhead from the shipped OBJ models.
 
 Run on its own:  python tools/asset-gen/infographics/pages_icbm_defense.py
@@ -69,7 +70,10 @@ MIN_RADIUS = _const(RAD, "MIN_RADIUS")
 MAX_REDSTONE = _const(RAD, "MAX_REDSTONE")
 _RANGE_SRC = re.search(r"static int range\(int tier\)\s*\{(.*?)\n    \}", _src(RAD), re.S).group(1)
 RANGES = [int(n) for n in re.findall(r"return (?:tier > 8 \? )?(\d+)", _RANGE_SRC)]   # HV, EV, IV, LuV, ZPM, UV, UHV
-assert RANGES == [128, 256, 512, 768, 1024, 1280, 1536], RANGES            # the lang strings and the table below agree
+assert len(RANGES) == 7, RANGES                                              # one range per tier, HV to UHV
+# The quests spell the ranges out; keep them in step with the code.
+for _r in RANGES[2:]:
+    assert f"{_r:,}" in (K.REPO / "src/main/resources/assets/gregguns/lang/en_US.lang").read_text(encoding="utf-8"), _r
 TIER_V = {"HV": 512, "EV": 2048, "IV": 8192, "LuV": 32768, "ZPM": 131072, "UV": 524288, "UHV": 2097152}   # GT's V[]
 
 SAM_SPEED = _const(SAM, "SPEED")
@@ -92,12 +96,44 @@ EMP_EU = _const(EMP, "EU_PER_AREA")
 EMP_MAX_R = int(_cfg("empMaxRadius"))
 EMP_DEVICES = int(_cfg("empMaxDevices"))
 P_KILL, P_FRY, P_TRIG = _cfg("empMissileKillChance"), _cfg("empMissileGuidanceChance"), _cfg("empMissileTriggerChance")
-EMP_WAR_R = 48       # WarheadBlast.EMP radius at full fill (the dump's emp curve ends at 48.0 at fill 64)
+EMP_WAR_R = _const("icbm/warhead/WarheadBlast.java", "EMP")   # Radii.EMP: the T3 EMP warhead's radius at fill 64
+_T3_CAP = re.search(r'T3\("warhead_t3", ExplosiveTier\.T3, (\d+),', _src("icbm/warhead/WarheadCasing.java"))
+if not _T3_CAP:
+    raise SystemExit("WarheadCasing.T3 changed; update pages_icbm_defense.py")
+EMP_WAR_FILL = int(_T3_CAP.group(1))
+DEARM_PER_CRAFT = int(_const("icbm/warhead/WarheadCharging.java", "MAX_PER_CRAFT"))
+CASING_PLATES = int(_const("icbm/defense/DefenseMachines.java", "CASING_PLATES"))
+CASING_YIELD = int(_const("icbm/defense/DefenseMachines.java", "CASING_YIELD"))
 RANGE_RD, RANGE_RE, RANGE_RI = int(_const(HAND, "RANGE_HV")), int(_const(HAND, "RANGE_EV")), int(_const(HAND, "RANGE_IV"))
 DEFUSER_USES = int(_const(HAND, "DEFUSER_USES"))
 GUN_RANGE = int(_const("icbm/defense/ItemRadarGun.java", "RANGE"))
 
 assert MISSILE[1]["hp"] == 20 and MISSILE[2]["hp"] == 40 and MISSILE[3]["hp"] == 60, MISSILE
+
+
+def _need(text: str, where: str, *facts: str) -> None:
+    for f in facts:
+        if f not in text:
+            raise SystemExit(f"{where}: '{f}' not found; the sheet's text no longer matches the code")
+
+
+def _verify() -> None:
+    """The facts the text states in words, checked against the source and the lang file."""
+    lang = (K.REPO / "src/main/resources/assets/gregguns/lang/en_US.lang").read_text(encoding="utf-8")
+    _need(lang, "en_US.lang", "item.gregguns.defuser.name=Defuse Kit", "item.gregguns.radar_gun.name=Radar Gun",
+          "item.gregguns.remote_detonator_hv.name=Remote Detonator (HV)", "item.gregguns.remote_detonator_ev.name=Remote Detonator (EV)",
+          "item.gregguns.remote_detonator_iv.name=Remote Detonator (IV)", "Radar Station",
+          "radar huts on a complex's surface hold a small radar with its Energy Hatch left out")
+    _need(_src("icbm/defense/ItemRadarGun.java"), "ItemRadarGun", "return Tier.HV;")
+    _need(_src("icbm/tools/ItemDefuser.java"), "ItemDefuser", "return Tier.HV;")
+    _need(_src("icbm/warhead/WarheadDearming.java"), "WarheadDearming", "DEFUSER_WEAR_PER_CRAFT = 1;")
+    _need(_src("icbm/warhead/WarheadRecipeSpec.java"), "WarheadRecipeSpec.EMP",
+          'EMP(WarheadBlast.EMP, 4, Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0),\n        Ing.gtItem("Emitter_LuV", 2, Tier.LUV, 10.0)),')
+    _need(_src("icbm/defense/DefenseMachines.java"), "DefenseMachines", '"plate", "StainlessSteel", CASING_PLATES, Tier.HV', ".eut(TierEU.RECIPE_HV)\n            .addTo(RecipeMaps.assemblerRecipes);")
+    _need(_src("icbm/emp/EmpMachines.java"), "EmpMachines", "TierEU.RECIPE_EV")
+
+
+_verify()
 
 
 def emp_cost(r: float) -> int:
@@ -279,7 +315,7 @@ def threat_diagram() -> str:
 def radar_card(title: str, tier: str, pic: K.Path, rng: int, extra: str) -> str:
     amp = TIER_V[tier] // 4
     return (f'<div class="card"><div style="display:flex;align-items:center;gap:12px"><h2>{esc(title)}</h2>{chip(tier)}</div>'
-            f'<div class="spot" style="display:flex;justify-content:center;align-items:center;padding:6px 0;margin:6px 0">{img(pic, h=210)}</div>'
+            f'<div class="spot" style="display:flex;justify-content:center;align-items:center;padding:6px 0;margin:6px 0">{img(pic, h=300)}</div>'
             f'<div class="kv"><span class="k">Range</span><span class="v">{n(rng)} blocks</span>'
             f'<span class="k">Power</span><span class="v">{n(amp)} EU/t while it scans</span>'
             f'<span class="k">Scan</span><span class="v">every {n(SCAN_TICKS)} ticks</span>{extra}</div></div>')
@@ -332,7 +368,8 @@ def sheet() -> str:
               + radar_card("Radar", "EV", ev, RANGES[1], f'<span class="k">Protected</span><span class="v">{n(DEFAULT_RADIUS)} blocks, set in its screen</span>')
               + f"""<div class="card"><h2>What it tells you</h2><div class="pt" style="margin-top:6px">A missile is a <b>contact</b> from the moment it climbs until it lands. The radar sorts every contact in range, nearest first, and flags as <b>incoming</b> only those whose <b>predicted impact point</b> is inside your protected radius, edge included. A missile that passes right over the radar but lands elsewhere is no threat; one that flies past and lands inside is.</div>
 <div class="label" style="margin:14px 0 4px">Build it</div><div class="pt"><b>{n_rc} Radar Casing</b> (at least {min_rc}): a 3 &times; 3 base two high with one on top for the dish to stand on, the controller in the middle of the front wall. An Energy Hatch of the controller&#39;s tier and a Maintenance Hatch go in any casing of the base. No structure, no radar: the controller does nothing alone. The dish turns while it scans.</div>
-<div class="label" style="margin:14px 0 4px">Its screen shows</div><div class="pt">Offline, scanning, tracking or <b>threat</b>; contacts in range and incoming; and, on the controller's R button, the protected radius field.</div></div>""")
+<div class="label" style="margin:14px 0 4px">Its screen shows</div><div class="pt">Offline, scanning, tracking or <b>threat</b>; contacts in range and incoming; and, on the controller's R button, the protected radius field.</div>
+<div class="label" style="margin:14px 0 4px">Found in the world</div><div class="pt">Radar huts on a silo complex&#39;s surface hold a small radar with no Energy Hatch. Mine the casing under the controller, put an HV Energy Hatch in its place and power it.</div></div>""")
 
     link_steps = f"""<div class="step"><span class="num">1</span><div class="t"><b>Power the radar and set its protected radius.</b> Open the controller's screen, press R and type the radius: {n(MIN_RADIUS)} blocks up to its range, {n(DEFAULT_RADIUS)} to begin with.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Save its link on a Data Stick.</b> Right-click the radar&#39;s controller (or the tower&#39;s) with the stick. The stick keeps the radar&#39;s dimension and position.</div></div>
@@ -352,7 +389,7 @@ def sheet() -> str:
 <div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;margin-top:8px">{img(tower_img, h=520, style="max-width:100%")}</div>
 <div class="muted" style="font-size:16px;margin-top:6px">One tower reaches farther than either small radar, and the better its Energy Hatch, the farther it sees. It carries the same spinning dish, half again as large, and gives the same outputs.</div></div>
 <div class="card"><div class="label" style="margin-bottom:6px">Build it</div>
-<div class="pt"><b>{n_c + n_h} Radar Casing</b> (at least {min_casing}; hatches may replace the rest) &middot; the walls. Make four at a time in the Assembler at HV from 6 stainless steel plates.</div>
+<div class="pt"><b>{n_c + n_h} Radar Casing</b> (at least {min_casing}; hatches may replace the rest) &middot; the walls. Make {CASING_YIELD} at a time in the Assembler at HV from {CASING_PLATES} stainless steel plates.</div>
 <div class="pt" style="margin-top:8px"><b>{n_b} Gantry Beam</b> &middot; the mast up the middle, standing two blocks above the walls.</div>
 <div class="pt" style="margin-top:8px"><b>1 Radar Tower controller</b> (IV) &middot; the front wall, second row up from the bottom.</div>
 <div class="pt" style="margin-top:8px"><b>Hatches</b> go in the {n_h} outlined casing blocks of the bottom ring: at least one <b>Energy Hatch</b> and one <b>Maintenance Hatch</b>. Below an IV Energy Hatch the tower stays off and says why.</div>
@@ -418,7 +455,7 @@ def sheet() -> str:
 <div class="card" style="margin-top:18px;display:grid;grid-template-columns:240px 1fr;gap:22px;align-items:center">
 <div class="spot" style="display:flex;justify-content:center;padding:8px">{img(war_img, h=210)}</div>
 <div><div style="display:flex;align-items:center;gap:12px"><h2>The T3 EMP warhead</h2>{chip("LuV")}</div>
-<div class="pt" style="margin-top:6px">The tower&#39;s pulse on a missile. A Tier 3 casing (LuV, made in the Assembler) that, when it goes off, sends one EMP pulse in <b>machines and missiles</b> mode, centered on the blast. A full warhead reaches <b>{EMP_WAR_R} blocks</b>, less with a smaller fill. It breaks no blocks and hurts nobody, but every device in reach drains exactly as it does for the tower, within the same {EMP_DEVICES}-device cap, and missiles in the air roll the same table. It costs no EU and, like every Tier 3 warhead, flies from the silo on a Tier 3 missile.</div></div></div>"""
+<div class="pt" style="margin-top:6px">The tower&#39;s pulse on a missile. Fit an inert Tier 3 warhead with the EMP payload (2 LuV Field Generators and 2 LuV Emitters) in the Assembler, then load Plastic Explosive charges. When it goes off it sends one EMP pulse in <b>machines and missiles</b> mode, centered on the blast. A full load of {EMP_WAR_FILL} charges reaches <b>{n(EMP_WAR_R)} blocks</b>, less with fewer. It breaks no blocks and hurts nobody, but every device in reach drains exactly as it does for the tower, within the same {EMP_DEVICES}-device cap, and missiles in the air roll the same table. It costs no EU and, like every Tier 3 warhead, flies from the silo on a Tier 3 missile.</div></div></div>"""
 
     # ---- handheld
     hand = f"""<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:18px">
@@ -426,8 +463,8 @@ def sheet() -> str:
 <div class="pt" style="margin-top:8px">Right-click to aim at a spot up to <b>{GUN_RANGE} blocks</b> away. It stores that spot&#39;s X and Z. Right-click a <b>Launch Control</b> to copy the target there, or drop the gun in the Launch Control&#39;s slot and press <b>Load target</b>. Sneak and right-click to clear it.</div></div>
 <div class="card"><div style="display:flex;align-items:center;gap:12px">{item_icon("remote_detonator", 56, "Remote Detonator")}<h2>Remote Detonator</h2>{chip("HV")}{chip("EV")}{chip("IV")}</div>
 <div class="pt" style="margin-top:8px"><b>Sneak-click a placed warhead</b> to link it; sneak-click the air to clear. A plain right-click <b>lights its fuse</b> from a distance, and the warhead counts down and beeps as if lit by hand. Reach: <b>{n(RANGE_RD)}</b> (HV), <b>{n(RANGE_RE)}</b> (EV), <b>{n(RANGE_RI)}</b> (IV) blocks, same dimension, loaded chunk only. Only the warhead&#39;s owner can link or fire it.</div></div>
-<div class="card"><div style="display:flex;align-items:center;gap:12px">{item_icon("defuser", 56, "Defuser")}<h2>Defuser</h2>{chip("HV")}</div>
-<div class="pt" style="margin-top:8px"><b>Right-click a lit warhead</b> to put its fuse out. <b>Left-click a missile</b> on a pad or in a silo to take it apart: body and warhead drop as items, the fuel is lost. Too late once the countdown runs or the engines have lit; abort at the Launch Control first. It breaks after <b>{DEFUSER_USES} uses</b>; refusals cost nothing.</div></div></div>"""
+<div class="card"><div style="display:flex;align-items:center;gap:12px">{item_icon("defuser", 56, "Defuse Kit")}<h2>Defuse Kit</h2>{chip("HV")}</div>
+<div class="pt" style="margin-top:8px"><b>Right-click a lit warhead</b> to put its fuse out. <b>Left-click a missile</b> on a pad or in a silo to take it apart: body and warhead drop as items, the fuel is lost. Too late once the countdown runs or the engines have lit; abort at the Launch Control first. <b>In a crafting grid with a live warhead</b> it takes out up to {DEARM_PER_CRAFT} Plastic Explosive charges, whole; the last one out leaves the inert warhead. It lasts <b>{DEFUSER_USES} uses</b>; refusals cost nothing.</div></div></div>"""
 
     # ---- outputs
     outputs = f"""<div class="card" style="margin-top:18px"><h2>Redstone, covers and computers</h2>
@@ -438,7 +475,7 @@ def sheet() -> str:
 <div class="muted" style="font-size:16px;margin-top:8px">A radar and a battery link through a Data Stick, never the air: the stick carries the radar&#39;s address. The handheld tools use no links but the warhead the detonator points at.</div></div>"""
 
     top = f"""<div class="card" style="display:grid;grid-template-columns:1.5fr 1fr;gap:26px;align-items:center">
-<div><h2>See it coming, shoot it down, switch it off</h2><div class="pt" style="margin-top:8px">A <b>radar</b> watches the missiles in flight and flags the ones that will <b>land</b> inside the radius you protect. A linked <b>Air-Defense Battery</b> fires <b>SAMs</b> at them. An <b>EMP Tower</b> kills missiles by chance and wipes the charge of machines in reach. The <b>handheld tools</b> aim, light and put out charges you place yourself. Everything runs on GregTech EU at HV and up.</div></div>
+<div><h2>See it coming, shoot it down, switch it off</h2><div class="pt" style="margin-top:8px">A <b>radar</b> watches the missiles in flight and flags the ones that will <b>land</b> inside the radius you protect. A linked <b>Air-Defense Battery</b> fires <b>SAMs</b> at them. An <b>EMP Tower</b> kills missiles by chance and wipes the charge of machines in reach. The <b>handheld tools</b> aim, light and put out charges you place yourself, and unload warheads. Everything runs on GregTech EU at HV and up.</div></div>
 <div class="spot" style="display:flex;justify-content:space-around;align-items:center;padding:6px">{img(hv, h=110)}{img(bat, h=110)}{img(emp, h=110)}</div></div>"""
 
     body = f"""{top}

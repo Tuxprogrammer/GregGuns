@@ -163,11 +163,11 @@ The Fuze Assembly Mk III (LuV: a Master circuit, a tungstensteel plate and four 
 | Smoke | HV | 8 | 2 Dispersal Canisters, 8 coal dust, 2,000 L creosote | 277.1 |
 | Repulsive | HV | 9 | 1 Field Generator (HV) | 277.5 |
 | Attractive | HV | 10 | 1 Field Generator (HV), 4 magnetic steel rods | 279.5 |
-| Fragmentation | EV | 19 | 1 Fragmentation Sleeve (Titanium) | 502 |
-| Thermobaric | EV | 24 | 2 Dispersal Canisters, 4,000 L GT++ kerosene | 502 |
-| Sonic | EV | 21 | 2 Emitters (EV) | 507 |
-| Breaching | EV | 22 | 2 Liner Cones, 6 titanium rods | 503 |
-| Contagious | EV | 23 | 4 Escherichia (rotten-flesh) petri dishes from the Bio Lab, 2,000 L biomass | 508 |
+| Fragmentation | EV | 19 | 1 Fragmentation Sleeve (Titanium) | 448 |
+| Thermobaric | EV | 24 | 2 Dispersal Canisters, 4,000 L GT++ kerosene | 448 |
+| Sonic | EV | 21 | 2 Emitters (EV) | 453 |
+| Breaching | EV | 22 | 2 Liner Cones, 6 titanium rods | 449 |
+| Contagious | EV | 23 | 4 Escherichia (rotten-flesh) petri dishes from the Bio Lab, 2,000 L biomass | 454 |
 | Exothermic | LuV | 1 | 4 Napalm Canisters, 8,000 L kerosene | 483.4 |
 | Endothermic | LuV | 2 | 4 Dispersal Canisters, 8,000 L helium | 479.4 |
 | Nuclear | ZPM | 3 | 8 uranium-235 ingots, 4 plutonium ingots, 2 ZPM Field Generators to hold the core (the charges are its implosion lens) | 605.4 |
@@ -181,7 +181,7 @@ The Fuze Assembly Mk III (LuV: a Master circuit, a tungstensteel plate and four 
 - **Gas-effect fills are general industrial pack fluids, chosen by in-game theme** (D56 amended): nitrous oxide, ammonia, creosote, biomass and kerosene, held in Dispersal Canisters. No chemical-warfare agent is used or named anywhere. The mustard seeds are a pun and nothing more: the item is HarvestCraft's `harvestcraft:mustardseedsItem` ("Mustard Seeds"); the recipe omits them when the mod is not loaded.
 - **Item names** checked in the pack source: `ItemList.Field_Generator_HV` and `Emitter_EV` (GT5-Unofficial 5.09.54.205 `ItemList`, used by the machine recipes in `MTERecipeLoader`; the parts' own recipes live in the pack's scripts), the `circuit` prefix with the material `Data` (the repo's tables use it already), and `BioCultureLoader.rottenFleshBacteria` with `BioCultureEnum.getPetriDish`.
 - **The payload recipe is not NBT-sensitive.** The Bio Lab's petri dish carries NBT. Because of that, an inert warhead that already has a payload can be refitted, and the old payload is lost. The fill recipe is NBT-sensitive. GT's `nbtSensitive` matching compares the item, damage and the whole tag (`GTRecipe.RecipeItemInput.matchesRecipe`). Inputs of the same item are summed across slots, so 128 charges can sit in two stacks.
-- **Cost (D328).** A full warhead costs the inert warhead (casing plates, fuze, the rocket's nose cone and hull, the arming electronics), plus the payload, plus a full casing of Plastic Explosive. The measured numbers are in [Cost (D328)](#cost-d328) below. The last column of the payload table is the in-code estimate (`WarheadRecipeSpec.cost`, plate equivalents: about ingots, with electronics counted low); `WarheadRecipeSpecTest` holds it in bands (T1 260 to 290, T2 495 to 515, T3 475 to 620, T4 and T5 950 to 1,250) to guard the data against an accidental change.
+- **Cost (D328).** A full warhead costs the inert warhead (casing plates, fuze, the rocket's nose cone and hull, the arming electronics), plus the payload, plus a full casing of Plastic Explosive. The measured numbers are in [Cost (D328)](#cost-d328) below. The last column of the payload table is the in-code estimate (`WarheadRecipeSpec.cost`, plate equivalents: about ingots, with electronics counted low); `WarheadRecipeSpecTest` holds it in bands (T1 260 to 290, T2 440 to 465, T3 475 to 620, T4 and T5 950 to 1,250) to guard the data against an accidental change.
 - **Tier ladder.** The explosive climbs with the casing through the charge count: 5, 20, 64, then 128 Plastic Explosive, each made from Industrial TNT and PTFE. The payloads climb from steel to titanium to tungstensteel-era field generators and exotics.
 - GT recycling data (D44, D283): each live warhead and each inert warhead recycles into its casing plates and its Fuze Assembly's metal; a fitted inert warhead recycles the same, so its payload is lost. Each part recycles into its metal and plastic. Explosives and fluids are lost. The Cutting Machine's de-arm is the lossless way back.
 - NEI: every machine step is an Assembler recipe, so NEI shows each one with its programmed circuit and its fluid, and NEI can follow the chain from the inert warhead to the live warhead. The crafting-grid load is a custom recipe and is not listed in NEI (as for the launcher warheads, D150). The inert warhead's tooltip explains it.
@@ -201,11 +201,11 @@ Measured in the real GTNH 2.9.0-RC-2 pack by `tools/icbm-balance/cost.py` over t
 | smoke T1 | 25 | 44 | 271 | 6 HV | 385 |
 | repulsive T1 | 19 | 292 | 265 | 6 HV, 4 IV | 633 |
 | attractive T1 | 21 | 294 | 267 | 6 HV, 4 IV | 635 |
-| fragmentation T2 | 45 | 81 | 483 | 6 EV | 743 |
-| thermobaric T2 | 46 | 86 | 484 | 6 EV | 748 |
-| sonic T2 | 50 | 215 | 488 | 10 EV | 877 |
-| breaching T2 | 47 | 84 | 485 | 6 EV | 745 |
-| contagious T2 | 63 | 102 | 501 | 6 EV | 763 |
+| fragmentation T2 | 45 | 81 | 429 | 6 EV | 662 |
+| thermobaric T2 | 46 | 86 | 430 | 6 EV | 667 |
+| sonic T2 | 50 | 215 | 434 | 10 EV | 796 |
+| breaching T2 | 47 | 84 | 431 | 6 EV | 664 |
+| contagious T2 | 63 | 102 | 447 | 6 EV | 682 |
 | exothermic T3 | 120 | 275 | 1,496 | 11 LuV | 3,103 |
 | endothermic T3 | 120 | 271 | 1,496 | 11 LuV | 3,099 |
 | nuclear T3 (ZPM) | 126 | 268 | 2,560 | 11 LuV, 32 ZPM, 8 UV | 16,473 |
@@ -217,14 +217,14 @@ Measured in the real GTNH 2.9.0-RC-2 pack by `tools/icbm-balance/cost.py` over t
 
 | Missile (body + full warhead) | Reference rocket, no lander | Before: missile / rocket | After: missile / rocket | After: warhead / body |
 |---|---|---|---|---|
-| T1 conventional | Tier 1 (HV), 799 | 0.55 - 0.88 | 0.97 - 1.30 | 0.91 - 1.56 |
-| T2 conventional | Tier 2 (EV), 2,264 | 0.51 - 0.57 | 0.81 - 0.86 | 0.69 - 0.81 |
-| T3 conventional | Tier 4 (LuV), 5,082 | 0.75 - 2.34 | 1.30 - 2.90 | 0.88 - 3.18 |
-| Nuclear | Tier 5 (ZPM), 20,874 | 0.18 | 0.96 | 4.68 |
-| Antimatter | Tier 6 (UV), 27,988 | 1.08 | 1.40 | 10.17 |
-| Red matter | Tier 7 (UHV), 84,284 | 0.76 | 0.96 | 21.98 |
+| T1 conventional | Tier 1 (HV), 799 | 0.55 - 0.88 | 0.99 - 1.32 | 0.88 - 1.51 |
+| T2 conventional | Tier 2 (EV), 2,264 | 0.51 - 0.57 | 0.90 - 0.96 | 0.48 - 0.58 |
+| T3 conventional | Tier 4 (LuV), 5,082 | 0.75 - 2.34 | 1.02 - 2.62 | 1.47 - 5.33 |
+| Nuclear | Tier 5 (ZPM), 20,874 | 0.18 | 0.89 | 7.84 |
+| Antimatter | Tier 6 (UV), 27,988 | 1.08 | 1.35 | 17.03 |
+| Red matter | Tier 7 (UHV), 84,284 | 0.76 | 0.94 | 36.79 |
 
-The targets (0018 §5, D328): a missile costs about one rocket of its tier (the band is 0.8 to 1.4 for the cheapest warhead of each tier; the special blasts cost more and are balanced on their effect), the warhead is the expensive part (at least 0.7 of its body; the T2 body is dear because it takes Tier 3 and 4 rocket parts, D329), and the cheapest warhead at least doubles each step: 371, 743, 3,099, 16,473, 35,795, 77,348. The EMP and anti-gravitational warheads are dear because their LuV Field Generators are.
+The "After" columns are F2's remeasure (D343, D344): the T2 casing takes the Tier 2 rocket's Nose Cone (the Heavy Nose Cone needs IV), the T3 body the Tier 4 rocket's parts, and the bodies are priced without hiding above-tier parts as raw items (420, 1,373 and 2,102 units). The targets (0018 §5, D328) apply to **the cheapest warhead of each tier**: with it a missile costs about one rocket of its tier (0.8 to 1.4), the warhead is the costly half or more (at least 0.5 of its body; the T2 body is dear because it takes Tier 3 and 4 rocket parts, D329), and each tier's cheapest warhead costs more than the one below: 371, 662, 3,099, 16,473, 35,795, 77,348 (1.8 times from T1 to T2, at least twice after). The special blasts cost more and are balanced on their effect. The EMP and anti-gravitational warheads are dear because their LuV Field Generators are.
 
 ## Requirements
 

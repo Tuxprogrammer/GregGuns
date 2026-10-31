@@ -103,7 +103,7 @@ A missile launched from a silo gets scatter x0.5 (`icbm.siloScatterFactor`, on t
 | Scatter | 6 blocks base (3 from a silo); no guidance steps (Mk III is IV, below the body's LuV) |
 | Health | 60 |
 | Warhead | T3 or lighter |
-| Build | LuV chip and schematic (yellow lens), Assembly Line at LuV behind a research scan: 4 compressed titanium plates, 4 Heavy Duty Rocket Fins Tier 3, 1 Heavy Duty Rocket Engine Tier 3 (NewHorizonsCoreMod, found by registry name), 2 Master circuits, lubricant; Assembler fit of a Mk III computer |
+| Build | LuV chip and schematic (yellow lens), Assembly Line at LuV behind a research scan: the Tier 4 rocket's hull, fins and engine (4 Heavy Duty Plates Tier 4 from NewHorizonsCoreMod, 4 heavy rocket fins, 1 heavy rocket engine, found by registry name; all buildable at LuV, D343), 2 Master circuits, lubricant; Assembler fit of a Mk III computer |
 | Recycling | the compressed titanium comes back |
 
 Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,300 for the body, one T3 rocket launch with its warhead. The nuclear coder owns the T3 and nuclear warheads; the silo mates whatever `BlockWarhead` item carries `{explosive, fill}`.

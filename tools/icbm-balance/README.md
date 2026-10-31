@@ -26,8 +26,13 @@ python -I tools/icbm-balance/cost.py dump.json report.md [--json report.json]
 - The cheapest such recipe wins. Recipe maps that take things apart or only show (macerator, cutting machine, recycler,
   scanner, research, the component assembly line and the like) never make an item; nor does a row whose output is one
   of its inputs.
+- An item whose recipes all run above that voltage, or need such an item, is **above tier**: it is priced by its
+  cheapest route at any voltage and named in the report's "Above tier" column (the summary lists every above-tier item
+  of a missile's body and warheads). A route at the tier always wins over one that needs an above-tier item. Only an
+  item with no recipe at any voltage counts as raw. The T2 body's heavy fins and engine are above tier at EV by design
+  (they need IV, inside the T2 band, D343).
 - The expansion stops at GT materials (in ingots: a plate is 1, a rod 0.5, molten metal 144 L is 1), circuits (counted
-  by tier, never expanded), fluids (litres, never expanded) and raw items (no recipe, no GT data). Crafting tools are
+  by tier, never expanded), fluids (liters, never expanded) and raw items (no recipe, no GT data). Crafting tools are
   free. EU is summed over every machine step.
 - **Units** = ingots + circuits (2^(tier+1) each: HV 16, EV 32, IV 64, LuV 128) + 1 per 1,000 L + 4 per raw item. It is
   the one number used to pick between recipes and to compare items; the report also gives ingots, the main materials,

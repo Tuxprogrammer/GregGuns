@@ -15,7 +15,7 @@ Whether any ICBM recipe collides with, or is hidden by, a recipe of the rest of 
 
 ### Tool change
 
-The warhead de-arm recipes in the Cutting Machine (D283) are NBT-sensitive: the same inert warhead with a different payload or fill is a different recipe. The dump keyed a stack by item and damage only, so the first run reported 370 false "exact" clashes among them (all `(own)`, all the Cutting Machine). `RecipeDumper.key` now appends `#nbt<hash of the tag>` to a GregGuns stack that carries NBT, so those rows differ. Pack stacks keep the plain key, so a pack row that ignores NBT still compares equal to ours.
+The warhead de-arm recipes in the Cutting Machine (D283) are NBT-sensitive: the same inert warhead with a different payload or fill is a different recipe. The dump keyed a stack by item and damage only, so the first run reported 370 false "exact" clashes among them (all `(own)`, all the Cutting Machine). `RecipeDumper.key` now appends `#nbt<hash of the tag>` to a GregGuns stack that carries NBT, so those rows differ. Pack stacks keep the plain key, so a pack row that ignores NBT still compares equal to ours. Since D344 a GT row flagged NBT-sensitive also carries `"nbt":true`, and `clash.py` compares the inputs of a GT row that ignores NBT (not flagged, not a display-only fake map) on the plain key: GT gives such a recipe a tagged stack too, so the review sees it fire on, say, a fitted warhead. An NBT-sensitive row still matches only its own tag. Crafting and NASA Workbench inputs, which ignore the tag, are dumped with the plain key. The item data of a tagged key is the item's (`DumpRow.plainKey`).
 
 ## Result
 
@@ -55,3 +55,14 @@ The same tool, on a dump from the real pack with the I7 jar merged with coder P1
 | subset | 1 (the Bacterial Vat row above) | 22 (the same rows as before) |
 
 No new finding: the changed rows add inputs, so none became a subset of a pack row, and the new de-arm rows differ by NBT. **No unresolved ICBM clash.** Any later recipe change reruns the tool the same way.
+
+## Rerun on the tier fixes (F2, D343 and D344)
+
+The same tool on a fresh dump from the real pack with the F2 jar: the Inert T2 Warhead takes the Nose Cone in place of the Heavy Nose Cone, the T2 scrap row returns it, and the T3 body (its Assembly Line recipe, its NASA Workbench rows and its research) takes 4 Heavy Duty Plates Tier 4, 4 heavy fins and a heavy engine. The dump now flags the NBT-sensitive GT rows, and `clash.py` compares rows that ignore NBT on the plain key (D344).
+
+| Category | Default flags | `--ignore-counts` |
+|---|---|---|
+| exact, shadow, grid, shapeless, duplicate, superset | 0 | 0 |
+| subset | 1 (the Bacterial Vat row above) | 22 (the same rows as before) |
+
+No new finding. **No unresolved ICBM clash.**
