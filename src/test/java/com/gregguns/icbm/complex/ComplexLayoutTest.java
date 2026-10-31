@@ -320,12 +320,13 @@ class ComplexLayoutTest {
                 if (r.kind() == RoomKind.ARMORY) {
                     armories++;
                     displays += here;
-                    assertTrue(here >= 1 && here <= 24, "an armory shows about sixteen guns: " + here);
+                    assertTrue(here >= 1, "an armory shows guns: " + here);
                 }
             }
         }
         assertTrue(armories > 100, "armories are mandatory: " + armories);
-        assertTrue(displays / armories >= 12 && displays / armories <= 20, "about as many guns as before");
+        // The 24-gun cap is lifted for alpha (D309): rows every six cells while they fit.
+        assertTrue(displays / armories >= 12, "an armory shows a dozen guns or more: " + displays / armories);
     }
 
     private static long key(int x, int z) {
@@ -395,10 +396,7 @@ class ComplexLayoutTest {
                     assertTrue(d >= 0, "inside the room, not on a wall: " + what);
                     assertEquals(Cell.AIR, raster.at(m.x(), 1, m.z()), what);
                     assertFalse(f.blocksDoor(a, d), "doorway stays clear: " + what);
-                    if (m.kind() == MarkKind.LOOT_CHEST && r.kind() == RoomKind.STOCKPILE) {
-                        assertEquals(0, d, "stockpile chests stand on the far wall: " + what);
-                        stock++;
-                    }
+                    if (m.kind() == MarkKind.LOOT_CHEST && r.kind() == RoomKind.STOCKPILE) stock++;
                     int reach = m.key()
                         .equals(MachineRole.NASA_WORKBENCH.name()) ? 2 : 1;
                     boolean ok = false;

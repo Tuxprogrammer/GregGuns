@@ -28,7 +28,7 @@ import com.gregguns.icbm.worldgen.Placement.Kind;
  * Pieces wear by group ({@link FurniturePiece#groupOf}): a bed's two halves, a container prism and a piece's stacked
  * layers go or stay together. Every roll is a hash of the plan seed and the group or cell, so each populate window
  * agrees. The rubble piles a gutted room gains never cut any open cell, chest, machine or door off from the room's
- * doors: each pile cell is kept only if a walk from the doors still reaches everything it reached before. Pure.
+ * doors: a pile cell is kept only where the open cells around it stay joined without it. Pure.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/activity-levels.md (Room looks); D309
 public final class FurnitureWear {
@@ -248,8 +248,8 @@ public final class FurnitureWear {
 
     /**
      * One rubble pile, 1 to 3 cells and 1 or 2 high, per {@link #PILE_CELLS} floor cells of a gutted room, on hashed
-     * free floor cells away from doors, lamps and floor damage. Each pile cell stays only if every cell, chest, machine
-     * and door the room's doors reached before is still reached.
+     * free floor cells away from doors, lamps and floor damage. Each pile cell stays only if it cannot cut any cell,
+     * chest, machine or door off ({@link RoomGrid#tryBlock}).
      */
     private static void piles(ComplexPlan plan, int section, List<Mark> marks, Box b, long seed, List<Placement> worn,
         List<Placement> out) {
@@ -258,7 +258,6 @@ public final class FurnitureWear {
         int floor = g.openCells();
         int want = floor / PILE_CELLS;
         if (want == 0) return;
-        boolean[] before = g.reach();
         List<int[]> cand = g.pileCandidates();
         // A hash order, so the piles are the same in every window and do not bunch.
         final long s = seed;
@@ -276,7 +275,7 @@ public final class FurnitureWear {
             int laid = 0;
             int x = c[0], z = c[1];
             for (int i = 0; i < cells; i++) {
-                if (g.free(x, z) && g.tryBlock(x, z, before)) {
+                if (g.free(x, z) && g.tryBlock(x, z)) {
                     for (int y = 1; y <= high; y++) {
                         out.add(
                             Placement.at(Kind.RUBBLE, x, y, z)
@@ -373,6 +372,31 @@ public final class FurnitureWear {
             return g.starts.isEmpty() ? null : g;
         }
 
+        /**
+         * Applies the rest of a room's look to the grid: rubble at foot height blocks its cell, and a piece removed
+         * at foot height frees it.
+         */
+        void after(List<Placement> ps) {
+            for (Placement p : ps) {
+                if (p.y() != 1 || !in(p.x(), p.z())) continue;
+                if (p.kind() == Kind.RUBBLE) blocked[i(p.x(), p.z())] = true;
+            }
+        }
+
+        /** @return the targets (chests, machines, spawners) with no reached cell beside them */
+        List<int[]> cutOff(boolean[] seen) {
+            List<int[]> out = new ArrayList<int[]>();
+            for (int[] t : targets) if (!touches(seen, t)) out.add(t);
+            return out;
+        }
+
+        /** @return the share of the floor that is blocked (pieces, marks, rubble) */
+        double fill() {
+            int n = 0;
+            for (boolean b : blocked) if (b) n++;
+            return blocked.length == 0 ? 0 : n / (double) blocked.length;
+        }
+
         boolean in(int x, int z) {
             return x >= x0 && z >= z0 && x < x0 + w && z < z0 + d;
         }
@@ -427,23 +451,50 @@ public final class FurnitureWear {
             return seen;
         }
 
+        /** The ring of eight cells around a cell, in walking order (each one step from the next). */
+        private static final int[] RX = { 0, 1, 1, 1, 0, -1, -1, -1 }, RZ = { -1, -1, 0, 1, 1, 1, 0, -1 };
+
+        private boolean open(int x, int z) {
+            return in(x, z) && !blocked[i(x, z)];
+        }
+
         /**
-         * Blocks a cell if the walk from the doors still reaches every other cell it reached in {@code before}, and
-         * every target that touched a reached cell still does.
+         * Blocks a cell when that cannot cut anything off, judged on its 3 x 3 neighborhood alone: the open cells
+         * beside it must stay joined around it (so every walk through it has a way round), and every chest, machine or
+         * guard beside it must keep another open neighbor. Conservative: a cell that might matter is left open.
          */
-        boolean tryBlock(int x, int z, boolean[] before) {
+        boolean tryBlock(int x, int z) {
+            // Runs of open cells around the ring that hold a cell straight beside this one.
+            int runs = 0;
+            for (int k = 0; k < 8; k++) {
+                boolean here = open(x + RX[k], z + RZ[k]);
+                boolean prev = open(x + RX[(k + 7) & 7], z + RZ[(k + 7) & 7]);
+                if (here && !prev) {
+                    // A run starts at k; does it hold an orthogonal neighbor?
+                    boolean side = false;
+                    for (int j = k; open(x + RX[j & 7], z + RZ[j & 7]) && j < k + 8; j++) side |= (j & 1) == 0;
+                    if (side) runs++;
+                }
+            }
+            boolean allOpen = true;
+            for (int k = 0; k < 8; k++) allOpen &= open(x + RX[k], z + RZ[k]);
+            if (runs > 1 || runs == 0 && !allOpen && hasOpenSide(x, z)) return false;
+            for (int[] t : targets) {
+                if (Math.abs(t[0] - x) + Math.abs(t[1] - z) != 1) continue;
+                boolean other = false;
+                for (int k = 0; k < 4; k++) {
+                    int nx = t[0] + DX[k], nz = t[1] + DZ[k];
+                    if ((nx != x || nz != z) && open(nx, nz)) other = true;
+                }
+                if (!other) return false;
+            }
             blocked[i(x, z)] = true;
-            boolean[] now = reach();
-            boolean ok = true;
-            for (int k = 0; k < now.length && ok; k++) {
-                if (before[k] && !now[k] && k != i(x, z)) ok = false;
-            }
-            for (int t = 0; t < targets.size() && ok; t++) {
-                int[] c = targets.get(t);
-                if (touches(before, c) && !touches(now, c)) ok = false;
-            }
-            if (!ok) blocked[i(x, z)] = false;
-            return ok;
+            return true;
+        }
+
+        private boolean hasOpenSide(int x, int z) {
+            for (int k = 0; k < 4; k++) if (open(x + DX[k], z + DZ[k])) return true;
+            return false;
         }
 
         private boolean touches(boolean[] seen, int[] c) {
