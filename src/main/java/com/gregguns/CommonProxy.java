@@ -183,6 +183,7 @@ public class CommonProxy {
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         command.register(new com.gregguns.core.command.BuildSubCommand());
         command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
+        command.register(new com.gregguns.icbm.soak.SoakStatSubCommand());
         event.registerServerCommand(command);
         GregGuns.LOG.info(
             "Registered /gregguns (dev environment or -Dgregguns.testHooks), {} scenarios",

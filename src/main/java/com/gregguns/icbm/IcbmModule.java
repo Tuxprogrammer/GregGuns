@@ -67,6 +67,7 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.tools.ToolRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.launcher.LauncherWarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.antidote.AntidoteRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.soak.IcbmSoakScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             // The complex scenarios fail on a role audit violation (D267).
             ScenarioRegistry complex = new ScenarioRegistry();
             com.gregguns.icbm.complex.ComplexScenarios.registerAll(complex);
