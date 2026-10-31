@@ -1,5 +1,6 @@
 package com.gregguns.client.mob;
 
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -25,9 +26,10 @@ import cpw.mods.fml.relauncher.SideOnly;
  * armor layers, the helmet slot and the held item work as for a zombie. On top of that it:
  * <ul>
  * <li>scales the model about the mob's feet (the shadow stays unscaled, as in the spec);</li>
- * <li>sets {@code aimedBow} on the main model and on both armor models, so the file's {@code when: aiming} poses
- * and the armor layers raise the arms together: true when the entity implements {@link MobAnimSource} and says it
- * aims, or else when a gun is in the right hand;</li>
+ * <li>sets {@code aimedBow} on the model, so the file's {@code when: aiming} poses apply: true when the entity
+ * implements {@link MobAnimSource} and says it aims, or else when a gun is in the right hand;</li>
+ * <li>makes every armor model drawn for the NPC take the model's pose ({@link ArmorPose}, D310): the vanilla armor
+ * layers are {@link PosedArmorModel}s, and the render runs with this model as the pose source;</li>
  * <li>adds a per-mob hand offset when the held item is a gun, to move the gun clear of a bulky arm.</li>
  * </ul>
  *
@@ -98,8 +100,20 @@ public final class RenderDataBiped extends RenderBiped {
         model.carryingGun = holdsGun(living);
         boolean aiming = isAiming(living);
         model.aimedBow = aiming;
-        field_82423_g.aimedBow = aiming;
-        field_82425_h.aimedBow = aiming;
+    }
+
+    /** The vanilla armor layers (chest and helmet, then leggings), built as models that follow the NPC's pose. */
+    @Override
+    protected void func_82421_b() {
+        // Called from the RenderBiped constructor, before this class's fields are set: it must not read them.
+        field_82423_g = new PosedArmorModel(1.0F);
+        field_82425_h = new PosedArmorModel(0.5F);
+    }
+
+    /** Draws the NPC with its body model as the armor's pose source (D310). */
+    @Override
+    public void doRender(EntityLiving living, double x, double y, double z, float yaw, float partial) {
+        ArmorPose.during(model, () -> super.doRender(living, x, y, z, yaw, partial));
     }
 
     private static boolean isAiming(EntityLivingBase living) {
@@ -156,6 +170,21 @@ public final class RenderDataBiped extends RenderBiped {
             renderManager.itemRenderer.renderItem(living, held, 0);
         } finally {
             GL11.glPopMatrix();
+        }
+    }
+
+    /** A vanilla armor layer that takes the NPC's pose after vanilla posed it. */
+    private static final class PosedArmorModel extends ModelBiped {
+
+        PosedArmorModel(float inflate) {
+            super(inflate);
+        }
+
+        @Override
+        public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
+            float headPitch, float scale, Entity entity) {
+            super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+            ArmorPose.follow(this);
         }
     }
 

@@ -5,12 +5,14 @@ import java.util.Map;
 
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.gregguns.armor.model.ArmorBoxDef;
 import com.gregguns.armor.model.ArmorModelDef;
 import com.gregguns.armor.model.ArmorModels;
+import com.gregguns.client.mob.ArmorPose;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -19,7 +21,8 @@ import cpw.mods.fml.relauncher.SideOnly;
  * A worn-armor model built from an {@link ArmorModelDef}: a {@link ModelBiped} whose six parts carry the set's own
  * boxes instead of the vanilla ones. One instance draws one piece (helmet, chestplate, leggings or boots), so Forge's
  * per-slot part visibility and the vanilla walk, sneak and aim animation keep working: every box is a child of a
- * biped part and follows its rotation.
+ * biped part and follows its rotation. On a GregGuns NPC the parts take the NPC's own pose instead
+ * ({@link ArmorPose}).
  *
  * <p>
  * Client only. Instances are cached per set and piece by {@link #forPiece}.
@@ -50,6 +53,14 @@ public final class BoxArmorModel extends ModelBiped {
         for (ArmorBoxDef b : def.boxesFor(slot)) {
             part(b.part()).addChild(build(b));
         }
+    }
+
+    /** Vanilla's pose, or the NPC's while an NPC wears this piece ({@link ArmorPose}). */
+    @Override
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
+        float headPitch, float scale, Entity entity) {
+        super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entity);
+        ArmorPose.follow(this);
     }
 
     private ModelRenderer part(ArmorBoxDef.Part p) {
