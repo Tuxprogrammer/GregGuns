@@ -2,6 +2,7 @@ package com.gregguns.icbm.worldgen;
 
 import java.util.List;
 
+import com.gregguns.icbm.complex.FurniturePiece;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.worldgen.Placement.Kind;
@@ -37,16 +38,18 @@ public final class FurnitureWear {
      * @param out       where a removal (air) or a crushed piece (rubble) goes
      */
     public static void wear(Mark m, boolean collapsed, ActivityLevel level, long seed, List<Placement> out) {
-        if (m.kind() != MarkKind.FURNITURE || "BASIN".equals(m.key())
-            || com.gregguns.icbm.complex.RoomFurniture.PARTITION.equals(m.key())) return; // walls stay
+        if (m.kind() != MarkKind.FURNITURE || "BASIN".equals(m.key())) return;
+        FurniturePiece p = FurniturePiece.of(m.key());
+        // Walls, water and rugs stay; an inlay is the floor itself.
+        if (p != null && (p.wear() == FurniturePiece.Wear.KEEP || p.inlay())) return;
         if (collapsed) {
             out.add(
                 Placement.at(Kind.RUBBLE, m.x(), m.y(), m.z())
                     .build());
             return;
         }
-        // One roll per column, so a whole piece goes or stays.
-        if (Mix.unit(Mix.of(seed, S_WEAR, m.x() * 4096L + m.z(), 0)) < lostShare(level)) {
+        // One roll per group (a bed's halves, a container prism) or per column, so a whole piece goes or stays.
+        if (Mix.unit(Mix.of(seed, S_WEAR, FurniturePiece.groupOf(m), 0)) < lostShare(level)) {
             out.add(
                 Placement.at(Kind.AIR, m.x(), m.y(), m.z())
                     .build());

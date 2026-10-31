@@ -71,7 +71,6 @@ public final class WorldBlocks implements BlockResolver {
             case Cell.DOOR_FRAME:
             case Cell.FURN_TABLE:
             case Cell.FURN_CONSOLE:
-            case Cell.FURN_BUNK:
             case Cell.FURN_SHELF:
                 // Without a palette style the door frame and the furniture are the complex wall (D205).
                 return new ResolvedBlock(BlockComplexWall.instance(), 0, false);
@@ -82,6 +81,9 @@ public final class WorldBlocks implements BlockResolver {
                 return glass();
             case Cell.BASIN:
                 return new ResolvedBlock(Blocks.water, 0, false);
+            case Cell.PROP:
+                // A blueprint prop (D305): the marks pass (or the contents pass, for a metal prop) fills the cell.
+                return new ResolvedBlock(Blocks.air, 0, false);
             default:
                 return null;
         }

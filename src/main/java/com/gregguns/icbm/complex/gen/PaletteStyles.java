@@ -100,8 +100,6 @@ public final class PaletteStyles implements Styles {
                 return furniture(s, Furniture.TABLE);
             case Cell.FURN_CONSOLE:
                 return furniture(s, Furniture.CONSOLE);
-            case Cell.FURN_BUNK:
-                return furniture(s, Furniture.BUNK);
             case Cell.FURN_SHELF:
                 return furniture(s, Furniture.SHELF);
             default:

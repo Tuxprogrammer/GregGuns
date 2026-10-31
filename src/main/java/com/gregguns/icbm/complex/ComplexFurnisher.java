@@ -1,9 +1,15 @@
 package com.gregguns.icbm.complex;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import com.gregguns.icbm.complex.blueprint.Kit;
+import com.gregguns.icbm.complex.blueprint.Legend;
+import com.gregguns.icbm.complex.blueprint.Opening;
+import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
+import com.gregguns.icbm.complex.blueprint.RoomBlueprints;
+import com.gregguns.icbm.complex.blueprint.rooms.Hub;
 
 /**
  * Puts the marks into a grown plan: the lamp grid of every section (D230, D231), each room's furniture and contents in
@@ -84,18 +90,13 @@ final class ComplexFurnisher {
         return out;
     }
 
+    /** Chest, machine and guard counts grow by one step per this many interior cells (D234). */
+    static final int AREA_STEP = com.gregguns.icbm.complex.blueprint.rooms.LegacyRoom.AREA_STEP;
+
     /** Longest gap between floor light tiles (each floor cell then lies within 3 + 3 cells of one). */
     static final int TILE_GAP = 6;
     /** Gap of the light tiles in rooms full of furniture rows, whose shadows a light has to reach around. */
     static final int DENSE_GAP = 4;
-
-    /** @return true for the kinds furnished with rows of tables, shelves or racks */
-    static boolean rowsOfFurniture(RoomKind k) {
-        return k == RoomKind.CAFETERIA || k == RoomKind.MESS_GALLEY
-            || k == RoomKind.SERVER_ROOM
-            || k == RoomKind.STOCKPILE
-            || k == RoomKind.ARMORY; // the display walls cast shadows
-    }
 
     /** Gap of the ceiling-only lamp rows of low sections (a lamp five cells over the floor reaches two cells). */
     static final int LOW_GAP = 3;
@@ -111,8 +112,13 @@ final class ComplexFurnisher {
             TILE_GAP);
         for (Room r : plan.rooms()) {
             int ds = r.doorSide();
-            // A room's runs follow its door wall; rows of furniture cast shadows, so those rooms get a closer grid.
-            lampSection(r.id(), r.bounds(), ds == 0 || ds == 2, rowsOfFurniture(r.kind()) ? DENSE_GAP : TILE_GAP);
+            // A room's runs follow its door wall; its blueprint sets the gap (D305): rows of furniture cast shadows.
+            lampSection(
+                r.id(),
+                r.bounds(),
+                ds == 0 || ds == 2,
+                RoomBlueprints.of(r.kind())
+                    .lampGap());
         }
         for (Tunnel t : plan.tunnels()) lampSection(t.id(), t.bounds(), t.alongX(), TILE_GAP);
         walkwayLamps();
@@ -225,58 +231,36 @@ final class ComplexFurnisher {
 
     // --- the hub -------------------------------------------------------------------------------------------------
 
+    /**
+     * The hub (the assembly bay) is furnished by its own blueprint (D306) in a frame turned to its south wall, with a
+     * straight lane kept clear across from every portal. Its sign (and the activity sign hung under it) keeps the cell
+     * in front of it, and the cells either side, clear.
+     */
     private void hub() {
         Room r = plan.hall();
         Box b = r.bounds();
         damage(r, b, r.id());
+        ComplexLayout.Frame f = new ComplexLayout.Frame(b, 2);
+        Kit k = kit(r, f);
         // The sign: on a wall beside the first portal, facing in.
         for (Door d : plan.doors()) {
             if (d.a != r.id() || d.kind != Door.Kind.PORTAL) continue;
             int[] w = besideOpening(b, d, d.side);
             if (w != null) {
                 r.add(MarkKind.SIGN, w[0], 3, w[1], "icbm.complex.sign.assembly_bay", inward(d.side), 1);
+                int ix = w[0] + DX[inward(d.side)], iz = w[1] + DZ[inward(d.side)];
+                int a = f.a(ix, iz), dd = f.d(ix, iz);
+                k.reserve(a - 1, a + 1, dd - 1, dd + 1);
                 break;
             }
         }
-        // Salvage chests spread along the walls, a machine in the middle, guards toward the corners.
-        List<int[]> ring = ring(b);
-        int chests = 4 + b.sizeX() * b.sizeZ() / 700;
-        spread(r, ring, chests, MarkKind.LOOT_CHEST, LootKeys.SALVAGE);
-        solid(r, b.centerX(), b.centerZ(), MarkKind.MACHINE, MachineRole.WORKBENCH.name());
-        int[][] corners = { { b.minX + 4, b.minZ + 4 }, { b.maxX - 5, b.maxZ - 5 }, { b.minX + 4, b.maxZ - 5 },
-            { b.maxX - 5, b.minZ + 4 } };
-        for (int i = 0; i < 3; i++) solid(r, corners[i][0], corners[i][1], MarkKind.SPAWNER, "room");
-    }
-
-    /** The interior cells against the walls of a box, clockwise from the north-west corner. */
-    private static List<int[]> ring(Box b) {
-        List<int[]> out = new ArrayList<int[]>();
-        int x0 = b.minX + 1, x1 = b.maxX - 2, z0 = b.minZ + 1, z1 = b.maxZ - 2;
-        for (int x = x0; x < x1; x++) out.add(new int[] { x, z0 });
-        for (int z = z0; z < z1; z++) out.add(new int[] { x1, z });
-        for (int x = x1; x > x0; x--) out.add(new int[] { x, z1 });
-        for (int z = z1; z > z0; z--) out.add(new int[] { x0, z });
-        return out;
+        lay(r, f, k, new Hub());
     }
 
     private final boolean[] used = new boolean[S * S];
 
     private boolean usable(int x, int z) {
         return !inZone(x, z) && !floorLamp[x * S + z] && !used[x * S + z];
-    }
-
-    /** Puts {@code n} marks evenly along a list of candidate cells, each on the nearest usable cell. */
-    private void spread(Object owner, List<int[]> cells, int n, MarkKind k, String key) {
-        for (int i = 0; i < n; i++) {
-            int at = (int) ((i + 0.5) * cells.size() / n);
-            for (int off = 0; off < cells.size(); off++) {
-                int[] c = cells.get((at + off) % cells.size());
-                if (!usable(c[0], c[1])) continue;
-                used[c[0] * S + c[1]] = true;
-                add(owner, k, c[0], 1, c[1], key);
-                break;
-            }
-        }
     }
 
     /** A solid mark on the nearest usable interior cell of its section to (x, z) within four cells. */
@@ -310,6 +294,9 @@ final class ComplexFurnisher {
                 return d.z1 + 2 <= b.maxZ - 2 ? new int[] { b.minX, d.z1 + 2 } : null;
         }
     }
+
+    /** World offsets of one step in each hanging direction (0 south, 1 west, 2 north, 3 east). */
+    static final int[] DX = { 0, -1, 0, 1 }, DZ = { 1, 0, -1, 0 };
 
     /** Hanging direction (0 south, 1 west, 2 north, 3 east) of something on a box's {@code side} wall, facing in. */
     static int inward(int side) {
@@ -421,453 +408,159 @@ final class ComplexFurnisher {
 
     // --- rooms ---------------------------------------------------------------------------------------------------
 
-    /** One room's furnishing, in its frame: cells as (lateral a, depth d), d 0 against the back wall. */
-    private final class Fit implements RoomFurniture.Floor {
-
-        final Room r;
-        final ComplexLayout.Frame f;
-        final int L, D;
-        final byte[] occ;
-        /** The furniture stack per cell, a mark key per layer from y 1 up (null for none), and its facing. */
-        final String[][] furn;
-        final byte[] furnFacing;
-
-        Fit(Room r) {
-            this.r = r;
-            this.f = new ComplexLayout.Frame(r);
-            this.L = f.lateral;
-            this.D = f.depth;
-            occ = new byte[L * D];
-            furn = new String[L * D][];
-            furnFacing = new byte[L * D];
-            for (int a = 0; a < L; a++) {
-                for (int d = 0; d < D; d++) {
-                    int x = f.x(a, d), z = f.z(a, d);
-                    occ[a * D + d] = inZone(x, z) ? DOORWAY : floorLamp[x * S + z] ? LIGHT_TILE : FREE;
-                }
-            }
-            // A floor hole or rubble cell (damage runs first) would leave a piece floating over it: not free, still
-            // walkable.
-            for (Mark m : r.marks()) {
-                if (m.kind() != MarkKind.DAMAGE_CELL || m.y() != 0 || !"floor".equals(m.key())) continue;
-                for (int a = 0; a < L; a++) {
-                    for (int d = 0; d < D; d++) {
-                        if (f.x(a, d) == m.x() && f.z(a, d) == m.z() && occ[a * D + d] == FREE) {
-                            occ[a * D + d] = LIGHT_TILE;
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public boolean free(int a, int d) {
-            return a >= 0 && d >= 0 && a < L && d < D && occ[a * D + d] == FREE;
-        }
-
-        @Override
-        public ComplexLayout.Frame frame() {
-            return f;
-        }
-
-        @Override
-        public String pieceAt(int a, int d) {
-            if (a < 0 || d < 0 || a >= L || d >= D || occ[a * D + d] != FURN) return null;
-            return furn[a * D + d][0];
-        }
-
-        @Override
-        public boolean put(int a, int d, int facing, String... layers) {
-            if (!free(a, d) || layers.length == 0) return false;
-            occ[a * D + d] = FURN;
-            furn[a * D + d] = layers.clone();
-            furnFacing[a * D + d] = (byte) facing;
-            return true;
-        }
-
-        @Override
-        public void top(int a, int d, String layer) {
-            if (pieceAt(a, d) == null) return;
-            String[] l = furn[a * D + d];
-            String[] more = java.util.Arrays.copyOf(l, l.length + 1);
-            more[l.length] = layer;
-            furn[a * D + d] = more;
-        }
-
-        /** A solid mark (chest, machine, spawner) at (a, d) or the nearest free cell, same row first. */
-        boolean mark(MarkKind k, int a, int d, String key) {
-            for (int[] o : NEAR) {
-                int ca = a + o[0], cd = d + o[1];
-                if (!free(ca, cd)) continue;
-                occ[ca * D + cd] = SOLID;
-                // A machine's front faces the room's door side (0 north, 1 east, 2 south, 3 west), toward the walkway.
-                if (k == MarkKind.MACHINE) r.add(k, f.x(ca, cd), 1, f.z(ca, cd), key, f.side, 1);
-                else r.add(k, f.x(ca, cd), 1, f.z(ca, cd), key);
-                return true;
-            }
-            return false;
-        }
-
-        /** A mark spread {@code n} times along the back wall. */
-        void backRow(MarkKind k, int n, String key) {
-            for (int i = 0; i < n; i++) wallMark(k, (int) ((i + 0.5) * L / n), key);
-        }
-
-        /** A mark against the back wall: the nearest free cell along it, else the nearest free cell anywhere. */
-        boolean wallMark(MarkKind k, int a, String key) {
-            for (int off = 0; off < L; off++) {
-                for (int ca : new int[] { a + off, a - off }) {
-                    if (!free(ca, 0)) continue;
-                    occ[ca * D] = SOLID;
-                    r.add(k, f.x(ca, 0), 1, f.z(ca, 0), key);
-                    return true;
-                }
-            }
-            return mark(k, a, 0, key);
-        }
-
-        /**
-         * Keeps a 5 x 5 block free around (a, d) for the NASA Workbench and its free ring; false if it does not fit.
-         * The 3 x 3 core (GC's fake blocks) must be strictly free, so a lit floor tile is never buried under it. A
-         * floor light tile may sit in the outer ring: it is a floor-layer block, and the ring is kept clear from
-         * layer 1 up, so the tile stays and still lights the room.
-         */
-        boolean nasa(int a, int d) {
-            for (int da = -2; da <= 2; da++) {
-                for (int dd = -2; dd <= 2; dd++) {
-                    boolean core = Math.abs(da) <= 1 && Math.abs(dd) <= 1;
-                    if (!free(a + da, d + dd) && (core || !lightTile(a + da, d + dd))) return false;
-                }
-            }
-            for (int da = -2; da <= 2; da++) {
-                for (int dd = -2; dd <= 2; dd++) {
-                    int i = (a + da) * D + d + dd;
-                    if (occ[i] == FREE) occ[i] = KEEP;
-                }
-            }
-            occ[a * D + d] = SOLID;
-            r.add(MarkKind.MACHINE, f.x(a, d), 1, f.z(a, d), MachineRole.NASA_WORKBENCH.name());
-            return true;
-        }
-
-        /**
-         * Places the NASA Workbench at the fitting center nearest (a, d) (Manhattan distance, then depth, then
-         * lateral); false only if no 5 x 5 block anywhere in the room fits.
-         */
-        boolean nasaNear(int a, int d) {
-            List<int[]> c = new ArrayList<int[]>();
-            for (int ca = 2; ca <= L - 3; ca++) for (int cd = 2; cd <= D - 3; cd++) c.add(new int[] { ca, cd });
-            java.util.Collections.sort(c, (p, q) -> {
-                int k = (Math.abs(p[0] - a) + Math.abs(p[1] - d)) - (Math.abs(q[0] - a) + Math.abs(q[1] - d));
-                if (k != 0) return k;
-                k = p[1] - q[1];
-                return k != 0 ? k : p[0] - q[0];
-            });
-            for (int[] p : c) if (nasa(p[0], p[1])) return true;
-            return false;
-        }
-
-        private boolean lightTile(int a, int d) {
-            return a >= 0 && d >= 0 && a < L && d < D && occ[a * D + d] == LIGHT_TILE;
-        }
-
-        /**
-         * Clears furniture that walls a chest, machine or guard off from the door: from every solid mark no walk
-         * reaches, the shortest way through furniture to a reached cell is cleared.
-         */
-        void keepReachable() {
-            boolean[] seen = flood();
-            for (int a = 0; a < L; a++) {
-                for (int d = 0; d < D; d++) {
-                    if (occ[a * D + d] != SOLID || touches(seen, a, d)) continue;
-                    clearPath(seen, a, d);
-                    seen = flood();
-                }
-            }
-        }
-
-        private boolean walk(int a, int d) {
-            byte o = occ[a * D + d];
-            return o == FREE || o == DOORWAY || o == LIGHT_TILE || o == KEEP;
-        }
-
-        private boolean[] flood() {
-            boolean[] seen = new boolean[L * D];
-            ArrayDeque<int[]> q = new ArrayDeque<int[]>();
-            for (int a = Math.max(0, f.doorLo); a <= Math.min(L - 1, f.doorHi); a++) {
-                if (walk(a, D - 1)) {
-                    seen[a * D + D - 1] = true;
-                    q.add(new int[] { a, D - 1 });
-                }
-            }
-            int[][] nb = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
-            while (!q.isEmpty()) {
-                int[] c = q.poll();
-                for (int[] n : nb) {
-                    int a = c[0] + n[0], d = c[1] + n[1];
-                    if (a < 0 || d < 0 || a >= L || d >= D || seen[a * D + d] || !walk(a, d)) continue;
-                    seen[a * D + d] = true;
-                    q.add(new int[] { a, d });
-                }
-            }
-            return seen;
-        }
-
-        private boolean touches(boolean[] seen, int a, int d) {
-            int[][] nb = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
-            for (int[] n : nb) {
-                int ca = a + n[0], cd = d + n[1];
-                if (ca >= 0 && cd >= 0 && ca < L && cd < D && seen[ca * D + cd]) return true;
-            }
-            return false;
-        }
-
-        private void clearPath(boolean[] seen, int a0, int d0) {
-            int[] prev = new int[L * D];
-            java.util.Arrays.fill(prev, -2);
-            ArrayDeque<int[]> q = new ArrayDeque<int[]>();
-            prev[a0 * D + d0] = -1;
-            q.add(new int[] { a0, d0 });
-            int[][] nb = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
-            while (!q.isEmpty()) {
-                int[] c = q.poll();
-                for (int[] n : nb) {
-                    int a = c[0] + n[0], d = c[1] + n[1];
-                    if (a < 0 || d < 0 || a >= L || d >= D || prev[a * D + d] != -2) continue;
-                    byte o = occ[a * D + d];
-                    if (o == SOLID) continue;
-                    prev[a * D + d] = c[0] * D + c[1];
-                    if (seen[a * D + d]) {
-                        // Walk back, clearing furniture.
-                        int at = prev[a * D + d];
-                        while (at >= 0 && at != a0 * D + d0) {
-                            if (occ[at] == FURN) {
-                                occ[at] = FREE;
-                                furn[at] = null;
-                            }
-                            at = prev[at];
-                        }
-                        return;
-                    }
-                    q.add(new int[] { a, d });
-                }
-            }
-        }
-
-        /**
-         * Writes the furniture that survived as FURNITURE marks, one per layer. A chair whose table the reachability
-         * pass cleared away is dropped too.
-         */
-        void commit() {
-            java.util.Map<Long, String> bottom = new java.util.HashMap<>();
-            for (int a = 0; a < L; a++) {
-                for (int d = 0; d < D; d++) {
-                    if (occ[a * D + d] == FURN) bottom.put(cell(f.x(a, d), f.z(a, d)), furn[a * D + d][0]);
-                }
-            }
-            for (int a = 0; a < L; a++) {
-                for (int d = 0; d < D; d++) {
-                    int i = a * D + d;
-                    if (occ[i] != FURN) continue;
-                    String[] l = furn[i];
-                    if (FurniturePiece.of(l[0]) == FurniturePiece.CHAIR) {
-                        int fc = furnFacing[i];
-                        String front = bottom
-                            .get(cell(f.x(a, d) + RoomFurniture.DX[fc], f.z(a, d) + RoomFurniture.DZ[fc]));
-                        if (!RoomFurniture.seatsAt(front)) continue;
-                    }
-                    for (int y = 1; y <= l.length; y++) {
-                        r.add(MarkKind.FURNITURE, f.x(a, d), y, f.z(a, d), l[y - 1], furnFacing[i], 1);
-                    }
-                }
-            }
-        }
-    }
-
-    private static long cell(int x, int z) {
-        return (long) x << 32 | (z & 0xffffffffL);
-    }
-
-    /** Offsets tried around a wanted cell, nearest first, a step in depth costing two steps along the row. */
-    private static final int[][] NEAR = near();
-
-    private static int[][] near() {
-        List<int[]> l = new ArrayList<int[]>();
-        for (int dd = -3; dd <= 3; dd++) for (int da = -12; da <= 12; da++) l.add(new int[] { da, dd });
-        java.util.Collections.sort(l, (p, q) -> {
-            int c = (Math.abs(p[0]) + 2 * Math.abs(p[1])) - (Math.abs(q[0]) + 2 * Math.abs(q[1]));
-            if (c != 0) return c;
-            c = Math.abs(p[1]) - Math.abs(q[1]);
-            if (c != 0) return c;
-            c = p[1] - q[1];
-            return c != 0 ? c : p[0] - q[0];
-        });
-        return l.toArray(new int[0][]);
-    }
-
-    /** Chest, machine and guard counts grow by one step per this many interior cells. */
-    static final int AREA_STEP = 450;
-
     private void room(Room r) {
         Box b = r.bounds();
         damage(r, b, r.id());
-        Fit fit = new Fit(r);
-        sign(r, fit.f);
-        int L = fit.L, D = fit.D, ma = L / 2, md = D / 2, last = L - 1;
-        int q = Math.max(1, L * D / AREA_STEP);
-        // D234: room guards, back-row chests and repeated machines all grow one step per AREA_STEP interior cells.
-        int guards = q;
-        switch (r.kind()) {
-            case LAUNCH_CONTROL:
-                fit.mark(MarkKind.MACHINE, ma, md, MachineRole.LAUNCH_CONTROL.name());
-                fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.CONTROL);
-                if (q > 2) fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.CONTROL);
-                spawners(fit, guards, "room");
-                break;
-            case RADAR_TRACKING:
-                fit.mark(MarkKind.MACHINE, ma, md, MachineRole.RADAR.name());
-                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.CONTROL);
-                break;
-            case COMMS:
-                fit.mark(MarkKind.MACHINE, ma, md, MachineRole.COMMS.name());
-                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.COMMS);
-                break;
-            case COMMANDER_OFFICE:
-                fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.SAFE);
-                fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.STOCKPILE);
-                break;
-            case WARHEAD_MAGAZINE: {
-                int n = 0;
-                for (int d = 2; d <= D - 4 && n < 4 + 2 * q; d += 3) {
-                    for (int a = 2; a <= last - 2 && n < 4 + 2 * q; a += 3) {
-                        if (fit.free(a, d)) {
-                            fit.mark(MarkKind.MACHINE, a, d, MachineRole.MAGAZINE_CASING.name());
-                            n++;
-                        }
-                    }
-                }
-                rubble(fit, Math.max(2, q));
-                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.MAGAZINE);
-                spawners(fit, guards, "room");
-                break;
-            }
-            case FUEL_DEPOT:
-                for (int d = 2, n = 0; d <= D - 4 && n < 2 + q; d += 4, n += 2) {
-                    fit.mark(MarkKind.MACHINE, 1, d, MachineRole.FUEL_TANK.name());
-                    fit.mark(MarkKind.MACHINE, last - 1, d, MachineRole.FUEL_TANK.name());
-                }
-                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.FUEL);
-                break;
-            case GENERATOR_HALL:
-                for (int a = 2, n = 0; a <= last - 2 && n < 2 + q; a += 4, n++) {
-                    fit.mark(MarkKind.MACHINE, a, md, MachineRole.GENERATOR.name());
-                }
-                fit.mark(MarkKind.MACHINE, last, 0, MachineRole.BATTERY_BUFFER.name());
-                spawners(fit, guards, "room");
-                break;
-            case AIR_HANDLING:
-                for (int i = 0, n = q; i < n; i++) {
-                    fit.mark(MarkKind.MACHINE, (int) ((i + 0.5) * L / n), md, MachineRole.AIR_HANDLER.name());
-                }
-                break;
-            case PUMP_ROOM:
-                for (int i = 0, n = q; i < n; i++) {
-                    fit.mark(MarkKind.MACHINE, (int) ((i + 0.5) * L / n), md, MachineRole.PUMP.name());
-                }
-                for (int a = 0; a <= last; a += 2) {
-                    if (fit.free(a, md + 1)) {
-                        r.add(MarkKind.FLOOD_CELL, fit.f.x(a, md + 1), 1, fit.f.z(a, md + 1), "flood");
-                    }
-                }
-                break;
-            case WORKSHOP:
-                fit.nasaNear(2, 2);
-                fit.mark(MarkKind.MACHINE, ma + 2, md, MachineRole.WORKBENCH.name());
-                if (q > 2) fit.mark(MarkKind.MACHINE, ma + 6, md, MachineRole.WORKBENCH.name());
-                fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.WORKSHOP);
-                break;
-            case BUNKS:
-                fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.BUNKS);
-                fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.BUNKS);
-                for (int i = 2; i < 1 + q; i++) fit.mark(MarkKind.LOOT_CHEST, i * L / (2 + q), 0, LootKeys.BUNKS);
-                spawners(fit, guards, "room");
-                break;
-            case STOCKPILE:
-                for (int a = 1; a <= last; a += 4) fit.wallMark(MarkKind.LOOT_CHEST, a, LootKeys.STOCKPILE);
-                break;
-            case MESS_GALLEY:
-            case CAFETERIA:
-                fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.GALLEY);
-                if (q > 2) fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.GALLEY);
-                break;
-            case INFIRMARY:
-                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.MEDICAL);
-                break;
-            case ARMORY:
-                displays(fit);
-                fit.backRow(MarkKind.LOOT_CHEST, q, LootKeys.ARMORY);
-                spawners(fit, guards, "room");
-                break;
-            case GUARD_POST:
-                fit.mark(MarkKind.SPAWNER, ma, md, "post");
-                break;
-            case VEHICLE_BAY:
-                fit.mark(MarkKind.MACHINE, 0, 0, MachineRole.BATTERY_BUFFER.name());
-                fit.mark(MarkKind.MACHINE, last, 0, MachineRole.BATTERY_BUFFER.name());
-                fit.mark(MarkKind.MACHINE, ma, 0, MachineRole.WORKBENCH.name());
-                fit.mark(MarkKind.LOOT_CHEST, 1, 0, LootKeys.WORKSHOP);
-                break;
-            case SERVER_ROOM:
-                fit.mark(MarkKind.MACHINE, 0, 0, MachineRole.COMMS.name());
-                fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.COMMS);
-                break;
-            case MISSILE_ASSEMBLY:
-                fit.nasaNear(ma, md);
-                fit.mark(MarkKind.MACHINE, 2, md, MachineRole.WORKBENCH.name());
-                fit.mark(MarkKind.MACHINE, last - 2, md, MachineRole.WORKBENCH.name());
-                for (int i = 0; i < 1 + q; i++) {
-                    fit.mark(MarkKind.MACHINE, 3 + i * 3, 0, MachineRole.MAGAZINE_CASING.name());
-                }
-                fit.mark(MarkKind.LOOT_CHEST, 0, 0, LootKeys.SALVAGE);
-                fit.mark(MarkKind.LOOT_CHEST, last, 0, LootKeys.SALVAGE);
-                spawners(fit, guards, "room");
-                break;
-            case WATER_TREATMENT:
-                for (int a = 2; a + 2 <= last - 2; a += 6) {
-                    for (int d = 2; d <= D - 5; d++) {
-                        for (int da = 0; da < 3; da++) {
-                            if (fit.free(a + da, d)) {
-                                fit.occ[(a + da) * D + d] = KEEP;
-                                r.add(MarkKind.FURNITURE, fit.f.x(a + da, d), 0, fit.f.z(a + da, d), "BASIN");
-                            }
-                        }
-                    }
-                }
-                for (int i = 0, n = q; i < n; i++) {
-                    fit.mark(MarkKind.MACHINE, (int) ((i + 0.5) * L / n), 0, MachineRole.PUMP.name());
-                }
-                break;
-            default:
-                break;
-        }
-        // D259: furniture only in the small rooms; the bays keep their machines, chests and guards only.
-        if (RoomFurniture.furnished(r.kind(), L * D)) {
-            RoomFurniture.furnish(r.kind(), fit, RoomFurniture.woodOf(plan.seed(), r.id()));
-        }
-        fit.keepReachable();
-        fit.commit();
+        ComplexLayout.Frame f = new ComplexLayout.Frame(r);
+        sign(r, f);
+        lay(r, f, kit(r, f), RoomBlueprints.of(r.kind()));
     }
 
-    private void spawners(Fit fit, int n, String key) {
-        for (int i = 0; i < n; i++) fit.mark(MarkKind.SPAWNER, (int) ((i + 0.5) * fit.L / n), 2, key);
+    /**
+     * The kit of one room: its floor in the room's frame (doorway zones, floor light tiles, floor holes) and its
+     * openings, the primary one being its doorway to its parent (none for the hub).
+     */
+    private Kit kit(Room r, ComplexLayout.Frame f) {
+        int L = f.lateral, D = f.depth;
+        byte[] base = new byte[L * D];
+        for (int a = 0; a < L; a++) {
+            for (int d = 0; d < D; d++) {
+                int x = f.x(a, d), z = f.z(a, d);
+                base[a * D + d] = inZone(x, z) ? Kit.DOORWAY : floorLamp[x * S + z] ? Kit.TILE : Kit.FREE;
+            }
+        }
+        // A floor hole or rubble cell (damage runs first) would leave a piece floating over it: not free, walkable.
+        for (Mark m : r.marks()) {
+            if (m.kind() != MarkKind.DAMAGE_CELL || m.y() != 0 || !"floor".equals(m.key())) continue;
+            int a = f.a(m.x(), m.z()), d = f.d(m.x(), m.z());
+            if (a >= 0 && d >= 0 && a < L && d < D && base[a * D + d] == Kit.FREE) base[a * D + d] = Kit.HOLE;
+        }
+        List<Opening> openings = new ArrayList<Opening>();
+        for (Door door : plan.doors()) {
+            if (!door.joins(r.id()) || door.kind == Door.Kind.WINDOW || door.kind == Door.Kind.WALKWAY) continue;
+            Opening o = opening(r, f, door);
+            if (o != null) openings.add(o);
+        }
+        long seed = plan.seed() * 0x9E3779B97F4A7C15L + r.id() * 0xC2B2AE3D27D4EB4FL;
+        return new Kit(L, D, base, openings, seed, woodOf(plan.seed(), r.id()));
     }
 
-    private void rubble(Fit fit, int n) {
-        for (int i = 0; i < n; i++) {
-            int a = rnd.nextInt(fit.L), d = 1 + rnd.nextInt(Math.max(1, fit.D - 3));
-            if (fit.free(a, d)) {
-                fit.r.add(MarkKind.RUBBLE, fit.f.x(a, d), 1, fit.f.z(a, d), "fallout");
+    /** @return a door of the room as an opening in its frame, or null when none of its cells lie in the room's wall */
+    private static Opening opening(Room r, ComplexLayout.Frame f, Door door) {
+        Box b = r.bounds();
+        int L = f.lateral, D = f.depth;
+        Opening.Wall wall = null;
+        int lo = Integer.MAX_VALUE, hi = Integer.MIN_VALUE;
+        for (int x = door.x0; x <= door.x1; x++) {
+            for (int z = door.z0; z <= door.z1; z++) {
+                if (!b.contains(x, b.minY, z)) continue;
+                int a = f.a(x, z), d = f.d(x, z);
+                Opening.Wall w;
+                int t;
+                if (d < 0) {
+                    w = Opening.Wall.BACK;
+                    t = a;
+                } else if (d >= D) {
+                    w = Opening.Wall.DOOR;
+                    t = a;
+                } else if (a < 0) {
+                    w = Opening.Wall.LEFT;
+                    t = d;
+                } else if (a >= L) {
+                    w = Opening.Wall.RIGHT;
+                    t = d;
+                } else {
+                    continue;
+                }
+                if (t < 0 || t >= ((w == Opening.Wall.LEFT || w == Opening.Wall.RIGHT) ? D : L)) continue;
+                wall = w;
+                lo = Math.min(lo, t);
+                hi = Math.max(hi, t);
             }
+        }
+        return wall == null ? null : new Opening(wall, lo, hi, door == r.door());
+    }
+
+    /**
+     * Lays a blueprint on a room's kit, then the reachability pass, the shadow fill and the commit: every piece as
+     * FURNITURE marks (one per layer, a floor inlay at y 0), every chest, machine and guard as its mark, the chests
+     * last in slot order (D305).
+     */
+    private void lay(Room r, ComplexLayout.Frame f, Kit k, RoomBlueprint bp) {
+        bp.lay(k);
+        k.reachable();
+        List<int[]> tiles = k.shadowFill();
+        if (!tiles.isEmpty()) shadowTiles(r, f, tiles);
+        java.util.Map<Integer, Long> anchors = new java.util.HashMap<Integer, Long>();
+        for (Kit.Placed p : k.commit()) {
+            int x = f.x(p.a, p.d), z = f.z(p.a, p.d);
+            used[x * S + z] = true;
+            int hang = p.facing.world(f.side);
+            Legend.Entry e = p.entry;
+            if (e.kind == Legend.Entry.Kind.MARK) {
+                switch (e.markKind()) {
+                    case LOOT_CHEST:
+                    case GUN_DISPLAY:
+                        r.add(e.markKind(), x, 1, z, p.key, hang, 1);
+                        break;
+                    case MACHINE:
+                        // A machine's front faces a horizontal side (0 north, 1 east, 2 south, 3 west).
+                        r.add(e.markKind(), x, 1, z, p.key, (hang + 2) & 3, 1);
+                        break;
+                    default:
+                        r.add(e.markKind(), x, 1, z, p.key);
+                        break;
+                }
+                continue;
+            }
+            long g = 0;
+            if (p.group != 0) {
+                Long have = anchors.get(p.group);
+                if (have == null) {
+                    have = x * 4096L + z;
+                    anchors.put(p.group, have);
+                }
+                g = have;
+            }
+            if (e.floorPiece() != null) r.add(
+                MarkKind.FURNITURE,
+                x,
+                0,
+                z,
+                e.floorPiece()
+                    .key(p.variant, g),
+                hang,
+                1);
+            FurniturePiece[] layers = e.layers();
+            for (int y = 1; y <= layers.length; y++) {
+                if (layers[y - 1] != null) {
+                    r.add(MarkKind.FURNITURE, x, y, z, layers[y - 1].key(p.variant, g), hang, 1);
+                }
+            }
+        }
+        for (Kit.Placed p : k.floorMarks()) r.add(p.entry.markKind(), f.x(p.a, p.d), 1, f.z(p.a, p.d), p.key);
+    }
+
+    /**
+     * The shadow fill's light tiles: a floor light mark on each, keyed to the room's nearest floor tile's run, so it
+     * lights and dies with that run (D231, D305).
+     */
+    private void shadowTiles(Room r, ComplexLayout.Frame f, List<int[]> tiles) {
+        List<Mark> floor = new ArrayList<Mark>();
+        for (Mark m : r.marks()) if (m.kind() == MarkKind.LIGHT && m.y() == 0) floor.add(m);
+        for (int[] t : tiles) {
+            int x = f.x(t[0], t[1]), z = f.z(t[0], t[1]);
+            String key = "lamp:" + r.id() + ":0";
+            int best = Integer.MAX_VALUE;
+            for (Mark m : floor) {
+                int dist = Math.abs(m.x() - x) + Math.abs(m.z() - z);
+                if (dist < best) {
+                    best = dist;
+                    key = m.key();
+                }
+            }
+            r.add(MarkKind.LIGHT, x, 0, z, key);
+            floorLamp[x * S + z] = true;
         }
     }
 
@@ -889,43 +582,15 @@ final class ComplexFurnisher {
             1);
     }
 
-    /** Partition rows in the armory, and how tall a partition stands (the frame hangs at its middle layer). */
-    static final int DISPLAY_ROWS = 2, PARTITION_HEIGHT = 2;
-    /** Lateral cells between two guns on one face of a partition. */
-    static final int DISPLAY_STRIDE = 5;
-    /** Most guns one armory shows, however large the room: it keeps the total near the old two rows of frames. */
-    static final int MAX_DISPLAYS = 24;
-    private static final String PARTITION = RoomFurniture.PARTITION;
-
     /**
-     * Free-standing display walls across the armory (owner, 2026-10-30): short partitions (two blocks) of the room's
-     * wall block
-     * running along the room, a walkway between rows and an open end at each side. Each face holds a gun in an item
-     * frame every {@link #DISPLAY_STRIDE} cells (the two faces staggered), with the ammo chest on the floor right
-     * below it: one {@link MarkKind#GUN_DISPLAY} mark per gun, at the chest's cell, the frame one layer up. Nothing
-     * hangs on the outer walls.
+     * @param planSeed the plan's seed
+     * @param roomId   the room's section id
+     * @return the room's wood: spruce, dark oak, birch or oak, from the seed (no random draw)
      */
-    private void displays(Fit fit) {
-        ComplexLayout.Frame f = fit.f;
-        int L = fit.L, D = fit.D;
-        if (L < 10) return;
-        int shown = 0;
-        String[] layers = new String[PARTITION_HEIGHT];
-        java.util.Arrays.fill(layers, PARTITION);
-        for (int i = 0; i < DISPLAY_ROWS; i++) {
-            int dw = 4 + 6 * i;
-            if (dw + 1 > D - 4) break; // the front chest and its walkway must stay clear of the door rows
-            for (int a = 3; a <= L - 4; a++) fit.put(a, dw, f.backFacing(), layers);
-            for (int face = -1; face <= 1; face += 2) {
-                int facing = face > 0 ? f.backFacing() : (f.backFacing() + 2) & 3;
-                for (int a = face > 0 ? 3 : 5; a <= L - 4; a += DISPLAY_STRIDE) {
-                    int d = dw + face;
-                    if (shown >= MAX_DISPLAYS || !PARTITION.equals(fit.pieceAt(a, dw)) || !fit.free(a, d)) continue;
-                    shown++;
-                    fit.occ[a * D + d] = SOLID;
-                    fit.r.add(MarkKind.GUN_DISPLAY, f.x(a, d), 1, f.z(a, d), LootKeys.ARMORY, facing, 1);
-                }
-            }
-        }
+    static int woodOf(long planSeed, int roomId) {
+        int[] woods = { 1, 5, 2, 0, 1, 5 };
+        long h = planSeed * 0x9E3779B97F4A7C15L + roomId * 0xBF58476D1CE4E5B9L;
+        h ^= h >>> 31;
+        return woods[(int) Math.floorMod(h, (long) woods.length)];
     }
 }
