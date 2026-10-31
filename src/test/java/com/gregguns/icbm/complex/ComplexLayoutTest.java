@@ -534,8 +534,21 @@ class ComplexLayoutTest {
                 assertGrid(xs, b.minX + 1, b.maxX - 2, gap, "x of section " + id);
                 assertGrid(zs, b.minZ + 1, b.maxZ - 2, gap, "z of section " + id);
                 // A light tile under every ceiling lamp, and the shadow fill's tiles beside them (D305).
-                if (tall) assertTrue(floor.containsAll(ceiling), "a light tile under every ceiling lamp");
-                else assertTrue(floor.isEmpty());
+                // D321, D322: unless a pool or a brig cell's wall or door was built over the tile.
+                if (tall) {
+                    Set<Long> builtOver = new java.util.HashSet<Long>();
+                    for (Mark m : marks) {
+                        FurniturePiece fp = m.kind() == MarkKind.FURNITURE ? FurniturePiece.of(m.key()) : null;
+                        if (m.y() == 0 && fp == FurniturePiece.POOL_WATER
+                            || m.y() == 1 && (fp == FurniturePiece.PARTITION || fp == FurniturePiece.IRON_DOOR))
+                            builtOver.add(key(m.x(), m.z()));
+                    }
+                    for (long c : ceiling) {
+                        assertTrue(
+                            floor.contains(c) || builtOver.contains(c),
+                            "seed " + s + " section " + id + ": a light tile under every ceiling lamp");
+                    }
+                } else assertTrue(floor.isEmpty());
             }
         }
     }
@@ -625,7 +638,11 @@ class ComplexLayoutTest {
                 if (fp != null && fp.clear() && fp.role() == Cell.PROP) opaque[(m.x() * Y + m.y()) * S + m.z()] = false;
             }
             boolean[] occupied = new boolean[S * S];
+            // D321: a sunk pool's water is no floor; no mob stands on it.
+            boolean[] pool = new boolean[S * S];
             for (Mark m : p.allMarks()) {
+                if (m.kind() == MarkKind.FURNITURE && m.y() == 0
+                    && FurniturePiece.of(m.key()) == FurniturePiece.POOL_WATER) pool[m.x() * S + m.z()] = true;
                 if (m.kind() == MarkKind.MACHINE || m.kind() == MarkKind.SPAWNER) {
                     occupied[m.x() * S + m.z()] = true;
                     opaque[(m.x() * Y + m.y()) * S + m.z()] = true;
@@ -667,7 +684,7 @@ class ComplexLayoutTest {
                 Box b = p.sectionBox(id);
                 for (int x = b.minX + 1; x < b.maxX - 1; x++) {
                     for (int z = b.minZ + 1; z < b.maxZ - 1; z++) {
-                        if (occupied[x * S + z] || !Cell.open(r.at(x, 1, z))) continue;
+                        if (occupied[x * S + z] || !Cell.open(r.at(x, 1, z)) || pool[x * S + z]) continue;
                         checked++;
                         int l = lv[(x * Y + 1) * S + z];
                         assertTrue(l >= 8, "seed " + s + " section " + id + " floor " + x + "," + z + " reads " + l);

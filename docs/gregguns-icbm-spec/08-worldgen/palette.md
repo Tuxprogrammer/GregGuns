@@ -10,7 +10,7 @@
 Every room, hall and the hub gets a `RoomStyle` from `ComplexPalette.styleFor(kind, roomSeed, dimensionKey, level)`. The call is pure and deterministic. A style is:
 
 - **one wall block**, the same everywhere in the room, drawn once from the style set's wall choices;
-- a **floor pattern** and a **ceiling pattern**, each a function of the interior cell `(x, z)` and the interior size (checker, border plus field, double ring, stripes, bands, grid lines, center strip). Interior cell 0 is the first cell inside the section's wall, so a border of width 1 runs along the wall;
+- a **floor pattern** and a **ceiling pattern**, each a function of the interior cell `(x, z)` and the interior size (checker, border plus field, double ring, stripes, bands, grid lines, center strip). Interior cell 0 is the first cell inside the section's wall, so a border of width 1 runs along the wall. A room's floor also knows its aisle (`Aisle`, D321): the doorway and the jamb either side, from the door to the back wall. A center strip in a room lies on that aisle, whatever width the set names, so it runs under the opening and its frame. In a section with no aisle (the hub, a hall, a tunnel) it runs along the long axis, centered, one cell wider than named where an even strip would have no middle in an odd span. Worn and planet floors keep the strip;
 - a **lamp pair**, lit and dead;
 - an optional **accent** block and **furniture** blocks (table, console, bunk, shelf), all plain cubes or slabs, never tile entities. They are the small rooms' cube furniture, and what a room shows of a BiblioCraft piece when BiblioCraft is absent (see [Furniture](#furniture-d259-d262-d263)).
 

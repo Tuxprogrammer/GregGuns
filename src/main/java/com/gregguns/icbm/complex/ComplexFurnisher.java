@@ -488,6 +488,14 @@ final class ComplexFurnisher {
      */
     private void lay(Room r, ComplexLayout.Frame f, Kit k, RoomBlueprint bp) {
         bp.lay(k);
+        // D321: a light tile a blueprint built over (a pool, a cell wall) is gone; the shadow fill relights the floor.
+        for (int[] t : k.droppedTiles()) {
+            int x = f.x(t[0], t[1]), z = f.z(t[0], t[1]);
+            r.remove(MarkKind.LIGHT, x, 0, z);
+            floorLamp[x * S + z] = false;
+        }
+        // D322: a floor hole a cell wall or a pool was built over stays whole floor.
+        for (int[] t : k.filledHoles()) r.remove(MarkKind.DAMAGE_CELL, f.x(t[0], t[1]), 0, f.z(t[0], t[1]));
         k.reachable();
         List<int[]> tiles = k.shadowFill();
         if (!tiles.isEmpty()) shadowTiles(r, f, tiles);
@@ -539,6 +547,38 @@ final class ComplexFurnisher {
             }
         }
         for (Kit.Placed p : k.floorMarks()) r.add(p.entry.markKind(), f.x(p.a, p.d), 1, f.z(p.a, p.d), p.key);
+        pools(r, f, k);
+    }
+
+    /**
+     * Sinks a room's pools (D321): under each pool cell's floor-layer water, more water down to {@link Kit#POOL_DEPTH}
+     * and a lining under it; under every cell around a pool (its rim, diagonals too), a lining from just under the
+     * floor down to the same depth, so no cave or loose rock beside the pool ever meets its water.
+     */
+    private static void pools(Room r, ComplexLayout.Frame f, Kit k) {
+        int L = f.lateral, D = f.depth, deep = Kit.POOL_DEPTH;
+        String water = FurniturePiece.POOL_WATER.key(0), liner = FurniturePiece.POOL_LINER.key(0);
+        boolean[] rim = new boolean[L * D];
+        for (int a = 0; a < L; a++) {
+            for (int d = 0; d < D; d++) {
+                if (!k.pool(a, d)) continue;
+                int x = f.x(a, d), z = f.z(a, d);
+                for (int y = 1; y < deep; y++) r.add(MarkKind.FURNITURE, x, -y, z, water, 0, 1);
+                r.add(MarkKind.FURNITURE, x, -deep, z, liner, 0, 1);
+                for (int da = -1; da <= 1; da++) {
+                    for (int dd = -1; dd <= 1; dd++) {
+                        int na = a + da, nd = d + dd;
+                        if (na >= 0 && nd >= 0 && na < L && nd < D && !k.pool(na, nd)) rim[na * D + nd] = true;
+                    }
+                }
+            }
+        }
+        for (int a = 0; a < L; a++) {
+            for (int d = 0; d < D; d++) {
+                if (!rim[a * D + d]) continue;
+                for (int y = 1; y <= deep; y++) r.add(MarkKind.FURNITURE, f.x(a, d), -y, f.z(a, d), liner, 0, 1);
+            }
+        }
     }
 
     /**

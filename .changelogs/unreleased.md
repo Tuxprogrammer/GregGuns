@@ -175,6 +175,9 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Nine new rooms: an underground farm, a mushroom cellar, cold storage, a shooting range with wool targets downrange, a brig, a chemistry lab, showers and laundry, a recreation lounge and an incinerator.
 - A complex deals its rooms like a deck of cards: it uses every room kind that fits before it repeats one.
 - Bunks and the infirmary have real beds, in head-to-head pairs sharing a locker, with a chest at the foot of each bed facing the aisle. The infirmary has curtains and treatment bays.
+- Every room's way in runs as wide as its doorway with the frame either side, from the door to the back wall, and a floor strip in the room's design lies under it.
+- The pump room has two large pools, three blocks deep and lined in concrete, either side of the aisle, with the pumps standing along the aisle between them. An abandoned pump room's pools have overflowed onto the floor.
+- Brig cells are walled in on every side in the room's own wall block: walls between the cells and behind the second row, and a solid jamb beside each iron door, with iron bars on the rest of the front. No cell is ever left open.
 - Rooms are dressed with Chisel shipping containers, wooden crates and metal-block props, and the machine rooms hold working GT machines: Chemical Reactors in the chemistry lab, machine tools in the workshop, recyclers and arc furnaces in the incinerator.
 - Each room shows its complex's activity level. Operational (Charlie): everything lit and in place, furnaces burning, crops ripe, machines running. Partly abandoned (Bravo): lit rooms still in service, dark rooms mothballed with pieces missing and machines dead. Abandoned (Alpha): gutted rooms with rubble piles, missing furniture, dead fields and broken glass. Wear and rubble never block the way to a chest, a machine or a door.
 

@@ -36,6 +36,7 @@ public final class Incinerator implements RoomBlueprint {
         Works.fillBands(k, 2, D - 3, recyclers, ash, sorting);
         k.column(0, 3, D - 4, "k.");
         k.column(L - 1, 3, D - 4, "C..");
-        Works.corners(k);
+        // The corner caches, in a shallow incinerator too (12 deep or more; D321's aisle leaves its front sparse).
+        if (L >= 16 && D >= 12) k.corners();
     }
 }

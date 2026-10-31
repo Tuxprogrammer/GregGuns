@@ -263,6 +263,11 @@ public final class RoomStyle {
         return PaletteResolver.resolve(floors.get(live().floorIndex).pattern.at(x, z, sizeX, sizeZ));
     }
 
+    /** @return the floor block at a cell of a room with an aisle (D321: a center strip follows it; null for none) */
+    public ResolvedBlock floor(int x, int z, int sizeX, int sizeZ, Aisle aisle) {
+        return PaletteResolver.resolve(floors.get(live().floorIndex).pattern.at(x, z, sizeX, sizeZ, aisle));
+    }
+
     /** @return the ceiling block at a room-local cell, from the design the guard picked */
     public ResolvedBlock ceiling(int x, int z, int sizeX, int sizeZ) {
         return PaletteResolver.resolve(ceilings.get(live().ceilingIndex).pattern.at(x, z, sizeX, sizeZ));

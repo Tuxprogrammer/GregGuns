@@ -777,12 +777,21 @@ public final class ComplexLevelScenarios {
                 }
             }
             // Every open floor cell of every section: the lamp grid keeps it at 8 or more when lit (D217, D230).
-            // Every dark cell is listed, so one fix never hides another.
+            // Every dark cell is listed, so one fix never hides another. A sunk pool's water is no floor (D321).
+            java.util.Set<Long> pool = new java.util.HashSet<>();
+            for (Mark m : all) {
+                if (m.kind() == MarkKind.FURNITURE && m.y() == 0
+                    && com.gregguns.icbm.complex.FurniturePiece.of(m.key())
+                        == com.gregguns.icbm.complex.FurniturePiece.POOL_WATER) {
+                    pool.add(((long) m.x() << 32) ^ (m.z() & 0xffffffffL));
+                }
+            }
             for (int id = 0; id < cp.sectionCount(); id++) {
                 com.gregguns.icbm.complex.Box b = cp.sectionBox(id);
                 for (int x = b.minX + 1; x <= b.maxX - 2; x++) {
                     for (int z = b.minZ + 1; z <= b.maxZ - 2; z++) {
                         if (!world.isAirBlock(ax + x, floor + 1, az + z)) continue;
+                        if (pool.contains(((long) x << 32) ^ (z & 0xffffffffL))) continue;
                         int l = world
                             .getSavedLightValue(net.minecraft.world.EnumSkyBlock.Block, ax + x, floor + 1, az + z);
                         t.floorMinLight = Math.min(t.floorMinLight, l);

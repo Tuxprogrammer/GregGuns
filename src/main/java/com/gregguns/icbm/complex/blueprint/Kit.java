@@ -105,6 +105,19 @@ public final class Kit {
         return primary != null && primary.wall == Opening.Wall.DOOR ? primary.hi : L / 2;
     }
 
+    /**
+     * @return the first lateral cell of the aisle: the spine and one cell beyond it, under the doorway's jamb, so the
+     *         clear way in is as wide as the doorway with its frame (D321)
+     */
+    public int aisleLo() {
+        return Math.max(0, spineLo() - 1);
+    }
+
+    /** @return the last lateral cell of the aisle (see {@link #aisleLo()}) */
+    public int aisleHi() {
+        return Math.min(L - 1, spineHi() + 1);
+    }
+
     /** @return the room's openings */
     public List<Opening> openings() {
         return openings;
@@ -150,6 +163,16 @@ public final class Kit {
     /** @return true for a strictly kept cell (the NASA Workbench's core, D252), which no walk crosses */
     public boolean core(int a, int d) {
         return in(a, d) && core[i(a, d)];
+    }
+
+    /** @return true for a kept cell (a ring or core the blueprint keeps free, such as the NASA Workbench's) */
+    public boolean kept(int a, int d) {
+        return in(a, d) && kept[i(a, d)];
+    }
+
+    /** @return true for a cell in a doorway zone (a doorway and the cells just inside it) */
+    public boolean doorway(int a, int d) {
+        return in(a, d) && base[i(a, d)] == DOORWAY;
     }
 
     /** @return the floor state under a cell ({@link #FREE}, {@link #DOORWAY}, {@link #TILE}, {@link #HOLE}) */
@@ -212,8 +235,9 @@ public final class Kit {
     }
 
     /**
-     * The door's clear path from the door wall up to depth {@code stop} (the firing line of a range, the corridor
-     * of a brig), then a path from every other opening in the back or door wall (a child's or a loop's door, D278)
+     * The door's clear path, its aisle ({@link #aisleLo()} to {@link #aisleHi()}: the doorway and its jambs), from
+     * the door wall up to depth {@code stop} (the firing line of a range, the corridor of a brig), then a path as wide
+     * from every other opening in the back or door wall (a child's or a loop's door, D278)
      * to it: straight in to the nearest lamp row, along it to the spine, and the spine on down. A door in a side
      * wall keeps its doorway zone, and {@link #reachable()} opens the cheapest way to it. The hub, which has no
      * primary door, gets a cross through its middle and a lane from each portal to it.
@@ -247,7 +271,8 @@ public final class Kit {
             }
             return;
         }
-        int lo = spineLo(), hi = spineHi();
+        // The aisle is the doorway and its jambs (D321): a 3-wide door under a 5-wide frame keeps 5 cells clear.
+        int lo = aisleLo(), hi = aisleHi();
         int top = Math.max(0, Math.min(stop, D - 1));
         for (Opening o : openings) {
             if (o.primary) continue;
@@ -259,15 +284,15 @@ public final class Kit {
                     break;
                 case BACK: {
                     int row = aisleBelow(0);
-                    reserve(o.lo, o.hi, 0, row);
-                    reserve(Math.min(o.lo, lo), Math.max(o.hi, hi), row, row);
+                    reserve(o.lo - 1, o.hi + 1, 0, row);
+                    reserve(Math.min(o.lo - 1, lo), Math.max(o.hi + 1, hi), row, row);
                     top = Math.min(top, row);
                     break;
                 }
                 default: {
                     int row = aisleAbove(D - 1);
-                    reserve(o.lo, o.hi, row, D - 1);
-                    reserve(Math.min(o.lo, lo), Math.max(o.hi, hi), row, row);
+                    reserve(o.lo - 1, o.hi + 1, row, D - 1);
+                    reserve(Math.min(o.lo - 1, lo), Math.max(o.hi + 1, hi), row, row);
                     break;
                 }
             }
@@ -454,6 +479,146 @@ public final class Kit {
         });
         for (int[] p : c) if (anchor(m, p[0], p[1])) return true;
         return false;
+    }
+
+    // --- dropping light tiles and sinking pools (D321) --------------------------------------------------------------
+
+    /** How deep a pool's water runs: the floor layer and the layers under it; its lining lies one layer lower. */
+    public static final int POOL_DEPTH = 3;
+
+    private final List<int[]> droppedTiles = new ArrayList<int[]>(), filledHoles = new ArrayList<int[]>();
+
+    /**
+     * Turns a floor light tile into free floor, so a solid piece or a pool may take the cell; the furnisher then drops
+     * the tile's light mark, and the shadow fill relights what goes dark.
+     */
+    private void dropTile(int a, int d) {
+        int i = i(a, d);
+        if (base[i] != TILE) return;
+        base[i] = FREE;
+        droppedTiles.add(new int[] { a, d });
+    }
+
+    /**
+     * Turns a floor hole back into whole floor, so a wall or a pool may take the cell; the furnisher then drops the
+     * cell's floor damage mark, so no hole ever opens under a cell wall or beside a pool's water.
+     */
+    private void fillHole(int a, int d) {
+        int i = i(a, d);
+        if (base[i] != HOLE) return;
+        base[i] = FREE;
+        filledHoles.add(new int[] { a, d });
+    }
+
+    /** @return the light tiles a blueprint built over, as {a, d} */
+    public List<int[]> droppedTiles() {
+        return Collections.unmodifiableList(new ArrayList<int[]>(droppedTiles));
+    }
+
+    /** @return the floor holes a blueprint built over, as {a, d} */
+    public List<int[]> filledHoles() {
+        return Collections.unmodifiableList(new ArrayList<int[]>(filledHoles));
+    }
+
+    /**
+     * Puts one character on (a, d) as {@link #put(int, int, char)} does, and where only a floor light tile or a floor
+     * hole stands in the way, builds over it: the tile is dropped or the hole filled (a cell wall or a door that must
+     * not leave a gap, D322).
+     */
+    public boolean build(int a, int d, char c) {
+        Legend.Entry e = legend.get(c);
+        if (e == null) throw new IllegalArgumentException("no legend entry for '" + c + "'");
+        if (!in(a, d) || base(a, d) != TILE && base(a, d) != HOLE || fits(a, d, e)) return put(a, d, e, c);
+        int i = i(a, d);
+        if (entry[i] != null || reserved[i] || kept[i]) return false;
+        byte was = base[i];
+        base[i] = FREE;
+        if (put(a, d, e, c)) {
+            (was == TILE ? droppedTiles : filledHoles).add(new int[] { a, d });
+            return true;
+        }
+        base[i] = was;
+        return false;
+    }
+
+    /** The pool's entry: water from the floor layer down; light passes it, no one walks over it. */
+    private static final Legend.Entry POOL = Legend.inlay(FurniturePiece.POOL_WATER);
+
+    /** @return true for a pool cell */
+    public boolean pool(int a, int d) {
+        Legend.Entry e = at(a, d);
+        return e != null && e.floorPiece() == FurniturePiece.POOL_WATER;
+    }
+
+    /**
+     * Sinks a pool into the floor over rows d0..d1 and lateral cells a0..a1, shrunk until it fits: every pool cell is
+     * free floor, a light tile (which it drops) or a floor hole (which it fills), at least one cell from every wall,
+     * and no cell around it is a doorway. The holes in its rim are filled too, so no damage opens the pool's side.
+     * Each step trims the side that keeps the larger pool.
+     *
+     * @return the pool as {a0, a1, d0, d1}, or null when nothing of at least {@code min} x {@code min} is left
+     */
+    public int[] sinkPool(int a0, int a1, int d0, int d1, int min) {
+        int[] r = { Math.max(1, Math.min(a0, a1)), Math.min(L - 2, Math.max(a0, a1)), Math.max(1, Math.min(d0, d1)),
+            Math.min(D - 2, Math.max(d0, d1)) };
+        while (r[1] - r[0] + 1 >= min && r[3] - r[2] + 1 >= min) {
+            int[] bad = poolBlocker(r);
+            if (bad == null) {
+                for (int a = r[0]; a <= r[1]; a++) {
+                    for (int d = r[2]; d <= r[3]; d++) {
+                        dropTile(a, d);
+                        fillHole(a, d);
+                        set(a, d, POOL, '%', Dir.TO_DOOR, 0);
+                    }
+                }
+                // The rim stays whole: no hole opens beside the water.
+                for (int a = r[0] - 1; a <= r[1] + 1; a++) for (int d = r[2] - 1; d <= r[3] + 1; d++) fillHole(a, d);
+                return r;
+            }
+            // Cut the pool short of the blocker on the side that leaves the most.
+            int ba = bad[0], bd = bad[1];
+            int[][] cuts = { { r[0], ba - 1, r[2], r[3] }, { ba + 1, r[1], r[2], r[3] }, { r[0], r[1], r[2], bd - 1 },
+                { r[0], r[1], bd + 1, r[3] } };
+            int[] best = null;
+            long bestArea = -1;
+            for (int[] c : cuts) {
+                long area = (long) Math.max(0, c[1] - c[0] + 1) * Math.max(0, c[3] - c[2] + 1);
+                if (area > bestArea && (c[0] != r[0] || c[1] != r[1] || c[2] != r[2] || c[3] != r[3])) {
+                    bestArea = area;
+                    best = c;
+                }
+            }
+            if (best == null || bestArea <= 0) return null;
+            r = best;
+        }
+        return null;
+    }
+
+    /**
+     * @return the pool cell that must go for the pool {a0, a1, d0, d1} to sink, as {a, d}: a pool cell that is taken,
+     *         or the pool cell nearest a doorway in the ring around it; null when the pool fits
+     */
+    private int[] poolBlocker(int[] r) {
+        for (int a = r[0] - 1; a <= r[1] + 1; a++) {
+            for (int d = r[2] - 1; d <= r[3] + 1; d++) {
+                // The pool keeps a cell off every wall, so its ring lies inside the room.
+                boolean ring = a < r[0] || a > r[1] || d < r[2] || d > r[3];
+                int i = i(a, d);
+                if (ring) {
+                    if (base[i] == DOORWAY) return inward(r, a, d);
+                    continue;
+                }
+                if (entry[i] != null || reserved[i] || kept[i] || base[i] == DOORWAY) {
+                    return new int[] { a, d };
+                }
+            }
+        }
+        return null;
+    }
+
+    /** @return the pool cell nearest a ring cell, which the trim takes out with every pool cell in line with it */
+    private static int[] inward(int[] r, int a, int d) {
+        return new int[] { Math.max(r[0], Math.min(r[1], a)), Math.max(r[2], Math.min(r[3], d)) };
     }
 
     /** Puts one character of the room's legend on (a, d). */
@@ -735,7 +900,7 @@ public final class Kit {
 
     /**
      * Clears the shortest way from (a0, d0) through pieces to a walked cell; with {@code throughChests} a chest on the
-     * way gives way too (never a machine or a guard).
+     * way gives way too (never a machine, a guard or a partition, D322).
      */
     private void clearPath(boolean[] seen, int a0, int d0, boolean throughChests) {
         int[] prev = new int[L * D];
@@ -750,6 +915,8 @@ public final class Kit {
                 if (!in(a, d) || prev[i(a, d)] != -2) continue;
                 Legend.Entry e = entry[i(a, d)];
                 if (e != null && e.kind == Legend.Entry.Kind.MARK && !(throughChests && e.chest())) continue;
+                // A partition is part of the room (an armory's display wall, a brig cell's wall): never cleared.
+                if (e != null && e.bottom() == FurniturePiece.PARTITION) continue;
                 prev[i(a, d)] = i(c[0], c[1]);
                 if (seen[i(a, d)]) {
                     for (int at = prev[i(a, d)]; at >= 0 && at != i(a0, d0); at = prev[at]) remove(at / D, at % D);
@@ -1005,7 +1172,7 @@ public final class Kit {
          * Cells holding a piece, a mark or an inlay, over all interior cells; rugs, kept rings and aisles are empty.
          */
         public final double fill;
-        /** The same over the cells at least 3 from every wall (0 when there are none). */
+        /** The same over the cells at least 3 from every wall, the aisle left out (0 when there are none). */
         public final double center;
         public final int chests, machines;
 
@@ -1025,7 +1192,9 @@ public final class Kit {
                 Legend.Entry e = entry[i(a, d)];
                 boolean full = e != null && e.bottom() != FurniturePiece.RUG;
                 if (full) filled++;
-                boolean centre = a >= 3 && d >= 3 && a <= L - 4 && d <= D - 4;
+                // The middle off the aisle: the aisle is the way in, empty by design (D321).
+                boolean aisle = reserved[i(a, d)] && a >= aisleLo() && a <= aisleHi();
+                boolean centre = a >= 3 && d >= 3 && a <= L - 4 && d <= D - 4 && !aisle;
                 if (centre) {
                     cn++;
                     if (full) cf++;
