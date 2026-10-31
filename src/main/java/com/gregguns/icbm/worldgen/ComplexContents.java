@@ -266,7 +266,8 @@ public final class ComplexContents {
                             .build());
                     break;
                 case GUN_DISPLAY:
-                    // every display unit of a standing armory, at every level, outside the chest budget (owner, alpha 7)
+                    // every display unit of a standing armory, at every level, outside the chest budget (owner, alpha
+                    // 7)
                     if (!collapsed) {
                         Placement chest = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
                             .category(SiloLootTables.categoryName(LootKeys.ARMORY_AMMO, ceiling))
