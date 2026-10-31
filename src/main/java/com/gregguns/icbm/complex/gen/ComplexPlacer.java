@@ -169,7 +169,7 @@ public final class ComplexPlacer implements ComplexWriter {
     }
 
     /** Lowest level floor: clear of bedrock. */
-    private static final int MIN_FLOOR = 6;
+    public static final int MIN_FLOOR = 6;
 
     /**
      * The level floor: {@link #DEPTH} under the recorded ground, and no higher than {@link #DEPTH} under the

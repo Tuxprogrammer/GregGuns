@@ -25,8 +25,9 @@ import com.gregguns.worldgen.StructureState;
  * sender (kind: {@code complex}, a structure id such as {@code military_base}, or {@code any}), nearest first, with
  * what the placement ledger knows (built, skipped with its reason, or not generated yet), and with {@code generate}
  * forces the nearest undecided ones to decide. {@code locate tp <id> <class> <cellX> <cellZ>} (what a click on a built
- * site's line runs) teleports the player onto the surface at its arrival point. Ops only: the {@code /gregguns}
- * command already requires permission level 2.
+ * site's line runs) teleports the player onto the surface at its arrival point. {@code locate rebuild <cellX> <cellZ>}
+ * clears a built silo complex's box and writes it again with the running code ({@link ComplexRebuild}). Ops only:
+ * the {@code /gregguns} command already requires permission level 2.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/planets-and-placement.md (Locating complexes)
 public final class LocateSubCommand implements GregGunsSubCommand {
@@ -55,6 +56,10 @@ public final class LocateSubCommand implements GregGunsSubCommand {
         }
         if (parsed.mode == LocateArgs.Mode.TP) {
             teleport(sender, (WorldServer) world, parsed);
+            return;
+        }
+        if (parsed.mode == LocateArgs.Mode.REBUILD) {
+            rebuild(sender, (WorldServer) world, parsed.cellX, parsed.cellZ);
             return;
         }
         ComplexWriter writer = StructureGenerator.complexWriter();
@@ -125,6 +130,35 @@ public final class LocateSubCommand implements GregGunsSubCommand {
         }
     }
 
+    /** Starts {@link ComplexRebuild} on the built complex of a cell of the sender's dimension. */
+    private static void rebuild(ICommandSender sender, WorldServer world, int cellX, int cellZ) {
+        ComplexWriter writer = StructureGenerator.complexWriter();
+        if (writer == null) {
+            sender.addChatMessage(new ChatComponentTranslation("gregguns.locate.disabled"));
+            return;
+        }
+        java.util.Optional<StructurePlan> plan = StructurePopulator
+            .complexGridPlanAt(world.getSeed(), world.provider.dimensionId, cellX, cellZ);
+        Decision d = plan.isPresent() ? StructureState.forWorld(world)
+            .get(PlanKey.of(plan.get())) : null;
+        if (d == null || !d.isPlaced()) {
+            sender.addChatMessage(new ChatComponentTranslation("gregguns.locate.rebuild.none", cellX, cellZ));
+            return;
+        }
+        ComplexRebuild run = new ComplexRebuild(world, sender, plan.get(), d, writer);
+        if (!LocateGeneration.start(run)) {
+            sender.addChatMessage(new ChatComponentTranslation("gregguns.locate.busy"));
+            return;
+        }
+        sender.addChatMessage(
+            new ChatComponentTranslation(
+                "gregguns.locate.rebuild.start",
+                cellX,
+                cellZ,
+                run.chunkCount(),
+                run.windowCount()));
+    }
+
     private static void teleport(ICommandSender sender, WorldServer world, LocateArgs a) {
         if (!(sender instanceof EntityPlayerMP)) {
             sender.addChatMessage(new ChatComponentTranslation("gregguns.locate.tp.player"));
@@ -162,6 +196,9 @@ public final class LocateSubCommand implements GregGunsSubCommand {
         String last = args.length == 0 ? "" : args[args.length - 1].toLowerCase(java.util.Locale.ROOT);
         if (args.length <= 1) {
             for (String k : StructureLocator.kinds()) if (k.startsWith(last)) out.add(k);
+            if ("rebuild".startsWith(last)) out.add("rebuild");
+        } else if (args[0].equalsIgnoreCase("rebuild")) {
+            // Cell coordinates: nothing to complete.
         } else if ("generate".startsWith(last)) {
             out.add("generate");
         }

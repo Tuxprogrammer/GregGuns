@@ -19,9 +19,9 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
 /**
- * The forced generation behind {@code /gregguns locate <kind> generate}. A structure is decided by the first populate
- * of
- * a window that overlaps it, so the job loads the few chunks around each chosen cell's center, one chunk per server
+ * The forced generation behind {@code /gregguns locate <kind> generate}, and the tick driver of
+ * {@code /gregguns locate rebuild} ({@link ComplexRebuild}). A structure is decided by the first populate of a window
+ * that overlaps it, so the job loads the few chunks around each chosen cell's center, one chunk per server
  * tick, and reads the ledger's record. The chunks it loaded are queued for unloading afterwards; the ledger and the
  * blocks the populate wrote are saved with the world, and the rest of a large structure builds as its chunks generate.
  * Server thread only; one job at a time.
@@ -34,7 +34,17 @@ public final class LocateGeneration {
     /** The most cells one run generates. */
     public static final int MAX_CELLS = 5;
 
-    private static Job active;
+    /** A run the tick handler steps: a generate run or a rebuild ({@link ComplexRebuild}). */
+    interface Run {
+
+        /** Does one tick's share of the work and clears {@link #active} when the run is over. */
+        void step();
+
+        /** @return the world the run works in */
+        WorldServer world();
+    }
+
+    private static Run active;
     private static boolean registered;
 
     private LocateGeneration() {}
@@ -67,6 +77,23 @@ public final class LocateGeneration {
         return true;
     }
 
+    /**
+     * Starts a rebuild of a built silo complex (at most one run at a time).
+     *
+     * @return false when a run is already going
+     */
+    static boolean start(Run rebuild) {
+        if (active != null) return false;
+        ensureRegistered();
+        active = rebuild;
+        return true;
+    }
+
+    /** Ends the active run; the run calls it on its last step. */
+    static void finished(Run run) {
+        if (active == run) active = null;
+    }
+
     /** Runs the active job to its end without waiting for ticks (scenarios; the server thread is theirs). */
     public static void drain() {
         while (active != null) active.step();
@@ -83,11 +110,11 @@ public final class LocateGeneration {
 
         @SubscribeEvent
         public void onUnload(WorldEvent.Unload event) {
-            if (active != null && active.world == event.world) active = null;
+            if (active != null && active.world() == event.world) active = null;
         }
     }
 
-    private static final class Job {
+    private static final class Job implements Run {
 
         final WorldServer world;
         private final ICommandSender sender;
@@ -105,13 +132,19 @@ public final class LocateGeneration {
             sender.addChatMessage(new ChatComponentTranslation("gregguns.locate.generate.start", cells.size()));
         }
 
+        @Override
+        public WorldServer world() {
+            return world;
+        }
+
         private Decision record(StructureLocator.Candidate c) {
             return StructureState.forWorld(world)
                 .get(PlanKey.of(c.plan));
         }
 
         /** Loads one chunk of the current cell, or finishes the cell, or the job. */
-        void step() {
+        @Override
+        public void step() {
             if (cell >= cells.size()) {
                 sender.addChatMessage(
                     new ChatComponentTranslation("gregguns.locate.generate.done", built, skipped, undecided));
