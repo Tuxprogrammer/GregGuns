@@ -677,6 +677,16 @@ public final class I6VisualSetups {
                     }
                     break;
                 }
+                case "nbt": {
+                    // A tile's saved data, for checks of what the world holds (a door piece's data, a pipe's
+                    // connections).
+                    int x = Integer.parseInt(t[1]), y = Integer.parseInt(t[2]), z = Integer.parseInt(t[3]);
+                    TileEntity te = lastWorld.getTileEntity(x, y, z);
+                    net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+                    if (te != null) te.writeToNBT(tag);
+                    GregGuns.LOG.info("I6C nbt {},{},{} {}", x, y, z, te == null ? "-" : tag.toString());
+                    break;
+                }
                 case "ents": {
                     EntityPlayerMP p = player(t[1]);
                     double r = Double.parseDouble(t[2]);
