@@ -19,9 +19,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.AxisAlignedBB;
@@ -140,7 +137,7 @@ public final class SpawnerScenarios {
                 player = new FakePlayer(
                     (WorldServer) world,
                     new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
-                new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), player);
+                com.gregguns.core.testing.QuietConnection.attach(player);
                 player.getEntityAttribute(SharedMonsterAttributes.maxHealth)
                     .setBaseValue(1000.0);
                 player.setHealth(1000.0F);
