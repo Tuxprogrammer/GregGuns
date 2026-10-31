@@ -30,8 +30,8 @@ import codechicken.nei.recipe.ShapelessRecipeHandler;
 // Spec: docs/gregguns-icbm-spec/02-explosives/launcher-warheads.md (NEI)
 public class LauncherLoadHandler extends ShapelessRecipeHandler {
 
-    /** NEI's output id for every page of this handler. */
-    static final String ID = "gregguns.launcher_load";
+    /** NEI's output id for every page of this handler: its title's lang key. */
+    static final String ID = "gregguns.nei.launcher_load";
 
     @Override
     public String getRecipeName() {
