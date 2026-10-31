@@ -578,7 +578,11 @@ public final class I6VisualSetups {
                     placePart(Integer.parseInt(t[1]));
                     break;
                 case "silocam":
-                    siloCam(player(t[1]), Integer.parseInt(t[2]), Double.parseDouble(t[3]), t.length > 4 ? Double.parseDouble(t[4]) : 0);
+                    siloCam(
+                        player(t[1]),
+                        Integer.parseInt(t[2]),
+                        Double.parseDouble(t[3]),
+                        t.length > 4 ? Double.parseDouble(t[4]) : 0);
                     break;
                 case "hatchradar":
                     hatchRadar(Integer.parseInt(t[1]));
