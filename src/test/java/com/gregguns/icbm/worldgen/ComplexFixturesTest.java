@@ -145,17 +145,25 @@ class ComplexFixturesTest {
     }
 
     @Test
-    void rossTierCasingsFrameEachDoorInItsOwnPlane() {
+    void rossTierCasingsFrameEachPortalInBothWallLayers() {
         ComplexRaster r = raster(7);
         for (BlastDoor d : ComplexFixtures.build(r, ActivityLevel.OPERATIONAL, true)
             .doors()) {
-            assertFalse(
+            int height = d.y1() - d.y0() + 1, width = d.a1() - d.a0() + 1;
+            // Two jambs one higher than the door and the lintel, in each of the two layers.
+            assertEquals(
+                2 * (2 * (height + 1) + width),
                 d.frame()
-                    .isEmpty());
+                    .size(),
+                "the whole frame, both layers");
+            Set<Integer> layers = new HashSet<>();
             for (int[] c : d.frame()) {
                 assertEquals(Cell.DOOR_FRAME, r.at(c[0], c[1], c[2]));
-                assertEquals(d.plane(), d.alongX() ? c[2] : c[0], "the frame is in the door's wall layer");
+                int layer = d.alongX() ? c[2] : c[0];
+                assertTrue(Math.abs(layer - d.plane()) <= 1, "the frame is in the portal's wall layers");
+                layers.add(layer);
             }
+            assertEquals(2, layers.size());
         }
     }
 

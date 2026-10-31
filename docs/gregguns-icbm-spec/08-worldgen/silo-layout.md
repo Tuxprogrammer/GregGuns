@@ -177,7 +177,7 @@ The `BLAST_DOOR` mark of each major hall off the hub (the gallery included) stan
 | Gutted (Alpha) | 40%: stuck open, with up to two columns torn out. 60%: breached. The door is shut, with a run of 4 to 7 columns torn out (never at an edge), and either side of the breach a column jammed 2 to 5 pieces down, resting on a rubble pile from the floor up. Before 30% of the shut columns, a rubble block lies on the floor on one side or the other. |
 
   A gutted door always leaves at least four columns clear. A jammed column's pile keeps Carpenter's void fill from growing it back down to the floor.
-- **Ross128 (D337):** on Ross128b and Ross128ba, whose tier is rolled per complex (D38), the door frame (both jambs and the lintel, in the door's wall layer) is the rolled tier's GregTech machine casing (`ItemList.MACHINE_CASINGS`), EV to UMV. The hall sign still names the class. Elsewhere the frame stays the style's accent.
+- **Ross128 (D337):** on Ross128b and Ross128ba, whose tier is rolled per complex (D38), the door frame (both jambs and the lintel, in both wall layers of the portal) is the rolled tier's GregTech machine casing (`ItemList.MACHINE_CASINGS`), EV to UMV. The hall sign still names the class. Elsewhere the frame stays the style's accent.
 - **Rubble** is cobblestone or gravel, only on open floor cells that no mark claims.
 
 ## Service runs (D336)

@@ -28,8 +28,8 @@ import com.gregguns.icbm.complex.Tunnel;
  * lateral cell. By the hall's state: staffed and mothballed halls are sealed (closed), a hall in service stands open
  * (rolled up into its top row), and a gutted hall's door is either stuck open with a few slats torn out, or breached:
  * shut, with a run of four to seven columns torn out, a column hanging jammed on a rubble pile either side of the
- * breach, and rubble knocked onto the floor before the shut columns. On Ross128 the frame of the door is the tier's
- * GregTech machine casing (D337).
+ * breach, and rubble knocked onto the floor before the shut columns. On Ross128 the frame of the portal, in both wall
+ * layers, is the tier's GregTech machine casing (D337).
  *
  * <p>
  * <b>Service runs (D336).</b> Every hall and hallway but the silo gallery carries a cable tray of frame boxes just
@@ -158,8 +158,8 @@ public final class ComplexFixtures {
         }
 
         /**
-         * @return the frame cells {x, y, z} in the door's plane (jambs and lintel) that take the tier's machine casing,
-         *         or none when the complex does not show its tier this way
+         * @return the frame cells {x, y, z} of the portal (jambs and lintel, in both wall layers) that take the tier's
+         *         machine casing, or none when the complex does not show its tier this way
          */
         public List<int[]> frame() {
             return frame;
@@ -399,11 +399,15 @@ public final class ComplexFixtures {
         }
         List<int[]> frame = new ArrayList<>();
         if (tierCasings) {
-            for (int y = portal.y0; y <= portal.y1 + 1; y++) {
-                frameCell(raster, alongX, plane, a0 - 1, y, frame);
-                frameCell(raster, alongX, plane, a1 + 1, y, frame);
+            // Both wall layers of the portal: the hall's frames the door, the hub's faces the hub, where the class
+            // sign hangs.
+            for (int p = p0; p <= p1; p++) {
+                for (int y = portal.y0; y <= portal.y1 + 1; y++) {
+                    frameCell(raster, alongX, p, a0 - 1, y, frame);
+                    frameCell(raster, alongX, p, a1 + 1, y, frame);
+                }
+                for (int a = a0; a <= a1; a++) frameCell(raster, alongX, p, a, portal.y1 + 1, frame);
             }
-            for (int a = a0; a <= a1; a++) frameCell(raster, alongX, plane, a, portal.y1 + 1, frame);
         }
         return new BlastDoor(
             t.id(),
