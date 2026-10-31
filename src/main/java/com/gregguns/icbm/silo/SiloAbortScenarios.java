@@ -319,7 +319,7 @@ final class SiloAbortScenarios {
             }
         }
 
-        /** A new controller where the old one stood, facing north and owned as the dev builder does it. */
+        /** A new controller where the old one stood, facing north, owned as the dev builder does it, and repaired. */
         private void placeController() {
             IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.MISSILE_SILO];
             ctx.world()
@@ -335,6 +335,12 @@ final class SiloAbortScenarios {
             b.setFrontFacing(ForgeDirection.NORTH);
             b.setOwnerName(OWNER);
             b.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
+            // A new GT controller starts with every maintenance problem; the player fixes them, as here.
+            if (b.getMetaTileEntity() instanceof MTEMissileSilo) {
+                MTEMissileSilo fresh = (MTEMissileSilo) b.getMetaTileEntity();
+                fresh.mWrench = fresh.mScrewdriver = fresh.mSoftMallet = true;
+                fresh.mHardHammer = fresh.mSolderingTool = fresh.mCrowbar = true;
+            }
         }
 
         void restore() {
@@ -359,7 +365,16 @@ final class SiloAbortScenarios {
                     : (s.isFormed() ? "formed" : "unformed") + " "
                         + s.stage()
                         + " "
-                        + SiloSequenceScenarios.statusOf(s))
+                        + SiloSequenceScenarios.statusOf(s)
+                        + ", allowed to work "
+                        + s.getBaseMetaTileEntity()
+                            .isAllowedToWork()
+                        + ", repair "
+                        + s.getRepairStatus()
+                        + ", resume scheduled "
+                        + s.resumeScheduled()
+                        + ", checks "
+                        + s.checks())
                 + ")";
             restore();
             return ScenarioResult.fail(name, why + where);
