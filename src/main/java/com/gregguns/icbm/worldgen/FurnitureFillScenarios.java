@@ -59,6 +59,9 @@ public final class FurnitureFillScenarios {
 
     private static final class FurnitureFill implements Scenario {
 
+        /** Whether BiblioCraft is loaded: the real pack has it, the dev environment does not. */
+        private static final boolean BIBLIO = com.gregguns.icbm.complex.gen.BiblioFurniture.loaded();
+
         @Override
         public String name() {
             return "icbm.complex.furniture_fill";
@@ -89,10 +92,14 @@ public final class FurnitureFillScenarios {
                     out.checkEquals(level + ": writes dropped outside a window", 0, r[0]);
                     rates.put(level, read(out, world, plan, placer, level));
                 }
-                out.check(
-                    rates.get(ActivityLevel.OPERATIONAL) > rates.get(ActivityLevel.PARTLY_ABANDONED)
-                        && rates.get(ActivityLevel.PARTLY_ABANDONED) > rates.get(ActivityLevel.ABANDONED),
-                    "furniture holds less from Charlie to Bravo to Alpha: " + rates);
+                if (BIBLIO) {
+                    out.check(
+                        rates.get(ActivityLevel.OPERATIONAL) > rates.get(ActivityLevel.PARTLY_ABANDONED)
+                            && rates.get(ActivityLevel.PARTLY_ABANDONED) > rates.get(ActivityLevel.ABANDONED),
+                        "furniture holds less from Charlie to Bravo to Alpha: " + rates);
+                } else {
+                    out.note("BiblioCraft is absent: only the vanilla and GT pieces are checked");
+                }
             } catch (RuntimeException e) {
                 com.gregguns.GregGuns.LOG.warn("icbm.complex.furniture_fill threw", e);
                 out.check(false, "threw " + e);
@@ -192,13 +199,16 @@ public final class FurnitureFillScenarios {
                 }
             }
             double rate = stockable == 0 ? 0 : holding / (double) stockable;
-            out.check(stockable > 50, level + ": pieces to stock: " + stockable);
+            if (BIBLIO) out.check(stockable > 50, level + ": pieces to stock: " + stockable);
             out.note(level + ": " + holding + "/" + stockable + " pieces hold something; sources " + summary(bySource));
-            if (level == ActivityLevel.OPERATIONAL) {
+            if (BIBLIO && level == ActivityLevel.OPERATIONAL) {
                 out.check(rate > 0.95, level + ": a staffed complex's furniture is full: " + rate);
             }
-            for (String must : new String[] { FurnitureStock.BOOKS, FurnitureStock.DESK, FurnitureStock.PLATE,
-                FurnitureStock.ARMOR_COMBAT, FurnitureStock.FURNACE, FurnitureStock.PLANT }) {
+            String[] musts = BIBLIO
+                ? new String[] { FurnitureStock.BOOKS, FurnitureStock.DESK, FurnitureStock.PLATE,
+                    FurnitureStock.ARMOR_COMBAT, FurnitureStock.FURNACE, FurnitureStock.PLANT }
+                : new String[] { FurnitureStock.FURNACE, FurnitureStock.PLANT };
+            for (String must : musts) {
                 int[] n = bySource.get(must);
                 out.check(n != null && n[2] > 0, level + ": some " + must + " is stocked");
             }
