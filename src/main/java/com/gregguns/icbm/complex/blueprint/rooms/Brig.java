@@ -43,7 +43,6 @@ public final class Brig implements RoomBlueprint {
         k.anchor(L - 8, D - 6, "kk.r", "kC..");
         k.anchor(0, D - 3, "k.", "Ck");
         k.anchor(L - 2, D - 3, ".k", "kC");
-        k.guards(LegacyRoom.steps(k), D - 3);
     }
 
     /**

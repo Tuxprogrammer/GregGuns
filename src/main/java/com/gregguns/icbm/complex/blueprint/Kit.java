@@ -623,10 +623,53 @@ public final class Kit {
         return false;
     }
 
-    /** {@code n} room guards spread along row d (D234: room guards keep the area step), each near its spot. */
-    public void guards(int n, int d) {
-        Legend.Entry g = Legend.guard("room");
-        for (int k = 0; k < n; k++) markNear((int) ((k + 0.5) * L / n), d, g, 'G');
+    /**
+     * Where a spawner may stand (D326): up to {@code n} bare floor cells that a walk from the doorway reaches, far
+     * apart.
+     * Call it after the commit, when nothing else will stand in the room. The first cell is a hash of the room, each
+     * next one the cell farthest from those chosen. A cell holding a floor mark is not offered.
+     *
+     * @param n the most cells wanted
+     * @return {a, d} cells, fewer than {@code n} (or none) when the room has no such floor
+     */
+    public List<int[]> spawnerSpots(int n) {
+        boolean[] seen = flood();
+        final List<int[]> pool = new ArrayList<int[]>();
+        for (int a = 0; a < L; a++) {
+            for (int d = 0; d < D; d++) {
+                if (!free(a, d) || !seen[i(a, d)]) continue;
+                boolean marked = false;
+                for (Placed p : floorMarks) marked |= p.a == a && p.d == d;
+                if (!marked) pool.add(new int[] { a, d });
+            }
+        }
+        List<int[]> out = new ArrayList<int[]>();
+        if (pool.isEmpty() || n <= 0) return out;
+        int[] first = pool.get(0);
+        long best = Long.MAX_VALUE;
+        for (int[] c : pool) {
+            long h = hash(0x59A, c[0], c[1]);
+            if (h < best || h == best && (c[0] < first[0] || c[0] == first[0] && c[1] < first[1])) {
+                best = h;
+                first = c;
+            }
+        }
+        out.add(first);
+        while (out.size() < n) {
+            int[] far = null;
+            int farDist = -1;
+            for (int[] c : pool) {
+                int near = Integer.MAX_VALUE;
+                for (int[] o : out) near = Math.min(near, Math.abs(c[0] - o[0]) + Math.abs(c[1] - o[1]));
+                if (near > farDist) {
+                    farDist = near;
+                    far = c;
+                }
+            }
+            if (far == null || farDist <= 0) break;
+            out.add(far);
+        }
+        return out;
     }
 
     private final List<Placed> floorMarks = new ArrayList<Placed>();

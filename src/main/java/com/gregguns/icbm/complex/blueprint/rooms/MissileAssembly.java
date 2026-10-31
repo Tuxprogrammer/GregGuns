@@ -39,7 +39,6 @@ public final class MissileAssembly implements RoomBlueprint {
         Module[] parts = { k.module("KKKzKKK", "KKKzKKK", "mCmmmCm"), k.module("KKK", "KKK", "mCm"),
             k.module("KKK", "KKK"), k.module("mCm"), k.module("m") };
         Works.fillBands(k, 3, D - 3, L < 24 ? 1 : 2, racks, parts);
-        k.guards(Works.steps(k), D - 3);
         k.put(1, 1, 'C');
         k.put(L - 2, 1, 'C');
         Works.corners(k);

@@ -461,9 +461,7 @@ public final class ComplexLevelScenarios {
             if (ab == null || pa == null || op == null) {
                 return;
             }
-            out.check(
-                ab.spawners >= 1 && ab.spawners <= 2,
-                "an abandoned complex holds one or two guard spawners (D284): " + ab.spawners);
+            out.check(ab.spawners > 0, "an abandoned complex still holds some spawners (D326): " + ab.spawners);
             out.checkEquals("abandoned elite spawners", 0, ab.elite);
             out.check(
                 ab.machinesWorking * 4 <= op.machinesWorking && ab.chests <= op.chests,
@@ -651,7 +649,70 @@ public final class ComplexLevelScenarios {
             out.check(
                 spawners.totalIn(world, ax, az, floor) == t.spawners,
                 tag + ": spawner blocks in the world equal the placements: " + spawners.last + " vs " + t.spawners);
+            spawnerSpread(out, tag, world, cp, ax, floor, az, level, t);
             return t;
+        }
+
+        /**
+         * D326: counts the marked spawner blocks standing in each room (the hub included) of the generated complex and
+         * checks the spread: no room holds more than two, a staffed complex has one in every room that offers a spot,
+         * a ruin has them in a minority, and the rooms with spawners reach beyond the first ring around the hub.
+         */
+        private void spawnerSpread(ScenarioResult.Builder out, String tag, World world, ComplexPlan cp, int ax,
+            int floor, int az, ActivityLevel level, Tally t) {
+            List<com.gregguns.icbm.complex.Room> rooms = new ArrayList<>(cp.rooms());
+            rooms.add(cp.hall());
+            int[] hist = new int[3];
+            int tooMany = 0, far = 0, staffedBare = 0;
+            com.gregguns.icbm.complex.Box hub = cp.hall()
+                .bounds();
+            for (com.gregguns.icbm.complex.Room r : rooms) {
+                com.gregguns.icbm.complex.Box b = r.bounds();
+                int n = 0;
+                for (int x = b.minX; x < b.maxX; x++) {
+                    for (int z = b.minZ; z < b.maxZ; z++) {
+                        if (world.getBlock(ax + x, floor + 1, az + z) != Blocks.mob_spawner) continue;
+                        NBTTagCompound st = VanillaSpawners.read(world.getTileEntity(ax + x, floor + 1, az + z));
+                        if (st != null && SpawnerNbt.isMarked(st)) n++;
+                    }
+                }
+                if (n > 2) {
+                    tooMany++;
+                }
+                hist[Math.min(n, 2)]++;
+                int dist = Math.abs(b.centerX() - hub.centerX()) + Math.abs(b.centerZ() - hub.centerZ());
+                if (n > 0 && dist >= 60) {
+                    far++;
+                }
+                boolean offers = false;
+                for (com.gregguns.icbm.complex.Mark m : r.marks()) {
+                    offers |= m.kind() == com.gregguns.icbm.complex.MarkKind.SPAWNER;
+                }
+                if (level == ActivityLevel.OPERATIONAL && n == 0 && offers) {
+                    staffedBare++;
+                }
+            }
+            out.note(
+                tag + ": "
+                    + rooms.size()
+                    + " rooms with 0/1/2 spawners "
+                    + hist[0]
+                    + "/"
+                    + hist[1]
+                    + "/"
+                    + hist[2]
+                    + ", "
+                    + far
+                    + " with spawners 60 or more cells from the hub");
+            out.checkEquals(tag + ": rooms holding more than two spawners", 0, tooMany);
+            out.checkEquals(tag + ": staffed rooms with a spot and no spawner", 0, staffedBare);
+            out.checkEquals(tag + ": every placed spawner stands inside a room", t.spawners, hist[1] + 2 * hist[2]);
+            if (level != ActivityLevel.ABANDONED) {
+                out.check(far > 0, tag + ": the outer rooms hold spawners, not only the middle");
+            }
+            if (level == ActivityLevel.ABANDONED) {
+                out.check(hist[0] > hist[1] + hist[2], tag + ": most rooms of a ruin hold none");
+            }
         }
 
         /** @return how many warhead block items an inventory holds (D17 allows none in a complex) */

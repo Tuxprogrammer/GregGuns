@@ -13,8 +13,8 @@ import com.gregguns.icbm.complex.blueprint.rooms.Hub;
 
 /**
  * Puts the marks into a grown plan: the lamp grid of every section (D230, D231), each room's furniture and contents in
- * the room's own door-relative frame (D208, D234), guard posts at branch points (D233), the deep posts of the silo
- * gallery, signs and damage cells. Counts of chests, machines and guards scale with a room's floor area. Pure and
+ * the room's own door-relative frame (D208, D234), two spawner spots per room (D326), signs and damage cells.
+ * Counts of chests and machines scale with a room's floor area. Pure and
  * deterministic; package-private, run by {@link ComplexLayout#fromSeed}.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Lighting, Furnishing)
@@ -24,6 +24,12 @@ final class ComplexFurnisher {
 
     /** Floor cells a room's furnishing can use, in its frame. */
     private static final byte FREE = 0, DOORWAY = 1, LIGHT_TILE = 2, SOLID = 3, FURN = 4, KEEP = 5;
+
+    /** Most spawner spots a room offers, the most any level rolls for it (D326). */
+    static final int SPAWNER_SPOTS = 2;
+
+    /** The key of a spawner mark: a bare floor spot the contents pass may fill. */
+    static final String SPOT = "spot";
 
     private final ComplexPlan plan;
     private final Random rnd;
@@ -39,13 +45,13 @@ final class ComplexFurnisher {
         this.rnd = rnd;
     }
 
-    static void furnish(ComplexPlan plan, List<int[]> branchPoints, Random rnd) {
+    static void furnish(ComplexPlan plan, Random rnd) {
         ComplexFurnisher f = new ComplexFurnisher(plan, rnd);
         f.zones();
         f.lamps();
-        f.hub(branchPoints);
+        f.hub();
         for (Room r : plan.rooms()) f.room(r);
-        f.halls(branchPoints);
+        f.halls();
     }
 
     // --- door zones ----------------------------------------------------------------------------------------------
@@ -234,7 +240,7 @@ final class ComplexFurnisher {
      * straight lane kept clear across from every portal. Its sign (and the activity sign hung under it) keeps the cell
      * in front of it, and the cells either side, clear.
      */
-    private void hub(List<int[]> branchPoints) {
+    private void hub() {
         Room r = plan.hall();
         Box b = r.bounds();
         damage(r, b, r.id());
@@ -252,35 +258,7 @@ final class ComplexFurnisher {
                 break;
             }
         }
-        // The hall posts at the hub's branch points (D233) go in first, so the yard is laid around them.
-        for (int[] p : branchPoints) {
-            if (p[2] == r.id()) k.markNear(f.a(p[0], p[1]), f.d(p[0], p[1]), Legend.guard("post"), 'G');
-        }
         lay(r, f, k, new Hub());
-    }
-
-    private final boolean[] used = new boolean[S * S];
-
-    private boolean usable(int x, int z) {
-        return !inZone(x, z) && !floorLamp[x * S + z] && !used[x * S + z];
-    }
-
-    /** A solid mark on the nearest usable interior cell of its section to (x, z) within four cells. */
-    private void solid(Object owner, int x, int z, MarkKind k, String key) {
-        Box b = owner instanceof Room ? ((Room) owner).bounds() : ((Tunnel) owner).bounds();
-        for (int r = 0; r <= 4; r++) {
-            for (int dx = -r; dx <= r; dx++) {
-                for (int dz = -r; dz <= r; dz++) {
-                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r) continue;
-                    int cx = x + dx, cz = z + dz;
-                    if (cx <= b.minX || cz <= b.minZ || cx >= b.maxX - 1 || cz >= b.maxZ - 1) continue;
-                    if (!usable(cx, cz)) continue;
-                    used[(x + dx) * S + z + dz] = true;
-                    add(owner, k, x + dx, 1, z + dz, key);
-                    return;
-                }
-            }
-        }
     }
 
     /** The wall cell of {@code b} two cells past an opening's edge on the side it is cut in, or null. */
@@ -316,7 +294,7 @@ final class ComplexFurnisher {
 
     // --- halls ---------------------------------------------------------------------------------------------------
 
-    private void halls(List<int[]> branchPoints) {
+    private void halls() {
         for (Tunnel t : plan.tunnels()) {
             Box b = t.bounds();
             damage(t, b, t.id());
@@ -342,53 +320,6 @@ final class ComplexFurnisher {
                 }
             }
         }
-        for (int[] p : branchPoints) {
-            Tunnel t = plan.section(p[2]) instanceof Tunnel ? (Tunnel) plan.section(p[2]) : null;
-            if (t != null) solid(t, p[0], p[1], MarkKind.SPAWNER, "post"); // the hub's posts are its blueprint's
-        }
-        // D36: guards thicken with depth; each silo's walkway and the gallery's far end hold a "deep" post.
-        for (SiloSlot s : plan.silos()) {
-            int dx = s.frontX() - s.controllerX(), dz = s.frontZ() - s.controllerZ();
-            Tunnel g = galleryAt(s.frontX() + dx, s.frontZ() + dz);
-            if (g == null) continue;
-            solidAnyway(g, s.frontX() + 3 * dx, s.frontZ() + 3 * dz, "deep");
-        }
-        for (Tunnel t : plan.tunnels()) {
-            if (!t.gallery()) continue;
-            Box b = t.bounds();
-            Box hub = plan.hall()
-                .bounds();
-            // The far end is the end away from the hub.
-            boolean farHigh = t.alongX() ? b.centerX() > hub.centerX() : b.centerZ() > hub.centerZ();
-            int x = t.alongX() ? (farHigh ? b.maxX - 4 : b.minX + 3) : b.minX + 3;
-            int z = t.alongX() ? b.minZ + 3 : (farHigh ? b.maxZ - 4 : b.minZ + 3);
-            solidAnyway(t, x, z, "deep");
-        }
-    }
-
-    /** A deep post on the nearest cell that is not a doorway or a light tile, searching wide. */
-    private void solidAnyway(Tunnel t, int x, int z, String key) {
-        Box b = t.bounds();
-        for (int r = 0; r < 12; r++) {
-            for (int dx = -r; dx <= r; dx++) {
-                for (int dz = -r; dz <= r; dz++) {
-                    int cx = x + dx, cz = z + dz;
-                    if (cx <= b.minX || cz <= b.minZ || cx >= b.maxX - 1 || cz >= b.maxZ - 1) continue;
-                    if (!usable(cx, cz)) continue;
-                    used[cx * S + cz] = true;
-                    t.add(MarkKind.SPAWNER, cx, 1, cz, key);
-                    return;
-                }
-            }
-        }
-    }
-
-    private Tunnel galleryAt(int x, int z) {
-        for (Tunnel t : plan.tunnels()) {
-            if (t.gallery() && t.bounds()
-                .contains(x, 1, z)) return t;
-        }
-        return null;
     }
 
     /** A wall cell beside a hall's mouth, on its side wall two cells in, with its facing; or null. */
@@ -494,7 +425,6 @@ final class ComplexFurnisher {
         java.util.Map<Integer, Long> anchors = new java.util.HashMap<Integer, Long>();
         for (Kit.Placed p : k.commit()) {
             int x = f.x(p.a, p.d), z = f.z(p.a, p.d);
-            used[x * S + z] = true;
             int hang = p.facing.world(f.side);
             Legend.Entry e = p.entry;
             if (e.kind == Legend.Entry.Kind.MARK) {
@@ -539,6 +469,12 @@ final class ComplexFurnisher {
             }
         }
         for (Kit.Placed p : k.floorMarks()) r.add(p.entry.markKind(), f.x(p.a, p.d), 1, f.z(p.a, p.d), p.key);
+        // The spots a spawner may take (D326): two bare, reachable floor cells far apart; the contents pass rolls how
+        // many of them hold one at the room's activity level.
+        for (int[] c : k.spawnerSpots(SPAWNER_SPOTS)) {
+            int x = f.x(c[0], c[1]), z = f.z(c[0], c[1]);
+            r.add(MarkKind.SPAWNER, x, 1, z, SPOT);
+        }
     }
 
     /**

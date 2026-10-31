@@ -194,20 +194,6 @@ public final class Legend {
             false);
     }
 
-    /** @return a guard spawner mark of tier {@code tier} ("room", "post") */
-    public static Entry guard(String tier) {
-        return new Entry(
-            Entry.Kind.MARK,
-            new FurniturePiece[0],
-            null,
-            -1,
-            Dir.AUTO,
-            MarkKind.SPAWNER,
-            tier,
-            false,
-            false);
-    }
-
     /**
      * @return a solid mark of any other kind (an armory display, a rubble or flood cell): {@code key} is its mark key;
      *         its facing is the entry's own (set it with {@link Entry#facing})
@@ -278,7 +264,6 @@ public final class Legend {
         l.set('o', inlay(FurniturePiece.WATER_INLAY));
         l.set('V', piece(FurniturePiece.VENT_RISER, FurniturePiece.VENT_RISER));
         l.set('X', piece(FurniturePiece.CASING_FRAME, FurniturePiece.CASING_FRAME));
-        l.set('G', guard("room"));
         l.set('~', piece(FurniturePiece.RUG));
         l.set('+', keep());
         l.set('*', keepStrict());

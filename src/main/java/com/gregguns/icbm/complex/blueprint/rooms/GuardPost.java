@@ -2,11 +2,10 @@ package com.gregguns.icbm.complex.blueprint.rooms;
 
 import com.gregguns.icbm.complex.LootKeys;
 import com.gregguns.icbm.complex.blueprint.Kit;
-import com.gregguns.icbm.complex.blueprint.Legend;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 
 /**
- * A guard post (D233, D305): the post spawner in the middle (its own rules, D284), lockers and a rifle rack in a back
+ * A guard post (D233, D305): lockers and a rifle rack in a back
  * corner, the duty desk with its chair and chest in the other, a card table with two stools, ammo chests and a rack
  * along the side walls. Fixed pieces; a larger post adds a second card table.
  */
@@ -17,7 +16,6 @@ public final class GuardPost implements RoomBlueprint {
     public void lay(Kit k) {
         int L = k.lateral(), D = k.depth();
         k.defaultLoot(LootKeys.ARMORY);
-        k.markNear(L / 2, D / 2, Legend.guard("post"), 'G');
         k.strip(0, 0, L - 1, "LLr..dCL");
         k.putNear(L - 3, 1, 'h');
         k.anchor(1, 3, "sTs");

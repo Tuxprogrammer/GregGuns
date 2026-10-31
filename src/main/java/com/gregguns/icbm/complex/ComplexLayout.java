@@ -96,7 +96,7 @@ public final class ComplexLayout {
             g.doors,
             g.escape,
             g.radars);
-        ComplexFurnisher.furnish(plan, g.branchPoints, new Random(seed ^ 0x6F75726E69736831L));
+        ComplexFurnisher.furnish(plan, new Random(seed ^ 0x6F75726E69736831L));
         return plan;
     }
 

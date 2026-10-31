@@ -90,7 +90,7 @@ The writer resolves the building roles through the owning section's palette styl
 `ComplexLayout.generate(worldSeed, cellX, cellZ)` returns a `ComplexPlan` of `Room`s (the hub is `hall()`), `Tunnel`s (major and minor halls), `SiloSlot`s and `Door`s. Each room and hall carries `Mark`s (`MarkKind`, x, y, z, key):
 
 - loot chest, with a loot-table key from `LootKeys`;
-- spawner, keyed `post`, `room` or `deep`;
+- spawner, keyed `spot` (D326);
 - machine, keyed by `MachineRole`;
 - item-frame wall, light, damage cell (`wall`, `floor`, `roof`), flood cell, rubble, sign and blast door;
 - furniture (D234).
@@ -122,7 +122,7 @@ Every room kind, and the hub, is furnished by its own **blueprint** (`complex/bl
 | Mess galley, cafeteria | The kitchen line (furnaces, cauldrons, counters, pantry chests) on the back wall; a serving counter; runs of 3 tables with a chair each side in every band (D259's density); pantry chests and crates down the side walls; the cafeteria adds two salad bars |
 | Recreation lounge | Bands of pool tables on rugs and of card tables; a bar with stools and a sofa corner facing a screen wall in front; bookcases and jukeboxes |
 | Showers and laundry | Shower stalls on the back wall (a drain in the floor under a shower head, bar dividers); lockers and chests down the left wall with a bench; a laundry corner of wash tubs, linen piles and chests |
-| Guard post | The `post` spawner; lockers, a rifle rack and the duty desk with its chair and chest on the back wall; a card table; ammo chests and a rack on the side walls |
+| Guard post | Lockers, a rifle rack and the duty desk with its chair and chest on the back wall; a card table; ammo chests and a rack on the side walls |
 | Decontamination airlock | A decon shower (cauldrons in a bar frame) in the middle; a bench and chests down one side, suits on stands and chests down the other; lockers and chests on the back wall |
 | Brig | A row of cells on the back wall (bunk, cauldron, bars, a closed iron door), a second row facing it in a deep brig, never across another door's way in; guard desks with consoles; evidence lockers and chests; an interrogation table; crates; guards |
 | Shooting range | A hay-bale backstop; a wool target on a fence post in each lane; bar lane dividers; booths at the firing line; ammo chests and rifle racks down both side walls and behind the line; the range officer's desk |
@@ -157,12 +157,11 @@ Every room kind, and the hub, is furnished by its own **blueprint** (`complex/bl
   - Roof, floor and wall damage cells, scaled by area, kept off lamps and openings.
   - A minecart rail along each major hall, one cell off its centerline: the centerline carries the middle row of floor light tiles, and a rail on glowstone drops off at the first block update beside it. A rail goes only over a FLOOR cell (D247).
 
-## Guards (D233)
+## Guards (D233, D326)
 
-- **Branch points:** every opening from the hub or a hall into another hall (a mouth, a bend, a side branch, a minor hallway) has a `post` spawner beside it, two cells in from the wall and two clear of the opening.
+- **Spawner spots (D326):** every room, the hub included, gets up to two `spot` marks after its furniture is laid: bare floor cells a walk from the doorway reaches, the second the farthest from the first. The halls get none. The contents pass places the first N, N rolled per room by activity level.
 - **Guard posts:** 3 to 5 guard-post rooms stand beside major hall mouths at the hub and beside minor hallway mouths.
 - **Decontamination airlock:** sits in the corner between the hub and a major hall, with a door onto each.
-- **Deep posts:** each silo has a `deep` post three cells into the gallery from its walkway, and the gallery's far end has one more. The contents pass makes them elite posts.
 
 ## Depth, stamp and surface
 
