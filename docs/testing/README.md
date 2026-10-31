@@ -77,7 +77,7 @@ gregguns test npc.soak    # needs modules.npcs on, e.g. GG_MODULES=guns,armor,ma
 
 The result lists the baseline and load tick statistics as notes, and the same lines go to the server log with the prefix `npc.soak:`.
 
-The ICBM soaks are opt-in too: `icbm.soak.missiles`, `icbm.soak.missiles_max`, `icbm.soak.blasts`, `icbm.soak.redmatter`, `icbm.soak.emp` and `icbm.soak.salvo`. Each takes a few minutes. They run by exact name only (a prefix run such as `icbm.` skips them) and are meant for a real-pack server and are judged by the playable bar (D332). See [soak.md](../gregguns-icbm-spec/01-core/soak.md). `tools/soak/icbm_soak.py` runs them and samples the server; it also runs the long play soak and the restart check. The results are in [i7-soak.md](i7-soak.md).
+The ICBM soaks are opt-in too: `icbm.soak.missiles`, `icbm.soak.missiles_max`, `icbm.soak.blasts`, `icbm.soak.redmatter`, `icbm.soak.emp` and `icbm.soak.salvo`. Each takes a few minutes. They run by exact name only (a prefix run such as `icbm.` skips them), are meant for a real-pack server, and are judged by the playable bar (D332). See [soak.md](../gregguns-icbm-spec/01-core/soak.md). `tools/soak/icbm_soak.py` runs them and samples the server; it also runs the long play soak and the restart check. The results are in [i7-soak.md](i7-soak.md).
 
 ## Writing a scenario
 
