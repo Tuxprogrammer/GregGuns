@@ -187,6 +187,41 @@ public final class ComplexLayout {
             doorHi = nsDoor ? d.x1 - b.minX - 1 : d.z1 - b.minZ - 1;
         }
 
+        /**
+         * A frame with no doorway of its own (the hub): {@code side} picks the frame's turn, and the doorway range is
+         * empty (-1).
+         */
+        public Frame(Box b, int side) {
+            this.b = b;
+            this.side = side;
+            boolean nsDoor = side == 0 || side == 2;
+            lateral = (nsDoor ? b.sizeX() : b.sizeZ()) - 2;
+            depth = (nsDoor ? b.sizeZ() : b.sizeX()) - 2;
+            doorLo = -1;
+            doorHi = -1;
+        }
+
+        /** @return the lateral index of the column (x, z); -1 or {@code lateral} for a side wall's column */
+        public int a(int x, int z) {
+            return side == 0 || side == 2 ? x - b.minX - 1 : z - b.minZ - 1;
+        }
+
+        /**
+         * @return the depth index of the column (x, z); -1 for the back wall's column, {@code depth} the door wall's
+         */
+        public int d(int x, int z) {
+            switch (side) {
+                case 0:
+                    return b.maxZ - 2 - z;
+                case 2:
+                    return z - b.minZ - 1;
+                case 1:
+                    return x - b.minX - 1;
+                default:
+                    return b.maxX - 2 - x;
+            }
+        }
+
         public int x(int a, int d) {
             switch (side) {
                 case 0:
