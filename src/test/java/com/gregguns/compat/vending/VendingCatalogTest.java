@@ -46,7 +46,7 @@ class VendingCatalogTest {
         assertTrue(OFFERS.size() > 150, "the shop should be big: " + OFFERS.size());
     }
 
-    /** The one number the docs quote: config.md, coins-and-vending.md and the changelog all say 177. */
+    /** The one number the docs quote: config.md and coins-and-vending.md say 176. */
     @Test
     void tradeCountIsTheDocumentedOne() {
         int misc = 0;
@@ -58,7 +58,7 @@ class VendingCatalogTest {
                 components++;
             }
         }
-        assertEquals("139 Misc + 38 Components = 177", misc + " Misc + " + components + " Components = " + OFFERS.size());
+        assertEquals("139 Misc + 37 Components = 176", misc + " Misc + " + components + " Components = " + OFFERS.size());
     }
 
     @Test
