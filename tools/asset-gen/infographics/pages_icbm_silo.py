@@ -119,7 +119,7 @@ def _verify() -> None:
     hc = re.search(r"HATCH_COLUMN_RIGHT = (\d+);", src(SILO_SHAPE))
     assert hc and int(hc.group(1)) == 0 and LAUNCH_CONTROL[0] == 0, "the right-hand hatch column moved"
     t3 = build_spec(3)
-    need(t3, "Tier.LUV", '"craftingLensYellow"', 'Ing.gt("compressed", "Titanium", 4', "FINS_T3, 4", "ENGINE_T3, 1",
+    need(t3, "Tier.LUV", '"craftingLensYellow"', "GalacticraftParts.HULL_T3, 4,", "GalacticraftParts.FINS_HEAVY, 4,", "GalacticraftParts.ENGINE_HEAVY, 1,",
          "Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK3)", "180, Tier.LUV,", '"Circuit_Board_Multifiberglass", 1',
          'Ing.gt("circuit", "Master", 2', 'Ing.gt("wireFine", "Platinum"', where="MissileBuildSpec.T3")
     need(src("icbm/missile/MissileTier.java"), 'T3("missile_body_t3", ExplosiveTier.T3, 8000, 20, 8000, 1.6, 6.0, 6, 60.0F, "fluid.rocketfuelmixc",\n        "fluid.rocketfuelmixa")',
@@ -337,9 +337,9 @@ def silo() -> str:
             ("Maintenance Hatch (1)", "as on any GregTech multiblock"),
         ])
     parts = "".join([
-        TP.part(TP.gc_icon("compressed_titanium"), 4, "Compressed Titanium Plate", 72),
-        TP.part(TP.NHCORE / "heavy_duty_rocket_fins_t3.png", 4, "Heavy Duty Rocket Fins Tier 3", 72),
-        TP.part(TP.NHCORE / "heavy_duty_rocket_engine_t3.png", 1, "Heavy Duty Rocket Engine Tier 3", 72),
+        TP.part(TP.NHCORE / "heavy_duty_plate_t4.png", 4, "Heavy Duty Plate Tier 4", 72),
+        TP.part(TP.gc_icon("rocket_fins_t2"), 4, "Heavy Rocket Fins", 72),
+        TP.part(TP.gc_icon("rocket_engine_t2"), 1, "Heavy Rocket Engine", 72),
         f'<span class="part" style="width:420px"><span class="pl"><b style="display:block">Also needed</b>a LuV missile chip (Multifiberglass board, 2 Master circuits and platinum fine wire in the Circuit Assembler), engraved with a Yellow lens, and a Guidance Computer Mk III.</span></span>'])
     t1r, t2r, t3r = (MT[k]["rng"] * RANGE_X for k in (1, 2, 3))
     body = f"""<div style="display:grid;grid-template-columns:1fr 470px;gap:20px">

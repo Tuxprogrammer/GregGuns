@@ -56,7 +56,8 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 
 ### ICBM balance pass
 
-- **Warheads are the expensive part of a missile.** Every Inert Warhead also takes the nose cone and 12 hull plates of its tier's Galacticraft rocket and its arming electronics (a Sensor, an Emitter and 2 circuits of its tier): T1 a Nose Cone and Heavy Duty Plates, T2 a Heavy Nose Cone and Heavy Duty Plates Tier 2, T3 a Heavy Nose Cone and Heavy Duty Plates Tier 4, T4 and T5 the Heavy Duty Nose Cones Tier 3 and 4 with Heavy Duty Plates Tier 6 and 7. A full missile costs about one Galacticraft rocket of its tier.
+- **Warheads are the expensive part of a missile.** Every Inert Warhead also takes the nose cone and 12 hull plates of its tier's Galacticraft rocket and its arming electronics (a Sensor, an Emitter and 2 circuits of its tier): T1 a Nose Cone and Heavy Duty Plates, T2 a Nose Cone and Heavy Duty Plates Tier 2, T3 a Heavy Nose Cone and Heavy Duty Plates Tier 4, T4 and T5 the Heavy Duty Nose Cones Tier 3 and 4 with Heavy Duty Plates Tier 6 and 7. Every casing is buildable at the floor of its tier: the Tier 2 casing at EV. A full missile costs about one Galacticraft rocket of its tier, measured in the pack: T1 0.99 to 1.32 rockets, T2 0.90 to 0.96, T3 1.02 to 2.62, nuclear 0.89, antimatter 1.35, red matter 0.94.
+- **The Tier 3 missile body** is built from the Tier 4 rocket's parts: 4 Heavy Duty Plates Tier 4, 4 Heavy Rocket Fins and a Heavy Rocket Engine, all buildable at LuV, with the same circuits and lubricant. The T3 body has no GT recycling.
 - The **nuclear payload** also takes 2 ZPM Field Generators to hold its core.
 - Silo complex room machines (generators, buffers, pumps, labs and the rest) run mostly LV and MV, with the complex's top tier a rare find; radars and comms gear are unchanged. Inert T1 warheads are rarer in silo chests.
 - The LuV ICBM quests pay an Ordnance III crate and HSS-G plates instead of IV rewards, and the LuV chapter's first quest offers Master circuits and LuV motors.
@@ -74,6 +75,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - Missile Bodies T1 and T2 are built in the GT Assembler at HV and EV, with no research, as well as in the NASA Workbench. The Tier 3 body stays on the LuV Assembly Line.
 - Missiles sound like Galacticraft rockets: the engine loop starts with the countdown, rises toward ignition, follows the flight and stops on impact, interception or abort.
 - A missile in flight across a server restart resumes its flight and releases its chunk ticket when it lands.
+- A silo never stands the next missile body under a missile that is counting down, so an aborted launch can fire again at once. An EMP-fried missile falls silent.
 
 ### Warheads
 
@@ -104,7 +106,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 ### Everything else
 
 - **GT recycling for nearly every GregGuns item, block and machine,** returning the materials of the cheapest recipe that makes it. Not recyclable on purpose: coins, spawn eggs, fallout, silo complex walls, world blocks from structures, cloth, leather and wooden parts, the Antidote, launcher warheads and guidance chips.
-- **GregGuns Coins and the Vending Machine.** A GregGuns Coin in five values, and 177 trades in the pack's Vending Machine priced in coins by tier, unlocked by each tier's intro quest when the quest line is installed.
+- **GregGuns Coins and the Vending Machine.** A GregGuns Coin in five values, and 176 trades in the pack's Vending Machine priced in coins by tier, unlocked by each tier's intro quest when the quest line is installed. Spawn eggs are offered only for NPC kinds that can spawn under the server's config.
 - **Quest loot bags.** GregGuns quests reward GregGuns EnhancedLootBags bags (ids 1701 to 1714): eight tier bags, Spoils of War and the ICBM Ordnance crates.
 - **Tanned Leather.** GregGuns armor, its repairs, the Night Vision Goggles, the Ammo Pouch and the glider parts take the pack's Tanned Leather; mobs and loot bags drop it.
 - **Nuclear Power Cell.** The Nuclear Death Ray takes one as its power core; the cell recipe makes one cell from half the materials. The cell, the Small Nuclear Warhead and the Rad Emitter are radioactive to carry without full hazmat.

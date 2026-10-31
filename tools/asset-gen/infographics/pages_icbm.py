@@ -147,7 +147,7 @@ INERT = {
             fuze="MK1", fuze_name="Mk I", nose=("NOSE_T1", "GalacticraftCore:item.noseCone@0", "a Nose Cone"),
             hull=("HULL_T1", "GalacticraftCore:item.heavyPlating@0", "12 Heavy Duty Plates"), etier="HV", circuit="Advanced"),
     2: dict(volt=4, chip="EV", plate="Titanium", plate_name="titanium", plates=8, plates_const="T2_PLATES",
-            fuze="MK2", fuze_name="Mk II", nose=("NOSE_HEAVY", "GalacticraftMars:item.heavyNoseCone@0", "a Heavy Nose Cone"),
+            fuze="MK2", fuze_name="Mk II", nose=("NOSE_T2", "NOSE_T1", "a Nose Cone"),
             hull=("HULL_T2", "GalacticraftMars:item.null@3", "12 Heavy Duty Plates (Tier 2)"), etier="EV", circuit="Data"),
     3: dict(volt=6, chip="LuV", plate="TungstenSteel", plate_name="tungstensteel", plates=8, plates_const="T3_PLATES",
             fuze="MK3", fuze_name="Mk III", nose=("NOSE_HEAVY", "GalacticraftMars:item.heavyNoseCone@0", "a Heavy Nose Cone"),
@@ -169,6 +169,11 @@ def inert_words(t: int, fuze_full=True) -> str:
             f"an {c['etier']} Sensor, an {c['etier']} Emitter and 2 {c['etier']} circuits")
 
 
+def _gc_def(name: str, value: str) -> str:
+    """How GalacticraftParts defines a part: an item id in quotes, or another part's constant (an alias)."""
+    return f"{name} = {value};" if re.fullmatch(r"[A-Z0-9_]+", value) else f'{name} = "{value}";'
+
+
 def verify_inert(tiers) -> None:
     """Each listed casing's inert warhead recipe, entry by entry, its plate count and the items its nose and hull name."""
     want = {}
@@ -183,7 +188,7 @@ def verify_inert(tiers) -> None:
     for t in tiers:
         c = INERT[t]
         need += [(_RECIPES, f"{c['plates_const']} = {c['plates']};"),
-                 (_GC, f'{c["nose"][0]} = "{c["nose"][1]}";'), (_GC, f'{c["hull"][0]} = "{c["hull"][1]}";')]
+                 (_GC, _gc_def(*c["nose"][:2])), (_GC, _gc_def(*c["hull"][:2]))]
     check_snippets("InertWarheadSpec/WarheadRecipes/GalacticraftParts", need)
 
 

@@ -14,7 +14,7 @@ The dump is checked against the code: each Inert Warhead's input list must match
 and each machine recipe must still be in its Java source, so a dump older than the recipes stops the build.
 
 Icons: GregGuns' own item art (the NTM-derived icons, LGPL-3.0), GregTech's items, hulls and material icons from the GT
-jar (LGPL-3.0), Galacticraft Legacy's rocket parts and NewHorizonsCoreMod's Tier 3 rocket parts from
+jar (LGPL-3.0), Galacticraft Legacy's rocket parts and NewHorizonsCoreMod's Heavy Duty Plate Tier 4 from
 inputs/thirdparty/ (MIT and GPL-3.0). Ingredients without a licensed icon are printed by name only.
 
 Run on its own:  python tools/asset-gen/infographics/pages_icbm_recipes.py
@@ -84,8 +84,13 @@ def rows(pred) -> list[dict]:
     return [r for r in dump()["rows"] if r["outputs"] and pred(r)]
 
 
+def base(key: str) -> str:
+    """A dump key without its `#nbt<hash>` suffix (stacks that carry NBT, such as a warhead with its payload)."""
+    return key.split("#", 1)[0]
+
+
 def out_key(r: dict) -> str:
-    return r["outputs"][0]["k"]
+    return base(r["outputs"][0]["k"])
 
 
 def by_output(key: str, mp: str | None = None, circuit: int | None = None) -> list[dict]:
@@ -93,6 +98,15 @@ def by_output(key: str, mp: str | None = None, circuit: int | None = None) -> li
     if not got:
         raise SystemExit(f"the recipe dump has no {mp or 'recipe'} for {key}; dump the pack again or update pages_icbm_recipes")
     return got
+
+
+def inert_row(t: int) -> dict:
+    """The Inert Warhead's own recipe (circuit 2): the one row for it that takes no inert warhead in."""
+    got = [r for r in by_output(f"gregguns:inert_warhead_t{t}:0", "gt.recipe.assembler", 2)
+           if not any("inert_warhead" in i["k"] for i in r["inputs"])]
+    if len(got) != 1:
+        raise SystemExit(f"expected one Inert T{t} Warhead recipe in the dump, found {len(got)}")
+    return got[0]
 
 
 # ---------------------------------------------------------------- names
@@ -186,6 +200,7 @@ MAP_NAME = {"gt.recipe.assembler": "Assembler", "gregguns.missileWorkbench": "NA
 
 def name(key: str) -> str:
     """The in-game name of a dump item key (mod:item:meta)."""
+    key = base(key)
     if key in FIXED:
         return FIXED[key]
     if key in FLUID:
@@ -241,8 +256,7 @@ def _gt_item_tex(folder: str, n: int) -> Path | None:
 
 
 GT_CIRCUIT_ICON = {"HV": 82, "EV": 85, "IV": 89, "LuV": 92, "ZPM": 93, "UV": 94, "UHV": 95}  # one GT circuit of the tier
-NHCORE_ICONS = {"dreamcraft:HeavyDutyRocketEngineTier3:0": TP.NHCORE / "heavy_duty_rocket_engine_t3.png",
-                "dreamcraft:HeavyDutyRocketFinsTier3:0": TP.NHCORE / "heavy_duty_rocket_fins_t3.png"}
+NHCORE_ICONS = {"dreamcraft:HeavyDutyPlateTier4:0": TP.NHCORE / "heavy_duty_plate_t4.png"}
 GC_ICONS = {"GalacticraftCore:item.basicItem:9": "compressed_steel", "GalacticraftCore:item.engine:0": "rocket_engine_t1",
             "GalacticraftCore:item.rocketFins:0": "rocket_fins_t1", "GalacticraftMars:item.itemBasicAsteroids:1": "rocket_engine_t2",
             "GalacticraftMars:item.itemBasicAsteroids:2": "rocket_fins_t2", "GalacticraftMars:item.itemBasicAsteroids:6": "compressed_titanium"}
@@ -268,6 +282,7 @@ def cube(tex: Path, tag: str) -> Path:
 
 def icon(key: str) -> Path | None:
     """A licensed icon for a dump key, or None (the ingredient is then named only)."""
+    key = base(key)
     mod, item, meta = key.rsplit(":", 2) if key.count(":") >= 2 else (key, "", "0")
     if mod == "gregguns":
         if item.startswith(("warhead_t", "inert_warhead_t")):
@@ -321,7 +336,7 @@ def _verify() -> None:
             if m:
                 c = m.group(1).split(",")[-1]
                 counts.append(consts[c.split(".")[-1]] if not c.isdigit() else int(c))
-        got = sorted(i["n"] for i in by_output(f"gregguns:inert_warhead_t{t}:0", "gt.recipe.assembler", 2)[0]["inputs"])
+        got = sorted(i["n"] for i in inert_row(t)["inputs"])
         if sorted(counts) != got:
             raise SystemExit(f"the recipe dump's Inert T{t} Warhead ({got}) differs from InertWarheadSpec ({sorted(counts)}); dump the pack again")
     machines = {"icbm/control/ControlMachines.java": ("Sensor_HV", "Emitter_HV", "Tool_DataStick"),
@@ -412,7 +427,7 @@ def inert_table() -> str:
     head = "<tr><th>Inert warhead</th><th>Casing</th><th>Fuze</th><th>Nose</th><th>Hull</th><th>Sensor and emitter</th><th>Circuits</th><th>Assembler</th></tr>"
     body = []
     for t in range(1, 6):
-        r = by_output(f"gregguns:inert_warhead_t{t}:0", "gt.recipe.assembler", 2)[0]
+        r = inert_row(t)
         ins = {i["k"]: i["n"] for i in r["inputs"]}
 
         def pick(test):

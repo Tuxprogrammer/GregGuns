@@ -120,7 +120,7 @@ def _verify() -> None:
     need(t1, 'Tier.HV', '"craftingLensRed"', 'Ing.gt("compressed", "Steel", 3', "FINS_T1, 4", "ENGINE_T1, 1",
          "GUIDANCE_COMPUTER_MK1, IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3",
          '"Circuit_Board_Plastic_Advanced", 1', 'Ing.gt("circuit", "Advanced", 2', 'Ing.gt("wireFine", "Gold"', where="MissileBuildSpec.T1")
-    need(t2, 'Tier.EV', '"craftingLensBlue"', 'Ing.gt("compressed", "Titanium", 4', "FINS_T2, 4", "ENGINE_T2, 1",
+    need(t2, 'Tier.EV', '"craftingLensBlue"', 'Ing.gt("compressed", "Titanium", 4', "FINS_HEAVY, 4", "ENGINE_HEAVY, 1",
          "Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3)",
          '"Circuit_Board_Epoxy_Advanced", 1', 'Ing.gt("circuit", "Data", 2', 'Ing.gt("wireFine", "Electrum"', where="MissileBuildSpec.T2")
     lc = src("icbm/control/ControlMachines.java")
@@ -149,23 +149,23 @@ def _words(n: int) -> str:
 
 TIERS = {
     1: dict(body="missile_body_t1", warhead="warhead_t1", volt="HV", fuel="RP-1 or Cetane-Boosted Diesel", warheads="T1",
-            plates="3 compressed steel", fins="4 Galacticraft Tier 1", engine="Galacticraft Tier 1 engine"),
+            plates="3 compressed steel", fins="4 Rocket Fins", engine="a Tier 1 Rocket Engine"),
     2: dict(body="missile_body_t2", warhead="warhead_t2", volt="EV", fuel="Dense Hydrazine", warheads="T1 or T2",
-            plates="4 compressed titanium", fins="4 Galacticraft Tier 2", engine="Galacticraft Tier 2 engine"),
+            plates="4 compressed titanium", fins="4 Heavy Rocket Fins", engine="a Heavy Rocket Engine"),
 }
 for _n, _t in TIERS.items():
     s = TIERS_SRC[_n]
     _t.update(fuel_mb=s["fuel_mb"], rng=s["rng"], speed=f"{s['speed']:g}", scatter=int(s["scatter"]), cap=CAPS[_n],
               flight=_minutes(s["rng"] / s["speed"] / 20))
-PARTS = {1: dict(plate="compressed_steel", plate_n=3, plate_l="Compressed Steel Plate", fins="rocket_fins_t1", engine="rocket_engine_t1", ft="Tier 1"),
-         2: dict(plate="compressed_titanium", plate_n=4, plate_l="Compressed Titanium Plate", fins="rocket_fins_t2", engine="rocket_engine_t2", ft="Tier 2")}
+PARTS = {1: dict(plate="compressed_steel", plate_n=3, plate_l="Compressed Steel Plate", fins="rocket_fins_t1", engine="rocket_engine_t1", fl="Rocket Fins", el="Tier 1 Rocket Engine"),
+         2: dict(plate="compressed_titanium", plate_n=4, plate_l="Compressed Titanium Plate", fins="rocket_fins_t2", engine="rocket_engine_t2", fl="Heavy Rocket Fins", el="Heavy Rocket Engine")}
 
 
 def body_parts(n: int, px: int = 52) -> str:
     """The body recipe's parts as Galacticraft's own icons."""
     q = PARTS[n]
-    return (TP.part(TP.gc_icon(q["plate"]), q["plate_n"], q["plate_l"], px) + TP.part(TP.gc_icon(q["fins"]), 4, f"{q['ft']} Rocket Fins", px)
-            + TP.part(TP.gc_icon(q["engine"]), 1, f"{q['ft']} Rocket Engine", px))
+    return (TP.part(TP.gc_icon(q["plate"]), q["plate_n"], q["plate_l"], px) + TP.part(TP.gc_icon(q["fins"]), 4, q["fl"], px)
+            + TP.part(TP.gc_icon(q["engine"]), 1, q["el"], px))
 
 CSS = """
 .stat .chip.t-HV, .stat .chip.t-MV { color: #1a1200; }
@@ -253,7 +253,7 @@ def first_missile() -> str:
                "Slot the schematic into the Galacticraft <b>NASA Workbench</b> and the page for that missile opens.")
     s3 = _step(3, "Build the body by hand",
                f"<div class='parts' style='gap:2px'>{body_parts(1, 44)}</div><span class='plus'>or</span><div class='parts' style='gap:2px'>{body_parts(2, 44)}</div>{plus}<span class='pill'>Guidance Computer</span>{arrow}<span class='pill'>Missile Body</span>",
-               "On the NASA Workbench page: <b>compressed plates</b> in one column (T1 three steel, T2 four titanium), <b>four Galacticraft rocket fins</b> and a <b>Galacticraft rocket engine</b> of the same tier, and a "
+               "On the NASA Workbench page: <b>compressed plates</b> in one column (T1 three steel, T2 four titanium), <b>four rocket fins</b> and a <b>rocket engine</b> (T1 the Rocket Fins and Tier 1 Rocket Engine, T2 the Heavy Rocket Fins and Heavy Rocket Engine), and a "
                "<b>Guidance Computer</b>: Mk I, II or III for T1, Mk II or III for T2. Make compressed plates from a plate in the Implosion Compressor. There is no warhead slot: a warhead goes on at the pad.")
     s3b = _step(4, "Or automate it",
                 f"<span class='pill'>Body parts</span>{plus}<span class='pill'>2 circuits</span>{plus}<span class='pill'>Lubricant</span>{arrow}{asm}{arrow}<span class='pill'>Missile Body</span>",
