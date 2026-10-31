@@ -187,7 +187,16 @@ public final class RecipeDumper {
     }
 
     private static String key(ItemStack s) {
-        return DumpRow.itemKey(nameOf(s.getItem()), s.getItemDamage());
+        String key = DumpRow.itemKey(nameOf(s.getItem()), s.getItemDamage());
+        // Our NBT-sensitive inputs (a warhead's payload and fill) are different recipes; the tag's hash tells them
+        // apart. Pack stacks keep the plain key so a pack row that ignores NBT still compares equal.
+        if (s.hasTagCompound() && OUR_MOD.equals(modOf(s))) {
+            key += "#nbt" + Integer.toHexString(
+                s.getTagCompound()
+                    .toString()
+                    .hashCode());
+        }
+        return key;
     }
 
     private static String nameOf(Item item) {

@@ -26,6 +26,7 @@ final class IcbmScenarios {
 
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new ModuleGate());
+        IcbmCoverageScenario.register(registry);
         IcbmBlastScenarios.registerAll(registry);
         // The complex scenarios fail on a role audit violation (D267).
         ScenarioRegistry complex = new ScenarioRegistry();
