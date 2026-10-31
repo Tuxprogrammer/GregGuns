@@ -65,7 +65,8 @@ import gregtech.api.util.GTRecipe;
  * item is BetterQuesting's missing-item placeholder, that a quest-completion reward completes its quest, and notes a
  * reward whose NBT matches no recipe's output.</li>
  * </ol>
- * Each quest logs one {@code I7Q} line.
+ * Each quest logs one {@code I7Q} line. A list line {@code <key> <uuid> noitems} is a control: the walk gives nothing
+ * and passes only if the quest stays incomplete, so the walk can be seen to fail.
  */
 // Spec: docs/gregguns-spec/12-questbook/index.md; BetterQuesting 3.8.89-GTNH:
 // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskRetrieval.java#L145-L270
@@ -161,7 +162,14 @@ final class I7QuestWalk implements ScenarioPoller {
             phaseStart = t;
             return null;
         }
+        boolean control = quests.get(index).length > 2 && "noitems".equals(quests.get(index)[2]);
         if (phase == 1) {
+            if (q.isComplete(pid) && control) {
+                fail(key, "control: completed although no items were given");
+                q.resetUser(pid, true);
+                phase = 3;
+                return null;
+            }
             if (q.isComplete(pid)) {
                 claim(p, pid, key, id, q, "auto");
                 return null;
@@ -179,7 +187,17 @@ final class I7QuestWalk implements ScenarioPoller {
             return null;
         }
         // phase 2: after the direct detect
-        if (q.isComplete(pid)) {
+        if (control && (q.isComplete(pid) || t - phaseStart >= DIRECT_TICKS)) {
+            if (q.isComplete(pid)) {
+                fail(key, "control: a direct detect completed it although no items were given");
+            } else {
+                passed++;
+                out.note(key + ": control, not completed without its items, as it should be");
+                GregGuns.LOG.info("I7Q {} PASS control (no items, not completed)", key);
+            }
+            q.resetUser(pid, true);
+            phase = 3;
+        } else if (q.isComplete(pid)) {
             fail(key, "BetterQuesting's inventory check did not complete it; a direct detect did");
             claim(p, pid, key, id, q, "direct");
         } else if (t - phaseStart >= DIRECT_TICKS) {
@@ -225,6 +243,10 @@ final class I7QuestWalk implements ScenarioPoller {
         out.check(q.isUnlocked(pid), key + ": unlocked once its prerequisites are complete");
         p.inventory.clearInventory(null, -1);
         List<String> sources = new ArrayList<>();
+        if (quests.get(index).length > 2 && "noitems".equals(quests.get(index)[2])) {
+            GregGuns.LOG.info("I7Q {} setup control: no items given", key);
+            return;
+        }
         List<ItemStack> crafted = new ArrayList<>();
         for (DBEntry<ITask> entry : q.getTasks()
             .getEntries()) {

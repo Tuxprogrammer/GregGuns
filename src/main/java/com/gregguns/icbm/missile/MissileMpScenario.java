@@ -181,6 +181,9 @@ public final class MissileMpScenario implements Scenario {
                 out.check(e != null && e.isDead, "the missile detonated");
                 final double tx = last[0];
                 final double tz = last[1];
+                // The ground where it came down, read now that the cams have loaded it: at the start the impact chunk
+                // was not loaded, so the start-time height read 0 (a camera in the stone on a deep world).
+                final int gy = Math.max(w.getHeightValue((int) Math.floor(tx) + 60, (int) Math.floor(tz)), 1);
                 plan.after(15, () -> {
                     for (int i = 0; i < players.size(); i++) {
                         double[] v = views[i % views.length];
