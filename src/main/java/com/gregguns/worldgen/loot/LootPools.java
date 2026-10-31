@@ -73,6 +73,17 @@ public final class LootPools {
             this.lines = Collections.unmodifiableList(new ArrayList<>(lines));
         }
 
+        /**
+         * A pool built outside this package (the silo complex's room pools, D316).
+         *
+         * @param name  the pool name, also each line's {@link LootEntry#pool()} once a {@link LootMix} takes it
+         * @param lines the lines, weights relative to this pool
+         * @return the pool
+         */
+        public static Pool of(String name, List<LootEntry> lines) {
+            return new Pool(name, lines);
+        }
+
         /** @return the pool name */
         public String name() {
             return name;

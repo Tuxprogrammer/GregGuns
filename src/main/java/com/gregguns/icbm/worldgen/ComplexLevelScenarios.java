@@ -101,6 +101,7 @@ public final class ComplexLevelScenarios {
         registry.register(new Guards());
         registry.register(new Armory());
         SalvageScenarios.registerAll(registry);
+        ChestLootScenarios.registerAll(registry);
         RoomScenarios.registerAll(registry);
     }
 
@@ -464,8 +465,9 @@ public final class ComplexLevelScenarios {
                 "an abandoned complex holds one or two guard spawners (D284): " + ab.spawners);
             out.checkEquals("abandoned elite spawners", 0, ab.elite);
             out.check(
-                ab.machinesWorking * 4 <= op.machinesWorking && ab.chests * 2 <= op.chests,
-                "an abandoned complex has far fewer working machines and chests (D284): machines " + ab.machinesWorking
+                ab.machinesWorking * 4 <= op.machinesWorking && ab.chests <= op.chests,
+                "an abandoned complex has far fewer working machines (D284) and no more chests (D315): machines "
+                    + ab.machinesWorking
                     + " vs "
                     + op.machinesWorking
                     + ", chests "
@@ -658,7 +660,7 @@ public final class ComplexLevelScenarios {
         }
 
         private static String id(ItemStack s) {
-            return net.minecraft.item.Item.itemRegistry.getNameForObject(s.getItem()) + "@" + s.getItemDamage();
+            return SiloChests.itemId(s);
         }
 
         /** @return stacks in the chest that are neither on the chest's table at the ceiling nor one of its bonuses */
@@ -671,10 +673,7 @@ public final class ComplexLevelScenarios {
                     if (s != null) allowed.add(id(s));
                 }
             }
-            for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {
-                ItemStack s = LootCategories.stack(l.ref(), 1);
-                if (s != null) allowed.add(id(s));
-            }
+            allowed.addAll(SiloChests.allowedIds(p.key(), ceiling)); // lines, junk, spoil (D317)
             for (Placement.Bonus b : p.bonuses()) {
                 ItemStack s = SiloBonusItems.stack(b, p);
                 if (s != null) allowed.add(id(s));

@@ -41,6 +41,11 @@ public final class Placement {
         /** A cave-in: fill part of {@link #box()} with rubble. */
         COLLAPSE,
         /**
+         * A wooden crate with no inventory: a chest spot the chest budget left over (D315). {@link #key()} is the wood
+         * (0 to 5) and {@link #facing()} the way the spot faces.
+         */
+        CRATE,
+        /**
          * One block by registry name, {@link #block()} at {@link #meta()}: a room's look at its activity level (D309),
          * written over what the marks pass put there (a cold furnace, a crop, coarse dirt, a metal prop, a rubble
          * pile). A name that does not resolve this run tries {@link #fallback()}, then writes nothing.
@@ -77,6 +82,7 @@ public final class Placement {
     private final boolean dead;
     private final int chestIndex;
     private final int richness;
+    private final RoomState roomState;
     private final Set<Bonus> bonuses = EnumSet.noneOf(Bonus.class);
     private String extra;
     private int ceiling = SiloCeiling.EV;
@@ -101,6 +107,7 @@ public final class Placement {
         this.dead = b.dead;
         this.chestIndex = b.chestIndex;
         this.richness = b.richness;
+        this.roomState = b.roomState;
         this.bonuses.addAll(b.bonuses);
         this.extra = b.extra;
         this.key = b.key;
@@ -195,6 +202,11 @@ public final class Placement {
         return richness;
     }
 
+    /** @return the state of the room a loot chest stands in, or null for a chest placed without one */
+    public RoomState roomState() {
+        return roomState;
+    }
+
     /** @return the extra items a chest holds; never null, read only */
     public Set<Bonus> bonuses() {
         return Collections.unmodifiableSet(bonuses);
@@ -275,6 +287,7 @@ public final class Placement {
         private boolean dead;
         private int chestIndex = -1;
         private int richness;
+        private RoomState roomState;
         private final Set<Bonus> bonuses = EnumSet.noneOf(Bonus.class);
         private String extra;
         private String key;
@@ -313,6 +326,15 @@ public final class Placement {
         Builder chest(int index, int rich) {
             chestIndex = index;
             richness = rich;
+            return this;
+        }
+
+        /** A loot chest of a room in {@code state}: its richness follows the state ({@link RoomLootDraw}). */
+        Builder chest(int index, RoomState state) {
+            chestIndex = index;
+            roomState = state;
+            richness = RoomLootDraw.profile(state)
+                .richness();
             return this;
         }
 

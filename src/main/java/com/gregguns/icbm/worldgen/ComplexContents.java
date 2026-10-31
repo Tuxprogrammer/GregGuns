@@ -32,8 +32,8 @@ public final class ComplexContents {
 
     /** Salts, one per roll family, so two rolls on one cell are independent. */
     private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_SPAWN = 0x59A, S_ELITE = 0xE11,
-        S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_CHEST = 0xC4E,
-        S_ABSENT = 0xAB5, S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_DISPLAY = 0xD15, S_VARIANT = 0x7A2;
+        S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_ABSENT = 0xAB5,
+        S_HOLD = 0x401D, S_HOLD_N = 0x401E, S_VARIANT = 0x7A2;
 
     private ComplexContents() {}
 
@@ -52,35 +52,50 @@ public final class ComplexContents {
         int[] chestCounter = { 0 };
         List<Placement> chests = new ArrayList<>();
         java.util.Set<Integer> collapsedRooms = new java.util.HashSet<>();
+        java.util.Map<Integer, RoomState> states = new java.util.HashMap<>();
         Box hall = plan.hall()
             .bounds();
-
-        mark(plan, plan.hall(), hall, false, p, seed, ceiling, hall, out, chests, chestCounter, level);
+        states.put(
+            plan.hall()
+                .id(),
+            roomState(seed, plan.hall(), level));
         for (Room r : plan.rooms()) {
-            boolean collapsed = mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p);
-            if (collapsed) {
+            if (mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p)) {
                 collapsedRooms.add(r.id());
+            }
+            states.put(r.id(), roomState(seed, r, level));
+        }
+        // The chest budget (D315): exactly the configured number of chest spots become loot chests.
+        Chests c = new Chests(
+            ChestBudget.choose(plan, level, states, collapsedRooms, ChestBudget.target(level)),
+            chests,
+            chestCounter);
+
+        mark(plan, plan.hall(), hall, false, p, seed, ceiling, hall, out, c, level);
+        for (Room r : plan.rooms()) {
+            boolean collapsed = collapsedRooms.contains(r.id());
+            if (collapsed) {
                 collapses.add(
                     Placement.at(Kind.COLLAPSE, r.bounds().minX, r.bounds().minY, r.bounds().minZ)
                         .box(r.bounds())
                         .build());
             }
-            mark(plan, r, r.bounds(), collapsed, p, seed, ceiling, hall, out, chests, chestCounter, level);
+            mark(plan, r, r.bounds(), collapsed, p, seed, ceiling, hall, out, c, level);
         }
         for (Tunnel t : plan.tunnels()) {
             marks(
                 t.marks(),
                 roomState(seed, t.id(), level),
                 t.bounds(),
-                "tunnel",
+                null,
+                -1,
                 false,
                 p,
                 seed,
                 ceiling,
                 hall,
                 out,
-                chests,
-                chestCounter,
+                c,
                 level);
         }
         if (level == ActivityLevel.ABANDONED) {
@@ -160,8 +175,22 @@ public final class ComplexContents {
         return ((long) x << 40) ^ ((long) y << 20) ^ z;
     }
 
+    /** The chest budget's picks and the running chest list of one build. */
+    private static final class Chests {
+
+        final java.util.Set<Mark> chosen;
+        final List<Placement> list;
+        final int[] counter;
+
+        Chests(java.util.Set<Mark> chosen, List<Placement> list, int[] counter) {
+            this.chosen = chosen;
+            this.list = list;
+            this.counter = counter;
+        }
+    }
+
     private static void mark(ComplexPlan plan, Room r, Box bounds, boolean collapsed, ActivityProfile p, long seed,
-        int ceiling, Box hall, List<Placement> out, List<Placement> chests, int[] counter, ActivityLevel level) {
+        int ceiling, Box hall, List<Placement> out, Chests chests, ActivityLevel level) {
         RoomState state = roomState(seed, r.id(), level);
         // The room's look at its state (D309): worn, lit or cold, grown or bare; whole groups at a time.
         FurnitureWear.room(plan, r.id(), r.kind(), r.marks(), bounds, state, collapsed, seed, ceiling, out);
@@ -169,9 +198,10 @@ public final class ComplexContents {
             r.marks(),
             state,
             bounds,
-            r.kind() == null ? ""
+            r.kind() == null ? null
                 : r.kind()
                     .name(),
+            r.id(),
             collapsed,
             p,
             seed,
@@ -179,12 +209,22 @@ public final class ComplexContents {
             hall,
             out,
             chests,
-            counter,
             level);
     }
 
-    private static void marks(List<Mark> marks, RoomState state, Box bounds, String owner, boolean collapsed,
-        ActivityProfile p, long seed, int ceiling, Box hall, List<Placement> out, List<Placement> chests, int[] counter,
+    /**
+     * The wood of a room's crates, 0 to 5, by a hash of the plan seed and the room (the room furniture's own woods:
+     * spruce, dark oak, birch, oak).
+     */
+    static int crateWood(long seed, int roomId) {
+        int[] woods = { 1, 5, 2, 0, 1, 5 };
+        long h = seed * 0x9E3779B97F4A7C15L + roomId * 0xBF58476D1CE4E5B9L;
+        h ^= h >>> 31;
+        return woods[(int) Math.floorMod(h, (long) woods.length)];
+    }
+
+    private static void marks(List<Mark> marks, RoomState state, Box bounds, String owner, int roomId,
+        boolean collapsed, ActivityProfile p, long seed, int ceiling, Box hall, List<Placement> out, Chests chests,
         ActivityLevel level) {
         int band = depthBand(bounds, hall);
         boolean controlRoom = "LAUNCH_CONTROL".equals(owner);
@@ -193,23 +233,31 @@ public final class ComplexContents {
             double u = Mix.unit(h);
             switch (m.kind()) {
                 case LOOT_CHEST: {
-                    if (Mix.unit(Mix.of(seed, S_CHEST, m.x() * 4096L + m.z(), m.y())) >= p.chestKeepChance()) {
-                        break; // a ruin's chest was emptied and carried off long ago (D284)
+                    if (collapsed) {
+                        break; // a caved-in room holds neither chests nor crates
                     }
-                    int index = counter[0]++;
+                    if (!chests.chosen.contains(m)) {
+                        // a spot the budget left over: an empty wooden crate, never an empty chest (D315)
+                        out.add(
+                            Placement.at(Kind.CRATE, m.x(), m.y(), m.z())
+                                .key(Integer.toString(crateWood(seed, roomId)))
+                                .front(m.facing())
+                                .build());
+                        break;
+                    }
+                    String table = RoomLoot.table(owner, m.key());
                     Placement c = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
-                        .category(SiloLootTables.categoryName(m.key(), ceiling))
-                        .key(m.key())
-                        .chest(index, p.richness())
+                        .category(SiloLootTables.categoryName(table, ceiling))
+                        .key(table)
+                        .chest(chests.counter[0]++, state)
+                        .front(m.facing())
                         .build();
-                    chests.add(c);
+                    chests.list.add(c);
                     out.add(c);
                     break;
                 }
                 case ITEM_FRAME_WALL:
-                    if (Mix.unit(Mix.of(seed, S_CHEST, m.x() * 4096L + m.z(), m.y())) >= p.chestKeepChance()) {
-                        break;
-                    }
+                    // display frames sit outside the chest budget (owner, alpha 7)
                     out.add(
                         Placement.at(Kind.FRAME_WALL, m.x(), m.y(), m.z())
                             .category(SiloLootTables.categoryName(m.key(), ceiling))
@@ -218,14 +266,14 @@ public final class ComplexContents {
                             .build());
                     break;
                 case GUN_DISPLAY:
-                    if (!collapsed
-                        && Mix.unit(Mix.of(seed, S_DISPLAY, m.x() * 4096L + m.z(), m.y())) < p.chestKeepChance()) {
+                    // every display unit of a standing armory, at every level, outside the chest budget (owner, alpha 7)
+                    if (!collapsed) {
                         Placement chest = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
                             .category(SiloLootTables.categoryName(LootKeys.ARMORY_AMMO, ceiling))
                             .key(LootKeys.ARMORY_AMMO)
-                            .chest(counter[0]++, p.richness())
+                            .chest(chests.counter[0]++, state)
                             .build();
-                        chests.add(chest);
+                        chests.list.add(chest);
                         out.add(chest);
                         out.add(
                             Placement.at(Kind.FRAME_WALL, m.x(), ArmoryDisplay.FRAME_Y, m.z())
