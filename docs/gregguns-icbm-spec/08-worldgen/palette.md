@@ -91,7 +91,7 @@ Worth is the value of mining the block in bulk. **Low** means it drops itself or
 | `gregguns:complex_wall` | 0 | Steel Bastion Plating look | one wall choice (D205) | None (breaks into itself, no recipe) |
 | vanilla: `stone`, `stonebrick` 0 2 3, `double_stone_slab` 0, `quartz_block` 0, `glowstone`, `sandstone` 2, `stained_hardened_clay` 7 12 15, `wool` 0 7 8, `wooden_slab` 1, `stone_slab` 7, `bookshelf` | as listed | Fallbacks and furniture | fallbacks (walls stone bricks, quartz or smooth sandstone; floors smooth double slab or clay; ceilings quartz or smooth sandstone), furniture | Low (glowstone gives 2 to 4 dust per block) |
 
-Not used, on purpose: GT machine casings, GT frame boxes, GT metal and storage blocks, GT sheet-metal blocks (they cost plates), Chisel steel and metal blocks (they carve from metal blocks), Galacticraft tin and aluminum decoration blocks (they pay in tin and aluminum), Desh blocks. Carpenter's Blocks are tile entities per block and are not used.
+Not used in the palette, on purpose: GT machine casings, GT frame boxes, GT metal and storage blocks, GT sheet-metal blocks (they cost plates), Chisel steel and metal blocks (they carve from metal blocks), Galacticraft tin and aluminum decoration blocks (they pay in tin and aluminum), Desh blocks. Carpenter's Blocks are tile entities per block and dress no room. The fixtures outside the palette are the exceptions: the blast doors are Carpenter's garage doors covered in a palette door plate, Ross128 blast-door frames are the tier's GT machine casing, and the service runs are GT frame boxes, cables and pipes ([silo layout](silo-layout.md#blast-doors-d335-d337), D335 to D337).
 
 ## Furniture (D259, D262, D263)
 

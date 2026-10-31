@@ -73,6 +73,7 @@ Nothing below HV (D69). The tower needs an IV or better hatch, and a small radar
 
 - GT's multiblock screen gains one "R" button (left of the power panel button) that opens a small radar panel: the protected radius field (digits only, clamped on the server to 8 up to the hatch range, or the IV range while no hatch is fitted), the range, and the detected and incoming counts. It is saved in the controller's NBT with the rest of the radar state.
 - Radar Casing (meta 11, NTM-derived art) replaces Gantry Casing in the tower; the Gantry Beam mast stays. Recipe (D193): 6 Stainless Steel plate, programmed circuit 16, Assembler at HV (`TierEU.RECIPE_HV`), 10 s, makes 4. It recycles to 1.5 plates of Stainless Steel each.
+- **Tooltip (D338):** GT's casing lines (no mob spawning, not a tile entity), then `Tier: HV`, "The casing of the Radar and the Radar Tower." and the Shift hint; behind Shift, the two shapes it builds and where the hatches go, then "Added by: GregGuns". It comes through GT's own casing hook: `ItemCasings.addInformation` calls `BlockCasingsAbstract.addInformation`, which `GregGunsCasings` overrides for meta 11 only (`RadarCasingTooltipFormat`, `RadarCasingTooltipFormatTest`).
 - Recycling for the rest: the SAM returns 2 Stainless Steel plates, the radar gun 2, each machine its hull's 8 (D44).
 
 ## The small radar (D125, D190, D191)

@@ -346,7 +346,7 @@ public final class ComplexContents {
                 case FURNITURE:
                     break; // a room's furniture wears as a whole, in FurnitureWear.room
                 default:
-                    break; // signs and blast doors are the layout's own
+                    break; // signs are the layout's own; blast doors are fixtures (ComplexFixtures)
             }
         }
         if (roomId >= 0) {

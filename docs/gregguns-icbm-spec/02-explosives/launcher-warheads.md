@@ -83,6 +83,12 @@ Short: tier line, one summary line, "Press [SHIFT]". Shift: the launchers it fit
 
 `LauncherRulesTest`, `LauncherWarheadSpecTest`, `LauncherDamageCapTest`, `LauncherWarheadClashTest`, `TerrainRuleTest` (units); scenario `icbm.launcher.load_and_fire` (with `explosions.blockDamage` forced off: exactly one `condensed` blast starts, the rocket's own explosion does not run, the cap is 75 and terrain stays whole).
 
+## NEI (D227, D338)
+
+NEI shows the Assembler recipes, and a **Launcher Loading** page lists the crafting-grid load: one page per launcher and warhead of its family (`LauncherLoads`, 13 pages), the empty launcher and the warhead in a shapeless grid and the launcher with 4 charges loaded as the result. It is a shapeless crafting page (`LauncherLoadHandler`), so the "?" button fills a crafting grid. A launcher's recipes show every warhead it takes (a loaded launcher, how its warhead got there), and a warhead's uses show every launcher that takes it. The page is registered only when the ICBM module added the loading recipe.
+
+Tests: `LauncherLoadsTest` (every warhead with each launcher of its family, nothing else).
+
 ## Open questions
 
-None. NEI shows the Assembler recipes; the crafting-grid load is a custom recipe and is not listed in NEI (the item tooltip says how).
+None.

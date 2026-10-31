@@ -119,6 +119,9 @@ All of it is fiction about the complex's own crew, every text a lang key (`icbm.
 | `FLOOD_CELL` | water when not operational |
 | `RUBBLE` | fallout rubble (placeholder until I5's fallout blocks are on master) |
 | `MACHINE` | the machine, or a husk |
+| `BLAST_DOOR` | the hall's blast door (D335): shut when staffed or mothballed, open in service, stuck open or breached when gutted; see [silo layout](silo-layout.md#blast-doors-d335-d337) |
+
+The service runs (D336) follow their hall's state the same way: whole unless gutted, broken when gutted ([silo layout](silo-layout.md#service-runs-d336)).
 
 ## Requirements
 
@@ -132,6 +135,8 @@ All of it is fiction about the complex's own crew, every text a lang key (`icbm.
 ## Tests
 
 Furniture stock (D323 to D325): `FurnitureStockTest` (a staffed room stocks every piece, the share falls with the state, nothing in a caved-in room or on a removed piece, counts in range, every cauldron holds water, only working machines hold work, a staffed farm at mixed stages), `RoomDressingTest`, `ComplexWritingTest` (every text fits its medium, every state and group has text) and the real-pack scenario `icbm.complex.furniture_fill` (each level written and every stocked piece opened: it holds the right kind of thing, Charlie's furniture is full and the share falls to Bravo and Alpha, stocked machines hold outputs and none holds an input or a job, every cauldron has water, every notice is written, crops at mixed stages).
+
+Fixtures (D335 to D337): `ComplexFixturesTest` (a door per hall mouth in the hall's wall layer, shut, open or gutted by state with a way through, rubble and fallen trays only on open floor no mark claims, Ross casings in the door's plane, runs in open air and only thinner when gutted); scenario `icbm.complex.fixtures` reads every piece back in the world.
 
 Unit: `ActivityLevelTest`, `RoomStateTest` (lamps and machines agree per room), `RoomLooksTest` (no chest, machine or guard cut off by wear at any level; crops and lit furnaces only in lit rooms; Bravo keeps at least three quarters of Charlie's pieces, Alpha half, rubble counted; metal props under the ceiling), `ComplexContentsTest` (the per-room spawner weights over many seeds, the placed spawners on layout spots, working machines against the other levels, every chest spot a chest or a crate with the budget's count and the displays on top; lamps by run and by section at the D36 shares). Scenarios: `icbm.complex.rooms` (each level written and read back room by room: the room looks in place, crops only in lit rooms and still standing after fast random ticks, lit furnaces still burning, metal props under the ceiling, every chest, machine and guard reachable from the door over passable blocks), `icbm.complex.levels` (each level, its tier and activity signs read back, plus Operational at UMV, generated onto a slab one window at a time and read back: spawners per room (none over two, the outer rooms reached), working machines and chests (abandoned far below operational), each spawner's mobs and danger floor (its vanilla mob spawner NBT); the style's lit lamps at the layout's light marks; block light 8 or more on every open floor cell of every section when operational; the cost per window; flooded pump room; collapses with rubble; holes and rubble; every chest filled from its table; every machine the one the picker chose; no armed or filled warhead block; the levels order as D36 says) and `icbm.complex.guards` (see silo-guard-spawner.md).
 

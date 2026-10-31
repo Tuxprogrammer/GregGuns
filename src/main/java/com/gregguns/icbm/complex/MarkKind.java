@@ -36,7 +36,10 @@ public enum MarkKind {
     RUBBLE,
     /** A wall sign next to its cell; the key is the lang key of its text (up to four lines divided by a bar). */
     SIGN,
-    /** A blast door between a tunnel and a section. Writes nothing yet: the doors arrive with I7 (D213). */
+    /**
+     * A blast door at a hall's mouth off the hub: the mark stands for the portal between the two, which the door fills
+     * ({@link com.gregguns.icbm.worldgen.ComplexFixtures}, D335).
+     */
     BLAST_DOOR,
     /**
      * A furniture cell the raster writes from the room's style (D234). The key is a

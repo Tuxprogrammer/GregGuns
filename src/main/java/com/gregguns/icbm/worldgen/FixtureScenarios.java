@@ -207,9 +207,11 @@ public final class FixtureScenarios {
             out.checkEquals(label + " run gaps that hold a piece (" + gaps + " gaps)", 0, wrongGaps);
             out.checkEquals(label + " fallen tray sections not on the floor (" + fallen + ")", 0, wrongFallen);
             // The placed cables and pipes' own tick, as the server runs them, for the soak budget (D336).
-            long t0 = System.nanoTime();
+            // Twenty ticks first: a pipe's first ticks set it up (its first-tick work, its block update at tick 10).
             for (int i = 0; i < 20; i++) for (BaseMetaPipeEntity p : pipes) p.updateEntity();
-            long perTick = (System.nanoTime() - t0) / 20_000L;
+            long t0 = System.nanoTime();
+            for (int i = 0; i < 40; i++) for (BaseMetaPipeEntity p : pipes) p.updateEntity();
+            long perTick = (System.nanoTime() - t0) / 40_000L;
             out.note(
                 label + ": "
                     + f.doors()

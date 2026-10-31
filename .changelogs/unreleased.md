@@ -203,3 +203,14 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - Furnaces hold fuel and the room's work, brewing stands hold potions, and working GregTech machines hold finished outputs (never an input or a job in progress).
 - Every cauldron holds water, and a staffed farm's crops grow at mixed stages.
 - How much a room holds follows its activity level: a Charlie complex is fully stocked, Bravo's lit rooms are well stocked and its dark rooms half empty, and an Alpha ruin holds little, much of it spoiled or worn.
+
+## Silo complexes: blast doors and service runs
+
+- Every hall off a complex's central hub is closed by a blast door: a Carpenter's Blocks garage door in the hall's own plating, as wide and tall as the hall's mouth. Right-click it to open or shut the whole door. An operational complex keeps its wings sealed; a partly abandoned one leaves its worked wings open and its dark wings shut; in an abandoned complex a door is stuck open or breached, with columns torn out, jammed slats on rubble and debris on the floor. Without Carpenter's Blocks the mouths stay open.
+- On Ross128b and Ross128ba the blast-door frames are the GregTech machine casing of the complex's tier, so you can read a complex's class from its doors.
+- Halls and hallways carry services under the ceiling: a cable tray of steel frame boxes with a real GregTech cable hung under it, and in the wide halls a large fluid pipe on the other wall. The cable and pipe follow the complex's tier. In an abandoned complex the runs are broken: gaps in the tray, fallen tray sections, stripped cable and missing pipe.
+
+## ICBM: NEI and tooltips
+
+- NEI has a **Launcher Loading** page: look up a Rocket Launcher, Grim Reaper, Grenade Launcher or Nuke Launcher, or a launcher warhead, to see which warheads load into which launcher in the crafting grid.
+- The Radar Casing's tooltip says what it builds (the Radar and the Radar Tower) and where their hatches go.
