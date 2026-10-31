@@ -515,6 +515,25 @@ public final class ComplexLevelScenarios {
                     last.put(key(p.x(), p.y(), p.z()), p);
                 }
             }
+            // The magazine's casing racks are furniture (CASING_FRAME pieces, D308): GT frame boxes, never a warhead
+            // block (D17); a collapsed or worn rack counts only where its frame still stands.
+            ItemStack casing = ComplexApplier.casingFrame();
+            if (casing != null) {
+                Block cf = Block.getBlockFromItem(casing.getItem());
+                for (com.gregguns.icbm.complex.Room room : cp.rooms()) {
+                    if (room.kind() != com.gregguns.icbm.complex.RoomKind.WARHEAD_MAGAZINE) continue;
+                    for (com.gregguns.icbm.complex.Mark m : room.marks()) {
+                        if (m.kind() != com.gregguns.icbm.complex.MarkKind.FURNITURE
+                            || com.gregguns.icbm.complex.FurniturePiece.of(m.key())
+                                != com.gregguns.icbm.complex.FurniturePiece.CASING_FRAME)
+                            continue;
+                        int x = ax + m.x(), y = floor + m.y(), z = az + m.z();
+                        Block b = world.getBlock(x, y, z);
+                        if (b == cf && world.getBlockMetadata(x, y, z) == casing.getItemDamage()
+                            && !(b instanceof BlockWarhead)) t.casings++;
+                    }
+                }
+            }
             SpawnerCheck spawners = new SpawnerCheck();
             com.gregguns.icbm.complex.gen.Styles styles = placer.stylesOf(plan);
             for (Placement p : last.values()) {

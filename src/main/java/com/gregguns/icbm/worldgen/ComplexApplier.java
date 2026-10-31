@@ -196,8 +196,8 @@ public final class ComplexApplier {
     private static final int[] CHEST_META = { 3, 4, 2, 5 };
 
     /**
-     * Chisel's plank blocks in vanilla's plank order (0 oak to 5 dark oak); meta 10 is the crate.
-     * Source: https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java#L4377
+     * Chisel's plank blocks in vanilla's plank order (0 oak to 5 dark oak); meta 10 is the crate. Source:
+     * https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java#L4377
      */
     private static final String[] CRATE_WOODS = { "oak", "spruce", "birch", "jungle", "acacia", "dark_oak" };
     private static final int CRATE_META = 10;
@@ -276,8 +276,26 @@ public final class ComplexApplier {
                 .build(mteId, front, com.gregguns.icbm.complex.gen.GtMachineHook::claim);
             if (tile == null) return;
             MachineFacingAudit.check(tile, "ComplexApplier.placeMte " + p, x, y, z);
-            sink.setTile(x, y, z, tile);
+            if (sink.setTile(x, y, z, tile)) initDefaultModes(tile);
         }
+    }
+
+    /**
+     * Gives a generated machine its default modes, as GT's own placement does: owner first (the claim in
+     * {@link MachineFacing#build}), then the front, then the modes. A hatch left without them draws GT's inactive
+     * face. A basic machine's default modes only set its main facing to its front and read its owner's client
+     * preferences (none for a generated machine), and {@link MachineFacing#build} already set the main facing the
+     * room wants (D208), so a basic machine is left as built: its modes would turn the main facing to the output side.
+     * Needs the tile in its world, so it runs after the tile is set; a window without a world skips it.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/blocks/ItemMachines.java#L286-L305
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEBasicMachine.java#L517-L534
+    static void initDefaultModes(gregtech.api.metatileentity.BaseMetaTileEntity tile) {
+        IMetaTileEntity mte = tile.getMetaTileEntity();
+        if (mte == null || tile.getWorld() == null
+            || mte instanceof gregtech.api.metatileentity.implementations.MTEBasicMachine) return;
+        mte.initDefaultModes(null);
     }
 
     /**

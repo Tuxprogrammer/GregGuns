@@ -151,7 +151,8 @@ public final class RoomScenarios {
                     last.put(key(p.x(), p.y(), p.z()), p);
                 }
             }
-            int blocks = 0, wrong = 0, cropsHere = 0, cropsDark = 0, props = 0, propsHigh = 0;
+            int blocks = 0, wrong = 0, cropsHere = 0, cropsDark = 0, props = 0, propsHigh = 0, machines = 0,
+                badModes = 0;
             for (Room r : cp.rooms()) {
                 if (collapsed.contains(r.id())) continue;
                 RoomState st = ComplexContents.roomState(cp.seed(), r, level);
@@ -187,6 +188,24 @@ public final class RoomScenarios {
                             || p.block()
                                 .startsWith("gregtech:gt.blockmetal"))
                             props++;
+                    } else if (p.kind() == Placement.Kind.MACHINE && !p.dead()) {
+                        // A working room machine is a GT tile with its modes set as a placed one's (owner, front,
+                        // default modes): a basic machine's main facing is one it may have.
+                        machines++;
+                        net.minecraft.tileentity.TileEntity te = world.getTileEntity(x, y, z);
+                        if (te instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity) {
+                            gregtech.api.interfaces.metatileentity.IMetaTileEntity mte = ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) te)
+                                .getMetaTileEntity();
+                            if (mte instanceof gregtech.api.metatileentity.implementations.MTEBasicMachine) {
+                                gregtech.api.metatileentity.implementations.MTEBasicMachine bm = (gregtech.api.metatileentity.implementations.MTEBasicMachine) mte;
+                                if (bm.mMainFacing == net.minecraftforge.common.util.ForgeDirection.UNKNOWN
+                                    || bm.mMainFacing.offsetY != 0) badModes++;
+                            }
+                        } else if (p.role() != com.gregguns.icbm.complex.MachineRole.NASA_WORKBENCH
+                            && p.role() != com.gregguns.icbm.complex.MachineRole.MAGAZINE_CASING
+                            && ComplexApplier.stackFor(p) != null) {
+                                badModes++;
+                            }
                     } else if (p.kind() == Placement.Kind.AIR && p.y() >= 1) {
                         blocks++;
                         if (w != Blocks.air) wrong++;
@@ -207,6 +226,8 @@ public final class RoomScenarios {
                 blocks == 0 || wrong * 100 <= blocks,
                 level + ": room looks in place " + wrong + " wrong of " + blocks);
             out.checkEquals(level + ": crops in a dark room", 0, cropsDark);
+            out.checkEquals(level + ": working room machines without their GT tile and default modes", 0, badModes);
+            out.note(level + ": working room machines " + machines);
             out.checkEquals(level + ": metal props above the EV ceiling", 0, propsHigh);
             if (level == ActivityLevel.OPERATIONAL)
                 out.check(cropsHere > 0 || !hasFarm(cp), "a staffed farm grows crops");
