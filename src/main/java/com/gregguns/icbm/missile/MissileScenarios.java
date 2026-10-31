@@ -978,12 +978,7 @@ public final class MissileScenarios {
                         return ScenarioResult.fail(name(), "no ticket for the re-bind");
                     }
                     rebound.bindEntity(copy);
-                    // Forge saved the ticket with the missile's chunk forced; the re-bound one carries it.
-                    net.minecraftforge.common.ForgeChunkManager.forceChunk(
-                        rebound,
-                        new net.minecraft.world.ChunkCoordIntPair(
-                            net.minecraft.util.MathHelper.floor_double(copy.posX) >> 4,
-                            net.minecraft.util.MathHelper.floor_double(copy.posZ) >> 4));
+                    // Forge saves a ticket without its chunks: the re-bound one forces nothing until it is adopted.
                     List<net.minecraftforge.common.ForgeChunkManager.Ticket> again = new ArrayList<>();
                     again.add(rebound);
                     MissileTickets.onTicketsLoaded(again, w);
@@ -991,6 +986,13 @@ public final class MissileScenarios {
                         copy.tickets()
                             .ticket() == rebound,
                         "the reloaded missile adopted the re-bound ticket");
+                    out.check(
+                        rebound.getChunkList()
+                            .contains(
+                                new net.minecraft.world.ChunkCoordIntPair(
+                                    net.minecraft.util.MathHelper.floor_double(copy.posX) >> 4,
+                                    net.minecraft.util.MathHelper.floor_double(copy.posZ) >> 4)),
+                        "adopting forces the missile's own chunk again, so it ticks after a load");
                     out.checkEquals("reloaded phase", FlightPhase.ARC, copy.phase());
                     live[0] = copy;
                     step[0] = 1;

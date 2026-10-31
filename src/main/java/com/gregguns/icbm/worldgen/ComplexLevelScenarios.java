@@ -21,9 +21,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -1271,7 +1268,7 @@ public final class ComplexLevelScenarios {
             FakePlayer p = new FakePlayer(
                 (WorldServer) ctx.world(),
                 new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
-            new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+            com.gregguns.core.testing.QuietConnection.attach(p);
             p.getEntityAttribute(SharedMonsterAttributes.maxHealth)
                 .setBaseValue(1000.0);
             p.setHealth(1000.0F);

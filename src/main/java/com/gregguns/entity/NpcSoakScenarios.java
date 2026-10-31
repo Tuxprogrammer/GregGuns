@@ -10,8 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -204,7 +202,7 @@ final class NpcSoakScenarios {
                 new GameProfile(UUID.nameUUIDFromBytes("npc_soak".getBytes(StandardCharsets.UTF_8)), "npc_soak"));
             player.capabilities.disableDamage = true;
             // The entity tracker crashes sending a connectionless fake player's metadata.
-            new NetHandlerPlayServer(server, new NetworkManager(false), player);
+            com.gregguns.core.testing.QuietConnection.attach(player);
             player.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
             ctx.spawn(player);
 

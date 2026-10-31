@@ -13,9 +13,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -113,7 +110,7 @@ final class NpcBossScenarios {
         Victim p = new Victim(
             (WorldServer) ctx.world(),
             new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
-        new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+        com.gregguns.core.testing.QuietConnection.attach(p);
         p.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5 + dz, 0.0F, 0.0F);
         return ctx.spawn(p);
     }

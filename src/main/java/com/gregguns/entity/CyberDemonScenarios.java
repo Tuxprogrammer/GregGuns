@@ -8,9 +8,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -248,7 +245,7 @@ final class CyberDemonScenarios {
             FakePlayer p = new FakePlayer(
                 (WorldServer) ctx.world(),
                 new GameProfile(UUID.nameUUIDFromBytes("cyber_target".getBytes(StandardCharsets.UTF_8)), "cyber_t"));
-            new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+            com.gregguns.core.testing.QuietConnection.attach(p);
             p.setLocationAndAngles(ctx.originX() + 10.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
             EntityPlayer target = ctx.spawn(p);
             NpcEntityScenarios.ShotLog log = NpcEntityScenarios.ShotLog.start();

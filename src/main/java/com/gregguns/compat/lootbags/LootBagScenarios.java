@@ -8,8 +8,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.WorldServer;
@@ -85,7 +83,7 @@ public final class LootBagScenarios {
         EntityPlayerMP p = FakePlayerFactory.get((WorldServer) ctx.world(), PROFILE);
         if (p.playerNetServerHandler == null) {
             // tryUseItem resends the inventory after a use; a fake player needs a handler with an unconnected manager.
-            new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+            com.gregguns.core.testing.QuietConnection.attach(p);
         }
         p.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0, 0);
         return p;

@@ -9,9 +9,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -61,7 +58,7 @@ public final class ChargeScenarios {
         FakePlayer p = new FakePlayer(
             (WorldServer) ctx.world(),
             new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name));
-        new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+        com.gregguns.core.testing.QuietConnection.attach(p);
         p.setPosition(ctx.originX() + 0.5, ctx.originY() + 1, ctx.originZ() + 3.5);
         return p;
     }

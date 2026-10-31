@@ -17,7 +17,6 @@ import com.gregguns.core.module.ModuleSyncLogic;
 import com.gregguns.core.module.PacketModuleSync;
 import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
-import com.gregguns.core.testing.ScenarioChunks;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.entity.NpcModule;
 import com.gregguns.gun.GunsModule;
@@ -77,10 +76,6 @@ public class CommonProxy {
             FMLCommonHandler.instance()
                 .bus()
                 .register(guard);
-        }
-        if (DevEnvironment.testHooksEnabled()) {
-            // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
-            ScenarioChunks.registerCallback();
         }
     }
 
@@ -183,6 +178,7 @@ public class CommonProxy {
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         command.register(new com.gregguns.core.command.BuildSubCommand());
         command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
+        command.register(new com.gregguns.icbm.soak.SoakStatSubCommand());
         event.registerServerCommand(command);
         GregGuns.LOG.info(
             "Registered /gregguns (dev environment or -Dgregguns.testHooks), {} scenarios",

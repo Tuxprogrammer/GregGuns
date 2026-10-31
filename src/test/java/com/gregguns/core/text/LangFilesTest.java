@@ -59,6 +59,7 @@ class LangFilesTest {
             "gregguns.icbm.roleAudit",
             "gregguns.projectile",
             "gregguns.showcase.player",
+            "gregguns.soak.recoveryMarginMs",
             "gregguns.soak.regressionMs",
             "gregguns.testHooks",
             "gregguns.test_melee"));
