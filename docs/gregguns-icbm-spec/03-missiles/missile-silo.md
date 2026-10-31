@@ -67,13 +67,13 @@ The silo builds the missile in the shaft where the player can watch it, one part
 - **Any order:** parts may arrive in any order or together. A warhead with no body waits in the bus ("Waiting for a missile body"); fuel waits in the hatch until a missile stands. A body alone goes up, runs its cycle and waits. The warhead stays in the bus for the whole body cycle.
 - **Power and tier:** every step keeps the power gate (below) and the hatch tier rule (D70): no part leaves the bus, and no cycle starts, without both. A body too heavy for the Energy Hatch stays in the bus with GT's "insufficient machine tier".
 - **The world wins:** the controller looks into the shaft every second (`watchShaft`). A body that is gone ends the sequence; a warhead taken off the nose steps back to waiting for one; a running cycle whose part is gone stops at once. Any change in the shaft asks GT for a check, because GT only checks on hatch events.
-- **Nothing dupes or vanishes:** breaking the silo mid-sequence leaves the body and warhead standing; each drops its own item once when broken (or the player arms the stack by hand). A body broken under a seated warhead stops the mating cycle, and the silo breaks the loose warhead so it drops as one item. Arming happens only when the stack is complete and fits.
+- **Nothing dupes or vanishes:** breaking the silo mid-sequence leaves the body and warhead standing; each drops its own item once when broken (or the player arms the stack by hand). A body broken under a seated warhead stops the mating cycle, and the silo breaks the loose warhead so it drops as one item, whichever look notices first: the shaft watch, a recipe check (after a wait for power) or the end of the cycle. Arming happens only when the stack is complete and fits.
 - **Adoption:** a body found on the pad with no sequence of the silo's (stacked by hand, or left by a controller that was broken and rebuilt) gets the body cycle and the sequence continues; a warhead seated on it by hand is mated like the silo's own. Arming by hand works at any point. A warhead on the nose that is too heavy or lit is not mated ("take it off"); a body off the pad's center, a loose warhead or a block in the column above the pad stops the silo ("Something in the shaft is in the way").
 - **The Launch Control** sees a standing body or stack as present but not armed (`NOT_ARMED`), as on an open pad.
-- **Old saves:** a controller saved by an earlier build mid-mating held the body and warhead inside itself. On its first check it stands them in the shaft (body, then warhead on the nose, stage `WARHEAD`) and runs the mating cycle again; if the shaft is taken, they drop as items.
+- **A launch keeps the shaft (D342):** from the moment a missile starts its countdown until it has climbed out of the column above the shaft (`PadMissiles.LAUNCH_COLUMN`, 24 blocks above the pad), the shaft counts as busy (`Shaft.LAUNCHING`): no part leaves the bus ("A launch is under way"). An aborted or stood-down missile (D88, D90) is back on its pad with its column clear, so it fires again with no player clearing the shaft; once a missile has climbed out, a body waiting in the bus goes up.
 - No fuel gauge is drawn: the missile model and WAILA have none.
 
-Refusals show on the controller as the cycle result: no body, a warhead waiting for a body, no warhead, a warhead too heavy, an inert warhead, a hatch too weak, something in the way.
+Refusals show on the controller as the cycle result: no body, a warhead waiting for a body, no warhead, a warhead too heavy, an inert warhead, a hatch too weak, something in the way, a launch under way.
 
 ## Fuel (D22)
 
@@ -91,7 +91,7 @@ A missile launched from a silo gets scatter x0.5 (`icbm.siloScatterFactor`, on t
 
 ## The launch site API
 
-`com.gregguns.icbm.missile.LaunchSite` (`centerX/Z`, `status`, `maxRange`, `expectedRadius`, `hold`, `launch`). `PadMissiles.site(world, x, y, z)` wraps the unchanged static pad API; `MTEMissileSilo.site()` is the silo. The Launch Control reaches both through `LaunchSites.find`: its own silo when the silo's structure holds it, else a Galacticraft pad it touches (D288, [launch-control-block](../04-launch-control/launch-control-block.md)). A formed silo's floor is never fired as a bare pad. `MTEMissileSilo.signName()` reads the first written line of a wall sign on the face one block above the controller, for the Launch Control's site line.
+`com.gregguns.icbm.missile.LaunchSite` (`centerX/Z`, `status`, `maxRange`, `expectedRadius`, `hold`, `launch`). `PadMissiles.site(world, x, y, z)` wraps the unchanged static pad API; `MTEMissileSilo.site()` is the silo. The Launch Control reaches both through `LaunchSites.find`: its own silo when the silo's structure holds it, else a Galacticraft pad it touches (D288, [launch-control-block](../04-launch-control/launch-control-block.md)). A formed silo's floor is never fired as a bare pad. `MTEMissileSilo.signName()` reads the first written line of a wall sign on the face two blocks above the controller (`SiloShape.NAME_SIGN_RISE`), on the concrete over the window, for the Launch Control's site line.
 
 ## T3 missiles
 

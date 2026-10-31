@@ -251,6 +251,7 @@ GT5U.gui.text.recipe_result.gregguns_silo_warhead_cycle=§aMating the warhead to
 GT5U.gui.text.recipe_result.gregguns_silo_fueling=§aFueling the missile
 GT5U.gui.text.recipe_result.gregguns_silo_bad_nose=§eThe warhead on the missile's nose is too heavy for the body or its fuse is lit: take it off
 GT5U.gui.text.recipe_result.gregguns_silo_blocked=§eSomething in the shaft is in the way: clear the pad and the column above it
+GT5U.gui.text.recipe_result.gregguns_silo_launching=§eA launch is under way: the next part waits until the missile has left the shaft
 GT5U.gui.text.recipe_result.gregguns_silo_no_power=§cNo power: the Energy Hatch holds too little EU to start; waiting for power
 GT5U.gui.text.recipe_result.gregguns_silo_chunks=§fThe shaft is in an unloaded chunk: waiting for it to load
 gt.blockmachines.gregguns.icbm.missilesilo.name=Missile Silo

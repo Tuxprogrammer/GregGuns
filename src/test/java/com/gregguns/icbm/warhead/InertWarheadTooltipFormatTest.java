@@ -68,6 +68,14 @@ class InertWarheadTooltipFormatTest {
     }
 
     @Test
+    void aSmallCasingNeverOffersMoreChargesPerCraftThanItHolds() {
+        // The T1 casing holds five: a load of six to eight makes no recipe, so the tooltip must not offer it.
+        List<String> lines = InertWarheadTooltipFormat.lines(labels(), facts(null, true, 5), true);
+        assertTrue(lines.contains("Up to 5 per craft"));
+        assertFalse(lines.contains("Up to 8 per craft"));
+    }
+
+    @Test
     void aFittedCasingSaysToLoadCharges() {
         List<String> lines = InertWarheadTooltipFormat.lines(labels(), facts("Thermobaric", false, 20), true);
         assertEquals("Payload: Thermobaric", lines.get(0));

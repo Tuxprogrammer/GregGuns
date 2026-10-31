@@ -52,6 +52,7 @@ final class SiloSequenceScenarios {
         registry.register(new InOrder());
         registry.register(new AnyOrder());
         registry.register(new BreakMidway());
+        registry.register(new BreakWhileWaiting());
         registry.register(new Shots());
         SiloAbortScenarios.registerAll(registry);
     }
@@ -585,6 +586,111 @@ final class SiloSequenceScenarios {
                         }
                         out.checkEquals("the body dropped exactly once", 1, items(ctx)[0]);
                         out.checkEquals("the warhead dropped exactly once", 1, items(ctx)[1]);
+                        return finish(ctx, out);
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
+
+    /**
+     * The body broken under a warhead while the mating waits for power, with the silo's next recipe check landing
+     * before its shaft watch: the warhead still comes down (D342). The check is called straight after the break, as
+     * the power poll's check would land, so the order is fixed and the scenario can fail.
+     */
+    private static final class BreakWhileWaiting implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.sequence_break_waiting";
+        }
+
+        @Override
+        public String description() {
+            return "A warhead seated by hand on a ready body with no power in the hatch makes the silo wait for power on the mating cycle. The body is broken and the next recipe check comes before the silo's look into the shaft: the loose warhead still comes down as one item, the body drops once, nothing is armed and nothing floats in the shaft.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            return ScenarioResult.pending(name(), 2400, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                World w = ctx.world();
+                MTEMissileSilo s = silo(ctx);
+                if (s == null) {
+                    return ScenarioResult.fail(name(), "no silo controller");
+                }
+                switch (stage[0]) {
+                    case 0:
+                        out.check(formed(ctx), "the silo forms");
+                        killItems(ctx);
+                        power(ctx);
+                        putBus(ctx, MissileBodies.body(MissileTier.T1));
+                        mark[0] = ticks;
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        power(ctx);
+                        if (s.stage() != SiloSequence.Stage.BODY_DONE) {
+                            return ticks > mark[0] + SiloRules.BODY_TICKS + 200
+                                ? ScenarioResult.fail(name(), "the body cycle never ended: " + statusOf(s))
+                                : null;
+                        }
+                        // No power, then a warhead seated by hand: the mating cycle waits for power.
+                        drain(ctx);
+                        out.check(
+                            com.gregguns.icbm.missile.MissileStacks.placeWarhead(
+                                w,
+                                bx(ctx),
+                                by(ctx) + MissileTier.T1.heightBlocks(),
+                                bz(ctx),
+                                warhead(WarheadCasing.T1, "condensed"),
+                                null,
+                                "[GGDev]"),
+                            "a warhead is seated by hand");
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        drain(ctx);
+                        if (s.stage() != SiloSequence.Stage.WARHEAD || !s.waitingForPower()) {
+                            return ticks > mark[0] + 100
+                                ? ScenarioResult.fail(name(), "the mating never waited for power: " + statusOf(s))
+                                : null;
+                        }
+                        out.check(onTheNose(ctx), "the warhead sits on the nose");
+                        // The body is broken; power comes back and the recipe check lands first.
+                        w.setBlockToAir(bx(ctx), by(ctx), bz(ctx));
+                        power(ctx);
+                        s.checkProcessing();
+                        out.check(!warheadSeated(ctx), "the check brought the loose warhead down at once");
+                        mark[0] = ticks;
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        power(ctx);
+                        if (ticks < mark[0] + 60) {
+                            return null;
+                        }
+                        out.check(!warheadSeated(ctx), "no warhead floats in the shaft");
+                        out.check(s.missile() == null, "nothing was armed");
+                        out.checkEquals("the body dropped exactly once", 1, items(ctx)[0]);
+                        out.checkEquals("the warhead came down exactly once", 1, items(ctx)[1]);
+                        out.checkEquals("the sequence is over", SiloSequence.Stage.NONE, s.stage());
                         return finish(ctx, out);
                     default:
                         return null;

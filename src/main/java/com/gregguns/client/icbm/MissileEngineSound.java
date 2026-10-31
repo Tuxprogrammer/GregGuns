@@ -16,7 +16,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * The missile's engine: Galacticraft's own rocket loop ({@code galacticraftcore:shuttle.shuttle}), played by event
  * name from Galacticraft's registered sounds (we ship none of its audio). It follows the missile, rises in pitch
  * through the countdown, runs at full pitch in flight, and ends when the missile is removed (impact, interception,
- * despawn, chunk unload) or the world changes. Client only.
+ * despawn, chunk unload), when an EMP fries its guidance (no more thrust, D342) or when the world changes. Client only.
  */
 // Source:
 // https://github.com/GTNewHorizons/Galacticraft/blob/3.4.34-GTNH/src/main/java/micdoodle8/mods/galacticraft/core/client/sounds/SoundUpdaterRocket.java
@@ -84,7 +84,7 @@ public final class MissileEngineSound extends MovingSound {
             return;
         }
         FlightPhase ph = missile.phase();
-        if (!MissileEngineMath.sounding(ph)) {
+        if (!MissileEngineMath.sounding(ph, missile.guidanceFried())) {
             stop();
             return;
         }
