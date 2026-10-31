@@ -33,7 +33,8 @@ import com.gregguns.worldgen.WorldTarget;
 /**
  * {@code /gregguns locate rebuild <cellX> <cellZ>} (ops only): clears a built silo complex's whole box and writes it
  * again with the code the server runs now, at the activity level and depth its ledger entry recorded. Two passes, one
- * chunk (then one populate window) per server tick, through {@link LocateGeneration}'s tick driver, with a progress line
+ * chunk (then one populate window) per server tick, through {@link LocateGeneration}'s tick driver, with a progress
+ * line
  * every {@link #PROGRESS_EVERY} steps:
  * <ol>
  * <li><b>Clear.</b> Every column of the box, from {@link ComplexPlacer#MIN_FLOOR} (the lowest level floor any complex
@@ -252,8 +253,9 @@ final class ComplexRebuild implements LocateGeneration.Run {
                 new WindowedHeightProbe(window, new WorldColumnReader(world)));
             windowsWritten++;
         } catch (RuntimeException e) {
-            GregGuns.LOG.error("Rebuild of the complex at cell " + plan.cellX() + "," + plan.cellZ() + " failed in "
-                + window, e);
+            GregGuns.LOG.error(
+                "Rebuild of the complex at cell " + plan.cellX() + "," + plan.cellZ() + " failed in " + window,
+                e);
         }
     }
 
@@ -261,8 +263,8 @@ final class ComplexRebuild implements LocateGeneration.Run {
         ChunkProviderServer cps = world.theChunkProviderServer;
         for (int[] ch : loadedByUs) cps.unloadChunksIfNotNearSpawn(ch[0], ch[1]);
         loadedByUs.clear();
-        com.gregguns.icbm.worldgen.ActivityLevel lv = writer instanceof ComplexPlacer ? ((ComplexPlacer) writer)
-            .levelOf(
+        com.gregguns.icbm.worldgen.ActivityLevel lv = writer instanceof ComplexPlacer
+            ? ((ComplexPlacer) writer).levelOf(
                 ((ComplexPlacer) writer).rasterOf(plan)
                     .plan())
             : null;

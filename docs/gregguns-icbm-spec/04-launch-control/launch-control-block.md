@@ -2,7 +2,7 @@
 
 - **ICBM baseline:** [launch-screen](../../icbm-spec/04-launch-control/launch-screen.md), [launcher-base](../../icbm-spec/04-launch-control/launcher-base.md)
 - **Design records:** [0018 §8-9](../../design/0018-icbm-program.md), [0011](../../design/0011-machine-policy.md)
-- **Decisions:** [D13](../DECISIONS.md), [D41](../DECISIONS.md), [D46](../DECISIONS.md)
+- **Decisions:** [D13](../DECISIONS.md), [D41](../DECISIONS.md), [D46](../DECISIONS.md), [D288](../DECISIONS.md), [D299](../DECISIONS.md), [D300](../DECISIONS.md)
 - **Pack mods:** GregTech (single block, covers, data stick), ModularUI2, Galacticraft (the pad)
 - **Roadmap:** [I2](../../ROADMAP-ICBM.md#i2--missiles-and-the-galacticraft-pad-t1t2)
 
@@ -11,7 +11,7 @@
 | ICBM behavior | GregGuns behavior | Why |
 |---|---|---|
 | Launcher screen block linked to launchers by a cable network | One block set against the pad's edge, or built into the silo's structure; no network | A Galacticraft pad is one 3x3 area and Galacticraft's own controller attaches by touch; the silo knows its own Launch Control (D288) |
-| Energy buffer fed by a battery slot (dead in ICBM, ICBM-04-15) | GT EU buffer; 300 EU per shot, paid only when the pad accepted the launch | ICBM-04-07 |
+| Energy buffer fed by a battery slot (dead in ICBM, ICBM-04-15) | GT EU buffer; 300 EU per shot, paid only when the pad accepted the launch; a silo's own Launch Control pays from the silo's Energy Hatches | ICBM-04-07, D300 |
 | Default target (0, 0, 0) is a legal target (ICBM-04-06) | A target is unset until both coordinates are given | ICBM-04-06 |
 | Range is two per-axis squares with a hard-coded minimum (ICBM-04-05) | A circle on the horizontal distance from the pad's center; the minimum is the body tier's (20) | ICBM-04-05 |
 | Strong-power, level-triggered redstone (ICBM-04-20) | Fires once on a rising edge | ICBM-04-19, 04-20 |
@@ -34,7 +34,15 @@ The block fires a `LaunchSite` (D288). There is no search for silos and no elect
 
 The range line and the expected radius are those of the bound site (a silo adds its bonus), and a silo whose Energy Hatch is below the missile's tier shows `silo_tier` and locks the button. `LaunchPads` is the only class that names a Galacticraft block, and it is reached only after the module gate.
 
-**Generated silos** carry their Launch Control in the front face, in the window's top row (one above the controller), in the outer column on the right of a player facing the controller (`SiloShape.LAUNCH_CONTROL_COLUMN`, `LAUNCH_CONTROL_RISE`; worldgen cell `SILO_LAUNCH_CONTROL`). The dev builder (`DevStructureBuilder.buildSilo`) puts it in the same place. The Launch Control room of the complex keeps its own Launch Control as furniture: it touches no pad and is part of no silo, so it shows "No pad adjacent".
+**Generated silos** carry their Launch Control in the front face, on top of the right hatch column (seen by a player facing the controller), level with the window's top row and outside the 3x3 glass window (`SiloShape.LAUNCH_CONTROL_COLUMN`, `LAUNCH_CONTROL_RISE`; worldgen cell `SILO_LAUNCH_CONTROL`; D299). The dev builder (`DevStructureBuilder.buildSilo`, `SILO_LC`) puts it in the same place. The Launch Control room of the complex keeps its own Launch Control as furniture: it touches no pad and is part of no silo, so it shows "No pad adjacent".
+
+## Power
+
+A shot costs 300 EU (`EU_PER_SHOT`), checked by the pre-check and paid only once the site accepted the launch.
+
+- **Free (beside a pad):** the block's own GT buffer, fed by cable.
+- **Part of a silo (D300):** the silo's Energy Hatches, normal and exotic (`MTEMissileSilo.launchControlEu`, `payLaunchControl`). A Launch Control in a silo wall has no cable, so it draws on the silo. Its own buffer is not used while it is bound, so the screen and the status say one thing. With too little EU in the silo the status is `silo_no_power` ("Silo has too little EU"), and the screen's power line reads `Silo EU: %s (shot: %d)`. The payment checks the full amount first, then drains it hatch by hatch (`ExoticEnergyInputHelper.drainEnergy`, which is not atomic). If the hatches were drained in the same tick between the check and the payment, the shot stands and nothing goes below zero.
+- **OpenComputers:** `launchInfo()` carries `power` (`silo` or `own`) and `eu` (what a shot is paid from).
 
 ## The pad API (coder 1's `PadMissiles`)
 

@@ -5,7 +5,8 @@ import java.util.Locale;
 /**
  * The arguments of {@code /gregguns locate}: {@code <kind> [radius_cells] [generate]} lists (and optionally
  * generates), {@code tp <structure_id> <small|medium|big> <cellX> <cellZ>} teleports to a built site (what a click on a
- * row runs), {@code rebuild <cellX> <cellZ>} clears a built silo complex and writes it again. The kind is {@code complex}, a structure id ({@code military_base}...) or {@code any}. Parsing is separate
+ * row runs), {@code rebuild <cellX> <cellZ>} clears a built silo complex and writes it again. The kind is
+ * {@code complex}, a structure id ({@code military_base}...) or {@code any}. Parsing is separate
  * from the command so it is unit tested without a server.
  */
 final class LocateArgs {

@@ -13,13 +13,13 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
 import com.gregguns.core.config.IcbmConfig;
-import com.gregguns.icbm.worldgen.ComplexText;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.icbm.worldgen.ComplexText;
 import com.gregguns.worldgen.ComplexWriter;
 import com.gregguns.worldgen.Decision;
 import com.gregguns.worldgen.PlanKey;
@@ -439,7 +439,8 @@ public final class LocateScenarios {
                 int[] hs = hallSign == null ? null : ComplexSigns.resolve(raster, hallSign);
                 out.check(hs != null, "the hall has its sign");
                 if (hs != null) {
-                    net.minecraft.tileentity.TileEntity t = world.getTileEntity(ax + hs[0], floor + hs[1] - 1, az + hs[2]);
+                    net.minecraft.tileentity.TileEntity t = world
+                        .getTileEntity(ax + hs[0], floor + hs[1] - 1, az + hs[2]);
                     String want = ComplexText.get(ComplexSigns.activityNameKey(placer.levelOf(raster.plan())));
                     out.check(
                         t instanceof net.minecraft.tileentity.TileEntitySign
