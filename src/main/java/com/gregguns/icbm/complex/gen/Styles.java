@@ -36,6 +36,14 @@ public interface Styles {
     ResolvedBlock litLamp(int x, int y, int z);
 
     /**
+     * @param section a hall's section id
+     * @return the plate its blast door is covered in (D335), or null for the writer's bare door
+     */
+    default ResolvedBlock doorPlate(int section) {
+        return null;
+    }
+
+    /**
      * Names the code path that decides a building role's block at a cell, for the role audit's log line (D267).
      *
      * @param role a {@link com.gregguns.icbm.complex.Cell} building role

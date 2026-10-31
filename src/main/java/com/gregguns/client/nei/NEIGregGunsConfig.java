@@ -63,6 +63,13 @@ public class NEIGregGunsConfig implements IConfigureNEI {
             API.registerRecipeHandler(handler);
             API.registerUsageHandler(handler);
         }
+        // The launcher-warhead load (D227, D338): a custom crafting recipe NEI's own crafting pages cannot list. Only
+        // when the ICBM module added the recipe.
+        if (com.gregguns.icbm.launcher.LauncherWarheadRegistration.loadingRecipe() != null) {
+            LauncherLoadHandler loads = new LauncherLoadHandler();
+            API.registerRecipeHandler(loads);
+            API.registerUsageHandler(loads);
+        }
         // Content of a module that is off stays registered but is hidden from NEI. A filter provider (not a one-shot
         // API.hideItem list) because the flags in force change when the server's flags arrive at login.
         API.addItemFilter(() -> {

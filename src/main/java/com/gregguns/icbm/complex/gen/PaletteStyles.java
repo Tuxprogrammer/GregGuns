@@ -117,6 +117,22 @@ public final class PaletteStyles implements Styles {
         }
     }
 
+    @Override
+    public ResolvedBlock doorPlate(int section) {
+        if (section < 0 || section >= bySection.length) return null;
+        // The set's own plate, or the next one when the hall's wall is that very block: a shut door must read as one.
+        ResolvedBlock wall = style(section).wall();
+        ResolvedBlock first = null;
+        for (com.gregguns.icbm.complex.palette.BlockRef ref : com.gregguns.icbm.complex.palette.ComplexPalette
+            .doorPlates(style(section).setId())) {
+            ResolvedBlock b = com.gregguns.icbm.complex.palette.PaletteResolver.resolve(ref);
+            if (b == null) continue;
+            if (first == null) first = b;
+            if (wall == null || b.block != wall.block || b.meta != wall.meta) return b;
+        }
+        return first;
+    }
+
     private Aisle aisle(int section) {
         Aisle a = aisles[section];
         if (a == null) {

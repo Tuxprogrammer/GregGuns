@@ -101,6 +101,26 @@ final class PaletteSets {
         return ch("laboratoryblock", meta, gtConcrete(gtConcreteMeta), v("quartz_block", 0));
     }
 
+    /**
+     * The blast-door plates (D335), most fitting first for a hall of the set: Factory plating, Tyrian plate, the
+     * Laboratory's large steel, the Factory metal box and the Technical rusty plates, each with its GregTech concrete
+     * and vanilla stand-ins. Every one is a cheap carving (palette block table: Low).
+     *
+     * @param setId a style set id
+     * @return the plates to try for that set's blast doors, in order
+     */
+    static List<BlockRef> doorPlates(String setId) {
+        BlockRef plating = factory(13), tyrianPlate = tyrian(15), steel = lab(11, 14), box = factory(9),
+            rusty = technical(12);
+        if ("tyrian_dark".equals(setId) || "granite_hall".equals(setId)) {
+            return java.util.Arrays.asList(tyrianPlate, plating, steel, box);
+        }
+        if ("steel_panel".equals(setId)) return java.util.Arrays.asList(steel, plating, tyrianPlate, box);
+        if ("concrete_bunker".equals(setId)) return java.util.Arrays.asList(box, plating, tyrianPlate, steel);
+        if ("technical_works".equals(setId)) return java.util.Arrays.asList(rusty, plating, box, steel);
+        return java.util.Arrays.asList(plating, tyrianPlate, steel, box);
+    }
+
     /** A dead lamp or accent of the Factory family. */
     private static BlockRef factory(int meta) {
         return ch("factoryblock", meta, gtConcrete(3), v("stonebrick", 0));
