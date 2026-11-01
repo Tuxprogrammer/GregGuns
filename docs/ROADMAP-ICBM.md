@@ -115,6 +115,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 | `icbm-silos` | Abandoned silos as dungeons: activity levels, guards, and the loot to expect on each planet | I6 |
 | `icbm-recipes` | The ICBM crafting chains, read from the recipe export | I7 |
 | `icbm-hero` | The module at a glance, for the README and for posting | I7 |
+| `icbm-computer-control` | The OpenComputers hookups of every ICBM machine and the Golden Dome floppy with its programs | I7 |
 
 **Owner check-ins** (not a gate): when new visuals land on master, the orchestrator tells the owner that day what is new and where to look. Every ICBM visual is collected, newest first, in the local gallery page `docs/icbm-visuals.html`, which links the local previews and the committed guide sheets. The page and the previews are git-ignored (D50), and nothing is hosted unless the owner asks. The owner's notes, if any, join the next milestone's fix list, and the build doesn't wait for them. The alpha review covers all visuals formally.
 

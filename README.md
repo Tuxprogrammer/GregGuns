@@ -128,6 +128,10 @@ Every ICBM crafting chain, as the pack builds it.
 
 ![Detection and Defense](docs/assets/infographics/icbm-detection-and-defense.png)
 
+#### Computer control
+
+![Computer Control](docs/assets/infographics/icbm-computer-control.png)
+
 #### Fallout
 
 ![Fallout](docs/assets/infographics/icbm-fallout.png)
