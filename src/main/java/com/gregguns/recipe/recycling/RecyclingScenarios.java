@@ -9,6 +9,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
+import com.gregguns.core.module.ModuleContent;
+import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -69,6 +71,7 @@ public final class RecyclingScenarios {
             out.checkEquals("catalog entries in the report", catalog.size(), report.size());
 
             Map<RecyclingDerivation.Status, Integer> counts = new EnumMap<>(RecyclingDerivation.Status.class);
+            int offModule = 0;
             for (Map.Entry<String, ItemStack> entry : catalog.entrySet()) {
                 String key = entry.getKey();
                 RecyclingDerivation.Entry line = report.get(key);
@@ -97,6 +100,11 @@ public final class RecyclingScenarios {
                     case DELEGATED:
                         break;
                     default:
+                        if (line.status() == RecyclingDerivation.Status.NO_RECIPE && icbmOff(entry.getValue())) {
+                            // ICBM recipes register only while the module is on (D46), so nothing makes these stacks.
+                            offModule++;
+                            break;
+                        }
                         out.check(
                             false,
                             key + ": "
@@ -137,8 +145,19 @@ public final class RecyclingScenarios {
                     name + " has subtypes the recycling catalog does not list; add its variants or exclude it whole");
             }
             out.note("recycling coverage: " + counts);
+            if (offModule > 0) {
+                out.note(offModule + " ICBM stacks have no recipe because the ICBM module is off");
+            }
             return out.build();
         }
+    }
+
+    /**
+     * @param stack a catalog stack
+     * @return whether the stack is ICBM content while the ICBM module is off, so its recipes and item data are absent
+     */
+    static boolean icbmOff(ItemStack stack) {
+        return ModuleContent.disabledModuleOf(stack) == ModuleId.ICBM;
     }
 
     /** {@code recycling.spot}. */
@@ -169,6 +188,10 @@ public final class RecyclingScenarios {
                 ItemStack stack = catalog.get(key);
                 out.check(stack != null, key + ": not a GregGuns stack in this run");
                 if (stack == null) {
+                    continue;
+                }
+                if (icbmOff(stack)) {
+                    out.note(key + ": ICBM item, the ICBM module is off, so it carries no recycling data");
                     continue;
                 }
                 ItemData data = GTOreDictUnificator.getItemData(stack);
@@ -386,6 +409,10 @@ public final class RecyclingScenarios {
             // GGS-06-24's exception: radioactive by their own GT material, Naquadria, never by GregGuns' uranium.
             for (String key : GT_MATERIAL_HOT) {
                 ItemStack stack = catalog.get(key);
+                if (stack != null && icbmOff(stack)) {
+                    out.note(key + ": ICBM item, the ICBM module is off, so it carries no Naquadria data");
+                    continue;
+                }
                 ItemData data = stack == null ? null : GTOreDictUnificator.getItemData(stack);
                 out.check(
                     data != null && data.hasValidMaterialData() && data.mMaterial.mMaterial == Materials.Naquadria,
