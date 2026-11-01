@@ -27,10 +27,10 @@ import com.gregguns.entity.npc.SuperMutantTier;
  * <ul>
  * <li>{@code mutant-feet-stand-line}: all three standing, seen side on from Z = -6 with the eye 0.12 blocks above the
  * floor (the player stands on a slab in a pit), so the floor line runs through the middle of the frame;</li>
- * <li>{@code mutant-feet-stand-elite}: the Elite's feet from 2.5 blocks, at the same eye height;</li>
+ * <li>{@code mutant-feet-stand-elite}: the Elite's feet from 2 blocks, at the same eye height;</li>
  * <li>{@code mutant-feet-stand-overview}: all three from a normal standing eye, looking down a little;</li>
- * <li>{@code mutant-feet-walk-line-1..4} and {@code mutant-feet-walk-elite-1..3}: the same views while each mutant walks
- * back and forth along X over 3 blocks, so some frames catch the legs mid-stride.</li>
+ * <li>{@code mutant-feet-walk-line-1..4} and {@code mutant-feet-walk-elite-1..3}: the same views while each mutant
+ * walks back and forth along X over 3 blocks, so some frames catch the legs mid-stride.</li>
  * </ul>
  * The entity side is checked as well: each mutant's {@code posY} and bounding box bottom must sit on the floor top
  * while standing and while walking, and the log records both with the floor Y ({@code [mutant-feet]} lines), so a sunk
