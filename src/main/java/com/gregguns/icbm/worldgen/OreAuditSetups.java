@@ -168,6 +168,28 @@ public final class OreAuditSetups {
                     return true;
                 };
             }
+            case "slice": {
+                // slice <x0> <z0> <x1> <z1> <y>: one layer as a letter grid (s stone, a air, o ore, w complex wall,
+                // . anything else), a row per z
+                final int x0 = Integer.parseInt(t[1]), z0 = Integer.parseInt(t[2]), x1 = Integer.parseInt(t[3]),
+                    z1 = Integer.parseInt(t[4]), y = Integer.parseInt(t[5]);
+                return w -> {
+                    for (int z = z0; z <= z1; z++) {
+                        StringBuilder b = new StringBuilder();
+                        for (int x = x0; x <= x1; x++) {
+                            Block k = w.getBlock(x, y, z);
+                            b.append(
+                                isOre(w, x, y, z) ? 'o'
+                                    : k == net.minecraft.init.Blocks.stone ? 's'
+                                        : k == net.minecraft.init.Blocks.air ? 'a'
+                                            : k == com.gregguns.icbm.complex.wall.BlockComplexWall.instance() ? 'w'
+                                                : '.');
+                        }
+                        GregGuns.LOG.info("ORE slice y={} z={} x={}..{} {}", y, z, x0, x1, b);
+                    }
+                    return true;
+                };
+            }
             default:
                 GregGuns.LOG.warn("ORE unknown op {}", t[0]);
                 return null;
