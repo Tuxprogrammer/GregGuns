@@ -195,13 +195,11 @@ final class NpcLootScenarios {
                 }
             }
             for (LootDrop d : refs) {
-                ItemStack s = NpcItems.stack(d.ref(), 1);
+                ItemStack s = LootCategories.stack(d.ref(), 1);
                 if (s == null) {
-                    // A missing GT or pack item skips that drop; the mod's own and vanilla items must resolve.
-                    out.check(
-                        d.ref()
-                            .startsWith("ore:"),
-                        id + " drop " + d.ref() + " should resolve");
+                    // Every reference resolves, ore dictionary and GT parts included: the dev GregTech is the pack's
+                    // own version, so a name missing here is missing in the pack too (D349).
+                    out.check(false, id + " drop " + d.ref() + " should resolve");
                 } else {
                     allowed.add(s.getItem());
                 }
@@ -238,7 +236,7 @@ final class NpcLootScenarios {
                         }
                     }
                     for (LootDrop fixed : profile.fixedDrops()) {
-                        ItemStack want = NpcItems.stack(fixed.ref(), 1);
+                        ItemStack want = LootCategories.stack(fixed.ref(), 1);
                         boolean found = false;
                         for (ItemStack s : log.kills.get(before)) {
                             found |= want != null && s.getItem() == want.getItem();
