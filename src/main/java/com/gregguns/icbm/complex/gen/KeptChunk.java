@@ -16,23 +16,25 @@ import net.minecraft.nbt.NBTTagString;
  * against it once every later populate that may reach the chunk has run, and sets back what they changed.
  *
  * <p>
- * Compact on purpose, since it lives in memory and in the chunk's own saved data until then: one {@code int} per cell
- * ({@code pos << 16 | palette << 4 | meta}, with {@code pos = y << 8 | x << 4 | z} inside the chunk) over a small
- * palette of block names. Names rather than ids, so a record stays right whatever ids the world assigns. Pure data, no
- * world access.
+ * Compact on purpose, since it lives in memory and in the chunk's own saved data until then: per cell one
+ * {@code int} ({@code pos << 16 | palette}, with {@code pos = y << 8 | x << 4 | z} inside the chunk) over a small
+ * palette of block names, and one {@code int} of meta. The meta is kept whole: the GTNH pack's EndlessIDs gives
+ * blocks metas past 15 (GregTech's frame boxes use the material id, 305 for steel). Names rather than ids, so a
+ * record stays right whatever ids the world assigns. Pure data, no world access.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Depth, stamp and surface: the complex keep)
 public final class KeptChunk {
 
     /** Format version of the saved record. */
     static final int VERSION = 1;
-    /** The palette index takes 12 bits of a cell. */
-    static final int MAX_PALETTE = 1 << 12;
+    /** The palette index takes the low 16 bits of a cell. */
+    static final int MAX_PALETTE = 1 << 16;
 
     private final int chunkX, chunkZ;
     private final List<String> palette = new ArrayList<String>();
     private final Map<String, Integer> index = new HashMap<String, Integer>();
     private int[] cells = new int[256];
+    private int[] metas = new int[256];
     private int size;
     private final Map<Integer, NBTTagCompound> tiles = new HashMap<Integer, NBTTagCompound>();
 
@@ -80,12 +82,12 @@ public final class KeptChunk {
 
     /** @return the block name of the {@code i}-th cell */
     public String blockAt(int i) {
-        return palette.get(cells[i] >> 4 & 0xFFF);
+        return palette.get(cells[i] & 0xFFFF);
     }
 
     /** @return the meta of the {@code i}-th cell */
     public int metaAt(int i) {
-        return cells[i] & 15;
+        return metas[i];
     }
 
     /** @return the tile entity data written at a cell, or null when the cell has none */
@@ -112,6 +114,7 @@ public final class KeptChunk {
                 tiles.remove(c >>> 16);
                 continue;
             }
+            metas[kept] = metas[i];
             cells[kept++] = c;
         }
         size = kept;
@@ -121,7 +124,7 @@ public final class KeptChunk {
      * Adds one cell. Call {@link #forget} for the positions first, so no cell is held twice.
      *
      * @param tile the cell's tile entity data, or null
-     * @return false when the palette is full (more than 4096 distinct blocks in one chunk), and the cell is not kept
+     * @return false when the palette is full (more than 65536 distinct blocks in one chunk), and the cell is not kept
      */
     public boolean put(int pos, String block, int meta, NBTTagCompound tile) {
         Integer p = index.get(block);
@@ -131,8 +134,12 @@ public final class KeptChunk {
             palette.add(block);
             index.put(block, p);
         }
-        if (size == cells.length) cells = java.util.Arrays.copyOf(cells, size * 2);
-        cells[size++] = pos << 16 | p << 4 | meta & 15;
+        if (size == cells.length) {
+            cells = java.util.Arrays.copyOf(cells, size * 2);
+            metas = java.util.Arrays.copyOf(metas, size * 2);
+        }
+        metas[size] = meta;
+        cells[size++] = pos << 16 | p;
         if (tile != null) tiles.put(pos, tile);
         return true;
     }
@@ -145,6 +152,7 @@ public final class KeptChunk {
         for (String n : palette) names.appendTag(new NBTTagString(n));
         t.setTag("p", names);
         t.setIntArray("c", java.util.Arrays.copyOf(cells, size));
+        t.setIntArray("m", java.util.Arrays.copyOf(metas, size));
         NBTTagList ts = new NBTTagList();
         for (Map.Entry<Integer, NBTTagCompound> e : tiles.entrySet()) {
             NBTTagCompound one = new NBTTagCompound();
@@ -171,10 +179,16 @@ public final class KeptChunk {
             k.index.put(n, k.palette.size());
             k.palette.add(n);
         }
-        int[] c = t.getIntArray("c");
-        k.cells = java.util.Arrays.copyOf(c, Math.max(16, c.length));
+        int[] c = t.getIntArray("c"), m = t.getIntArray("m");
+        int n = Math.min(c.length, m.length);
+        k.cells = new int[Math.max(16, n)];
+        k.metas = new int[Math.max(16, n)];
         int kept = 0;
-        for (int v : c) if ((v >> 4 & 0xFFF) < k.palette.size()) k.cells[kept++] = v;
+        for (int i = 0; i < n; i++) {
+            if ((c[i] & 0xFFFF) >= k.palette.size()) continue;
+            k.metas[kept] = m[i];
+            k.cells[kept++] = c[i];
+        }
         k.size = kept;
         NBTTagList ts = t.getTagList("t", 10);
         for (int i = 0; i < ts.tagCount(); i++) {

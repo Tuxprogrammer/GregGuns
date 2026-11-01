@@ -39,14 +39,17 @@ class KeptChunkTest {
         NBTTagCompound tile = new NBTTagCompound();
         tile.setString("id", "Chest");
         assertTrue(k.put(KeptChunk.pos(15, 255, 15), "gregtech:gt.blockconcretes", 15, null));
+        // EndlessIDs metas past 15: GregTech's steel frame box.
+        assertTrue(k.put(KeptChunk.pos(3, 30, 4), "gregtech:gt.blockframes", 305, null));
         assertTrue(k.put(KeptChunk.pos(1, 200, 2), "minecraft:chest", 3, tile));
         assertTrue(k.put(KeptChunk.pos(0, 0, 0), "minecraft:air", 0, null));
-        assertEquals(3, k.size());
+        assertEquals(4, k.size());
         Map<Integer, String> seen = new HashMap<Integer, String>();
         for (int i = 0; i < k.size(); i++) seen.put(k.posAt(i), k.blockAt(i) + ":" + k.metaAt(i));
         assertEquals("gregtech:gt.blockconcretes:15", seen.get(KeptChunk.pos(15, 255, 15)));
         assertEquals("minecraft:chest:3", seen.get(KeptChunk.pos(1, 200, 2)));
         assertEquals("minecraft:air:0", seen.get(KeptChunk.pos(0, 0, 0)));
+        assertEquals("gregtech:gt.blockframes:305", seen.get(KeptChunk.pos(3, 30, 4)));
         assertNotNull(k.tile(KeptChunk.pos(1, 200, 2)));
         assertNull(k.tile(KeptChunk.pos(0, 0, 0)));
         assertEquals(1, k.tileCount());
@@ -78,7 +81,7 @@ class KeptChunkTest {
         NBTTagCompound tile = new NBTTagCompound();
         tile.setInteger("x", 80);
         for (int i = 0; i < 3000; i++) {
-            k.put(i * 7 % 65536, "mod:block" + (i % 37), i % 16, i == 11 ? tile : null);
+            k.put(i * 7 % 65536, "mod:block" + (i % 37), i * 31 % 40000, i == 11 ? tile : null);
         }
         KeptChunk back = KeptChunk.fromNbt(5, -9, k.toNbt());
         assertNotNull(back);
@@ -104,16 +107,17 @@ class KeptChunkTest {
         KeptChunk k = new KeptChunk(0, 0);
         k.put(1, "minecraft:stone", 0, null);
         NBTTagCompound saved = k.toNbt();
-        saved.setIntArray("c", new int[] { 1 << 16 | 0 << 4, 2 << 16 | 5 << 4 });
+        saved.setIntArray("c", new int[] { 1 << 16 | 0, 2 << 16 | 5 });
+        saved.setIntArray("m", new int[] { 0, 0 });
         KeptChunk back = KeptChunk.fromNbt(0, 0, saved);
         assertEquals(1, back.size(), "the cell naming a palette entry the record lacks is dropped");
     }
 
     @Test
-    void thePaletteHoldsAtMost4096Blocks() {
+    void thePaletteHoldsAtMost65536Blocks() {
         KeptChunk k = new KeptChunk(0, 0);
         for (int i = 0; i < KeptChunk.MAX_PALETTE; i++) assertTrue(k.put(i, "b" + i, 0, null));
-        assertFalse(k.put(5000, "one too many", 0, null));
-        assertTrue(k.put(5001, "b7", 3, null), "a known block still fits");
+        assertFalse(k.put(1, "one too many", 0, null));
+        assertTrue(k.put(2, "b7", 3, null), "a known block still fits");
     }
 }
