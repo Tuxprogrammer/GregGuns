@@ -31,7 +31,8 @@ final class ComplexGrower {
     static final class Node {
 
         final int id, type;
-        final RoomKind kind;
+        /** Set once; the deck may hand a just-placed room to an earlier card that fits it (D307). */
+        RoomKind kind;
         int x0, z0, x1, z1, h;
         final int parent;
         /** The side of the parent this node hangs off (its outward direction), -1 for the hub. */
@@ -217,26 +218,11 @@ final class ComplexGrower {
             if (postsAtMouths < posts - 1 && m.parent == 0 && guardPost(hub, m.dir, m)) postsAtMouths++;
         }
         for (Node n : nodes) addSites(n);
-        // Missile assembly goes beside the gallery first, so it stands by the silos.
-        List<RoomKind> queue = new ArrayList<RoomKind>();
-        queue.add(RoomKind.MISSILE_ASSEMBLY);
-        List<RoomKind> pool = new ArrayList<RoomKind>();
-        List<RoomKind> mandatory = new ArrayList<RoomKind>();
-        for (RoomKind k : RoomKind.values()) {
-            if (k == RoomKind.ASSEMBLY_BAY || k == RoomKind.LAUNCH_CONTROL
-                || k == RoomKind.MISSILE_ASSEMBLY
-                || k.small()) continue;
-            if (k.mandatory) mandatory.add(k);
-            else pool.add(k);
-        }
-        Collections.shuffle(pool, rnd);
-        // Rooms so far (posts at the mouths included), the assembly floor, the guard posts still to come.
+        // Rooms so far (posts at the mouths included), the assembly floor, the guard posts still to come; the deck
+        // deals the rest (D307).
         int fixed = roomCount() + 1 + posts - postsAtMouths;
-        List<RoomKind> rest = new ArrayList<RoomKind>(mandatory);
-        for (int i = 0; rest.size() < target - fixed; i++) rest.add(pool.get(i % pool.size()));
-        Collections.shuffle(rest, rnd);
-        queue.addAll(rest);
-        growRooms(queue, gallery.get(0), posts - postsAtMouths, target);
+        RoomDeck deck = new RoomDeck(rnd, target - fixed);
+        growRooms(deck, gallery.get(0), posts - postsAtMouths, target);
         // Rooms grow to their usual limit; a plan still short of the coverage target lets them grow further.
         inflate();
         for (int step = 0; step < 6
@@ -255,6 +241,13 @@ final class ComplexGrower {
     int posts() {
         int n = 0;
         for (Node x : nodes) if (x.type == ROOM && x.kind == RoomKind.GUARD_POST) n++;
+        return n;
+    }
+
+    /** @return the branch points on a hall (not the hub), each a guard post mark */
+    int hallBranchPoints() {
+        int n = 0;
+        for (int[] b : branchPoints) if (b[2] != 0) n++;
         return n;
     }
 
@@ -524,6 +517,9 @@ final class ComplexGrower {
         return placed;
     }
 
+    /** The top layer of a silo's walkway: the row over the window, where its "Silo N" sign hangs (D299). */
+    static final int WALKWAY_TOP = 2 + com.gregguns.icbm.silo.SiloShape.NAME_SIGN_RISE;
+
     private void silo(Node g, int side, int[] b) {
         int facing = (side + 2) & 3;
         SiloSlot s = new SiloSlot(
@@ -533,17 +529,18 @@ final class ComplexGrower {
             facing);
         claim(b[0], b[1], b[2], b[3], SILO);
         silos.add(s);
-        // The walkway: the hall's wall cells in front of the silo's three middle columns.
+        // The walkway (D299): the hall's wall cells in front of the silo's whole five-wide face, from the floor up to
+        // the row over the window, so the hatch columns, the Launch Control and the "Silo N" sign all face the hall.
         int dx = s.frontX() - s.controllerX(), dz = s.frontZ() - s.controllerZ();
         doors.add(
             new Door(
                 Door.Kind.WALKWAY,
-                s.x(1, 0) + dx,
-                s.x(3, 0) + dx,
-                s.z(1, 0) + dz,
-                s.z(3, 0) + dz,
+                Math.min(s.x(0, 0), s.x(4, 0)) + dx,
+                Math.max(s.x(0, 0), s.x(4, 0)) + dx,
+                Math.min(s.z(0, 0), s.z(4, 0)) + dz,
+                Math.max(s.z(0, 0), s.z(4, 0)) + dz,
                 1,
-                3,
+                WALKWAY_TOP,
                 g.id,
                 -1,
                 side));
@@ -681,17 +678,20 @@ final class ComplexGrower {
         return null;
     }
 
-    private void growRooms(List<RoomKind> queue, Node gallery, int posts, int target) {
-        // The assembly floor first, on the gallery's sides.
-        for (int side = 0; side < 4 && queue.get(0) == RoomKind.MISSILE_ASSEMBLY; side++) {
+    private void growRooms(RoomDeck deck, Node gallery, int posts, int target) {
+        // The assembly floor first, on the gallery's sides, so it stands by the silos.
+        boolean assembly = false;
+        for (int side = 0; side < 4 && !assembly; side++) {
             if (side == ((gallery.dir + 2) & 3) || side == gallery.dir) continue;
             Site s = new Site(gallery, side, gallery.latLo(side));
-            if (place(s, RoomKind.MISSILE_ASSEMBLY, RoomKind.MISSILE_ASSEMBLY.length, RoomKind.MISSILE_ASSEMBLY.depth)
-                != null) queue.remove(0);
+            RoomKind k = RoomKind.MISSILE_ASSEMBLY;
+            assembly = place(s, k, k.length, k.depth) != null;
         }
+        // No gallery side had room: the floor is the first card for any other slot.
+        if (!assembly) deck.require(RoomKind.MISSILE_ASSEMBLY);
         int minors = 0, maxMinors = 10 + rnd.nextInt(6);
         int postsLeft = posts;
-        for (int guard = 0; guard < 6000 && !queue.isEmpty(); guard++) {
+        for (int guard = 0; guard < 6000 && !deck.empty(); guard++) {
             Site s = pick();
             if (s == null) break;
             boolean hallSite = s.n.type == HUB || s.n.type == MAJOR || s.n.type == MINOR && s.side != s.n.dir;
@@ -703,14 +703,9 @@ final class ComplexGrower {
                     continue;
                 }
             }
-            RoomKind k = queue.get(0);
-            int len = scale(k.length), dep = scale(k.depth);
-            if (s.n.type == MINOR && s.side == s.n.dir) {
-                // The far end of a minor hallway: a room caps it.
-                len = Math.max(len, 12);
-            }
-            Node r = place(s, k, len, dep);
-            if (r != null) queue.remove(0);
+            // The far end of a minor hallway: a room caps it.
+            int minLen = s.n.type == MINOR && s.side == s.n.dir ? 12 : 0;
+            dealAt(deck, s, 5, minLen);
         }
         // Guard posts left over stand beside the major halls' mouths at the hub.
         for (Node m : new ArrayList<Node>(nodes)) {
@@ -726,18 +721,69 @@ final class ComplexGrower {
             if (postsLeft <= 0 || posts() >= 3) break;
             if (m.type == MAJOR && m.parent != 0 && guardPost(nodes.get(m.parent), m.dir, m)) postsLeft--;
         }
-        // Whatever is still queued squeezes in wherever a side has room, smaller.
-        for (int guard = 0; guard < 4000 && !queue.isEmpty() && roomCount() < target; guard++) {
+        // Whatever is still to deal squeezes in wherever a side has room, smaller; the deck deals the same way.
+        for (int guard = 0; guard < 4000 && !deck.empty() && roomCount() < target; guard++) {
             Site s = pick();
             if (s == null) {
                 for (Site x : sites) if (x.n.type == ROOM && x.n.depth < 4) x.done = false;
                 s = pickAny();
                 if (s == null) break;
             }
-            RoomKind k = queue.get(0);
-            int shrink = guard < 2000 ? 4 : 3;
-            if (place(s, k, scale(k.length) * shrink / 5, scale(k.depth) * shrink / 5) != null) queue.remove(0);
+            dealAt(deck, s, guard < 2000 ? 4 : 3, 0);
         }
+    }
+
+    /**
+     * Deals one room to a site (D307): the first card, in deck order, that {@link #place} can fit there within its
+     * kind's size limits. A card that does not fit leaves the site as it was for the next card; when none fits, the
+     * site
+     * is done.
+     *
+     * @param fifths the size to try, in fifths of the kind's scaled size (5 in the first pass, less in the squeeze)
+     * @param minLen the least length along the site's side (12 where a room caps a minor hallway's far end)
+     * @return the room, or null
+     */
+    private Node dealAt(RoomDeck deck, Site s, int fifths, int minLen) {
+        int cursor = s.cursor;
+        List<int[]> failed = new ArrayList<int[]>();
+        for (RoomKind k : deck.candidates()) {
+            int len = Math.max(scale(k.length) * fifths / 5, minLen), dep = scale(k.depth) * fifths / 5;
+            if (k.maxLateral > 0) len = Math.min(len, k.maxLateral);
+            if (k.maxDepth > 0) dep = Math.min(dep, k.maxDepth);
+            // A card no smaller than one that already failed here, with no larger floor, fails too: skip the search.
+            if (dominated(failed, len, dep, k)) continue;
+            s.cursor = cursor;
+            s.done = false;
+            Node r = place(s, k, len, dep);
+            if (r != null) {
+                // The slot goes to the first card, in deck order, that fits the room as placed: a card that missed
+                // this slot only by its scaled size still comes before a repeat.
+                RoomKind first = k;
+                for (RoomKind c : deck.candidates()) {
+                    if (c == k) break;
+                    if ((c == RoomKind.VEHICLE_BAY) == (k == RoomKind.VEHICLE_BAY)
+                        && c.fits(lateralOf(r), depthOf(r))) {
+                        first = c;
+                        break;
+                    }
+                }
+                r.kind = first;
+                deck.deal(first);
+                return r;
+            }
+            failed.add(new int[] { len, dep, Math.max(12, k.minLateral), Math.max(10, k.minDepth) });
+        }
+        s.done = true;
+        return null;
+    }
+
+    private static boolean dominated(List<int[]> failed, int len, int dep, RoomKind k) {
+        for (int[] f : failed) {
+            if (len >= f[0] && dep >= f[1] && Math.max(12, k.minLateral) >= f[2] && Math.max(10, k.minDepth) >= f[3]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Site pickAny() {
@@ -764,12 +810,12 @@ final class ComplexGrower {
             while (s.cursor < hi - need - 2) {
                 for (int t = 0; t < 4; t++) {
                     int w = len - t * len / 8, d = dep - t * dep / 8;
-                    if (w < 12 || d < 10) break;
+                    if (w < Math.max(12, k.minLateral) || d < Math.max(10, k.minDepth)) break;
                     // Never hang a room more than half off the hall's side.
                     int lat0 = Math.max(s.cursor, lo - w / 2);
                     if (Math.min(hi, lat0 + w) - Math.max(lo, lat0) - 3 < need) continue;
                     int[] b = clip(adjacent(p, s.side, lat0, w, d));
-                    if (b == null || !free(b[0], b[1], b[2], b[3])) continue;
+                    if (b == null || !fits(k, s.side, b) || !free(b[0], b[1], b[2], b[3])) continue;
                     Node r = attachRoom(p, s.side, k, b, dw);
                     if (r == null) continue;
                     s.cursor = lat0 + w;
@@ -782,16 +828,23 @@ final class ComplexGrower {
         }
         for (int t = 0; t < 10; t++) {
             int w = len - (t / 2) * len / 8, d = dep - (t / 2) * dep / 8;
-            if (w < 12 || d < 10) break;
+            if (w < Math.max(12, k.minLateral) || d < Math.max(10, k.minDepth)) break;
             int span = hi - lo;
             int lat0 = lo - w + need + 3 + rnd.nextInt(Math.max(1, span + w - 2 * need - 6));
             int[] b = clip(adjacent(p, s.side, lat0, w, d));
-            if (b == null || !free(b[0], b[1], b[2], b[3])) continue;
+            if (b == null || !fits(k, s.side, b) || !free(b[0], b[1], b[2], b[3])) continue;
             Node r = attachRoom(p, s.side, k, b, dw);
             if (r != null) return r;
         }
         s.done = true;
         return null;
+    }
+
+    /** @return whether a box on a parent's side (clipped to the complex) is a size the kind may stand at (D307) */
+    private static boolean fits(RoomKind k, int side, int[] b) {
+        int along = (side & 1) == 0 ? b[2] - b[0] : b[3] - b[1];
+        int out = (side & 1) == 0 ? b[3] - b[1] : b[2] - b[0];
+        return k.fits(along, out);
     }
 
     private static int doorWidth(RoomKind k, Node parent) {
@@ -898,9 +951,24 @@ final class ComplexGrower {
             : ((n.dir & 1) == 0 ? n.z1 - n.z0 : n.x1 - n.x0);
         int cap = lateralAxis ? Math.min(capLateral, n.kind.length * capPercent / 100)
             : Math.min(capDepth, n.kind.depth * capPercent / 100);
+        // A kind with a size cap (the showers) never grows past it, whatever the coverage asks (D307).
+        int max = lateralAxis ? n.kind.maxLateral : n.kind.maxDepth;
+        if (max > 0) cap = Math.min(cap, max);
+        // A deep kind (the range) keeps its door on a short wall: it never grows wider than it is deep.
+        if (lateralAxis && n.kind.length < n.kind.depth && along >= depthOf(n)) return false;
         // Rooms stay rooms, not corridors: neither side grows past twice the other.
         int other = (side & 1) == 0 ? n.x1 - n.x0 : n.z1 - n.z0;
         return along < cap && along < 2 * other;
+    }
+
+    /** @return a room's size along its door wall */
+    private static int lateralOf(Node n) {
+        return (n.dir & 1) == 0 ? n.x1 - n.x0 : n.z1 - n.z0;
+    }
+
+    /** @return a room's size away from its door wall */
+    private static int depthOf(Node n) {
+        return (n.dir & 1) == 0 ? n.z1 - n.z0 : n.x1 - n.x0;
     }
 
     private boolean growSide(Node n, int side) {

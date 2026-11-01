@@ -25,19 +25,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Grenades and rockets need explosive dust. Store it away from the line.",
+      "desc:8": "Grenade Launcher ammo is made in an MV Ammo Press: two aluminum plates, two TNT blocks and a gunpowder make eight 40mm grenades. Hold eight to finish this quest.\n\nExplosives want a separate room. Keep the TNT and gunpowder in a chest well away from the press, away from the furnace, and away from any creeper that could drift in.\n\n[warn]A chain explosion will empty your entire stockpile. Do not leave TNT lying next to the press.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:ammo_9mm_bullet"
+        "id:8": "gregguns:ammo_40mm_grenade"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Explosives Handling",
+      "name:8": "§6§lExplosives Handling",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -66,11 +66,106 @@
   },
   "questIDHigh:4": -7833593291424247331,
   "questIDLow:4": -6764881646376655048,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1703,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:cornbreadItem"
+        },
+        "2:10": {
+          "Count:3": 5,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_40mm_grenade"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:frag_grenade"
+        },
+        "2:10": {
+          "Count:3": 6,
+          "Damage:2": 17019,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 17019,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:tnt"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_40mm_grenade"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

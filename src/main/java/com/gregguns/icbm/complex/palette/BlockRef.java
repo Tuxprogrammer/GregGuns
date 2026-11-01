@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.gregguns.worldgen.layout.ChiselVariants;
+
 /**
  * A block named by registry id and meta, with a fallback chain: the first entry whose block exists wins, and the last
  * entry is always a vanilla block, so a chain always resolves. Pure: it holds strings only, and nothing resolves at
@@ -134,11 +136,16 @@ public final class BlockRef {
      */
     public Entry resolve(Lookup lookup) {
         for (Entry e : chain) {
-            if (lookup.has(e.modId, e.name)) {
+            if (lookup.has(e.modId, e.name) && chiselMetaOk(e)) {
                 return e;
             }
         }
         return chain.get(chain.size() - 1);
+    }
+
+    /** A Chisel block at a meta it defines no variation for draws the missing texture; skip it for the next link. */
+    private static boolean chiselMetaOk(Entry e) {
+        return !"chisel".equals(e.modId) || ChiselVariants.isValid(e.name, e.meta);
     }
 
     @Override

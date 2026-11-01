@@ -7,7 +7,7 @@
 
 - `size: 7 10 33` (x 7, y 10, z 33). Techguns declared 33 by 7 (WGEN-07, transposed); the data is 7 wide by 33 long. Use 7 by 33.
 - **Long axis:** north-south (z). Authored at rotation 0 with the **bow at high z** and the stern at low z. The front is the bow.
-- **Water placement:** the boat lies on the sea floor in open ocean. Layer 0 is the hull's lowest row and replaces the floor's top block (use `ground: 0`, so the boat rests in the sea-floor surface). Everything above the floor is water when generated; the generator checks that the columns under the footprint really are water (WGEN-08), so the layout does not place water. Interior rooms must be sealed with `air` so they stay dry.
+- **Water placement:** **amended by D291 (GregGuns): the boat floats.** The generator anchors it at the water surface like the Aircraft Carrier, so layer 0 replaces the top water block; see [structure-placement](../../../gregguns-spec/11-worldgen/structure-placement.md#what-changes-from-techguns). The original brief follows. The boat lies on the sea floor in open ocean. Layer 0 is the hull's lowest row and replaces the floor's top block (use `ground: 0`, so the boat rests in the sea-floor surface). Everything above the floor is water when generated; the generator checks that the columns under the footprint really are water (WGEN-08), so the layout does not place water. Interior rooms must be sealed with `air` so they stay dry.
 - **Entry:** the conning tower hatch on top. A swimmer climbs the tower ladder and opens the trapdoor to reach the upper deck. There is no other opening.
 
 ## Shape
@@ -45,12 +45,12 @@ None. No spawner, no camp flag, no NPCs.
 
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
-| Hull | `plating` | iron block | outer hull, fins, tower |
-| Aft band and trim | `factory_wall` | iron block | band, bulkheads |
-| Interior walls | `factory_floor` | double stone slab | lower deck walls |
-| Upper deck floor | `brick` | stone brick | grating floor |
+| Hull | `hull_dark` (dark steel) | stone brick | outer hull, fins, tower |
+| Aft band and trim | `factory_wall` | smooth stone slab | band, bulkheads |
+| Interior walls | `plating` | smooth stone slab | lower deck walls |
+| Upper deck floor | `factory_floor` (steel grate) | smooth stone slab | grating floor |
 | Hub block | `hazard` | yellow hardened clay | rudder hub |
-| Lamps | `lantern` | glowstone | interior |
+| Lamps | `lamp` | glowstone | interior |
 | Ladders | `minecraft:ladder@facing` | same | two |
 | Trapdoor | `minecraft:trapdoor@trapdoor` | same | tower top |
 | Doors | `minecraft:iron_door@door` | same | four |

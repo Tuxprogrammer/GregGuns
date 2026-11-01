@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Put the chip and a Red lens (Tier 2: Blue) in the Laser Engraver. The lens is not used up. Slot the finished Missile Schematic into the Galacticraft NASA Workbench to open the missile\u0027s page.",
+      "desc:8": "A Galacticraft NASA Workbench builds whatever its schematic tells it to. The Missile Schematic T1 opens the missile\u0027s own page, with slots in the shape of the missile.\n\nPut the chip and a red lens in the Laser Engraver at HV (30 seconds); the lens is not used up. Slot the finished schematic into the NASA Workbench and use the Next button to find the missile page. Check NEI for the lens.\n\n[note]Each missile tier has its own chip and schematic. A Tier 2 schematic never opens the Tier 1 page.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,10 +26,10 @@
         "id:8": "gregguns:missile_schematic_t1"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Engrave the Schematic",
+      "name:8": "§5§lEngrave the Schematic",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": 8276161777893466018,
   "questIDLow:4": -6333627611064242781,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sundayroastItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 6,
+          "Damage:2": 9,
+          "OreDict:8": "compressedSteel",
+          "id:8": "GalacticraftCore:item.basicItem"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk1"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +123,24 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:missile_chip_t1"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

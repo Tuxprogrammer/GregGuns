@@ -6,6 +6,7 @@ Every GregGuns texture, sound, logo and infographic is generated procedurally by
 |---|---|---|
 | `build_manifest.py` | the asset list, built from the spec and design records | `manifest.json`, [docs/assets/MANIFEST.md](../../docs/assets/MANIFEST.md) |
 | `icons.py` (uses `pixel.py`) | 16×16 item icons | `src/main/resources/assets/gregguns/textures/items/` |
+| `lootbag_icons.py` (uses `pixel.py`) | the 16×16 icons of the GregGuns loot bags (EnhancedLootBags groups 1701 to 1714): an ammo crate with a GT tier color band | `textures/items/lootbag/` |
 | `blocks.py` (uses `blocktex.py`, `machines.py`, `blockart.py`, `fx.py`) | block, machine-overlay, casing and particle textures, including animated strips with `.mcmeta` | `textures/blocks/`, `textures/particles/` |
 | `ctm.py` (uses `blockart.py`) | the 47-tile connected-texture sets and `.properties` files for the wall casings (Works, Gantry, Bastion), tile 0 equal to the base texture ([design record 0023](../../docs/design/0023-connected-casing-textures.md)) | `src/main/resources/assets/gregguns/mcpatcher/ctm/`, `credits/ctm.csv` |
 | `gui.py`, `models.py` (use `modeltex.py`) | GUI sprite sheets; armor, entity and model textures. UV rectangles are listed in `model_layouts.md` | `textures/gui/`, `textures/models/` |
@@ -21,6 +22,7 @@ Requirements: Python 3 with numpy and Pillow, and ffmpeg with libvorbis on `PATH
 
 ```sh
 python -I -X utf8 tools/asset-gen/icons.py
+python -I -X utf8 tools/asset-gen/lootbag_icons.py
 python -I -X utf8 tools/asset-gen/blocks.py
 python -I -X utf8 tools/asset-gen/gui.py
 python -I -X utf8 tools/asset-gen/models.py

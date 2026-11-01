@@ -86,19 +86,19 @@ Verdicts: **keep** (ours, already built from GT parts or has no pack equivalent)
 | 20 | `part_cybernetic` | Assembler EV: fine wire, EV circuits, polyethylene, redstone, soul sand | feed | **Bio Lab** (HV): `ItemList.PlasmaMembrane` ([L3206][itemlist-bio]), made by Centrifuging E. coli fluid ([L91-L98][centrifuge]) | The one part whose theme is biological. A Plasma Membrane input ties the Bio Lab chain into a second EV product |
 | 21 | `part_power_plating` | Assembler IV | keep | GT tungsten steel, epoxy (already) | Gun-specific |
 | 22 | `part_nuclear_warhead` | Assembly Line ZPM | keep | GT U-235, TNT (already) | Already pack-fed |
-| 23 | `part_heavy_cloth` | crafting grid from wool | keep | none verified | No pack cloth intermediate found at the tier; low value |
+| 23 | `part_heavy_cloth` | crafting grid from wool | **replaced** (2026-10-30) | Backpack `tannedLeather` | The owner chose the pack's Tanned Leather (Stone Age drying rack, LV Chemical Bath); Heavy Cloth is retired |
 | 24 | `part_laser_focus` | moves to Laser Engraver EV (0012) | keep | `laserEngraverRecipes` (0012) | Already moved by 0012 |
 | 25 | `part_anti_gravity_core` | moves to Assembler IV (0012) | keep | `assemblerRecipes` (0012) | Already moved by 0012 |
 | 26 | `part_gas_mask_filter` | Assembler MV | keep | `ActivatedCarbonFilterMesh` (already) | Already pack-fed |
-| 27 | `part_treated_leather` | Chemical Bath LV, sulfuric acid | keep | `Materials.SulfuricAcid` (already) | Already on a pack map |
+| 27 | `part_treated_leather` | Chemical Bath LV, sulfuric acid | **replaced** (D292, 2026-10-30) | Backpack `tannedLeather` | The Riot set takes the pack's Tanned Leather like every other set; Treated Leather is retired |
 | 28 | `part_steam_armor_plating` | Assembler EV | keep | GT plates (already) | Gun-specific |
 | 29 | `part_glider_backpack` | flight-gear Assembler | keep | not audited in depth | Flight gear is area 05; revisit with armor |
 | 30 | `part_glider_wing` | flight-gear Assembler HV | keep | not audited in depth | Same |
 | 31 | `tank_bio` | Assembler EV, `Cell_Empty`, titanium plate and ring, polyethylene | feed | Fluid: culture fluid from the **Bacterial Vat** (section 1). Body: [`Large_Fluid_Cell_Titanium`][lfc] | The ammo fluid is the main fix; the body can take the pack's large cell as one input |
 | 32 | `tank_fuel` | Assembler HV, `Cell_Empty`, stainless | feed | [`Large_Fluid_Cell_StainlessSteel`][lfc] | RC-52 already mirrors the Large Fluid Cell recipe; use the cell itself |
 | 33 | `tank_air` | Assembler HV, `Cell_Empty`, double plates | feed | `Large_Fluid_Cell_StainlessSteel` | Same; check capacity against 1,000 mB first |
-| 34 | `cell_nuclear` | Assembly Line ZPM | keep | GT U-235, Naquadah alloy (already) | Pack-fed; the deeper tie is item 35 |
-| 35 | `cell_nuclear_depleted` and RC-60 refuel | returned item, refuel with U-235 dust | feed | GT depleted rod items (`ItemList.DepletedRodUranium*`, [L1896-L1908][itemlist-rod]) via the pack's reactor and Centrifuge loop | Let the depleted cell return through the pack's own reprocessing instead of a private refuel step. Needs a spike; unverified |
+| 34 | `cell_nuclear` | Assembly Line ZPM | keep | GT U-235, Naquadah alloy (already) | Pack-fed; one cell goes into the Nuclear Death Ray's recipe (D293) |
+| 35 | `cell_nuclear_depleted` and RC-60 refuel | returned item, refuel with U-235 dust | **dropped** (D293, 2026-10-30) | GT depleted rod items (`ItemList.DepletedRodUranium*`, [L1896-L1908][itemlist-rod]) via the pack's reactor and Centrifuge loop | The depleted cell and its refill are retired: the cell is a recipe input of the Nuclear Death Ray, so nothing returns |
 | 36 | `bandages` | crafting LV | keep | none verified | No GT or Forestry bandage found |
 | 37 | `medkit` | Assembler MV | keep | `Materials.Ethanol` (already) | Already pack-fed |
 | F1 | Fluid: Biomass (Bio Tank) | `Materials.Biomass` | feed | Vat culture fluid (section 1); Biomass stays as the vat input | Main deliverable |

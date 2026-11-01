@@ -21,9 +21,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -90,7 +87,8 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 // Spec: docs/gregguns-icbm-spec/08-worldgen/activity-levels.md (Tests), loot-and-ceilings.md
 public final class ComplexLevelScenarios {
 
-    private static final int GROUND = 63;
+    /** The slab's ground height. */
+    static final int GROUND = 63;
     private static final long SEED = 0x51105L;
 
     private ComplexLevelScenarios() {}
@@ -99,13 +97,24 @@ public final class ComplexLevelScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Levels());
         registry.register(new Guards());
+        registry.register(new Armory());
         SalvageScenarios.registerAll(registry);
+        ChestLootScenarios.registerAll(registry);
+        RoomScenarios.registerAll(registry);
+        FurnitureFillScenarios.registerAll(registry);
+        PropFacingScenarios.registerAll(registry);
+        DoorLightScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
 
     /** The plan of the fixed test cell. */
     static StructurePlan plan(World world) {
+        return planAt(world, 3, 4);
+    }
+
+    /** @return the plan of a test cell, or null when the grid places none there */
+    static StructurePlan planAt(World world, int cellX, int cellZ) {
         StructureGrid g = new StructureGrid(
             64,
             64,
@@ -113,8 +122,8 @@ public final class ComplexLevelScenarios {
             Collections.singletonMap(
                 SizeClass.BIG,
                 Collections.singletonList(new PoolEntry(ComplexWriter.ID, 1, 1, new Footprint(240, 12, 240)))));
-        return g.planAt(SEED, world.provider.dimensionId, SizeClass.BIG, 3, 4)
-            .get();
+        return g.planAt(SEED, world.provider.dimensionId, SizeClass.BIG, cellX, cellZ)
+            .orElse(null);
     }
 
     static void load(World world, StructurePlan p) {
@@ -191,6 +200,131 @@ public final class ComplexLevelScenarios {
         return new int[] { rejected, PopulateGuard.violationCount() - before, busy, blocks, (int) total, (int) most };
     }
 
+    // --- the armory scenario ----------------------------------------------------------------------------------
+
+    /** Generates an operational complex and reads its armories back: display walls, frames, ammo chests. */
+    private static final class Armory implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.complex.armory";
+        }
+
+        @Override
+        public String description() {
+            return "Generates an operational complex and checks every armory: guns hang in item frames on short"
+                + " interior partitions of the room's wall block (open air above them, clear of the outer walls),"
+                + " none on the outer walls, and a chest stands right under each gun holding that gun's ammo.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            World world = ctx.world();
+            StructurePlan plan = plan(world);
+            SiloChests.register();
+            try {
+                load(world, plan);
+                slab(world, plan, false);
+                ComplexPlacer placer = placer().forceLevel(ActivityLevel.OPERATIONAL)
+                    .forceCeiling(SiloCeiling.EV);
+                int[] r = generate(world, plan, placer, "gregguns_complex_armory");
+                out.checkEquals("writes dropped outside a window", 0, r[0]);
+                read(out, world, plan, placer);
+            } finally {
+                slab(world, plan, true);
+            }
+            return out.build();
+        }
+
+        private void read(ScenarioResult.Builder out, World world, StructurePlan plan, ComplexPlacer placer) {
+            ComplexPlan cp = placer.rasterOf(plan)
+                .plan();
+            int ax = plan.anchorX(), az = plan.anchorZ(), floor = floor(world);
+            List<Placement> ps = ComplexContents.build(cp, ActivityLevel.OPERATIONAL, SiloCeiling.EV, null);
+            int armories = 0, guns = 0, wrongAmmo = 0, noChest = 0, noWall = 0, noGun = 0, tall = 0, outer = 0;
+            for (com.gregguns.icbm.complex.Room room : cp.rooms()) {
+                if (room.kind() != com.gregguns.icbm.complex.RoomKind.ARMORY) continue;
+                armories++;
+                com.gregguns.icbm.complex.Box b = room.bounds();
+                // No frame on the outer walls: every frame in the room hangs on a block that is not on the perimeter.
+                @SuppressWarnings("unchecked")
+                List<?> inRoom = world.getEntitiesWithinAABB(
+                    net.minecraft.entity.item.EntityItemFrame.class,
+                    AxisAlignedBB
+                        .getBoundingBox(ax + b.minX, floor, az + b.minZ, ax + b.maxX, floor + b.sizeY(), az + b.maxZ));
+                for (Object o : inRoom) {
+                    net.minecraft.entity.item.EntityItemFrame f = (net.minecraft.entity.item.EntityItemFrame) o;
+                    int[] dx = { 0, -1, 0, 1 }, dz = { 1, 0, -1, 0 };
+                    // The block it hangs on: one step behind the cell it floats in.
+                    int wx = (int) Math.floor(f.posX) - dx[f.hangingDirection] - ax,
+                        wz = (int) Math.floor(f.posZ) - dz[f.hangingDirection] - az;
+                    if (wx <= b.minX + 1 || wx >= b.maxX - 2 || wz <= b.minZ + 1 || wz >= b.maxZ - 2) outer++;
+                }
+                for (Placement p : ps) {
+                    if (p.kind() != Kind.FRAME_WALL || p.x() <= b.minX
+                        || p.x() >= b.maxX - 1
+                        || p.z() <= b.minZ
+                        || p.z() >= b.maxZ - 1) {
+                        continue;
+                    }
+                    guns++;
+                    int x = ax + p.x(), z = az + p.z(), y = floor + p.y();
+                    int bx = p.facing() == 1 ? 1 : p.facing() == 3 ? -1 : 0,
+                        bz = p.facing() == 0 ? -1 : p.facing() == 2 ? 1 : 0;
+                    if (w(world, x + bx, y, z + bz) == Blocks.air) noWall++;
+                    if (world.getBlock(x + bx, floor + 3, z + bz) != Blocks.air) tall++;
+                    @SuppressWarnings("unchecked")
+                    List<?> es = world.getEntitiesWithinAABB(
+                        net.minecraft.entity.item.EntityItemFrame.class,
+                        AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1));
+                    ItemStack gun = es.isEmpty() ? null
+                        : ((net.minecraft.entity.item.EntityItemFrame) es.get(0)).getDisplayedItem();
+                    if (gun == null) {
+                        noGun++;
+                        continue;
+                    }
+                    TileEntity t = world.getTileEntity(x, y - 1, z);
+                    if (!(t instanceof TileEntityChest)) {
+                        noChest++;
+                        continue;
+                    }
+                    String gunName = net.minecraft.item.Item.itemRegistry.getNameForObject(gun.getItem())
+                        .toString();
+                    List<String> allowed = ArmoryDisplay.itemsFor(gunName);
+                    boolean any = false;
+                    boolean energy = allowed.isEmpty(); // an energy gun's chest draws the armory table
+                    TileEntityChest chest = (TileEntityChest) t;
+                    for (int i = 0; i < chest.getSizeInventory(); i++) {
+                        ItemStack s = chest.getStackInSlot(i);
+                        if (s == null) continue;
+                        any = true;
+                        String n = net.minecraft.item.Item.itemRegistry.getNameForObject(s.getItem())
+                            .toString();
+                        if (!energy && !allowed.contains(n.substring(n.indexOf(':') + 1))) {
+                            if (wrongAmmo++ < 3)
+                                out.note("gun " + gunName + " chest holds " + n + ", allowed " + allowed);
+                        }
+                    }
+                    if (!any) noChest++;
+                }
+            }
+            out.note("armories " + armories + ", display guns " + guns);
+            out.check(armories > 0, "the complex has an armory");
+            out.check(guns >= 1, "each armory shows its guns: " + guns);
+            out.checkEquals("frames on an outer wall", 0, outer);
+            out.checkEquals("frames with no wall behind", 0, noWall);
+            out.checkEquals("partitions that reach the ceiling", 0, tall);
+            out.checkEquals("frames holding no gun", 0, noGun);
+            out.checkEquals("guns with no ammo chest under them", 0, noChest);
+            out.checkEquals("ammo stacks that do not fit the gun above", 0, wrongAmmo);
+        }
+
+        private static Block w(World world, int x, int y, int z) {
+            return world.getBlock(x, y, z);
+        }
+    }
+
     // --- the level scenario -----------------------------------------------------------------------------------
 
     /** The counts one level read back from the world. */
@@ -203,9 +337,10 @@ public final class ComplexLevelScenarios {
         int lightsPlaced;
         int lightMarks;
         int lightsLit;
-        /** Lowest block light on an open floor cell of any section (15 when nothing was read), and where. */
+        /** Lowest block light on an open floor cell of any section (15 when nothing was read). */
         int floorMinLight = 15;
-        String darkest = "";
+        /** Every open floor cell under light 8, as "light at section id (kind) local x,z", in section order. */
+        final List<String> darkCells = new ArrayList<>();
         int floodMarks;
         int floodWet;
         int collapses;
@@ -216,6 +351,8 @@ public final class ComplexLevelScenarios {
         int chestsEmpty;
         int overCeiling;
         int machinesWanted;
+        /** Machine placements that are not husks: the working machines a player could take (D284). */
+        int machinesWorking;
         int machinesRight;
         int machinesSkipped;
         int casings;
@@ -260,7 +397,9 @@ public final class ComplexLevelScenarios {
                     slab(world, plan, false);
                     ComplexPlacer placer = placer().forceLevel(level)
                         .forceCeiling(ceiling);
+                    long fixturesBefore = FixtureWriter.spentNanos();
                     int[] r = generate(world, plan, placer, "gregguns_complex_levels");
+                    long fixturesMs = (FixtureWriter.spentNanos() - fixturesBefore) / 1_000_000L;
                     out.checkEquals(tag + ": writes dropped outside a window", 0, r[0]);
                     out.checkEquals(tag + ": PopulateGuard violations", 0, r[1]);
                     if (r[2] > 0) {
@@ -268,13 +407,14 @@ public final class ComplexLevelScenarios {
                             String.format(
                                 java.util.Locale.ROOT,
                                 "%s cost with contents: %d windows, %d blocks, %.1f ms mean and %.1f ms most per"
-                                    + " window, %.0f ms in all",
+                                    + " window, %.0f ms in all (blast doors and service runs %d ms)",
                                 tag,
                                 r[2],
                                 r[3],
                                 r[4] / 1000.0 / r[2],
                                 r[5] / 1000.0,
-                                r[4] / 1000.0));
+                                r[4] / 1000.0,
+                                fixturesMs));
                     }
                     Tally t = read(out, tag, world, plan, placer, level, ceiling);
                     tallies.put(tag, t);
@@ -303,6 +443,8 @@ public final class ComplexLevelScenarios {
                             + t.floodMarks
                             + ", chests "
                             + t.chests
+                            + ", working machines "
+                            + t.machinesWorking
                             + ", machines "
                             + t.machinesRight
                             + "/"
@@ -328,7 +470,18 @@ public final class ComplexLevelScenarios {
             if (ab == null || pa == null || op == null) {
                 return;
             }
-            out.checkEquals("abandoned spawners", 0, ab.spawners);
+            out.check(ab.spawners > 0, "an abandoned complex still holds some spawners (D326): " + ab.spawners);
+            out.checkEquals("abandoned elite spawners", 0, ab.elite);
+            out.check(
+                ab.machinesWorking * 4 <= op.machinesWorking && ab.chests <= op.chests,
+                "an abandoned complex has far fewer working machines (D284) and no more chests (D315): machines "
+                    + ab.machinesWorking
+                    + " vs "
+                    + op.machinesWorking
+                    + ", chests "
+                    + ab.chests
+                    + " vs "
+                    + op.chests);
             out.check(pa.spawners > 0, "a partly abandoned complex has some guards");
             out.check(
                 op.spawners > pa.spawners,
@@ -343,13 +496,46 @@ public final class ComplexLevelScenarios {
                 "an abandoned complex is dark: " + ab.lightsLit + "/" + ab.lightMarks);
             out.checkEquals("operational lights lit", op.lightMarks, op.lightsLit);
             out.check(
-                op.floorMinLight >= 8,
+                op.darkCells.isEmpty(),
                 "an operational complex reads block light 8 or more on every open floor cell of every hall and room: "
+                    + op.darkCells.size()
+                    + " dark (lowest "
                     + op.floorMinLight
-                    + " at "
-                    + op.darkest);
+                    + ")"
+                    + (op.darkCells.isEmpty() ? ""
+                        : ": " + String.join("; ", op.darkCells.subList(0, Math.min(12, op.darkCells.size())))
+                            + (op.darkCells.size() > 12 ? "; ..." : "")));
             out.check(ab.floodMarks > 0 ? ab.floodWet == ab.floodMarks : true, "abandoned pump room is flooded");
             out.checkEquals("operational flooding", 0, op.floodWet);
+        }
+
+        /**
+         * The hub's "Silo Complex / Class X" sign and, one under it, "Activity Level:" over the level's code name
+         * (D301), read from the world.
+         */
+        private void hallSigns(ScenarioResult.Builder out, String tag, World world,
+            com.gregguns.icbm.complex.ComplexRaster raster, int ax, int floor, int az, ActivityLevel level,
+            int ceiling) {
+            com.gregguns.icbm.complex.Mark hall = com.gregguns.icbm.complex.gen.ComplexSigns.hallSign(raster.plan());
+            int[] at = hall == null ? null : com.gregguns.icbm.complex.gen.ComplexSigns.resolve(raster, hall);
+            out.check(at != null, tag + ": the hub has its tier sign");
+            if (at == null) return;
+            net.minecraft.tileentity.TileEntity t = world.getTileEntity(ax + at[0], floor + at[1], az + at[2]);
+            out.check(
+                t instanceof net.minecraft.tileentity.TileEntitySign
+                    && "Silo Complex".equals(((net.minecraft.tileentity.TileEntitySign) t).signText[0])
+                    && ("Class " + SiloCeiling.name(ceiling))
+                        .equals(((net.minecraft.tileentity.TileEntitySign) t).signText[1]),
+                tag + ": the tier sign reads Silo Complex, Class " + SiloCeiling.name(ceiling));
+            String want = level == ActivityLevel.ABANDONED ? "Alpha"
+                : level == ActivityLevel.PARTLY_ABANDONED ? "Bravo" : "Charlie";
+            net.minecraft.tileentity.TileEntity a = world.getTileEntity(ax + at[0], floor + at[1] - 1, az + at[2]);
+            out.check(
+                a instanceof net.minecraft.tileentity.TileEntitySign
+                    && world.getBlockMetadata(ax + at[0], floor + at[1] - 1, az + at[2]) == at[3]
+                    && "Activity Level:".equals(((net.minecraft.tileentity.TileEntitySign) a).signText[0])
+                    && want.equals(((net.minecraft.tileentity.TileEntitySign) a).signText[1]),
+                tag + ": the sign under it reads Activity Level: " + want);
         }
 
         private Tally read(ScenarioResult.Builder out, String tag, World world, StructurePlan plan,
@@ -358,6 +544,7 @@ public final class ComplexLevelScenarios {
             ComplexPlan cp = placer.rasterOf(plan)
                 .plan();
             int ax = plan.anchorX(), az = plan.anchorZ(), floor = floor(world);
+            hallSigns(out, tag, world, placer.rasterOf(plan), ax, floor, az, level, ceiling);
             int[] other = { plan.anchorX() + 64 * 16, plan.anchorZ() };
             List<Placement> placements = ComplexContents.build(cp, level, ceiling, other);
             // Last writer wins per cell; collapses are boxes, tallied on their own.
@@ -366,8 +553,27 @@ public final class ComplexLevelScenarios {
             for (Placement p : placements) {
                 if (p.kind() == Kind.COLLAPSE) {
                     collapses.add(p);
-                } else {
+                } else if (p.kind() != Kind.STOCK) { // a piece's stock shares its cell (D323)
                     last.put(key(p.x(), p.y(), p.z()), p);
+                }
+            }
+            // The magazine's casing racks are furniture (CASING_FRAME pieces, D308): GT frame boxes, never a warhead
+            // block (D17); a collapsed or worn rack counts only where its frame still stands.
+            ItemStack casing = ComplexApplier.casingFrame();
+            if (casing != null) {
+                Block cf = Block.getBlockFromItem(casing.getItem());
+                for (com.gregguns.icbm.complex.Room room : cp.rooms()) {
+                    if (room.kind() != com.gregguns.icbm.complex.RoomKind.WARHEAD_MAGAZINE) continue;
+                    for (com.gregguns.icbm.complex.Mark m : room.marks()) {
+                        if (m.kind() != com.gregguns.icbm.complex.MarkKind.FURNITURE
+                            || com.gregguns.icbm.complex.FurniturePiece.of(m.key())
+                                != com.gregguns.icbm.complex.FurniturePiece.CASING_FRAME)
+                            continue;
+                        int x = ax + m.x(), y = floor + m.y(), z = az + m.z();
+                        Block b = world.getBlock(x, y, z);
+                        if (b == cf && world.getBlockMetadata(x, y, z) == casing.getItemDamage()
+                            && !(b instanceof BlockWarhead)) t.casings++;
+                    }
                 }
             }
             SpawnerCheck spawners = new SpawnerCheck();
@@ -452,7 +658,70 @@ public final class ComplexLevelScenarios {
             out.check(
                 spawners.totalIn(world, ax, az, floor) == t.spawners,
                 tag + ": spawner blocks in the world equal the placements: " + spawners.last + " vs " + t.spawners);
+            spawnerSpread(out, tag, world, cp, ax, floor, az, level, t);
             return t;
+        }
+
+        /**
+         * D326: counts the marked spawner blocks standing in each room (the hub included) of the generated complex and
+         * checks the spread: no room holds more than two, a staffed complex has one in every room that offers a spot,
+         * a ruin has them in a minority, and the rooms with spawners reach beyond the first ring around the hub.
+         */
+        private void spawnerSpread(ScenarioResult.Builder out, String tag, World world, ComplexPlan cp, int ax,
+            int floor, int az, ActivityLevel level, Tally t) {
+            List<com.gregguns.icbm.complex.Room> rooms = new ArrayList<>(cp.rooms());
+            rooms.add(cp.hall());
+            int[] hist = new int[3];
+            int tooMany = 0, far = 0, staffedBare = 0;
+            com.gregguns.icbm.complex.Box hub = cp.hall()
+                .bounds();
+            for (com.gregguns.icbm.complex.Room r : rooms) {
+                com.gregguns.icbm.complex.Box b = r.bounds();
+                int n = 0;
+                for (int x = b.minX; x < b.maxX; x++) {
+                    for (int z = b.minZ; z < b.maxZ; z++) {
+                        if (world.getBlock(ax + x, floor + 1, az + z) != Blocks.mob_spawner) continue;
+                        NBTTagCompound st = VanillaSpawners.read(world.getTileEntity(ax + x, floor + 1, az + z));
+                        if (st != null && SpawnerNbt.isMarked(st)) n++;
+                    }
+                }
+                if (n > 2) {
+                    tooMany++;
+                }
+                hist[Math.min(n, 2)]++;
+                int dist = Math.abs(b.centerX() - hub.centerX()) + Math.abs(b.centerZ() - hub.centerZ());
+                if (n > 0 && dist >= 60) {
+                    far++;
+                }
+                boolean offers = false;
+                for (com.gregguns.icbm.complex.Mark m : r.marks()) {
+                    offers |= m.kind() == com.gregguns.icbm.complex.MarkKind.SPAWNER;
+                }
+                if (level == ActivityLevel.OPERATIONAL && n == 0 && offers) {
+                    staffedBare++;
+                }
+            }
+            out.note(
+                tag + ": "
+                    + rooms.size()
+                    + " rooms with 0/1/2 spawners "
+                    + hist[0]
+                    + "/"
+                    + hist[1]
+                    + "/"
+                    + hist[2]
+                    + ", "
+                    + far
+                    + " with spawners 60 or more cells from the hub");
+            out.checkEquals(tag + ": rooms holding more than two spawners", 0, tooMany);
+            out.checkEquals(tag + ": staffed rooms with a spot and no spawner", 0, staffedBare);
+            out.checkEquals(tag + ": every placed spawner stands inside a room", t.spawners, hist[1] + 2 * hist[2]);
+            if (level != ActivityLevel.ABANDONED) {
+                out.check(far > 0, tag + ": the outer rooms hold spawners, not only the middle");
+            }
+            if (level == ActivityLevel.ABANDONED) {
+                out.check(hist[0] > hist[1] + hist[2], tag + ": most rooms of a ruin hold none");
+            }
         }
 
         /** @return how many warhead block items an inventory holds (D17 allows none in a complex) */
@@ -515,16 +784,20 @@ public final class ComplexLevelScenarios {
         }
 
         private static String id(ItemStack s) {
-            return net.minecraft.item.Item.itemRegistry.getNameForObject(s.getItem()) + "@" + s.getItemDamage();
+            return SiloChests.itemId(s);
         }
 
         /** @return stacks in the chest that are neither on the chest's table at the ceiling nor one of its bonuses */
         private static int outsideTable(IInventory inv, Placement p, int ceiling) {
             Set<String> allowed = new HashSet<>();
-            for (SiloLootTables.Line l : SiloLootTables.lines(p.key(), ceiling)) {
-                ItemStack s = LootCategories.stack(l.ref(), 1);
-                if (s != null) allowed.add(id(s));
+            if (com.gregguns.icbm.complex.LootKeys.ARMORY_AMMO.equals(p.key())) {
+                // An armory display chest holds its gun's ammo (checked by icbm.complex.armory), else the armory table.
+                for (String item : ArmoryDisplay.everyItem()) {
+                    ItemStack s = LootCategories.stack("gregguns:" + item, 1);
+                    if (s != null) allowed.add(id(s));
+                }
             }
+            allowed.addAll(SiloChests.allowedIds(p.key(), ceiling)); // lines, junk, spoil (D317)
             for (Placement.Bonus b : p.bonuses()) {
                 ItemStack s = SiloBonusItems.stack(b, p);
                 if (s != null) allowed.add(id(s));
@@ -574,25 +847,46 @@ public final class ComplexLevelScenarios {
                 }
             }
             // Every open floor cell of every section: the lamp grid keeps it at 8 or more when lit (D217, D230).
+            // Every dark cell is listed, so one fix never hides another. A sunk pool's water is no floor (D321).
+            java.util.Set<Long> pool = new java.util.HashSet<>();
+            for (Mark m : all) {
+                if (m.kind() == MarkKind.FURNITURE && m.y() == 0
+                    && com.gregguns.icbm.complex.FurniturePiece.of(m.key())
+                        == com.gregguns.icbm.complex.FurniturePiece.POOL_WATER) {
+                    pool.add(((long) m.x() << 32) ^ (m.z() & 0xffffffffL));
+                }
+            }
             for (int id = 0; id < cp.sectionCount(); id++) {
                 com.gregguns.icbm.complex.Box b = cp.sectionBox(id);
                 for (int x = b.minX + 1; x <= b.maxX - 2; x++) {
                     for (int z = b.minZ + 1; z <= b.maxZ - 2; z++) {
                         if (!world.isAirBlock(ax + x, floor + 1, az + z)) continue;
+                        if (pool.contains(((long) x << 32) ^ (z & 0xffffffffL))) continue;
                         int l = world
                             .getSavedLightValue(net.minecraft.world.EnumSkyBlock.Block, ax + x, floor + 1, az + z);
-                        if (l < t.floorMinLight) {
-                            t.floorMinLight = l;
-                            t.darkest = "section " + id + " local " + x + "," + z;
+                        t.floorMinLight = Math.min(t.floorMinLight, l);
+                        if (l < 8) {
+                            t.darkCells
+                                .add(l + " at section " + id + " (" + sectionName(cp, id) + ") local " + x + "," + z);
                         }
                     }
                 }
             }
         }
 
+        /** @return a section's kind for a report: the hub, a room's kind, or a major hall or minor hallway */
+        private static String sectionName(ComplexPlan cp, int id) {
+            Object o = cp.section(id);
+            if (o == cp.hall()) return "hub";
+            if (o instanceof com.gregguns.icbm.complex.Room) return ((com.gregguns.icbm.complex.Room) o).kind()
+                .name();
+            return ((com.gregguns.icbm.complex.Tunnel) o).major() ? "major hall" : "minor hallway";
+        }
+
         private void machine(Tally t, World world, Placement p, int x, int y, int z) {
             MachineRole role = p.role();
             t.machinesWanted++;
+            if (!p.dead()) t.machinesWorking++;
             Block b = world.getBlock(x, y, z);
             TileEntity te = world.getTileEntity(x, y, z);
             if (role == MachineRole.MAGAZINE_CASING) {
@@ -632,7 +926,7 @@ public final class ComplexLevelScenarios {
                     .getItemDamage();
                 tier = 0;
             } else {
-                MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead());
+                MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead(), p.variant());
                 if (pick == null) {
                     t.machinesSkipped++;
                     return;
@@ -982,7 +1276,7 @@ public final class ComplexLevelScenarios {
             FakePlayer p = new FakePlayer(
                 (WorldServer) ctx.world(),
                 new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
-            new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+            com.gregguns.core.testing.QuietConnection.attach(p);
             p.getEntityAttribute(SharedMonsterAttributes.maxHealth)
                 .setBaseValue(1000.0);
             p.setHealth(1000.0F);

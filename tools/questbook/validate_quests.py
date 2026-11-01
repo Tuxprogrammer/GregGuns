@@ -1,10 +1,13 @@
 """Validate a BetterQuesting quest folder: a pack DefaultQuests folder, or the in-jar questbook resource root.
 
-usage: python -I tools/questbook/validate_quests.py <dir> [--only GregGuns-] [--registry registry.txt] [--entities entities.txt]
+usage: python -I tools/questbook/validate_quests.py <dir> [--only GregGuns-] [--registry registry.txt] [--entities entities.txt] [--data tools/questbook/quests]
 
 registry.txt: one item registry name per line (modid:name).
 entities.txt: one EntityList string name per line.
 --only: report only errors whose message contains this text (the shipped pack has older findings of its own).
+--data: the GregGuns quest data folder; runs build_quests' data checks and checks that <dir> holds exactly the
+quests the data names (uuid5 of each key), that no retired key is still shipped, and that index.json lists exactly
+the retired ids, so stale resources fail.
 Checks: file names match ids, prerequisites exist, no cycles, line entries point at quests, no overlapping boxes,
 QuestLinesOrder.txt entries exist (when the file is present), index.json lists exactly the files on disk (when
 present), and optionally registry and entity names. Exit code 1 if any check fails. Python 3, standard library only.
@@ -27,7 +30,31 @@ def load(path):
         return json.load(fh)
 
 
-def main(root, registry=None, entities=None, only=None):
+def data_errors(folder, quests, root):
+    """The build's data checks, plus: the quest ids on disk are exactly uuid5 of the data's keys."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # -I leaves the script's folder off sys.path
+    import build_quests
+    import uuid
+    data = build_quests.load_data(folder)
+    problems, _ = build_quests.check(data)
+    errors = ['data: ' + p for p in problems]
+    ns = uuid.UUID(data['namespace'])
+    expected = {build_quests.qid(ns, q['key'])[:2]: q['key'] for q in data['quests']}
+    for k in sorted(v for i, v in expected.items() if i not in quests):
+        errors.append('stale resources: no quest file for %s' % k)
+    for i in sorted(set(quests) - set(expected)):
+        errors.append('stale resources: quest file not in the data: %s' % os.path.basename(quests[i][0]))
+    index_path = os.path.join(root, 'index.json')
+    if os.path.exists(index_path):
+        listed = set(load(index_path).get('retired', []))
+        wanted = {str(uuid.uuid5(ns, k)) for k in data.get('retired', [])}
+        if listed != wanted:
+            errors.append('stale resources: index.json "retired" differs from the data (%d listed, %d retired keys)'
+                          % (len(listed), len(wanted)))
+    return errors
+
+
+def main(root, registry=None, entities=None, only=None, data=None):
     errors = []
     quests = {}
 
@@ -111,6 +138,8 @@ def main(root, registry=None, entities=None, only=None):
                 for t in d.get('tasks:9', {}).values():
                     if t.get('taskID:8') == 'bq_standard:hunt' and t['target:8'] not in ents:
                         errors.append('%s: unknown entity %s' % (rel(path), t['target:8']))
+    if data:
+        errors += data_errors(data, quests, root)
     if only:
         errors = [e for e in errors if only in e]
     print('quests %d, lines %d, errors %d' % (len(quests), len(lines), len(errors)))
@@ -127,4 +156,5 @@ if __name__ == '__main__':
     if '--entities' in args:
         ents = args[args.index('--entities') + 1]
     only = args[args.index('--only') + 1] if '--only' in args else None
-    sys.exit(main(args[0], reg, ents, only))
+    data = args[args.index('--data') + 1] if '--data' in args else None
+    sys.exit(main(args[0], reg, ents, only, data))

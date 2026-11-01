@@ -1,0 +1,882 @@
+{
+  "chapter": "gear",
+  "quests": [
+    {
+      "key": "gg.gear.intro",
+      "title": "Equipment Slots",
+      "tier": "LV",
+      "desc": [
+        "Armor and gear sit in two places. Armor goes in the four armor slots, and so does the Gas Mask, because GregTech's hazard checks only read those slots. Galacticraft's oxygen gear uses Galacticraft's own slots. Everything else, goggles, back devices and the ammo pouch, goes in Baubles slots: head for goggles, wings for packs and gliders, quiver for the ammo pouch.",
+        "Pick up any starter chestplate to begin: Steam, Bandit (Scout) or Soldier's (T1 Combat). The Steam set is crafted by hand from bronze plates and Tanned Leather, and the T1 Combat set is built in an assembler. Check NEI for the exact pieces.",
+        "[note]Wear every piece of a set for its full bonus. Items in Baubles slots drop when you die unless you keep your inventory.[/note]"
+      ],
+      "pre": [
+        "gg.lv.intro",
+        88
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:steam_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t1_scout_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t1_combat_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hamburgerItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305,
+              "ore": "plateSteel"
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1138,
+      "y": 382,
+      "size": 28,
+      "main": true,
+      "icon": {
+        "id": "gregguns:gas_mask",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.lv.intro"
+      ]
+    },
+    {
+      "key": "gg.gear.medkit",
+      "title": "Medkit",
+      "tier": "MV",
+      "desc": [
+        "The Medkit is the best healing item you can carry before the endgame. Use it below full health and, after 50 ticks of use, it heals you 6 health and gives Regeneration II for 20 seconds.",
+        "It is built in an MV assembler from two aluminum plates, four Bandages, a Redstone dust and 250 mB of ethanol. Bandages are the LV version of the same idea: a steel ring, three string and a slimeball make two. Check NEI."
+      ],
+      "pre": [
+        "gg.gear.intro",
+        1148
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:redstone",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:medkit",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:toastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1176,
+      "y": 312,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:medkit",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.gear.gas_mask",
+      "title": "Gas Mask",
+      "tier": "MV",
+      "desc": [
+        "The Gas Mask is a helmet-slot item that fully protects you from GregTech's gas hazard (the pollution effects of a polluted area) by itself, and it also cures poison and wither while its filter lasts. It must go in the helmet slot, not a Baubles slot, because GregTech only checks armor slots.",
+        "Build it in an MV assembler from five rubber plates, two glass panes, an aluminum plate and a Gas Mask Filter. When the filter runs out, combine the mask with a fresh filter in a crafting grid to refill it.",
+        "[note]Gas is the hazard it stops. For radiation or heat you need a full armor set.[/note]"
+      ],
+      "pre": [
+        "gg.gear.intro",
+        1148,
+        1888
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 5,
+              "damage": 17880
+            },
+            {
+              "id": "minecraft:glass_pane",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:part_gas_mask_filter",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:gas_mask",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hamburgerItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_gas_mask_filter",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1176,
+      "y": 348,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:gas_mask",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.gear.hazards",
+      "title": "Know Your Hazards",
+      "tier": "MV",
+      "desc": [
+        "GregTech tracks hazards such as gas, radiation, heat, frost and electricity, and each protective item lists the ones it covers in its tooltip. Check the tooltip before you walk into a reactor hall.",
+        "A full set protects when every piece does. T2 Commando armor covers electricity, Ranger Veteran armor covers radiation from its lead plating, and the Steam set covers heat. Bring one piece of any of these sets to practice reading its tooltip.",
+        "[warn]One piece is not protection. Wear all four.[/warn]"
+      ],
+      "pre": [
+        "gg.gear.gas_mask"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t2_commando_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t2_riot_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:steam_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hotdogItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1212,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:t2_riot_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.gear.nvg",
+      "title": "Night Vision Goggles",
+      "tier": "MV",
+      "desc": [
+        "Night Vision Goggles go in the head Baubles slot, not the helmet slot, so you can wear them under a gas mask. They are electric, so charge them before you use them: they come out of the assembler empty.",
+        "They are built in an MV assembler from rubber plates, Tanned Leather, circuits, an MV Sensor, glass and an aluminum plate. Check NEI for the exact list."
+      ],
+      "pre": [
+        "gg.gear.intro",
+        1148
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "minecraft:glass",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:night_vision_goggles",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefjerkyItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1176,
+      "y": 384,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:night_vision_goggles",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.gear.pouch",
+      "title": "Ammo Pouch",
+      "tier": "MV",
+      "desc": [
+        "The Ammo Pouch lives in the quiver Baubles slot and holds six stacks of ammunition with its own screen. When you reload, your guns look in the pouch before the rest of your inventory, so you stop digging through your bag in a fight.",
+        "It is a cheap MV assembler recipe: three Tanned Leather, two leather and an aluminum plate."
+      ],
+      "pre": [
+        "gg.gear.nvg"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:leather",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_pouch",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:trailmixItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            }
+          ]
+        }
+      ],
+      "x": 1212,
+      "y": 384,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:ammo_pouch",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.gear.oxygen",
+      "title": "Oxygen Mask and Tanks",
+      "tier": "HV",
+      "desc": [
+        "For space and for bad air you need Galacticraft's oxygen gear. The Oxygen Mask goes in the mask slot and the Oxygen Tanks in the tank slots, because Galacticraft reads its own slots.",
+        "The Mask takes two plastic plates, two rubber plates and a stainless steel plate. The Tanks take four plastic plates, two Compressed Air Tanks and two stainless plates, and when they run dry, combine them with a Compressed Air Tank in a crafting grid to refill them. Check NEI."
+      ],
+      "pre": [
+        "gg.gear.intro",
+        160,
+        822,
+        824
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17874
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17880
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregguns:tank_air",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:oxygen_mask",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:oxygen_tanks",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregguns:tank_air",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1176,
+      "y": 420,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:oxygen_mask",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.gear.jump_pack",
+      "title": "Jump Pack",
+      "tier": "HV",
+      "desc": [
+        "The Jump Pack is an electric back device for the wings slot. Each jump spends charge and gives you a boost, and it absorbs falls longer than three blocks, up to eight blocks for free, while it has charge. Only one back device fits the wings slot at a time.",
+        "Build it in an HV assembler: stainless steel plates and screws, a Glider Backpack, two Compressed Air Tanks, an Electric Piston and an HV circuit. Charge it in a GT charger before you leave."
+      ],
+      "pre": [
+        "gg.gear.intro",
+        160
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregguns:tank_air",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:jump_pack",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregguns:tank_air",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1176,
+      "y": 456,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:jump_pack",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.gear.glider",
+      "title": "Glider",
+      "tier": "HV",
+      "desc": [
+        "The Glider lets you glide down from heights with no energy at all. It also goes in the wings slot, so choose between it and the Jump Pack.",
+        "It is assembled from a Glider Backpack and two Glider Wings, which come from Tanned Leather and stainless steel. Check NEI for the exact recipe."
+      ],
+      "pre": [
+        "gg.gear.jump_pack"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 19,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:glider",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1212,
+      "y": 456,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:glider",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    }
+  ]
+}

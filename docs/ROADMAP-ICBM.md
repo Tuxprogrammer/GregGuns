@@ -9,7 +9,7 @@ GregGuns' own final polish stays on [ROADMAP.md](ROADMAP.md) (M9). The handoff c
 - **Milestones I0–I7** are delivered in order, with an entry gate and an exit gate each, as on the main roadmap. The universal [definition of done](../CONTRIBUTING.md#definition-of-done) applies to every change.
 - **Spec first.** Each milestone's first task writes or finishes its GregGuns-side sheets in [gregguns-icbm-spec](gregguns-icbm-spec/README.md), following the [GregGuns spec conventions](gregguns-spec/CONVENTIONS.md). Builders work from those sheets and the ICBM baseline, never from the ICBM source, except for `MIT-portable` sections (D2).
 - **Two gates involve the owner:** the alpha gate (one review) and the beta gate (playthrough and feedback). Everything between them is autonomous.
-- **The module stays off by default** (`modules.icbm=false`) until the beta gate, so GregGuns `0.3.x-beta` fixes keep shipping from master.
+- **The module defaults to on** (`modules.icbm=true`) from the beta checkpoint (I7). Until then it was off, so GregGuns `0.3.x-beta` fixes kept shipping from master. Without Galacticraft it turns itself off (D9, D46).
 
 ```
 I0 Foundation ──► I1 Warheads & blast engine ──► I2 Missiles & the GC pad (T1–T2)
@@ -51,7 +51,7 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
 
 These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone checks against them.
 
-- **Cost:** an automatable arsenal. A missile costs about one of its tier's Galacticraft rocket launches in plates, circuits and fuel, and is Assembly Line-automatable. The warhead is the expensive part, and cost rises steeply by tier.
+- **Cost:** an automatable arsenal. A missile costs about one of its tier's Galacticraft rocket launches in plates, circuits and fuel, and is automatable in GT machines (the Assembler below LuV, the Assembly Line from LuV, D281). The warhead is the expensive part, and cost rises steeply by tier.
 - **Conventional center damage, at least:** T1 (HV) 1,200; T2 (EV–IV) 3,000; T3 (LuV) 8,000. Damage falls off to zero at the blast edge.
 - **Nuclear (ZPM), antimatter (UV) and red matter (UHV):** every living entity in the kill zone dies, bosses included. Players are subject only to server damage settings.
 - **Tiers** (D5): T1 HV; T2 EV–IV; T3 LuV–ZPM, with nuclear at ZPM; antimatter at UV; red matter at UHV.
@@ -92,7 +92,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Player guide sheets:** 13 stand-alone infographics in `docs/assets/infographics/`, built by [tools/asset-gen/infographics](../tools/asset-gen/infographics/README.md) from real renders of our models and GT textures. The tooling was written on Windows: it drives Edge through Playwright, and its docs use `cygpath`. On the Linux host it needs Playwright's own Chromium and plain paths.
 - **The renderer** (`render3d.py`) draws 1.7.10 box models and voxel scenes only. The ICBM models are meshes ([D43](gregguns-icbm-spec/DECISIONS.md)), so it needs a triangle-mesh path that reads the same OBJ files the game loads.
 - **Preview sheets** in `docs/assets/previews/` (models, icons, blocks, GUIs, particles) for reviewing new art before it reaches a guide.
-- **The quest line,** built by [tools/questbook](../tools/questbook/README.md) from `quests.json` with stable keys and installed from the jar.
+- **The quest line,** built by [tools/questbook](../tools/questbook/README.md) from `quests/` with stable keys and installed from the jar.
 - **Screenshots** from the batched client sessions.
 
 **Rules,** on top of the [infographic writing rules](../tools/asset-gen/infographics/README.md#writing-rules) (player language; no IDs, specs or repo links; the mod described as finished; strong contrast on every element; GT textures credited):
@@ -115,6 +115,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 | `icbm-silos` | Abandoned silos as dungeons: activity levels, guards, and the loot to expect on each planet | I6 |
 | `icbm-recipes` | The ICBM crafting chains, read from the recipe export | I7 |
 | `icbm-hero` | The module at a glance, for the README and for posting | I7 |
+| `icbm-computer-control` | The OpenComputers hookups of every ICBM machine and the Golden Dome floppy with its programs | I7 |
 
 **Owner check-ins** (not a gate): when new visuals land on master, the orchestrator tells the owner that day what is new and where to look. Every ICBM visual is collected, newest first, in the local gallery page `docs/icbm-visuals.html`, which links the local previews and the committed guide sheets. The page and the previews are git-ignored (D50), and nothing is hosted unless the owner asks. The owner's notes, if any, join the next milestone's fix list, and the build doesn't wait for them. The alpha review covers all visuals formally.
 
@@ -185,7 +186,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Getting a missile body:**
   - a missile chip in the Circuit Assembler, then a schematic in the Laser Engraver (D8);
   - our NASA Workbench page for building by hand;
-  - Assembly Line recipes, behind a research data stick, for automation (D27).
+  - Machine recipes for automation (D27): the Assembler below LuV, the Assembly Line behind a research data stick from LuV (D281).
 - **The stack-on-pad build** (0018 §8): place the body on the Galacticraft pad and the warhead on its nose; arming fuses the stack into the missile entity. The body is a full-height 3D missile model on its fins, the warhead seats onto it, and the flying entity uses the same model ([D31](gregguns-icbm-spec/DECISIONS.md#d31-in-detail)).
 - **Fuel** keyed to tier through Galacticraft's `RocketFuels` lists and fuel loader (D19). A fixed amount per tier, and unburned fuel adds to the blast (D20).
 - **A launch-control block beside the pad.** Targeting by coordinates, data stick, ModularUI2 GUI, redstone or the GT machine-controller cover (D13).
@@ -201,7 +202,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** previews of the missile bodies, the stacked missile and the launch-control GUI; the `icbm-first-missile` sheet; quests from the chip to the first launch; screenshots and a short clip of build, launch, flight and impact from the client session.
 
 **Exit gate:**
-- [x] A T1 and a T2 missile are built by hand and by Assembly Line, stacked, fueled, launched and detonated on target. Scenario.
+- [x] A T1 and a T2 missile are built by hand and by machine (the Assembler, D281), stacked, fueled, launched and detonated on target. Scenario.
 - [x] The Galacticraft pad, fuel loader and anything attached are intact after a launch. Scenario `icbm.pad.survives`.
 - [x] A missile never holds more than two chunk tickets, and every ticket is released on impact, on timeout and on unload. Scenario.
 - [x] Recipes and costs match the cost target, and everything is visible in NEI.
@@ -349,11 +350,11 @@ The one owner review before the beta.
 **Entry gate:** I0–I6 done.
 
 **Exit gate:**
-- [ ] A completeness audit of I0–I6: every exit box is met or deferred with a recorded reason.
-- [ ] A batched client pass with no crash or invisible-render bugs.
-- [ ] The visuals gallery holds every ICBM visual so far, and the review guide links it.
-- [ ] Tag `0.4.0-alpha-pre` as a pre-release, with `modules.icbm` still off by default. The notes give the owner a review guide: what to enable, a test world, and what to look at.
-- [ ] The owner has reviewed it once, and their notes are written up as the I7 fix list.
+- [x] A completeness audit of I0–I6: every exit box is met or deferred with a recorded reason.
+- [x] A batched client pass with no crash or invisible-render bugs.
+- [x] The visuals gallery holds every ICBM visual so far, and the review guide links it.
+- [x] Tag `0.4.0-alpha-pre` as a pre-release, with `modules.icbm` still off by default. The notes give the owner a review guide: what to enable, a test world, and what to look at.
+- [x] The owner has reviewed it once, and their notes are written up as the I7 fix list.
 
 ## I7 · Hardening
 
@@ -377,13 +378,13 @@ The one owner review before the beta.
 - **Modeled radar (D125, owner, pre-beta):** the single-block HV and EV radars give way to a small radar multiblock whose formed controller spawns a spinning dish (an entity or a TESR, like the silo doors). The Radar Tower gets the same dish. Look for an NTM dish model first (D47). The old blocks 20142 and 20143 convert in place (D190).
 
 **Exit gate:**
-- [ ] The fix list is closed.
+- [x] The fix list is closed. The owner's alpha play sessions were fixed in batches 6–8 (D297–D326) and played on their server.
 - [x] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
-- [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
-- [ ] The recipe-clash review finds no unresolved clash with ICBM content.
-- [ ] Every ICBM guide sheet matches the code after the balance pass.
-- [ ] `modules.icbm` defaults to on.
-- [ ] The milestone review fix list is closed.
+- [x] The soak runs meet the playable bar (D332): nothing crashes or runs away, the server comes back near its baseline after every burst, and no chunk ticket or forced chunk is left. Lag while 10 or more blasts run is accepted. See [soak.md](gregguns-icbm-spec/01-core/soak.md).
+- [x] The recipe-clash review finds no unresolved clash with ICBM content. Evidence: [icbm-recipe-clash-review.md](gregguns-spec/08-machines-production/icbm-recipe-clash-review.md), exact 0 on a real-pack dump, rerun on the balance pass recipes (D340).
+- [x] Every ICBM guide sheet matches the code after the balance pass. The sheets were rebuilt from the real-pack recipe export after the tier fixes (D343), and `icbm-computer-control` was added (D347).
+- [x] `modules.icbm` defaults to on (D339). Evidence: `IcbmModuleRulesTest`, `ModulesConfig`, and the no-Galacticraft boot still logs "turns itself off" once (D46).
+- [x] The milestone review fix list is closed. Four area reviews, fixed by F1–F6 (D342–D347). The beta checkpoint passed on both halves of the full suite (D68).
 
 ## Beta gate · 0.4.0-beta
 

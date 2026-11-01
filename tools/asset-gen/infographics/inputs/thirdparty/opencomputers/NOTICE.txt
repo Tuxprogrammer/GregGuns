@@ -1,0 +1,15 @@
+Textures in this folder: copied unmodified from OpenComputers 1.12.64-GTNH (the GT New Horizons fork,
+OpenComputers-1.12.64-GTNH.jar in the GTNH 2.9.0-RC-2 pack; source https://github.com/GTNewHorizons/OpenComputers
+at tag 1.12.64-GTNH), by Florian "Sangar" Nuecke and the OpenComputers contributors. The jar's LICENSE (beside this
+file as LICENSE.txt) puts the code under the MIT License and all images and textures in the public domain (CC0 1.0).
+
+  assets/opencomputers/textures/blocks/CaseTop.png            -> case_top.png
+  assets/opencomputers/textures/blocks/CaseFront.png          -> case_front.png
+  assets/opencomputers/textures/blocks/CaseSide.png           -> case_side.png
+  assets/opencomputers/textures/blocks/AdapterTop.png         -> adapter_top.png
+  assets/opencomputers/textures/blocks/AdapterSide.png        -> adapter_side.png
+  assets/opencomputers/textures/blocks/DiskDriveFront.png     -> disk_drive_front.png
+  assets/opencomputers/textures/blocks/DiskDriveSide.png      -> disk_drive_side.png
+  assets/opencomputers/textures/blocks/GenericTop.png         -> generic_top.png
+  assets/opencomputers/textures/items/FloppyDisk_dyeYellow.png -> floppy_yellow.png
+  assets/opencomputers/textures/items/FloppyDisk_dyeGray.png   -> floppy_gray.png (a blank floppy with no color)

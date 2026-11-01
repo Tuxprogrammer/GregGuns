@@ -45,10 +45,6 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     /** Checks (10 ticks apart) without a formed silo before a silo-only body stands down: 300 ticks, past a reload. */
     private static final int STRAY_CHECKS = 30;
-    /** Blocks the missile climbs straight up before it turns onto the arc. */
-    public static final double CLIMB_HEIGHT = 12.0;
-    /** Climb acceleration, blocks per tick per tick. */
-    private static final double CLIMB_ACCEL = 0.08;
     /** Height of the pad surface above the pad block's Y. */
     public static final double PAD_SURFACE = 0.2;
 
@@ -62,6 +58,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     private final MissileTickets tickets = new MissileTickets();
     private ArcPath path;
+    /** The climb and the arc from launch point to target (D287); rebuilt from the saved fields when null. */
+    private FlightPath flight;
     private Object landingPad;
 
     private FlightPhase phase = FlightPhase.PAD;
@@ -70,6 +68,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private int warmupLead;
     /** Lead plus countdown, ticks; set at launch (D88). */
     private int warmupTotal;
+    /** Client: the engine loop has been started for this entity (it plays once per missile). */
+    private boolean engineSoundStarted;
     /** Consecutive checks a silo-only body found no formed silo under it; not saved. */
     private int strayChecks;
     private int fuelMb;
@@ -87,6 +87,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private double launchX;
     private double launchY;
     private double launchZ;
+    /** Top of the vertical climb (the build height above the launch point, D287); set at launch. */
+    private double waypointY;
     private double arcX;
     private double arcY;
     private double arcZ;
@@ -120,7 +122,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     @Override
     protected void entityInit() {
-        // No DataWatcher slot (GGS-01-11): phase, casing and fuel reach clients through PacketMissileState.
+        // No DataWatcher slot (GGS-01-11): phase, casing, fuel and the fried guidance reach clients through
+        // PacketMissileState.
     }
 
     /**
@@ -130,12 +133,14 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param newCasing the warhead casing
      * @param newFuel   mB in the tank
      * @param blastId   the warhead's blast id (picks the nose model and skin), or null when the server sent none
+     * @param newFried  whether an EMP fried the guidance (the engine is out)
      */
-    void applyState(FlightPhase newPhase, int newCasing, int newFuel, String blastId) {
+    void applyState(FlightPhase newPhase, int newCasing, int newFuel, String blastId, boolean newFried) {
         this.explosive = blastId == null ? WarheadData.DEFAULT_EXPLOSIVE : blastId;
         this.phase = newPhase;
         this.casing = newCasing;
         this.fuelMb = newFuel;
+        this.fried = newFried;
     }
 
     /**
@@ -508,6 +513,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         this.launchX = posX;
         this.launchY = posY;
         this.launchZ = posZ;
+        this.waypointY = FlightPath.waypointY(posY, worldObj.getHeight());
+        this.flight = null;
         if (source != null) {
             this.ownerId = source.getUniqueID();
             this.ownerName = source.getCommandSenderName();
@@ -518,8 +525,9 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     }
 
     /**
-     * @return true when nothing solid stands in the column the missile climbs through: from the pad to the top of the
-     *         body at the end of the climb (ICBM-04-26)
+     * @return true when nothing solid stands in the column right above the pad: from the pad to the top of the body
+     *         {@link FlightPath#MIN_CLIMB} blocks up (ICBM-04-26). The climb goes on to the build height through
+     *         whatever stands higher, colliding with nothing and breaking nothing (D287).
      */
     private boolean climbColumnClear() {
         int x0 = net.minecraft.util.MathHelper.floor_double(posX - width / 2.0);
@@ -527,7 +535,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         int z0 = net.minecraft.util.MathHelper.floor_double(posZ - width / 2.0);
         int z1 = net.minecraft.util.MathHelper.floor_double(posZ + width / 2.0);
         int y0 = net.minecraft.util.MathHelper.floor_double(posY) + 1;
-        int y1 = net.minecraft.util.MathHelper.floor_double(posY + CLIMB_HEIGHT + tier().heightBlocks());
+        int y1 = net.minecraft.util.MathHelper.floor_double(posY + FlightPath.MIN_CLIMB + tier().heightBlocks());
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 for (int y = y0; y <= y1; y++) {
@@ -600,7 +608,6 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         if (++phaseTick >= warmupTotal) {
             phaseTick = 0;
             setPhase(FlightPhase.CLIMB);
-            worldObj.playSoundEffect(posX, posY, posZ, "fireworks.launch", 4.0F, 0.6F);
         }
     }
 
@@ -620,20 +627,43 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         }
     }
 
+    /**
+     * One tick of the climb: straight up the launch point's column, never sideways, so the missile leaves a silo shaft
+     * through its open doors and passes nothing on the way up; it does not collide in the climb (GGS-ICBM-03-52). At
+     * the waypoint (the build height) it turns onto the arc (D287).
+     */
     private void climbTick() {
         phaseTick++;
-        double climbed = 0.5 * CLIMB_ACCEL * phaseTick * phaseTick;
-        double y = launchY + climbed;
-        if (climbed >= CLIMB_HEIGHT) {
+        FlightPath f = flight();
+        if (phaseTick >= f.climbTicks()) {
             arcX = launchX;
-            arcY = launchY + CLIMB_HEIGHT;
+            arcY = f.waypointY();
             arcZ = launchZ;
-            path = new ArcPath(arcX, arcY, arcZ, targetX, targetY, targetZ, tier().speed());
+            path = f.arc();
             phaseTick = 0;
             setPhase(FlightPhase.ARC);
-            y = arcY;
+            moveTo(arcX, arcY, arcZ);
+            return;
         }
-        moveTo(launchX, y, launchZ);
+        double[] p = f.position(phaseTick);
+        moveTo(p[0], p[1], p[2]);
+    }
+
+    /** @return the flight from the saved launch point, waypoint and target; built once per load */
+    private FlightPath flight() {
+        if (flight == null) {
+            if (!(waypointY > launchY)) {
+                // No waypoint saved (a save from before the climb, or a phase set from outside): the build height.
+                waypointY = FlightPath.waypointY(launchY, worldObj.getHeight());
+            }
+            flight = new FlightPath(launchX, launchY, launchZ, waypointY, targetX, targetY, targetZ, tier().speed());
+        }
+        return flight;
+    }
+
+    /** @return the top of the climb, the arc's start (D287); 0 before launch */
+    public double waypointY() {
+        return waypointY;
     }
 
     private void arcTick() {
@@ -677,6 +707,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             return false;
         }
         fried = true;
+        stateDirty = true; // clients stop the engine sound and flames
         fallSpeed = 0.0;
         // The last tick's step is the missile's velocity (moveTo stored it in the motion fields).
         driftX = motionX;
@@ -751,11 +782,28 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         double bx = posX - ux * 0.5;
         double by = posY - uy * 0.5;
         double bz = posZ - uz * 0.5;
-        worldObj.spawnParticle("flame", bx, by, bz, -ux * 0.1, -uy * 0.1, -uz * 0.1);
+        if (!fried) {
+            worldObj.spawnParticle("flame", bx, by, bz, -ux * 0.1, -uy * 0.1, -uz * 0.1);
+        }
         worldObj.spawnParticle("largesmoke", bx, by, bz, -ux * 0.05, -uy * 0.05, -uz * 0.05);
     }
 
+    /** Client: starts the engine loop once the missile leaves the pad; it ends itself when the missile is removed. */
+    @SideOnly(Side.CLIENT)
+    private void clientTickSound() {
+        if (!MissileEngineMath.sounding(phase(), fried)) {
+            engineSoundStarted = false; // an aborted launch ends the loop; the next launch starts a new one
+            return;
+        }
+        if (engineSoundStarted) {
+            return;
+        }
+        engineSoundStarted = true;
+        com.gregguns.client.icbm.MissileEngineSound.start(this);
+    }
+
     private void clientTick() {
+        clientTickSound();
         if (phase() == FlightPhase.WARMUP) {
             phaseTick++;
             clientTickParticles();
@@ -990,6 +1038,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         tag.setDouble("launchX", launchX);
         tag.setDouble("launchY", launchY);
         tag.setDouble("launchZ", launchZ);
+        tag.setDouble("waypointY", waypointY);
         tag.setDouble("arcX", arcX);
         tag.setDouble("arcY", arcY);
         tag.setDouble("arcZ", arcZ);
@@ -1039,6 +1088,9 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         launchX = tag.getDouble("launchX");
         launchY = tag.getDouble("launchY");
         launchZ = tag.getDouble("launchZ");
+        waypointY = tag.getDouble("waypointY");
+        flight = null;
+        path = null;
         arcX = tag.getDouble("arcX");
         arcY = tag.getDouble("arcY");
         arcZ = tag.getDouble("arcZ");

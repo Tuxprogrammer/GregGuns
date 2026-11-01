@@ -1,0 +1,868 @@
+{
+  "chapter": "npc",
+  "retired": [
+    "gg.npc.elite",
+    "gg.npc.ultra",
+    "gg.npc.infernal"
+  ],
+  "quests": [
+    {
+      "key": "gg.npc.intro",
+      "title": "Hostile Factions",
+      "tier": "Steam",
+      "desc": [
+        "Soldiers, bandits and the walking dead share the Overworld with you, and most of them are armed. Some carry real guns, some drop real ammo, and a few drop things you cannot easily make yet. Hunting them is the cheapest way to stock up on rounds and cloth, and every hunt in this chapter pays out.",
+        "Zombies, skeletons, bandits and Psycho Steve spawn on their own in the Overworld. The rest come from structures: camp flags send out soldiers, and a Big Bunker or a silo complex holds ordinary vanilla mob spawners with an NPC spinning inside. A spawner only works while you are within 24 blocks, caps how many of its mob stand around it, and drops nothing when broken. GregTech makes spawners very slow to mine by hand, so treat them as a farm, not a trophy.",
+        "Some spawns are Infernal: a glowing name, a boss bar and a pile of modifiers. Elite mobs have up to five, ultra up to ten, infernal more, and each rank drops better GregGuns gear (LV, MV, and MV with a rare HV roll). Structure guards from spawners roll for Infernal too, at the same odds.",
+        "[note]Go armed: hold a Hand Cannon and 16 stone bullets to start the chapter.[/note]"
+      ],
+      "pre": [
+        "gg.steam.first_blood",
+        11
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:handcannon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:cornbreadItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:coal",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 22,
+      "y": 372,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 61
+      },
+      "implicit": [
+        "gg.steam.first_blood"
+      ]
+    },
+    {
+      "key": "gg.npc.zombies",
+      "title": "Walking Dead",
+      "tier": "Steam",
+      "desc": [
+        "Three kinds of zombie carry guns instead of just groaning. Farmers and miners are the common ones and carry hoes, picks and the odd Hand Cannon. Soldiers are rarer, tougher and often wear Soldier's armor.",
+        "Kill three of each. They drop Tanned Leather and gunpowder, plus food, coal, iron or ammo depending on the kind, which feeds your armor and ammo crafting."
+      ],
+      "pre": [
+        "gg.npc.intro"
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.ZombieSoldier",
+          "count": 3
+        },
+        {
+          "type": "hunt",
+          "target": "gregguns.ZombieFarmer",
+          "count": 3
+        },
+        {
+          "type": "hunt",
+          "target": "gregguns.ZombieMiner",
+          "count": 3
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:trailmixItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:iron_ingot",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 82,
+      "y": 372,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 61
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.skeletons",
+      "title": "Skeleton Soldiers",
+      "tier": "Steam",
+      "desc": [
+        "Armed skeletons shoot back with revolvers, Thompsons and the occasional Hand Cannon, and some wear Soldier's or Bandit helmets and boots. They are more accurate than zombies, so use cover and keep moving.",
+        "Five kills earns the reward. They drop bones, coal and gunpowder."
+      ],
+      "pre": [
+        "gg.npc.zombies"
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.SkeletonSoldier",
+          "count": 5
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:cornbreadItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:coal",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 142,
+      "y": 372,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 71
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.bandits",
+      "title": "Bandits",
+      "tier": "LV",
+      "desc": [
+        "Bandits are the first enemies that carry real LV firepower: 9mm pistols, revolvers, sawed-offs, bolt-action rifles and now and then an AK-47 or Thompson. They wear Scout gear.",
+        "They drop 9mm rounds, shells and rifle bullets, so they are a free ammo supply. Kill four.",
+        "[note]Outcasts, their heavily armed cousins, appear only from spawn eggs.[/note]"
+      ],
+      "pre": [
+        "gg.npc.skeletons",
+        88
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.Bandit",
+          "count": 4
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:grilledcheeseItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305,
+              "ore": "plateSteel"
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 202,
+      "y": 372,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 69
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.steve",
+      "title": "Psycho Steve",
+      "tier": "LV",
+      "desc": [
+        "A chainsaw-wielding mini-boss in miner gear, Steve is rare (a spawn weight of 1) and has 75 health, so he soaks up bullets while he runs you down. Keep your distance.",
+        "He always drops his Chainsaw and a handful of fuel tanks.",
+        "[warn]He is a melee threat. Do not fight him in a corridor.[/warn]"
+      ],
+      "pre": [
+        "gg.npc.bandits"
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.PsychoSteve",
+          "count": 1
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:potatocakesItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305,
+              "ore": "plateSteel"
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 214,
+      "y": 312,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 73
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.army",
+      "title": "Army Soldiers",
+      "tier": "MV",
+      "desc": [
+        "Army Soldiers are disciplined, armored in T2 Combat gear and armed with M4 rifles, Combat Shotguns or bolt-action rifles. They do not wander the countryside. They come out of Military Camps, the Aircraft Carrier and silo guard posts, so you have to go to them.",
+        "Kill five. They drop rifle bullets, shells, iron and Tanned Leather."
+      ],
+      "pre": [
+        "gg.npc.bandits",
+        1148
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.ArmySoldier",
+          "count": 5
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:chickensandwichItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 262,
+      "y": 372,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 68
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.commandos",
+      "title": "Commandos",
+      "tier": "MV",
+      "desc": [
+        "Commandos are Army elite in T2 Commando armor with M4 rifles. They drop explosive charges, steel ingots and rubber plates. Find them at Aircraft Carriers and silo guard posts.",
+        "Armor up and kill three."
+      ],
+      "pre": [
+        "gg.npc.army"
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.Commando",
+          "count": 3
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:pbandjItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_assault_rifle",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 322,
+      "y": 372,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 75
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.helicopter",
+      "title": "Attack Helicopter",
+      "tier": "HV",
+      "desc": [
+        "A flying boss with 100 health and its own boss bar, the Attack Helicopter circles you with machine-gun bursts and rockets. Bring launchers and cover. It drops rifle bullets, rockets, cybernetic parts and iron blocks.",
+        "[note]Breaking a Camp Flag calls one in. An admin can turn the helicopter setting off under npcs in the GregGuns config.[/note]"
+      ],
+      "pre": [
+        "gg.npc.commandos",
+        160
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.AttackHelicopter",
+          "count": 1
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 2
+            },
+            {
+              "bag": "spoils",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:tank_fuel",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17306,
+              "ore": "plateStainlessSteel"
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 382,
+      "y": 372,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 65
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.dave",
+      "title": "Dictator Dave",
+      "tier": "IV",
+      "desc": [
+        "A secret mini-boss with 100 health, Dave fires a Golden Revolver and wears a beret. He does not spawn on his own: he comes from a spawn egg, an admin command or a custom spawner.",
+        "He drops the Golden Revolver and some 9mm rounds."
+      ],
+      "pre": [
+        "gg.npc.helicopter",
+        213
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.DictatorDave",
+          "count": 1
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 2
+            },
+            {
+              "bag": "spoils",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefwellingtonItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 334,
+      "y": 444,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 74
+      },
+      "implicit": [],
+      "visibility": "SECRET"
+    },
+    {
+      "key": "gg.npc.cyberdemon",
+      "title": "Cyberdemon",
+      "tier": "EV",
+      "desc": [
+        "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is a Nether mob that also comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.",
+        "[warn]It hits hard. Bring good armor.[/warn]"
+      ],
+      "pre": [
+        "gg.npc.helicopter",
+        176
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.CyberDemon",
+          "count": 1
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 2
+            },
+            {
+              "bag": "spoils",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 394,
+      "y": 444,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 67
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.npc.alien_bug",
+      "title": "Alien Bug",
+      "tier": "EV",
+      "desc": [
+        "A fast, wall-climbing spider-like creature from the Alien Bug Nest. Find a nest in a sandy biome: the bug spawns from the vanilla mob spawner inside.",
+        "It drops string and spider eyes. Check the nest quest in the site chapter for what else the nest holds."
+      ],
+      "pre": [
+        "gg.npc.helicopter",
+        176
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "gregguns.AlienBug",
+          "count": 1
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 2
+            },
+            {
+              "bag": "spoils",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:medkit",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 442,
+      "y": 444,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:npc_egg",
+        "count": 1,
+        "damage": 66
+      },
+      "implicit": []
+    }
+  ]
+}

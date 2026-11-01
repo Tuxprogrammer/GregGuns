@@ -1,8 +1,8 @@
 package com.gregguns.entity.npc.loot;
 
 /**
- * Whether an NPC skips Infernal Mobs modifier roll (GGS-10-13). Spawner blocks are farms, so their NPCs opt out
- * unless the config allows them. Pure.
+ * Whether an NPC skips Infernal Mobs modifier roll (GGS-10-13). Spawner NPCs roll like any other NPC; they opt out
+ * only when the config asks for the farm guard. Pure.
  */
 // Spec: docs/gregguns-spec/10-entities-npcs/infernal-mobs.md (GGS-10-13)
 public final class InfernalOptOut {
@@ -17,10 +17,10 @@ public final class InfernalOptOut {
 
     /**
      * @param fromSpawnerBlock true when a spawner block places the NPC
-     * @param allowSpawnerNpcs the {@code infernalAllowSpawnerNpcs} config value
+     * @param spawnerOptOut    the {@code infernalSpawnerOptOut} config value (default false)
      * @return true when the NPC must carry the marker
      */
-    public static boolean shouldOptOut(boolean fromSpawnerBlock, boolean allowSpawnerNpcs) {
-        return fromSpawnerBlock && !allowSpawnerNpcs;
+    public static boolean shouldOptOut(boolean fromSpawnerBlock, boolean spawnerOptOut) {
+        return fromSpawnerBlock && spawnerOptOut;
     }
 }

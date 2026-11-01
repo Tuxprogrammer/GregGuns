@@ -1,0 +1,175 @@
+{
+  "preRequisites:9": {
+    "0:10": {
+      "questIDHigh:4": -3846270064191317513,
+      "questIDLow:4": -5296237746598317479
+    }
+  },
+  "properties:10": {
+    "betterquesting:10": {
+      "autoClaim:1": 0,
+      "completion_animation:8": "default",
+      "completion_particle:8": "default",
+      "confetti_icon:10": {
+        "Count:3": 0,
+        "Damage:2": 0,
+        "OreDict:8": "",
+        "id:8": "minecraft:stick"
+      },
+      "countAsQuest:1": 1,
+      "desc:8": "A warhead is built in steps, and the first is an empty one. The Inert T1 Warhead is the missile\u0027s nose: a Tier 1 rocket\u0027s nose cone and hull plating around a stainless steel casing, with a Fuze Assembly Mk I and the arming electronics wired into it. There is no explosive inside yet, so it is perfectly safe: it can\u0027t be placed, launched or set off, and a silo won\u0027t take it.\n\nThe Assembler makes it at HV, on programmed circuit 2, from 4 stainless steel plates, a Fuze Assembly Mk I, a Nose Cone, 12 Heavy Duty Plates, an HV Sensor, an HV Emitter and 2 Advanced circuits. Check NEI. The warhead is the expensive part of a missile. Every heavier casing follows the same pattern at its own tier, with that tier\u0027s rocket nose cone and hull: titanium and a Mk II fuze at EV, then tungstensteel, naquadria and neutronium with a Mk III.\n\nFrom here you customize it. Fit a payload in the Assembler if you want a special blast, then load Plastic Explosive charges to make it live. A Tier 1 casing takes up to 5 charges.\n\n[note]An inert warhead looks like the real thing, only darker. Read the tooltip: it shows the payload and Charges: 0.[/note]",
+      "globalShare:1": 1,
+      "icon:10": {
+        "Count:3": 1,
+        "Damage:2": 0,
+        "OreDict:8": "",
+        "id:8": "gregguns:inert_warhead_t1"
+      },
+      "isGlobal:1": 0,
+      "isMain:1": 1,
+      "isSilent:1": 0,
+      "lockedProgress:1": 0,
+      "name:8": "§5§lInert Warhead",
+      "notification_duration:5": -1.0,
+      "notification_effect:3": -1,
+      "notification_fade_in:5": -1.0,
+      "notification_fade_out:5": -1.0,
+      "notification_icon_offset_y:3": -2147483648,
+      "notification_icon_scale:5": -1.0,
+      "notification_pos_x:3": -2147483648,
+      "notification_pos_y:3": -2147483648,
+      "notification_show_icon:8": "default",
+      "notification_style:8": "default",
+      "notification_subtitle:8": "",
+      "notification_subtitle_scale:5": -1.0,
+      "notification_title:8": "",
+      "notification_title_scale:5": -1.0,
+      "particle_count:3": -1,
+      "partySingleReward:1": 0,
+      "questLogic:8": "AND",
+      "repeatTime:3": -1,
+      "repeat_relative:1": 1,
+      "simultaneous:1": 0,
+      "snd_complete:8": "random.levelup",
+      "snd_update:8": "random.levelup",
+      "taskLogic:8": "AND",
+      "visibility:8": "NORMAL"
+    }
+  },
+  "questIDHigh:4": 3995211488086283615,
+  "questIDLow:4": -8746542850698651010,
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:heartybreakfastItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk1"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fragmentation_sleeve_steel"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
+  "tasks:9": {
+    "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk1"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.noseCone"
+        },
+        "3:10": {
+          "Count:3": 12,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "GalacticraftCore:item.heavyPlating"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:inert_warhead_t1"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
+    }
+  }
+}

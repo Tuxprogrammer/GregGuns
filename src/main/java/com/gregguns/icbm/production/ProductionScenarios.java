@@ -27,7 +27,8 @@ import micdoodle8.mods.galacticraft.api.recipe.ISchematicPage;
 import micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry;
 
 /**
- * Headless scenarios of how a missile body is made: the chip, schematic and Assembly Line recipes are in GT's maps,
+ * Headless scenarios of how a missile body is made: the chip, schematic and body recipes are in GT's maps (the body in
+ * the Assembler below LuV and on the Assembly Line from LuV up, D281),
  * the NASA Workbench page is registered and unlocks with its schematic, and the page's container turns the right
  * slots into the right body (and nothing else). Server side.
  */
@@ -76,7 +77,7 @@ public final class ProductionScenarios {
 
         @Override
         public String description() {
-            return "Each missile chip is in the Circuit Assembler, each schematic in the Laser Engraver (lens not consumed), and each tier's one Assembly Line recipe (guidance-0 body, reachable by GT's scanner from its own research item), each guidance fit in the Assembler, and every body and computer in the workbench's NEI map, at its tier's voltage.";
+            return "Each missile chip is in the Circuit Assembler, each schematic in the Laser Engraver (lens not consumed), each tier's one guidance-0 body recipe in the Assembler below LuV (found by GT's lookup from its own inputs, no Assembly Line recipe) or on the Assembly Line from LuV (reachable by GT's scanner from its own research item), each guidance fit in the Assembler, and every body and computer in the workbench's NEI map, at its tier's voltage; no GregGuns Assembly Line recipe runs below LuV.";
         }
 
         @Override
@@ -98,24 +99,30 @@ public final class ProductionScenarios {
                         spec + " schematic takes the chip first");
                 }
                 MissileTier tier = MissileTier.byNumber(spec.number());
-                // One Assembly Line recipe per tier, for the guidance-0 body, and GT's scanner reaches exactly it.
+                // The guidance-0 body: one Assembly Line recipe from LuV up (GT's scanner reaches exactly it), none
+                // below LuV (D281).
                 int lines = 0;
                 for (GTRecipe r : RecipeMaps.assemblylineVisualRecipes.getAllRecipes()) {
                     ItemStack o = r.mOutputs == null || r.mOutputs.length == 0 ? null : r.mOutputs[0];
                     if (o != null && MissileBodies.tierOf(o) == tier) {
                         lines++;
                         out.checkEquals(spec + " line body guidance", 0, MissileBodies.guidanceOf(o));
+                        out.checkEquals(spec + " line voltage", volts, (long) r.mEUt);
                     }
                 }
-                out.checkEquals(spec + " Assembly Line recipes", 1, lines);
-                ItemStack research = MissileBodies.body(tier, 0);
-                gregtech.api.util.GTScannerResult scan = gregtech.loaders.postload.ScannerHandlerLoader
-                    .doAssemblyLineResearch(null, research, ItemList.Tool_DataStick.get(1), null);
-                boolean reaches = scan instanceof gregtech.api.util.GTScannerResult.ALScannerResult
-                    && ((gregtech.api.util.GTScannerResult.ALScannerResult) scan).alRecipe != null
-                    && MissileBodies.tierOf(((gregtech.api.util.GTScannerResult.ALScannerResult) scan).alRecipe.mOutput)
-                        == tier;
-                out.check(reaches, spec + " research item reaches its own recipe in GT's scanner");
+                out.checkEquals(spec + " Assembly Line recipes", spec.onAssemblyLine() ? 1 : 0, lines);
+                if (spec.onAssemblyLine()) {
+                    ItemStack research = MissileBodies.body(tier, 0);
+                    gregtech.api.util.GTScannerResult scan = gregtech.loaders.postload.ScannerHandlerLoader
+                        .doAssemblyLineResearch(null, research, ItemList.Tool_DataStick.get(1), null);
+                    boolean reaches = scan instanceof gregtech.api.util.GTScannerResult.ALScannerResult
+                        && ((gregtech.api.util.GTScannerResult.ALScannerResult) scan).alRecipe != null
+                        && MissileBodies.tierOf(
+                            ((gregtech.api.util.GTScannerResult.ALScannerResult) scan).alRecipe.mOutput) == tier;
+                    out.check(reaches, spec + " research item reaches its own recipe in GT's scanner");
+                } else {
+                    assemblerBody(out, spec, tier, volts);
+                }
                 for (IcbmPart computer : spec.computers()) {
                     int g = spec.guidanceOf(computer);
                     boolean fit = false;
@@ -137,7 +144,65 @@ public final class ProductionScenarios {
                     out.check(bench, spec + " body with " + computer + " in the workbench's NEI map");
                 }
             }
+            noLineRecipeBelowLuv(out);
             return out.build();
+        }
+
+        /**
+         * One Assembler recipe makes the guidance-0 body of a tier below LuV, at the tier's voltage, and GT's lookup
+         * on exactly its inputs returns it (no other Assembler recipe takes a subset of them first).
+         */
+        private static void assemblerBody(ScenarioResult.Builder out, MissileBuildSpec spec, MissileTier tier,
+            long volts) {
+            GTRecipe body = null;
+            int found = 0;
+            for (GTRecipe r : RecipeMaps.assemblerRecipes.getAllRecipes()) {
+                ItemStack o = r.mOutputs == null || r.mOutputs.length == 0 ? null : r.mOutputs[0];
+                if (o != null && MissileBodies.tierOf(o) == tier && MissileBodies.guidanceOf(o) == 0) {
+                    found++;
+                    body = r;
+                }
+            }
+            out.checkEquals(spec + " Assembler body recipes", 1, found);
+            if (body == null) {
+                return;
+            }
+            out.checkEquals(spec + " Assembler body voltage", volts, (long) body.mEUt);
+            out.checkEquals(spec + " Assembler body ticks", spec.bodyTicks(), body.mDuration);
+            boolean lube = body.mFluidInputs != null && body.mFluidInputs.length == 1
+                && body.mFluidInputs[0] != null
+                && body.mFluidInputs[0].amount == MissileBuildSpec.LUBRICANT_LITERS;
+            out.check(lube, spec + " Assembler body takes the lubricant");
+            if (!lube) {
+                return;
+            }
+            ItemStack[] in = new ItemStack[] { IcbmIngredients.stack(spec.plates()), IcbmIngredients.stack(spec.fins()),
+                IcbmIngredients.stack(spec.engine()), IcbmIngredients.stack(spec.bodyCircuits()) };
+            GTRecipe looked = RecipeMaps.assemblerRecipes.findRecipeQuery()
+                .items(in)
+                .fluids(body.mFluidInputs[0].copy())
+                .voltage(volts)
+                .find();
+            out.check(looked == body, spec + " GT's Assembler lookup on the body inputs finds the body recipe");
+        }
+
+        /** Every Assembly Line recipe with a GregGuns output runs at LuV or above (D281). */
+        private static void noLineRecipeBelowLuv(ScenarioResult.Builder out) {
+            long luv = com.gregguns.recipe.ProductionRecipes.eutFor(MissileBuildSpec.ASSEMBLY_LINE_TIER);
+            int ours = 0;
+            for (GTRecipe r : RecipeMaps.assemblylineVisualRecipes.getAllRecipes()) {
+                ItemStack o = r.mOutputs == null || r.mOutputs.length == 0 ? null : r.mOutputs[0];
+                if (o == null || o.getItem() == null) {
+                    continue;
+                }
+                cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier id = cpw.mods.fml.common.registry.GameRegistry
+                    .findUniqueIdentifierFor(o.getItem());
+                if (id != null && com.gregguns.GregGuns.MODID.equals(id.modId)) {
+                    ours++;
+                    out.check(r.mEUt >= luv, o.getUnlocalizedName() + " Assembly Line recipe runs at LuV or above");
+                }
+            }
+            out.check(ours > 0, "at least one GregGuns Assembly Line recipe is listed (the check is not vacuous)");
         }
     }
 

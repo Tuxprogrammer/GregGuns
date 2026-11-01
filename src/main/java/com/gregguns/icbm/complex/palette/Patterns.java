@@ -17,13 +17,19 @@ public final class Patterns {
         BlockRef at(int x, int z, int sx, int sz);
     }
 
+    /** The cell function of a pattern given the room's aisle (null for none, D321). */
+    private interface AisleCells {
+
+        BlockRef at(int x, int z, int sx, int sz, Aisle aisle);
+    }
+
     /** A pattern that knows the chains it places. */
     private static final class Pattern implements CellPattern {
 
-        private final Cells cells;
+        private final AisleCells cells;
         private final List<BlockRef> refs;
 
-        Pattern(Cells cells, List<BlockRef> refs) {
+        Pattern(AisleCells cells, List<BlockRef> refs) {
             this.cells = cells;
             List<BlockRef> l = new ArrayList<>();
             for (BlockRef r : refs) if (!l.contains(r)) l.add(r);
@@ -32,7 +38,12 @@ public final class Patterns {
 
         @Override
         public BlockRef at(int x, int z, int sizeX, int sizeZ) {
-            return cells.at(x, z, sizeX, sizeZ);
+            return cells.at(x, z, sizeX, sizeZ, null);
+        }
+
+        @Override
+        public BlockRef at(int x, int z, int sizeX, int sizeZ, Aisle aisle) {
+            return cells.at(x, z, sizeX, sizeZ, aisle);
         }
 
         @Override
@@ -42,7 +53,7 @@ public final class Patterns {
     }
 
     private static CellPattern of(Cells cells, BlockRef... refs) {
-        return new Pattern(cells, Arrays.asList(refs));
+        return new Pattern((x, z, sx, sz, aisle) -> cells.at(x, z, sx, sz), Arrays.asList(refs));
     }
 
     /** @return one block everywhere */
@@ -83,22 +94,29 @@ public final class Patterns {
         return of((x, z, sx, sz) -> x % spacing == 0 || z % spacing == 0 ? line : field, field, line);
     }
 
-    /** @return {@code field} with a center strip of {@code line} {@code width} wide along the room's long axis */
+    /**
+     * @return {@code field} with a strip of {@code line}: in a room, on its aisle (the doorway and its jambs, D321)
+     *         from
+     *         the door to the back wall; in a section with no aisle, {@code width} wide along its long axis, one wider
+     *         where that keeps it centered (an even strip has no middle in an odd span)
+     */
     public static CellPattern centerStrip(BlockRef field, BlockRef line, int width) {
-        return of((x, z, sx, sz) -> {
+        return new Pattern((x, z, sx, sz, aisle) -> {
+            if (aisle != null) return aisle.contains(x, z) ? line : field;
             boolean alongX = sx >= sz;
             int pos = alongX ? z : x;
             int span = alongX ? sz : sx;
-            int lo = (span - width) / 2;
-            return pos >= lo && pos < lo + width ? line : field;
-        }, field, line);
+            int w = Math.min(span, width + (span - width & 1));
+            int lo = (span - w) / 2;
+            return pos >= lo && pos < lo + w ? line : field;
+        }, Arrays.asList(field, line));
     }
 
     /** @return {@code base} with every fifth-ish cell (hashed from the position) swapped for {@code worn} */
     public static CellPattern worn(CellPattern base, BlockRef worn) {
         List<BlockRef> refs = new ArrayList<>(base.refs());
         refs.add(worn);
-        return new Pattern((x, z, sx, sz) -> hash(x, z) % 5 == 0 ? worn : base.at(x, z, sx, sz), refs);
+        return new Pattern((x, z, sx, sz, a) -> hash(x, z) % 5 == 0 ? worn : base.at(x, z, sx, sz, a), refs);
     }
 
     /**
@@ -114,7 +132,7 @@ public final class Patterns {
             refs.add(r.preferring(brick));
         }
         return new Pattern(
-            (x, z, sx, sz) -> base.at(x, z, sx, sz)
+            (x, z, sx, sz, a) -> base.at(x, z, sx, sz, a)
                 .preferring(((x / cell) + (z / cell) & 1) == 0 ? stone : brick),
             refs);
     }
@@ -128,10 +146,25 @@ public final class Patterns {
     public static CellPattern localField(CellPattern base, BlockRef.Entry stone, int width) {
         List<BlockRef> refs = new ArrayList<>(base.refs());
         for (BlockRef r : base.refs()) refs.add(r.preferring(stone));
-        return new Pattern((x, z, sx, sz) -> {
-            BlockRef r = base.at(x, z, sx, sz);
+        return new Pattern((x, z, sx, sz, a) -> {
+            BlockRef r = base.at(x, z, sx, sz, a);
             return edge(x, z, sx, sz) < width ? r : r.preferring(stone);
         }, refs);
+    }
+
+    /**
+     * A ceiling accent: {@code base} with about one cell in {@code period} (hashed from the position, so scattered,
+     * never a grid) swapped for {@code accent}. The accent is one more block the design places, so the role check
+     * (D265) counts it as part of the design.
+     *
+     * @return the sparse design
+     */
+    public static CellPattern sparse(CellPattern base, BlockRef accent, int period) {
+        List<BlockRef> refs = new ArrayList<>(base.refs());
+        refs.add(accent);
+        return new Pattern(
+            (x, z, sx, sz, a) -> hash(x + 7, z + 3) % period == 0 ? accent : base.at(x, z, sx, sz, a),
+            refs);
     }
 
     /** @return the distance from the nearest room edge, in cells */

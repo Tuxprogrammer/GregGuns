@@ -2,8 +2,7 @@
   "preRequisites:9": {
     "0:10": {
       "questIDHigh:4": -5978948560363040462,
-      "questIDLow:4": -6755999232205568031,
-      "type:1": 1
+      "questIDLow:4": -6755999232205568031
     }
   },
   "properties:10": {
@@ -18,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Your launchers can carry a blast type. Make a Launcher Warhead: High Explosive, Heavy Slug, Incendiary and Phosphorus at HV, Demolition at EV, for the Rocket Launcher and Grim Reaper; Grenade HE (HV) and Grenade Cluster (EV) for the Grenade Launcher; EMP (LuV) for the Nuke Launcher. Craft it with the launcher in the crafting grid for 4 charges, up to 16. Each shot spends one charge and the launcher\u0027s own round, and goes off as a small blast; center damage is capped at 1.25 times the launcher\u0027s own. Make a High Explosive one.",
+      "desc:8": "Your shoulder launchers can carry a blast type too. A Launcher Warhead is a small charge: High Explosive, Heavy Slug, Incendiary and Phosphorus at HV and Demolition at EV for the Rocket Launcher and Grim Reaper; Grenade HE (HV) and Grenade Cluster (EV) for the Grenade Launcher; EMP (LuV) for the Nuke Launcher.\n\nCraft it with the launcher in the crafting grid for 4 charges, up to 16. Each shot spends one charge and the launcher\u0027s own round, and goes off as a small blast; its center damage is capped at 1.25 times the launcher\u0027s own. Make a High Explosive one; check NEI for its recipe.\n\n[warn]Keep your distance from the impact point: these rounds hurt you as much as your target.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -30,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Launcher Warhead",
+      "name:8": "§5§lLauncher Warhead",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -59,7 +58,64 @@
   },
   "questIDHigh:4": -5949206854851665966,
   "questIDLow:4": -8459942860218389499,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:ploughmanslunchItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "IC2:blockITNT"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:launcher_warhead_he"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

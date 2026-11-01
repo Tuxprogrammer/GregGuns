@@ -11,5 +11,6 @@
     "Quests/Fixture-AAAA/Beta-2.json",
     "Quests/Fixture-AAAA/Gamma-3.json"
   ],
-  "orderEntry": "AAAAAAAAAAEAAAAAAAAAAg==: Fixture"
+  "orderEntry": "AAAAAAAAAAEAAAAAAAAAAg==: Fixture",
+  "retired": ["00000000-0000-0007-0000-000000000004"]
 }

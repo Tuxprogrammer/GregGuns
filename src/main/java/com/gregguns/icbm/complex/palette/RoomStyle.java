@@ -263,6 +263,11 @@ public final class RoomStyle {
         return PaletteResolver.resolve(floors.get(live().floorIndex).pattern.at(x, z, sizeX, sizeZ));
     }
 
+    /** @return the floor block at a cell of a room with an aisle (D321: a center strip follows it; null for none) */
+    public ResolvedBlock floor(int x, int z, int sizeX, int sizeZ, Aisle aisle) {
+        return PaletteResolver.resolve(floors.get(live().floorIndex).pattern.at(x, z, sizeX, sizeZ, aisle));
+    }
+
     /** @return the ceiling block at a room-local cell, from the design the guard picked */
     public ResolvedBlock ceiling(int x, int z, int sizeX, int sizeZ) {
         return PaletteResolver.resolve(ceilings.get(live().ceilingIndex).pattern.at(x, z, sizeX, sizeZ));
@@ -272,7 +277,7 @@ public final class RoomStyle {
      * Names the code path that decided a role's block at a cell, for the role audit's log line (D265): the design and
      * where it came from, the chain, and which entry of the chain the registry resolved.
      *
-     * @param role "wall", "floor" or "ceiling"
+     * @param role "wall", "floor", "ceiling" or "lit lamp"
      * @return a one-line description
      */
     public String describe(String role, int x, int z, int sizeX, int sizeZ) {
@@ -282,6 +287,9 @@ public final class RoomStyle {
         if ("wall".equals(role)) {
             r = wall;
             source = wallSource;
+        } else if ("lit lamp".equals(role)) {
+            r = lampLit;
+            source = setId + " lit lamp";
         } else if ("floor".equals(role)) {
             Choice c = floors.get(live().floorIndex);
             r = c.pattern.at(x, z, sizeX, sizeZ);
@@ -308,7 +316,7 @@ public final class RoomStyle {
 
     /** @return the lamp; lit emits 15 and is an opaque cube, unlit is its dark twin */
     public ResolvedBlock lamp(boolean lit) {
-        return PaletteResolver.resolve(lampRef(lit));
+        return lit ? PaletteResolver.resolveLit(lampLit) : PaletteResolver.resolve(lampUnlit);
     }
 
     /** @return the accent block, or null */

@@ -14,7 +14,8 @@ import com.gregguns.icbm.warhead.WarheadBlast;
 import io.netty.buffer.Unpooled;
 
 /**
- * The client state packet carries the T3 casing, the warhead blast and the warm-up clock (D88). The site factors' NBT
+ * The client state packet carries the T3 casing, the warhead blast, the warm-up clock (D88) and the fried guidance
+ * (D342). The site factors' NBT
  * is
  * in icbm.silo.tiers.
  */
@@ -38,9 +39,10 @@ class MissileSiteStateTest {
         set(p, "tick", 61);
         set(p, "lead", 40);
         set(p, "total", 240);
+        set(p, "fried", 1);
         PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
         p.encode(buf);
-        assertEquals(23, buf.readableBytes());
+        assertEquals(24, buf.readableBytes());
         PacketMissileState q = new PacketMissileState();
         q.decode(new PacketBuffer(buf.copy()));
         assertEquals(77, buf.readInt());
@@ -51,7 +53,9 @@ class MissileSiteStateTest {
         assertEquals(61, buf.readInt());
         assertEquals(40, buf.readInt());
         assertEquals(240, buf.readInt());
-        for (String f : new String[] { "entityId", "phase", "casing", "fuel", "blast", "tick", "lead", "total" }) {
+        assertEquals(1, buf.readByte());
+        for (String f : new String[] { "entityId", "phase", "casing", "fuel", "blast", "tick", "lead", "total",
+            "fried" }) {
             Field field = PacketMissileState.class.getDeclaredField(f);
             field.setAccessible(true);
             assertEquals(field.getInt(p), field.getInt(q), f);

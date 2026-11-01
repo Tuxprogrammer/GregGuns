@@ -30,7 +30,7 @@
 | Base scatter (D24) | 12 blocks half-width | 8 blocks half-width |
 | Health | 20 | 40 |
 
-Fuel, range and speed are constants of the tier (`MissileTier`); the config multiplies the tank (`icbm.missileFuelFactor`) and the range (`icbm.missileRangeFactor`). The production track (the missile chip, schematic, NASA Workbench page and Assembly Line recipes) makes the body items and decides their ingredients, see [04-launch-control](../04-launch-control/index.md) and its build sheet.
+Fuel, range and speed are constants of the tier (`MissileTier`); the config multiplies the tank (`icbm.missileFuelFactor`) and the range (`icbm.missileRangeFactor`). The production track (the missile chip, schematic, NASA Workbench page and the machine body recipes: the Assembler below LuV, the Assembly Line from LuV, D281) makes the body items and decides their ingredients, see [04-launch-control](../04-launch-control/index.md) and its build sheet.
 
 ## The item and its NBT
 

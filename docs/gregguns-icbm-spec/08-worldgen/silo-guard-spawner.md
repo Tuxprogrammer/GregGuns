@@ -10,8 +10,8 @@ A guard post is the vanilla `minecraft:mob_spawner`, placed by `ComplexApplier` 
 
 | Kind | Layout tag | NPCs | Where |
 |---|---|---|---|
-| `SILO_GUARD` | `spawner.silo_guard` | Army Soldier, Commando | `post` and `room` marks, and `room` marks nearer the hall |
-| `SILO_ELITE` | `spawner.silo_elite` | Commando, Stormtrooper | `deep` marks, and 40% of `room` marks at depth band 2 or more |
+| `SILO_GUARD` | `spawner.silo_guard` | Army Soldier, Commando | the spawner spots (D326), except the elite share |
+| `SILO_ELITE` | `spawner.silo_elite` | Commando, Stormtrooper | 40% of the spots in rooms at depth band 2 or more, never at the abandoned level |
 
 `SpawnPotentials` lists the registered NPCs of the kind with weight 1 each, so vanilla picks evenly, one type per cycle. A kind with no registered NPC this run places no spawner (a spawner must never name a missing entity: the vanilla client draws it).
 
@@ -40,7 +40,7 @@ The cap is per mob type, as vanilla counts: a guard post can hold up to 5 Army S
 Every `SpawnPotentials` entry and the `SpawnData` carry `GGSpawner: {MinDanger: n, X, Y, Z}`, the post's own block as its origin, with `n = RolledCeiling.danger(ceiling)` of the complex: EV and IV 3, LuV and ZPM 4, UV and above 5 (`SiloCeiling.guardDanger`, tested equal). Vanilla merges `SpawnData` into the new NPC's NBT and calls `readFromNBT` before the NPC joins the world. The NPC sees the key there and:
 
 1. sets its danger to the larger of its spawn position's danger and `n`;
-2. takes the Infernal Mobs opt-out marker (unless `infernal.allowSpawnerNpcs`);
+2. takes the Infernal Mobs opt-out marker only when `npcs.infernalSpawnerOptOut` is on (default off: guards can roll infernal);
 3. runs its egg-style setup, which rolls its equipment at that danger.
 
 Steps 1 and 2 apply only while the spawner placing it stands on its origin. A post carried elsewhere with its NBT (a JABBA diamond dolly moves spawners in GTNH) is a plain vanilla spawner of its mobs: the light rules apply, and its NPCs start at danger 0 with their gear rolled at it, so a deep post moved into a lit base spawns nothing, and in the dark only the weakest guards (D275).

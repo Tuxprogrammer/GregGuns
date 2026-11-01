@@ -16,10 +16,12 @@ import com.gregguns.client.GunsClientModule;
 import com.gregguns.client.anim.AnimWindow;
 import com.gregguns.client.anim.CamoIndex;
 import com.gregguns.client.anim.GunAnimState;
+import com.gregguns.client.render.profile.AdsOffset;
 import com.gregguns.client.render.profile.AkimboLayout;
 import com.gregguns.client.render.profile.GunTransforms;
 import com.gregguns.client.render.profile.MuzzleFlashSpec;
 import com.gregguns.client.render.profile.TransformProgram;
+import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.item.gun.ItemGun;
 
@@ -139,6 +141,12 @@ final class GunItemRenderer implements IItemRenderer {
             try {
                 if (aim > 0.0) {
                     GL11.glTranslated(adsShift[0] * aim, adsShift[1] * aim, adsShift[2] * aim);
+                    if (adsShift.length >= AdsOffset.WITH_PITCH) {
+                        // The aimed pitch, turning about the sight point so the sights stay on the screen center.
+                        GL11.glTranslated(adsShift[7], adsShift[8], adsShift[9]);
+                        GL11.glRotated(adsShift[3] * aim, adsShift[4], adsShift[5], adsShift[6]);
+                        GL11.glTranslated(-adsShift[7], -adsShift[8], -adsShift[9]);
+                    }
                 }
                 if (mirrored) {
                     // The second gun: a mirror image about the screen centre. Mirroring flips the winding.
@@ -235,7 +243,7 @@ final class GunItemRenderer implements IItemRenderer {
                 }
                 break;
             case EQUIPPED:
-                if (holder instanceof EntityPlayer) {
+                if (AimedHold.applies(holder instanceof EntityPlayer, holder instanceof NpcEntity)) {
                     t.applyAimed(GL_SINK);
                 }
                 t.tpBase()

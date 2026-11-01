@@ -17,19 +17,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Craft it in GT machines, or find it: quest loot bags, chests in ruins, drops from hostile soldiers. NEI lists every recipe and drop.",
+      "desc:8": "Nothing here appears from thin air. Guns are assembled from parts, and the parts come from the same GregTech materials as everything else you build. Besides crafting, you can find gear in quest loot bags, in chests at ruins and bunkers, and on hostile soldiers. NEI lists every recipe and drop.\n\nStart with the two simplest parts. A Stone Barrel is stone around a tiny bronze pipe, worked with a file and a hammer. A Wooden Stock is three logs and a saw. Hold both to finish this quest, and the Hand Cannon is one crafting grid away.\n\n[note]Press R on any item in NEI to see how it is made, or U to see what it is used for.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:pistol_9mm"
+        "id:8": "gregguns:part_barrel_stone"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Where Gear Comes From",
+      "name:8": "§c§lWhere Gear Comes From",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,11 +58,106 @@
   },
   "questIDHigh:4": -3832811344559777848,
   "questIDLow:4": -7800002072714849224,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:bakedbeansItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_1"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:flint_and_steel"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 6,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:stone"
+        },
+        "1:10": {
+          "Count:3": 3,
+          "Damage:2": 32767,
+          "OreDict:8": "",
+          "id:8": "minecraft:log"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_barrel_stone"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_stock_wooden"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

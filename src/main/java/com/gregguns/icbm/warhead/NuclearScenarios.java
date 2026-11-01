@@ -10,8 +10,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
@@ -70,7 +68,7 @@ final class NuclearScenarios {
      */
     static void connect(EntityPlayerMP p) {
         if (p.playerNetServerHandler == null) {
-            new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+            com.gregguns.core.testing.QuietConnection.attach(p);
         }
         try {
             for (java.lang.reflect.Field f : EntityPlayerMP.class.getDeclaredFields()) {

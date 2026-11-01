@@ -131,9 +131,31 @@ USE_S = _const(AD, "USE_TICKS") / 20
 PER_RUN = _const(AD, "PER_RUN")
 STACK = int(re.search(r"setMaxStackSize\((\d+)\)", _src("icbm/antidote/ItemAntidote.java")).group(1))
 _ad_reg = _src("icbm/antidote/AntidoteRegistration.java")
-for snippet in ('Ing.gt("plate", "Rubber", 1', 'Ing.gt("plate", "StainlessSteel", 1', 'Ing.gt("dust", "Charcoal", 2', "Tier MACHINE_TIER = Tier.HV"):
-    if snippet not in _ad_reg:
-        raise SystemExit(f"AntidoteRegistration changed; update icbm-fallout: {snippet}")
+
+
+def _verify() -> None:
+    """The hand-written facts below, checked against the source so a changed recipe or rule stops the build: the antidote
+    recipe as a whole input list, the effects it cures, the warhead core the fallout bound is measured against, and which
+    fallout items irradiate a player who carries them."""
+    m = re.search(r"INPUTS = Collections\.unmodifiableList\(\s*(Arrays\.asList\(.*?\))\);", _ad_reg, re.S)
+    inputs = P._norm(m.group(1)) if m else None
+    if inputs != ['gt("plate","Rubber",1)', 'gt("plate","StainlessSteel",1)', 'gt("dust","Charcoal",2)']:
+        raise SystemExit(f"AntidoteRegistration's recipe changed; update icbm-fallout: {inputs}")
+    nuke = P.entry(P._SPEC, "NUCLEAR")
+    if f'gt("ingot","Uranium235",{CORE_U})' not in nuke or f'gt("ingot","Plutonium",{CORE_PU})' not in nuke:
+        raise SystemExit(f"FalloutYield's core no longer matches the nuclear payload; update icbm-fallout: {nuke}")
+    P.check_snippets("Antidote/fallout items", [
+        (_ad_reg, "Tier MACHINE_TIER = Tier.HV;"),
+        (re.sub(r"\s+", " ", _src("icbm/antidote/AntidoteGuard.java")),
+         "int[] base = { Potion.poison.id, Potion.hunger.id, Potion.weakness.id, Potion.moveSlowdown.id, Potion.confusion.id, Potion.digSlowdown.id };"),
+        (_src(AD), "SWEEP_PERIOD = 10;"),
+        (_src(RUB), "stack.getItemDamage() == 1 ? level() + 1 : level()"),
+        (_src(NUC + "ItemFalloutProduct.java"), "holder.ticksExisted % ItemIrradiatedRubble.PERIOD_TICKS == 0"),
+        (_src(NUC + "ItemFalloutProduct.java"), "(damage & 1) == 1 ? base + 1 : base"),
+    ])
+
+
+_verify()
 
 
 def fissile_share() -> float:
@@ -209,7 +231,7 @@ def disc(radius_full: int, inner: float) -> str:
 def falloff_chart() -> str:
     """Chance against distance, each curve as a share of its own ground-zero value, from the same formulas the engine uses."""
     W, H, L, B, T = 560, 250, 58, 48, 16
-    pw, ph = W - L - 16, H - B - T
+    pw, ph = W - L - 30, H - B - T  # room on the right for the centered "100%" tick
 
     def X(share):  # share of the fallout radius
         return L + share * pw
@@ -292,12 +314,12 @@ def fallout() -> str:
 <div style="display:flex;flex-direction:column;align-items:center">{disc(R_FULL, INNER)}<div class="muted" style="font-size:15px;margin-top:4px;text-align:center">The hot zone is the inner {round(INNER * 100)}% of the radius</div></div>
 <div><div class="label" style="margin-bottom:6px">Irradiated earth &middot; the whole disc</div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">{plain}</div>
 <div class="label" style="margin-bottom:6px">The hot zone only &middot; glowing lime veins</div><div style="display:flex;gap:12px;flex-wrap:wrap">{hot}</div></div></div>
-<div class="pt" style="margin-top:12px"><b>Hot earth</b> and <b>trinitite</b> (fused sand) appear only near ground zero of a ZPM or better blast. <b>Fallout goo</b> is rare: at most {GOO_PEAK * 100:g}% of the top blocks at ground zero, fewer further out, and never more than {MAX_GOO} per strike. Mine them and they drop <b>Irradiated Rubble</b>, <b>Trinitite Shards</b> and <b>Fallout Goo</b> for the processing chain below. Antimatter and red matter leave no fallout at all.</div>
+<div class="pt" style="margin-top:12px"><b>Hot earth</b> and <b>trinitite</b> (fused sand) appear only near ground zero of a nuclear warhead. <b>Fallout goo</b> is rare: at most {GOO_PEAK * 100:g}% of the top blocks at ground zero, fewer further out, and never more than {MAX_GOO} per strike. Mine them and they drop <b>Irradiated Rubble</b>, <b>Trinitite Shards</b> and <b>Fallout Goo</b> for the processing chain below. Antimatter and red matter leave no fallout at all.</div>
 <div class="label" style="margin:16px 0 4px">A nuclear warhead by fill</div>
 <table class="tbl"><tr><th>Fill</th><th>Blast radius</th><th>Fallout radius</th><th>Hot zone radius</th></tr>{sizes}</table></div>"""
     # ---- hazard
     hazard = f"""<div class="card"><h2>The radiation hazard</h2>
-<div class="pt" style="margin:6px 0 8px">Stand on or beside irradiated ground (the 3 &times; 3 around your feet, or the layer below) and you are exposed <b>every {EXPOSE_PERIOD / 20:g} second</b>. Carrying rubble exposes you every {CARRY_PERIOD / 20:g} seconds, and hot rubble hits harder than plain. Exposure is level {LEVEL} (a server setting).</div>
+<div class="pt" style="margin:6px 0 8px">Stand on or beside irradiated ground (the 3 &times; 3 around your feet, or the layer below) and you are exposed <b>every {EXPOSE_PERIOD / 20:g} second</b>. Carrying rubble, trinitite shards or goo exposes you every {CARRY_PERIOD / 20:g} seconds, and the hot kinds hit harder. Exposure is level {LEVEL} (a server setting).</div>
 <div class="fx"><span>Slowness</span><span>Mining Fatigue</span><span>Nausea</span><span>Weakness</span><span>Hunger</span><span>Radiation damage</span></div>
 <div class="pt" style="margin-top:10px"><span class="ok">Protected:</span> anyone in <b>full hazmat armor</b>. Any hazmat-capable armor counts: GregTech's hazmat suit, a full HEV set or other GregGuns armor flagged for radiation, or armor carrying the Hazmat enchantment. Creative players are never exposed.</div></div>"""
     # ---- antidote
@@ -346,11 +368,11 @@ def fallout() -> str:
 
     # ---- bound and decay
     bound = f"""<div class="card"><h2>It never pays for the bomb</h2>
-<div style="display:flex;gap:22px;align-items:center"><div class="big" style="white-space:nowrap;flex:none">&le;&nbsp;{round(MAX_RETURN * 100)}%</div>
+<div style="display:flex;gap:22px;align-items:center;margin-top:10px"><div class="big" style="white-space:nowrap;flex:none">&le;&nbsp;{round(MAX_RETURN * 100)}%</div>
 <div class="pt" style="font-size:18.5px">One strike's whole fallout can return <b>at most a quarter</b> of the fissile material in the warhead's core ({CORE_U:g} uranium-235 ingots and {CORE_PU:g} plutonium ingots), however big the blast. At the default settings it is about <b>{SHARE * 100:.0f}%</b>. A warhead is never a net source of fuel; the value of fallout is in the heavier elements and the gases.</div></div></div>"""
     decay = f"""<div class="card"><h2>It heals, unless there is goo</h2>
 <div class="pt" style="margin:6px 0 4px">Once a strike's ground is placed, it fades back to normal <b>{DECAY_MIN:g} minutes</b> later, up to {REVERT:g} blocks a tick, back to what it was (grass returns as dirt). Ground in chunks nobody has loaded heals when someone comes back.</div>
-<div class="pt"><b>Fallout goo stops the clock.</b> While any goo stands in a chunk, that chunk's irradiated earth does not heal, however long you wait. <b>Dig the goo up</b> (shovel) and the land is released to decay. Process it in the chain below, or store it safely.</div></div>"""
+<div class="pt"><b>Fallout goo stops the clock.</b> While any goo stands in a chunk, that chunk's irradiated earth does not heal, however long you wait. <b>Dig the goo up</b> (shovel) and the land is released to decay. Process it in the chain above, or store it safely.</div></div>"""
 
     body = f"""<div class="grid" style="grid-template-columns:1.35fr 1fr;align-items:stretch">{leaves}<div style="display:flex;flex-direction:column;gap:18px">{hazard}{ant}</div></div>
 <div class="grid" style="grid-template-columns:1.15fr 1fr;margin-top:18px">{fall}{tier}</div>

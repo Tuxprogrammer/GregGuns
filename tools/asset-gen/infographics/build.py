@@ -14,16 +14,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import kit  # noqa: E402
 import pages_icbm  # noqa: E402
+import pages_icbm_computers  # noqa: E402
 import pages_icbm_defense  # noqa: E402
 import pages_icbm_fallout  # noqa: E402
 import pages_icbm_heavy  # noqa: E402
+import pages_icbm_hero  # noqa: E402
 import pages_icbm_missile  # noqa: E402
+import pages_icbm_recipes  # noqa: E402
 import pages_icbm_silo  # noqa: E402
 import pages_icbm_silos  # noqa: E402
 import pages_more as _more  # noqa: E402
 
 PAGES = {**_more.PAGES, **pages_icbm.PAGES, **pages_icbm_missile.PAGES, **pages_icbm_silo.PAGES, **pages_icbm_silos.PAGES,
-         **pages_icbm_defense.PAGES, **pages_icbm_heavy.PAGES, **pages_icbm_fallout.PAGES}
+         **pages_icbm_defense.PAGES, **pages_icbm_heavy.PAGES, **pages_icbm_fallout.PAGES,
+         **pages_icbm_recipes.PAGES, **pages_icbm_hero.PAGES, **pages_icbm_computers.PAGES}
 
 
 def main(names):

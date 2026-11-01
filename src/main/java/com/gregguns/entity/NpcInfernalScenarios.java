@@ -6,6 +6,7 @@ import java.util.Random;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.world.World;
@@ -15,6 +16,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import com.gregguns.api.Tier;
 import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
+import com.gregguns.core.config.NpcConfig;
 import com.gregguns.core.testing.PackMobGuard;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -44,6 +46,7 @@ final class NpcInfernalScenarios {
                 new HooksScenario(),
                 () -> com.gregguns.entity.npc.NpcRegistry.isRegistered(NpcMob.NPC_TEST),
                 "needs the dev-only test NPC (NpcMob.NPC_TEST), which the pack does not register"));
+        registry.register(new InfernalRollScenario());
         registry.register(
             SkipUnless.of(
                 new HurtPipelineScenario(),
@@ -107,6 +110,98 @@ final class NpcInfernalScenarios {
                 }
             }
             return Tier.STEAM;
+        }
+    }
+
+    /**
+     * With Infernal Mobs loaded, real GregGuns NPCs (the natural-spawn path: nothing pre-marks them) and NPCs that a
+     * GregGuns spawner would place (the spawner opt-out is off by default) roll as infernal at Infernal's own rates,
+     * and the opt-out, when on, stops the spawner path only. Never infernal: the Attack Helicopter.
+     */
+    private static final class InfernalRollScenario implements Scenario {
+
+        private static final NpcMob[] KINDS = { NpcMob.ZOMBIE_SOLDIER, NpcMob.BANDIT, NpcMob.SKELETON_SOLDIER,
+            NpcMob.ZOMBIE_MINER };
+        private static final int SAMPLE = 400;
+
+        @Override
+        public String name() {
+            return "npc.infernal_roll";
+        }
+
+        @Override
+        public String description() {
+            return "Natural and spawner-path GregGuns NPCs roll as infernal with Infernal Mobs loaded; the spawner"
+                + " opt-out, when on, stops only the spawner path; the helicopter never rolls.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            if (!InfernalHooks.available()) {
+                out.note("Infernal Mobs absent: nothing to roll (run on the real-pack harness)");
+                return out.build();
+            }
+            boolean saved = NpcConfig.infernalSpawnerOptOut;
+            try {
+                NpcConfig.infernalSpawnerOptOut = false;
+                int natural = countInfernal(ctx, false);
+                int spawner = countInfernal(ctx, true);
+                out.note("infernal of " + SAMPLE + ": natural " + natural + ", spawner path " + spawner);
+                // Elite rarity 1 in 20 by default: the chance of zero in 400 is about 1e-9.
+                out.check(natural > 0, "some natural-path NPCs should roll as infernal, got " + natural);
+                out.check(spawner > 0, "some spawner-path NPCs should roll as infernal, got " + spawner);
+                NpcConfig.infernalSpawnerOptOut = true;
+                out.checkEquals("spawner-path infernal with the opt-out on", 0, countInfernal(ctx, true));
+                out.check(countInfernal(ctx, false) > 0, "the opt-out must not touch the natural path");
+                NpcConfig.infernalSpawnerOptOut = false;
+                out.checkEquals("helicopters that rolled infernal", 0, countHelicopters(ctx));
+            } finally {
+                NpcConfig.infernalSpawnerOptOut = saved;
+            }
+            return out.build();
+        }
+
+        private static int countInfernal(ScenarioContext ctx, boolean spawnerPath) {
+            World world = ctx.world();
+            int infernal = 0;
+            for (int i = 0; i < SAMPLE; i++) {
+                Entity e = EntityList.createEntityByName(KINDS[i % KINDS.length].fullName(), world);
+                if (!(e instanceof EntityLivingBase)) {
+                    continue;
+                }
+                e.setPosition(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5);
+                if (spawnerPath) {
+                    // What a spawner on its origin does before the join, without the tile.
+                    InfernalHooks.markSpawnerNpc((EntityLivingBase) e);
+                }
+                world.spawnEntityInWorld(e);
+                if (InfernalHooks.modifierSize((EntityLivingBase) e) > 0) {
+                    infernal++;
+                }
+                InfernalHooks.forget((EntityLivingBase) e);
+                world.removeEntity(e);
+            }
+            return infernal;
+        }
+
+        private static int countHelicopters(ScenarioContext ctx) {
+            World world = ctx.world();
+            int infernal = 0;
+            for (int i = 0; i < SAMPLE; i++) {
+                Entity e = EntityList.createEntityByName(NpcMob.ATTACK_HELICOPTER.fullName(), world);
+                if (!(e instanceof EntityLivingBase)) {
+                    return infernal;
+                }
+                e.setPosition(ctx.originX() + 0.5, ctx.originY() + 20, ctx.originZ() + 0.5);
+                world.spawnEntityInWorld(e);
+                if (InfernalHooks.modifierSize((EntityLivingBase) e) > 0) {
+                    infernal++;
+                }
+                InfernalHooks.forget((EntityLivingBase) e);
+                world.removeEntity(e);
+            }
+            return infernal;
         }
     }
 

@@ -8,22 +8,23 @@ The one order in which GregGuns items and blocks appear in NEI and the creative 
 
 ## The order
 
-Ten blocks, always in this sequence. Inside every block that has tiers, items run tier by tier: Steam, LV, MV, HV, EV, IV, LuV, ZPM. The "first" and "last" columns are checked against the code by `NeiOrderTest`; a new item must slot into its block, or the test names where it landed.
+Eleven blocks, always in this sequence. Inside every block that has tiers, items run tier by tier: Steam, LV, MV, HV, EV, IV, LuV, ZPM. The "first" and "last" columns are checked against the code by `NeiOrderTest`; a new item must slot into its block, or the test names where it landed.
 
 | # | Block | What it holds, and the order inside | First | Last |
 |---|---|---|---|---|
 | 1 | `WEAPONS_AND_AMMO` | Each gun, its akimbo variant, the magazines it uses (empty, then full), the loose rounds it uses; then the tier's melee tools and grenades. Shared ammo sits at the lowest-tier gun that uses it. | `handcannon` | `ammo_rocket_nuke` |
-| 2 | `GUN_PARTS` | Gun parts, then gun components (tanks, cells), tier by tier | `part_mechanical_1` | `cell_nuclear_depleted` |
-| 3 | `MACHINE_BLOCKS` | The Ammunition Works casing block. The Ammo Presses, Ammunition Works and benches are GT machines, see below | `casings` | `casings` |
-| 4 | `ARMOR` | Every armor set in catalog order, helmet, chestplate, leggings, boots, tier by tier | `t1_scout_helmet` | `t3_exo_boots` |
-| 5 | `ACCESSORIES` | Special-slot gear (goggles, pouch, masks, oxygen) then flight devices, tier by tier | `night_vision_goggles` | `anti_gravity_device` |
-| 6 | `ARMOR_PARTS` | Crafting parts of armor, tier by tier | `part_heavy_cloth` | `part_glider_wing` |
-| 7 | `UTILITY` | Turret plates cheapest first, the Explosive Charge, Reinforced Chest, Weapon Chest, Camp Flag, Bio Blob | `turret_armor_iron` | `bio_blob` |
-| 8 | `NPC_EGG` | The spawn egg; its subtypes follow [`NpcEggOrder`](../10-entities-npcs/index.md) (undead, bug, factions weakest first, mutants, bosses, machines) | `npc_egg` | `npc_egg` |
-| 9 | `WORLD_BLOCKS` | Bug Nest, Bug Nest Slime | `bug_nest` | `bug_nest_slime` |
-| 10 | `DEV` | Dev-only items (registered only in a dev environment) | `probe_tool_gun` | `probe_tool_gun` |
+| 2 | `GUN_PARTS` | Gun parts, then gun components (tanks, cells), tier by tier | `part_mechanical_1` | `cell_nuclear` |
+| 3 | `COINS` | The GregGuns Coin; its subtypes run 1, 10, 100, 1000, 10K ([coins-and-vending.md](coins-and-vending.md)) | `coin` | `coin` |
+| 4 | `MACHINE_BLOCKS` | The Ammunition Works casing block. The Ammo Presses, Ammunition Works and benches are GT machines, see below | `casings` | `casings` |
+| 5 | `ARMOR` | Every armor set in catalog order, helmet, chestplate, leggings, boots, tier by tier | `t1_scout_helmet` | `t3_exo_boots` |
+| 6 | `ACCESSORIES` | Special-slot gear (goggles, pouch, masks, oxygen) then flight devices, tier by tier | `night_vision_goggles` | `anti_gravity_device` |
+| 7 | `ARMOR_PARTS` | Crafting parts of armor, tier by tier | `part_gas_mask_filter` | `part_glider_wing` |
+| 8 | `UTILITY` | Turret plates cheapest first, the Explosive Charge, Reinforced Chest, Weapon Chest, Camp Flag, Bio Blob | `turret_armor_iron` | `bio_blob` |
+| 9 | `NPC_EGG` | The spawn egg; its subtypes follow [`NpcEggOrder`](../10-entities-npcs/index.md) (undead, bug, factions weakest first, mutants, bosses, machines) | `npc_egg` | `npc_egg` |
+| 10 | `WORLD_BLOCKS` | Bug Nest, Bug Nest Slime | `bug_nest` | `bug_nest_slime` |
+| 11 | `DEV` | Dev-only items (registered only in a dev environment) | `probe_tool_gun` | `probe_tool_gun` |
 
-Blocks 1 to 3 register in the guns module, 4 to 6 in armor, 7 in utility, 8 in npcs, 9 and 10 in worldgen and guns (the dev probe is registered last). That is also the module registration order, so a NEW world's numeric ids already follow the table.
+Blocks 1 to 4 register in the guns module, 5 to 7 in armor, 8 in utility, 9 in npcs, 10 and 11 in worldgen and guns (the dev probe is registered last). That is also the module registration order, so a NEW world's numeric ids already follow the table.
 
 ### GT machines
 

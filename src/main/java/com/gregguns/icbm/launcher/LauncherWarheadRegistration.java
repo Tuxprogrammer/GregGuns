@@ -47,6 +47,26 @@ public final class LauncherWarheadRegistration {
             .register("gregguns:launcher_warhead", LauncherWarheadRecipe.class, RecipeSorter.Category.SHAPELESS, "");
         GameRegistry.addRecipe(new LauncherWarheadRecipe());
         GregTechAPI.sBeforeGTPostload.add(LauncherWarheadRegistration::addAll);
+        neiTab();
+    }
+
+    /**
+     * Gives NEI's Launcher Loading page (D338) the Rocket Launcher as its tab icon and the crafting page's size, five
+     * loads a page. NEI reads the message on the client; without NEI it goes nowhere.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/NotEnoughItems/blob/2.8.155-GTNH/src/main/java/codechicken/nei/config/IMCHandler.java#L47-L111
+    private static void neiTab() {
+        net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+        tag.setString("handler", "com.gregguns.client.nei.LauncherLoadHandler");
+        tag.setString("modName", "GregGuns");
+        tag.setString("modId", com.gregguns.GregGuns.MODID);
+        tag.setBoolean("modRequired", true);
+        tag.setString("itemName", com.gregguns.GregGuns.MODID + ":rocket_launcher");
+        tag.setInteger("handlerHeight", 65);
+        tag.setInteger("handlerWidth", 166);
+        tag.setInteger("maxRecipesPerPage", 5);
+        cpw.mods.fml.common.event.FMLInterModComms.sendMessage("NotEnoughItems", "registerHandlerInfo", tag);
     }
 
     /** Dev-only scenarios. */

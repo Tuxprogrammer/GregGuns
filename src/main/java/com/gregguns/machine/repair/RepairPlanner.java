@@ -126,7 +126,7 @@ public final class RepairPlanner {
 
     /**
      * @param spec a repair list
-     * @return the material key of its cloth part, {@code item:<registry name>}
+     * @return the material key of its cloth part, {@code item:<cloth id>}
      */
     public static String clothKey(RepairSpec spec) {
         return "item:" + spec.clothItem();

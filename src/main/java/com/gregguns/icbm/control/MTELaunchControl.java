@@ -38,8 +38,10 @@ import gregtech.api.metatileentity.implementations.MTETieredMachineBlock;
 import gregtech.api.render.TextureFactory;
 
 /**
- * The Launch Control: an HV GT single block that stands within reach of a Galacticraft launch pad and fires the missile
- * on it (D13). It stores a target (typed coordinates, the player's position, or a GT data stick), checks the pad,
+ * The Launch Control: an HV GT single block that fires a missile (D13). Built into a Missile Silo's structure (any
+ * hatch position) it is that silo's Launch Control and fires that silo only; standing free, it fires a Galacticraft
+ * launch pad it touches (D288, {@link LaunchSites}). It stores a target (typed coordinates, the player's position, or a
+ * GT data stick), checks the pad,
  * the arming, the fuel and the range, and asks the launch site ({@link LaunchSite}: a pad or a silo) to launch. Three
  * things can fire it:
  * the Launch button, a rising redstone edge, and a rising edge of GT's work-allowed flag (what a machine controller
@@ -71,6 +73,12 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     private static final String K_HAS_X = "hasX";
     private static final String K_HAS_Z = "hasZ";
     private static final String K_COOL = "cool";
+    private static final String K_HAS_SILO = "hasSilo";
+    private static final String K_SILO_X = "siloX";
+    private static final String K_SILO_Y = "siloY";
+    private static final String K_SILO_Z = "siloZ";
+    /** Ticks after the block's first tick at which it asks silos around it to check their structure once. */
+    private static final int NUDGE_TICKS = 20;
 
     private boolean hasX;
     private boolean hasZ;
@@ -80,6 +88,13 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     private final FireTrigger redstoneEdge = new FireTrigger();
     private final FireTrigger coverEdge = new FireTrigger();
     private static final LaunchSnapshot GONE = new LaunchSnapshot(ControlStatus.NO_PAD, false, 0, 0, 0, 0, 0);
+
+    /** The silo whose structure holds this block (D288), set by the silo's structure check; saved. */
+    private boolean hasSilo;
+    private int siloX;
+    private int siloY;
+    private int siloZ;
+    private int nudgeIn = -1;
 
     private LaunchSnapshot snapshot;
     private long snapshotTick;
@@ -200,12 +215,12 @@ public final class MTELaunchControl extends MTETieredMachineBlock
 
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
-        return index == SLOT_STICK && isStick(stack);
+        return index == SLOT_STICK && isTargetCarrier(stack);
     }
 
     @Override
     public boolean allowPutStack(IGregTechTileEntity base, int index, ForgeDirection side, ItemStack stack) {
-        return index == SLOT_STICK && isStick(stack);
+        return index == SLOT_STICK && isTargetCarrier(stack);
     }
 
     @Override
@@ -213,9 +228,25 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         return false;
     }
 
-    /** @return true for a GT data stick */
+    /** @return true for a GT data stick (accepted quietly, for admins and automation) */
     static boolean isStick(ItemStack stack) {
         return stack != null && ItemList.Tool_DataStick.isStackEqual(stack, false, true);
+    }
+
+    /** @return true for a Radar Gun, the handheld that captures targets */
+    static boolean isRadarGun(ItemStack stack) {
+        return stack != null && stack.getItem() instanceof com.gregguns.icbm.defense.ItemRadarGun;
+    }
+
+    /**
+     * What the target slot takes: a Radar Gun, or a data stick. Both keep the target in the same tag
+     * ({@link TargetStick}); the item stays in the slot, so the player can take it back.
+     *
+     * @param stack any stack
+     * @return true for a Radar Gun or a GT data stick
+     */
+    static boolean isTargetCarrier(ItemStack stack) {
+        return isRadarGun(stack) || isStick(stack);
     }
 
     // --- target ---------------------------------------------------------------------------------------------------
@@ -299,7 +330,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             return;
         }
         ItemStack stick = getStackInSlot(SLOT_STICK);
-        if (!isStick(stick)) {
+        if (!isTargetCarrier(stick)) {
             lastStick = TargetStick.Outcome.NO_STICK;
             return;
         }
@@ -335,7 +366,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     /** Copies the target on the stick in the slot to this block; the outcome is also kept for the GUI line. */
     private TargetStick.Outcome loadStick() {
         ItemStack stick = getStackInSlot(SLOT_STICK);
-        if (!isStick(stick)) {
+        if (!isTargetCarrier(stick)) {
             lastStick = TargetStick.Outcome.NO_STICK;
             return lastStick;
         }
@@ -359,6 +390,21 @@ public final class MTELaunchControl extends MTETieredMachineBlock
     public ControlStatus currentStatus() {
         snapshot = null;
         return snapshot().status;
+    }
+
+    /**
+     * @return the pre-check without the target right now, recomputed: what the screen's status line reports while no
+     *         target is set ({@link LaunchGate#statusLineKey}); server side
+     */
+    public ControlStatus currentSiteStatus() {
+        snapshot = null;
+        return snapshot().siteStatus;
+    }
+
+    /** @return the silo or pad the block is bound to right now, recomputed (tests, the GUI line); server side */
+    public SiteLine siteLine() {
+        snapshot = null;
+        return snapshot().site;
     }
 
     /** @return how many times a shot was attempted since the block loaded (tests and the GUI) */
@@ -411,20 +457,23 @@ public final class MTELaunchControl extends MTETieredMachineBlock
 
     private LaunchSnapshot compute(IGregTechTileEntity base) {
         LaunchTarget t = target();
-        boolean energy = base.getStoredEU() >= EU_PER_SHOT;
+        com.gregguns.icbm.silo.MTEMissileSilo silo = boundSilo();
+        boolean siloPowered = silo != null;
+        boolean energy = shotEu(silo) >= EU_PER_SHOT;
         World w = base.getWorld();
-        LaunchSite site = ModuleState.isActive(ModuleId.ICBM)
-            ? LaunchSites.find(w, base.getXCoord(), base.getYCoord(), base.getZCoord())
-            : null;
+        LaunchSites.Found found = ModuleState.isActive(ModuleId.ICBM)
+            ? LaunchSites.find(this, w, base.getXCoord(), base.getYCoord(), base.getZCoord())
+            : LaunchSites.Found.NOTHING;
+        LaunchSite site = found.site;
         if (site == null) {
-            return new LaunchSnapshot(
-                LaunchGate.check(t, false, energy, shots.coolingDown(), false, false, false, 0, 0, 0),
-                false,
-                0,
-                0,
-                0,
-                0,
-                0);
+            ControlStatus st = LaunchGate
+                .check(t, false, energy, siloPowered, shots.coolingDown(), false, false, false, 0, 0, 0);
+            ControlStatus siteSt = found.siloUnformed ? ControlStatus.SILO_UNFORMED : ControlStatus.NO_PAD;
+            if (st == ControlStatus.NO_PAD) {
+                st = siteSt;
+            }
+            return new LaunchSnapshot(st, false, 0, 0, 0, 0, 0).at(found.line)
+                .withSiteStatus(siteSt);
         }
         int cd = site.countdownTicks();
         MissileStatus ms = site.status();
@@ -432,12 +481,29 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             .minRange() : 0;
         int max = ms.present() ? site.maxRange() : 0;
         double dist = t.distanceFrom(site.centerX(), site.centerZ());
-        ControlStatus st = LaunchGate
-            .check(t, true, energy, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled(), dist, min, max);
-        if (st == ControlStatus.READY && site.hold() != com.gregguns.icbm.missile.LaunchResult.OK) {
-            st = LaunchGate.fromResult(
-                site.hold()
-                    .name());
+        ControlStatus st = LaunchGate.check(
+            t,
+            true,
+            energy,
+            siloPowered,
+            shots.coolingDown(),
+            ms.present(),
+            ms.armed(),
+            ms.fueled(),
+            dist,
+            min,
+            max);
+        ControlStatus siteSt = LaunchGate
+            .checkSite(true, energy, siloPowered, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled());
+        com.gregguns.icbm.missile.LaunchResult hold = site.hold();
+        if (hold != com.gregguns.icbm.missile.LaunchResult.OK) {
+            ControlStatus held = LaunchGate.fromResult(hold.name());
+            if (st == ControlStatus.READY) {
+                st = held;
+            }
+            if (siteSt == ControlStatus.READY) {
+                siteSt = held;
+            }
         }
         int radius = t.isSet() && ms.present() ? (int) Math.round(site.expectedRadius(t.aimX(), t.aimZ()) * 10.0) : 0;
         if (cd >= 0 || site.ignited()) {
@@ -450,7 +516,8 @@ public final class MTELaunchControl extends MTETieredMachineBlock
                 dist,
                 radius,
                 ms.present() ? ms.tier()
-                    .number() : 0);
+                    .number() : 0)
+                .at(found.line);
         }
         return new LaunchSnapshot(
             st,
@@ -460,7 +527,32 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             (int) Math.round(dist),
             radius,
             ms.present() ? ms.tier()
-                .number() : 0);
+                .number() : 0).at(found.line)
+                    .withSiteStatus(siteSt);
+    }
+
+    /**
+     * The EU a shot is paid from (D300): a silo's own Launch Control uses the silo's Energy Hatches and ignores its own
+     * buffer while it is bound; a free one uses its own buffer. Server side.
+     *
+     * @return the EU available for a shot
+     */
+    public long shotEu() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (base == null || base.isClientSide()) {
+            return 0;
+        }
+        return shotEu(boundSilo());
+    }
+
+    private long shotEu(com.gregguns.icbm.silo.MTEMissileSilo silo) {
+        return silo != null ? silo.launchControlEu() : getBaseMetaTileEntity().getStoredEU();
+    }
+
+    /** @return whether a shot is paid from a bound silo's Energy Hatches (D300); server side */
+    public boolean siloPowered() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base != null && !base.isClientSide() && boundSilo() != null;
     }
 
     /**
@@ -483,7 +575,8 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             return s.status;
         }
         LaunchTarget t = target();
-        LaunchSite site = LaunchSites.find(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
+        LaunchSite site = LaunchSites
+            .find(this, base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord()).site;
         if (site == null) {
             lastShot = ControlStatus.NO_PAD;
             return lastShot;
@@ -491,7 +584,15 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         LaunchResult r = site.launch(t.aimX(), t.aimZ(), source);
         ControlStatus st = LaunchGate.fromResult(r.name());
         if (st == ControlStatus.FIRED) {
-            base.decreaseStoredEnergyUnits(EU_PER_SHOT, true);
+            // A silo's own Launch Control pays from the silo's Energy Hatches (D300). The launch is already accepted:
+            // if the hatches were drained in this same tick since the check, the shot stands and nothing goes below
+            // zero.
+            com.gregguns.icbm.silo.MTEMissileSilo silo = boundSilo();
+            if (silo != null) {
+                silo.payLaunchControl(EU_PER_SHOT);
+            } else {
+                base.decreaseStoredEnergyUnits(EU_PER_SHOT, true);
+            }
             shots.startCooldown(COOLDOWN_TICKS);
             launches++;
         }
@@ -555,6 +656,18 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         m.put("euPerShot", EU_PER_SHOT);
         m.put("cooldownTicks", COOLDOWN_TICKS);
         m.put("padFound", siteOrNull() != null);
+        if (isServerLive()) {
+            // A silo's own Launch Control runs on the silo's EU (D300).
+            m.put("power", siloPowered() ? "silo" : "own");
+            m.put("eu", shotEu());
+            SiteLine line = snapshot().site;
+            m.put(
+                "site",
+                line.kind()
+                    .name()
+                    .toLowerCase(java.util.Locale.ROOT));
+            m.put("siteName", line.name());
+        }
         return m;
     }
 
@@ -568,7 +681,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             return null;
         }
         IGregTechTileEntity base = getBaseMetaTileEntity();
-        return LaunchSites.find(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
+        return LaunchSites.find(this, base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord()).site;
     }
 
     /**
@@ -593,7 +706,8 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         if (base == null || base.isClientSide() || !ModuleState.isActive(ModuleId.ICBM) || !mayUse(player)) {
             return false;
         }
-        LaunchSite site = LaunchSites.find(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
+        LaunchSite site = LaunchSites
+            .find(this, base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord()).site;
         snapshot = null;
         return site != null && site.abort();
     }
@@ -605,6 +719,9 @@ public final class MTELaunchControl extends MTETieredMachineBlock
             return;
         }
         shots.tick();
+        if (nudgeIn > 0 && --nudgeIn == 0) {
+            nudgeSilos(base);
+        }
         // Both edges are sampled every tick; neither fires on its first sample, so a load with the signal high is
         // quiet.
         boolean rs = redstoneEdge.rising(base.getStrongestRedstone() > 0);
@@ -619,6 +736,102 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         super.onFirstTick(base);
         redstoneEdge.reset();
         coverEdge.reset();
+        nudgeIn = NUDGE_TICKS;
+    }
+
+    // --- the silo (D288) ------------------------------------------------------------------------------------------
+
+    /**
+     * Called by a Missile Silo's structure check that found this block in one of its hatch positions: this block is
+     * now that silo's Launch Control. Server side.
+     *
+     * @param x X of the silo controller
+     * @param y Y
+     * @param z Z
+     */
+    public void bindSilo(int x, int y, int z) {
+        if (!hasSilo || siloX != x || siloY != y || siloZ != z) {
+            hasSilo = true;
+            siloX = x;
+            siloY = y;
+            siloZ = z;
+            changed();
+        }
+    }
+
+    private void unbindSilo() {
+        hasSilo = false;
+        changed();
+    }
+
+    /** @return whether a silo's structure check bound this block and it has not been released since */
+    boolean hasSilo() {
+        return hasSilo;
+    }
+
+    /** @return {x, y, z} of the bound silo's controller; meaningful only while {@link #hasSilo()} */
+    int[] siloPos() {
+        return new int[] { siloX, siloY, siloZ };
+    }
+
+    /**
+     * The silo this block belongs to. The binding holds while the controller stands there and is either unformed (it
+     * may re-form with this block) or formed with a Launch Control at this block's position; a silo that formed
+     * without it, or a controller that is gone, releases it and the block stands free. Both sides keep positions, not
+     * references, so a reload of one chunk does not break the pairing. Server side.
+     *
+     * @return the silo, or null when the block is not part of one or the silo's chunk is not loaded
+     */
+    public com.gregguns.icbm.silo.MTEMissileSilo boundSilo() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (!hasSilo || base == null || base.isClientSide()) {
+            return null;
+        }
+        World w = base.getWorld();
+        if (!w.blockExists(siloX, siloY, siloZ)) {
+            return null; // keep the binding until the silo's chunk is back
+        }
+        com.gregguns.icbm.silo.MTEMissileSilo silo = LaunchSites.siloAt(w, siloX, siloY, siloZ);
+        if (silo == null
+            || silo.isFormed() && !silo.hasLaunchControlAt(base.getXCoord(), base.getYCoord(), base.getZCoord())) {
+            unbindSilo();
+            return null;
+        }
+        return silo;
+    }
+
+    /**
+     * A block placed into a silo that is already formed: GT rechecks a structure when a machine block next to its
+     * parts changes, which a Launch Control in a plain concrete wall may not reach. So once, shortly after it loads or
+     * is placed, a free block asks every formed silo whose structure could hold it, and that has no Launch Control, to
+     * check its structure again; the check binds it ({@link #bindSilo}).
+     */
+    private void nudgeSilos(IGregTechTileEntity base) {
+        if (hasSilo) {
+            return;
+        }
+        World w = base.getWorld();
+        int x = base.getXCoord();
+        int y = base.getYCoord();
+        int z = base.getZCoord();
+        int reach = com.gregguns.icbm.silo.SiloShape.DEPTH - 1;
+        int above = com.gregguns.icbm.silo.SiloShape.HEIGHT - 1 - com.gregguns.icbm.silo.SiloShape.CONTROLLER_ROW;
+        int below = com.gregguns.icbm.silo.SiloShape.CONTROLLER_ROW;
+        for (int dy = -below; dy <= above; dy++) {
+            for (int dx = -reach; dx <= reach; dx++) {
+                for (int dz = -reach; dz <= reach; dz++) {
+                    if (y + dy < 0 || y + dy > 255
+                        || !w.blockExists(x + dx, y + dy, z + dz)
+                        || w.getBlock(x + dx, y + dy, z + dz) != gregtech.api.GregTechAPI.sBlockMachines) {
+                        continue;
+                    }
+                    com.gregguns.icbm.silo.MTEMissileSilo silo = LaunchSites.siloAt(w, x + dx, y + dy, z + dz);
+                    if (silo != null && silo.isFormed() && !silo.hasLaunchControl()) {
+                        silo.onMachineBlockUpdate();
+                    }
+                }
+            }
+        }
     }
 
     // --- GUI ------------------------------------------------------------------------------------------------------
@@ -675,6 +888,10 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         nbt.setInteger(K_X, tx);
         nbt.setInteger(K_Z, tz);
         nbt.setInteger(K_COOL, shots.cooldownLeft());
+        nbt.setBoolean(K_HAS_SILO, hasSilo);
+        nbt.setInteger(K_SILO_X, siloX);
+        nbt.setInteger(K_SILO_Y, siloY);
+        nbt.setInteger(K_SILO_Z, siloZ);
     }
 
     @Override
@@ -684,6 +901,10 @@ public final class MTELaunchControl extends MTETieredMachineBlock
         tx = nbt.getInteger(K_X);
         tz = nbt.getInteger(K_Z);
         shots.restoreCooldown(nbt.getInteger(K_COOL));
+        hasSilo = nbt.getBoolean(K_HAS_SILO);
+        siloX = nbt.getInteger(K_SILO_X);
+        siloY = nbt.getInteger(K_SILO_Y);
+        siloZ = nbt.getInteger(K_SILO_Z);
     }
 
     // --- textures -------------------------------------------------------------------------------------------------

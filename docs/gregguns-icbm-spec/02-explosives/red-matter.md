@@ -32,7 +32,7 @@
 
 ## Recipe and cost
 
-An Assembler recipe at UHV, circuit 2: 8 neutronium plates, 2 UHV Field Generators, 2 Quantum Eyes, 2 UHV Emitters, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. About 190 plate equivalents ([D134](../DECISIONS.md)).
+Built in the warhead chain ([D282](../DECISIONS.md), [warheads-and-fill](warheads-and-fill.md#recipes)). The Inert T5 Warhead is made in the Assembler at UHV from 8 neutronium plates and a Fuze Assembly Mk III. The red matter payload is fitted at UHV on circuit 2: 2 UHV Field Generators, 2 Quantum Eyes and 2 UHV Emitters. Then 128 Plastic Explosive charges go in. A full warhead costs about 315 plate equivalents (D134).
 
 ## Requirements
 

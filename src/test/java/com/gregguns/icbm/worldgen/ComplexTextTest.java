@@ -43,6 +43,29 @@ class ComplexTextTest {
         }
     }
 
+    /** D301: "Activity Level:" over Alpha, Bravo or Charlie fits a sign for every level. */
+    @Test
+    void theActivitySignFitsForEveryLevel() {
+        Map<String, String> lang = lang();
+        String sign = lang.get("icbm.complex.sign.activity");
+        assertNotNull(sign, "the activity sign key is missing");
+        java.util.Map<ActivityLevel, String> names = new java.util.EnumMap<>(ActivityLevel.class);
+        names.put(ActivityLevel.ABANDONED, "Alpha");
+        names.put(ActivityLevel.PARTLY_ABANDONED, "Bravo");
+        names.put(ActivityLevel.OPERATIONAL, "Charlie");
+        for (ActivityLevel level : ActivityLevel.values()) {
+            String key = com.gregguns.icbm.complex.gen.ComplexSigns.activityNameKey(level);
+            assertEquals(names.get(level), lang.get(key), key);
+            String[] lines = String.format(sign, lang.get(key))
+                .split("\\|", -1);
+            assertEquals(2, lines.length, level + ": two lines");
+            assertEquals("Activity Level:", lines[0]);
+            for (String l : lines) {
+                assertTrue(l.length() <= 15, level + " line too long: " + l);
+            }
+        }
+    }
+
     @Test
     void dataStickTextIsInTheLangFile() {
         Map<String, String> lang = lang();

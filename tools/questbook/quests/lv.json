@@ -1,0 +1,1332 @@
+{
+  "chapter": "lv",
+  "quests": [
+    {
+      "key": "gg.lv.intro",
+      "title": "Steel-Age Firearms",
+      "tier": "LV",
+      "desc": [
+        "Steel changes everything. At LV your guns move from the crafting table to the GregTech Assembler, your ammunition moves to the GregGuns Ammo Press, and a handful of new weapons become possible: a pistol, a revolver, a sawed-off shotgun and a bolt-action rifle, plus steel armor and the first melee tools.",
+        "The gate is steel. Nearly every LV recipe in this chapter uses it, and the last step is always an LV machine. Hold eight steel plates to open the chapter; you will use them up quickly.",
+        "Start with the Ammo Press, because every gun in this chapter is useless without it. Then make 9mm bullets, build the parts for your first pistol, and branch out to the rifle and shotgun when you have lead and brass to spare. The grenade, bandages and armor quests are optional, but the loot bags are worth the trip.",
+        "[note]Press R on any gun in NEI to see its recipe. Every LV gun is built in an LV Assembler.[/note]"
+      ],
+      "pre": [
+        "gg.steam.intro",
+        88,
+        76
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305,
+              "ore": "plateSteel"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hotdogItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 258,
+      "y": 94,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:revolver",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.ammo_press",
+      "title": "Ammo Press",
+      "tier": "LV",
+      "desc": [
+        "Ammo is made in the GregGuns Ammo Press, not in a GregTech Assembler. It has its own recipe map: bullets, shells, empty magazines and loaded magazines, each pressed from GregTech parts and gunpowder. Build the LV press and everything in this chapter becomes possible.",
+        "Its hand recipe is like GregTech's own basic machines: an LV hull, a motor, a piston, conveyors, circuits and cable. Check NEI for the exact grid. The Steam press you may already own runs the same recipes more slowly.",
+        "[note]A machine can run any recipe at or below its tier. The LV press covers every LV round and magazine; MV and HV presses are needed for later calibers.[/note]"
+      ],
+      "pre": [
+        "gg.lv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20101
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:toastItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 204,
+      "y": 160,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20101
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.ammo_9mm",
+      "title": "9mm Rounds",
+      "tier": "LV",
+      "desc": [
+        "The 9mm bullet feeds the pistol and the revolver, and it is the cheapest round you will make. A single run in the Ammo Press takes sixteen brass foils, sixteen lead rounds and two gunpowder and produces sixteen bullets.",
+        "Brass foil comes from the Bending Machine, and lead rounds from the Lathe or from a nugget and a file. Check the Ammo Press tab in NEI for the exact recipe. Rounds take a while by design, so queue several runs.",
+        "[note]One batch makes sixteen bullets, enough to fill five pistol magazines.[/note]"
+      ],
+      "pre": [
+        "gg.lv.ammo_press"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 29301
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 25089
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:hamburgerItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 29301
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 25089
+            }
+          ]
+        }
+      ],
+      "x": 204,
+      "y": 196,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:ammo_9mm_bullet",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.parts",
+      "title": "Gun Parts at LV",
+      "tier": "LV",
+      "desc": [
+        "Steel guns are built from steel parts, and three of them turn up in almost every LV recipe. The Hardened Steel Barrel (a steel pipe, two rings and a plate) is the bore of the pistol and the rifle. The Iron Receiver (three iron plates, Mechanical Parts and two steel screws) is the action of the bolt-action rifle. Mechanical Parts T2 (small steel gears, springs and screws) is the clockwork inside nearly everything.",
+        "All three are LV Assembler recipes, and NEI shows the inputs. Hold one of each to finish this quest.",
+        "[note]Mechanical Parts T2 are also an input to empty magazines, so make extra.[/note]"
+      ],
+      "pre": [
+        "gg.lv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_iron",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hotdogItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17305
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 27305
+            }
+          ]
+        }
+      ],
+      "x": 276,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_barrel_hardened",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.pistol",
+      "title": "9mm Pistol",
+      "tier": "LV",
+      "desc": [
+        "Your first real sidearm. The 9mm Pistol is semi-automatic and fed from an eighteen-round magazine, so a reload is one key press instead of the Hand Cannon's slow single shot.",
+        "It is an LV Assembler recipe. The inputs are a Hardened Steel Barrel, Mechanical Parts T2, steel plates, rubber plates, steel screws and a spring: the parts from the last quest plus a little rubber, standing in for a plastic grip. NEI has the exact list.",
+        "The pistol takes 9mm Pistol Magazines, filled from three bullets each; see the Magazines quest next.",
+        "[note]Press Reload with a loaded magazine in your inventory. Sneak and right-click a magazine to empty it back into loose rounds.[/note]"
+      ],
+      "pre": [
+        "gg.lv.ammo_9mm"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17305
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17880
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 27305
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:pistol_9mm",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:beefjerkyItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 204,
+      "y": 232,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:pistol_9mm",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.magazines",
+      "title": "Magazines",
+      "tier": "LV",
+      "desc": [
+        "A magazine is built in two steps in the same Ammo Press. First press empty magazines: two steel plates, eight small steel springs and Mechanical Parts T2 make eight. Then fill them: four empties and twelve 9mm bullets make four loaded magazines.",
+        "You can also fill one by hand: put an empty magazine and three 9mm bullets together in a crafting grid. The press is just faster, and the pipes in the Ammo Logistics chapter can run it for you.",
+        "[note]A loaded pistol magazine holds eighteen rounds. Sneak and right-click it to take the bullets back out.[/note]"
+      ],
+      "pre": [
+        "gg.lv.pistol"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol_empty",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 12,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:trailmixItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_9mm_pistol_empty",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17305
+            }
+          ]
+        }
+      ],
+      "x": 204,
+      "y": 268,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:mag_9mm_pistol",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.revolver",
+      "title": "Revolver",
+      "tier": "LV",
+      "desc": [
+        "A heavier sidearm with six chambers and a bit more punch per shot than the pistol, at the cost of a longer reload. The Revolver uses loose 9mm bullets instead of a magazine: one bullet reloads all six chambers.",
+        "It is built in the LV Assembler from an Iron Barrel, Mechanical Parts, a Wooden Stock, steel plates and screws, and a spring. Compare its damage and range with the pistol on the tooltips and keep the one you like; two Revolvers combine into Akimbo Revolvers at a crafting table.",
+        "[note]The Revolver is the cheapest gun to keep fed, because one loose bullet fills it.[/note]"
+      ],
+      "pre": [
+        "gg.lv.ammo_9mm"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_iron",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_1",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_wooden",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17305
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 27305
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:revolver",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:cornbreadItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 240,
+      "y": 232,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:revolver",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.sawed_off",
+      "title": "Sawed Off",
+      "tier": "LV",
+      "desc": [
+        "Two barrels, two shells, and an apology to whatever is in front of you. The Sawed Off fires a spray of pellets: ruinous at point-blank range and nearly useless at a distance. It holds two shells, and a reload tops up only what you have fired.",
+        "Build it in an LV Assembler from two Iron Barrels, a Wooden Stock, a steel plate, screws and a spring. Its ammo is the Shotgun Shell, which the Ammo Press makes from eight brass foils, twenty-four lead rounds and four gunpowder per batch of eight; the Ammo Logistics chapter walks through it.",
+        "[warn]Do not stand in the open with it. Anything that survives the first two shells is already next to you.[/warn]"
+      ],
+      "pre": [
+        "gg.lv.ammo_press"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_iron",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_wooden",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17305
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 27305
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:sawed_off",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:grilledcheeseItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 240,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:sawed_off",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.bolt_rifle",
+      "title": "Bolt Action Rifle",
+      "tier": "LV",
+      "desc": [
+        "Long range and slow to cycle. The Bolt Action Rifle hits much harder than any LV sidearm and has a real scope: right-click to zoom in, which also tightens your spread, and line up the shot. It holds six rounds.",
+        "The recipe uses the Hardened Steel Barrel and Iron Receiver from the parts quest, a Wooden Stock, a glass lens for the scope, and steel plates, screws and a spring. Rifle Bullets come from the Ammo Press: brass foil, steel rounds and gunpowder.",
+        "[note]Zoom shrinks your field of view and narrows the spread while it is active.[/note]"
+      ],
+      "pre": [
+        "gg.lv.parts"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_iron",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_wooden",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 24890
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17305
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:bolt_action_rifle",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:potatocakesItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 276,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:bolt_action_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.melee",
+      "title": "Knife or Crowbar",
+      "tier": "LV",
+      "desc": [
+        "Melee tools never run dry. The Combat Knife is a steel blade for when the magazine is empty; the Crowbar is a tool as much as a weapon, and it mines blocks like an iron pickaxe. Either one completes this quest, and both are cheap.",
+        "Both are LV Assembler recipes. The knife takes two steel plates, a rubber plate and two screws; the crowbar takes long steel rods, a plate and a screw. Check NEI for the exact amounts.",
+        "[note]A crowbar in your hotbar means one less pickaxe to carry on a bunker raid.[/note]"
+      ],
+      "pre": [
+        "gg.lv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:combat_knife",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:crowbar",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:chickensandwichItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 27305
+            }
+          ]
+        }
+      ],
+      "x": 312,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:crowbar",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.combat_armor",
+      "title": "T1 Combat Armor",
+      "tier": "LV",
+      "desc": [
+        "Steel plate and Tanned Leather, pressed in the LV Assembler. The Soldier's set is the first armor that protects better than the hand-made sets: three steel plates in every piece but the boots, which take two, plus cloth, and a full set beats the Steam armor. The Soldier's Vest is the quest item.",
+        "Stock up on Tanned Leather, because the vest alone eats five. Your LV Chemical Bath makes it from two leather in phosphoric acid, with no drying rack to wait on. Helmet, vest, pants and boots each use their own circuit number in the Assembler, and NEI shows each one.",
+        "[note]Armor value shows on the tooltip. Compare sets before you commit plates.[/note]"
+      ],
+      "pre": [
+        "gg.lv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17305
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 5,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t1_combat_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:pbandjItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 348,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:t1_combat_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.stielgranate",
+      "title": "Stielgranate",
+      "tier": "LV",
+      "desc": [
+        "A classic stick grenade: a steel head packed with gunpowder on a wooden handle. It deals heavy blast damage in a radius of about five blocks and bounces a few times before it settles, so you can throw it around a corner. Sixteen come out of one LV Assembler run.",
+        "The recipe is two steel plates, four gunpowder and a wooden stick. Hold sixteen to finish the quest. Hold right click to wind up a throw; the longer you hold, the farther it goes.",
+        "[warn]The fuse is ten seconds long and the blast hurts you too. Throw it and step back. By default it does not break blocks, but a server can turn that on.[/warn]"
+      ],
+      "pre": [
+        "gg.lv.melee"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17305
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:stick",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:stielgranate",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:bakedbeansItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:stielgranate",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17305
+            }
+          ]
+        }
+      ],
+      "x": 312,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:stielgranate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.bandages",
+      "title": "Bandages",
+      "tier": "LV",
+      "desc": [
+        "A bandage is the cheapest healing you can carry. Using one takes about three seconds, heals one heart and gives Regeneration I for a while. Two come out of a single LV Assembler run of three string, a slimeball and a steel ring.",
+        "Hold four to finish this quest. Keep a few in your hotbar before you go near any soldier.",
+        "[note]The Medkit in the Gear chapter heals more, but it needs aluminum.[/note]"
+      ],
+      "pre": [
+        "gg.lv.combat_armor"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "minecraft:string",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:slime_ball",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 28305
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:bandages",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:fishandchipsItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:bandages",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17305
+            }
+          ]
+        }
+      ],
+      "x": 348,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:bandages",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.lv.summary",
+      "title": "Steel Age Done",
+      "tier": "LV",
+      "desc": [
+        "You have a press, a pistol, a revolver, a shotgun, a rifle and steel armor. LV is done. The next gate is aluminum, and with it come automatic weapons, grenades with real fragments, and the first serious armor.",
+        "Aluminum is a GregTech project in its own right: bauxite, electrolysis, and an MV power setup. Take your time. Everything you built here keeps working at MV, and a higher-tier machine runs lower-tier recipes faster.",
+        "Hold four aluminum plates to close the chapter and take the big loot bag. Spend some of the winnings on ammo, because MV guns burn through it.",
+        "[note]The MV chapter opens from the pack's MV quests, not from this one. You can start it any time.[/note]"
+      ],
+      "pre": [
+        "gg.lv.bolt_rifle",
+        "gg.lv.pistol",
+        "gg.lv.combat_armor"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17019,
+              "ore": "plateAluminium"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 3
+            },
+            {
+              "id": "harvestcraft:bltItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 8,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17305
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 276,
+      "y": 250,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.metaitem.01",
+        "count": 1,
+        "damage": 17019
+      },
+      "implicit": [
+        "gg.lv.pistol",
+        "gg.lv.combat_armor"
+      ]
+    }
+  ]
+}

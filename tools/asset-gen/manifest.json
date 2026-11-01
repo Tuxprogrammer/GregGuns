@@ -1361,44 +1361,6 @@
   "priority": "P3"
  },
  {
-  "id": "icon.part_heavy_cloth",
-  "kind": "icon",
-  "path": "textures/items/part_heavy_cloth.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#643200"
-  ],
-  "brief": "Heavy Cloth (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. folded brown heavy cloth.",
-  "footprint_ref": "textures/items/heavyCloth.png",
-  "priority": "P2"
- },
- {
-  "id": "icon.part_treated_leather",
-  "kind": "icon",
-  "path": "textures/items/part_treated_leather.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080"
-  ],
-  "brief": "Treated Leather (LV): GT-style 16x16 item icon, soft top-left light, dark outline. dark green-black treated leather.",
-  "footprint_ref": "textures/items/treatedLeather.png",
-  "priority": "P2"
- },
- {
   "id": "icon.part_power_plating",
   "kind": "icon",
   "path": "textures/items/part_power_plating.png",
@@ -2111,26 +2073,6 @@
   "priority": "P3"
  },
  {
-  "id": "icon.cell_nuclear_depleted",
-  "kind": "icon",
-  "path": "textures/items/cell_nuclear_depleted.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#282828",
-   "#8C648C"
-  ],
-  "brief": "Nuclear Power Cell, Depleted (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. same cell, glow gone, dull gray-brown.",
-  "footprint_ref": "textures/items/nuclearPowerCellDepleted.png",
-  "priority": "P3"
- },
- {
   "id": "icon.bandages",
   "kind": "icon",
   "path": "textures/items/bandages.png",
@@ -2550,7 +2492,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Soldier's Helmet (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: helmet.",
+  "brief": "Soldier's Helmet (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: helmet.",
   "footprint_ref": "textures/items/t1_combat_helmet.png",
   "priority": "P2"
  },
@@ -2569,7 +2511,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Soldier's Vest (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: chestplate.",
+  "brief": "Soldier's Vest (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: chestplate.",
   "footprint_ref": "textures/items/t1_combat_chestplate.png",
   "priority": "P2"
  },
@@ -2588,7 +2530,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Soldier's Pants (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: leggings.",
+  "brief": "Soldier's Pants (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: leggings.",
   "footprint_ref": "textures/items/t1_combat_leggings.png",
   "priority": "P2"
  },
@@ -2607,7 +2549,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Soldier's Boots (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on heavy cloth. Slot: boots.",
+  "brief": "Soldier's Boots (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel plates on leather. Slot: boots.",
   "footprint_ref": "textures/items/t1_combat_boots.png",
   "priority": "P2"
  },
@@ -15176,7 +15118,7 @@
   "kind": "infographic",
   "path": "docs/assets/infographics/multiblock-ammunition-works.png",
   "width": 1600,
-  "height": 3474,
+  "height": 3359,
   "frames": 1,
   "frametime": null,
   "duration_s": null,
@@ -15198,7 +15140,7 @@
   "kind": "infographic",
   "path": "docs/assets/infographics/multiblock-armory-gantry.png",
   "width": 1600,
-  "height": 2814,
+  "height": 2413,
   "frames": 1,
   "frametime": null,
   "duration_s": null,
@@ -15242,7 +15184,7 @@
   "kind": "infographic",
   "path": "docs/assets/infographics/enemies.png",
   "width": 1600,
-  "height": 3600,
+  "height": 3623,
   "frames": 1,
   "frametime": null,
   "duration_s": null,
@@ -15286,7 +15228,7 @@
   "kind": "infographic",
   "path": "docs/assets/infographics/recipes-steam-and-lv.png",
   "width": 1600,
-  "height": 2971,
+  "height": 3040,
   "frames": 1,
   "frametime": null,
   "duration_s": null,
@@ -15304,11 +15246,11 @@
   "priority": "P2"
  },
  {
-  "id": "info.icbm_warheads",
+  "id": "info.icbm_hero",
   "kind": "infographic",
-  "path": "docs/assets/infographics/icbm-warheads.png",
+  "path": "docs/assets/infographics/icbm-hero.png",
   "width": 1600,
-  "height": 3876,
+  "height": 503,
   "frames": 1,
   "frametime": null,
   "duration_s": null,
@@ -15321,16 +15263,16 @@
    "#101418",
    "#F2F2F2"
   ],
-  "brief": "Player guide (DRAFT, stamped; numbers pending): the Tier 1, Tier 2, Tier 3 and nuclear warheads rendered from the shipped models, every T1-T2 blast type, fill and radius, damage falloff, demolition-charge use, and the GT machines that make them. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "brief": "ICBM banner for the README and for posting: the five warhead casings, the EV radar with its dish and two missiles on the Galacticraft pad. Shows HBM's Nuclear Tech Mod models (LGPL-3.0) and Galacticraft's pad (MIT). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
   "footprint_ref": "(new)",
   "priority": "P2"
  },
  {
-  "id": "info.icbm_missile_silo",
+  "id": "info.icbm_warheads",
   "kind": "infographic",
-  "path": "docs/assets/infographics/icbm-missile-silo.png",
+  "path": "docs/assets/infographics/icbm-warheads.png",
   "width": 1600,
-  "height": 2402,
+  "height": 3203,
   "frames": 1,
   "frametime": null,
   "duration_s": null,
@@ -15343,7 +15285,29 @@
    "#101418",
    "#F2F2F2"
   ],
-  "brief": "Build guide (DRAFT, stamped; numbers pending): the Missile Silo multiblock, layer by layer, with block counts, hatches and a Tier 3 missile standing in the shaft. Shows HBM's Nuclear Tech Mod missile models (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "brief": "Player guide: the Tier 1 and Tier 2 warheads rendered from the shipped models, every blast type with radius, center damage and payload, fill and fuse, damage falloff, demolition use, de-arming, and the warhead chain. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "footprint_ref": "(new)",
+  "priority": "P2"
+ },
+ {
+  "id": "info.icbm_warheads_heavy",
+  "kind": "infographic",
+  "path": "docs/assets/infographics/icbm-warheads-heavy.png",
+  "width": 1600,
+  "height": 3193,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#808080",
+   "#FF8000",
+   "#101418",
+   "#F2F2F2"
+  ],
+  "brief": "Player guide: the heavy casings (Tier 3, nuclear, antimatter, red matter), their blast types, kill zones and casing recipes, and the launcher warheads. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
   "footprint_ref": "(new)",
   "priority": "P2"
  },
@@ -15352,7 +15316,7 @@
   "kind": "infographic",
   "path": "docs/assets/infographics/icbm-first-missile.png",
   "width": 1600,
-  "height": 2882,
+  "height": 3213,
   "frames": 1,
   "frametime": null,
   "duration_s": null,
@@ -15365,7 +15329,139 @@
    "#101418",
    "#F2F2F2"
   ],
-  "brief": "Player guide (DRAFT, stamped; numbers pending): the Tier 1 and Tier 2 missiles on the Galacticraft pad, and the steps from chip and schematic to body, stacking, fuel, launch control and impact. Shows HBM's Nuclear Tech Mod missile and warhead models (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "brief": "Player guide: the Tier 1 and Tier 2 missiles on the Galacticraft pad, and the steps from chip and schematic to body, stacking, fuel, Launch Control and launch. Shows HBM's Nuclear Tech Mod missile and warhead models (LGPL-3.0) and Galacticraft art (MIT). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "footprint_ref": "(new)",
+  "priority": "P2"
+ },
+ {
+  "id": "info.icbm_missile_silo",
+  "kind": "infographic",
+  "path": "docs/assets/infographics/icbm-missile-silo.png",
+  "width": 1600,
+  "height": 3082,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#808080",
+   "#FF8000",
+   "#101418",
+   "#F2F2F2"
+  ],
+  "brief": "Build guide: the Missile Silo multiblock, layer by layer, with block counts, hatches, doors, loading and the Tier 3 body. Paints in two NewHorizonsCoreMod icons, so the sheet is GPL-3.0. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "footprint_ref": "(new)",
+  "priority": "P2"
+ },
+ {
+  "id": "info.icbm_detection_and_defense",
+  "kind": "infographic",
+  "path": "docs/assets/infographics/icbm-detection-and-defense.png",
+  "width": 1600,
+  "height": 5064,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#808080",
+   "#FF8000",
+   "#101418",
+   "#F2F2F2"
+  ],
+  "brief": "Player guide: radars and their ranges, the Radar Tower, the Air-Defense Battery and SAMs, the EMP Tower and the handheld tools. Shows HBM's Nuclear Tech Mod art (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "footprint_ref": "(new)",
+  "priority": "P2"
+ },
+ {
+  "id": "info.icbm_fallout",
+  "kind": "infographic",
+  "path": "docs/assets/infographics/icbm-fallout.png",
+  "width": 1600,
+  "height": 2796,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#808080",
+   "#FF8000",
+   "#101418",
+   "#F2F2F2"
+  ],
+  "brief": "Player guide: fallout zones, the hazard and protection, the Antidote, and the processing chain with its yields. Shows HBM's Nuclear Tech Mod block art (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "footprint_ref": "(new)",
+  "priority": "P2"
+ },
+ {
+  "id": "info.icbm_computer_control",
+  "kind": "infographic",
+  "path": "docs/assets/infographics/icbm-computer-control.png",
+  "width": 1600,
+  "height": 2116,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#808080",
+   "#FF8000",
+   "#101418",
+   "#F2F2F2"
+  ],
+  "brief": "Player guide: the OpenComputers hookups of every ICBM machine (Adapter, components, calls and signals) and the Golden Dome floppy with its recipe and its four programs, with a sample launch session checked against the shipped Lua. Shows OpenComputers' textures (CC0) and HBM's Nuclear Tech Mod overlays (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "footprint_ref": "(new)",
+  "priority": "P2"
+ },
+ {
+  "id": "info.icbm_silos",
+  "kind": "infographic",
+  "path": "docs/assets/infographics/icbm-silos.png",
+  "width": 1600,
+  "height": 9923,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#808080",
+   "#FF8000",
+   "#101418",
+   "#F2F2F2"
+  ],
+  "brief": "Player guide: abandoned silo complexes, their layout map, rooms, blast doors and service runs, the three activity levels, guards, loot by planet, taking a silo over, radar stations and the data stick. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "footprint_ref": "(new)",
+  "priority": "P2"
+ },
+ {
+  "id": "info.icbm_recipes",
+  "kind": "infographic",
+  "path": "docs/assets/infographics/icbm-recipes.png",
+  "width": 1600,
+  "height": 4619,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#808080",
+   "#FF8000",
+   "#101418",
+   "#F2F2F2"
+  ],
+  "brief": "Player guide: every ICBM crafting chain (warhead parts, inert warheads, charges, missile bodies, machines, tools, launcher warheads), read from a real-pack recipe export. Paints in two NewHorizonsCoreMod icons, so the sheet is GPL-3.0. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.]",
   "footprint_ref": "(new)",
   "priority": "P2"
  }

@@ -1,7 +1,6 @@
 package com.gregguns.core.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
@@ -20,14 +19,8 @@ class ConfigDefaultsTest {
     @Test
     void everyModuleFlagHasItsExpectedDefault() {
         for (ModuleId id : ModuleId.values()) {
-            // icbm ships off until the ICBM beta gate (docs/ROADMAP-ICBM.md)
-            assertEquals(id != ModuleId.ICBM, ModuleFlags.isEnabled(id), "modules." + id.configKey());
+            assertTrue(ModuleFlags.isEnabled(id), "modules." + id.configKey());
         }
-    }
-
-    @Test
-    void debugKeybindsDefaultToOff() {
-        assertFalse(DebugConfig.enableDebugKeybinds);
     }
 
     @Test

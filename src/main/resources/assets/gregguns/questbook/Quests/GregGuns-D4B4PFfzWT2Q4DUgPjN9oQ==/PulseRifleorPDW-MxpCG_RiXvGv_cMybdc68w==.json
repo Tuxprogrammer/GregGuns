@@ -1,8 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -7893280336126059310,
-      "questIDLow:4": -6171163180922998266
+      "questIDHigh:4": -7548932031149616246,
+      "questIDLow:4": -5183314183505690754
+    },
+    "1:10": {
+      "questIDHigh:4": -3390561897226019459,
+      "questIDLow:4": -7862952162482090016,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -17,7 +22,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Advanced magazines are the EV ammo step up.",
+      "desc:8": "Two ballistic guns that eat advanced magazines. The Pulse Rifle adds a fire-control circuit to the build. The PDW is a compact personal defense weapon and needs no circuit. Build either one to move on.\n\nBoth are built in the EV Assembler from a Carbon Barrel, a Carbon Receiver and a Carbon Gunstock, plus titanium plates and screws. The Pulse Rifle adds a diamond lens, an EV circuit and soldering alloy; the PDW takes small titanium springs instead.\n\nNeither is an electric item, so they need no charger. The ammo is the work.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +34,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Pulse Rifle or PDW",
+      "name:8": "§8§lPulse Rifle or PDW",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -65,12 +70,49 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1705,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:mcpamItem"
+        },
+        "2:10": {
           "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 6,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:mag_advanced"
+        },
+        "1:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_advanced_bullet"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
         }
-      }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
@@ -80,6 +122,42 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_barrel_carbon"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_receiver_carbon"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_stock_carbon"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 1,
       "requiredItems:9": {

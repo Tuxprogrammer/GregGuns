@@ -449,6 +449,17 @@
   {
    "type": "pose",
    "part": "rightArm",
+   "when": "carrying",
+   "mode": "set",
+   "angles": {
+    "x": -25,
+    "y": -10,
+    "z": 0
+   }
+  },
+  {
+   "type": "pose",
+   "part": "rightArm",
    "when": "aiming",
    "mode": "set",
    "angles": {

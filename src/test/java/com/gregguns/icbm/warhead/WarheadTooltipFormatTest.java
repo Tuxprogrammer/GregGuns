@@ -69,6 +69,17 @@ class WarheadTooltipFormatTest {
     }
 
     @Test
+    void shiftEndsWithHowToDearmIt() {
+        WarheadTooltipFormat.Labels l = labels();
+        l.detailDearm = "Dearm %s per craft";
+        List<String> lines = WarheadTooltipFormat.lines(l, facts(), true);
+        assertEquals("Dearm 8 per craft", lines.get(lines.size() - 1));
+        assertFalse(
+            WarheadTooltipFormat.lines(l, facts(), false)
+                .contains("Dearm 8 per craft"));
+    }
+
+    @Test
     void annihilationReplacesTheDamageLine() {
         WarheadTooltipFormat.Facts f = facts();
         f.annihilates = true;

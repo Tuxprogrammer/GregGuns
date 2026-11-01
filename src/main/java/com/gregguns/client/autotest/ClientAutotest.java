@@ -81,6 +81,8 @@ public final class ClientAutotest {
     private String pendingShot;
     private AutotestCommands.Wait holdWait;
     private int shotFrames;
+    /** The frame count running for an {@code fps} signal, or null. */
+    private com.gregguns.core.testing.FpsWindow fps;
     private boolean joinLogged;
     private int fireClock = -1;
     private int fireRemaining;
@@ -229,6 +231,13 @@ public final class ClientAutotest {
 
     @SubscribeEvent
     public void onRenderTickEnd(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && fps != null) {
+            String line = fps.frame(System.nanoTime());
+            if (line != null) {
+                fps = null;
+                log(line + " (client " + localName() + ")");
+            }
+        }
         if (event.phase != TickEvent.Phase.END || pendingShot == null) {
             return;
         }
@@ -313,6 +322,13 @@ public final class ClientAutotest {
             case "view" -> Minecraft.getMinecraft().gameSettings.thirdPersonView = Integer.parseInt(args[0]);
             // hud off hides the GUI layer (hotbar, hands, crosshair) for clean worn-model screenshots (F1).
             case "hud" -> Minecraft.getMinecraft().gameSettings.hideGUI = "off".equals(args[0]);
+            // fov <degrees>: the world field of view, as the options slider sets it (70 normal, 110 Quake Pro).
+            case "fov" -> Minecraft.getMinecraft().gameSettings.fovSetting = Float.parseFloat(args[0]);
+            // fps <label> <seconds>: counts frames for that long and logs "FPS <label> frames=... avgFps=...".
+            case "fps" -> fps = new com.gregguns.core.testing.FpsWindow(
+                args[0],
+                Double.parseDouble(args[1]),
+                System.nanoTime());
             case "shot" -> {
                 pendingShot = args[0];
                 shotFrames = 0;
@@ -335,7 +351,11 @@ public final class ClientAutotest {
             }
             case "see" -> holdWait = new AutotestCommands.SeeWait(args[0]);
             case "cblock" -> AutotestCommands.logBlock(args);
+            case "cstate" -> StateProbe.log(args);
+            case "rerender" -> Minecraft.getMinecraft().renderGlobal.loadRenderers();
+            case "chat" -> Minecraft.getMinecraft().thePlayer.sendChatMessage(String.join(" ", args));
             case "sync" -> AutotestCommands.syncAck();
+            case "fxstats" -> AutotestCommands.fxStats(args);
             case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);
             case "scope" -> com.gregguns.client.render.GunRenderers
                 .setDebugScope("off".equals(args[0]) ? null : args[0]);

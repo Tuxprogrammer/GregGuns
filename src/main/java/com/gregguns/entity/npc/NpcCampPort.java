@@ -40,7 +40,7 @@ public final class NpcCampPort implements CampSpawnPort {
     @Override
     public boolean spawn(World world, String npcName, double x, double y, double z) {
         NpcMob mob = NpcMob.byName(npcName);
-        if (world.isRemote || mob == null || !NpcRegistry.isRegistered(mob)) {
+        if (world.isRemote || mob == null || !NpcRegistry.isRegistered(mob) || !NpcSpawnGate.allowed(mob)) {
             return false;
         }
         int cx = (int) Math.floor(x) >> 4;

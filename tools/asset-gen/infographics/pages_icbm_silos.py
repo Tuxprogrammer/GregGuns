@@ -4,7 +4,8 @@ What a complex is, a map of its layout, the rooms and what each holds, the three
 ceiling of every planet, the real machines, how to take a silo over, the radar station and the data stick.
 
 Every number is read from the Java sources at build time (`_const`-style regexes on `ActivityProfile`, `IcbmConfig`,
-`PlanetTable`, `SiloCeiling`, `SiloLootTables`, `RoomKind` and the room switch in `ComplexFurnisher`), and each formula the
+`PlanetTable`, `SiloCeiling`, `SiloLootTables`, `RoomKind`, `RoomLoot`, `RoomLootDraw`, `FurnitureWear` and the room
+blueprints in `complex/blueprint/rooms/`), and each formula the
 sheet restates is checked against the source text, so a changed constant moves the sheet and a changed rule stops the
 build instead of leaving it stale (D50). The map is drawn from the `ComplexExportTest` dump (complex_map.py):
 
@@ -101,8 +102,9 @@ if sum(SILO_ODDS) != 100 or len(SILO_ODDS) != MAX_SILOS - MIN_SILOS + 1:
 SILO_PITCH = int(re.search(r"SILO_PITCH = (\d+);", _gr).group(1))
 _must(_gr, "static final int CAP_PERCENT = 150", "the room growth cap")
 _must(_src("icbm/complex/gen/ComplexPlacer.java"), "MIN_FLOOR", "the floor rule")
-_fur = _src("icbm/complex/ComplexFurnisher.java")
-_must(_fur, "static final int AREA_STEP = 450;", "the furnishing area step")
+CHEST_TARGETS = _ints_of_config("siloComplexChestTargets")
+if len(CHEST_TARGETS) != 3:
+    raise SystemExit("IcbmConfig.siloComplexChestTargets no longer gives one total per activity level")
 
 LEVELS = ["Abandoned", "Partly abandoned", "Operational"]
 
@@ -114,11 +116,17 @@ def _profiles() -> list[dict]:
     for m in re.finditer(r"private static final ActivityProfile (\w+) = new ActivityProfile\((.*?)\);", s, re.S):
         body = re.sub(r"new double\[\]\s*\{([^}]*)\}", lambda a: "ARR[" + a.group(1).replace(",", ";") + "]", m.group(2))
         args = [a.strip() for a in body.split(",")]
-        arr = [float(x) for x in re.search(r"ARR\[(.*)\]", args[9]).group(1).split(";")]
+        if len(args) != 14:
+            raise SystemExit(f"ActivityProfile's constructor changed ({len(args)} arguments); update pages_icbm_silos._profiles")
+        spawn = [float(x) for x in re.search(r"ARR\[(.*)\]", args[9]).group(1).split(";")]
+        if len(spawn) != 3:
+            raise SystemExit("ActivityProfile.spawnerWeights no longer gives the odds of 0, 1 and 2 spawners a room")
         out.append(dict(
             name=m.group(1), collapse=float(args[1]), breach=float(args[2]), rubble=float(args[3]), hole=float(args[4]),
-            lit=float(args[5]), broken=float(args[6]), dead=float(args[7]), flooded=args[8] == "true", spawn=arr,
-            shaft=float(args[10]), richness=int(args[11]), chip=float(args[12]), part=float(args[13])))
+            lit=float(args[5]), broken=float(args[6]), dead=float(args[7]), flooded=args[8] == "true", spawn=spawn,
+            chip=float(args[11]), part=float(args[12]), absent=float(args[13])))
+    _must(s, "double[] spawnerWeights, int richness, double chip,", "ActivityProfile's argument order")
+    _must(s, "double siloPart, double absentMachine)", "ActivityProfile's argument order")
     names = [p["name"] for p in out]
     if names != ["ABANDONED", "PARTLY", "OPERATIONAL"]:
         raise SystemExit(f"ActivityProfile constants changed: {names}")
@@ -135,10 +143,18 @@ def _ceiling_rules():
     _must(sc, "return ceiling <= 5 ? 3 : ceiling <= 7 ? 4 : 5;", "the guard danger rule")
     _must(sc, "Math.max(1, Math.min(7, ceiling))", "the gun table rule")
     cc = _src("icbm/worldgen/ComplexContents.java")
-    _must(cc, "1.0 + 0.5 * (c - SiloCeiling.EV) / (SiloCeiling.UMV - SiloCeiling.EV)", "the guard scale")
     _must(cc, "Math.max(1, Math.min(3, ceiling - 3))", "the salvaged body tier")
-    _must(cc, "Math.max(Math.min(3, ceiling), ceiling - below)", "the machine tier rule")
-    _must(cc, "Long.remainderUnsigned(h, 3)", "the machine tier spread")
+    _must(cc, "Math.max(Math.min(3, ceiling), ceiling - below)", "the radar and comms tier rule")
+    _must(cc, "Long.remainderUnsigned(h, 3)", "the radar and comms tier spread")
+    _must(cc, "default:\n                return roomMachineTier(ceiling, h);", "the room machine tier rule")
+    _must(cc, "total += com.gregguns.icbm.complex.gen.MetalProps.weight(t, c);", "the room machine tier ladder")
+    mp = _src("icbm/complex/gen/MetalProps.java")
+    _must(mp, "if (tier >= ceiling - 1) return 1;\n        if (tier <= 2) return 4;\n        return 2;", "the metal ladder's weights")
+    _must(cc, "boolean elite = p.level() != ActivityLevel.ABANDONED && band >= 2", "the elite spawner rule")
+    _must(cc, "&& Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;", "the elite spawner share")
+    _must(cc, "return 1 + Math.min(2, d / 30);", "the depth bands")
+    _must(cc, "if (collapsed) {\n            return;", "no spawners in a caved-in room")
+    _must(_src("worldgen/spawner/SpawnerSettings.java"), "STANDARD = new SpawnerSettings(3, 4, 100, 120, 5, 24, 40);", "the guard spawner settings")
     pt = _src("icbm/complex/PlanetTable.java")
     _must(pt, "return 4 + Math.max(0, t - 1);", "the planet ceiling formula")
     _must(pt, "public static final int OVERWORLD = 0;", "the Overworld tier")
@@ -188,13 +204,19 @@ def danger(c: int) -> int:
     return 3 if c <= 5 else 4 if c <= 7 else 5
 
 
-def guard_scale(c: int) -> float:
-    return 1.0 + 0.5 * (c - 4) / (12 - 4)
+def _ladder_weight(t: int, c: int) -> int:
+    """MetalProps.weight: LV and MV weigh 4, the tiers between 2, the ceiling and the tier under it 1."""
+    if t < 1 or t > c:
+        return 0
+    if t >= c - 1:
+        return 1
+    return 4 if t <= 2 else 2
 
 
-def machine_range(c: int) -> str:
-    lo = max(min(3, c), c - 2)
-    return vname(c) if lo == c else f"{vname(lo)} to {vname(c)}"
+def machine_share(c: int) -> tuple[float, float]:
+    """(LV and MV share, the ceiling tier's share) of the room machines under a ceiling."""
+    tot = sum(_ladder_weight(t, c) for t in range(1, c + 1))
+    return (_ladder_weight(1, c) + _ladder_weight(2, c)) / tot, _ladder_weight(c, c) / tot
 
 
 def pct(x: float) -> str:
@@ -204,123 +226,198 @@ def pct(x: float) -> str:
 
 # ---------------------------------------------------------------- rooms, from the layout code
 
-ROOMS = re.findall(r"^\s+([A-Z_]+)\((\d+), (\d+), (true|false)\)", _src("icbm/complex/RoomKind.java"), re.M)
+ROOMS = re.findall(r"^\s+([A-Z_]+)\((\d+), (\d+), (true|false)(?:, \d+){0,4}\)[,;]", _src("icbm/complex/RoomKind.java"), re.M)
 ROOM_INFO = {k: dict(length=int(a), depth=int(b), mandatory=c == "true") for k, a, b, c in ROOMS}
+_must(_src("icbm/complex/RoomKind.java"), "UNDERGROUND_FARM(44, 34, false, 20, 16, 0, 0)", "the farm's minimum size")
 
-
-_FURN = {"T": "tables", "C": "consoles", "B": "bunks", "SH": "shelves"}
+_BP = JAVA / "icbm/complex/blueprint/rooms"
+_BP_REG = _src("icbm/complex/blueprint/RoomBlueprints.java")
+BLUEPRINT = dict(re.findall(r'put\("([A-Z_]+)", new (\w+)\(\)\);', _BP_REG))
 
 
 def _room_contents() -> dict:
-    """{room kind: {chests, machines, furniture: sets, posts: bool, frames: bool}} from ComplexFurnisher.room's switch. Counts
-    scale with the room's area, so the sheet names what a room holds and not how many."""
-    s = _fur
-    sw = s[s.index("switch (r.kind()) {"):]
-    sw = sw[:sw.index("default:")]
+    """{room kind: {machines: set of MachineRole names, nasa, displays}} read from each kind's blueprint class.
+    Counts follow a room's size, so the sheet names what a room holds and not how many."""
     out = {}
-    pending = []
-    for m in re.finditer(r"case (\w+):(.*?)(?=\n\s+case |\Z)", sw, re.S):
-        kind, body = m.group(1), m.group(2)
-        pending.append(kind)
-        if not body.strip():
-            continue
-        d = dict(chests=set(), machines=set(), furniture=set(), posts="spawners(" in body or "MarkKind.SPAWNER" in body,
-                 frames="frames(fit)" in body, nasa="fit.nasa" in body)
-        d["chests"] |= {k.lower() for k in re.findall(r"LootKeys\.(\w+)", body)}
-        d["machines"] |= set(re.findall(r"MachineRole\.(\w+)\.name", body))
-        d["furniture"] |= {_FURN[k] for k in re.findall(r"fit\.(?:row|column)\((T|C|B|SH),", body)}
-        if "BASIN" in body:
-            d["furniture"].add("basins of standing water")
-        for k in pending:
-            out[k] = d
-        pending = []
-    # The hub's furnishing is its own method.
-    h = s[s.index("private void hub()"):]
-    h = h[:h.index("\n    }\n")]
-    out["ASSEMBLY_BAY"] = dict(chests={"salvage"}, machines={"WORKBENCH"}, furniture=set(), posts=True, frames=False, nasa=False)
-    if "LootKeys.SALVAGE" not in h or "MachineRole.WORKBENCH" not in h:
-        raise SystemExit("ComplexFurnisher.hub changed; update pages_icbm_silos._room_contents")
+    for kind, cls in BLUEPRINT.items():
+        body = (_BP / f"{cls}.java").read_text(encoding="utf-8")
+        out[kind] = dict(machines=set(re.findall(r"MachineRole\.(\w+)", body)),
+                         nasa="nasa" in body.lower(), displays="GUN_DISPLAY" in body or "displays(" in body)
     return out
 
 
 ROOM_CONTENTS = _room_contents()
-if (not ROOM_CONTENTS.get("ARMORY", {}).get("frames") or "magazine" not in ROOM_CONTENTS["WARHEAD_MAGAZINE"]["chests"]
-        or not ROOM_CONTENTS["MISSILE_ASSEMBLY"]["nasa"]):
-    raise SystemExit("the room contents read from ComplexFurnisher look wrong; update pages_icbm_silos._room_contents")
+if sorted(ROOM_CONTENTS) != sorted(ROOM_INFO):
+    raise SystemExit(f"rooms without a blueprint: {sorted(set(ROOM_INFO) ^ set(ROOM_CONTENTS))}; update pages_icbm_silos")
+if (not ROOM_CONTENTS["ARMORY"]["displays"] or not ROOM_CONTENTS["MISSILE_ASSEMBLY"]["nasa"]
+        or "CHEM_REACTOR" not in ROOM_CONTENTS["CHEM_LAB"]["machines"] or "LAUNCH_CONTROL" not in ROOM_CONTENTS["LAUNCH_CONTROL"]["machines"]):
+    raise SystemExit("the room contents read from the blueprints look wrong; update pages_icbm_silos._room_contents")
 
+# Each room kind's chest table (RoomLoot's rows); the commander's safe keeps its own table.
+_rl = _src("icbm/worldgen/RoomLoot.java")
+_KEY_VALUE = dict(re.findall(r'public static final String (\w+) = "([a-z_]+)";', _src("icbm/complex/LootKeys.java")))
+ROOM_TABLE = {k: _KEY_VALUE[t] for k, t in re.findall(r'row\("([A-Z_]+)", LootKeys\.(\w+), \d+, Group\.\w+\);', _rl)}
+if sorted(ROOM_TABLE) != sorted(ROOM_INFO):
+    raise SystemExit(f"RoomLoot rows changed: {sorted(set(ROOM_INFO) ^ set(ROOM_TABLE))}; update pages_icbm_silos")
+_must(_rl, "if (LootKeys.SAFE.equals(markKey) || LootKeys.ARMORY_AMMO.equals(markKey))", "the safe and armory display tables")
+
+# What each table holds, in a player's words. The pools each line names are SiloLootTables.mix's for that table.
 LOOT_TEXT = {
-    "salvage": "iron, steel, copper, coal, ceiling-tier plates, a damaged missile body",
-    "stockpile": "iron, steel, copper, coal, ceiling-tier plates and ingots",
-    "safe": "ceiling-tier plates and ingots, gold, silver, a gun",
-    "comms": "plastic, rubber, gold and fine gold wire",
-    "armory": "steel and guns of the ceiling tier",
-    "workshop": "ceiling-tier plates, rods, screws and gears",
-    "medical": "golden apples, paper, potatoes, rubber, plastic",
-    "galley": "bread, beef, pork, apples, a bucket",
-    "bunks": "leather, wool, paper, books, gold nuggets",
-    "fuel": "coal, sulfur, steel and aluminum plates, rocket fuel cells",
-    "control": "plastic, gold wire, plates, a gun",
-    "magazine": "gunpowder, lead, steel and tungstensteel plates, 4 stainless steel plates",
+    "salvage": "metal ingots and plates, hardware, spare parts, tools, canned food, a damaged missile body",
+    "control": "maps, clipboards, guidance computers, circuits and fine wire",
+    "radar": "circuits, sensors, cables and guidance computers",
+    "comms": "circuits, fine wire, cables, paper and maps",
+    "server": "circuits, batteries and cables, fans",
+    "office": "books, maps, clipboards, glasses, gold and silver, a beret",
+    "safe": "the planet's top plates and ingots, gold, silver, coins, diamonds, a gun and its ammo",
+    "magazine": "inert warheads, fuzes, liners and sleeves, explosives, four stainless steel plates",
+    "assembly": "missile body parts (plating, fins, engines, nose cones, guidance), warhead parts, rarely a whole missile body",
+    "fuel": "fuel canisters and tanks, coke, lubricant and creosote cells",
+    "power": "batteries, cables, rotors, redstone, coke",
+    "hvac": "fans, vents, gas mask filters, rotors, pipes",
+    "pumps": "pumps, pipes, rubber, water and chlorine cells",
+    "workshop": "screws, bolts, gears, springs, motors, pumps and pistons, tools, gun parts",
+    "motorpool": "motors and pistons, buggy parts, batteries, fuel",
+    "chemlab": "acid, solvent and gas cells, salts and dusts, hazmat gear",
+    "incinerator": "ash, scrap boxes, metal nuggets, coal, bones",
+    "stockpile": "metal ingots and plates, rubber, plastic, wool, logs, canned food",
+    "pantry": "raw meat, canned and dried food, fresh produce, packed ice",
+    "galley": "ingredients and meals (Pam's HarvestCraft and vanilla), produce, cookware",
+    "canteen": "meals, snacks and drinks",
+    "farm": "seeds, produce, bone meal, fertilizer, hoes and hay",
+    "cellar": "mushrooms and mushroom dishes, mycelium",
+    "bunks": "armor from leather to power armor, books, coins, a sidearm's ammo, snacks",
+    "laundry": "wool, cotton, linens, armor",
+    "lounge": "music discs, snacks and drinks, books, coins",
+    "medical": "bandages, medkits, antidote, healing potions, golden apples",
+    "decon": "hazmat suits, gas masks, filters, air tanks, medkits",
+    "guard": "sidearms and their ammo, coffee, snacks, bandages",
+    "brig": "confiscated knives, crowbars and swords, coins, gold, now and then a diamond",
+    "range": "guns, ammo, grenades and gun parts, targets",
+    "armory": "ammo, guns, grenades, gun parts and combat armor",
 }
-CHEST_NAME = {"salvage": "Salvage", "stockpile": "Stockpile", "safe": "Safe", "comms": "Comms", "armory": "Armory",
-              "workshop": "Workshop", "medical": "Medical", "galley": "Galley", "bunks": "Bunk", "fuel": "Fuel",
-              "control": "Control", "magazine": "Magazine"}
+for _k in set(ROOM_TABLE.values()) | {"safe"}:
+    if _k not in LOOT_TEXT:
+        raise SystemExit(f"loot table {_k} has no text in pages_icbm_silos.LOOT_TEXT")
+_slt = _src("icbm/worldgen/SiloLootTables.java")
+for _case, _needle in [("GALLEY", ".pool(30, SiloPools.ingredients())"), ("BUNKS", ".pool(50, SiloPools.bunkarmor())"),
+                       ("RANGE", ".pool(45, SiloArms.ammo(c))"), ("ASSEMBLY", ".pool(50, SiloPools.missilebody(c, true))"),
+                       ("MAGAZINE", ".pool(45, SiloPools.warheadparts())"), ("CANTEEN", ".pool(35, SiloPools.meals())")]:
+    _seg = _slt[_slt.index(f"case LootKeys.{_case}:"):]
+    if _needle not in _seg[:_seg.index("break;")]:
+        raise SystemExit(f"the {_case.lower()} table changed (expected `{_needle}`); update pages_icbm_silos.LOOT_TEXT")
+
 MACHINE_NAME = {
-    "GENERATOR": "GregTech generators", "BATTERY_BUFFER": "Battery Buffer", "LAUNCH_CONTROL": "Launch Control",
+    "GENERATOR": "GregTech generators", "BATTERY_BUFFER": "Battery Buffers", "LAUNCH_CONTROL": "Launch Control",
     "NASA_WORKBENCH": "NASA Workbench", "PUMP": "GregTech pumps", "AIR_HANDLER": "air handlers (machine hulls)",
     "FUEL_TANK": "fuel tanks (machine hulls)", "WORKBENCH": "Assemblers", "RADAR": "radar console (machine hull)",
-    "COMMS": "comms console (machine hull)", "MAGAZINE_CASING": "stainless steel frame boxes",
+    "COMMS": "comms consoles (machine hulls)", "MAGAZINE_CASING": "stainless steel frame boxes",
+    "CHEM_REACTOR": "Chemical Reactors", "LAB": "Centrifuges, Electrolyzers, Mixers and other lab machines",
+    "RECYCLER": "Recyclers, Electric and Arc Furnaces", "MACHINE_TOOL": "Lathes, Benders, Presses, Wiremills, Cutters",
 }
+_mp = _src("icbm/worldgen/MachinePicker.java")
+for _n in ("Machine_{T}_ChemicalReactor", "Machine_{T}_Centrifuge", "Machine_{T}_Recycler", "Machine_{T}_ArcFurnace",
+           "Machine_{T}_Lathe", "Machine_{T}_Cutter", "Machine_{T}_Assembler"):
+    _must(_mp, f'"{_n}"', "the machine picker's roles")
+for _k, _c in ROOM_CONTENTS.items():
+    for _r in _c["machines"]:
+        if _r not in MACHINE_NAME:
+            raise SystemExit(f"MachineRole.{_r} has no name in pages_icbm_silos.MACHINE_NAME")
+
 ROOM_NAME = dict(CM.NAMES)
 ROOM_NAME["GUARD_POST"] = "Guard Post"
 ROOM_NAME["ASSEMBLY_BAY"] = "Assembly Bay"
-ROOM_SPECIAL = {
-    "ASSEMBLY_BAY": "The hub: every hall leaves it.",
-    "WARHEAD_MAGAZINE": "Fallout rubble; no warhead is ever stored.",
-    "PUMP_ROOM": "Floods when the complex is not operational.",
-    "ARMORY": "Two rows of guns in item frames on the back wall.",
-    "GUARD_POST": "Stands beside a hall mouth.",
-    "DECON_AIRLOCK": "In the corner between the hub and a hall.",
-    "LAUNCH_CONTROL": "Windows over the silo gallery.",
-    "MISSILE_ASSEMBLY": "Beside the silo gallery.",
+# How each room is laid out (its blueprint, as silo-layout.md's Furnishing table describes it), in a few words.
+ROOM_LOOK = {
+    "ASSEMBLY_BAY": "The hub: a container yard, shipping containers along the walls and in rows, crate pallets, clear lanes to every hall.",
+    "LAUNCH_CONTROL": "A console row with chairs at the windows over the silo gallery; plot tables, console pods, server racks.",
+    "MISSILE_ASSEMBLY": "Beside the silo gallery: casing racks, parts chests and body-part containers around the NASA Workbench.",
+    "COMMS": "Four-seat operator pods with typewriters, a console wall, racks and files.",
+    "COMMANDER_OFFICE": "The desk and chairs, the safe, a meeting table, a couch corner, a map table, bookcases and filing chests.",
+    "WARHEAD_MAGAZINE": "Racks of inert casing frame boxes, steel containers; fallout rubble. No warhead is ever stored.",
+    "GENERATOR_HALL": "Generator sets with turbine housings, fuel containers, spares pallets.",
+    "ARMORY": "Display walls across the room, a gun in an item frame every fifth block over a chest of its ammo; rifle racks and armor stands.",
+    "RADAR_TRACKING": "Plot tables and back-to-back console pods, a console wall.",
+    "FUEL_DEPOT": "Tank islands ringed by drums, fuel containers, a drum wall.",
+    "AIR_HANDLING": "Air-handler units inside rings of vent risers, filter crates.",
+    "PUMP_ROOM": "Two pools sunk 3 deep either side of the aisle, the pumps along the aisle between them, drums. Floods unless the complex is operational.",
+    "WATER_TREATMENT": "Strips of standing water with filter tanks and dosing drums.",
+    "WORKSHOP": "A row of GT machine tools, crafting-table and anvil islands, tool racks, the NASA Workbench in a corner.",
+    "VEHICLE_BAY": "A drive lane to the back wall, shipping containers, charging buffers, a fuel point.",
+    "STOCKPILE": "Pallet racks of chests and crate stacks, containers, metal props.",
+    "SERVER_ROOM": "Two-high rack pairs, backup batteries, the operator's desk.",
+    "BUNKS": "Real beds in head-to-head pairs sharing a locker, a chest at the foot of each bed; rifle racks.",
+    "MESS_GALLEY": "A kitchen line of furnaces, cauldrons and counters; a serving counter; tables with chairs.",
+    "CAFETERIA": "A serving line and rows of tables with chairs.",
+    "INFIRMARY": "Bed pairs behind curtains, treatment bays, medicine cabinets, the nurse's station.",
+    "DECON_AIRLOCK": "A decon shower, a bench, suits on stands. In the corner between the hub and a hall.",
+    "GUARD_POST": "The duty desk, lockers, a rifle rack, a card table and ammo chests. Beside a hall mouth.",
+    "UNDERGROUND_FARM": "Lit wheat, carrot and potato fields between water channels, hay bales and seed chests.",
+    "MUSHROOM_CELLAR": "Mycelium beds framed by mushroom stems, crate racks.",
+    "COLD_STORAGE": "Freezer racks of packed ice with chests in them, reefer containers.",
+    "SHOOTING_RANGE": "Firing lanes down to wool targets on a hay backstop, booths at the firing line, ammo chests.",
+    "BRIG": "Barred cells with bunks and iron doors, guard desks, evidence lockers, an interrogation table.",
+    "CHEM_LAB": "Working Chemical Reactors on the back wall, lab benches, safety showers.",
+    "SHOWERS_LAUNDRY": "Shower stalls, lockers and a bench, a laundry corner with wash tubs.",
+    "REC_LOUNGE": "Pool tables, card tables, a bar and a sofa corner facing a screen wall, bookcases.",
+    "INCINERATOR": "A furnace bank with chimney risers, GT recyclers, ash heaps, coal bunkers, sorting stations.",
 }
 _ROOM_ORDER = ["ASSEMBLY_BAY", "LAUNCH_CONTROL", "MISSILE_ASSEMBLY", "COMMS", "COMMANDER_OFFICE", "WARHEAD_MAGAZINE",
-               "GENERATOR_HALL", "ARMORY", "RADAR_TRACKING", "FUEL_DEPOT", "AIR_HANDLING", "PUMP_ROOM", "WATER_TREATMENT",
-               "WORKSHOP", "VEHICLE_BAY", "STOCKPILE", "SERVER_ROOM", "BUNKS", "MESS_GALLEY", "CAFETERIA", "INFIRMARY",
-               "DECON_AIRLOCK", "GUARD_POST"]
-if sorted(_ROOM_ORDER) != sorted(ROOM_INFO):
-    raise SystemExit(f"RoomKind changed: {sorted(set(ROOM_INFO) ^ set(_ROOM_ORDER))}; update pages_icbm_silos._ROOM_ORDER")
-
-
-FURN_RENAME = {("SERVER_ROOM", "shelves"): "server racks", ("MESS_GALLEY", "consoles"): "a counter",
-               ("CAFETERIA", "consoles"): "a counter", ("AIR_HANDLING", "shelves"): "racks"}
+               "GENERATOR_HALL", "ARMORY", "RADAR_TRACKING", "SERVER_ROOM", "FUEL_DEPOT", "AIR_HANDLING", "PUMP_ROOM",
+               "WATER_TREATMENT", "WORKSHOP", "VEHICLE_BAY", "CHEM_LAB", "INCINERATOR", "STOCKPILE", "COLD_STORAGE",
+               "MESS_GALLEY", "CAFETERIA", "UNDERGROUND_FARM", "MUSHROOM_CELLAR", "BUNKS", "INFIRMARY",
+               "SHOWERS_LAUNDRY", "REC_LOUNGE", "SHOOTING_RANGE", "BRIG", "GUARD_POST", "DECON_AIRLOCK"]
+if sorted(_ROOM_ORDER) != sorted(ROOM_INFO) or sorted(ROOM_LOOK) != sorted(ROOM_INFO) or any(k not in ROOM_NAME for k in ROOM_INFO):
+    raise SystemExit(f"RoomKind changed: {sorted(set(ROOM_INFO) ^ set(_ROOM_ORDER))}; update pages_icbm_silos._ROOM_ORDER and ROOM_LOOK")
 
 
 def room_card(kind: str) -> str:
     info = ROOM_INFO[kind]
-    c = ROOM_CONTENTS.get(kind, dict(chests=set(), machines=set(), furniture=set(), posts=False, frames=False, nasa=False))
+    c = ROOM_CONTENTS[kind]
     role, rgb = CM.ROLE_OF[kind]
     sw = f"rgb({rgb[0]},{rgb[1]},{rgb[2]})"
     size = f"about {info['length']} &times; {info['depth']}" if kind != "ASSEMBLY_BAY" else f"{HUB[0]} &times; {HUB[1]}"
     tag = {"ASSEMBLY_BAY": "one", "GUARD_POST": "3 to 5", "DECON_AIRLOCK": "one"}.get(
-        kind, "always" if info["mandatory"] else "sometimes")
-    lines = []
-    for k in sorted(c["chests"]):
-        lines.append(f"<b>{CHEST_NAME[k]} chests</b>: {LOOT_TEXT[k]}")
-    for r in sorted(c["machines"] | ({"NASA_WORKBENCH"} if c["nasa"] else set())):
-        lines.append(f"<b>{MACHINE_NAME[r]}</b>")
-    furn = {FURN_RENAME.get((kind, f), f) for f in c["furniture"]}
-    if furn:
-        lines.append("Furniture: " + ", ".join(sorted(furn)))
-    if c["frames"]:
-        lines.append("<b>Item frames</b> with guns on the back wall")
-    if kind in ROOM_SPECIAL and kind != "ARMORY":
-        lines.append(ROOM_SPECIAL[kind])
-    if c["posts"]:
-        lines.append("Guard posts")
-    body = "".join(f"<li>{ln}</li>" for ln in lines) or "<li>Empty but for lamps and a sign.</li>"
+        kind, "always" if info["mandatory"] else "dealt")
+    lines = [esc(ROOM_LOOK[kind])]
+    lines.append(f"<b>Chests</b>: {LOOT_TEXT[ROOM_TABLE[kind]]}")
+    if kind == "COMMANDER_OFFICE":
+        lines.append(f"<b>The safe</b>: {LOOT_TEXT['safe']}")
+    machines = sorted(c["machines"] | ({"NASA_WORKBENCH"} if c["nasa"] else set()))
+    if machines:
+        lines.append("<b>" + ", ".join(MACHINE_NAME[r] for r in machines) + "</b>")
+    body = "".join(f"<li>{ln}</li>" for ln in lines)
     return (f'<div class="room"><div class="rh"><i style="background:{sw}"></i><b>{esc(ROOM_NAME[kind])}</b>'
             f'<span>{size} &middot; {tag}</span></div><ul>{body}</ul></div>')
+
+
+# ---------------------------------------------------------------- room states, chests and wear
+
+
+def _draw_profiles() -> dict:
+    """RoomLootDraw's numbers per room state: real picks, junk picks."""
+    s = _src("icbm/worldgen/RoomLootDraw.java")
+    out = {}
+    for name, args in re.findall(r"private static final Profile (\w+) = new Profile\(([^)]*)\);", s):
+        a = [x.strip() for x in args.split(",")]
+        out[name] = dict(real=(int(a[0]), int(a[1])), junk=(int(a[2]), int(a[3])))
+    if sorted(out) != ["GUTTED", "IN_SERVICE", "MOTHBALLED", "STAFFED"]:
+        raise SystemExit(f"RoomLootDraw profiles changed: {sorted(out)}")
+    _must(s, "Profile(int realMin, int realMax, int junkMin, int junkMax,", "RoomLootDraw.Profile's argument order")
+    return out
+
+
+DRAW = _draw_profiles()
+_fw = _src("icbm/worldgen/FurnitureWear.java")
+NORMAL_LOST = [float(x) for x in re.search(r"NORMAL_LOST = \{([^}]*)\}", _fw).group(1).split(",")]
+_must(_src("icbm/worldgen/RoomState.java"), "STAFFED,", "the room states")
+_cc = _src("icbm/worldgen/ComplexContents.java")
+IN_SERVICE_DEAD = float(re.search(r"IN_SERVICE_DEAD = ([0-9.]+);", _cc).group(1))
+MOTHBALLED_DEAD = float(re.search(r"MOTHBALLED_DEAD = ([0-9.]+);", _cc).group(1))
+_must(_cc, "a caved-in room holds neither chests nor crates", "the caved-in room rule")
+_must(_cc, "display frames sit outside the chest budget", "the armory displays outside the chest total")
+_must(_cc, "c.addBonus(Bonus.CASING_PLATES);", "the magazine's plates")
+_must(_cc, "c.addBonus(Bonus.DAMAGED_BODY);", "the hub's damaged bodies")
 
 
 # ---------------------------------------------------------------- blocks and renders
@@ -445,22 +542,17 @@ def radar_station(formed: bool) -> Path:
 
 
 def silo_front(missing: str | None) -> Path:
-    """The front wall of a complex silo, with the controller and hatches where the complex places them. missing: None, "controller" or "hatch"."""
+    """The front wall of a complex silo, with the controller, hatches and Launch Control where the complex places them
+    (D299: hatch columns beside a 3 x 3 glass window). missing: None, "controller" or "hatch"."""
     b = SILO.silo_build()
-    cells = SILO.silo_cells()
-    for pos, _, _ in SILO.HATCHES:
-        b.blocks[pos] = {"C": "casing", "G": "glass", "B": "beam"}[cells[pos]]
-    b.hatches = []
-    gc = S._casing("gantry_casing")
     b.blocks[(2, 2, 0)] = "casing" if missing == "controller" else ("ctrl", FRONT)
-    b.hatch((1, 2, 0), "input_bus", FRONT, gc)
-    b.hatch((3, 2, 0), "maintenance_hatch", FRONT, gc)
-    b.hatch((3, 1, 0), "input_hatch", FRONT, gc)
-    if missing != "hatch":
-        b.hatch((2, 1, 0), "energy_hatch", FRONT, gc)
-    else:
-        b.blocks[(2, 1, 0)] = "glass"
-    return SILO.render(b, yaw=-22, pitch=22, ppu=84, ground=False, missile=False, marks=True, cut=lambda x, y, z: y > 3 or z > 1)
+    if missing == "hatch":
+        # The Energy Hatch's cell keeps the hatch column's concrete.
+        pos = next(p for p, k, _ in SILO.HATCHES if k == "energy_hatch")
+        b.blocks[pos] = "casing"
+        b.hatches = [h for h in b.hatches if h[1] != pos]
+    return SILO.render(b, yaw=-22, pitch=22, ppu=84, ground=False, missile=False, marks=True,
+                       cut=lambda x, y, z: y > 3 or z > 1)
 
 
 def hull_block(tier: str) -> Path:
@@ -519,6 +611,112 @@ def _crop(d: dict, p: dict, px: int) -> Path:
         return im
 
     return K._cached("silos-crop", dict(seed=p["seed"], px=px, v=3), make)
+
+
+# ---------------------------------------------------------------- blast doors and service runs, from the fixtures code
+
+_fx = _src("icbm/worldgen/ComplexFixtures.java")
+_fw2 = _src("icbm/worldgen/FixtureWriter.java")
+GUTTED_OPEN = float(re.search(r"GUTTED_OPEN = ([0-9.]+);", _fx).group(1))
+BREACH_MIN, BREACH_MAX = (int(x) for x in re.search(r"BREACH_MIN = (\d+), BREACH_MAX = (\d+);", _fx).groups())
+_must(_fx, "int torn = (int) (Mix.unit(Mix.of(seed, S_DOOR, id, 1)) * 3); // 0 to 2", "the stuck-open door's torn slats")
+_must(_fx, "hang[i] = Math.min(height - 1, 2 + (int) (Mix.unit(Mix.of(seed, S_DOOR, id, 4 + side)) * 4));", "the jammed columns")
+_must(_fx, "int gap = 1 + (int) (Mix.unit(Mix.of(seed, S_RUN, t.id() * 4096L + k, 2)) * 3);", "the tray gaps")
+_must(_fx, "i += gap + 6 + (int) (Mix.unit(Mix.of(seed, S_RUN, t.id() * 4096L + k, 4)) * 9);", "the tray gap spacing")
+CABLE_STRIP = float(re.search(r"strip\(cable, seed, t\.id\(\), 5, ([0-9.]+),", _fx).group(1))
+PIPE_STRIP = float(re.search(r"strip\(pipe, seed, t\.id\(\), 6, ([0-9.]+),", _fx).group(1))
+_must(_fx, "boolean[] pipe = t.major() && hi > lo ?", "the pipe in major halls only")
+_must(_fx, "if (!t.gallery()) runs(", "no service runs in the silo gallery")
+_must(_gr, "return h <= ComplexLayout.MINOR_HEIGHT ? h - 2 : h - 3;", "the portal height")
+for _st in ("case IN_SERVICE:", "case STAFFED:", "case MOTHBALLED:"):
+    _must(_fx, _st, "the door states")
+SERVICE = [tuple(m) for m in re.findall(r'\{ "(\w+)", "(\w+)" \}', re.search(r"SERVICE_MATERIALS = \{(.*?)\};", _fw2, re.S).group(1))]
+_must(_fw2, "OrePrefixes.cableGt04 : OrePrefixes.pipeLarge", "the 4x cable and the large pipe")
+_must(_fw2, "OrePrefixes.frameGt, Materials.Steel", "the steel tray")
+_must(_fw2, "ItemList[] casings = ItemList.MACHINE_CASINGS;", "the Ross128 tier casing frames")
+GT_NAME = {"Aluminium": "Aluminium", "Platinum": "Platinum", "VanadiumGallium": "Vanadium-Gallium", "Naquadah": "Naquadah",
+           "NaquadahAlloy": "Naquadah Alloy", "Steel": "Steel", "StainlessSteel": "Stainless Steel", "Titanium": "Titanium",
+           "TungstenSteel": "Tungstensteel", "Iridium": "Iridium"}
+
+
+def door_svg(kind: str, casing: Path | None = None, w_cols: int = 18, h_rows: int = 8, cell: int = 13, slat: str = "#a9b4c1") -> str:
+    """A blast-door portal face on, as a diagram: jambs and lintel, the door's slat columns by state. `casing` fills the
+    frame with a GregTech machine casing texture (the Ross128 tier frame)."""
+    W, H = (w_cols + 2) * cell, (h_rows + 1) * cell + cell
+    out = [f'<svg viewBox="0 0 {W} {H}" width="{W}" height="{H}" style="display:block;margin:0 auto">']
+    fill = "#4a5562"
+    if casing is not None:
+        pid = "cas" + casing.stem.replace("-", "")
+        out.append(f'<defs><pattern id="{pid}" width="{cell}" height="{cell}" patternUnits="userSpaceOnUse">'
+                   f'<image href="{K.url(casing)}" width="{cell}" height="{cell}" style="image-rendering:pixelated"/></pattern></defs>')
+        fill = f"url(#{pid})"
+    frame = [(0, r) for r in range(h_rows + 1)] + [(w_cols + 1, r) for r in range(h_rows + 1)] + [(c, 0) for c in range(1, w_cols + 1)]
+    for c, r in frame:
+        out.append(f'<rect x="{c * cell}" y="{r * cell}" width="{cell}" height="{cell}" fill="{fill}" stroke="#1b2129" stroke-width=".6"/>')
+    floor_y = (h_rows + 1) * cell
+    out.append(f'<rect x="0" y="{floor_y}" width="{W}" height="{cell}" fill="#3a424c"/>')
+    rows = {c: h_rows for c in range(w_cols)}       # pieces hanging from the top, per column
+    piles = set()
+    if kind == "open":
+        rows = {c: 1 for c in range(w_cols)}
+    elif kind == "stuck":
+        rows = {c: 1 for c in range(w_cols)}
+        rows[4] = rows[13] = 0
+    elif kind == "breached":
+        for c in range(6, 12):
+            rows[c] = 0
+        rows[5], rows[12] = 3, 4
+        piles = {4, 5, 6, 11, 12, 13}
+    for c in range(w_cols):
+        for r in range(rows[c]):
+            x, y = (c + 1) * cell, (r + 1) * cell
+            out.append(f'<rect x="{x + .5}" y="{y + .5}" width="{cell - 1}" height="{cell - 1}" fill="{slat}" stroke="#3e4651" stroke-width="1"/>'
+                       f'<line x1="{x + 1}" y1="{y + cell / 2}" x2="{x + cell - 1}" y2="{y + cell / 2}" stroke="#7b8693" stroke-width="1"/>')
+    for c in piles:
+        x = (c + 1) * cell
+        out.append(f'<polygon points="{x},{floor_y} {x + cell / 2},{floor_y - cell * .8} {x + cell},{floor_y}" fill="#8a7a66" stroke="#4d4337"/>')
+    out.append("</svg>")
+    return "".join(out)
+
+
+def gt_block(tex: Path, tag: str) -> Path:
+    return K.voxels(f"silos-gt-{tag}", {(0, 0, 0): "h"}, {"h": (tex, tex, tex)}, yaw=-34, pitch=28, ppu=96)
+
+
+PLUS = "<b style='color:var(--txt)'> +</b>"
+
+
+def fixtures_section() -> str:
+    states = [("shut", None, "Shut", "Staffed and mothballed wings"), ("open", None, "Rolled up", "Wings in service"),
+              ("stuck", None, "Stuck open", f"{GUTTED_OPEN * 100:.0f}% of a ruin's doors"),
+              ("breached", None, "Breached", f"{(1 - GUTTED_OPEN) * 100:.0f}% of a ruin's doors")]
+    panels = "".join(f'<div style="text-align:center">{door_svg(k, c)}<div class="cap" style="margin-top:4px"><b style="color:var(--txt)">{t}</b> &middot; {sub}</div></div>'
+                     for k, c, t, sub in states)
+    ross_tiers = [vname(4 + i) for i in range(len(ROSS_WEIGHTS))]
+    ross = "".join(f'<div style="text-align:center">{img(gt_block(gt.hull_tinted(t), "casing-" + t), h=48)}<div style="margin-top:2px">{chip(t)}</div></div>'
+                   for t in ross_tiers)
+    ross_door = door_svg("shut", gt.hull_tinted("LuV"), slat="#6f7a88")
+    cable_rows = "".join(f'<tr><td style="white-space:nowrap">{chip(vname(4 + i)) if 4 + i < len(VNAMES) else ""}{PLUS if i == len(SERVICE) - 1 else ""}</td>'
+                         f'<td style="color:var(--txt)">{GT_NAME[c]} 4x Cable</td><td style="color:var(--txt)">Large {GT_NAME[p]} Fluid Pipe</td></tr>'
+                         for i, (c, p) in enumerate(SERVICE))
+    blocks = "".join(f'<div style="text-align:center"><div class="spot" style="padding:8px 14px 4px">{img(gt_block(t, n), h=64)}</div><div class="cap" style="margin-top:4px">{lab}</div></div>' for t, n, lab in [
+        (gt.frame("Steel"), "frame", "Steel Frame Box tray"), (gt.cable(SERVICE[0][0]), "cable", "4x Cable under it"),
+        (gt.pipe("pipeLarge", SERVICE[0][1]), "pipe", "Large Fluid Pipe")])
+    return f"""<div class="sec"><h2>Blast doors and service runs</h2>
+<div class="card" style="display:grid;grid-template-columns:1.25fr 1fr;gap:26px">
+<div><div class="pt" style="margin-bottom:10px">Every major hall leaves the hub through a <b>blast door</b> the full width of the hall, {MAJOR_W - 2} columns wide and {MAJOR_H - 3} high
+({min(HUB_H, GALLERY_H) - 3} for the silo gallery). It is a Carpenter's Blocks garage door covered in the hall's own plating: right-click it to roll the whole door up or down. Its slats are thin and come away under a pickaxe.</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 18px">{panels}</div>
+<div class="pt" style="margin-top:10px">A ruined door is either <b>stuck open</b> with up to two slats torn out, or <b>breached</b>: shut, with {BREACH_MIN} to {BREACH_MAX} columns torn out and the column at each side of the hole jammed 2 to 5 slats down over a rubble pile, so there is always a way through.
+Without Carpenter's Blocks the hall mouths simply stand open.</div>
+<div style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin-top:14px">{ross_door}<div class="pt"><b>Ross128b and Ross128ba.</b> The jambs and lintel of every blast door, on both faces, are GregTech machine casings of the complex's rolled class, so the frame tells you what you drew. Here, a LuV complex.</div></div></div>
+<div><div class="pt"><b>Service runs.</b> Every hall but the silo gallery carries a cable tray under the ceiling along one wall: Steel Frame Boxes with a GregTech <b>4x cable</b> hung under them. Major halls also run a <b>large fluid pipe</b> along the other wall. The metal follows the complex's ceiling:</div>
+<table class="t" style="margin-top:8px"><tr><th>Ceiling</th><th>Cable</th><th>Pipe</th></tr>{cable_rows}</table>
+<div style="display:flex;justify-content:space-around;margin-top:10px">{blocks}</div>
+<div class="pt" style="margin-top:8px">They run whole in a staffed or mothballed wing. In a ruin the tray has gaps of 1 to 3 blocks, with fallen sections on the floor, about {CABLE_STRIP * 100:.0f}% of the cable is stripped and {PIPE_STRIP * 100:.0f}% of the pipe is missing. What is left mines like any GregTech cable or pipe.</div>
+<div class="pt" style="margin-top:12px">The Ross128 frame casings, one per class:</div>
+<div style="display:flex;justify-content:space-between;gap:4px;margin-top:6px">{ross}</div></div></div></div>
+"""
 
 
 # ---------------------------------------------------------------- page pieces
@@ -583,10 +781,15 @@ def _meter(frac: float, color: str, label: str | None = None) -> str:
 
 
 FLAVOR = [
-    "Dark and ruined: a few lit lamp lines, rubble, fallen rooms, breached walls, nothing on guard.",
-    "Half dead: whole rooms and halls lit or dark, some rooms fallen in, guards hold the deeper rooms.",
-    "Lit and running: every lamp burns, walls intact, a dry pump room, guards at the posts and the silo walkways.",
+    "<b>Alpha</b>, a gutted ruin: a few lit lamp lines, fallen rooms, rubble piles, furniture gone, dead fields, a guard spawner in about one room in five.",
+    "<b>Bravo</b>, half-staffed: lit rooms still in service, dark rooms mothballed and shut down, a guard spawner in most rooms.",
+    "<b>Charlie</b>, fully staffed: every lamp burns, furnaces lit, crops growing, every machine in working order, one or two guard spawners in every room.",
 ]
+
+
+def _finds(state: str) -> str:
+    lo, hi = DRAW[state]["real"]
+    return f"{lo} to {hi}"
 
 
 def activity_table() -> str:
@@ -597,23 +800,31 @@ def activity_table() -> str:
 
     P = PROFILES
     M_ = lambda key, i: _meter(P[i][key], LEVEL_COLOR[i])  # noqa: E731
-    shaft = [_meter(p["shaft"], LEVEL_COLOR[i]) if p["shaft"] else ("none" if not any(p["spawn"]) else "by depth") for i, p in enumerate(P)]
+    M_spawn = lambda i, n: _meter(P[i]["spawn"][n], LEVEL_COLOR[i])  # noqa: E731
     rows = [
         row("Room collapses", [M_("collapse", i) for i in range(3)], "rooms only; halls stay walkable"),
         row("Wall breaches", [M_("breach", i) for i in range(3)], "per damaged wall cell"),
         row("Floor holes", [M_("hole", i) for i in range(3)], "per damaged floor cell"),
         row("Rubble", [M_("rubble", i) for i in range(3)], "per wall or floor cell"),
         row("Lamps lit", [M_("lit", i) for i in range(3)], "by lamp line, by section, all"),
-        row("Dead machines", [M_("dead", i) for i in range(3)], "a dead machine is a bare hull"),
+        row("Rooms", ["gutted", "in service where lit, mothballed where dark", "staffed"], "every room follows its state"),
+        row("Furniture gone", [_meter(NORMAL_LOST[3], LEVEL_COLOR[0]),
+                               f"{pct(NORMAL_LOST[1])} lit, {pct(NORMAL_LOST[2])} dark", _meter(NORMAL_LOST[0], LEVEL_COLOR[2])],
+            "a ruin also gets rubble piles"),
+        row("Machine slots left empty", [M_("absent", i) for i in range(3)], "stripped to the floor"),
+        row("Dead machines", [M_("dead", 0), f"{pct(IN_SERVICE_DEAD)} lit, {pct(MOTHBALLED_DEAD)} dark", _meter(0, LEVEL_COLOR[2])],
+            "a dead machine is a bare hull"),
         row("Pump room flooded", ["Yes" if p["flooded"] else "No" for p in P]),
-        row("Chest richness", [f"{p['richness']} of 2" for p in P], "more picks, heavier top-metal lines"),
-        row("Guard posts at the hall", [_meter(p["spawn"][0], LEVEL_COLOR[i]) for i, p in enumerate(P)], "chance per post, EV planet"),
-        row("Guard posts under 30 blocks out", [_meter(p["spawn"][1], LEVEL_COLOR[i]) for i, p in enumerate(P)]),
-        row("Guard posts 30 to 59 blocks out", [_meter(p["spawn"][2], LEVEL_COLOR[i]) for i, p in enumerate(P)]),
-        row("Guard posts 60 blocks and more out", [_meter(p["spawn"][3], LEVEL_COLOR[i]) for i, p in enumerate(P)], "the far ends of the halls"),
-        row("Silo walkways, Launch Control", shaft, "at least this chance"),
+        row("Loot chests in the whole complex", [f"<b>{n}</b>" for n in CHEST_TARGETS], "never an empty one; spare spots are empty crates"),
+        row("Finds per chest", [_finds("GUTTED"), f"{_finds('IN_SERVICE')} lit, {_finds('MOTHBALLED')} dark", _finds("STAFFED")],
+            "plus junk and spoiled food in dark and ruined rooms"),
+        row("Rooms with no guard spawner", [M_spawn(i, 0) for i in range(3)], "a room rolls once"),
+        row("Rooms with one", [M_spawn(i, 1) for i in range(3)]),
+        row("Rooms with two", [M_spawn(i, 2) for i in range(3)], "the hub counts as a room"),
+        row("Elite spawners", ["none", "2 in 5, deep rooms", "2 in 5, deep rooms"], "rooms 30+ blocks from the hub"),
         row("Schematic chip in a chest", [pct(p["chip"]) for p in P], "Safe, Comms or Control chest"),
         row("The silo's missing part in a chest", [pct(p["part"]) for p in P], "one part per silo"),
+        row("Hub sign, Activity Level", ["Alpha", "Bravo", "Charlie"], "under the Silo Complex sign"),
     ]
     tot = sum(ACT_WEIGHTS)
     ths = "".join(f'<th style="text-align:center;color:{LEVEL_COLOR[i]};vertical-align:top;width:25%"><span style="font-size:22px">{lv}</span>'
@@ -631,9 +842,10 @@ def planet_rows() -> str:
         metal = METAL[LADDER[c]]
         body = f"T{max(1, min(3, c - 3))} body"
         guns = vname(min(c, 7))
+        lvmv, top = machine_share(c)
         rows.append(f"""<tr><td style="white-space:nowrap">{rocket}</td><td style="color:var(--txt)">{planets}</td>
-<td class="n">{chip(vname(c))}</td><td style="white-space:nowrap"><b>{metal}</b></td><td style="white-space:nowrap">{machine_range(c).replace(" to ", "&ndash;")}</td><td>{guns}</td><td style="white-space:nowrap">{body}</td>
-<td class="n">{danger(c)}</td><td class="n">&times; {guard_scale(c):.2f}</td></tr>""")
+<td class="n">{chip(vname(c))}</td><td style="white-space:nowrap"><b>{metal}</b></td><td style="white-space:nowrap">{vname(1)}&ndash;{vname(c)}</td><td class="n">{lvmv * 100:.0f}%</td><td class="n">{top * 100:.0f}%</td><td>{guns}</td><td style="white-space:nowrap">{body}</td>
+<td class="n">{danger(c)}</td></tr>""")
     return "".join(rows)
 
 
@@ -684,7 +896,7 @@ def build_page() -> str:
     guard_post = elite_post = spawner_block()
 
     # ---- machines
-    hulls = "".join(f'<div style="text-align:center">{img(hull_block(t), h=64)}<div class="cap" style="margin-top:0">{t}</div></div>' for t in ("HV", "EV", "IV"))
+    hulls = "".join(f'<div style="text-align:center">{img(hull_block(t), h=64)}<div class="cap" style="margin-top:0">{t}</div></div>' for t in ("LV", "MV", "HV", "EV"))
 
     # ---- take over
     front = [silo_front("controller"), silo_front("hatch"), silo_front(None)]
@@ -720,8 +932,9 @@ with two air gaps left to climb.</div>
 <div class="card"><div class="label" style="margin-bottom:8px">How to read the map</div>
 <div class="pt" style="margin-bottom:10px">Looking down from above, north up. This is one real complex with {main["siloCount"]} silos, drawn from the same plan the game builds. Each room is tinted by what it is for.</div>
 {key_rows}
-<div class="lk"><i class="d" style="background:#ff4d4d"></i>Possible guard post</div>
-<div class="lk"><i style="background:#ffd23f"></i>Loot chest</div>
+<div class="lk"><i class="d" style="background:#ff4d4d"></i>Guard spawner spot (a room fills 0 to 2)</div>
+<div class="lk"><i style="background:#1b2129;border:2px solid #ffd23f;height:9px;border-radius:2px"></i>Blast door</div>
+<div class="lk"><i style="background:#ffd23f"></i>Chest spot (a chest or a crate)</div>
 <div class="lk"><i class="c" style="background:#2fd0ff"></i>Machine</div>
 <div class="lk"><i style="background:#ff8a1f;border-color:#ff8a1f"></i>Silo outline</div>
 <div class="lk"><i style="background:#22d36b"></i>Escape ladder</div>
@@ -729,43 +942,45 @@ with two air gaps left to climb.</div>
 <div class="label" style="margin:12px 0 6px">Halls</div>
 {hall_key}</div></div>
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px">
-<div class="card"><h3>The hub</h3><div class="pt" style="margin-top:6px">The Assembly Bay sits near the middle, {HUB[0]} &times; {HUB[1]} and {HUB_H} high, with salvage chests along its walls, a workbench and guards in the corners. Its sign names the complex's <b>class</b>, its loot ceiling.
+<div class="card"><h3>The hub</h3><div class="pt" style="margin-top:6px">The Assembly Bay sits near the middle, {HUB[0]} &times; {HUB[1]} and {HUB_H} high, a container yard with salvage chests, a workbench and guards. Its sign names the complex's <b>class</b>, its loot ceiling, and the sign under it its <b>Activity Level</b>: Alpha, Bravo or Charlie.
 A decontamination airlock waits in the corner between the hub and a hall.</div></div>
 <div class="card"><h3>Halls and rooms</h3><div class="pt" style="margin-top:6px">Major halls are {MAJOR_W} wide and {MAJOR_H} high, with a rail down the middle; minor hallways are {MINOR_W} wide and {MINOR_H} high. Rooms are {ROOM_H} high, grow to fill the rock around them and
-can hang off other rooms, so not every room has a straight line to the hub. About {COVERAGE}% of the footprint is built. Each hall mouth off the hub has a blast door and a sign naming its direction. A guard post stands at every branch.</div></div>
+can hang off other rooms, so not every room has a straight line to the hub. About {COVERAGE}% of the footprint is built. Each major hall leaves the hub through a <b>blast door</b> and past a sign naming its direction. Three to five small guard rooms stand beside the hall mouths and branches.</div></div>
 <div class="card"><h3>The silo gallery</h3><div class="pt" style="margin-top:6px">The silos line a {GALLERY_H}-high hall on both sides, in facing pairs {SILO_PITCH} blocks apart, each turned so its controller faces the hall. A walkway niche opens in front of each controller.
 <b>Launch Control</b> caps the far end behind glass, so you look down on the silos from it. The <b>Missile Assembly</b> floor opens off the gallery's side. With seven or more silos the gallery can split across a second straight hall.</div></div></div>
 <div class="label" style="margin:16px 0 8px">Galleries by silo count, and how often each count turns up</div>
 <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:8px">{crops}</div></div>
 
 <div class="sec"><h2>The rooms</h2>
-<div class="pt" style="margin-bottom:10px">A complex holds {MIN_ROOMS} to {MAX_ROOMS} rooms besides the hub. Seven kinds are always present: Launch Control, Missile Assembly, Comms, the Commander's Office, the Warhead Magazine, the Generator Hall and the Armory. The rest are drawn from the other kinds, so a complex can hold two bunk rooms and no infirmary. The sign by every door names the room. Every room is furnished from its own door: chests and wall machines stand against the back wall, and the way in stays clear.</div>
+<div class="pt" style="margin-bottom:10px">A complex holds {MIN_ROOMS} to {MAX_ROOMS} rooms besides the hub. Seven kinds are always present: Launch Control, Missile Assembly, Comms, the Commander's Office, the Warhead Magazine, the Generator Hall and the Armory. The rest are dealt like a deck of cards: every kind that fits turns up before any kind repeats. The sign by every door names the room. Every room is laid out to its own plan, in rows and islands between the lamp lines, with a clear way from the door to every chest, machine and door.</div>
 <div class="rooms">{rooms}</div>
-<div class="cap">Sizes are the room's starting footprint, length &times; depth in blocks; rooms then grow into the rock around them. Chest, machine and guard counts grow with a room's area. Chests hold what the activity level and the planet's ceiling allow (see below).</div></div>
+<div class="cap">Sizes are the room's starting footprint, length &times; depth in blocks; rooms then grow into the rock around them. "Dealt" rooms come from the deck. A whole complex holds exactly {CHEST_TARGETS[0]}, {CHEST_TARGETS[1]} or {CHEST_TARGETS[2]} loot chests (Alpha, Bravo, Charlie), shared out by room size; the chest spots left over are empty wooden crates, and a caved-in room holds none. Each chest draws its room's table, up to the planet's ceiling (see below). The armory's display chests come on top of the count.</div></div>
 
 <div class="sec"><h2>Light and finish</h2>
 <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
 <div><h3>Lamps</h3><ul class="pt" style="margin:8px 0 0 18px;line-height:1.45">
-<li>Lamps sit <b>flush in the ceiling</b> on an even grid, a line at least every 6 blocks (every 4 over rows of tables and racks).</li>
+<li>Lamps sit <b>flush in the ceiling</b> on an even grid, a line every 4 to 7 blocks as the room's layout needs, and an extra floor light wherever furniture would leave a dark corner.</li>
 <li>Rooms and halls taller than {MINOR_H} also have a <b>light tile in the floor</b> under each ceiling lamp, so a fully lit section is never dark at your feet.</li>
 <li>Minor hallways have ceiling lamps only, every 3 blocks.</li>
 <li>Lamps go out by circuit: an abandoned complex keeps a few lamp lines burning, a partly abandoned one lights whole rooms and halls, an operational one lights everything. A dead lamp stays in place as a dark panel.</li></ul></div>
 <div><h3>Finish</h3><div class="pt" style="margin-top:8px">Every room has <b>one wall block</b> all round, with its own floor and ceiling pattern, so rooms are told apart by look as well as by sign. The finish comes from the blocks of the pack: with Chisel and Ztones installed, rooms are dressed in laboratory panels, factory plating, marble, concrete and dark server plate; without them the same patterns are laid in GregTech concrete and plain vanilla blocks.
-On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to ordinary stone-grade blocks: no casings, frames or machines are part of the finish.</div>
+On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to ordinary stone-grade blocks: no casings, frames or machines are part of a room's finish. The halls are the exception: their service runs and blast doors are real blocks.</div>
 <div style="margin-top:10px">{swatches}</div></div></div></div>
 
+{fixtures_section()}
+
 <div class="sec"><h2>Three activity levels</h2>
-<div class="pt" style="margin-bottom:10px">Each complex rolls its level once, and it never changes. The rooms are the same at every level; the level decides how much is broken, how much is lit and how many guards wait.</div>
+<div class="pt" style="margin-bottom:10px">Each complex rolls its level once, and it never changes. The layout is the same at every level; the level decides how each room looks, what its chests hold, how much is broken and lit, and how many guards wait. Wear and rubble never block the way to a chest, a machine or a door.</div>
 <div class="card" style="padding:12px 18px 6px">{activity_table()}</div>
-<div class="cap">The share of each level is a server setting. Guard chances rise with the planet, up to 1.5 times at the top, and guard posts at hall mouths get 25 points more when the complex is not abandoned.</div></div>
+<div class="cap">The share of each level is a server setting. Spawner odds are the same on every planet; the planet sets how well the guards are armed (see Loot by planet). Halls and caved-in rooms hold no spawner.</div></div>
 
 <div class="sec"><h2>Guards</h2>
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
 <div class="card"><div class="post"><div style="text-align:center">{img(guard_post, h=100)}<div class="cap" style="margin-top:0">Inside: Army Soldier or Commando</div></div><div><h3>Silo Guard Post</h3>
-<div class="pt">A monster spawner of <b>Army Soldiers</b> and <b>Commandos</b>. It stands at hall branches and in the rooms. The figure turning in the cage is the guard it sends next.</div></div></div>
+<div class="pt">A monster spawner of <b>Army Soldiers</b> and <b>Commandos</b>. It stands on open floor in the rooms, the hub included. The figure turning in the cage is the guard it sends next.</div></div></div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{soldier}</div><b>Army Soldier</b></div><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div></div></div>
 <div class="card"><div class="post"><div style="text-align:center">{img(elite_post, h=100)}<div class="cap" style="margin-top:0">Inside: Commando or Stormtrooper</div></div><div><h3>Silo Elite Post</h3>
-<div class="pt">A monster spawner of <b>Commandos</b> and <b>Stormtroopers</b>. It holds the silo walkways, the far end of the gallery, and the deep rooms. A Stormtrooper in the cage marks an elite post.</div></div></div>
+<div class="pt">A monster spawner of <b>Commandos</b> and <b>Stormtroopers</b>. Two in five spawners in rooms 30 or more blocks from the hub are elite, never in an abandoned complex. A Stormtrooper in the cage marks one.</div></div></div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div><div class="mob"><div class="guide" style="padding:0 6px">{storm}</div><b>Stormtrooper</b></div></div></div>
 <div class="card"><h3>How the posts behave</h3>
 <ul class="pt" style="margin:8px 0 0 18px;line-height:1.45">
@@ -773,36 +988,36 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <li>At most <b>5</b> of each guard type near it, up to <b>3</b> at a time, every <b>5 to 6 seconds</b>.</li>
 <li><b>Break the spawner and it is gone</b> for good. It drops nothing. By hand it is slow, as every spawner in the pack is; a missile warhead destroys it outright.</li>
 <li>Guards are armed to match the planet: danger <b>3</b> up to IV, <b>4</b> at LuV and ZPM, <b>5</b> from UV up.</li>
-<li>An abandoned complex has no posts at all.</li></ul></div></div></div>
+<li>Each room rolls <b>none, one or two</b> spawners for the complex's level (see the table above), set far apart on open floor. Halls hold none.</li></ul></div></div></div>
 
 <div class="sec"><h2>Loot by planet</h2>
 <div class="pt" style="margin-bottom:10px">Nothing in a complex, chest or machine, goes above its planet's <b>ceiling</b>. The Overworld and the Moon sit at EV, and each rocket tier above the Moon lifts the ceiling by one voltage tier, to UMV for Tier 9. Chests fill with a ladder of GregTech metals, and the top rung at the ceiling is the most common. Guns come from the weapon tables and stop at ZPM, so above UHV the loot is GregTech material only.</div>
-<div class="card" style="padding:10px 14px"><table class="t"><tr><th>Rocket</th><th>Planets</th><th style="text-align:center">Ceiling</th><th>Top metal</th><th>Machines</th><th>Guns to</th><th>Salvage</th><th style="text-align:center">Danger</th><th style="text-align:center">Guard rate</th></tr>
+<div class="card" style="padding:10px 14px"><table class="t"><tr><th>Rocket</th><th>Planets</th><th style="text-align:center">Ceiling</th><th>Top metal</th><th>Machines</th><th style="text-align:center">LV or MV</th><th style="text-align:center">At the ceiling</th><th>Guns to</th><th>Salvage</th><th style="text-align:center">Danger</th></tr>
 {planet_rows()}</table></div>
 <div class="card" style="margin-top:14px;display:grid;grid-template-columns:1fr 620px;gap:22px;align-items:center">
-<div><h3>Ross128b and Ross128ba</h3><div class="pt" style="margin-top:6px">The challenge-start planets have no fixed ceiling. <b>Each complex rolls its own</b>, from EV to UMV, weighted to the low end: about half are EV to IV, one in a hundred is UMV. The hall's sign tells you the class you drew.</div></div>
+<div><h3>Ross128b and Ross128ba</h3><div class="pt" style="margin-top:6px">The challenge-start planets have no fixed ceiling. <b>Each complex rolls its own</b>, from EV to UMV, weighted to the low end: about half are EV to IV, one in a hundred is UMV. The hall's sign and the blast door frames tell you the class you drew.</div></div>
 <div style="display:flex;align-items:flex-end;justify-content:space-between">{ross_card()}</div></div></div>
 
 <div class="sec"><h2>Real machines, real salvage</h2>
 <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
-<div><div class="pt">The machines in the rooms are <b>real GregTech machines</b>: generators, Battery Buffers, Assemblers and pumps at the ceiling's tier or one or two below it (never under HV), plus a
-<b>Launch Control</b> and Galacticraft's <b>NASA Workbench</b>. Air handlers, fuel tanks and consoles are machine hulls. You can pick up what you find, though a dead machine, about a third to a half of them in a ruined complex, is only the bare hull.</div>
+<div><div class="pt">The machines in the rooms are <b>real GregTech machines</b>: generators, Battery Buffers, Assemblers, pumps, Chemical Reactors and lab machines, recyclers and furnaces, and machine tools, plus a
+<b>Launch Control</b> and Galacticraft's <b>NASA Workbench</b>. Most are LV or MV, and a machine at the planet's ceiling is a rare find (see the table above); radar and comms consoles sit at the ceiling or one or two tiers under it, never under HV. Air handlers, fuel tanks and consoles are machine hulls. Working machines sit idle, often holding a few batches of finished goods. You can pick up what you find, though a dead machine is only the bare hull: nearly all of them in a ruin and in a partly abandoned complex's dark rooms, a few in its lit rooms. About {pct(PROFILES[0]["absent"])} of a ruin's machine slots are simply gone, so a working machine there is a rare find.</div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:8px">{hulls}</div></div>
-<div><div class="pt"><b>Nothing live is left behind.</b> The magazine holds stainless steel frame boxes and four plates, never a warhead. Chests hold a <b>damaged missile body</b> (too broken to stand; it recycles for its plates),
-<b>rocket fuel cells</b> in the fuel depot, and now and then a <b>schematic chip</b>. The <b>Silo Complex Wall</b> mines to itself: a handsome plated block for your own base, though no machine takes it.</div>
+<div><div class="pt"><b>Nothing live is left behind.</b> The magazine holds inert warheads, fuzes and stainless steel frame boxes, never a live warhead. The hub's chests hold a <b>damaged missile body</b> (too broken to stand; it recycles for its plates), the missile assembly floor now and then a <b>whole missile body</b> (a damaged one in a ruin),
+the fuel depot <b>rocket fuel cells</b>, and the safe, comms and control chests now and then a <b>schematic chip</b>. The <b>Silo Complex Wall</b> mines to itself: a handsome plated block for your own base, though no machine takes it.</div>
 <div style="display:flex;justify-content:center;margin-top:8px">{img(wall_block(), h=64)}</div></div></div></div>
 
 <div class="sec"><h2>Take over a silo</h2>
 <div class="card"><div class="pt" style="margin-bottom:10px">Every silo in a complex is a real <b>Missile Silo</b>, built from the same structure you would build yourself, with its bus and hatches in place. Each is missing <b>exactly one part</b>. Put it back and the silo forms.</div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
 <div style="text-align:center"><div class="spot">{img(front[0], h=250)}</div><div class="cap"><b style="color:var(--txt)">No controller.</b> A concrete block stands in the middle of the front wall.</div></div>
-<div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A clear glass block stands under where the controller is.</div></div>
-<div style="text-align:center"><div class="spot">{img(front[2], h=250)}</div><div class="cap"><b style="color:var(--txt)">Repaired.</b> The controller (blue ring) and the hatches (orange rings) in their places.</div></div></div>
+<div style="text-align:center"><div class="spot">{img(front[1], h=250)}</div><div class="cap"><b style="color:var(--txt)">No Energy Hatch.</b> A concrete block stands where the Energy Hatch goes, at the foot of the right-hand hatch column.</div></div>
+<div style="text-align:center"><div class="spot">{img(front[2], h=250)}</div><div class="cap"><b style="color:var(--txt)">Repaired.</b> The controller (blue ring), the hatches and the silo&#39;s own Launch Control (orange rings) in their places.</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:16px">
-<div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> An operational complex always has an elite post at each silo walkway, and a partly abandoned one often does. Mine their spawners (slow by hand), blow them up with a warhead, or fight what they spawn.</div></div>
+<div class="step"><span class="num">1</span><div class="t"><b>Clear the way.</b> The silo gallery holds no spawners, but Launch Control and Missile Assembly roll theirs like any room, and elite posts are likely that deep. Mine the spawners (slow by hand), blow them up with a warhead, or fight what they spawn.</div></div>
 <div class="step"><span class="num">2</span><div class="t"><b>Find the part.</b> Check the Safe, Stockpile, Workshop and Control chests: about {pct(PROFILES[0]["part"])} of abandoned, {pct(PROFILES[1]["part"])} of partly abandoned and {pct(PROFILES[2]["part"])} of operational silos have theirs lying in one. A missing part is not lost: the controller and a GregTech Energy Hatch are both craftable.</div></div>
-<div class="step"><span class="num">3</span><div class="t"><b>Put it in.</b> Mine the concrete and set the controller facing out, or mine the glass and set the Energy Hatch in its place. The silo forms and switches itself on.</div></div>
-<div class="step"><span class="num">4</span><div class="t"><b>Power and launch.</b> Run EU to the Energy Hatch. A found hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Then add a Launch Control, fuel and a missile as for any silo.</div></div></div></div></div>
+<div class="step"><span class="num">3</span><div class="t"><b>Put it in.</b> Mine the concrete and set the controller facing out, or mine the concrete at the foot of the right-hand hatch column and set the Energy Hatch there. The silo forms and switches itself on.</div></div>
+<div class="step"><span class="num">4</span><div class="t"><b>Power and launch.</b> Run EU to the Energy Hatch. A found hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Then fuel it, load a missile and fire it from the silo&#39;s own Launch Control, on top of the right-hand hatch column: it runs on the silo&#39;s EU.</div></div></div></div></div>
 
 <div class="sec"><div style="display:grid;grid-template-columns:1.25fr 1fr;gap:20px">
 <div class="card"><h2>The radar station</h2>
@@ -819,7 +1034,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="cap">Dig down under the coordinates to find it. A stick can point at a place where the terrain turned the complex away, so go prepared.</div></div></div></div>
 """
     credit = [
-        "Silo Complex Wall: Steel Bastion Plating art, with connected textures. Radar Casing, dish and radar controller overlay: derived from HBM's Nuclear Tech Mod, GNU LGPL v3; modified.",
+        "Silo Complex Wall: Steel Bastion Plating art, with connected textures. Radar Casing, dish, radar controller, Missile Silo and Launch Control overlays: derived from HBM's Nuclear Tech Mod, GNU LGPL v3; modified.",
         "Machine hulls, hatch overlays and Light and Dark Concrete Bricks: GregTech 5 Unofficial textures, LGPL-3.0. Hut casings and the Silo Complex Wall: GregGuns art, MIT. Guard posts: the Minecraft monster spawner (Mojang).",
         TP.GC_CREDIT, TP.TC_CREDIT, MOJANG_CREDIT, TP.TINT_CREDIT,
     ]

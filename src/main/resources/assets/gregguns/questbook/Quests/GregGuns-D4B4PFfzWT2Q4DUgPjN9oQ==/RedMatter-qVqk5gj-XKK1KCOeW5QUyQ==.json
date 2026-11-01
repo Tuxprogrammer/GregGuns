@@ -3,6 +3,10 @@
     "0:10": {
       "questIDHigh:4": 8049483481844307640,
       "questIDLow:4": -5592706508923533594
+    },
+    "1:10": {
+      "questIDHigh:4": 0,
+      "questIDLow:4": 2616
     }
   },
   "properties:10": {
@@ -17,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Red Matter is the Tier 5 casing, made in the Assembler at UHV from 8 neutronium plates, 2 UHV Field Generators, 2 Quantum Eyes, 2 UHV Emitters, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. It digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. Antimatter ends it at once. Make one.",
+      "desc:8": "Red Matter is the Tier 5 casing and the end of the line. The Assembler makes the Inert T5 Warhead at UHV from 8 neutronium plates, a Fuze Assembly Mk III, a Heavy Duty Nose Cone Tier 4, 12 Heavy Duty Plates Tier 7, a UHV Sensor, a UHV Emitter and 2 UHV circuits, fits the red matter payload at UHV (2 UHV Field Generators, 2 Quantum Eyes and 2 UHV Emitters), and fills it with 128 Plastic Explosive. Check NEI.\n\nIt digs no crater. A black ball grows from a radius of 2 to 32 blocks at a full casing, eating blocks, killing everything inside (bosses too) and pulling in what is near. It idles for 10 seconds once full-grown and lives 60 seconds at most, a server setting. An Antimatter blast ends it at once. Make one.\n\n[warn]Nothing inside the ball survives. Keep an Antimatter warhead ready if you ever need to stop one.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +33,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Red Matter",
+      "name:8": "§4§l§nRed Matter",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +62,64 @@
   },
   "questIDHigh:4": -6243496625495450462,
   "questIDLow:4": -5393021390727932727,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 1714,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sausageinbreadItem"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17129,
+          "OreDict:8": "plateNeutronium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:inert_warhead_t5"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 32678,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 32688,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

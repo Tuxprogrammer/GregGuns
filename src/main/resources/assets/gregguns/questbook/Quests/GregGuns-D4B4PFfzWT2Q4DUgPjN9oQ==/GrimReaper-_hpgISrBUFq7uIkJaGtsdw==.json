@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Late-game close-range weapon.",
+      "desc:8": "Four rocket tubes in one frame. The Grim Reaper holds four rockets and is the heaviest close-range weapon you can build before ZPM.\n\nIt is an upgrade in the LuV Assembler: a Rocket Launcher, three Hardened Steel Barrels for the other tubes, a Carbon Receiver, a LuV electric piston and four HSS-G plates. The launcher is used up. Its ammo is the same Rocket you made at HV.\n\n[warn]The blast radius is the same as the Rocket Launcher\u0027s, and four rockets in a row are four chances to hurt yourself.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Grim Reaper",
+      "name:8": "§d§lGrim Reaper",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": -136691143113879462,
   "questIDLow:4": -4920031919402685321,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1707,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:epicbaconItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rocket"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 17372,
+          "OreDict:8": "plateHSSG",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 6,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_barrel_hardened"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +117,42 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:rocket_launcher"
+        },
+        "1:10": {
+          "Count:3": 3,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_barrel_hardened"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_receiver_carbon"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 17372,
+          "OreDict:8": "plateHSSG",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

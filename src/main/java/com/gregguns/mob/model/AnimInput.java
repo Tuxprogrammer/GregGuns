@@ -22,6 +22,8 @@ public final class AnimInput {
     public boolean aiming;
     /** Whether the mob holds an item in its right hand. */
     public boolean holding;
+    /** Whether the mob carries a gun without aiming it: the weight of a {@code carrying} pose. */
+    public boolean carrying;
     /** Attack progress 0 to 1, or 0 when not attacking. */
     public float attackProgress;
     /** Death progress 0 to 1, or 0 while alive; see {@link MobAnimSource#deathProgress}. */

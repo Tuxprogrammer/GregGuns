@@ -7,7 +7,7 @@ public final class ResolvedBlock {
 
     public final Block block;
     public final int meta;
-    /** True when the vanilla fallback stands in for a Chisel block (Chisel absent or its field null). */
+    /** True when a later candidate of the role stands in for its first (Chisel absent, or a block not registered). */
     public final boolean fallback;
 
     public ResolvedBlock(Block block, int meta, boolean fallback) {

@@ -12,10 +12,14 @@ public enum ControlStatus {
     READY(true),
     /** No target is set (ICBM-04-06). */
     NO_TARGET(false),
-    /** No Galacticraft launch pad within reach. */
+    /** Not part of a silo, and no Galacticraft launch pad touches the block (D288). */
     NO_PAD(false),
+    /** The block is part of a silo that is not formed right now (D288). */
+    SILO_UNFORMED(false),
     /** The block holds less than one shot of EU. */
     NO_POWER(false),
+    /** The block is part of a silo whose Energy Hatches hold less than one shot of EU (D300). */
+    SILO_NO_POWER(false),
     /** The pad holds no missile. */
     NO_MISSILE(false),
     /** A body and warhead are stacked but not armed. */

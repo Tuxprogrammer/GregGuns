@@ -1,0 +1,887 @@
+{
+  "chapter": "steam",
+  "retired": [
+    "gg.steam.heavy_cloth"
+  ],
+  "quests": [
+    {
+      "key": "gg.steam.intro",
+      "title": "Steam-Age Arms",
+      "tier": "Steam",
+      "desc": [
+        "Before electricity, there is bronze. The Steam chapter builds everything with a crafting table, a hammer and a file: a single-shot Hand Cannon, stone ammunition, and three sets of light armor. No machine is required, although one steam-powered Ammo Press makes bullets for you.",
+        "The gate material here is bronze (cast iron for the Miner set). Hold eight bronze plates to open the chapter; the Hand Cannon eats a plate, and the Steam armor takes fourteen.",
+        "The plan is simple. Build the cannon and some bullets, test them on zombies, then dress for the job: Tanned Leather is the base of every armor set, and bronze plates armor the parts that matter. When you have all of that and a few steel plates, the LV chapter is next.",
+        "[note]This chapter pays the first loot bags and Pam's snacks. Eat up, then go shoot something.[/note]"
+      ],
+      "pre": [
+        "gg.start.welcome",
+        44,
+        948
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17300,
+              "ore": "plateBronze"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:meatystewItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17300
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 58,
+      "y": 94,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:handcannon",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.hand_cannon",
+      "title": "Hand Cannon",
+      "tier": "Steam",
+      "desc": [
+        "A bronze and wood muzzle-loader for people who do not own a single wire yet. The Hand Cannon fires one Stone Bullet per shot and must be reloaded after every one, so it is slow and loud, but it needs no power and no machine.",
+        "It is crafted at a crafting table from a Stone Barrel, a Wooden Stock, flint and steel and a bronze plate, with a hard hammer in the grid. The Gear quest on the start page covered the barrel and stock; check NEI for the exact layout.",
+        "[note]The ball falls in a slight arc over distance, so aim a little high at long range. A reload takes about a second and a half.[/note]"
+      ],
+      "pre": [
+        "gg.steam.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_stone",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_wooden",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:flint_and_steel",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17300
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:handcannon",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:toastItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17300
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 24,
+      "y": 160,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregguns:handcannon",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.stone_bullets",
+      "title": "Stone Bullets",
+      "tier": "Steam",
+      "desc": [
+        "The Hand Cannon eats one Stone Bullet per shot, so you will want a lot of them. At a crafting table, three cobblestone, a gunpowder and a bronze nugget make sixteen bullets. Hold thirty-two to finish the quest.",
+        "Gunpowder drops from creepers, and GregTech can mix it too. Bronze nuggets are made from bronze ingots. If you would rather not hand-craft, the next quest builds a steam machine that does it for you.",
+        "[note]Stone Bullets are Steam-tier ammo. Rounds for the LV guns are made in the Ammo Press from brass foil, lead or steel rounds, and gunpowder.[/note]"
+      ],
+      "pre": [
+        "gg.steam.hand_cannon"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "minecraft:cobblestone",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 9300
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hamburgerItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "minecraft:gunpowder",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 9300
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17300
+            }
+          ]
+        }
+      ],
+      "x": 24,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:ammo_stone_bullet",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.steam_press",
+      "title": "Steam Ammo Press",
+      "tier": "Steam",
+      "desc": [
+        "The Steam Ammo Press is your first GregGuns machine. It runs on steam like GregTech's other bronze machines and presses ammunition from loose parts, so you can load a stack of cobblestone and walk away. One run makes twenty-four Stone Bullets, eight more than hand crafting.",
+        "Its recipe is hand-crafted: three small bronze pipes, two pistons, a bronze hull and three bronze plates. Feed it steam from any side except the front; it vents steam out of the front after every run.",
+        "A steam press can run any Ammo Press recipe up to LV, only at half the speed of an electric machine. That means you can start making 9mm bullets before you have a single volt, if you have the brass and lead.",
+        "[note]The press has its own recipe tab in NEI. Check it for every recipe it runs.[/note]"
+      ],
+      "pre": [
+        "gg.steam.stone_bullets"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20100
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hotdogItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17300
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 60,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20100
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.first_blood",
+      "title": "First Blood",
+      "tier": "Steam",
+      "desc": [
+        "Zombies come out at night, and a Hand Cannon is a fine answer. Kill five of them. Stand your ground, shoot, then step back and reload before they close the gap. One round per shot means each one has to count.",
+        "[note]Zombies drop rotten flesh and sometimes better things. Keep your bullets stocked.[/note]"
+      ],
+      "pre": [
+        "gg.steam.stone_bullets"
+      ],
+      "tasks": [
+        {
+          "type": "hunt",
+          "target": "Zombie",
+          "count": 5
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefjerkyItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 24,
+      "y": 232,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:handcannon",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.tanned_leather",
+      "title": "Tanned Leather",
+      "tier": "Steam",
+      "desc": [
+        "Tanned Leather is the lining of almost every armor set in GregGuns, from the Steam age to the late game. It is the pack's own material, the same one your first backpack takes. Bind four leather with four string and a Woven Cotton into Bound Leather, then hang it on a Tinkers' drying rack for about ten minutes.",
+        "You need plenty: the Steam armor alone takes eleven, so keep a few racks busy. Hold four to finish this quest. Once you have an LV Chemical Bath, two leather in phosphoric acid make one with no wait. NEI shows both recipes.",
+        "[note]The Stone Age quest of the same name walks you through the drying rack.[/note]"
+      ],
+      "pre": [
+        "gg.steam.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "Backpack:boundLeather",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:leather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:string",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:trailmixItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17300
+            },
+            {
+              "id": "minecraft:leather",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:string",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 96,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "Backpack:tannedLeather",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.scout_armor",
+      "title": "T1 Scout Armor",
+      "tier": "Steam",
+      "desc": [
+        "The Bandit set is the lightest armor in the tab: plain leather with a little Tanned Leather, held together with a few bronze plates. Each piece adds to your armor value, and none of them needs a machine. The Bandit Vest is the quest item: two Tanned Leather, six leather and a bronze plate in a crafting grid. Check NEI for the pattern of each piece: mask, vest, pants and boots.",
+        "Tier 1 armor will not stop much damage, but it costs little and keeps you in the fight until you can afford steel. Each piece comes in several camo patterns, and the Camo Bench cycles them later.",
+        "[note]Build a full set if you can: the armor values add up.[/note]"
+      ],
+      "pre": [
+        "gg.steam.tanned_leather"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:leather",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 17300
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t1_scout_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:cornbreadItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17300
+            },
+            {
+              "id": "minecraft:leather",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 96,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:t1_scout_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.miner_armor",
+      "title": "T1 Miner Armor",
+      "tier": "Steam",
+      "desc": [
+        "The Miner set trades some of the Scout's lightness for cast iron plates and a helmet with a yellow band. The Miner's Jacket is the quest item: six Tanned Leather above two cast iron plates, crafted by hand. Cast iron comes from the Better Than Iron quests, and its plates are hammered flat from ingots.",
+        "All four pieces are crafted at a table; NEI shows each pattern. The helmet wants yellow dye, and the boots use cast iron nuggets.",
+        "[note]Cast iron is the alternative gate for the Steam tier. If you have bronze but no cast iron yet, build the Scout set first.[/note]"
+      ],
+      "pre": [
+        "gg.steam.tanned_leather"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17304
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t1_miner_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:grilledcheeseItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17300
+            },
+            {
+              "id": "minecraft:coal",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 132,
+      "y": 196,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:t1_miner_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.steam_armor",
+      "title": "Steam Armor",
+      "tier": "Steam",
+      "desc": [
+        "The Steam set is the best protection you can build without a single circuit: bronze plates over Tanned Leather, fourteen plates in all for the full set. The chestplate is the quest item (five plates and three Tanned Leather), and it is more than armor: it is a small steam engine.",
+        "Carry coal or charcoal in your inventory and the chestplate burns it to power the set. Powered, the full set makes you faster, a little tougher and a better jumper. Without fuel it is still armor.",
+        "[note]One piece of coal or charcoal refuels a quarter of a full charge. The chestplate only burns one when it has room for all of it, so nothing is wasted.[/note]"
+      ],
+      "pre": [
+        "gg.steam.tanned_leather"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 5,
+              "damage": 17300
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 3,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:steam_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:potatocakesItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17300
+            },
+            {
+              "id": "minecraft:coal",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 3,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 132,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:steam_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.steam.summary",
+      "title": "Steam Age Done",
+      "tier": "Steam",
+      "desc": [
+        "You have a cannon, bullets, a press and armor, and the zombies are learning to fear you. Steam is done. The next gate is steel, and steel is a GregTech project: make it in your furnace setup, press it into plates, and the LV chapter opens.",
+        "LV changes the game. The Hand Cannon gives way to magazine-fed pistols, a revolver, a scoped rifle and a shotgun; armor moves up to steel; and ammo becomes a production line with its own machine. All of it is on the next tab to the right of this one.",
+        "Hold four steel plates to finish the chapter. Use the loot bags to patch any gaps in your kit, and eat something.",
+        "[note]You do not need to finish every quest here to open LV. The LV chapter opens from the pack's own tier quests.[/note]"
+      ],
+      "pre": [
+        "gg.steam.first_blood",
+        "gg.steam.miner_armor"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17305,
+              "ore": "plateSteel"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 3
+            },
+            {
+              "id": "harvestcraft:meatystewItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17300
+            },
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 60,
+      "y": 250,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.metaitem.01",
+        "count": 1,
+        "damage": 17305
+      },
+      "implicit": [
+        "gg.steam.miner_armor"
+      ]
+    }
+  ]
+}

@@ -29,7 +29,7 @@ public enum ModuleId {
     /** Worldgen and structures (M8). Entry gate: M7 done. */
     WORLDGEN("worldgen", NPCS),
     /**
-     * Missiles, warheads and the ICBM program (ICBM roadmap I0 to I7). Off by default until the ICBM beta gate. Also
+     * Missiles, warheads and the ICBM program (ICBM roadmap I0 to I7). On by default. Also
      * needs Galacticraft at runtime (D9): without it the module turns itself off, see
      * {@link ModuleResolution.SkipReason#MISSING_MOD}.
      */

@@ -9,10 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -176,11 +172,7 @@ public final class WorldScenarioContext implements ScenarioContext {
     private void giveNetHandler(Entity entity) {
         if (entity instanceof EntityPlayerMP && ((EntityPlayerMP) entity).playerNetServerHandler == null) {
             EntityPlayerMP p = (EntityPlayerMP) entity;
-            new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p) {
-
-                @Override
-                public void sendPacket(Packet packet) {}
-            };
+            QuietConnection.attach(p);
         }
     }
 

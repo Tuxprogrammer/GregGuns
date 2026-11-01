@@ -16,7 +16,7 @@ The main findings:
 
 | File | Covers |
 |---|---|
-| [infernal-mobs.md](infernal-mobs.md) | Eligibility, config keys, damage-pipeline rules, modifier interplay, tiered loot, spawner-block opt-out |
+| [infernal-mobs.md](infernal-mobs.md) | Eligibility, config keys, damage-pipeline rules, modifier interplay, tiered loot, optional spawner-block opt-out |
 | [mob-drops-nei.md](mob-drops-nei.md) | How Mobs Info discovers drops, dreamcraft Custom Drops as a pack hook, NPC equipment against the tier map |
 | [spawning.md](spawning.md) | The placeholder against the pack, SpecialMobs, EnderZoo spawn config, AngerMod, dimensions |
 | [registry-and-pack-hooks.md](registry-and-pack-hooks.md) | Entity names as each pack mod sees them, ThaumcraftMobAspects values |
@@ -29,7 +29,7 @@ The main findings:
 - Models, renderers, animations, textures and sounds: [rendering-and-models.md](../../techguns-spec/10-entities-npcs/rendering-and-models.md), [textures.md](../../techguns-spec/10-entities-npcs/textures.md), [sounds.md](../../techguns-spec/10-entities-npcs/sounds.md), with [0006](../../design/0006-art-direction.md). Infernal Mobs' glow is a particle effect and needs no renderer cooperation.
 - Attack Helicopter flight and the Alien Bug's legacy AI: [ai.md](../../techguns-spec/10-entities-npcs/ai.md#6-attack-helicopter). The helicopter is excluded from Infernal Mobs.
 - Turret entity: its overlap with OpenModularTurrets is a block and machine matter, in [09-machines-utility](../09-machines-utility/index.md). The entity-side facts (not `IMob`, no drops) are in [infernal-mobs.md](infernal-mobs.md).
-- Spawn eggs and the two spawner blocks: [spawning.md](../../techguns-spec/10-entities-npcs/spawning.md#2-spawn-eggs-tgmonsterplacer) and [07-blocks](../../techguns-spec/07-blocks/index.md). The infernal opt-out for spawner NPCs is in [infernal-mobs.md](infernal-mobs.md).
+- Spawn eggs and the two spawner blocks: [spawning.md](../../techguns-spec/10-entities-npcs/spawning.md#2-spawn-eggs-tgmonsterplacer) and [07-blocks](../../techguns-spec/07-blocks/index.md). The optional infernal opt-out for spawner NPCs is in [infernal-mobs.md](infernal-mobs.md). Every registered NPC except the camp turret has an egg, and the egg spawns its mob whatever the `npcs.*` spawn switches say (they gate natural spawns only; scenario `npc.egg_every_mob`). The Vending Machine sells the eggs for GregGuns Coins, bosses at ten units of their tier ([coins-and-vending.md](../06-items/coins-and-vending.md#spawn-eggs)).
 - Camp flags and structures that place NPCs: [11-worldgen](../11-worldgen/index.md).
 - Hardcore Ender Expansion: End-only, no hook into Overworld NPC spawns.
 
@@ -39,7 +39,9 @@ The main findings:
 |---|---|---|---|
 | Hostile NPC classes (`EntityMob`, `IMob`) | Eligible for elite, ultra and infernal rolls. Turret and any non-hostile NPC are not `IMob`. | Infernal Mobs 1.10.7-GTNH | [infernal-mobs.md](infernal-mobs.md) |
 | `DamageSystem` re-implementation of damage | Posts `LivingHurtEvent` once and applies the final amount. Ranged sources are `EntityDamageSourceIndirect`. | Infernal Mobs | [infernal-mobs.md](infernal-mobs.md) |
-| Own loot tables and the held-item drop | Kept. Infernal NPCs also drop tiered GregGuns items. | Infernal Mobs, [06-items](../06-items/pack-loot.md) | [infernal-mobs.md](infernal-mobs.md) |
+| Own loot tables | Kept. Infernal NPCs also drop tiered GregGuns items. | Infernal Mobs, [06-items](../06-items/pack-loot.md) | [infernal-mobs.md](infernal-mobs.md) |
+| Held-item drop (8.5% equipment roll plus a 2.5% rare copy) | The held item never drops through the equipment roll; a rare gun copy at 2% plus 1% per Looting level on player kills; every loot-dropping death drops the carried gun's ammo, a full tank, or for an energy gun parts of its recipe (D312) | Mobs Info (`IMobExtraInfoProvider`) | [mob-drops-nei.md](mob-drops-nei.md) GGS-10-38 to GGS-10-40 |
+| Armor layers on NPCs posed by vanilla `ModelBiped` math | Every armor model drawn on a GregGuns biped NPC takes the posed body model's part angles and pivots, so sleeves follow the hip carry, the aim, the walk and the death pose (D310). Players are unaffected. | Vanilla `RenderBiped` armor passes, Forge `getArmorModel` | `ArmorPose`, `ArmorPoseTest`, `npc.hold_showcase` |
 | Mob drop code and equipment roll | Simulation-friendly: entity `rand` only, vanilla no-argument `addRandomArmor()`. | Mobs Info 0.6.0 | [mob-drops-nei.md](mob-drops-nei.md) |
 | (none) | Per-class and once-per-player drops through pack XML. | dreamcraft Custom Drops | [mob-drops-nei.md](mob-drops-nei.md) |
 | Fixed drops and held guns | Each NPC has a tier ceiling checked against the tier map. | [0001](../../design/0001-tier-map.md), [0005](../../design/0005-world-presence.md) | [mob-drops-nei.md](mob-drops-nei.md) |

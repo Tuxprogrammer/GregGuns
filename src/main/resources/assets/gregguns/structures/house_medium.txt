@@ -6,30 +6,30 @@ size: 16 12 16
 ground: 1
 
 palette:
-B = brick
+B = brick_worn
 C = minecraft:crafting_table
 F = minecraft:fence
 G = glass_pane
 H = minecraft:ladder#3@facing
-I = iron_plate
+I = brick_trim
 J = gold_plate
 K = minecraft:bookshelf
-M = concrete*2 | brick*1
+M = brick*4 | brick_worn*1
 N = minecraft:nether_brick
 P = minecraft:planks#5
 Q = minecraft:wooden_pressure_plate
 R = minecraft:iron_bars
-T = brick*3 | minecraft:stonebrick#2*1
+T = brick*3 | brick_worn*1
 U = copper_block
 X = tin_block
 Y = lead_block
 Z = minecraft:wall_sign#2@facing
 a = minecraft:wooden_door#0@door
 b = minecraft:bed#2@door
-c = minecraft:carpet#14
+c = minecraft:carpet#12
 d = minecraft:wooden_door#1@door
 h = minecraft:bed#10@door
-o = lantern
+o = lamp
 p = minecraft:stonebrick#1
 q = minecraft:leaves#4
 u = minecraft:wooden_door#8

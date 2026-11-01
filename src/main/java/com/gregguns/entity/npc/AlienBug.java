@@ -131,6 +131,9 @@ public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSour
      */
     @Override
     public boolean getCanSpawnHere() {
+        if (!NpcSpawnGate.allowed(NpcMob.ALIEN_BUG)) {
+            return false; // npcs.alienBug is off: no spawner, camp or natural spawn
+        }
         if (!naturalCandidate && worldObj != null && !worldObj.isRemote) {
             if (!SpawnerOrigin.canSpawnFromSpawner(this)) {
                 return false; // vanilla's answer too: these checks are part of it
@@ -144,8 +147,10 @@ public class AlienBug extends EntitySpider implements HasNpcFaction, MobAnimSour
 
     /**
      * A GregGuns vanilla spawner on its worldgen origin places the bug: its {@code SpawnData} was just read and it has
-     * not joined the world, so this is where it takes the Infernal Mobs opt-out. A spawner carried away from its
-     * origin is a plain vanilla spawner, and its bugs get no opt-out. The bug carries no equipment and no danger.
+     * not joined the world, so this is where it takes the Infernal Mobs opt-out when {@code infernalSpawnerOptOut} is
+     * on (it is off by
+     * default, so the bug rolls like any other). A spawner carried away from its origin is a plain vanilla spawner,
+     * and its bugs get no opt-out. The bug carries no equipment and no danger.
      */
     @Override
     public void readEntityFromNBT(NBTTagCompound tag) {

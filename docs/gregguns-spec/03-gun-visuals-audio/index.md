@@ -46,6 +46,7 @@ Code: `com.gregguns.client.anim` (pure curves, windows, per-shooter state, zoom 
 - **The pistol muzzle flash is additive.** The gun sheet says "default blend", but `muzzleflash2.png` is a black-background additive sheet (MANIFEST), so it is drawn with `ONE, ONE`. Its frame 7 is empty, so the last eighth of the flash window shows nothing.
 - **The third-person flash is two crossed planes at the muzzle**, drawn by the item renderer, not an area 04 particle.
 - **Models are box data.** `BoxSpec` lists boxes from the asset layout sheet (`tools/asset-gen/model_layouts.md`); `BoxGunModel` turns them into `ModelRenderer`s. A model is authored muzzle toward +X and turned a quarter turn about Y into the Z family, so the sheet transforms are used unchanged.
+- **The Grim Reaper's first-person hold is lower and further out than the in-hand notes'.** Their section 7 row (length 2.57, center 0.66, -0.41, 0.59 camera blocks) leaves the rear of this 22-texel-tall launcher 0.70 behind the eye, so it fills the lower right third of the screen and reaches the top of the frame. `InHandTargets` holds it like the Rocket Launcher: length 2.30, center 0.80, -0.82, 1.30, rear 0.15 in front of the eye, all of it below the crosshair. Third person and NPC holds keep the notes' length.
 - **Held-gun muzzle light** is not wired. `MuzzleLight.luminance` and `GunAnimations.muzzleLuminance` exist for the item to call; the open question in dynamic-lights.md (how `getLuminance(ItemStack)` finds the holder) is unchanged.
 
 ## Related areas

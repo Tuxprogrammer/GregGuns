@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Uranium-based power cell. Store it carefully.",
+      "desc:8": "A sealed uranium cell, the power core of the Nuclear Death Ray. One cell goes into the Death Ray\u0027s recipe; the gun itself runs on stored energy and never burns cells as ammo. The cell is a ZPM Assembly Line craft that puts your lead, redstone and enriched uranium to work.\n\nOne cell comes from two Naquadah alloy plates, two lead plates, four enriched uranium dust, two redstone dust, a ZPM circuit and soldering alloy. The research item is Power Plating.\n\n[warn]The cell is radioactive. Carry it only in full radiation hazmat, or keep it in a chest until the Death Ray craft.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Nuclear Power Cell",
+      "name:8": "§b§lNuclear Power Cell",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": 95714632158960895,
   "questIDLow:4": -8428537662229755266,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1708,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:supremepizzaItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 17325,
+          "OreDict:8": "plateNaquadahAlloy",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_nuclear_warhead"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_rad_emitter"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +117,30 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17325,
+          "OreDict:8": "plateNaquadahAlloy",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_power_plating"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

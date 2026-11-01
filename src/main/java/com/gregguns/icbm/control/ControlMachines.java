@@ -23,8 +23,9 @@ import gregtech.api.util.GTOreDictUnificator;
 // Spec: docs/gregguns-icbm-spec/04-launch-control/launch-control-block.md (Recipe)
 public final class ControlMachines {
 
-    private static final String[] TOOLTIP = { "gregguns.icbm.control.tooltip", "gregguns.icbm.control.tooltip.reach",
-        "gregguns.icbm.control.tooltip.range", "gregguns.icbm.control.tooltip.eu",
+    private static final String[] TOOLTIP = { "gregguns.icbm.control.tooltip", "gregguns.icbm.control.tooltip.target",
+        "gregguns.icbm.control.tooltip.reach", "gregguns.icbm.control.tooltip.range",
+        "gregguns.icbm.control.tooltip.eu", "gregguns.icbm.control.tooltip.eu_silo",
         "gregguns.icbm.control.tooltip.triggers" };
 
     private ControlMachines() {}

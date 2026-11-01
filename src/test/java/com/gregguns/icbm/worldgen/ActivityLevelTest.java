@@ -1,5 +1,6 @@
 package com.gregguns.icbm.worldgen;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,15 +11,15 @@ import org.junit.jupiter.api.Test;
 class ActivityLevelTest {
 
     @Test
-    void defaultWeightsGiveAboutFiftyThirtyFiveFifteen() {
+    void defaultWeightsGiveAboutThirtyFortyThirty() {
         int[] n = new int[3];
-        for (long s = 0; s < 40000; s++) {
+        for (long s = 0; s < 100000; s++) {
             n[ActivityLevel.roll(s, ActivityLevel.DEFAULT_WEIGHTS)
                 .ordinal()]++;
         }
-        assertEquals(0.50, n[0] / 40000.0, 0.02);
-        assertEquals(0.35, n[1] / 40000.0, 0.02);
-        assertEquals(0.15, n[2] / 40000.0, 0.02);
+        assertEquals(0.30, n[0] / 100000.0, 0.01);
+        assertEquals(0.40, n[1] / 100000.0, 0.01);
+        assertEquals(0.30, n[2] / 100000.0, 0.01);
     }
 
     @Test
@@ -38,11 +39,13 @@ class ActivityLevelTest {
         assertTrue(a.breachChance() > p.breachChance() && p.breachChance() >= o.breachChance());
         assertTrue(a.litChance() < p.litChance() && p.litChance() < o.litChance());
         assertTrue(a.richness() < p.richness() && p.richness() < o.richness());
-        for (int band = 0; band <= 3; band++) {
-            assertEquals(0.0, a.spawnerChance(band), "abandoned has no guards");
-            assertTrue(o.spawnerChance(band) >= p.spawnerChance(band));
-        }
-        assertTrue(p.spawnerChance(3) > p.spawnerChance(0), "partly abandoned guards the deeper sections");
+        assertArrayEquals(new double[] { 0.80, 0.20, 0.0 }, a.spawnerWeights(), 1e-9);
+        assertArrayEquals(new double[] { 0.25, 0.55, 0.20 }, p.spawnerWeights(), 1e-9);
+        assertArrayEquals(new double[] { 0.0, 0.75, 0.25 }, o.spawnerWeights(), 1e-9);
+        assertEquals(0.20, a.absentMachineChance(), 1e-9);
+        assertEquals(0.90, a.deadMachineChance(), 1e-9);
+        assertEquals(0.0, p.absentMachineChance(), 1e-9);
+        assertEquals(0.0, o.absentMachineChance(), 1e-9);
         assertTrue(a.flooded() && p.flooded() && !o.flooded());
     }
 

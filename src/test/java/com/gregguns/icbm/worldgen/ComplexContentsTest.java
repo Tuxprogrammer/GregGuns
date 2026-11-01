@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.LootKeys;
+import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.complex.Room;
 import com.gregguns.icbm.complex.RoomKind;
@@ -51,13 +53,69 @@ class ComplexContentsTest {
                 .toString());
     }
 
+    /** D326: the per-room roll follows each level's weights over many seeds and rooms. */
     @Test
-    void abandonedHasNoGuardsAndOperationalHasMany() {
-        assertEquals(0, sum(ActivityLevel.ABANDONED, 4, Kind.SPAWNER)[0]);
+    void spawnersPerRoomFollowTheLevelWeights() {
+        double[][] want = { { 0.80, 0.20, 0.0 }, { 0.25, 0.55, 0.20 }, { 0.0, 0.75, 0.25 } };
+        ActivityLevel[] levels = { ActivityLevel.ABANDONED, ActivityLevel.PARTLY_ABANDONED, ActivityLevel.OPERATIONAL };
+        for (int l = 0; l < 3; l++) {
+            int[] hist = new int[3];
+            int rolls = 0;
+            for (long seed = 0; seed < 4000; seed++) {
+                for (int room = 0; room < 25; room++) {
+                    int n = ComplexContents.spawnersIn(seed * 7919L, room, levels[l]);
+                    assertTrue(n >= 0 && n <= 2);
+                    hist[n]++;
+                    rolls++;
+                    assertEquals(n, ComplexContents.spawnersIn(seed * 7919L, room, levels[l]), "deterministic");
+                }
+            }
+            for (int n = 0; n < 3; n++) {
+                assertEquals(want[l][n], hist[n] / (double) rolls, 0.01, levels[l] + " rooms with " + n);
+            }
+        }
+    }
+
+    /** D326: placed spawners follow the room rolls, sit on layout spots, never in a collapsed room. */
+    @Test
+    void placedSpawnersAreTheRoomsRolledSpots() {
+        for (ActivityLevel level : ActivityLevel.values()) {
+            for (long s = 0; s < 30; s++) {
+                ComplexPlan plan = ComplexLayout.generate(s, 1, 2);
+                List<Placement> ps = ComplexContents.build(plan, level, 4, null);
+                java.util.Set<Long> spots = new java.util.HashSet<>();
+                int expected = 0;
+                List<com.gregguns.icbm.complex.Room> all = new java.util.ArrayList<>(plan.rooms());
+                all.add(plan.hall());
+                for (com.gregguns.icbm.complex.Room r : all) {
+                    int have = 0;
+                    for (com.gregguns.icbm.complex.Mark m : r.marks()) {
+                        if (m.kind() == com.gregguns.icbm.complex.MarkKind.SPAWNER) {
+                            have++;
+                            spots.add(m.x() * 4096L + m.z());
+                        }
+                    }
+                    expected += Math.min(have, ComplexContents.spawnersIn(plan.seed(), r.id(), level));
+                }
+                long n = count(ps, Kind.SPAWNER);
+                assertTrue(n <= expected, level + " seed " + s + ": " + n + " placed, " + expected + " rolled");
+                for (Placement p : ps) {
+                    if (p.kind() != Kind.SPAWNER) continue;
+                    assertTrue(spots.contains(p.x() * 4096L + p.z()), "a spawner stands on a layout spot");
+                    if (level == ActivityLevel.ABANDONED) {
+                        assertEquals(SpawnerKind.SILO_GUARD, p.spawner(), "ruins hold the weaker guards");
+                    }
+                }
+                assertEquals(
+                    ps.toString(),
+                    ComplexContents.build(plan, level, 4, null)
+                        .toString());
+            }
+        }
+        long ab = sum(ActivityLevel.ABANDONED, 4, Kind.SPAWNER)[0];
         long partly = sum(ActivityLevel.PARTLY_ABANDONED, 4, Kind.SPAWNER)[0];
         long op = sum(ActivityLevel.OPERATIONAL, 4, Kind.SPAWNER)[0];
-        assertTrue(partly > 0, "partly abandoned has some guards");
-        assertTrue(op > partly, "operational has the most: " + op + " vs " + partly);
+        assertTrue(ab < partly && partly < op, "spawners by level: " + ab + ", " + partly + ", " + op);
     }
 
     @Test
@@ -126,16 +184,37 @@ class ComplexContentsTest {
     }
 
     @Test
-    void everyChestMarkBecomesAChestWithAStableIndexAndACeilingTable() {
+    void everyChestSpotBecomesAChestOrACrateAndDisplaysAreExtra() {
         for (long s = 0; s < 30; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 0, 0);
-            long marks = plan.allMarks()
-                .stream()
-                .filter(m -> m.kind() == MarkKind.LOOT_CHEST)
-                .count();
             for (ActivityLevel level : ActivityLevel.values()) {
                 List<Placement> ps = ComplexContents.build(plan, level, 6, null);
-                assertEquals(marks, count(ps, Kind.CHEST));
+                long spots = 0, displays = 0;
+                java.util.Set<Long> collapsedCells = new HashSet<>();
+                for (Placement p : ps) {
+                    if (p.kind() == Kind.COLLAPSE) {
+                        collapsedCells.add((long) p.box().minX << 32 | p.box().minZ & 0xFFFFFFFFL);
+                    }
+                }
+                for (Room r : roomsWithHall(plan)) {
+                    boolean down = collapsedCells.contains((long) r.bounds().minX << 32 | r.bounds().minZ & 0xFFFFFFFFL)
+                        && r.id() != plan.hall()
+                            .id();
+                    for (Mark m : r.marks()) {
+                        if (down) continue;
+                        if (m.kind() == MarkKind.LOOT_CHEST) spots++;
+                        if (m.kind() == MarkKind.GUN_DISPLAY) displays++;
+                    }
+                }
+                long roomChests = ps.stream()
+                    .filter(p -> p.kind() == Kind.CHEST && !LootKeys.ARMORY_AMMO.equals(p.key()))
+                    .count();
+                long displayChests = ps.stream()
+                    .filter(p -> p.kind() == Kind.CHEST && LootKeys.ARMORY_AMMO.equals(p.key()))
+                    .count();
+                assertEquals(Math.min(ChestBudget.target(level), spots), roomChests, "room chests, " + level);
+                assertEquals(spots, roomChests + count(ps, Kind.CRATE), "every spot is a chest or a crate");
+                assertEquals(displays, displayChests, "every standing display is placed, outside the budget");
                 Set<Integer> idx = new HashSet<>();
                 for (Placement p : ps) {
                     if (p.kind() == Kind.CHEST) {
@@ -144,14 +223,22 @@ class ComplexContentsTest {
                             p.category()
                                 .endsWith("_luv"),
                             p.category());
+                        assertNotNull(p.roomState(), "a room chest knows its room's state");
                         assertEquals(
-                            ActivityProfile.of(level)
+                            RoomLootDraw.profile(p.roomState())
                                 .richness(),
                             p.richness());
                     }
                 }
             }
         }
+    }
+
+    private static List<Room> roomsWithHall(ComplexPlan plan) {
+        List<Room> out = new java.util.ArrayList<>();
+        out.add(plan.hall());
+        out.addAll(plan.rooms());
+        return out;
     }
 
     @Test
@@ -170,7 +257,7 @@ class ComplexContentsTest {
     }
 
     @Test
-    void spawnerKindsAreTheSiloPostsAndDeepOnesAreElite() {
+    void spawnerKindsAreTheSiloPosts() {
         for (long s = 0; s < 40; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 9, 9);
             for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 4, null)) {
@@ -272,7 +359,7 @@ class ComplexContentsTest {
     @Test
     void theDamagePassNeverBreaksTheWallBehindAnArmoryFrame() {
         int frames = 0;
-        for (long s = 0; s < 60; s++) {
+        for (long s = 0; s < 250; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 5, 6);
             List<Placement> ps = ComplexContents.build(plan, ActivityLevel.ABANDONED, 4, null);
             for (Placement f : ps) {
@@ -295,36 +382,68 @@ class ComplexContentsTest {
         assertTrue(frames > 50, "armories exist: " + frames);
     }
 
+    /** Each display chest sits right under its gun's frame and holds ammo that gun takes. */
     @Test
-    void guardChancesGrowByAtMostHalfFromEvToUmv() {
-        assertEquals(1.0, ComplexContents.guardScale(SiloCeiling.EV));
-        assertEquals(1.5, ComplexContents.guardScale(SiloCeiling.UMV), 1e-9);
-        assertEquals(1.0, ComplexContents.guardScale(0));
-        assertEquals(1.5, ComplexContents.guardScale(99), 1e-9);
-        for (int c = SiloCeiling.EV; c < SiloCeiling.UMV; c++) {
-            assertTrue(ComplexContents.guardScale(c) < ComplexContents.guardScale(c + 1));
+    void everyDisplayChestHoldsAmmoForTheGunAboveIt() {
+        int pairs = 0;
+        for (long s = 0; s < 40; s++) {
+            ComplexPlan plan = ComplexLayout.generate(s, 5, 6);
+            for (int ceiling : new int[] { 4, 5, 7, 10 }) {
+                List<Placement> ps = ComplexContents.build(plan, ActivityLevel.OPERATIONAL, ceiling, null);
+                for (Placement c : ps) {
+                    if (c.kind() != Kind.CHEST || !"armory_ammo".equals(c.key())) continue;
+                    Placement frame = null;
+                    for (Placement f : ps) {
+                        if (f.kind() == Kind.FRAME_WALL && f.x() == c.x() && f.z() == c.z()) frame = f;
+                    }
+                    assertNotNull(frame, "a gun hangs above the ammo chest");
+                    assertEquals(c.y() + 1, frame.y(), "directly above");
+                    String gun = ArmoryDisplay.gunAt(ceiling, 12345L, c.x(), c.z());
+                    assertNotNull(gun);
+                    List<String> items = ArmoryDisplay.itemsFor(gun);
+                    com.gregguns.item.ammo.AmmoCompatibility ac = com.gregguns.item.ammo.AmmoCompatibility.DEFAULT;
+                    String bare = gun.substring(gun.indexOf(':') + 1);
+                    if (!com.gregguns.gun.def.GunDefinitions.byName(bare)
+                        .stats()
+                        .isEnergy()) {
+                        assertFalse(items.isEmpty(), gun + " has ammo");
+                        for (String item : items) {
+                            boolean direct = ac.gunsTaking(item)
+                                .contains(bare);
+                            boolean viaMag = false;
+                            for (String mag : ac.magazinesFilledWith(item)) viaMag |= ac.gunsTaking(mag)
+                                .contains(bare);
+                            assertTrue(direct || viaMag, item + " fits " + gun);
+                        }
+                    }
+                    pairs++;
+                }
+            }
         }
+        assertTrue(pairs > 300, "display pairs: " + pairs);
     }
 
-    @Test
-    void partlyAbandonedComplexesHaveMoreGuardsAtTheTop() {
-        int low = 0;
-        int high = 0;
+    private static long[] machinesAndChests(ActivityLevel level) {
+        long working = 0;
+        long chests = 0;
         for (long s = 0; s < 60; s++) {
-            ComplexPlan plan = ComplexLayout.generate(s, 2, 2);
-            low += spawners(ComplexContents.build(plan, ActivityLevel.PARTLY_ABANDONED, SiloCeiling.EV, null));
-            high += spawners(ComplexContents.build(plan, ActivityLevel.PARTLY_ABANDONED, SiloCeiling.UMV, null));
+            for (Placement p : ComplexContents.build(ComplexLayout.generate(s, 1, 2), level, 4, null)) {
+                if (p.kind() == Kind.MACHINE && !p.dead()) working++;
+                if (p.kind() == Kind.CHEST) chests++;
+            }
         }
-        assertTrue(high > low, "guards " + low + " at EV, " + high + " at UMV");
-        assertTrue(high <= low * 1.5 + 1, "no more than half again: " + low + " vs " + high);
+        return new long[] { working, chests };
     }
 
-    private static int spawners(java.util.List<Placement> placements) {
-        int n = 0;
-        for (Placement p : placements) {
-            n += p.kind() == Kind.SPAWNER ? 1 : 0;
-        }
-        return n;
+    @Test
+    void abandonedComplexesHoldFarFewerWorkingMachines() {
+        long[] ab = machinesAndChests(ActivityLevel.ABANDONED);
+        long[] pa = machinesAndChests(ActivityLevel.PARTLY_ABANDONED);
+        long[] op = machinesAndChests(ActivityLevel.OPERATIONAL);
+        assertTrue(op[0] > 0 && ab[0] * 5 < pa[0], "working machines " + ab[0] + " vs " + pa[0]);
+        assertTrue(ab[0] * 10 < op[0], "working machines " + ab[0] + " vs " + op[0]);
+        // the chest totals are the budget's (D315): never more in a ruin than in a staffed complex
+        assertTrue(ab[1] > 0 && ab[1] <= op[1], "chests " + ab[1] + " vs " + op[1]);
     }
 
     @Test

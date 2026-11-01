@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Reinforced chests and soldiers. MV ceiling.",
+      "desc:8": "The Big Bunker is a concrete fortress with Weapon and Reinforced chests throughout and a spawner room, and its loot reaches MV: Thompsons, MAC-10s, AK-47s, M4s and their magazines. Zombie Soldiers, Farmers and Miners spill out of the vanilla mob spawners inside, three at a time, up to five of each at once.\n\nKill three Zombie Soldiers and take an MV gun out of the chests. Breaking a spawner by hand takes a long time, so farm it instead.\n\n[warn]The zombies carry guns and the bunker is dark. Bring light and armor.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -30,10 +30,10 @@
         "id:8": "gregguns:weapon_chest"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Big Bunker",
+      "name:8": "§6§lBig Bunker",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -70,17 +70,102 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 5,
+          "Damage:2": 1703,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:omeletItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rifle_bullet"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_assault_rifle"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17019,
+          "OreDict:8": "plateAluminium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:frag_grenade"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "damageType:8": "",
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "required:3": 3,
+      "subtypes:1": 0,
+      "target:8": "gregguns.ZombieSoldier",
+      "targetNBT:10": {},
+      "taskID:8": "bq_standard:hunt"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 1,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:thompson_smg"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mac10"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ak47"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:m4"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

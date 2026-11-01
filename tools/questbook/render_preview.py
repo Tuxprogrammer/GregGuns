@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Render quests.json the way BetterQuesting draws a quest line, to a PNG.
+"""Render the quest data (tools/questbook/quests/) the way BetterQuesting draws a quest line, to a PNG.
 
 Dev-only tool: it needs Pillow (`pip install pillow`), unlike the rest of tools/questbook, which is standard
 library only. Nothing in the build depends on it.
 
-usage: python -I tools/questbook/render_preview.py OUT.png [--data quests.json] [--zoom N] [--implicit]
+usage: python -I tools/questbook/render_preview.py OUT.png [--data tools/questbook/quests] [--zoom N] [--implicit]
 
 What it mirrors from BetterQuesting 3.8.89-GTNH (see README.md, "How BetterQuesting draws a line"):
 - a node is a square of `size` canvas units at (x, y); a prerequisite line runs from the center of the
@@ -15,11 +15,13 @@ What it mirrors from BetterQuesting 3.8.89-GTNH (see README.md, "How BetterQuest
 - the canvas zooms to fit the window with a 24 unit margin. The default zoom fits a 1650 x 940 viewport.
 """
 import argparse
-import json
 import os
 import sys
 
 from PIL import Image, ImageDraw, ImageFont
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # -I leaves the script's folder off sys.path
+from build_quests import load_data  # noqa: E402
 
 COLORS = {'start': (200, 200, 200), 'steam': (176, 124, 70), 'lv': (150, 170, 190), 'mv': (230, 160, 70),
           'hv': (230, 200, 60), 'ev': (150, 90, 200), 'iv': (70, 120, 220), 'luv': (220, 80, 160),
@@ -70,12 +72,11 @@ def render(data, out, zoom=None, implicit=False, view=(1650, 940)):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('out')
-    ap.add_argument('--data', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'quests.json'))
+    ap.add_argument('--data', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'quests'))
     ap.add_argument('--zoom', type=float)
     ap.add_argument('--implicit', action='store_true', help='also draw implicit prerequisites (grey)')
     a = ap.parse_args()
-    with open(a.data, encoding='utf-8') as f:
-        z, size = render(json.load(f), a.out, a.zoom, a.implicit)
+    z, size = render(load_data(a.data), a.out, a.zoom, a.implicit)
     print('zoom %.3f, %dx%d' % (z, *size))
 
 

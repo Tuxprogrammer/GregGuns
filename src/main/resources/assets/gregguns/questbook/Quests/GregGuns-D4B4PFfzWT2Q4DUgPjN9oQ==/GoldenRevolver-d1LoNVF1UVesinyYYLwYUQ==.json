@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A showpiece sidearm. Single or akimbo.",
+      "desc:8": "A showpiece sidearm that is nearly all gold. It is the Revolver\u0027s mechanism wrapped in gold, so check its tooltip for the stats.\n\nYou do not build it from scratch. Put a Revolver in the IV Assembler with eight gold plates, two tungstensteel plates and four tungstensteel screws. The Revolver is used up and the new gun comes out fresh, without its camo. Put two golden revolvers in the crafting grid for the akimbo pair.\n\nThe quest takes the single revolver or the pair.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Golden Revolver",
+      "name:8": "§9§lGolden Revolver",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": 8598189954301251927,
   "questIDLow:4": -6013857358500063151,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1706,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:beefwellingtonItem"
+        },
+        "2:10": {
+          "Count:3": 5,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +117,36 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:revolver"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17086,
+          "OreDict:8": "plateGold",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 1,
       "requiredItems:9": {

@@ -51,13 +51,15 @@ Not listed: guns with a scope overlay (Bolt Action Rifle, AS50, AUG, Infiltrator
 
 ## How the model moves
 
-Per-gun data is in `AdsTable`: the names of the model boxes that form the sights, and an optional nudge in texels. The sight point is the center of those boxes in the model's own axes.
+Per-gun data is in `AdsTable`: the names of the model boxes that form the sights, and an optional nudge in texels. The sight point is the center of those boxes in the model's own axes, then carried to eye space through the same chain the renderer draws with, which includes the quarter turn about Y that a Z-family model (the 9mm Pistol, Golden Gun and Mac10) gets in `BoxGunModel.render`. A gun with a red dot aims through the dot (the LMG names the red dot's window box, not its muzzle sight, so the eye sits a third of the way along the gun and not at the buttstock).
 
 `AdsOffset` evaluates the gun's own first-person rows (`fpBase`, `fpIdle`) on top of the shared item frame (`InHandFit.firstPersonItemFrame`: camera offset 0.56, -0.52, -0.72, rotY 45, scale 0.4) to find where the sight point sits in eye space, then computes the translation in the item frame that moves it to x = 0, y = 0 at the same depth. Keeping the depth means the gun neither grows nor shrinks. `GunItemRenderer` multiplies that translation by the eased blend and applies it inside its own matrix push, before the gun's rows. So:
 
 - it works with every existing first-person row (idle, fire, reload, charge) unchanged;
 - the muzzle flash, drawn in the same frame, moves with the gun;
 - it changes no GL state, so a shader pack sees nothing new (the shader GL-state fix, branch `fix/shader-gl-state`, is already on master; the code here only calls `glTranslated` between the renderer's own `glPushMatrix` and `glPopMatrix`).
+
+A gun can also carry an **aimed pitch** (`AdsSpec.pitchDegrees`, degrees, positive tips the muzzle down). `AdsOffset.itemPose` then adds a rotation about the sight point, about the screen's horizontal axis (so the sight stays on the center and the tip reads as a pitch to the player), and `GunItemRenderer` applies it scaled by the blend after the shift. The Thompson and the Combat Shotgun use it: they aim through their front blade, and tip the muzzle up 4 degrees (pitch -4) so the tall rear sight and receiver, which sit between the eye and the blade, swing down out of the line of sight. Tipping the other way raises the rear end into view and makes the picture worse.
 
 The sight point and offsets are computed from the model, not hand-tuned. A gun that sits a little off after a client check is fixed by its nudge in `AdsTable`, not in the renderer.
 

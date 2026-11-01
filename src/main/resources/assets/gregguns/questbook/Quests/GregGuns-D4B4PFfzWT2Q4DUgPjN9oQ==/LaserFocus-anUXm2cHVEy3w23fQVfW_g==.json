@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Laser Focus is cut in a GT Laser Engraver at EV. It is the core of every laser weapon.",
+      "desc:8": "The Laser Focus is the heart of every laser weapon: a ruby cut to a tight beam. Without it there is no Laser Barrel, and without a Laser Barrel there is no Laser Rifle.\n\nCut it in a GT Laser Engraver (EV) from a ruby and an EV emitter, with a white lens in the machine. The lens is not used up, but the emitter is. NEI shows the recipe if you press R on the focus.\n\n[note]A Laser Barrel is built later in the Assembler from the focus, a lens and electrum foil. Make a few at once.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Laser Focus",
+      "name:8": "§8§lLaser Focus",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": 7671063496511411276,
   "questIDLow:4": -5205195938668751106,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1705,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:extremechiliItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_laser_focus"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -71,6 +122,30 @@
       "requiredItems:9": {
         "0:10": {
           "Count:3": 1,
+          "Damage:2": 8502,
+          "OreDict:8": "gemRuby",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 32683,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:part_laser_focus"

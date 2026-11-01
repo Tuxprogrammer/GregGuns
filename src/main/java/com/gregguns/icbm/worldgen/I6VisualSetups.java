@@ -36,8 +36,10 @@ import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.complex.Box;
+import com.gregguns.icbm.complex.Cell;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.ComplexRaster;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.MarkKind;
 import com.gregguns.icbm.complex.MissingPart;
@@ -96,6 +98,9 @@ public final class I6VisualSetups {
         registry.register(new Gen("pa", ActivityLevel.PARTLY_ABANDONED, SiloCeiling.EV));
         registry.register(new Gen("op", ActivityLevel.OPERATIONAL, SiloCeiling.EV));
         registry.register(new Gen("op_umv", ActivityLevel.OPERATIONAL, SiloCeiling.UMV));
+        // A Ross128 complex in any dimension: the blast-door frames are the rolled tier's machine casings (D337).
+        registry.register(new Gen("op_ross", ActivityLevel.OPERATIONAL, SiloCeiling.EV + 2, true));
+        registry.register(new Gen("ab_ross", ActivityLevel.ABANDONED, SiloCeiling.UHV - 1, true));
         registry.register(new Planet("moon", 4));
         registry.register(new Planet("mars", 4));
         registry.register(new Planet("moon_fast", 100000));
@@ -152,11 +157,17 @@ public final class I6VisualSetups {
         private final String tag;
         private final ActivityLevel level;
         private final int ceiling;
+        private final boolean tierCasings;
 
         Gen(String tag, ActivityLevel level, int ceiling) {
+            this(tag, level, ceiling, false);
+        }
+
+        Gen(String tag, ActivityLevel level, int ceiling, boolean tierCasings) {
             this.tag = tag;
             this.level = level;
             this.ceiling = ceiling;
+            this.tierCasings = tierCasings;
         }
 
         @Override
@@ -176,7 +187,8 @@ public final class I6VisualSetups {
             final StructurePlan plan = planOf(world, cellX, cellZ);
             final ComplexPlacer placer = ComplexLevelScenarios.placer()
                 .forceLevel(level)
-                .forceCeiling(ceiling);
+                .forceCeiling(ceiling)
+                .forceTierCasings(tierCasings);
             placer.enabledIn(world);
             final ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
             final List<int[]> chunks = new ArrayList<int[]>();
@@ -219,13 +231,53 @@ public final class I6VisualSetups {
                         at[3] = PopulateGuard.violationCount() - before;
                         Decision d = state.get(PlanKey.of(plan));
                         GregGuns.LOG.info("I6C gen {} rejected={} violations={} decision={}", tag, at[2], at[3], d);
-                        dump(world, plan, ComplexPlacer.floorY(world, d == null ? 32 : d.groundY()), tag);
+                        int fl = ComplexPlacer.floorY(world, d == null ? 32 : d.groundY());
+                        dump(world, plan, fl, tag);
+                        fixtures(placer.fixturesOf(plan, placer.rasterOf(plan)), plan, fl);
                         return ScenarioResult.builder(name())
                             .build();
                     }
                 }
                 return null;
             });
+        }
+    }
+
+    /** Logs each blast door and service run in world coordinates, for framing the shots (D335, D336). */
+    private static void fixtures(ComplexFixtures f, StructurePlan plan, int floor) {
+        int ax = plan.anchorX(), az = plan.anchorZ();
+        for (ComplexFixtures.BlastDoor d : f.doors()) {
+            StringBuilder cols = new StringBuilder();
+            for (int a = d.a0(); a <= d.a1(); a++) cols.append(
+                d.column(a)
+                    .name()
+                    .charAt(0));
+            GregGuns.LOG.info(
+                "I6C DOOR hall={} from={},{} to={},{} y={}..{} facing={} state={} columns={} frame={}",
+                d.hall(),
+                ax + d.x(d.a0()),
+                az + d.z(d.a0()),
+                ax + d.x(d.a1()),
+                az + d.z(d.a1()),
+                floor + d.y0(),
+                floor + d.y1(),
+                d.facing(),
+                d.state(),
+                cols,
+                d.frame()
+                    .size());
+        }
+        for (ComplexFixtures.Run r : f.runs()) {
+            GregGuns.LOG.info(
+                "I6C RUN {} section={} from={},{} to={},{} y={} cells={}",
+                r.service(),
+                r.section(),
+                ax + r.x(r.a0()),
+                az + r.z(r.a0()),
+                ax + r.x(r.a1()),
+                az + r.z(r.a1()),
+                floor + r.y(),
+                r.count());
         }
     }
 
@@ -254,6 +306,30 @@ public final class I6VisualSetups {
         logRoom(ax, az, floor, cp.hall(), "HALL");
         for (Room r : cp.rooms()) {
             logRoom(ax, az, floor, r, "ROOM");
+            // The wall block at the room's low corner tells which style set drew it.
+            Box rb = r.bounds();
+            GregGuns.LOG.info(
+                "I6C wallblock id={} block={} meta={}",
+                r.id(),
+                net.minecraft.block.Block.blockRegistry
+                    .getNameForObject(world.getBlock(ax + rb.minX, floor + 1, az + rb.minZ)),
+                world.getBlockMetadata(ax + rb.minX, floor + 1, az + rb.minZ));
+            // How many of the ceiling's cells are Chisel Technical vents (meta 7)?
+            int vents = 0, cells = 0, cy = -1;
+            ComplexRaster raster = new ComplexRaster(cp);
+            for (int x = rb.minX + 1; x < rb.maxX - 1; x++) {
+                for (int z = rb.minZ + 1; z < rb.maxZ - 1; z++) {
+                    for (int y = 1; y < ComplexRaster.LEVELS; y++) {
+                        if (raster.ownerAt(x, z) != r.id() || raster.at(x, y, z) != Cell.CEILING) continue;
+                        net.minecraft.block.Block b = world.getBlock(ax + x, floor + y, az + z);
+                        cells++;
+                        cy = y;
+                        if ("chisel:technical".equals(net.minecraft.block.Block.blockRegistry.getNameForObject(b))
+                            && world.getBlockMetadata(ax + x, floor + y, az + z) == 7) vents++;
+                    }
+                }
+            }
+            GregGuns.LOG.info("I6C ceiling id={} cells={} vents={} y={}", r.id(), cells, vents, cy);
         }
         int i = 0;
         for (SiloSlot s : cp.silos()) {
@@ -467,7 +543,7 @@ public final class I6VisualSetups {
 
         @Override
         public String description() {
-            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, hatchradar, breakblock, shellcheck, planet, dim). Not part of test all.";
+            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, silocam, hatchradar, breakblock, shellcheck, planet, dim, complexinfo). Not part of test all.";
         }
 
         @Override
@@ -507,6 +583,42 @@ public final class I6VisualSetups {
                     cellX = Integer.parseInt(t[1]);
                     cellZ = Integer.parseInt(t[2]);
                     break;
+                case "blast": {
+                    // blast <explosive id> <x> <y> <z> <fill>: sets one off, as a warhead would
+                    boolean ok = com.gregguns.icbm.explosive.IcbmBlasts.detonate(
+                        ctx.world(),
+                        Double.parseDouble(t[2]),
+                        Double.parseDouble(t[3]),
+                        Double.parseDouble(t[4]),
+                        com.gregguns.icbm.explosive.Explosives.get(t[1]),
+                        Integer.parseInt(t[5]),
+                        null);
+                    GregGuns.LOG.info("I6C blast {} at {},{},{} fill {} accepted={}", t[1], t[2], t[3], t[4], t[5], ok);
+                    break;
+                }
+                case "lightpeak":
+                    // lightpeak start|stop: the largest light queue ArchaicFix held at a tick's start or end
+                    if ("start".equals(t[1])) LightPeak.start(ctx.world());
+                    else GregGuns.LOG.info("I6C lightpeak {}", LightPeak.stop());
+                    break;
+                case "primerstats": {
+                    com.gregguns.compat.carpenters.CarpentersLightPrimer p = com.gregguns.compat.carpenters.CarpentersLightPrimer
+                        .installed();
+                    long[] st = p == null ? null : p.stats();
+                    GregGuns.LOG.info(
+                        "I6C primer {}",
+                        st == null ? "not installed"
+                            : "chunk loads " + st[0]
+                                + ", pieces primed "
+                                + st[1]
+                                + ", "
+                                + st[2]
+                                + " ns per chunk load");
+                    break;
+                }
+                case "locate":
+                    locate(ctx.world(), Integer.parseInt(t[1]), Integer.parseInt(t[2]), Integer.parseInt(t[3]));
+                    break;
                 case "cam": {
                     EntityPlayerMP p = player(t[1]);
                     double[] v = new double[6];
@@ -536,7 +648,10 @@ public final class I6VisualSetups {
                     break;
                 }
                 case "cut":
-                    cut(lastWorld, t);
+                    cut(lastWorld != null ? lastWorld : ctx.world(), t);
+                    break;
+                case "complexinfo":
+                    complexInfo(player(t[1]));
                     break;
                 case "sig": {
                     EntityPlayerMP p = player(t[1]);
@@ -550,6 +665,13 @@ public final class I6VisualSetups {
                     break;
                 case "placepart":
                     placePart(Integer.parseInt(t[1]));
+                    break;
+                case "silocam":
+                    siloCam(
+                        player(t[1]),
+                        Integer.parseInt(t[2]),
+                        Double.parseDouble(t[3]),
+                        t.length > 4 ? Double.parseDouble(t[4]) : 0);
                     break;
                 case "hatchradar":
                     hatchRadar(Integer.parseInt(t[1]));
@@ -589,6 +711,16 @@ public final class I6VisualSetups {
                             }
                         }
                     }
+                    break;
+                }
+                case "nbt": {
+                    // A tile's saved data, for checks of what the world holds (a door piece's data, a pipe's
+                    // connections).
+                    int x = Integer.parseInt(t[1]), y = Integer.parseInt(t[2]), z = Integer.parseInt(t[3]);
+                    TileEntity te = lastWorld.getTileEntity(x, y, z);
+                    net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+                    if (te != null) te.writeToNBT(tag);
+                    GregGuns.LOG.info("I6C nbt {},{},{} {}", x, y, z, te == null ? "-" : tag.toString());
                     break;
                 }
                 case "ents": {
@@ -660,7 +792,197 @@ public final class I6VisualSetups {
         }
     }
 
+    /**
+     * {@code complexinfo <player>}: for the naturally generated complex over the player's chunk, logs its floor, every
+     * silo (shaft, footprint, variant, bore cells that are not air from the pad to the top of its ring) and every
+     * room's
+     * world box, and how many silo mouths still wait for their finish (D319). For shots of a real-pack world.
+     */
+    private static void complexInfo(EntityPlayerMP p) {
+        World w = p.worldObj;
+        int cx = Math.floorDiv((int) Math.floor(p.posX), 16), cz = Math.floorDiv((int) Math.floor(p.posZ), 16);
+        com.gregguns.worldgen.ComplexWriter writer = com.gregguns.worldgen.StructureGenerator.complexWriter();
+        if (!(writer instanceof ComplexPlacer)) {
+            GregGuns.LOG.info("I6C complexinfo: no complex writer");
+            return;
+        }
+        ComplexPlacer placer = (ComplexPlacer) writer;
+        StructureState state = StructureState.forWorld(w);
+        for (StructurePlan plan : StructurePopulator
+            .complexPlans(w.getSeed(), w.provider.dimensionId, cx, cz, writer.chancePercent(), state)) {
+            com.gregguns.worldgen.Decision d = state.get(com.gregguns.worldgen.PlanKey.of(plan));
+            if (d == null || !d.isPlaced()) {
+                GregGuns.LOG.info("I6C complexinfo cell {},{}: not placed ({})", plan.cellX(), plan.cellZ(), d);
+                continue;
+            }
+            placer.enabledIn(w);
+            int floor = ComplexPlacer.floorY(w, d.groundY(), d.sink());
+            ComplexPlan cp = placer.rasterOf(plan)
+                .plan();
+            int ax = plan.anchorX(), az = plan.anchorZ();
+            GregGuns.LOG.info(
+                "I6C complexinfo cell {},{} anchor {},{} floor {} sink {} level {} silos {} rooms {}",
+                plan.cellX(),
+                plan.cellZ(),
+                ax,
+                az,
+                floor,
+                d.sink(),
+                placer.levelOf(plan),
+                cp.silos()
+                    .size(),
+                cp.rooms()
+                    .size());
+            int i = 0;
+            for (SiloSlot s : cp.silos()) {
+                int sx = ax + s.bounds().minX, sz = az + s.bounds().minZ;
+                int notAir = 0, top = floor;
+                // The ring column's highest concrete is the surface the shaft was written to.
+                for (int y = floor + 12; y < 250; y++) {
+                    if (w.getBlock(sx, y, sz) == gregtech.api.GregTechAPI.sBlockConcretes) top = y;
+                }
+                StringBuilder where = new StringBuilder();
+                for (int x = sx + 1; x <= sx + 3; x++) {
+                    for (int z = sz + 1; z <= sz + 3; z++) {
+                        for (int y = floor + 1; y < top; y++) {
+                            if (w.getBlock(x, y, z) != Blocks.air) {
+                                notAir++;
+                                if (where.length() < 200) where.append(' ')
+                                    .append(x)
+                                    .append(',')
+                                    .append(y)
+                                    .append(',')
+                                    .append(z)
+                                    .append('=')
+                                    .append(Block.blockRegistry.getNameForObject(w.getBlock(x, y, z)));
+                            }
+                        }
+                    }
+                }
+                GregGuns.LOG.info(
+                    "I6C complexinfo silo {} shaft {},{} footprint {},{} facing {} variant {} ring top {} bore cells not air {}{}",
+                    ++i,
+                    ax + s.shaftX(),
+                    az + s.shaftZ(),
+                    sx,
+                    sz,
+                    s.facing(),
+                    s.variant(),
+                    top,
+                    notAir,
+                    where);
+            }
+            for (Room r : cp.rooms()) {
+                Box b = r.bounds();
+                GregGuns.LOG.info(
+                    "I6C complexinfo room {} {} x {}..{} z {}..{} h {}",
+                    r.id(),
+                    r.kind(),
+                    ax + b.minX,
+                    ax + b.maxX - 1,
+                    az + b.minZ,
+                    az + b.maxZ - 1,
+                    b.sizeY());
+            }
+        }
+        com.gregguns.icbm.complex.gen.SiloMouths m = com.gregguns.icbm.complex.gen.SiloMouths.forWorld(w, false);
+        GregGuns.LOG.info(
+            "I6C complexinfo mouths waiting for their finish: {}",
+            m == null ? 0
+                : m.pending()
+                    .size());
+    }
+
     /** {@code cut x0 z0 x1 z1 y0 y1}: air in the box, direct writes (the roof cut-away for overviews). */
+    /**
+     * {@code locate <x> <z> <radius cells>}: the complex sites near a point, as {@code /gregguns locate} lists them
+     * from a player standing there, with each site's level (recorded, or the roll it will get) and its ledger status.
+     */
+    private static void locate(World w, int x, int z, int radius) {
+        com.gregguns.worldgen.ComplexWriter writer = com.gregguns.worldgen.StructureGenerator.complexWriter();
+        if (writer == null) {
+            GregGuns.LOG.info("I6C locate: no complex writer");
+            return;
+        }
+        StructureState state = StructureState.forWorld(w);
+        for (com.gregguns.icbm.complex.gen.StructureLocator.Candidate c : com.gregguns.icbm.complex.gen.StructureLocator
+            .nearest(
+                w.getSeed(),
+                w.provider.dimensionId,
+                writer.chancePercent(),
+                x,
+                z,
+                radius,
+                p -> state.get(PlanKey.of(p)))) {
+            GregGuns.LOG.info(
+                "I6C locate cell={},{} center={},{} status={} reason={} level={}",
+                c.plan.cellX(),
+                c.plan.cellZ(),
+                c.plan.anchorX() + ComplexLayout.SIZE / 2,
+                c.plan.anchorZ() + ComplexLayout.SIZE / 2,
+                c.status,
+                c.reason,
+                ComplexPlacer.levelFor(c.decision, c.plan.chestSeedBase()));
+        }
+    }
+
+    /**
+     * Samples the size of ArchaicFix's queued light updates (both light types) at the start and end of every server
+     * tick, and keeps the largest: how close a blast comes to the queue size at which the engine drains mid-tick.
+     */
+    // Source:
+    // https://github.com/embeddedt/ArchaicFix/blob/0.8.0/src/main/java/org/embeddedt/archaicfix/lighting/world/lighting/LightingEngine.java#L25-L36
+    public static final class LightPeak {
+
+        private static LightPeak active;
+        private final World world;
+        private long max, samples;
+
+        private LightPeak(World world) {
+            this.world = world;
+        }
+
+        static void start(World world) {
+            if (active != null) return;
+            active = new LightPeak(world);
+            cpw.mods.fml.common.FMLCommonHandler.instance()
+                .bus()
+                .register(active);
+        }
+
+        static String stop() {
+            if (active == null) return "not running";
+            cpw.mods.fml.common.FMLCommonHandler.instance()
+                .bus()
+                .unregister(active);
+            String r = "max=" + active.max + " of 4194304 over " + active.samples + " samples";
+            active = null;
+            return r;
+        }
+
+        @cpw.mods.fml.common.eventhandler.SubscribeEvent
+        public void onTick(cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent e) {
+            try {
+                Object engine = world.getClass()
+                    .getMethod("getLightingEngine")
+                    .invoke(world);
+                java.lang.reflect.Field f = engine.getClass()
+                    .getDeclaredField("queuedLightUpdates");
+                f.setAccessible(true);
+                long n = 0;
+                for (Object q : (Object[]) f.get(engine)) {
+                    n += (Integer) q.getClass()
+                        .getMethod("size")
+                        .invoke(q);
+                }
+                max = Math.max(max, n);
+                samples++;
+            } catch (ReflectiveOperationException | RuntimeException ex) {
+                samples = -1;
+            }
+        }
+    }
+
     private static void cut(World w, String[] t) {
         int x0 = Integer.parseInt(t[1]), z0 = Integer.parseInt(t[2]), x1 = Integer.parseInt(t[3]),
             z1 = Integer.parseInt(t[4]), y0 = Integer.parseInt(t[5]), y1 = Integer.parseInt(t[6]);
@@ -716,6 +1038,24 @@ public final class I6VisualSetups {
         GregGuns.LOG.info("I6C part silo={} missing={}: NO chest of this complex holds it", silo, s.missing());
     }
 
+    /**
+     * The camera in the gallery in front of a silo's face, {@code back} blocks out from the face, at standing eye
+     * height, looking at the controller (the owner's view of a silo front, D299); {@code side} moves it along the face
+     * to the viewer's right.
+     */
+    private static void siloCam(EntityPlayerMP p, int silo, double back, double side) {
+        SiloSlot s = lastCp.silos()
+            .get(silo);
+        int cx = lastPlan.anchorX() + s.controllerX(), cz = lastPlan.anchorZ() + s.controllerZ();
+        int fx = s.frontX() - s.controllerX(), fz = s.frontZ() - s.controllerZ();
+        // The viewer looks along (-fx, -fz); their right is (fz, -fx) (looking north, the right is east).
+        double rx = fz, rz = -fx;
+        double ex = cx + 0.5 + fx * back + rx * side, ez = cz + 0.5 + fz * back + rz * side;
+        com.gregguns.icbm.missile.MissileShotsScenario
+            .cam(p, ex, lastFloor + 2.62, ez, cx + 0.5, lastFloor + 2.5, cz + 0.5);
+        GregGuns.LOG.info("I6C silocam silo={} eye={},{} facing={} missing={}", silo, ex, ez, s.facing(), s.missing());
+    }
+
     /** Places the silo's missing part the way the scenarios do and checks the structure. */
     private static void placePart(int silo) {
         SiloSlot s = lastCp.silos()
@@ -723,13 +1063,15 @@ public final class I6VisualSetups {
         ItemStack part = partFor(s);
         int cx = lastPlan.anchorX() + s.controllerX(), cz = lastPlan.anchorZ() + s.controllerZ();
         boolean noController = s.missing() == MissingPart.CONTROLLER;
-        int y = lastFloor + (noController ? 2 : 1);
+        // A missing Energy Hatch goes where the complex leaves its concrete: the foot of the right hatch column (D299).
+        int[] at = noController ? new int[] { s.controllerX(), 2, s.controllerZ() }
+            : s.hatchCell(com.gregguns.icbm.complex.Cell.HATCH_ENERGY);
         GtMachineHook.placeMte(
             lastWorld,
             part.getItemDamage(),
-            cx,
-            y,
-            cz,
+            lastPlan.anchorX() + at[0],
+            lastFloor + at[1],
+            lastPlan.anchorZ() + at[2],
             net.minecraftforge.common.util.ForgeDirection.values()[new int[] { 2, 5, 3, 4 }[s.facing()]]);
         TileEntity ctl = lastWorld.getTileEntity(cx, lastFloor + 2, cz);
         if (ctl instanceof IGregTechTileEntity) {
@@ -740,9 +1082,9 @@ public final class I6VisualSetups {
         GregGuns.LOG.info(
             "I6C placepart silo={} at {},{},{} formed={} controller=({},{},{})",
             silo,
-            cx,
-            y,
-            cz,
+            lastPlan.anchorX() + at[0],
+            lastFloor + at[1],
+            lastPlan.anchorZ() + at[2],
             com.gregguns.machine.DevStructureBuilder.check(lastWorld, cx, lastFloor + 2, cz),
             cx,
             lastFloor + 2,

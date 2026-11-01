@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Factory building, train station, medium house and gas station. Their chests hold LV gear.",
+      "desc:8": "The small factory, train station, gas station and medium house are the easy stops. Their chests draw from the LV weapon table: 9mm and shotgun rounds, revolvers, sawed-offs and the occasional Hand Cannon. The medium house also holds Reinforced Chests of GregTech ingots (tin, copper, lead, iron) and a few Weapon Chests.\n\nBring back a revolver, sawed-off or Hand Cannon, and some 9mm or shotgun rounds. The revolver and sawed-off are LV builds and the Hand Cannon is steam age, so check NEI if the chests are not generous.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -30,10 +30,10 @@
         "id:8": "gregguns:weapon_chest"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Small Ruins",
+      "name:8": "§2§lSmall Ruins",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -70,17 +70,110 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 4,
+          "Damage:2": 1702,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:meatystewItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_shotgun_shell"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17305,
+          "OreDict:8": "plateSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:bandages"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 1,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:revolver"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sawed_off"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:handcannon"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 1,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_shotgun_shell"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

@@ -7,7 +7,7 @@ ground: 1
 
 palette:
 G = minecraft:gravel
-R = minecraft:planks#1
+R = crate
 
 marks:
 spawn.npc 0 3 0

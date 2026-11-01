@@ -49,7 +49,8 @@ class ArcPathTest {
         // ICBM-03-17: a flat distance of 0 or under 1 broke the baseline arc.
         for (double d : new double[] { 0.0, 0.3, 1.0 }) {
             ArcPath p = new ArcPath(0, 100, 0, d, 100, 0, 0.8);
-            assertTrue(p.ticks() >= 1 && p.ticks() <= 2);
+            // The dive cap (D287) stretches the hop over the apex, never below one tick.
+            assertTrue(p.ticks() >= 1 && p.ticks() <= Math.ceil(4 * p.apex() / ArcPath.MAX_DIVE) + 1);
             for (int n = 0; n < 5; n++) {
                 for (double v : p.position(n)) {
                     assertFalse(Double.isNaN(v) || Double.isInfinite(v));
@@ -84,5 +85,26 @@ class ArcPathTest {
         double[] e = p.position(p.ticks());
         assertEquals(-300, e[0], 1e-9);
         assertEquals(-400, e[2], 1e-9);
+    }
+
+    @Test
+    void aTargetFarBelowTheStartIsReachedWithinTheDiveCap() {
+        // D287: the arc starts at the build height; a short flight to a low target is slowed, not a free fall.
+        for (double flat : new double[] { 20, 50, 100, 400, 2000 }) {
+            for (double drop : new double[] { 0, 100, 192, 256 }) {
+                ArcPath p = new ArcPath(0, drop, 0, flat, 0, 0, 1.6);
+                assertTrue(p.ticks() >= Math.ceil(flat / 1.6), "never faster than the tier's speed sideways");
+                assertEquals(0.0, p.position(p.ticks())[1], 1e-9, "arrives at the target height");
+                for (int n = 0; n < p.ticks(); n++) {
+                    assertTrue(-p.velocity(n)[1] <= ArcPath.MAX_DIVE + 1e-9, "dives within the cap at " + n);
+                }
+            }
+        }
+    }
+
+    @Test
+    void aLevelLongFlightKeepsItsSpeedTime() {
+        // The cap only binds short flights or big drops: a long one still takes flat / speed.
+        assertEquals(1250, new ArcPath(0, 256, 0, 2000, 64, 0, 1.6).ticks());
     }
 }

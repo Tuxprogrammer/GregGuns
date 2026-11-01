@@ -17,19 +17,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Bio Gun runs on culture fluid. Brew Biomass, make the E. coli dish in the Bio Lab, then grow the culture in the BartWorks Bacterial Vat.",
+      "desc:8": "The Bio Gun runs on E. coli culture fluid, and the same fluid becomes a Plasma Membrane, a part you need for Cybernetic Parts. So this quest asks you to make the whole chain once and hand over the Cybernetic Parts.\n\nStart in the HV Bio Lab: an empty petri dish, a fermented spider eye and water make an E. coli dish. Put the dish in a BartWorks Bacterial Vat (EV) with Biomass and distilled water to grow culture fluid. An HV Centrifuge turns 1,000 mB of it into a Plasma Membrane.\n\nCraft Cybernetic Parts in the EV Assembler from fine electrum wire, EV circuits, plastic, redstone, soul sand and that membrane. Check NEI for the recipe.\n\n[note]You will fill the Bio Tank from the same fluid in the next quest.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:laser_rifle"
+        "id:8": "gregguns:part_cybernetic"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "E. coli Culture",
+      "name:8": "§8§lE. coli Culture",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,11 +58,76 @@
   },
   "questIDHigh:4": 3088269864049531807,
   "questIDLow:4": -6730551901932120211,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1705,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:extremechiliItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_cybernetic"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_cybernetic"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

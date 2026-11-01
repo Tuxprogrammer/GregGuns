@@ -29,6 +29,6 @@ public final class ParticleSpec {
     public float velocityDamping;
     /** The sprite used when the system has variations. */
     public int variationFrame;
-    /** Quarter turns of the sprite, 0 to 3. */
+    /** The sprite's orientation, 0 to 3: none, mirror U, mirror U and V, mirror V ({@link QuadMath#uv}, D311). */
     public int rotation;
 }

@@ -32,7 +32,7 @@ public final class FlightTable {
     /** Anti Gravity Core registry name (GT Assembler, IV: ComponentTable RC-65). */
     public static final String ANTI_GRAVITY_CORE = com.gregguns.item.part.ComponentItems.ANTI_GRAVITY_CORE;
 
-    private static final String CLOTH = ArmorCatalog.HEAVY_CLOTH;
+    private static final String CLOTH = ArmorCatalog.TANNED_LEATHER;
 
     /** The rows, in sheet order. */
     public static final List<Row> ROWS = Collections.unmodifiableList(
@@ -45,7 +45,7 @@ public final class FlightTable {
                 Target.ASSEMBLER,
                 18,
                 1,
-                Input.mod(CLOTH, 7),
+                Input.external(CLOTH, 7),
                 Input.gt("plate", "StainlessSteel", 2)),
             new Row(
                 "FL-02",
@@ -55,7 +55,7 @@ public final class FlightTable {
                 Target.ASSEMBLER,
                 18,
                 2,
-                Input.mod(CLOTH, 6),
+                Input.external(CLOTH, 6),
                 Input.gt("stick", "StainlessSteel", 3)),
             new Row(
                 "FL-03",

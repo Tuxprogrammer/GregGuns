@@ -23,7 +23,7 @@ public final class LootTierCheck {
      * @param actualTier the item's own declared tier by reference ({@code Tiered.getTier()} in game), or null for a
      *                   reference that is not a GregGuns item; the function itself may be null to skip this half
      * @return one message per line whose declared tier, or real item tier, is above the ceiling, or whose declared
-     *         tier is below the real one
+     *         tier is below the real one, or whose companion (a gun's ammo) is really above the ceiling
      */
     public static List<String> violations(LootCategory category, @Nullable Function<String, Tier> actualTier) {
         List<String> bad = new ArrayList<>();
@@ -41,6 +41,22 @@ public final class LootTierCheck {
             if (real != null && real.ordinal() > e.tier()
                 .ordinal()) {
                 bad.add(category.name() + ": " + e.ref() + " declares " + e.tier() + " but is really " + real);
+            }
+            Tier companion = actualTier == null || e.companion() == null ? null
+                : actualTier.apply(
+                    e.companion()
+                        .ref());
+            if (companion != null && companion.ordinal() > ceiling) {
+                bad.add(
+                    category.name() + ": "
+                        + e.ref()
+                        + " brings "
+                        + e.companion()
+                            .ref()
+                        + ", really "
+                        + companion
+                        + ", above "
+                        + category.ceiling());
             }
         }
         return bad;

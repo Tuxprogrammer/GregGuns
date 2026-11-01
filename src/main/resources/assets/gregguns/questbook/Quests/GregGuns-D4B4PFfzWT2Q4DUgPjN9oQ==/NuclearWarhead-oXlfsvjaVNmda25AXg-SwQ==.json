@@ -3,6 +3,10 @@
     "0:10": {
       "questIDHigh:4": 1487176508098239353,
       "questIDLow:4": -5005757595434946124
+    },
+    "1:10": {
+      "questIDHigh:4": 0,
+      "questIDLow:4": 2610
     }
   },
   "properties:10": {
@@ -17,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The nuclear warhead is a Tier 3 casing at ZPM, two blocks tall, made in the Assembler from tungstensteel plates, Industrial TNT, Plastic Explosive, uranium-235, plutonium and a Fuze Assembly Mk III. It flies only on a Tier 3 missile from the silo. A full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour: cross it in full hazmat armor. Launch one from your silo, and stand well back.",
+      "desc:8": "The nuclear warhead is a Tier 3 casing, two blocks tall. Start with an Inert T3 Warhead (the Assembler at LuV: 8 tungstensteel plates, a Fuze Assembly Mk III, a Heavy Nose Cone, 12 Heavy Duty Plates Tier 4, a LuV Sensor, a LuV Emitter and 2 Master circuits), fit the nuclear payload at ZPM (8 uranium-235 ingots, 4 plutonium ingots and 2 ZPM Field Generators to hold the core), then load 64 Plastic Explosive, its implosion lens. It flies only on a Tier 3 missile, from the silo. Check NEI.\n\nA full warhead blasts 64 blocks, and nothing living inside the inner 60 percent (38 blocks at full fill) survives, bosses included. The top layer of ground is left irradiated for about an hour.\n\n[warn]Cross the blast zone only in full hazmat armor, and stand well back from the launch target. There is no safe distance inside the inner radius.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +33,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Nuclear Warhead",
+      "name:8": "§b§lNuclear Warhead",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,14 +62,107 @@
   },
   "questIDHigh:4": -6811307739137288999,
   "questIDLow:4": -7103462764511784255,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 1712,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sausageinbreadItem"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 11097,
+          "OreDict:8": "ingotUranium235",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 32088,
+          "OreDict:8": "circuitUltimate",
+          "id:8": "gregtech:gt.metaitem.03"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:antidote"
+        },
+        "3:10": {
+          "Count:3": 8,
+          "Damage:2": 17325,
+          "OreDict:8": "plateNaquadahAlloy",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
       "consume:1": 0,
       "groupDetect:1": 0,
-      "ignoreNBT:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:inert_warhead_t3"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 11097,
+          "OreDict:8": "ingotUranium235",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 11100,
+          "OreDict:8": "ingotPlutonium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 64,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 0,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

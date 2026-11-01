@@ -17,19 +17,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Place a warhead where you want the hole and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius, so a full Condensed warhead gives you 6. Get well clear, and keep other charges away: another explosion sets one off in half a second.",
+      "desc:8": "A warhead doesn\u0027t need a missile. Place it where you want the hole and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius, so a full Condensed warhead gives you 6 seconds to leave.\n\nFill a Condensed warhead to its cap of 5 charges for the biggest hole a Tier 1 casing makes: in a crafting grid, or all at once in the Assembler from a bare Inert T1 Warhead and 5 Plastic Explosive on circuit 1. Keep a lighter with it.\n\n[warn]Get well clear, and keep other charges away: another explosion sets a warhead off in half a second.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:warhead_t1"
+        "id:8": "gregguns:plastic_explosive"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Demolition Charge",
+      "name:8": "§5§lDemolition Charge",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,11 +58,116 @@
   },
   "questIDHigh:4": -5978948560363040462,
   "questIDLow:4": -6755999232205568031,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sundayroastItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "IC2:blockITNT"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:launcher_warhead_he"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:inert_warhead_t1"
+        },
+        "1:10": {
+          "Count:3": 5,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:plastic_explosive"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 0,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:warhead_t1",
+          "tag:10": {
+            "explosive:8": "condensed",
+            "fill:3": 5
+          }
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:flint_and_steel"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

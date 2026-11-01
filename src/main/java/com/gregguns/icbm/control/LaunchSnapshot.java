@@ -13,6 +13,13 @@ final class LaunchSnapshot {
     final int tier;
     /** Ticks left on a running countdown (D88), -1 when none. */
     final int countdown;
+    /** The silo or pad the block is bound to, for the screen's site line (D288). */
+    final SiteLine site;
+    /**
+     * The gate's verdict without the target ({@link LaunchGate#checkSite}), which the screen's status line shows while
+     * no target is set; equal to {@link #status} unless set by {@link #withSiteStatus}.
+     */
+    final ControlStatus siteStatus;
 
     LaunchSnapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
         int tier) {
@@ -21,6 +28,13 @@ final class LaunchSnapshot {
 
     LaunchSnapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
         int tier, int countdown) {
+        this(status, padFound, minRange, maxRange, distance, radiusTenths, tier, countdown, SiteLine.NONE, status);
+    }
+
+    private LaunchSnapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance,
+        int radiusTenths, int tier, int countdown, SiteLine site, ControlStatus siteStatus) {
+        this.site = site == null ? SiteLine.NONE : site;
+        this.siteStatus = siteStatus == null ? status : siteStatus;
         this.countdown = countdown;
         this.status = status;
         this.padFound = padFound;
@@ -29,6 +43,42 @@ final class LaunchSnapshot {
         this.distance = distance;
         this.radiusTenths = radiusTenths;
         this.tier = tier;
+    }
+
+    /**
+     * @param line the site line
+     * @return this snapshot naming that site
+     */
+    LaunchSnapshot at(SiteLine line) {
+        return new LaunchSnapshot(
+            status,
+            padFound,
+            minRange,
+            maxRange,
+            distance,
+            radiusTenths,
+            tier,
+            countdown,
+            line,
+            siteStatus);
+    }
+
+    /**
+     * @param verdict the gate's verdict without the target
+     * @return this snapshot carrying it
+     */
+    LaunchSnapshot withSiteStatus(ControlStatus verdict) {
+        return new LaunchSnapshot(
+            status,
+            padFound,
+            minRange,
+            maxRange,
+            distance,
+            radiusTenths,
+            tier,
+            countdown,
+            site,
+            verdict);
     }
 
     /**

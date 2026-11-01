@@ -22,7 +22,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Armor uses armor slots. Goggles, packs and pouches use Baubles slots.",
+      "desc:8": "Armor and gear sit in two places. Armor goes in the four armor slots, and so does the Gas Mask, because GregTech\u0027s hazard checks only read those slots. Galacticraft\u0027s oxygen gear uses Galacticraft\u0027s own slots. Everything else, goggles, back devices and the ammo pouch, goes in Baubles slots: head for goggles, wings for packs and gliders, quiver for the ammo pouch.\n\nPick up any starter chestplate to begin: Steam, Bandit (Scout) or Soldier\u0027s (T1 Combat). The Steam set is crafted by hand from bronze plates and Tanned Leather, and the T1 Combat set is built in an assembler. Check NEI for the exact pieces.\n\n[note]Wear every piece of a set for its full bonus. Items in Baubles slots drop when you die unless you keep your inventory.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -31,10 +31,10 @@
         "id:8": "gregguns:gas_mask"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Equipment Slots",
+      "name:8": "§2§lEquipment Slots",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -63,11 +63,88 @@
   },
   "questIDHigh:4": -5641603309570729864,
   "questIDLow:4": -5815142202396673729,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1702,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:hamburgerItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17305,
+          "OreDict:8": "plateSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "Backpack:tannedLeather"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:bandages"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 1,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:steam_chestplate"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t1_scout_chestplate"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t1_combat_chestplate"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

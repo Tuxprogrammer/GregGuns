@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Cobblestone and gunpowder at a crafting table. Your first lesson in ammo supply.",
+      "desc:8": "The Hand Cannon eats one Stone Bullet per shot, so you will want a lot of them. At a crafting table, three cobblestone, a gunpowder and a bronze nugget make sixteen bullets. Hold thirty-two to finish the quest.\n\nGunpowder drops from creepers, and GregTech can mix it too. Bronze nuggets are made from bronze ingots. If you would rather not hand-craft, the next quest builds a steam machine that does it for you.\n\n[note]Stone Bullets are Steam-tier ammo. Rounds for the LV guns are made in the Ammo Press from brass foil, lead or steel rounds, and gunpowder.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Stone Bullets",
+      "name:8": "§c§lStone Bullets",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -65,32 +65,99 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 16,
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:ammo_stone_bullet"
+          "id:8": "harvestcraft:hamburgerItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 9300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
-      "allowAnvil:1": 0,
-      "allowCraft:1": 1,
-      "allowCraftedFromStatistics:1": 0,
-      "allowSmelt:1": 1,
-      "ignoreNBT:1": 0,
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
       "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
+          "Count:3": 3,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:cobblestone"
+        },
+        "1:10": {
           "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 9300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 32,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:ammo_stone_bullet"
         }
       },
-      "taskID:8": "bq_standard:crafting"
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

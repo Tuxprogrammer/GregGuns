@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Missiles launch from the Missile Silo, a 5 by 5 tower you build from Light or Dark Concrete (any finish but cobblestone) and clear glass (Tinkers\u0027 Construct or EnderIO) around an open 3 by 3 shaft, with a Galacticraft Launch Pad for its floor and a ring of Gantry Beams on top. The controller is an HV machine, and the Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. A silo shot flies 25% farther and scatters half as much. Fit an Input Bus for bodies and warheads, an Input Hatch for fuel, an Energy Hatch and a Maintenance Hatch in place of any wall, glass or floor-ring block, but not the rim or the pad. Feed it a body and a warhead and it stands the missile in the shaft for you. Build the silo and put a Launch Control within 6 blocks of it.",
+      "desc:8": "The Missile Silo is a GregTech multiblock that loads, fuels and fires missiles for you. A silo shot flies 25 percent farther and scatters half as much as a pad shot.\n\nBuild a 5 by 5 tower around an open 3 by 3 shaft: a Galacticraft launch pad for the shaft floor in a ring of Light or Dark Concrete, three rings of clear glass (Tinkers\u0027 Construct or EnderIO), seven rings of concrete (any finish but cobblestone) and a rim of 12 Gantry Beams. The HV controller sits in the middle glass ring. The front is five wide in the glass rings: a 3 by 3 glass window around the controller with a column of concrete or hatches on each side. Fit an Input Bus, an Input Hatch for fuel, an Energy Hatch and a Maintenance Hatch in place of wall, hatch-column, glass or floor-ring blocks. Check the controller\u0027s hologram.\n\nThe Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. Feed the bus a body and a warhead and it stands the missile in the shaft. Build a Launch Control into the silo in place of any wall, hatch-column, glass or floor-ring block, one per silo: it fires that silo and no other, runs on the silo\u0027s power, and its screen names the silo.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,10 +26,10 @@
         "id:8": "gregtech:gt.blockmachines"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Missile Silo",
+      "name:8": "§8§lMissile Silo",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": 1487176508098239353,
   "questIDLow:4": -5005757595434946124,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:extremechiliItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk2"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:guidance_computer_mk2"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fragmentation_sleeve_titanium"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -74,6 +131,12 @@
           "Damage:2": 20141,
           "OreDict:8": "",
           "id:8": "gregtech:gt.blockmachines"
+        },
+        "1:10": {
+          "Count:3": 12,
+          "Damage:2": 4,
+          "OreDict:8": "",
+          "id:8": "gregguns:casings"
         }
       },
       "taskID:8": "bq_standard:retrieval"

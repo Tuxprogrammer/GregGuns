@@ -50,7 +50,7 @@ public final class NestScenarios {
     /** @param registry where to register */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Places());
-        registry.register(new DefaultOff());
+        registry.register(new DefaultOn());
     }
 
     private static StructurePlan plan(World world) {
@@ -335,33 +335,32 @@ public final class NestScenarios {
         }
     }
 
-    private static final class DefaultOff implements Scenario {
+    private static final class DefaultOn implements Scenario {
 
         @Override
         public String name() {
-            return "worldgen.bug_nest_default_off";
+            return "worldgen.bug_nest_default_on";
         }
 
         @Override
         public String description() {
-            return "With the default config the Alien Bug Nest is disabled and the real pool builder adds no nest entry,"
-                + " so no grid cell plans one over a wide area; with the nest enabled (control) the same area does plan"
-                + " nests (PLAN-M8 Q2, GGS-11-15).";
+            return "With the default config the Alien Bug Nest is enabled and the real pool builder plans nests over a"
+                + " wide area; with the nest disabled (control) the same area plans none (GGS-11-15).";
         }
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             out.check(
-                !StructureId.ALIEN_BUG_NEST.enabledByDefault(),
-                "the nest should be disabled by default in the catalog");
+                StructureId.ALIEN_BUG_NEST.enabledByDefault(),
+                "the nest should be enabled by default in the catalog");
             out.check(
-                !WorldgenSettings.enabled(StructureId.ALIEN_BUG_NEST),
-                "the nest should be disabled in the running config (default)");
+                WorldgenSettings.enabled(StructureId.ALIEN_BUG_NEST),
+                "the nest should be enabled in the running config (default)");
             int dflt = countNests(WorldgenSettings::enabled);
-            out.checkEquals("nests planned over 400 MEDIUM cells with the config as is", 0, dflt);
-            int forced = countNests(s -> s == StructureId.ALIEN_BUG_NEST);
-            out.check(forced > 0, "the control with the nest enabled should plan some: " + forced);
+            out.check(dflt > 0, "nests planned over 400 MEDIUM cells with the config as is: " + dflt);
+            int off = countNests(s -> s != StructureId.ALIEN_BUG_NEST);
+            out.checkEquals("the control with the nest disabled plans none", 0, off);
             return out.build();
         }
 

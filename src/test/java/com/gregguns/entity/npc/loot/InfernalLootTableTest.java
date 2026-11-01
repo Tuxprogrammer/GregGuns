@@ -117,10 +117,10 @@ class InfernalLootTableTest {
     }
 
     @Test
-    void optOutOnlyForSpawnersWhenNotAllowed() {
-        assertTrue(InfernalOptOut.shouldOptOut(true, false));
-        assertFalse(InfernalOptOut.shouldOptOut(true, true));
-        assertFalse(InfernalOptOut.shouldOptOut(false, false));
+    void optOutOnlyForSpawnersWhenAsked() {
+        assertFalse(InfernalOptOut.shouldOptOut(true, false));
+        assertTrue(InfernalOptOut.shouldOptOut(true, true));
+        assertFalse(InfernalOptOut.shouldOptOut(false, true));
         assertFalse(InfernalOptOut.MARKER.isEmpty());
     }
 

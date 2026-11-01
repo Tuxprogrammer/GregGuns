@@ -22,6 +22,13 @@ public final class AdsTable {
 
     private static final double[] NONE = { 0.0, 0.0, 0.0 };
 
+    /**
+     * Degrees the Thompson and the combat shotgun tip while aimed, through their front blade (see
+     * {@link AdsSpec#pitchDegrees}). Negative: the muzzle comes up about the blade, so the tall rear sight and
+     * receiver swing down out of the line of sight (tipped the other way the rear end rises and blocks the blade).
+     */
+    private static final double PITCH = -4.0;
+
     /** Every gun that can aim, one line each. */
     public static final List<AdsSpec> ALL = Collections.unmodifiableList(
         Arrays.asList(
@@ -29,17 +36,17 @@ public final class AdsTable {
             new AdsSpec("golden_gun", NONE, "rear_sight", "front_sight"),
             new AdsSpec("revolver", NONE, "sight"),
             new AdsSpec("golden_revolver", NONE, "sight_rear", "sight_front"),
-            new AdsSpec("thompson_smg", NONE, "front_sight", "rear_leaf_a", "rear_leaf_b"),
+            new AdsSpec("thompson_smg", NONE, PITCH, "front_sight"),
             new AdsSpec("mac10", NONE, "sight_post", "front_blade"),
             new AdsSpec("pdw", NONE, "sight_ear_l", "sight_ear_r", "front_post"),
             new AdsSpec("m4", NONE, "red_dot"),
             new AdsSpec("ak47", NONE, "sight_leaf", "sight_tip"),
             new AdsSpec("vector", NONE, "red_dot"),
-            new AdsSpec("lmg", NONE, "sight_base", "sight_cap"),
+            new AdsSpec("lmg", NONE, "rd_window"),
             new AdsSpec("laser_rifle", NONE, "dot"),
             new AdsSpec("tesla_rifle", NONE, "red_dot"),
             new AdsSpec("scatter_laser_rifle", NONE, "sight_glow_window"),
-            new AdsSpec("combat_shotgun", NONE, "rear_sight", "front_sight"),
+            new AdsSpec("combat_shotgun", NONE, PITCH, "front_sight"),
             new AdsSpec("grenade_launcher", NONE, "sight_rear")));
 
     private AdsTable() {}
@@ -60,7 +67,9 @@ public final class AdsTable {
 
     /**
      * @param def a gun's client definition
-     * @return the first-person item-frame shift that puts its sights on the screen center, or null if the gun cannot
+     * @return the first-person item-frame pose ({@link AdsOffset#itemPose}: the shift that puts its sights on the
+     *         screen
+     *         center, plus the aimed pitch when the spec has one), or null if the gun cannot
      *         aim (or is akimbo)
      */
     public static double[] shiftOf(ClientGunDefinition def) {
@@ -68,6 +77,6 @@ public final class AdsTable {
         if (spec == null || def.akimbo()) {
             return null;
         }
-        return AdsOffset.itemShift(def.transforms(), def.boxes(), def.modelScale(), spec);
+        return AdsOffset.itemPose(def.transforms(), def.boxes(), def.modelScale(), spec, def.xFamily());
     }
 }

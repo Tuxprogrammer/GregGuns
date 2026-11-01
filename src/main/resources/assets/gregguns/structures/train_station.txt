@@ -10,12 +10,12 @@ palette:
 B = minecraft:gravel*6 | minecraft:cobblestone*2 | minecraft:mossy_cobblestone*1
 R = minecraft:rail#0*2 | air*1
 C = concrete
-K = brick*1 | concrete*1
+K = red_brick*3 | red_brick_worn*1
 G = glass_pane*1 | air*1
 a = air
-S = minecraft:stone_stairs#0@stairs*2 | minecraft:sandstone_stairs#0@stairs*2 | air*1
-s = minecraft:stone_stairs#1@stairs*2 | minecraft:sandstone_stairs#1@stairs*2 | air*1
-r = minecraft:stone_slab#1*4 | air*1
+S = minecraft:stone_brick_stairs#0@stairs*4 | air*1
+s = minecraft:stone_brick_stairs#1@stairs*4 | air*1
+r = minecraft:stone_slab#5*4 | air*1
 l = minecraft:wooden_slab#8
 n = minecraft:ladder#4@facing
 k = minecraft:chest#3@facing

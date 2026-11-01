@@ -18,10 +18,10 @@ import com.gregguns.machine.repair.RepairPlanner.Status;
 
 class RepairPlannerTest {
 
-    private static final RepairSpec STEEL_VEST = new RepairSpec("plate", "Steel", "part_heavy_cloth", 0.5, 4);
-    private static final RepairSpec CLOTH_ONLY = new RepairSpec(null, null, "part_heavy_cloth", 0.0, 4);
+    private static final RepairSpec STEEL_VEST = new RepairSpec("plate", "Steel", "Backpack:tannedLeather", 0.5, 4);
+    private static final RepairSpec CLOTH_ONLY = new RepairSpec(null, null, "Backpack:tannedLeather", 0.0, 4);
     private static final String STEEL = "plate:Steel";
-    private static final String CLOTH = "item:part_heavy_cloth";
+    private static final String CLOTH = "item:Backpack:tannedLeather";
 
     private static Map<String, Integer> pool(int steel, int cloth) {
         Map<String, Integer> pool = new HashMap<>();
@@ -119,6 +119,6 @@ class RepairPlannerTest {
     @Test
     void materialKeysNameThePrefixAndTheItem() {
         assertEquals("plate:Steel", RepairPlanner.metalKey(STEEL_VEST));
-        assertEquals("item:part_heavy_cloth", RepairPlanner.clothKey(STEEL_VEST));
+        assertEquals("item:Backpack:tannedLeather", RepairPlanner.clothKey(STEEL_VEST));
     }
 }

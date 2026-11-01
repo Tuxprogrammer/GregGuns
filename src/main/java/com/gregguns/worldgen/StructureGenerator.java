@@ -55,6 +55,22 @@ public final class StructureGenerator implements IWorldGenerator {
         complexWriter = writer;
     }
 
+    /** @return the grid of the ordinary structures now in force, or null before postInit (the locate command) */
+    public static StructureGrid ordinaryGrid() {
+        StructurePopulator p = override != null ? override : real;
+        return p == null ? null : p.grid();
+    }
+
+    /** @return whether ordinary structures generate in this world (dimension list and world type, GGS-11-12) */
+    public static boolean placementAllowed(World world) {
+        return allowed(world);
+    }
+
+    /** @return the complex writer, or null when the ICBM module is off (the locate command reads its settings) */
+    public static ComplexWriter complexWriter() {
+        return complexWriter;
+    }
+
     /** @return whether the silo complex is on in this non-Overworld world (its chunk provider then needs the hook) */
     static boolean complexWanted(World world) {
         ComplexWriter c = complexWriter;
@@ -196,7 +212,8 @@ public final class StructureGenerator implements IWorldGenerator {
                 StructureState.forWorld(world),
                 new WorldMarks(world, sink),
                 complex,
-                general);
+                general,
+                complex == null ? StructureStarts.NONE : VanillaStarts.forWorld(world));
             STAMPED.addAndGet(n);
             ACCEPTED.addAndGet(sink.acceptedWrites());
             REJECTED.addAndGet(sink.rejectedWrites());
@@ -241,8 +258,19 @@ public final class StructureGenerator implements IWorldGenerator {
         }
 
         @Override
-        public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
-            return inner.write(plan, groundY, window, sink, probe);
+        public int decisionVariant(StructurePlan plan) {
+            return inner.decisionVariant(plan);
+        }
+
+        @Override
+        public int sinkFor(StructurePlan plan, int groundY) {
+            return inner.sinkFor(plan, groundY);
+        }
+
+        @Override
+        public int write(StructurePlan plan, Decision decision, PopulateWindow window, WindowedSink sink,
+            HeightProbe probe) {
+            return inner.write(plan, decision, window, sink, probe);
         }
     }
 

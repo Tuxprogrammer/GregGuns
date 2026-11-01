@@ -1,7 +1,8 @@
 """Third-party art for the ICBM guide sheets: Galacticraft's launch pad and rocket parts (MIT, D85), the core mod's
-Tier 3 rocket parts (GPL-3.0, D86), the formed launch pad, and the tinted vanilla grass, leaves and logs the worldgen views need.
+Heavy Duty Plate Tier 4 (GPL-3.0, D86), the formed launch pad, and the tinted vanilla grass, leaves and logs the worldgen views need.
+Also the Backpack mod's Tanned Leather icon (LGPL-3.0), which the recipes sheet shows as an armor ingredient.
 
-The Galacticraft and core-mod files are read from inputs/thirdparty/ beside this script, never from a jar and never
+The Galacticraft, core-mod and Backpack files are read from inputs/thirdparty/ beside this script, never from a jar and never
 from src/main/resources, so the mod jar carries none of them. The grass and leaf textures are Mojang's, tinted green the way the game tints them (a derived render, noted in the sheet's credit).
 """
 
@@ -25,13 +26,15 @@ GC_ITEMS = INPUTS / "galacticraft"
 GC_PAD = INPUTS / "galacticraft/launch_pad.png"
 NHCORE = INPUTS / "nhcore"
 TCONSTRUCT_GLASS = INPUTS / "tconstruct/clear_glass.png"
+BACKPACK_TANNED_LEATHER = INPUTS / "backpack/tanned_leather.png"
 
 PAD_HEIGHT = 0.4   # the formed launch pad's top tier ends 0.4 of a block above the floor; a missile stands on it
 
 GC_CREDIT = ("Launch pad and rocket part textures © Team Galacticraft (Galacticraft Legacy), MIT License.")
-CORE_CREDIT = ("Heavy Duty Rocket Engine and Fins Tier 3 icons © NewHorizonsCoreMod contributors (GT New Horizons), "
+CORE_CREDIT = ("Heavy Duty Plate Tier 4 icon © NewHorizonsCoreMod contributors (GT New Horizons), "
                "GNU GPL v3. This sheet is a combined work and is released under the GPL-3.0.")
 TC_CREDIT = ("Clear Glass texture © the Tinkers' Construct authors (GT New Horizons fork), GNU LGPL v3.")
+BACKPACK_CREDIT = ("Tanned Leather icon \u00a9 the Backpack mod authors (Eydamos, GT New Horizons fork), GNU LGPL v3.")
 TINT_CREDIT = "Exception to the above: grass and leaves are Mojang's textures tinted green, as the game does."
 
 

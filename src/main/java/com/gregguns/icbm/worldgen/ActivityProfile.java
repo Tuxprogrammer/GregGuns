@@ -19,13 +19,13 @@ public final class ActivityProfile {
         0.12,
         0.05,
         0.18,
-        0.35,
+        0.90,
         true,
-        new double[] { 0, 0, 0, 0 },
-        0.0,
+        new double[] { 0.80, 0.20, 0.0 },
         0,
         0.08,
-        0.25);
+        0.25,
+        0.20);
     private static final ActivityProfile PARTLY = new ActivityProfile(
         ActivityLevel.PARTLY_ABANDONED,
         0.10,
@@ -36,11 +36,11 @@ public final class ActivityProfile {
         0.50,
         0.45,
         true,
-        new double[] { 0.10, 0.20, 0.45, 0.65 },
-        0.0,
+        new double[] { 0.25, 0.55, 0.20 },
         1,
         0.10,
-        0.40);
+        0.40,
+        0.0);
     private static final ActivityProfile OPERATIONAL = new ActivityProfile(
         ActivityLevel.OPERATIONAL,
         0.0,
@@ -51,11 +51,11 @@ public final class ActivityProfile {
         0.0,
         0.0,
         false,
-        new double[] { 0.50, 0.75, 1.0, 1.0 },
-        1.0,
+        new double[] { 0.0, 0.75, 0.25 },
         2,
         0.25,
-        0.60);
+        0.60,
+        0.0);
 
     private final ActivityLevel level;
     private final double collapseChance;
@@ -66,15 +66,15 @@ public final class ActivityProfile {
     private final double brokenCasingChance;
     private final double deadMachineChance;
     private final boolean flooded;
-    private final double[] spawnerByDepth;
-    private final double shaftSpawnerChance;
+    private final double[] spawnerWeights;
     private final int richness;
     private final double chipChance;
     private final double siloPartChance;
+    private final double absentMachineChance;
 
     private ActivityProfile(ActivityLevel level, double collapse, double breach, double rubble, double hole, double lit,
-        double brokenCasing, double deadMachine, boolean flooded, double[] spawnerByDepth, double shaftSpawner,
-        int richness, double chip, double siloPart) {
+        double brokenCasing, double deadMachine, boolean flooded, double[] spawnerWeights, int richness, double chip,
+        double siloPart, double absentMachine) {
         this.level = level;
         this.collapseChance = collapse;
         this.breachChance = breach;
@@ -84,11 +84,11 @@ public final class ActivityProfile {
         this.brokenCasingChance = brokenCasing;
         this.deadMachineChance = deadMachine;
         this.flooded = flooded;
-        this.spawnerByDepth = spawnerByDepth;
-        this.shaftSpawnerChance = shaftSpawner;
+        this.spawnerWeights = spawnerWeights;
         this.richness = richness;
         this.chipChance = chip;
         this.siloPartChance = siloPart;
+        this.absentMachineChance = absentMachine;
     }
 
     /**
@@ -154,16 +154,11 @@ public final class ActivityProfile {
     }
 
     /**
-     * @param depthBand 0 hall, 1 first ring, 2 deeper, 3 deepest (values above 3 count as 3)
-     * @return the chance that a guard-post mark at that depth holds a spawner
+     * @return the odds that a room holds 0, 1 or 2 spawners (D326), summing to 1: abandoned 80/20/0, partly abandoned
+     *         25/55/20, operational 0/75/25
      */
-    public double spawnerChance(int depthBand) {
-        return spawnerByDepth[Math.max(0, Math.min(3, depthBand))];
-    }
-
-    /** @return the chance that a silo shaft or the control room mark holds a spawner (operational only) */
-    public double shaftSpawnerChance() {
-        return shaftSpawnerChance;
+    public double[] spawnerWeights() {
+        return spawnerWeights.clone();
     }
 
     /** @return chest richness 0 to 2 ({@code LootDraw} semantics: more picks, heavier top-tier lines) */
@@ -179,5 +174,10 @@ public final class ActivityProfile {
     /** @return chance the silo's missing part is lying in a chest of the complex */
     public double siloPartChance() {
         return siloPartChance;
+    }
+
+    /** @return per machine slot, the chance it holds nothing (stripped), checked before the husk roll (D284) */
+    public double absentMachineChance() {
+        return absentMachineChance;
     }
 }

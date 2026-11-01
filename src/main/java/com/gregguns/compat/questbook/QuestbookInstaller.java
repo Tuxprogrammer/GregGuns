@@ -9,7 +9,8 @@ import com.google.gson.JsonObject;
 
 /**
  * Installs a {@link QuestbookBundle} into a {@link QuestbookTarget}: an idempotent upsert by fixed UUID that never
- * touches a quest or line outside the bundle. Quests an older GregGuns shipped and this one dropped are left alone.
+ * touches a quest or line outside the bundle, except the retired ids the bundle's index names. Those are quests an
+ * earlier GregGuns shipped; the install deletes exactly them (GGS-12-02, GGS-12-18).
  */
 public final class QuestbookInstaller {
 
@@ -20,6 +21,8 @@ public final class QuestbookInstaller {
 
         public final List<UUID> addedQuests = new ArrayList<>();
         public final List<UUID> replacedQuests = new ArrayList<>();
+        /** Retired ids that are in the database, so the install deletes them. */
+        public final List<UUID> retiredQuests = new ArrayList<>();
         public boolean lineAdded;
         /** The tab order to set, or {@code null} when the line is already in it. */
         public List<UUID> newOrder;
@@ -37,6 +40,12 @@ public final class QuestbookInstaller {
                 plan.replacedQuests.add(id);
             } else {
                 plan.addedQuests.add(id);
+            }
+        }
+        for (UUID id : bundle.index.retired) {
+            if (target.questIds()
+                .contains(id) && !bundle.quests.containsKey(id)) {
+                plan.retiredQuests.add(id);
             }
         }
         plan.lineAdded = !target.lineIds()
@@ -59,6 +68,9 @@ public final class QuestbookInstaller {
     /** Plans, writes, saves and syncs. Safe to run on every start. */
     public static Plan install(QuestbookBundle bundle, QuestbookTarget target) {
         Plan plan = plan(bundle, target);
+        for (UUID retired : plan.retiredQuests) {
+            target.removeQuest(retired);
+        }
         for (Map.Entry<UUID, JsonObject> quest : bundle.quests.entrySet()) {
             target.putQuest(quest.getKey(), quest.getValue());
         }

@@ -376,6 +376,15 @@ public final class ComplexDimScenarios {
                     .getMetaTileEntity() instanceof com.gregguns.icbm.defense.MTERadar;
             out.check(controller, label + ": an HV radar controller in the station");
             if (!controller) return;
+            // The station's Maintenance Hatch (RadarStation.cellAt: dx 1, dz -1, one over the roof) is switched on as a
+            // placed one is, so it shows its wrench face, not GT's duct-tape cross.
+            TileEntity mh = w.getTileEntity(cx + 1, roof + 1, cz - 1);
+            out.check(
+                mh instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                    && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) mh)
+                        .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance
+                    && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) mh).isActive(),
+                label + ": the radar's Maintenance Hatch is switched on (no duct-tape cross)");
             out.check(
                 !com.gregguns.machine.DevStructureBuilder.check(w, cx + c[0], roof + c[1], cz + c[2]),
                 label + ": the station is inert without an Energy Hatch");
@@ -489,11 +498,11 @@ public final class ComplexDimScenarios {
             ComplexPlacer placer = ConfigSettings.writer();
             placer.enabledIn(w);
             int ceiling = placer.ceilingOf(plan);
-            ActivityLevel level = placer.levelOf(cp);
+            ActivityLevel level = placer.levelOf(plan);
             int[] other = NeighborComplex.nearest(w.getSeed(), plan.dimension(), plan, 100, NeighborComplex.RADIUS);
             Decision d = StructureState.forWorld(w)
                 .get(PlanKey.of(plan));
-            int floor = ComplexPlacer.floorY(w, d.groundY());
+            int floor = ComplexPlacer.floorY(w, d.groundY(), d.sink());
             out.note(
                 label + ": level " + level + ", ceiling " + ceiling + ", stick -> " + java.util.Arrays.toString(other));
             int deepWanted = 0, deepFound = 0, sticks = 0, expected = 0, cut = 0;
@@ -589,10 +598,67 @@ public final class ComplexDimScenarios {
                         + ((EntityItemFrame) o).posZ;
                 }
             }
+            fixtures(w, plan, placer, ceiling, floor, out, label);
             out.note(label + ": item frames in the world " + anyFrames + ", first " + first + "; floor y " + floor);
             out.check(frames == expected, label + ": armory frames " + frames + " of " + expected);
             out.checkEquals(label + ": frames without a gun or a wall", 0, bad);
             GregGuns.LOG.info("{} {}: {} frames, {} deep posts", name, label, frames, deepFound);
+        }
+
+        /**
+         * The blast doors in the real dimension (D335, D337): every door piece of a standing column is a Carpenter's
+         * garage door when the mod is loaded, and on the rolled Ross128 dimensions every frame cell of every door's
+         * portal is the rolled tier's GregTech machine casing (none elsewhere). Columns the terrain cut off are left
+         * out.
+         */
+        private void fixtures(World w, StructurePlan plan, ComplexPlacer placer, int ceiling, int floor,
+            ScenarioResult.Builder out, String label) {
+            com.gregguns.icbm.worldgen.ComplexFixtures fx = placer.fixturesOf(plan, placer.rasterOf(plan));
+            Integer tier = PlanetTable.tierOf(com.gregguns.icbm.complex.gen.DimensionKey.of(w));
+            boolean ross = tier != null && tier == PlanetTable.ROLLED;
+            net.minecraft.item.ItemStack casing = com.gregguns.icbm.worldgen.FixtureWriter.tierCasing(ceiling);
+            Block garage = com.gregguns.icbm.worldgen.FixtureWriter.garageDoor();
+            int frameCells = 0, frameOk = 0, pieces = 0, piecesOk = 0;
+            for (com.gregguns.icbm.worldgen.ComplexFixtures.BlastDoor d : fx.doors()) {
+                for (int[] c : d.frame()) {
+                    int x = plan.anchorX() + c[0], z = plan.anchorZ() + c[2];
+                    if (cutOff(w, floor, x, z)) continue;
+                    frameCells++;
+                    if (casing != null && w.getBlock(x, floor + c[1], z) == Block.getBlockFromItem(casing.getItem())
+                        && w.getBlockMetadata(x, floor + c[1], z) == casing.getItemDamage()) frameOk++;
+                }
+                if (garage == null) continue;
+                for (int a = d.a0(); a <= d.a1(); a++) {
+                    int x = plan.anchorX() + d.x(a), z = plan.anchorZ() + d.z(a);
+                    com.gregguns.icbm.worldgen.ComplexFixtures.Column col = d.column(a);
+                    if (col == com.gregguns.icbm.worldgen.ComplexFixtures.Column.TORN || cutOff(w, floor, x, z))
+                        continue;
+                    pieces++;
+                    if (w.getBlock(x, floor + d.y1(), z) == garage) piecesOk++;
+                }
+            }
+            out.note(
+                label + ": "
+                    + fx.doors()
+                        .size()
+                    + " blast doors, "
+                    + piecesOk
+                    + "/"
+                    + pieces
+                    + " top pieces, "
+                    + frameOk
+                    + "/"
+                    + frameCells
+                    + " tier-casing frame cells");
+            boolean anyFrame = false;
+            for (com.gregguns.icbm.worldgen.ComplexFixtures.BlastDoor d : fx.doors()) anyFrame |= !d.frame()
+                .isEmpty();
+            out.check(
+                fx.doors()
+                    .isEmpty() || anyFrame == ross,
+                label + ": tier casings frame the doors exactly on Ross128");
+            out.checkEquals(label + ": frame cells that are the tier casing", frameCells, frameOk);
+            out.checkEquals(label + ": door columns with their top piece", pieces, piecesOk);
         }
     }
 }

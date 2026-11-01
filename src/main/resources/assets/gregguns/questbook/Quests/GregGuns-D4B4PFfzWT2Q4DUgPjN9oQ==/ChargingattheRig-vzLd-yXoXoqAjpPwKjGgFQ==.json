@@ -29,19 +29,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A GregGuns electric item has one tier. Only a charger or buffer of exactly that tier takes it.",
+      "desc:8": "A GregGuns electric item has one tier, and only a GregTech charger or battery buffer of exactly that tier will charge it. A higher-tier charger does not work, which is how GregTech treats its own tools. The Night Vision Goggles are MV, and the Tactical Mask is HV.\n\nHold either one to finish this quest, then match your charger to it. The pack\u0027s Battery Buffer and charger quests show how to build them.\n\n[note]The tooltip shows the charge but not the tier, so remember: goggles MV, mask HV. If it will not charge, you probably have the wrong tier of buffer.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:ammo_9mm_bullet"
+        "id:8": "gregguns:night_vision_goggles"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Charging at the Right Tier",
+      "name:8": "§5§lCharging at the Right Tier",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -70,11 +70,82 @@
   },
   "questIDHigh:4": -4669425792887267702,
   "questIDLow:4": -9183239930452533227,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1704,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:baconcheeseburgerItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 6,
+          "Damage:2": 17306,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_2"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_rocket"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 1,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:night_vision_goggles"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:tactical_mask"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

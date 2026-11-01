@@ -60,6 +60,8 @@ public final class MobAnimDef {
         ATTACKING("attacking"),
         /** The mob holds an item in its right hand. */
         HOLDING("holding"),
+        /** The mob carries a gun and is not aiming it (the hip-carry pose of a walking or idle NPC). */
+        CARRYING("carrying"),
         /** The mob is dying; the weight is the death progress. */
         DYING("dying");
 

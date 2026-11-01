@@ -2,8 +2,7 @@ package com.gregguns.icbm.complex;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,35 +47,40 @@ class ComplexContentCountsTest {
         assertTrue(workshops > SEEDS, "workshops checked: " + workshops);
     }
 
-    /** D234: room guards grow one step per {@link ComplexFurnisher#AREA_STEP} interior cells. */
+    /** D326: every room offers up to two spawner spots, on bare cells no other mark takes. */
     @Test
-    void roomGuardsGrowWithArea() {
-        Set<RoomKind> guarded = EnumSet.of(
-            RoomKind.LAUNCH_CONTROL,
-            RoomKind.WARHEAD_MAGAZINE,
-            RoomKind.GENERATOR_HALL,
-            RoomKind.BUNKS,
-            RoomKind.ARMORY,
-            RoomKind.MISSILE_ASSEMBLY);
-        int rooms = 0, exact = 0, big = 0;
+    void everyRoomOffersTwoDistinctBareSpawnerSpots() {
+        int rooms = 0, two = 0, none = 0;
         for (long s = 0; s < SEEDS; s++) {
-            for (Room r : plan(s).rooms()) {
-                if (!guarded.contains(r.kind())) continue;
-                ComplexLayout.Frame f = new ComplexLayout.Frame(r);
-                int q = Math.max(1, f.lateral * f.depth / ComplexFurnisher.AREA_STEP);
-                int n = count(r, MarkKind.SPAWNER, "room");
-                assertTrue(n <= q, "seed " + s + " " + r.kind() + ": " + n + " guards over " + q + " steps");
-                assertTrue(n >= 1, "seed " + s + " " + r.kind() + " has a guard");
-                rooms++;
-                if (n == q) exact++;
-                if (q >= 2) {
-                    big++;
-                    assertTrue(n >= 2, "seed " + s + " " + r.kind() + " of " + q + " steps has " + n + " guards");
+            ComplexPlan plan = plan(s);
+            List<Room> all = new java.util.ArrayList<>(plan.rooms());
+            all.add(plan.hall());
+            for (Room r : all) {
+                int n = count(r, MarkKind.SPAWNER, ComplexFurnisher.SPOT);
+                assertTrue(n <= ComplexFurnisher.SPAWNER_SPOTS, "seed " + s + " " + r.kind() + " offers " + n);
+                java.util.Set<Long> cells = new java.util.HashSet<>();
+                for (Mark m : r.marks()) {
+                    if (m.kind() == MarkKind.SPAWNER) {
+                        assertTrue(cells.add(m.x() * 4096L + m.z()), "two spots on one cell");
+                    }
                 }
+                for (Mark m : r.marks()) {
+                    if (m.kind() == MarkKind.SPAWNER || m.y() < 1) continue;
+                    if (m.kind() == MarkKind.FURNITURE || m.kind() == MarkKind.MACHINE
+                        || m.kind() == MarkKind.LOOT_CHEST
+                        || m.kind() == MarkKind.GUN_DISPLAY) {
+                        assertTrue(
+                            !cells.contains(m.x() * 4096L + m.z()),
+                            "seed " + s + " " + r.kind() + ": a spawner spot under " + m.kind());
+                    }
+                }
+                rooms++;
+                if (n == 2) two++;
+                if (n == 0) none++;
             }
         }
-        assertTrue(big > 20, "rooms of two steps or more: " + big);
-        assertTrue(exact * 100 >= rooms * 95, "rooms with one guard per step: " + exact + " of " + rooms);
+        assertTrue(two * 100 >= rooms * 90, "rooms with two spots: " + two + " of " + rooms);
+        assertTrue(none * 100 <= rooms, "rooms with no spot: " + none + " of " + rooms);
     }
 
     /** The lamp count per complex, printed for the record and held in a band (review M2: lamps drop dust). */

@@ -14,15 +14,16 @@ import com.gregguns.network.validation.ClientRules;
 
 /**
  * Server to every client tracking a {@link EntityMissile}: its flight phase, warhead casing, warhead blast and fuel,
- * which drive the
- * engine flames and the nose model and skin. Sent on change and repeated about once a second, so a client that starts
+ * and whether an EMP fried its guidance, which drive the
+ * engine flames and sound and the nose model and skin. Sent on change and repeated about once a second, so a client
+ * that starts
  * tracking
  * late catches up. It replaces DataWatcher slots, which GregGuns never claims (GGS-01-11).
  *
  * <p>
  * Wire: entity id (int), phase (byte), casing (byte), fuel (int), blast (byte: 0 for none, else the
  * {@link WarheadBlast} ordinal plus one; picks the nose skin), warm-up
- * tick, lead and total (ints, D88).
+ * tick, lead and total (ints, D88), fried (byte 0 or 1: no thrust, so no engine, D342).
  * Append-only list position: see
  * {@code GregGunsNetwork}. A bad value or a target that is not a missile is dropped (CORE-40). Side: sent by the
  * server, handled by the client.
@@ -39,6 +40,7 @@ public final class PacketMissileState extends ClientboundPacket {
     private int tick;
     private int lead;
     private int total;
+    private int fried;
 
     /** Required by the channel. */
     public PacketMissileState() {}
@@ -57,6 +59,7 @@ public final class PacketMissileState extends ClientboundPacket {
         this.tick = missile.warmupTick();
         this.lead = missile.warmupLead();
         this.total = missile.warmupTotal();
+        this.fried = missile.guidanceFried() ? 1 : 0;
     }
 
     @Override
@@ -69,6 +72,7 @@ public final class PacketMissileState extends ClientboundPacket {
         buf.writeInt(tick);
         buf.writeInt(lead);
         buf.writeInt(total);
+        buf.writeByte(fried);
     }
 
     @Override
@@ -81,6 +85,7 @@ public final class PacketMissileState extends ClientboundPacket {
         tick = buf.readInt();
         lead = buf.readInt();
         total = buf.readInt();
+        fried = buf.readByte();
     }
 
     @Override
@@ -92,6 +97,7 @@ public final class PacketMissileState extends ClientboundPacket {
             .inRange("tick", tick, 0, 100_000)
             .inRange("lead", lead, 0, 100_000)
             .inRange("total", total, 0, 100_000)
+            .inRange("fried", fried, 0, 1)
             .targetOfType("missile", () -> {
                 Entity e = WorldTargets.entity(world, entityId);
                 return e instanceof EntityMissile ? e : null;
@@ -105,7 +111,8 @@ public final class PacketMissileState extends ClientboundPacket {
             FlightPhase.values()[phase],
             casing,
             fuel,
-            blast == 0 ? null : WarheadBlast.values()[blast - 1].id());
+            blast == 0 ? null : WarheadBlast.values()[blast - 1].id(),
+            fried == 1);
         m.applyCountdown(tick, lead, total);
     }
 }

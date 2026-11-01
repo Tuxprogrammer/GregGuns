@@ -8,6 +8,16 @@
       "questIDHigh:4": -1731850489548483738,
       "questIDLow:4": -6717662094995753723,
       "type:1": 1
+    },
+    "2:10": {
+      "questIDHigh:4": 422678459749390635,
+      "questIDLow:4": -4660881918599608206,
+      "type:1": 1
+    },
+    "3:10": {
+      "questIDHigh:4": 3934826126687819866,
+      "questIDLow:4": -7770130209774094114,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -22,19 +32,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "LuV recipes use the Assembly Line.",
+      "desc:8": "Powered suit on your back, blaster in your hands. Every piece of it came out of GregTech machines, not a crafting table.\n\nAt LuV, the Nether Blaster and its Nether Charges move to the Assembly Line. Each needs a research item scanned first, so keep a spare: the Nether Blaster scans a Blaster Rifle, and the charge scans an Advanced Bullet. The gun recipes there also ask for lubricant and more soldering alloy.\n\nHSS-G is the gate material at LuV, so start your HSS-G line now. The coins and the bag below are yours to spend while you set it up.\n\n[note]This capstone pays extra, with three bags. The coins spend at the Vending Machine.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:blaster_rifle"
+        "id:8": "gregguns:t3_power_chestplate"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Power Armor Era Done",
+      "name:8": "§9§lPower Armor Era Done",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -70,18 +80,81 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 1,
-          "Damage:2": 8,
+          "Count:3": 3,
+          "Damage:2": 1706,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:beefwellingtonItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 64,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_power_plating"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_barrel_laser"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_anti_gravity_core"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:blaster_rifle"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t3_power_chestplate"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

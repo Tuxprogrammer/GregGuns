@@ -98,6 +98,15 @@ public final class LootCategory {
             return this;
         }
 
+        /**
+         * @param entry a finished line (from {@link LootMix})
+         * @return this
+         */
+        public Builder add(LootEntry entry) {
+            entries.add(Objects.requireNonNull(entry));
+            return this;
+        }
+
         /** @return the category */
         public LootCategory build() {
             return new LootCategory(name, ceiling, min, max, new ArrayList<>(entries));

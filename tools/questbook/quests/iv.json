@@ -1,0 +1,1022 @@
+{
+  "chapter": "iv",
+  "quests": [
+    {
+      "key": "gg.iv.intro",
+      "title": "Power Armor Era",
+      "tier": "IV",
+      "desc": "Tungstensteel opens the IV door: blaster rifles, the De-Atomizer pistols, a scatter laser, the golden revolver, and the powered suits that make a player feel like a tank. IV is also where hovering flight arrives, with the Anti Gravity Device.\n\nEverything in this tier is built in the IV Assembler at 7,680 EU/t. Energy guns are tier 5 electric items: they take a Lapotronic Orb as their battery and a good dose of soldering alloy, they come out uncharged, and they only charge in an IV charger or battery buffer. Power armor works the same way.\n\nPlan your power first. A guns-only base can get by on a single IV buffer, but a full suit and a back device want a proper charging line.\n\n[note]Press R over any item in NEI for its exact recipe. Quests only check what you carry; they never take it.[/note]",
+      "pre": [
+        "gg.ev.intro",
+        213,
+        861
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:heartybreakfastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1416,
+      "y": 94,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:blaster_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.blaster",
+      "title": "Blaster Rifle",
+      "tier": "IV",
+      "desc": "The Blaster Rifle is the high-damage energy rifle of the IV tier: a laser with an IV emitter behind it and a Lapotronic Orb for a battery. It is the weapon that makes Laser Rifles feel like toys.\n\nBuild it in the IV Assembler from a Laser Barrel, a Carbon Receiver, a Carbon Gunstock, an IV emitter, a Lapotronic Orb, two IV circuits, tungstensteel plates and screws, and soldering alloy. NEI has the full list.\n\n[note]It is an electric item of tier 5. Only an IV charger or battery buffer will charge it.[/note]",
+      "pre": [
+        "gg.iv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:blaster_rifle",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefwellingtonItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 6,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1416,
+      "y": 148,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:blaster_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.scatter",
+      "title": "Scatter Laser Rifle",
+      "tier": "IV",
+      "desc": "A laser that fires a spread of five beams. Up close, it is brutal. Further out, the beams spread apart, so keep it for rooms and corridors.\n\nBuild it in the IV Assembler from two Laser Barrels, a Carbon Receiver and Gunstock, two IV emitters, a Lapotronic Orb, two IV circuits, and tungstensteel plates and screws. The extra barrel and emitter pay for the extra beams. NEI has the exact list.\n\n[note]It is a tier 5 electric item, so it charges at an IV buffer only.[/note]",
+      "pre": [
+        "gg.iv.blaster"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:scatter_laser_rifle",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:delightedmealItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1428,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:scatter_laser_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.deatomizer",
+      "title": "De-Atomizer Pistol",
+      "tier": "IV",
+      "desc": "A compact energy pistol. The akimbo version holds a pair, one in each hand, for twice the volume of fire.\n\nBuild one in the IV Assembler from a Laser Barrel, a Sonic Emitter, Mechanical Parts T3, a Lapotronic Orb, an IV circuit, titanium and tungstensteel plates and screws. To make the pair, put two De-Atomizer Pistols in the crafting grid. The quest takes either one.\n\n[note]The akimbo pair is an electric item too. Charge it at an IV buffer.[/note]",
+      "pre": [
+        "gg.iv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_sonic_emitter",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:deatomizer_pistol",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:akimbo_deatomizer_pistols",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:heartybreakfastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_sonic_emitter",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1482,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:deatomizer_pistol",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.golden",
+      "title": "Golden Revolver",
+      "tier": "IV",
+      "desc": "A showpiece sidearm that is nearly all gold. It is the Revolver's mechanism wrapped in gold, so check its tooltip for the stats.\n\nYou do not build it from scratch. Put a Revolver in the IV Assembler with eight gold plates, two tungstensteel plates and four tungstensteel screws. The Revolver is used up and the new gun comes out fresh, without its camo. Put two golden revolvers in the crafting grid for the akimbo pair.\n\nThe quest takes the single revolver or the pair.",
+      "pre": [
+        "gg.iv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:revolver",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17086,
+              "ore": "plateGold"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:golden_revolver",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:akimbo_golden_revolvers",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefwellingtonItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1536,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:golden_revolver",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.power_plating",
+      "title": "Power Plating",
+      "tier": "IV",
+      "desc": "Power Plating is the armor core of every powered suit. It is a heavy composite of tungstensteel and epoxy fiber, and it is what the power armor is made of.\n\nCraft two at a time in the IV Assembler from two tungstensteel plates, four Epoxid Fiber Reinforced plates, a Mechanical Parts T3 and two EV circuits. NEI shows the exact recipe. You will use several per suit, so make a stack.\n\n[note]Power armor is far hungrier for Power Plating than the Exo Suit is, so build a lot.[/note]",
+      "pre": [
+        "gg.iv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_power_plating",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:delightedmealItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_power_plating",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 6,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1578,
+      "y": 148,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:part_power_plating",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.power_armor",
+      "title": "Power Armor",
+      "tier": "IV",
+      "desc": "The heaviest suit in the mod: very high resistance across damage types, extra health from every piece, and boots with step assist and fall reduction. Its bonuses and its hazard protection only work while the chestplate holds a charge.\n\nEach piece is an IV Assembler recipe of Power Plating, IV circuits, IV electric motors and tungstensteel plates, with a programmed circuit for the piece. The chestplate is the electric part. Charge it at an IV charger or battery buffer. The quest checks the chestplate, but you want all four pieces.\n\n[note]The suit gives heat, cold and electrical protection while charged. Check NEI for the circuit number of each piece.[/note]",
+      "pre": [
+        "gg.iv.power_plating"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_power_plating",
+              "count": 5,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t3_power_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:heartybreakfastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_power_plating",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:t3_power_boots",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1578,
+      "y": 202,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:t3_power_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.exo",
+      "title": "Exo Suit",
+      "tier": "IV",
+      "desc": "The Exo Suit is the lighter powered suit. It trades some of the power armor's resistance for a better jump and a lower build cost, and it is the upgrade path for the Advanced Combat armor you built at EV.\n\nEach piece is an upgrade in the IV Assembler: an Advanced Combat piece, Mechanical Parts T3, an IV circuit, an IV electric motor and one or two tungstensteel plates. The Advanced Combat piece is used up and the Exo piece comes out fresh. Charge the chestplate at an IV buffer for the bonuses.\n\n[note]You need both tiers: the Advanced Combat piece is EV work, the upgrade is IV.[/note]",
+      "pre": [
+        "gg.iv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:t3_combat_chestplate",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t3_exo_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefwellingtonItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:t3_exo_boots",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1644,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:t3_exo_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.antigrav_core",
+      "title": "Anti Gravity Core",
+      "tier": "IV",
+      "desc": "The Anti Gravity Core is the part that cancels your weight. It is a nether star surrounded by IV electronics, and the Anti Gravity Device cannot be built without it.\n\nOnly the IV Assembler makes it, from a nether star, an IV emitter, two IV circuits and 1,152 mB of molten Enderium, in 30 seconds. NEI has the recipe if you press R over the core.\n\n[note]A nether star is a Wither drop, so plan the fight before you plan the machine.[/note]",
+      "pre": [
+        "gg.iv.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_anti_gravity_core",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:delightedmealItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_anti_gravity_core",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1698,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_anti_gravity_core",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.iv.antigrav",
+      "title": "Anti-Gravity Device",
+      "tier": "IV",
+      "desc": "A back device for flight. It sits in the wings slot and moves you by motion instead of switching on creative flight, so it will not fight with other flight mods.\n\nBuild it in the IV Assembler from two tungstensteel plates, an IV field generator, two IV circuits, the Anti Gravity Core, two Mechanical Parts T3 and a Glider Backpack. It is a tier 5 electric item: charge it in an IV charger or battery buffer.\n\n[note]There is one wings slot, so a jump pack, glider or anti-gravity device are alternatives, not a stack.[/note]",
+      "pre": [
+        "gg.iv.antigrav_core",
+        "gg.iv.power_armor"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_anti_gravity_core",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_glider_backpack",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:anti_gravity_device",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:heartybreakfastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_anti_gravity_core",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_glider_backpack",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1698,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:anti_gravity_device",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.iv.power_armor"
+      ]
+    },
+    {
+      "key": "gg.iv.summary",
+      "title": "Power Armor Era Done",
+      "tier": "IV",
+      "desc": "Powered suit on your back, blaster in your hands. Every piece of it came out of GregTech machines, not a crafting table.\n\nAt LuV, the Nether Blaster and its Nether Charges move to the Assembly Line. Each needs a research item scanned first, so keep a spare: the Nether Blaster scans a Blaster Rifle, and the charge scans an Advanced Bullet. The gun recipes there also ask for lubricant and more soldering alloy.\n\nHSS-G is the gate material at LuV, so start your HSS-G line now. The coins and the bag below are yours to spend while you set it up.\n\n[note]This capstone pays extra, with three bags. The coins spend at the Vending Machine.[/note]",
+      "pre": [
+        "gg.iv.power_armor",
+        "gg.iv.blaster",
+        "gg.iv.scatter",
+        "gg.iv.antigrav"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:blaster_rifle",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t3_power_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "iv",
+              "count": 3
+            },
+            {
+              "id": "harvestcraft:beefwellingtonItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 3
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 64,
+              "damage": 17316,
+              "ore": "plateTungstenSteel"
+            },
+            {
+              "id": "gregguns:part_power_plating",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_anti_gravity_core",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1524,
+      "y": 256,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:t3_power_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.iv.blaster",
+        "gg.iv.scatter",
+        "gg.iv.antigrav"
+      ]
+    }
+  ]
+}

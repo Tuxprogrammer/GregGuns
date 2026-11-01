@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -5978948560363040462,
-      "questIDLow:4": -6755999232205568031
+      "questIDHigh:4": -6984177076999661098,
+      "questIDLow:4": -6923954339081298188
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Every missile starts as a chip. The GregTech Circuit Assembler makes a Missile Chip T1 at HV from an Advanced Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wire. The Tier 2 chip is made at EV from an Advanced Epoxy Circuit Board, 2 Data circuits and 4 fine electrum wire. Make a Tier 1 chip.",
+      "desc:8": "Every missile starts as a chip. The Missile Chip T1 holds the flight program, and it\u0027s the first thing the NASA Workbench will ask about.\n\nMake it in the GregTech Circuit Assembler at HV (20 seconds) from a Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wires. Check NEI for the exact recipe. The chip is only half the job: the next quest engraves it into a schematic.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,10 +26,10 @@
         "id:8": "gregguns:missile_chip_t1"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Missile Chip",
+      "name:8": "§5§lMissile Chip",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": -2258329279774958227,
   "questIDLow:4": -4889314045690869992,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:baconcheeseburgerItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 6,
+          "Damage:2": 9,
+          "OreDict:8": "compressedSteel",
+          "id:8": "GalacticraftCore:item.basicItem"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk1"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +123,36 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 32106,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.03"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 19086,
+          "OreDict:8": "wireFineGold",
+          "id:8": "gregtech:gt.metaitem.02"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

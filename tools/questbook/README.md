@@ -2,22 +2,27 @@
 
 Builds the GregGuns quest line that ships inside the jar (`src/main/resources/assets/gregguns/questbook`). Python 3, standard library only. Design: `docs/gregguns-spec/12-questbook/`.
 
-- `quests.json`: the quest data, the single source of truth (keys, titles, tasks, rewards, prerequisites, layout). Quest IDs are `uuid5(namespace, key)`, so a key never changes after release.
+- `quests/`: the quest data, the single source of truth (keys, titles, tasks, rewards, prerequisites, layout). `_line.json` holds the header (`format`, `namespace`, `line`, `retired`); each `<chapter>.json` is `{"chapter": "<chapter>", "retired": [...], "quests": [...]}` (`retired` optional), so parallel edits to different chapters never conflict. Quest IDs are `uuid5(namespace, key)`, so a key never changes after release.
 - `build_quests.py`: writes `index.json`, the line file, and one quest file plus one position file per quest. Output is byte-identical across rebuilds.
-- `validate_quests.py`: checks a quest folder (file names, prerequisites, cycles, overlaps, `index.json`).
+- `quest_doc.py`: regenerates the quest tables, reward budget, totals and trigger table of `docs/gregguns-spec/12-questbook/quest-line.md` from the data (`--check` reports a stale doc and writes nothing).
+- `validate_quests.py`: checks a quest folder (file names, prerequisites, cycles, overlaps, `index.json`); with `--data`, also the data's own checks and that the resources are not stale.
+- `item_tiers.json`: the tier of each reward item worth checking (a `gregguns:` id, or `id@damage` for a pack item). `build_quests.py` reads it for the reward-tier rule (GGS-12-19) and `QuestbookResourcesTest` reads the same file.
+- `pack_items.txt`: the pack item ids quests may name besides `gregguns:` ones (coins, Galacticraft parts, GT materials, HarvestCraft food, loot bags). `pack_items.py <pack .minecraft>` regenerates it from the pack's `DefaultQuests`, `LootBags.xml` and the HarvestCraft jar's lang.
+
+The data schema (tasks, `taskLogic`, rewards, `{"bag": "lv"}` stacks, `[questlink]`, retired keys) is in [authoring.md](../../docs/gregguns-spec/12-questbook/authoring.md#quest-data). Loot bags resolve through the `BAGS` table in `build_quests.py`; title colors come from `TIER_COLORS`.
 
 ```sh
-python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook
-python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook
+python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook --lang src/main/resources/assets/gregguns/lang/en_US.lang
+python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook --data tools/questbook/quests
 ```
 
-After editing `quests.json`, rebuild, update the tables in `quest-line.md` and the quest count, and run `./gradlew test`. `QuestbookResourcesTest` fails if the resources are stale or name something GregGuns does not register.
+After editing a chapter file, rebuild, run `python -I tools/questbook/quest_doc.py` to regenerate the tables in `quest-line.md`, and run `./gradlew test`. `QuestbookResourcesTest` fails if the quest IDs in the resources no longer match the data, or if they name something GregGuns does not register. It does not compare quest text, rewards or layout, so always rebuild after an edit.
 
 ## Layout and prerequisites
 
-`quests.json` per quest: `x`, `y`, `size`, `pre` (quest keys, or pack quest numbers), optional `implicit` (a subset of `pre` drawn as BetterQuesting implicit prerequisites) and optional `main` (default: `size > 24`; GregGuns sets it false everywhere).
+Per quest: `x`, `y`, `size`, `pre` (quest keys, or pack quest numbers), optional `implicit` (a subset of `pre` drawn as BetterQuesting implicit prerequisites) and optional `main` (default: `size > 24`; `true` on the spine a player must follow, which BetterQuesting draws with thick incoming lines).
 
-Rules: 36 unit pitch, 24 unit nodes, 28 unit chapter heads, at most two in-line prerequisites per quest, only the first one drawn, no hub fan-out from `gg.start.welcome`.
+Rules: 36 unit pitch, 24 unit nodes, 28 or 48 unit chapter heads and main quests (72 for a tier milestone), at most two in-line prerequisites per quest, only the first one drawn, no hub fan-out from `gg.start.welcome`.
 
 ### How BetterQuesting draws a line
 

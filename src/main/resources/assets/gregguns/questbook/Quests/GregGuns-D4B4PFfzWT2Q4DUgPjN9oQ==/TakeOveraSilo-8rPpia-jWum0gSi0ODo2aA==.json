@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Every silo in a complex is a real Missile Silo with its hatches in place, missing exactly one part: a concrete block where the controller goes, or a clear glass block under it where the Energy Hatch goes. Look for the part in the Safe, Stockpile, Workshop and Control chests, or craft it, then put it in and the silo forms. A found Energy Hatch is EV, which launches up to Tier 2; fit a LuV hatch for Tier 3. Clear the guard posts first, then power it and add a Launch Control. Repair a silo.",
+      "desc:8": "Every silo in a complex is a real Missile Silo with its hatches in place, missing exactly one part: a concrete block where the controller goes, or a concrete block at the foot of the right-hand hatch column where the Energy Hatch goes.\n\nLook for the part in the Safe, Stockpile, Workshop and Control chests, or craft it. Put it in and the silo forms. A found Energy Hatch is EV, which launches up to Tier 2; swap in a LuV hatch for Tier 3. Power it and fire it from its own Launch Control, at the top of the right-hand hatch column, which runs on the silo\u0027s power: the complex\u0027s silo is yours. Bring back the part you found.\n\n[warn]Clear the guard posts before you start working on the silo.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Take Over a Silo",
+      "name:8": "§8§lTake Over a Silo",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,11 +58,88 @@
   },
   "questIDHigh:4": -958165518133273879,
   "questIDLow:4": -5440022120384285080,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:extremechiliItem"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk2"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:guidance_computer_mk2"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fragmentation_sleeve_titanium"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 1,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 20141,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.blockmachines"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 44,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.blockmachines"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

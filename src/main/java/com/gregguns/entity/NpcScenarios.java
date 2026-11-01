@@ -23,11 +23,14 @@ public final class NpcScenarios {
         registry.register(new ModuleConfigScenario());
         NpcEntityScenarios.registerAll(registry);
         NpcLootScenarios.registerAll(registry);
+        NpcGunDropScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
+        NpcHoldShowcaseScenario.register(registry);
         NpcSuperMutantScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
         NpcBossScenarios.registerAll(registry);
         CyberDemonScenarios.registerAll(registry);
+        SpawnFlagsScenarios.registerAll(registry);
         AttackHelicopterScenarios.registerAll(registry);
         NpcAlienBugScenarios.registerAll(registry);
         NpcTurretScenarios.registerAll(registry);
@@ -62,7 +65,7 @@ public final class NpcScenarios {
             out.checkEquals("spawn dimension", 0, NpcConfig.spawnDimensions[0]);
             out.checkEquals("per-chunk cap", 4, NpcConfig.perChunkCap);
             out.checkEquals("per-player cap", 8, NpcConfig.perPlayerCap);
-            out.check(!NpcConfig.helicopter && !NpcConfig.cyberdemon && !NpcConfig.alienBug, "special mobs off");
+            out.check(NpcConfig.helicopter && NpcConfig.cyberdemon && NpcConfig.alienBug, "special mobs on");
             return out.build();
         }
     }

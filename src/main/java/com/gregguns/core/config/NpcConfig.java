@@ -25,20 +25,24 @@ public class NpcConfig {
     @Config.Comment({ "Bandits spawn naturally.", "Default: true." })
     public static boolean bandits = true;
 
-    @Config.Comment({ "Mini-bosses (Psycho Steve, Dictator Dave) may spawn.", "Default: true." })
+    @Config.Comment({
+        "Mini-bosses (Psycho Steve, Dictator Dave) may spawn: naturally, from eggs and from camps. Off, none does.",
+        "Default: true." })
     public static boolean miniBosses = true;
 
-    @Config.Comment({ "Super Mutants may spawn (camps and eggs).", "Default: true." })
+    @Config.Comment({ "Super Mutants may spawn (camps, eggs and spawners). Off, none does.", "Default: true." })
     public static boolean mutants = true;
 
-    @Config.Comment({ "Alien Bugs may spawn (spawner block and egg).", "Default: false." })
-    public static boolean alienBug = false;
+    @Config.Comment({
+        "Alien Bugs may spawn (spawner block and egg). Off, the spawner stays idle and the egg does nothing.",
+        "Default: true." })
+    public static boolean alienBug = true;
 
-    @Config.Comment({ "The Cyberdemon may spawn (egg and command only).", "Default: false." })
-    public static boolean cyberdemon = false;
+    @Config.Comment({ "The Cyberdemon may spawn (egg and command only). Off, the egg does nothing.", "Default: true." })
+    public static boolean cyberdemon = true;
 
-    @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: false." })
-    public static boolean helicopter = false;
+    @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: true." })
+    public static boolean helicopter = true;
 
     @Config.Comment({ "Spawn weight of the Zombie Farmer. 0 means it is never registered or selected.",
         "Default: 100 (half of the Techguns value)." })
@@ -97,7 +101,7 @@ public class NpcConfig {
         "Leave Infernal Mobs' own drop lists unchanged when this is on, or an NPC may drop twice.", "Default: true." })
     public static boolean infernalTieredLoot = true;
 
-    @Config.Comment({ "NPCs placed by spawner blocks may roll as infernal mobs. Off, they never do (farm guard).",
-        "Default: false." })
-    public static boolean infernalAllowSpawnerNpcs = false;
+    @Config.Comment({ "NPCs placed by spawner blocks never roll as infernal mobs when true (farm guard).",
+        "Off, they roll like any other NPC at Infernal Mobs' own rates.", "Default: false." })
+    public static boolean infernalSpawnerOptOut = false;
 }

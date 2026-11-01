@@ -67,6 +67,7 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.tools.ToolRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.launcher.LauncherWarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.antidote.AntidoteRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.soak.IcbmSoakScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             // The complex scenarios fail on a role audit violation (D267).
             ScenarioRegistry complex = new ScenarioRegistry();
             com.gregguns.icbm.complex.ComplexScenarios.registerAll(complex);
@@ -85,6 +86,10 @@ public final class IcbmModule implements GregGunsModule {
         GregGuns.LOG.info("ICBM module active (Galacticraft present)");
         com.gregguns.worldgen.StructureGenerator
             .setComplexWriter(com.gregguns.icbm.complex.gen.ConfigSettings.writer());
+        // The silo mouth finish (D319) runs from the world tick, once a mouth's surroundings have populated.
+        cpw.mods.fml.common.FMLCommonHandler.instance()
+            .bus()
+            .register(new com.gregguns.icbm.complex.gen.SiloMouthKeeper.Ticker());
         WarheadRegistration.init();
         com.gregguns.icbm.missile.MissileRegistration.init();
         com.gregguns.icbm.production.MissileRecipes.init();
@@ -97,14 +102,23 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.compat.oc.OcCompat.register();
         }
         com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
+        // The balance pass prices missiles against the pack's rockets from the recipe dump.
+        com.gregguns.icbm.compat.NasaWorkbenchDump.register();
         com.gregguns.icbm.tools.ToolRegistration.init();
         com.gregguns.icbm.launcher.LauncherWarheadRegistration.init();
         com.gregguns.icbm.antidote.AntidoteRegistration.init();
+        // Every Carpenter's piece learns its light value as its chunk loads, so a blast's light drain never asks first.
+        com.gregguns.compat.carpenters.CarpentersLightPrimer.install();
     }
 
     /** After every mod's items exist: the silo complex loot tables (GT parts resolve through the unificator). */
     @Override
     public void postInit(cpw.mods.fml.common.event.FMLPostInitializationEvent event) {
         com.gregguns.icbm.worldgen.SiloChests.register();
+        // Roguelike Dungeons registered its generator in preInit; swap it for the keep-out one (D303).
+        if (cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.roguelike.RoguelikeGuard.MODID)) {
+            com.gregguns.compat.roguelike.RoguelikeGuard
+                .install(com.gregguns.core.config.CompatConfig.roguelikeKeepOutOfComplexes);
+        }
     }
 }

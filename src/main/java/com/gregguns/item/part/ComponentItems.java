@@ -15,9 +15,8 @@ import com.gregguns.core.registry.ModuleRegistrar;
  * tier, so the registry and the inventory cannot disagree.
  *
  * <p>
- * Items registered elsewhere keep their registrars ({@link PartItems} for the M1 and M2 parts, {@code ArmorParts}:
- * Heavy Cloth, Gas Mask Filter and the
- * Compressed Air Tank). Names match the texture files.
+ * Items registered elsewhere keep their registrars ({@link PartItems} for the M1 and M2 parts, {@code ArmorParts}: Gas
+ * Mask Filter and the Compressed Air Tank). Names match the texture files.
  *
  * <p>
  * Usage: {@code ComponentItems.get(ComponentItems.RECEIVER_STEEL)}.
@@ -67,8 +66,6 @@ public final class ComponentItems {
     public static final String TANK_AIR = "tank_air";
     /** Registry name of the Nuclear Power Cell. */
     public static final String CELL_NUCLEAR = "cell_nuclear";
-    /** Registry name of the depleted Nuclear Power Cell. */
-    public static final String CELL_NUCLEAR_DEPLETED = "cell_nuclear_depleted";
     /** Registry name of Bandages. */
     public static final String BANDAGES = "bandages";
     /** Registry name of the Medkit. */
@@ -110,8 +107,6 @@ public final class ComponentItems {
                 return new ItemConsumable(
                     tier,
                     BANDAGES.equals(entry.name()) ? ConsumableSpec.BANDAGES : ConsumableSpec.MEDKIT);
-            case CELL_HIDDEN:
-                return new ItemPartHidden(tier);
             default:
                 return new ItemPart(tier);
         }

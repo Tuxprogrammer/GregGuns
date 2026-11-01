@@ -19,7 +19,7 @@ public enum StructureId {
     /** Big Bunker. */
     BIG_BUNKER("big_bunker", true, 2),
     /** Alien Bug Nest. */
-    ALIEN_BUG_NEST("alien_bug_nest", false, 1),
+    ALIEN_BUG_NEST("alien_bug_nest", true, 1),
     /** Military Base. */
     MILITARY_BASE("military_base", true, 2),
     /** Aircraft Carrier. */
@@ -42,7 +42,7 @@ public enum StructureId {
         return id;
     }
 
-    /** @return whether the structure is placed unless an admin turns it off (false only for the Alien Bug Nest) */
+    /** @return whether the structure is placed unless an admin turns it off (true for every structure) */
     public boolean enabledByDefault() {
         return enabledByDefault;
     }

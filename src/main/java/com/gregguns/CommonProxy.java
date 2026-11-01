@@ -1,6 +1,7 @@
 package com.gregguns;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 
 import com.gregguns.armor.ArmorModule;
 import com.gregguns.core.DevEnvironment;
@@ -16,7 +17,6 @@ import com.gregguns.core.module.ModuleSyncLogic;
 import com.gregguns.core.module.PacketModuleSync;
 import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
-import com.gregguns.core.testing.ScenarioChunks;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.entity.NpcModule;
 import com.gregguns.gun.GunsModule;
@@ -32,6 +32,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -44,6 +45,10 @@ public class CommonProxy {
         GregGuns.LOG.info("{} {} loading", GregGuns.NAME, Tags.VERSION);
         // Order per CONTRIBUTING.md: config first, then the modules register items, blocks and entities.
         GregGunsConfig.register();
+        if (cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.lootbags.LootBagGroups.MOD_ID)) {
+            // After ELB's preInit (after:enhancedlootbags) and before any texture stitch reads the group icons.
+            com.gregguns.compat.lootbags.LootBagInjector.preInit(event.getModConfigurationDirectory());
+        }
         GregGunsNetwork.init();
         modules = new ModuleManager(ModuleFlags::isEnabled, ModPresence::isLoaded, new GregGunsTab());
         registerModules(modules);
@@ -55,14 +60,22 @@ public class CommonProxy {
         // Retired ids get an inert machine so old worlds cannot crash GT's item render (see MtePlaceholders). Still
         // inside GT's registration window.
         MtePlaceholders.registerMissing();
+        // GT recycling data for every GregGuns stack that has none, from the recipes that make it (GGS-06-49).
+        com.gregguns.recipe.recycling.RecyclingDerivation.register();
         FMLCommonHandler.instance()
             .bus()
             .register(this);
         // Existing items of a module that is off do nothing; also on a client whose server has other flags.
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(ModuleGate.INSTANCE);
-        if (DevEnvironment.testHooksEnabled()) {
-            // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
-            ScenarioChunks.registerCallback();
+        // Re-merges the GregGuns vending trades after /vending reload; nothing without the Vending Machine.
+        com.gregguns.compat.VendingMachineCompat.init();
+        if (com.gregguns.compat.lootbags.LootBagInjector.active()) {
+            // Whatever compat.lootBags says: a GregGuns bag must never crash ELB (LootBagGuard).
+            com.gregguns.compat.lootbags.LootBagGuard guard = new com.gregguns.compat.lootbags.LootBagGuard();
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+            FMLCommonHandler.instance()
+                .bus()
+                .register(guard);
         }
     }
 
@@ -77,15 +90,23 @@ public class CommonProxy {
     /** @param event a player logging in; tells their client which modules are active on the server */
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.player instanceof EntityPlayerMP) {
+        if (event.player instanceof EntityPlayerMP && !isIntegratedHost((EntityPlayerMP) event.player)) {
             GregGunsNetwork.channel()
                 .sendTo(new PacketModuleSync(enabledModuleMask()), (EntityPlayerMP) event.player);
         }
     }
 
+    /** @return whether the player is the one playing on this integrated server: same config, nothing to compare */
+    private static boolean isIntegratedHost(EntityPlayerMP player) {
+        MinecraftServer server = player.mcServer;
+        return server.isSinglePlayer() && player.getCommandSenderName()
+            .equals(server.getServerOwner());
+    }
+
     public void postInit(FMLPostInitializationEvent event) {
         modules.postInit(event);
         applyPackFit();
+        com.gregguns.compat.lootbags.LootBagInjector.postInit();
     }
 
     /**
@@ -112,29 +133,52 @@ public class CommonProxy {
     }
 
     /**
-     * Registers the dev-only {@code /gregguns} command (with its {@code test} subcommand) and the built-in scenarios.
-     * Does nothing outside the dev environment unless {@code -Dgregguns.testHooks=true} is set.
+     * Runs once the server has started, after every mod's server-starting handler: merges the GregGuns trades into the
+     * Vending Machine, which loads its own trade file while starting.
+     */
+    public void serverStarted(FMLServerStartedEvent event) {
+        com.gregguns.compat.VendingMachineCompat.onServerStarted();
+    }
+
+    /**
+     * Registers {@code /gregguns}: the op-only {@code locate} subcommand whenever structures generate, and in the
+     * dev environment (or with {@code -Dgregguns.testHooks=true}) also {@code test} and the built-in scenarios.
      */
     public void serverStarting(FMLServerStartingEvent event) {
         // Optional quest line install; runs after BetterQuesting has loaded its database (GregGuns declares
         // after:betterquesting).
         com.gregguns.compat.BetterQuestingInstall.onServerStarting();
+        // Structure locator: an op tool for real servers too, so it registers whenever worldgen or the ICBM module is
+        // on.
+        GregGunsCommand command = new GregGunsCommand();
+        boolean any = false;
+        if (com.gregguns.worldgen.StructureGenerator.complexWriter() != null
+            || com.gregguns.worldgen.StructureGenerator.ordinaryGrid() != null) {
+            command.register(new com.gregguns.icbm.complex.gen.LocateSubCommand());
+            com.gregguns.icbm.complex.gen.LocateGeneration.ensureRegistered();
+            any = true;
+        }
         if (!DevEnvironment.testHooksEnabled()) {
             if (com.gregguns.core.config.DebugConfig.recipeDump) {
-                GregGunsCommand dump = new GregGunsCommand();
-                dump.register(new com.gregguns.core.command.DumpRecipesSubCommand());
-                event.registerServerCommand(dump);
+                command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
+                any = true;
                 GregGuns.LOG.warn("debug.recipeDump is on: /gregguns dumprecipes is available to ops");
+            }
+            if (any) {
+                event.registerServerCommand(command);
             }
             return;
         }
         HarnessScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.fx.FxScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.machine.BuildScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-        GregGunsCommand command = new GregGunsCommand();
+        com.gregguns.compat.VendingScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        com.gregguns.compat.lootbags.LootBagScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        com.gregguns.recipe.recycling.RecyclingScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         command.register(new com.gregguns.core.command.BuildSubCommand());
         command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
+        command.register(new com.gregguns.icbm.soak.SoakStatSubCommand());
         event.registerServerCommand(command);
         GregGuns.LOG.info(
             "Registered /gregguns (dev environment or -Dgregguns.testHooks), {} scenarios",
@@ -168,6 +212,7 @@ public class CommonProxy {
      * {@link SelfCheckRunner}.
      */
     public void loadComplete(FMLLoadCompleteEvent event) {
+        com.gregguns.compat.GtAchievementFilter.apply();
         if (DevEnvironment.isActive()) {
             SelfCheckRunner.run();
         }

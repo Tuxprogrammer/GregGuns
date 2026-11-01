@@ -29,7 +29,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "LuV weapons are built in the Assembly Line with a research item, like GT\u0027s own LuV parts.",
+      "desc:8": "LuV is where GregGuns leaves the plain Assembler behind. The Nether Blaster is built on the Assembly Line, with a research item scanned first, just like GT\u0027s own LuV parts. The Alien Blaster, the Grim Reaper and the Golden Gun are LuV Assembler builds, but they all want HSS-G plates and LuV parts.\n\nHSS-G is the gate material, so the first job is a good supply of HSS-G plates and LuV circuits. Energy guns at this tier are tier 6 electric items: they take a Lapotronic Orb II as their battery, come out uncharged, and only charge in a LuV charger or battery buffer.\n\nAssembly Line recipes need a scanned research item and fluids such as soldering alloy, lubricant or lava, and a scanned weapon is matched whatever its charge or wear. Keep a spare of the weapon one tier below the one you want to build.\n\n[note]Press R over any item in NEI for the exact recipe. Quests only check what you carry and never take it.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -38,10 +38,10 @@
         "id:8": "gregguns:alien_blaster"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Assembly-Line Weapons",
+      "name:8": "§d§lAssembly-Line Weapons",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -70,11 +70,76 @@
   },
   "questIDHigh:4": -7865027950390518512,
   "questIDLow:4": -5809219404973842534,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1707,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:epicbaconItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 17372,
+          "OreDict:8": "plateHSSG",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 32706,
+          "OreDict:8": "circuitMaster",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 32606,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17372,
+          "OreDict:8": "plateHSSG",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

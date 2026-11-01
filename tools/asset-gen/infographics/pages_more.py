@@ -357,13 +357,13 @@ ENCOUNTERS = [
      "Natural spawns, Overworld only. The danger level rises the farther you travel from world spawn, and in harsh "
      "biomes: deserts, wastelands, frozen lands and swamps. Higher danger opens tougher spawns.", 3, [
          ("Zombie Farmer", "Danger 0+", "A hoe or a Hand Cannon, in Miner's clothes.",
-          "Wheat, seeds, leather, bread, apples, Heavy Cloth.",
+          "Wheat, seeds, leather, bread, apples, Tanned Leather.",
           dict(model="biped", skin="zombie_soldier", pose=ZOMBIE_ARMS, armor=None)),
          ("Zombie Miner", "Danger 0+", "A pickaxe or a Hand Cannon, and a Miner's Helmet.",
-          "Coal, redstone, iron, gunpowder, Heavy Cloth.",
+          "Coal, redstone, iron, gunpowder, Tanned Leather.",
           dict(model="biped", skin="zombie_soldier", pose=K.AIM, gun_name="handcannon", armor=None)),
          ("Zombie Soldier", "Danger 1+", "A revolver, a Thompson or a shovel, in Soldier armor.",
-          "Shotgun shells, 9mm bullets, iron, gunpowder, Heavy Cloth.",
+          "Shotgun shells, 9mm bullets, iron, gunpowder, Tanned Leather.",
           dict(model="biped", skin="zombie_soldier", pose=K.AIM, gun_name="thompson_smg", armor=None)),
          ("Skeleton Soldier", "Danger 1+", "A revolver, Thompson or Hand Cannon; a helmet and boots.",
           "Bones, coal, gunpowder.",
@@ -372,14 +372,14 @@ ENCOUNTERS = [
           "Always his Chainsaw and 4 to 8 Fuel Tanks.",
           dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="chainsaw", armor=None)),
          ("Bandit", "Danger 2+", "A pistol, revolver, Sawed Off, Thompson, AK47 or Bolt Action Rifle, in Bandit armor.",
-          "Ammo, iron, gunpowder, Heavy Cloth.",
+          "Ammo, iron, gunpowder, Tanned Leather.",
           dict(model="biped", skin="bandit", pose=K.AIM, gun_name="sawed_off", armor=None)),
      ]),
     ("At camps and nests", "#ffd24a",
      "Military Camps and Aircraft Carriers fly a camp flag that keeps calling in soldiers until you break it. "
      "Breaking it brings the helicopter.", 5, [
          ("Army Soldier", "Camps", "An M4, Combat Shotgun or Bolt Action Rifle; Combat armor or a beret.",
-          "Shotgun shells, rifle bullets, iron, Heavy Cloth.",
+          "Shotgun shells, rifle bullets, iron, Tanned Leather.",
           dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4", armor=None)),
          ("Commando", "Aircraft Carriers", "An M4 and full Commando armor.",
           "Steel, rubber, rifle bullets, Explosive Charges.",

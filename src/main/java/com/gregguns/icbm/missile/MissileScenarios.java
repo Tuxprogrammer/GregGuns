@@ -47,9 +47,19 @@ public final class MissileScenarios {
         registry.register(new TargetHeight());
         registry.register(new ShotDown());
         registry.register(new PadSurvives());
+        registry.register(new PadBreak());
         registry.register(new MissileShotsScenario());
         registry.register(new MissileShotsScenario(true));
+        registry.register(new GasGroundShotsScenario());
         registry.register(new MissileMpScenario());
+        registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_nuclear", MissileTier.T3, 3, "nuclear", 4, 400));
+        registry
+            .register(new C3MpBlastScenario("testing.icbm_c3_mp_nuclear_far", MissileTier.T3, 3, "nuclear", 4, 1800));
+        registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_gas", MissileTier.T1, 1, "chemical", 3, 70));
+        registry
+            .register(new C3MpBlastScenario("testing.icbm_c3_mp_antimatter", MissileTier.T3, 4, "antimatter", 1, 400));
+        registry
+            .register(new C3MpBlastScenario("testing.icbm_c3_mp_redmatter", MissileTier.T3, 5, "redmatter", 1, 400));
         I3ItemShotsScenarios.registerAll(registry);
         EmpMissileScenarios.registerAll(registry);
     }
@@ -586,11 +596,18 @@ public final class MissileScenarios {
             }
             final boolean[] flew = { false };
             final double[] maxY = { 0 };
+            final double[] leftColumnAt = { -1 };
+            final double lpX = m.posX;
+            final double lpZ = m.posZ;
             return ScenarioResult.pending(name(), 900, ticks -> {
                 trace(w, m, ticks);
                 if (!m.isDead) {
                     flew[0] |= m.phase() == FlightPhase.ARC;
                     maxY[0] = Math.max(maxY[0], m.posY);
+                    // D287: the first tick off the pad's column is the first step of the arc, from the build height.
+                    if (leftColumnAt[0] < 0 && Math.hypot(m.posX - lpX, m.posZ - lpZ) > 1e-6) {
+                        leftColumnAt[0] = m.posY;
+                    }
                     if (ticks >= 880) {
                         setTerrain(terrain);
                         return ScenarioResult.fail(
@@ -635,7 +652,12 @@ public final class MissileScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(flew[0], "it reached the arc phase");
-                out.check(maxY[0] > py + 20, "it climbed well above the pad (" + maxY[0] + ")");
+                out.check(maxY[0] >= w.getHeight(), "it climbed to the build height (" + maxY[0] + ")");
+                out.check(
+                    leftColumnAt[0] >= w.getHeight() - ArcPath.MAX_DIVE,
+                    "it climbed straight up from the pad to the build height before it turned (left the column at y "
+                        + leftColumnAt[0]
+                        + ")");
                 out.check(target.removed(w) > 0, "the blast broke blocks on the target platform");
                 out.checkEquals(
                     "no tickets after impact",
@@ -957,12 +979,7 @@ public final class MissileScenarios {
                         return ScenarioResult.fail(name(), "no ticket for the re-bind");
                     }
                     rebound.bindEntity(copy);
-                    // Forge saved the ticket with the missile's chunk forced; the re-bound one carries it.
-                    net.minecraftforge.common.ForgeChunkManager.forceChunk(
-                        rebound,
-                        new net.minecraft.world.ChunkCoordIntPair(
-                            net.minecraft.util.MathHelper.floor_double(copy.posX) >> 4,
-                            net.minecraft.util.MathHelper.floor_double(copy.posZ) >> 4));
+                    // Forge saves a ticket without its chunks: the re-bound one forces nothing until it is adopted.
                     List<net.minecraftforge.common.ForgeChunkManager.Ticket> again = new ArrayList<>();
                     again.add(rebound);
                     MissileTickets.onTicketsLoaded(again, w);
@@ -970,6 +987,13 @@ public final class MissileScenarios {
                         copy.tickets()
                             .ticket() == rebound,
                         "the reloaded missile adopted the re-bound ticket");
+                    out.check(
+                        rebound.getChunkList()
+                            .contains(
+                                new net.minecraft.world.ChunkCoordIntPair(
+                                    net.minecraft.util.MathHelper.floor_double(copy.posX) >> 4,
+                                    net.minecraft.util.MathHelper.floor_double(copy.posZ) >> 4)),
+                        "adopting forces the missile's own chunk again, so it ticks after a load");
                     out.checkEquals("reloaded phase", FlightPhase.ARC, copy.phase());
                     live[0] = copy;
                     step[0] = 1;
@@ -1190,6 +1214,31 @@ public final class MissileScenarios {
                 return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
             }
             return new MissileGcScenarios.PadSurvives().run(ctx);
+        }
+    }
+
+    /** Wrapper like {@link PadSurvives}: no Galacticraft types here. */
+    private static final class PadBreak extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.pad.break";
+        }
+
+        @Override
+        public String description() {
+            return "Breaking an armed missile on a pad drops body and warhead once and awards no GT achievement.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            if (!IcbmAvailability.galacticraftPresent()) {
+                return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
+            }
+            return new MissileGcScenarios.PadBreakNoAchievement().run(ctx);
         }
     }
 }

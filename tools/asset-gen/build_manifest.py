@@ -216,8 +216,6 @@ PARTS = [
     ("part_rad_emitter", "Rad Emitter", "ZPM", ["NaquadahAlloy", "Uranium235"], "radEmitter", "P3", "lead-shielded emitter with green glow"),
     ("part_anti_gravity_core", "Anti Gravity Core", "IV", ["TungstenSteel"], "antiGravityCore", "P3", "cyan core sphere in a steel cage"),
     ("part_cybernetic", "Cybernetic Parts", "EV", ["Electrum", "Titanium"], "cyberneticParts", "P3", "wires and plates, warm gray"),
-    ("part_heavy_cloth", "Heavy Cloth", "ULV", ["Wood"], "heavyCloth", "P2", "folded brown heavy cloth"),
-    ("part_treated_leather", "Treated Leather", "LV", ["Steel"], "treatedLeather", "P2", "dark green-black treated leather"),
     ("part_power_plating", "Power Plating", "IV", ["TungstenSteel", "EpoxidFiberReinforced"], "powerPlating", "P2", "slate plate with fiber layer"),
     ("part_gas_mask_filter", "Gas Mask Filter", "MV", ["Aluminium"], "gasMaskFilter", "P2", "round filter canister"),
     ("part_nuclear_warhead", "Small Nuclear Warhead", "ZPM", ["NaquadahAlloy", "Lead"], "tacticalNuclearWarhead", "P3", "olive warhead with hazard band"),
@@ -278,8 +276,6 @@ for reg, disp, tier, fpn, pri, mats, desc in TANKS:
              fp=ttex("items/%s%s.png" % (fpn, "Empty" if empty else "")))
 icon("cell_nuclear", "Nuclear Power Cell (ZPM)", G + "green-glow uranium cell in a lead sleeve.", mats=["NaquadahAlloy", "Uranium235", "Lead"],
      pri="P3", fp=ttex("items/nuclearPowerCell.png"))
-icon("cell_nuclear_depleted", "Nuclear Power Cell, Depleted (ZPM)", G + "same cell, glow gone, dull gray-brown.", mats=["NaquadahAlloy", "Lead"],
-     pri="P3", fp=ttex("items/nuclearPowerCellDepleted.png"))
 
 # Consumables, tools, placers, misc
 icon("bandages", "Bandages (LV)", G + "rolled white bandage with a small red mark.", extra_palette=["#FFFFFF", "#C80000"],
@@ -310,7 +306,7 @@ PIECES = (("helmet", "Helmet"), ("chestplate", "Chestplate"), ("leggings", "Legg
 SETS = [
     ("t1_scout", "Bandit", "ULV", ["Bronze"], ("Mask", "Vest", "Pants", "Boots"), "t1_scout", "rough cloth with bronze studs"),
     ("t1_miner", "Miner's", "ULV", ["WroughtIron"], ("Helmet", "Jacket", "Pants", "Boots"), "t1_miner", "blue canvas, yellow helmet with lamp, wrought-iron rivets"),
-    ("t1_combat", "Soldier's", "LV", ["Steel"], ("Helmet", "Vest", "Pants", "Boots"), "t1_combat", "steel plates on heavy cloth"),
+    ("t1_combat", "Soldier's", "LV", ["Steel"], ("Helmet", "Vest", "Pants", "Boots"), "t1_combat", "steel plates on leather"),
     ("t2_combat", "Combat", "MV", ["Aluminium"], ("Helmet", "Vest", "Pants", "Boots"), "t2_combat", "dark olive plates with aluminum trim"),
     ("t2_commando", "Commando", "MV", ["Aluminium"], ("Helmet", "Vest", "Pants", "Boots"), "t2_commando", "near-black tactical gear"),
     ("t2_riot", "Riot", "MV", ["Aluminium"], ("Helmet", "Coat", "Pants", "Boots"), "t2_riot", "brown long coat, visor helmet, aluminum shield plates"),
@@ -816,9 +812,16 @@ INFO = [
     ("enemies", "enemies", "Player guide: mobs by danger, rendered, plus structures and loot.", "P2"),
     ("questbook", "questbook", "Player guide: the GregGuns questbook chapters, side branches and rewards.", "P2"),
     ("recipes_steam_and_lv", "recipes-steam-and-lv", "Player guide: the Steam and LV crafting chains, crafting-table grids and Assembler and Ammo Press rows, read from the mod's recipe tables.", "P2"),
-    ("icbm_warheads", "icbm-warheads", "Player guide (DRAFT, stamped; numbers pending): the Tier 1, Tier 2, Tier 3 and nuclear warheads rendered from the shipped models, every T1-T2 blast type, fill and radius, damage falloff, demolition-charge use, and the GT machines that make them. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0).", "P2"),
-    ("icbm_missile_silo", "icbm-missile-silo", "Build guide (DRAFT, stamped; numbers pending): the Missile Silo multiblock, layer by layer, with block counts, hatches and a Tier 3 missile standing in the shaft. Shows HBM's Nuclear Tech Mod missile models (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source.", "P2"),
-    ("icbm_first_missile", "icbm-first-missile", "Player guide (DRAFT, stamped; numbers pending): the Tier 1 and Tier 2 missiles on the Galacticraft pad, and the steps from chip and schematic to body, stacking, fuel, launch control and impact. Shows HBM's Nuclear Tech Mod missile and warhead models (LGPL-3.0).", "P2"),
+    ("icbm_hero", "icbm-hero", "ICBM banner for the README and for posting: the five warhead casings, the EV radar with its dish and two missiles on the Galacticraft pad. Shows HBM's Nuclear Tech Mod models (LGPL-3.0) and Galacticraft's pad (MIT).", "P2"),
+    ("icbm_warheads", "icbm-warheads", "Player guide: the Tier 1 and Tier 2 warheads rendered from the shipped models, every blast type with radius, center damage and payload, fill and fuse, damage falloff, demolition use, de-arming, and the warhead chain. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0).", "P2"),
+    ("icbm_warheads_heavy", "icbm-warheads-heavy", "Player guide: the heavy casings (Tier 3, nuclear, antimatter, red matter), their blast types, kill zones and casing recipes, and the launcher warheads. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0).", "P2"),
+    ("icbm_first_missile", "icbm-first-missile", "Player guide: the Tier 1 and Tier 2 missiles on the Galacticraft pad, and the steps from chip and schematic to body, stacking, fuel, Launch Control and launch. Shows HBM's Nuclear Tech Mod missile and warhead models (LGPL-3.0) and Galacticraft art (MIT).", "P2"),
+    ("icbm_missile_silo", "icbm-missile-silo", "Build guide: the Missile Silo multiblock, layer by layer, with block counts, hatches, doors, loading and the Tier 3 body. Paints in two NewHorizonsCoreMod icons, so the sheet is GPL-3.0.", "P2"),
+    ("icbm_detection_and_defense", "icbm-detection-and-defense", "Player guide: radars and their ranges, the Radar Tower, the Air-Defense Battery and SAMs, the EMP Tower and the handheld tools. Shows HBM's Nuclear Tech Mod art (LGPL-3.0).", "P2"),
+    ("icbm_fallout", "icbm-fallout", "Player guide: fallout zones, the hazard and protection, the Antidote, and the processing chain with its yields. Shows HBM's Nuclear Tech Mod block art (LGPL-3.0).", "P2"),
+    ("icbm_computer_control", "icbm-computer-control", "Player guide: the OpenComputers hookups of every ICBM machine (Adapter, components, calls and signals) and the Golden Dome floppy with its recipe and its four programs, with a sample launch session checked against the shipped Lua. Shows OpenComputers' textures (CC0) and HBM's Nuclear Tech Mod overlays (LGPL-3.0).", "P2"),
+    ("icbm_silos", "icbm-silos", "Player guide: abandoned silo complexes, their layout map, rooms, blast doors and service runs, the three activity levels, guards, loot by planet, taking a silo over, radar stations and the data stick.", "P2"),
+    ("icbm_recipes", "icbm-recipes", "Player guide: every ICBM crafting chain (warhead parts, inert warheads, charges, missile bodies, machines, tools, launcher warheads), read from a real-pack recipe export. Paints in two NewHorizonsCoreMod icons, so the sheet is GPL-3.0.", "P2"),
 ]
 for iid, fn, brief, pri in INFO:
     path = os.path.join(ROOT, I + fn + ".png")

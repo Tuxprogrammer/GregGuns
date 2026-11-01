@@ -22,7 +22,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The radar huts on a complex\u0027s surface hold a small radar with its Energy Hatch left out. Mine the Radar Casing under the radar controller, put an HV Energy Hatch in its place and power it. The radar forms and its dish starts to turn. Link it to a battery with a Data Stick as for any radar. Bring a radar station online.",
+      "desc:8": "The radar huts on a complex\u0027s surface hold a small radar with its Energy Hatch left out, so they sit dark.\n\nMine the Radar Casing under the radar controller, put an HV Energy Hatch in its place and power it. The radar forms and its dish starts to turn. Link it to an air-defense battery with a data stick, as for any radar. Hold the Radar Casing you mined out and an HV Energy Hatch to finish the quest.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -34,7 +34,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Radar Station",
+      "name:8": "§8§lRadar Station",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -63,11 +63,88 @@
   },
   "questIDHigh:4": 238161300553553326,
   "questIDLow:4": -6345779797235718352,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:baconcheeseburgerItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sam"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:antidote"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 11,
+          "OreDict:8": "",
+          "id:8": "gregguns:casings"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 43,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.blockmachines"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

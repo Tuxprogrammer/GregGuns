@@ -8,12 +8,12 @@ size: 13 7 16
 ground: 1
 
 palette:
-A = concrete
-X = brick
-W = brick*3 | concrete*1
+A = asphalt
+X = concrete_panel
+W = brick
 P = plating
 G = glass_pane
-L = lantern
+L = lamp
 a = air
 H = hazard
 U = factory_wall
@@ -144,11 +144,11 @@ layer 6
 .............
 .............
 .............
-.............
-.............
-.............
-.............
-.............
-.............
-.............
-.........fif.
+.iiiiiiiiiii.
+.i.........i.
+.i.........i.
+.i.........i.
+.i.........i.
+.i.........i.
+.i.........i.
+.iiiiiiiiiii.

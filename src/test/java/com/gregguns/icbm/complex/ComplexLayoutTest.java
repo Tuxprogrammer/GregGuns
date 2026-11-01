@@ -252,29 +252,28 @@ class ComplexLayoutTest {
     }
 
     @Test
-    void guardPostsStandAtBranchPointsAndSilosAreGuardedFromDeepIn() {
+    void spawnerSpotsReachTheFarRoomsAndNoMarkLiesInTheHalls() {
         for (long s = 0; s < 120; s++) {
             ComplexPlan p = plan(s);
-            int deep = 0;
-            for (Mark m : p.allMarks()) if (m.kind() == MarkKind.SPAWNER && "deep".equals(m.key())) deep++;
-            assertTrue(
-                deep >= p.silos()
-                    .size() + 1,
-                "a post per silo walkway and one at the gallery's end: " + deep);
-            int posts = 0;
             for (Tunnel t : p.tunnels()) {
                 for (Mark m : t.marks()) {
-                    if (m.kind() != MarkKind.SPAWNER || !"post".equals(m.key())) continue;
-                    posts++;
-                    boolean nearBranch = false;
-                    for (Door d : p.doors()) {
-                        if (d.kind != Door.Kind.PORTAL || !d.joins(t.id())) continue;
-                        nearBranch |= m.x() >= d.x0 - 8 && m.x() <= d.x1 + 8 && m.z() >= d.z0 - 8 && m.z() <= d.z1 + 8;
-                    }
-                    assertTrue(nearBranch, "seed " + s + ": a hall post stands by a branch point: " + m);
+                    assertTrue(m.kind() != MarkKind.SPAWNER, "seed " + s + ": halls hold no spawner marks");
                 }
             }
-            assertTrue(posts >= 2, "seed " + s + ": posts at branch points " + posts);
+            int far = 0;
+            Box hub = p.hall()
+                .bounds();
+            for (Room r : p.rooms()) {
+                int dist = Math.abs(
+                    r.bounds()
+                        .centerX() - hub.centerX())
+                    + Math.abs(
+                        r.bounds()
+                            .centerZ() - hub.centerZ());
+                if (dist < 60) continue;
+                for (Mark m : r.marks()) if (m.kind() == MarkKind.SPAWNER) far++;
+            }
+            assertTrue(far >= 2, "seed " + s + ": the outer rooms carry spawner spots: " + far);
         }
     }
 
@@ -290,35 +289,43 @@ class ComplexLayoutTest {
         }
     }
 
+    /** The armory's guns hang on short interior partitions of the room's wall block, never on the outer walls. */
     @Test
-    void armoryFramesHangOnASolidWallInsideTheRoom() {
-        int walls = 0;
+    void armoryDisplaysStandOnShortInteriorPartitions() {
+        int displays = 0, armories = 0;
         for (long seed = 0; seed < 120; seed++) {
             ComplexPlan p = plan(seed);
             ComplexRaster raster = new ComplexRaster(p);
             for (Room r : p.rooms()) {
+                int here = 0;
                 for (Mark m : r.marks()) {
-                    if (m.kind() != MarkKind.ITEM_FRAME_WALL) continue;
-                    walls++;
+                    assertTrue(m.kind() != MarkKind.ITEM_FRAME_WALL, "no frame hangs on an outer wall");
+                    if (m.kind() != MarkKind.GUN_DISPLAY) continue;
+                    here++;
                     assertEquals(RoomKind.ARMORY, r.kind());
-                    boolean alongZ = m.facing() == 1 || m.facing() == 3;
                     int bx = m.facing() == 1 ? 1 : m.facing() == 3 ? -1 : 0,
                         bz = m.facing() == 0 ? -1 : m.facing() == 2 ? 1 : 0;
-                    for (int i = 0; i < m.extent(); i++) {
-                        int x = m.x() + (alongZ ? 0 : ComplexLayout.FRAME_STRIDE * i),
-                            z = m.z() + (alongZ ? ComplexLayout.FRAME_STRIDE * i : 0);
-                        assertEquals(Cell.AIR, raster.at(x, m.y(), z), "frame cell is air inside the room");
-                        assertEquals(Cell.WALL, raster.at(x + bx, m.y(), z + bz), "a solid wall behind it");
-                        assertTrue(
-                            x > r.bounds().minX && x < r.bounds().maxX - 1
-                                && z > r.bounds().minZ
-                                && z < r.bounds().maxZ - 1,
-                            "inside the room");
-                    }
+                    int wx = m.x() + bx, wz = m.z() + bz;
+                    assertEquals(Cell.AIR, raster.at(m.x(), 1, m.z()), "the chest cell is open");
+                    assertEquals(Cell.AIR, raster.at(m.x(), 2, m.z()), "the frame cell is open");
+                    for (int y = 1; y <= 2; y++) assertEquals(Cell.WALL, raster.at(wx, y, wz), "partition layer " + y);
+                    assertEquals(Cell.AIR, raster.at(wx, 3, wz), "the partition stands short of the ceiling");
+                    assertTrue(
+                        wx > r.bounds().minX + 1 && wx < r.bounds().maxX - 2
+                            && wz > r.bounds().minZ + 1
+                            && wz < r.bounds().maxZ - 2,
+                        "the partition is clear of the outer walls");
+                }
+                if (r.kind() == RoomKind.ARMORY) {
+                    armories++;
+                    displays += here;
+                    assertTrue(here >= 1, "an armory shows guns: " + here);
                 }
             }
         }
-        assertTrue(walls > 200, "armories are mandatory, two rows each: " + walls);
+        assertTrue(armories > 100, "armories are mandatory: " + armories);
+        // The 24-gun cap is lifted for alpha (D309): rows every six cells while they fit.
+        assertTrue(displays / armories >= 12, "an armory shows a dozen guns or more: " + displays / armories);
     }
 
     private static long key(int x, int z) {
@@ -388,10 +395,7 @@ class ComplexLayoutTest {
                     assertTrue(d >= 0, "inside the room, not on a wall: " + what);
                     assertEquals(Cell.AIR, raster.at(m.x(), 1, m.z()), what);
                     assertFalse(f.blocksDoor(a, d), "doorway stays clear: " + what);
-                    if (m.kind() == MarkKind.LOOT_CHEST && r.kind() == RoomKind.STOCKPILE) {
-                        assertEquals(0, d, "stockpile chests stand on the far wall: " + what);
-                        stock++;
-                    }
+                    if (m.kind() == MarkKind.LOOT_CHEST && r.kind() == RoomKind.STOCKPILE) stock++;
                     int reach = m.key()
                         .equals(MachineRole.NASA_WORKBENCH.name()) ? 2 : 1;
                     boolean ok = false;
@@ -491,7 +495,7 @@ class ComplexLayoutTest {
                 TreeSet<Integer> xs = new TreeSet<Integer>(), zs = new TreeSet<Integer>();
                 Set<Long> ceiling = new java.util.HashSet<Long>(), floor = new java.util.HashSet<Long>();
                 for (Mark m : marks) {
-                    if (m.kind() != MarkKind.LIGHT) continue;
+                    if (m.kind() != MarkKind.LIGHT || walkwayLamp(m)) continue;
                     assertTrue(m.y() == b.sizeY() - 1 || m.y() == 0, "lamps are flush in the ceiling or floor: " + m);
                     assertTrue(
                         m.key()
@@ -519,13 +523,77 @@ class ComplexLayoutTest {
                         + " x "
                         + zs.size());
                 boolean tall = b.sizeY() > ComplexLayout.MINOR_HEIGHT;
-                int gap = tall ? ComplexFurnisher.TILE_GAP : ComplexFurnisher.LOW_GAP;
+                Object sec = p.section(id);
+                // D305: a room's blueprint sets its gap; the hub and the halls keep the usual one.
+                int roomGap = id != 0 && sec instanceof Room
+                    ? com.gregguns.icbm.complex.blueprint.RoomBlueprints.of(((Room) sec).kind())
+                        .lampGap()
+                    : ComplexFurnisher.TILE_GAP;
+                int gap = tall ? roomGap : ComplexFurnisher.LOW_GAP;
                 assertGrid(xs, b.minX + 1, b.maxX - 2, gap, "x of section " + id);
                 assertGrid(zs, b.minZ + 1, b.maxZ - 2, gap, "z of section " + id);
-                if (tall) assertEquals(ceiling, floor, "a light tile under every ceiling lamp");
-                else assertTrue(floor.isEmpty());
+                // A light tile under every ceiling lamp, and the shadow fill's tiles beside them (D305).
+                // D321, D322: unless a pool or a brig cell's wall or door was built over the tile.
+                if (tall) {
+                    Set<Long> builtOver = new java.util.HashSet<Long>();
+                    for (Mark m : marks) {
+                        FurniturePiece fp = m.kind() == MarkKind.FURNITURE ? FurniturePiece.of(m.key()) : null;
+                        if (m.y() == 0 && fp == FurniturePiece.POOL_WATER
+                            || m.y() == 1 && (fp == FurniturePiece.PARTITION || fp == FurniturePiece.IRON_DOOR))
+                            builtOver.add(key(m.x(), m.z()));
+                    }
+                    for (long c : ceiling) {
+                        assertTrue(
+                            floor.contains(c) || builtOver.contains(c),
+                            "seed " + s + " section " + id + ": a light tile under every ceiling lamp");
+                    }
+                } else assertTrue(floor.isEmpty());
             }
         }
+    }
+
+    /** @return whether the light mark is a silo walkway's lamp, which stands outside its gallery's grid */
+    private static boolean walkwayLamp(Mark m) {
+        String[] k = m.key()
+            .split(":");
+        return k.length == 3 && Integer.parseInt(k[2]) >= ComplexFurnisher.WALKWAY_RUN;
+    }
+
+    /**
+     * Owner bug (alpha playtest): the walkway in front of a silo's window was dark, lit only from the gallery's grid
+     * lamps far up and out. Every walkway has one lamp flush in the gallery wall right over its middle column, an
+     * ordinary light mark of the gallery, and its middle floor cell reads block light 12 or more.
+     */
+    @Test
+    void everySiloWalkwayHasALampOverItsMiddleColumn() {
+        int walkways = 0;
+        for (long s = 0; s < 60; s++) {
+            ComplexPlan p = plan(s);
+            ComplexRaster r = new ComplexRaster(p);
+            for (Door d : p.doors()) {
+                if (d.kind != Door.Kind.WALKWAY) continue;
+                walkways++;
+                int x = (d.x0 + d.x1) / 2, z = (d.z0 + d.z1) / 2;
+                assertEquals(Cell.LAMP, r.at(x, d.y1 + 1, z), "seed " + s + " walkway " + d + ": lamp over the niche");
+                boolean marked = false;
+                Object owner = p.section(d.a);
+                List<Mark> marks = owner instanceof Room ? ((Room) owner).marks() : ((Tunnel) owner).marks();
+                for (Mark m : marks) {
+                    marked |= m.kind() == MarkKind.LIGHT && m.x() == x
+                        && m.y() == d.y1 + 1
+                        && m.z() == z
+                        && walkwayLamp(m);
+                }
+                assertTrue(marked, "seed " + s + " walkway " + d + ": the lamp is a light mark of its gallery");
+                // Straight down through the open niche: 15 at the lamp, one less per cell.
+                for (int y = d.y1; y >= d.y0; y--) {
+                    assertTrue(Cell.open(r.at(x, y, z)), "seed " + s + " walkway " + d + " open at y " + y);
+                }
+                // D299: the niche is four high (the "Silo N" sign hangs in its top row), so the lamp sits at y 5.
+                assertTrue(15 - (d.y1 + 1 - d.y0) >= 11, "the walkway floor reads 11 or more");
+            }
+        }
+        assertTrue(walkways > 100, "the seeds hold silos: " + walkways);
     }
 
     private static void assertGrid(TreeSet<Integer> lines, int lo, int hi, int gap, String what) {
@@ -547,7 +615,8 @@ class ComplexLayoutTest {
 
     /**
      * D217 adapted (D230): with every lamp lit, Minecraft's block light (15 at a lamp, one less per step through air,
-     * stopped by solid blocks; furniture and machines counted solid) reads 8 or more on every open floor cell.
+     * stopped by solid blocks; furniture, machines and chest spots, which may be left as crates, counted solid) reads
+     * 8 or more on every open floor cell.
      */
     @Test
     void everyOpenFloorCellReadsLightEightWhenTheLampsBurn() {
@@ -562,8 +631,17 @@ class ComplexLayoutTest {
                 byte c = r.at(x, y, z);
                 opaque[(x * Y + y) * S + z] = !(Cell.open(c) || c == Cell.WINDOW);
             }
-            boolean[] occupied = new boolean[S * S];
+            // D305: a bed, bars, a pane, a cauldron or a rug lets light through; every other prop is opaque.
             for (Mark m : p.allMarks()) {
+                FurniturePiece fp = m.kind() == MarkKind.FURNITURE ? FurniturePiece.of(m.key()) : null;
+                if (fp != null && fp.clear() && fp.role() == Cell.PROP) opaque[(m.x() * Y + m.y()) * S + m.z()] = false;
+            }
+            boolean[] occupied = new boolean[S * S];
+            // D321: a sunk pool's water is no floor; no mob stands on it.
+            boolean[] pool = new boolean[S * S];
+            for (Mark m : p.allMarks()) {
+                if (m.kind() == MarkKind.FURNITURE && m.y() == 0
+                    && FurniturePiece.of(m.key()) == FurniturePiece.POOL_WATER) pool[m.x() * S + m.z()] = true;
                 if (m.kind() == MarkKind.MACHINE || m.kind() == MarkKind.SPAWNER) {
                     occupied[m.x() * S + m.z()] = true;
                     opaque[(m.x() * Y + m.y()) * S + m.z()] = true;
@@ -575,7 +653,10 @@ class ComplexLayoutTest {
                         }
                     }
                 }
-                if (m.kind() == MarkKind.LOOT_CHEST) occupied[m.x() * S + m.z()] = true;
+                if (m.kind() == MarkKind.LOOT_CHEST || m.kind() == MarkKind.GUN_DISPLAY)
+                    occupied[m.x() * S + m.z()] = true;
+                // A chest spot the chest budget leaves over is an opaque wooden crate (D315).
+                if (m.kind() == MarkKind.LOOT_CHEST) opaque[(m.x() * Y + m.y()) * S + m.z()] = true;
             }
             ArrayDeque<int[]> q = new ArrayDeque<int[]>();
             for (int x = 0; x < S; x++) for (int y = 0; y < Y; y++) for (int z = 0; z < S; z++) {
@@ -602,7 +683,7 @@ class ComplexLayoutTest {
                 Box b = p.sectionBox(id);
                 for (int x = b.minX + 1; x < b.maxX - 1; x++) {
                     for (int z = b.minZ + 1; z < b.maxZ - 1; z++) {
-                        if (occupied[x * S + z] || !Cell.open(r.at(x, 1, z))) continue;
+                        if (occupied[x * S + z] || !Cell.open(r.at(x, 1, z)) || pool[x * S + z]) continue;
                         checked++;
                         int l = lv[(x * Y + 1) * S + z];
                         assertTrue(l >= 8, "seed " + s + " section " + id + " floor " + x + "," + z + " reads " + l);

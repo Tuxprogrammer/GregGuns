@@ -15,6 +15,12 @@ public enum MarkKind {
      */
     ITEM_FRAME_WALL,
     /**
+     * An armory display: the ammo chest on the floor at the mark's cell and, one layer above it, an item frame holding
+     * a gun, hung on the partition wall behind. {@link Mark#facing()} is the way the frame faces. The chest holds the
+     * ammo of the gun in the frame.
+     */
+    GUN_DISPLAY,
+    /**
      * A lamp flush in the ceiling layer, or a light tile flush in the floor layer (D231). The key is
      * {@code lamp:<section>:<run>}: the activity level lights whole runs or whole sections (D36, D231).
      */
@@ -30,7 +36,10 @@ public enum MarkKind {
     RUBBLE,
     /** A wall sign next to its cell; the key is the lang key of its text (up to four lines divided by a bar). */
     SIGN,
-    /** A blast door between a tunnel and a section. Writes nothing yet: the doors arrive with I7 (D213). */
+    /**
+     * A blast door at a hall's mouth off the hub: the mark stands for the portal between the two, which the door fills
+     * ({@link com.gregguns.icbm.worldgen.ComplexFixtures}, D335).
+     */
     BLAST_DOOR,
     /**
      * A furniture cell the raster writes from the room's style (D234). The key is a

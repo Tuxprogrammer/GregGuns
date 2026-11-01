@@ -7,9 +7,7 @@ Guns, armor and military tech for [GT New Horizons](https://github.com/GTNewHori
 GregGuns is a from-scratch rewrite inspired by [Techguns](https://github.com/pWn3d1337/Techguns). It is not a port. GTNH has changed 1.7.10 so much that the original code would not carry over cleanly. GregGuns is written against GTNH's own APIs instead, and its weapons, components and recipes are gated by GregTech tiers rather than vanilla-style crafting.
 
 > [!IMPORTANT]
-> **Beta.** [**GregGuns 0.3.3-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) is out for **GTNH 2.9.0-RC-2**. Everything planned for the first full version is in: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins, an optional questbook tab, and now aim down sights, an in-game guide and structures on Ross128. It has been tested inside the real pack. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) list the known issues (one is with shader packs), and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
->
-> An opt-in preview is also available: [**GregGuns 0.4.0-alpha**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-alpha-pre) is a pre-release that adds the optional ICBM module (warheads, missiles, silos, radars, air defense and abandoned silo complexes). The module is off by default, and the alpha has had far less play than the beta.
+> **Beta.** [**GregGuns 0.4.0-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-beta) is out for **GTNH 2.9.0-RC-2**. It has everything planned for the first full version: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins, aim down sights, an in-game guide, a questbook tab, and the **ICBM module** with warheads, missiles, silos, air defense and abandoned silo complexes. It has been tested inside the real pack. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-beta) list the known issues, and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
 
 ## For players
 
@@ -17,9 +15,9 @@ GregGuns adds guns, ammo, armor, turrets, enemy soldiers and ruins to GTNH. It a
 
 ### Install
 
-1. Download `gregguns-0.3.3-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta).
+1. Download `gregguns-0.4.0-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-beta).
 2. Put it in the `mods` folder of your **GTNH 2.9.0-RC-2** instance. For multiplayer, the server **and** every player need the same jar.
-3. Start the game. Every module is on by default. You can switch modules off in `config/gregguns.cfg`, and that never stops anyone joining: the server's settings apply to everyone connected.
+3. Start the game. Every module is on by default, ICBM included. You can switch modules off in `config/gregguns.cfg`, and that never stops anyone joining: the server's settings apply to everyone connected.
 
 The keys are **R** to reload, **;** for the back device (glider, anti-gravity), **M** for night vision and **]** for the ammo pouch. All of them can be rebound in Controls.
 
@@ -29,7 +27,7 @@ The keys are **R** to reload, **;** for the back device (glider, anti-gravity), 
 2. **Steam age.** Craft the Hand Cannon and some Stone Bullets.
 3. **LV.** Assemble a 9mm Pistol from GT parts, and build an LV Ammo Press.
 4. **Ammo.** Press bullets and magazines, then reload with **R**.
-5. **Upkeep.** Mend worn gear on a Repair Bench or in the Armory Gantry. A **GregGuns** questbook tab leads you up the tiers once the server owner switches it on (see below).
+5. **Upkeep.** Mend worn gear on a Repair Bench or in the Armory Gantry. A **GregGuns** questbook tab leads you up the tiers (see below).
 
 ![Getting started](docs/assets/infographics/getting-started.png)
 
@@ -87,9 +85,60 @@ Who shoots back, and what they drop.
 
 #### The questbook
 
-Chapters, side branches and rewards. The tab ships inside the mod. A server owner switches it on with `questbook.install=true` in `config/gregguns.cfg`, then restarts the server (see [docs/config.md](docs/config.md#hidden-keys)).
+Chapters, side branches and rewards. The tab ships inside the mod and installs itself on a server with BetterQuesting. A server owner who doesn't want it sets `questbook.install=false` in `config/gregguns.cfg` (see [docs/config.md](docs/config.md#questbook-questbook)).
 
 ![Questbook](docs/assets/infographics/questbook.png)
+
+## The ICBM module
+
+![GregGuns ICBM](docs/assets/infographics/icbm-hero.png)
+
+Strategic weapons on GregTech tiers. Build warheads from HV to UHV, stand missiles on Galacticraft launch pads or in a Missile Silo, and fire them across the map. Watch the sky with radar, shoot incoming missiles down with SAMs, and drain an enemy base with an EMP. Out in the world, abandoned silo complexes wait under the Overworld and every planet with solid ground, guarded, looted and each holding real silos you can take over.
+
+- **Needs Galacticraft**, which GT New Horizons ships. Without it the module switches itself off and the rest of GregGuns runs as usual. OpenComputers is optional and adds computer control.
+- **On by default.** A server that doesn't want it sets `B:icbm=false` in the `modules` block of `config/gregguns.cfg` and restarts.
+- **Warheads** come in five casing tiers, T1 (HV) to T5 (UHV), and a blast type for every job: craters, fire, gas, push, tunnels, nuclear, EMP, ender, antimatter and red matter.
+- **Missiles** fly 1,000 blocks at T1, 3,000 at T2 and 8,000 at T3, 10,000 from a silo. The silo builds the missile in its shaft, opens its doors and launches it.
+- **Complexes** have three activity levels, from a gutted ruin to a fully staffed base, and their loot ceiling rises with the planet, from EV on the Overworld to UMV.
+- The ICBM quests are part of the GregGuns questbook tab.
+
+### ICBM guides
+
+#### Warheads
+
+![Warheads](docs/assets/infographics/icbm-warheads.png)
+
+![Heavy Warheads](docs/assets/infographics/icbm-warheads-heavy.png)
+
+#### Recipes
+
+Every ICBM crafting chain, as the pack builds it.
+
+![ICBM Recipes](docs/assets/infographics/icbm-recipes.png)
+
+#### Your first missile
+
+![Your First Missile](docs/assets/infographics/icbm-first-missile.png)
+
+#### The Missile Silo
+
+![Missile Silo](docs/assets/infographics/icbm-missile-silo.png)
+
+#### Detection and defense
+
+![Detection and Defense](docs/assets/infographics/icbm-detection-and-defense.png)
+
+#### Computer control
+
+![Computer Control](docs/assets/infographics/icbm-computer-control.png)
+
+#### Fallout
+
+![Fallout](docs/assets/infographics/icbm-fallout.png)
+
+#### Abandoned silos
+
+![Abandoned Silos](docs/assets/infographics/icbm-silos.png)
 
 ## Building
 
@@ -118,7 +167,7 @@ The GregGuns code, original art, sounds, models, documentation, specs and tools 
 
 **Third-party assets in the mod jar.** The ICBM module ships art from HBM's Nuclear Tech Mod (warhead, missile and silo models, textures and item icons, the Radar Casing tiles and the fallout block art), licensed under the LGPL-3.0, with the modifications named. Each `thirdparty/ntm/` folder under `src/main/resources/assets/gregguns/` holds the license text beside the files (`LICENSE.txt` and `GPL-3.0.txt`), and [docs/assets/CREDITS.md](docs/assets/CREDITS.md) lists every file with its source commit. Those files stay under their own license; the rest of the jar is MIT.
 
-**Third-party art in the guide sheets.** The infographics in `docs/assets/infographics/` (not part of the jar) paint in some upstream art: GregTech 5 Unofficial textures (hulls, hatches, frames, glass and material icons, LGPL-3.0), Galacticraft Legacy art (MIT), Tinkers' Construct glass (LGPL-3.0), HBM's Nuclear Tech Mod renders (LGPL-3.0) and the Minecraft textures (Mojang's usage guidelines). The Missile Silo sheet also paints in two NewHorizonsCoreMod icons under the GPL-3.0, so that sheet is GPL-3.0. Each sheet's credits row in [docs/assets/CREDITS.md](docs/assets/CREDITS.md) says which parts it uses; the license texts sit beside the source files in `tools/asset-gen/infographics/inputs/thirdparty/`. The rest of each image is MIT.
+**Third-party art in the guide sheets.** The infographics in `docs/assets/infographics/` (not part of the jar) paint in some upstream art: GregTech 5 Unofficial textures (hulls, hatches, frames, glass and material icons, LGPL-3.0), Galacticraft Legacy art (MIT), Tinkers' Construct glass (LGPL-3.0), HBM's Nuclear Tech Mod renders (LGPL-3.0) and the Minecraft textures (Mojang's usage guidelines). The Missile Silo and ICBM Recipes sheets also paint in two NewHorizonsCoreMod icons under the GPL-3.0, so those sheets are GPL-3.0. Each sheet's credits row in [docs/assets/CREDITS.md](docs/assets/CREDITS.md) says which parts it uses; the license texts sit beside the source files in `tools/asset-gen/infographics/inputs/thirdparty/`. The rest of each image is MIT.
 
 **Build files.** The Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`, Apache-2.0) and the GTNH buildscript files (`build.gradle.kts`, `settings.gradle.kts`, `gtnhShared/`, from [GTNewHorizons/ExampleMod1.7.10](https://github.com/GTNewHorizons/ExampleMod1.7.10)) keep their own licenses.
 

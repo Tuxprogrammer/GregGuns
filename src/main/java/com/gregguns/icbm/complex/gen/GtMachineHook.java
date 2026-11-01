@@ -17,7 +17,8 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.threads.RunnableMachineUpdate;
 
 /**
- * Places the silo's GT machines: the Missile Silo controller and the hatches around it, facing the silo's front (toward
+ * Places the silo's GT machines: the Missile Silo controller, the hatches around it and its Launch Control, facing the
+ * silo's front (toward
  * its gallery), the same way {@code DevStructureBuilder} builds a silo.
  */
 // Source: DevStructureBuilder.place (this repo) for the GT calls; GT5-Unofficial 5.09.54.205 BaseMetaTileEntity API.
@@ -105,7 +106,27 @@ public final class GtMachineHook implements MachineHook {
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
         claim(base);
-        base.setFrontFacing(front);
+        // The asked front when the machine allows it, else the nearest valid side (never left DOWN).
+        ForgeDirection use = front;
+        if (!proto.isFacingValid(front)) {
+            int index = Math.max(
+                0,
+                java.util.Arrays.asList(FACINGS)
+                    .indexOf(front));
+            ForgeDirection alt = com.gregguns.icbm.worldgen.MachineFacing
+                .choose(index, base.getMetaTileEntity()::isFacingValid);
+            if (alt != null) use = alt;
+        }
+        base.setFrontFacing(use);
+        // Then the machine's default modes, as GT's own placement does after setting the front (the owner is set
+        // above: a bus or hatch reads its owner's preferences there). A Maintenance Hatch switches itself active;
+        // left inactive it draws GT's duct-tape cross over its wrench face. A plain item carries no tag: null.
+        // Source:
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/blocks/ItemMachines.java#L286-L305
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEHatchMaintenance.java#L116-L157
+        base.getMetaTileEntity()
+            .initDefaultModes(null);
+        com.gregguns.icbm.worldgen.MachineFacingAudit.check(base, "GtMachineHook.placeMte", x, y, z);
         return true;
     }
 
@@ -185,9 +206,11 @@ public final class GtMachineHook implements MachineHook {
             case Cell.HATCH_ENERGY:
                 return ENERGY_HATCH.get(1)
                     .getItemDamage();
-            case Cell.HATCH_POWER:
+            case Cell.HATCH_FUEL:
                 return ItemList.Hatch_Input_HV.get(1)
                     .getItemDamage();
+            case Cell.SILO_LAUNCH_CONTROL:
+                return GregGunsMTEIDs.LAUNCH_CONTROL;
             default:
                 return -1;
         }

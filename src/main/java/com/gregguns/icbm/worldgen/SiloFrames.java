@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.gregguns.worldgen.loot.LootCategory;
 import com.gregguns.worldgen.loot.LootCategoryDefs;
 import com.gregguns.worldgen.loot.LootEntry;
 
@@ -31,17 +30,10 @@ public final class SiloFrames {
         if (tier < 1 || tier > SiloCeiling.tableTier(ceiling)) {
             return out;
         }
-        String name = "gregguns:weaponchest_t" + tier;
-        for (LootCategory c : LootCategoryDefs.all()) {
-            if (!c.name()
-                .equals(name)) {
-                continue;
-            }
-            for (LootEntry e : c.entries()) {
-                if (isGun.test(e.ref())) {
-                    for (int i = 0; i < e.weight(); i++) {
-                        out.add(e.ref());
-                    }
+        for (LootEntry e : LootCategoryDefs.arms(tier)) {
+            if (isGun.test(e.ref())) {
+                for (int i = 0; i < e.weight(); i++) {
+                    out.add(e.ref());
                 }
             }
         }

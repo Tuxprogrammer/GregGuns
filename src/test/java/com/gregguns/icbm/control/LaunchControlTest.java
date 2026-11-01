@@ -2,8 +2,7 @@ package com.gregguns.icbm.control;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -86,6 +85,74 @@ class LaunchControlTest {
         assertEquals(ControlStatus.READY, check(t, true, true, false, true, true, true, 1000.0));
     }
 
+    /** D300: a silo's own Launch Control short of EU says the silo is, after the same pad check. */
+    @Test
+    void aSiloPoweredBlockShortOfEuBlamesTheSilo() {
+        LaunchTarget t = LaunchTarget.of(100, 100);
+        assertEquals(
+            ControlStatus.SILO_NO_POWER,
+            LaunchGate.check(t, true, false, true, false, true, true, true, 100, 20, 1000));
+        assertEquals(
+            ControlStatus.NO_POWER,
+            LaunchGate.check(t, true, false, false, false, true, true, true, 100, 20, 1000));
+        assertEquals(ControlStatus.SILO_NO_POWER, LaunchGate.checkSite(true, false, true, false, true, true, true));
+        assertEquals(ControlStatus.NO_POWER, LaunchGate.checkSite(true, false, false, false, true, true, true));
+        // The pad and the target still come first, and enough EU is enough wherever it comes from.
+        assertEquals(ControlStatus.NO_PAD, LaunchGate.checkSite(false, false, true, false, true, true, true));
+        assertEquals(
+            ControlStatus.NO_TARGET,
+            LaunchGate.check(LaunchTarget.NONE, true, false, true, false, true, true, true, 100, 20, 1000));
+        assertEquals(
+            ControlStatus.READY,
+            LaunchGate.check(t, true, true, true, false, true, true, true, 100, 20, 1000));
+        assertEquals(ControlStatus.READY, LaunchGate.checkSite(true, true, true, false, true, true, true));
+    }
+
+    @Test
+    void theSiteCheckIsTheGateWithoutTheTarget() {
+        LaunchTarget t = LaunchTarget.of(100, 100);
+        boolean[] f = { false, true };
+        for (boolean pad : f) {
+            for (boolean energy : f) {
+                for (boolean cool : f) {
+                    for (boolean present : f) {
+                        for (boolean armed : f) {
+                            for (boolean fueled : f) {
+                                ControlStatus site = LaunchGate.checkSite(pad, energy, cool, present, armed, fueled);
+                                // In range, the full gate says exactly what the site check says.
+                                assertEquals(site, check(t, pad, energy, cool, present, armed, fueled, 100));
+                                assertEquals(
+                                    ControlStatus.NO_TARGET,
+                                    check(LaunchTarget.NONE, pad, energy, cool, present, armed, fueled, 100));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void withNoTargetTheStatusLineReportsTheSiteNotTheTarget() {
+        // The target line already reads "No target: use a Radar Gun"; the status line must not repeat it.
+        assertEquals(
+            ControlStatus.NO_MISSILE.langKey(),
+            LaunchGate.statusLineKey(ControlStatus.NO_TARGET, ControlStatus.NO_MISSILE));
+        assertEquals(
+            ControlStatus.SILO_UNFORMED.langKey(),
+            LaunchGate.statusLineKey(ControlStatus.NO_TARGET, ControlStatus.SILO_UNFORMED));
+        assertEquals(LaunchGate.SITE_READY_KEY, LaunchGate.statusLineKey(ControlStatus.NO_TARGET, ControlStatus.READY));
+        for (ControlStatus s : ControlStatus.values()) {
+            if (s != ControlStatus.NO_TARGET) {
+                assertEquals(s.langKey(), LaunchGate.statusLineKey(s, ControlStatus.READY), "a set target: " + s);
+                assertNotEquals(
+                    ControlStatus.NO_TARGET.langKey(),
+                    LaunchGate.statusLineKey(ControlStatus.NO_TARGET, s),
+                    "never the duplicate line, site " + s);
+            }
+        }
+    }
+
     @Test
     void padResultsMapOneToOne() {
         assertEquals(ControlStatus.FIRED, LaunchGate.fromResult("OK"));
@@ -149,33 +216,6 @@ class LaunchControlTest {
         assertFalse(t.coolingDown());
     }
 
-    // --- PadSearch ---
-
-    @Test
-    void thePadSearchFindsTheNearestCenterAndNothingOutOfReach() {
-        assertNull(PadSearch.nearest((dx, dy, dz) -> false));
-        int[] near = PadSearch.nearest((dx, dy, dz) -> (dx == 2 && dz == 0 && dy == 0) || (dx == -4 && dz == 4));
-        assertNotNull(near);
-        assertEquals(2, near[0]);
-        // out of reach in every axis
-        assertNull(PadSearch.nearest((dx, dy, dz) -> Math.abs(dx) > PadSearch.REACH));
-        assertNull(PadSearch.nearest((dx, dy, dz) -> Math.abs(dy) > PadSearch.BAND));
-    }
-
-    @Test
-    void thePadSearchOnlyAsksInsideItsBox() {
-        int[] max = { 0, 0, 0 };
-        PadSearch.nearest((dx, dy, dz) -> {
-            max[0] = Math.max(max[0], Math.abs(dx));
-            max[1] = Math.max(max[1], Math.abs(dy));
-            max[2] = Math.max(max[2], Math.abs(dz));
-            return false;
-        });
-        assertEquals(PadSearch.REACH, max[0]);
-        assertEquals(PadSearch.BAND, max[1]);
-        assertEquals(PadSearch.REACH, max[2]);
-    }
-
     // --- TargetStick ---
 
     @Test
@@ -223,6 +263,9 @@ class LaunchControlTest {
         assertEquals("1,250", LaunchControlFormat.blocks(1250));
         assertEquals("20 - 1,000", LaunchControlFormat.range(20, 1000));
         assertEquals("-", LaunchControlFormat.range(0, 0));
+        assertEquals("1,250", LaunchControlFormat.distance(true, 1250));
+        assertEquals("0", LaunchControlFormat.distance(true, 0));
+        assertEquals("-", LaunchControlFormat.distance(false, 0), "no target: no distance, not 0");
         assertEquals("0", LaunchControlFormat.eu(-4));
         assertEquals("30,720", LaunchControlFormat.eu(30720));
     }

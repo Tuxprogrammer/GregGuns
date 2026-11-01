@@ -21,12 +21,17 @@ import com.gregguns.icbm.complex.SurfaceVariant;
 import com.gregguns.icbm.worldgen.ActivityLevel;
 import com.gregguns.icbm.worldgen.ComplexApplier;
 import com.gregguns.icbm.worldgen.ComplexContents;
+import com.gregguns.icbm.worldgen.ComplexFixtures;
+import com.gregguns.icbm.worldgen.FixtureWriter;
 import com.gregguns.icbm.worldgen.Placement;
 import com.gregguns.icbm.worldgen.SiloCeiling;
 import com.gregguns.worldgen.ComplexWriter;
+import com.gregguns.worldgen.Decision;
 import com.gregguns.worldgen.HeightProbe;
+import com.gregguns.worldgen.PlanKey;
 import com.gregguns.worldgen.PopulateWindow;
 import com.gregguns.worldgen.StructurePlan;
+import com.gregguns.worldgen.StructureState;
 import com.gregguns.worldgen.WindowedSink;
 import com.gregguns.worldgen.layout.ResolvedBlock;
 
@@ -80,6 +85,17 @@ public final class ComplexPlacer implements ComplexWriter {
     }
 
     private Styles.Factory styles = Styles.Factory.NONE;
+    private SiloMouthKeeper mouths;
+
+    /**
+     * @param keeper where each silo's mouth is recorded for its finish (D319): {@link SiloMouthKeeper#game()} in the
+     *               game, an in-memory one in a scenario, none (null) in unit tests
+     * @return this
+     */
+    public ComplexPlacer withMouths(SiloMouthKeeper keeper) {
+        this.mouths = keeper;
+        return this;
+    }
 
     /**
      * @param factory where each section's look comes from: {@link PaletteStyles#FACTORY} in the game, none in unit
@@ -101,7 +117,7 @@ public final class ComplexPlacer implements ComplexWriter {
         Styles st = stylesCache.remove(key);
         if (st == null) {
             String dim = world == null ? "Overworld" : DimensionKey.of(world);
-            st = styles.of(raster, dim, levelOf(raster.plan()));
+            st = styles.of(raster, dim, levelOf(plan));
             if (stylesCache.size() >= CACHED) stylesCache.remove(
                 stylesCache.keySet()
                     .iterator()
@@ -134,8 +150,10 @@ public final class ComplexPlacer implements ComplexWriter {
         world = null;
         cache.clear();
         contentsCache.clear();
+        fixturesCache.clear();
         stylesCache.clear();
         summaries.clear();
+        decisions.clear();
     }
 
     @Override
@@ -158,32 +176,88 @@ public final class ComplexPlacer implements ComplexWriter {
 
     @Override
     public void skipped(StructurePlan plan, String reason) {
+        skipped(plan, reason, "");
+    }
+
+    @Override
+    public void skipped(StructurePlan plan, String reason, String detail) {
         skipListener.accept(reason);
         GregGuns.LOG.info(
-            "Silo complex skipped at dimension {} cell {},{} ({}): {}",
+            "Silo complex skipped at dimension {} cell {},{} ({}): {}{}",
             plan.dimension(),
             plan.cellX(),
             plan.cellZ(),
             plan.anchorX() + "," + plan.anchorZ(),
-            reason);
+            reason,
+            detail == null || detail.isEmpty() ? "" : ", " + detail);
+    }
+
+    @Override
+    public void sunk(StructurePlan plan, int sink, String detail) {
+        GregGuns.LOG.info(
+            "Silo complex at dimension {} cell {},{} ({}) sinks {} blocks deeper: {}",
+            plan.dimension(),
+            plan.cellX(),
+            plan.cellZ(),
+            plan.anchorX() + "," + plan.anchorZ(),
+            sink,
+            detail);
     }
 
     /** Lowest level floor: clear of bedrock. */
-    private static final int MIN_FLOOR = 6;
+    public static final int MIN_FLOOR = 6;
+    /** The least and most a complex sinks under a village or temple (D302, owner: "10 or 20 blocks"). */
+    public static final int SINK_MIN = 10, SINK_MAX = 20;
+    private static final long SINK_SALT = 0x5149_4E4BL;
+
+    /**
+     * How deep a complex under a village or temple goes (D302): its own roll from {@link #SINK_MIN} to
+     * {@link #SINK_MAX}, cut to what keeps the level floor at or above {@link #MIN_FLOOR}; -1 when not even
+     * {@link #SINK_MIN} fits, and the plan is skipped.
+     */
+    @Override
+    public int sinkFor(StructurePlan plan, int groundY) {
+        return sinkFor(plan.chestSeedBase(), floorY(world, groundY));
+    }
+
+    /**
+     * @param seedBase the plan's seed base
+     * @param floorY   the level floor before sinking
+     * @return the sink, or -1 when {@link #SINK_MIN} would put the floor under {@link #MIN_FLOOR}
+     */
+    public static int sinkFor(long seedBase, int floorY) {
+        int room = floorY - MIN_FLOOR;
+        if (room < SINK_MIN) return -1;
+        int roll = SINK_MIN + (int) Math.floorMod(StructureHash.mix(seedBase ^ SINK_SALT), SINK_MAX - SINK_MIN + 1L);
+        return Math.min(roll, room);
+    }
+
+    /** The activity level, rolled once with the weights in force when the plan is decided (D304). */
+    @Override
+    public int decisionVariant(StructurePlan plan) {
+        return rollLevel(plan.chestSeedBase()).ordinal();
+    }
 
     /**
      * The level floor: {@link #DEPTH} under the recorded ground, and no higher than {@link #DEPTH} under the
      * dimension's average ground level, so a plan recorded on a hilltop still lies under the lower land around it.
      * A pure function of the recorded height and the provider, so every window agrees.
+     *
+     * @param world the world (null: the recorded ground alone)
      */
-    int floorYOf(int groundY) {
-        return floorY(world, groundY);
-    }
-
-    /** @see #floorYOf the same rule for a given world (null: the recorded ground alone) */
     public static int floorY(World world, int groundY) {
         int avg = world == null ? Integer.MAX_VALUE : world.provider.getAverageGroundLevel();
         return Math.max(MIN_FLOOR, Math.min(groundY, avg) - DEPTH);
+    }
+
+    /**
+     * The level floor of a decided complex: the rule above, then {@code sink} blocks deeper when a village or
+     * temple stands over the box (D302). The sink was cut at decision time to keep the floor clear of bedrock.
+     *
+     * @param sink {@link com.gregguns.worldgen.Decision#sink()}
+     */
+    public static int floorY(World world, int groundY, int sink) {
+        return Math.max(MIN_FLOOR, floorY(world, groundY) - Math.max(0, sink));
     }
 
     /** The seed base folds in the world seed, the dimension and the cell, so no two worlds share a key. */
@@ -261,6 +335,7 @@ public final class ComplexPlacer implements ComplexWriter {
     public ComplexPlacer forceCeiling(int ceiling) {
         this.forcedCeiling = ceiling;
         contentsCache.clear();
+        fixturesCache.clear();
         return this;
     }
 
@@ -268,17 +343,45 @@ public final class ComplexPlacer implements ComplexWriter {
     public ComplexPlacer forceLevel(ActivityLevel level) {
         this.forcedLevel = level;
         contentsCache.clear();
+        fixturesCache.clear();
         stylesCache.clear();
         return this;
     }
 
-    /** The activity level of a complex, rolled from its seed. */
-    public ActivityLevel levelOf(ComplexPlan cp) {
+    /** Decisions the writes in progress carry, by plan: the recorded level wins over a fresh roll (D304). */
+    private final Map<String, Decision> decisions = new LinkedHashMap<String, Decision>();
+
+    /**
+     * The activity level of a complex: the forced one (scenarios), else the one recorded with its decision (by the
+     * write in progress, or in the world's ledger), else rolled from its seed with the weights in force. A level is
+     * recorded the first time the plan is decided, so changing the weights later never splits a complex (D304).
+     */
+    public ActivityLevel levelOf(StructurePlan plan) {
         if (forcedLevel != null) {
             return forcedLevel;
         }
+        Decision d = decisions.get(cacheKey(plan));
+        if (d == null && world != null) {
+            d = StructureState.forWorld(world)
+                .get(PlanKey.of(plan));
+        }
+        return levelFor(d, plan.chestSeedBase());
+    }
+
+    /**
+     * @param d        the plan's decision, or null when undecided
+     * @param seedBase the plan's seed base
+     * @return the recorded level when {@code d} holds one, else the roll with the configured weights
+     */
+    public static ActivityLevel levelFor(Decision d, long seedBase) {
+        int v = d == null ? Decision.NO_VARIANT : d.variant();
+        if (v >= 0 && v < ActivityLevel.values().length) return ActivityLevel.values()[v];
+        return rollLevel(seedBase);
+    }
+
+    private static ActivityLevel rollLevel(long seedBase) {
         return ActivityLevel
-            .roll(cp.seed(), ActivityLevel.weightsFrom(com.gregguns.core.config.IcbmConfig.siloComplexActivityWeights));
+            .roll(seedBase, ActivityLevel.weightsFrom(com.gregguns.core.config.IcbmConfig.siloComplexActivityWeights));
     }
 
     private java.util.List<Placement> contentsOf(StructurePlan plan, ComplexPlan cp) {
@@ -289,7 +392,7 @@ public final class ComplexPlacer implements ComplexWriter {
             int[] other = world == null ? null
                 : NeighborComplex
                     .nearest(world.getSeed(), plan.dimension(), plan, settings.chancePercent(), NeighborComplex.RADIUS);
-            l = ComplexContents.build(cp, levelOf(cp), ceilingOf(plan), other);
+            l = ComplexContents.build(cp, levelOf(plan), ceilingOf(plan), other);
             if (contentsCache.size() >= CACHED) contentsCache.remove(
                 contentsCache.keySet()
                     .iterator()
@@ -299,12 +402,67 @@ public final class ComplexPlacer implements ComplexWriter {
         return l;
     }
 
+    private final Map<String, ComplexFixtures> fixturesCache = new LinkedHashMap<String, ComplexFixtures>();
+    private Boolean forcedTierCasings;
+
+    /**
+     * @param on whether the blast-door frames are the tier's machine casings instead of the dimension's own rule
+     *           (scenarios), or null for the rule: casings on the rolled Ross128 dimensions only (D337)
+     * @return this
+     */
+    public ComplexPlacer forceTierCasings(Boolean on) {
+        this.forcedTierCasings = on;
+        fixturesCache.clear();
+        return this;
+    }
+
+    /**
+     * @return whether a complex shows its tier in its blast-door frames: on Ross128b and Ross128ba, whose ceiling is
+     *         rolled per complex (D38, D337)
+     */
+    public boolean tierCasingsOf(StructurePlan plan) {
+        if (forcedTierCasings != null) return forcedTierCasings;
+        Integer tier = world == null ? null : com.gregguns.icbm.complex.PlanetTable.tierOf(DimensionKey.of(world));
+        return tier != null && tier == com.gregguns.icbm.complex.PlanetTable.ROLLED;
+    }
+
+    /** The blast doors and service runs of a complex (D335, D336), cached like its contents. */
+    public ComplexFixtures fixturesOf(StructurePlan plan, ComplexRaster raster) {
+        String key = cacheKey(plan);
+        ComplexFixtures f = fixturesCache.remove(key);
+        if (f == null) {
+            long t0 = System.nanoTime();
+            f = ComplexFixtures.build(raster, levelOf(plan), tierCasingsOf(plan));
+            FixtureWriter.addSpent(System.nanoTime() - t0);
+            if (fixturesCache.size() >= CACHED) fixturesCache.remove(
+                fixturesCache.keySet()
+                    .iterator()
+                    .next());
+        }
+        fixturesCache.put(key, f);
+        return f;
+    }
+
     @Override
-    public int write(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink, HeightProbe probe) {
+    public int write(StructurePlan plan, Decision decision, PopulateWindow window, WindowedSink sink,
+        HeightProbe probe) {
         // The GT blocks the window places (silo concrete, hatches) start no machine-update search (D205).
         boolean before = machines.suspendUpdates();
+        String key = cacheKey(plan);
+        Decision was = decisions.put(key, decision);
+        if (was != null && !was.equals(decision)) {
+            // Another decision for the same plan (a scenario's fresh ledger): the cached contents used the old one.
+            contentsCache.remove(key);
+            fixturesCache.remove(key);
+            stylesCache.keySet()
+                .removeIf(k -> k.startsWith(key + ":"));
+        }
+        if (decisions.size() > CACHED * 4) decisions.remove(
+            decisions.keySet()
+                .iterator()
+                .next());
         try {
-            return writeWindow(plan, groundY, window, sink, probe);
+            return writeWindow(plan, decision.groundY(), decision.sink(), window, sink, probe);
         } finally {
             machines.resumeUpdates(before);
         }
@@ -313,7 +471,7 @@ public final class ComplexPlacer implements ComplexWriter {
     /** Plans no layout grew from (never seen in 40,000 seeds), so each is logged once, not once per window. */
     private final Set<String> unbuildable = new java.util.LinkedHashSet<String>();
 
-    private int writeWindow(StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink,
+    private int writeWindow(StructurePlan plan, int groundY, int sunk, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
         ComplexRaster raster;
         try {
@@ -329,25 +487,29 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         if (raster == null) return 0;
         ComplexPlan cp = raster.plan();
-        int floorY = floorYOf(groundY);
+        int floorY = floorY(world, groundY, sunk);
         int ax = plan.anchorX(), az = plan.anchorZ();
         int x0 = Math.max(ax, window.minX()), x1 = Math.min(ax + ComplexLayout.SIZE - 1, window.maxX());
         int z0 = Math.max(az, window.minZ()), z1 = Math.min(az + ComplexLayout.SIZE - 1, window.maxZ());
+        // The skin (D320) reaches one column past the box, behind a section wall on the box's edge, wherever that
+        // column lies in a window that runs the complex.
+        int sx0 = Math.max(ax - 1, window.minX()), sx1 = Math.min(ax + ComplexLayout.SIZE, window.maxX());
+        int sz0 = Math.max(az - 1, window.minZ()), sz1 = Math.min(az + ComplexLayout.SIZE, window.maxZ());
         int n = 0;
         Block air = blocks.air();
         // The recorded ground comes from one window; this window's own columns may lie lower (a valley, a lake bed).
         // A column whose ground is within a few blocks of the level's top is cut off, so nothing breaks the surface.
         boolean[] mask = new boolean[PopulateWindow.SIZE * PopulateWindow.SIZE];
         boolean masked = false;
-        for (int x = x0; x <= x1; x++) {
-            for (int z = z0; z <= z1; z++) {
+        for (int x = sx0; x <= sx1; x++) {
+            for (int z = sz0; z <= sz1; z++) {
                 if (cutOff(probe, floorY, x, z)) {
                     mask[ColumnMaskSink.index(window, x, z)] = true;
                     masked = true;
                 }
             }
         }
-        int[] seal = sealFloors(probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
+        int[] seal = sealFloors(raster, probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
         WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
         Styles st = stylesOf(plan);
         // The role audit (D267): tag every write with the pass that made it, then read the complex back once its
@@ -357,14 +519,28 @@ public final class ComplexPlacer implements ComplexWriter {
         if (RoleAudit.enabled()) {
             auditKey = System.identityHashCode(this) + ":" + cacheKey(plan);
             RoleAudit.Tracker t = RoleAudit
-                .tracker(auditKey, world, raster, st, auditWhere(plan, floorY), levelOf(cp).name(), ax, floorY, az);
+                .tracker(auditKey, world, raster, st, auditWhere(plan, floorY), levelOf(plan).name(), ax, floorY, az);
             under = tagUnder = new RoleAudit.TaggingSink(under, t);
             sink = tagSink = new RoleAudit.TaggingSink(sink, t);
         }
         int maskedColumns = 0;
         for (boolean m : mask) if (m) maskedColumns++;
-        for (int x = x0; x <= x1; x++) {
-            for (int z = z0; z <= z1; z++) {
+        // The silo number signs are written after the shell, into the walkway cell they hang in; the shell leaves that
+        // air cell to them, so no cell is written twice.
+        Set<Long> signCells = new java.util.HashSet<>();
+        for (SiloSlot s : cp.silos()) {
+            int[] at = ComplexSigns.siloSignAt(s);
+            signCells.add(((long) at[0] << 40) ^ ((long) at[1] << 32) ^ (at[2] & 0xFFFFFFFFL));
+        }
+        // The escape ladder's column and the one behind it belong to the ladder pass from the top of its section up.
+        int ex = cp.escapeX(), ez = cp.escapeZ(), em = cp.escapeMeta();
+        int bx = ex + (em == 4 ? 1 : em == 5 ? -1 : 0), bz = ez + (em == 2 ? 1 : em == 3 ? -1 : 0);
+        for (int x = sx0; x <= sx1; x++) {
+            for (int z = sz0; z <= sz1; z++) {
+                int clx = x - ax, clz = z - az;
+                boolean escape = clx == ex && clz == ez || clx == bx && clz == bz;
+                n += skin(raster, clx, clz, x, z, floorY, escape ? cp.escapeTop() : Integer.MAX_VALUE, under);
+                if (x < x0 || x > x1 || z < z0 || z > z1) continue; // past the box: the skin only
                 for (int y = 0; y < ComplexRaster.LEVELS; y++) {
                     int lx = x - ax, lz = z - az;
                     byte c = raster.at(lx, y, lz);
@@ -372,7 +548,9 @@ public final class ComplexPlacer implements ComplexWriter {
                     int wy = floorY + y;
                     // Open cells beside a cut-off column whose ground lies under them face its water or air: wall.
                     if (y >= 1 && Cell.open(c) && wy > seal[ColumnMaskSink.index(window, x, z)]) c = Cell.WALL;
-                    if (c >= Cell.CONTROLLER && c <= Cell.HATCH_POWER) {
+                    if (c == Cell.AIR && signCells.contains(((long) lx << 40) ^ ((long) y << 32) ^ (lz & 0xFFFFFFFFL)))
+                        continue;
+                    if (Cell.siloMachine(c)) {
                         if (under.setBlock(x, wy, z, air, 0) && world != null) {
                             machines.place(world, c, x, wy, z, siloFacing(cp, lx, lz));
                         }
@@ -397,7 +575,13 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
         if (tagSink != null) tagSink.as(RoleAudit.SIGNS);
+        // The signs go through the cut-off mask too (D207): no sign hangs in rock, water or valley air where no room
+        // was built. The silo numbers belong to the silo, so the shell pass writes them (shell-only runs read them
+        // back too).
+        WindowedSink signs = new QuietSink(masked ? new ColumnMaskSink(sink, mask) : sink);
+        ComplexSigns.writeSilos(cp, ax, floorY, az, signs);
         if (contents) {
+            final boolean[] cut = mask;
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(under),
                 world,
@@ -407,9 +591,21 @@ public final class ComplexPlacer implements ComplexWriter {
                 plan.chestSeedBase(),
                 plan.cellX(),
                 plan.cellZ(),
-                ceilingOf(plan)).withLamps(st::litLamp);
-            for (Placement p : contentsOf(plan, cp)) applier.apply(p);
-            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
+                ceilingOf(plan)).withLamps(st::litLamp)
+                    .withColumns(masked ? (x, z) -> !cut[ColumnMaskSink.index(window, x, z)] : null);
+            java.util.List<Placement> placements = contentsOf(plan, cp);
+            for (Placement p : placements) {
+                if (tagUnder != null)
+                    tagUnder.as(p.kind() == Placement.Kind.LIGHT ? RoleAudit.LIGHT : RoleAudit.CONTENTS);
+                applier.apply(p);
+            }
+            // A chest turns itself and the chest beside it as it is placed: their facings go back on once all are in.
+            applier.settleChests(placements);
+            if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
+            // The blast doors and service runs (D335 to D337), clipped to the window.
+            new FixtureWriter(new QuietSink(under), ax, floorY, az, ceilingOf(plan), st::doorPlate)
+                .write(fixturesOf(plan, raster));
+            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(plan), signs);
         }
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;
@@ -437,18 +633,23 @@ public final class ComplexPlacer implements ComplexWriter {
      * ({@link Integer#MAX_VALUE} when no neighbor is cut off). A neighbor outside the window is read through
      * {@link HeightProbe#seaFloorYBeside}: one column past the window still lies in a loaded chunk.
      */
-    private static int[] sealFloors(HeightProbe probe, PopulateWindow window, int floorY, boolean[] mask, int x0,
-        int x1, int z0, int z1, int ax, int az) {
+    private static int[] sealFloors(ComplexRaster raster, HeightProbe probe, PopulateWindow window, int floorY,
+        boolean[] mask, int x0, int x1, int z0, int z1, int ax, int az) {
         int[] seal = new int[PopulateWindow.SIZE * PopulateWindow.SIZE];
         java.util.Arrays.fill(seal, Integer.MAX_VALUE);
         for (int x = x0; x <= x1; x++) {
             for (int z = z0; z <= z1; z++) {
                 int i = ColumnMaskSink.index(window, x, z);
                 if (mask[i]) continue;
+                // A silo's inside is its own shaft, open to the bore above: never walled up (S3-2).
+                if (siloColumn(raster, x - ax, z - az)) continue;
                 for (int d = 0; d < 4; d++) {
                     int nx = x + (d == 1 ? 1 : d == 3 ? -1 : 0), nz = z + (d == 2 ? 1 : d == 0 ? -1 : 0);
                     // Outside the complex nothing is written next to an open cell: every section ends in its wall.
                     if (nx < ax || nz < az || nx >= ax + ComplexLayout.SIZE || nz >= az + ComplexLayout.SIZE) continue;
+                    // A bore column is the complex's own air from the pad up once its window has run, so reading it
+                    // from the next window would depend on which ran first (D319): it is never a cut-off neighbor.
+                    if (boreColumn(raster, nx - ax, nz - az)) continue;
                     int g;
                     if (window.contains(nx, nz)) {
                         if (!mask[ColumnMaskSink.index(window, nx, nz)]) continue;
@@ -462,6 +663,56 @@ public final class ComplexPlacer implements ComplexWriter {
             }
         }
         return seal;
+    }
+
+    /** @return whether a complex-local column belongs to a silo's 5 x 5 footprint */
+    static boolean siloColumn(ComplexRaster raster, int lx, int lz) {
+        return raster.ownerAt(lx, lz) < 0 && raster.at(lx, 0, lz) != Cell.NONE;
+    }
+
+    /** @return whether a complex-local column is one of a silo's nine bore columns (open over the pad) */
+    static boolean boreColumn(ComplexRaster raster, int lx, int lz) {
+        return siloColumn(raster, lx, lz) && raster.at(lx, 1, lz) == Cell.AIR;
+    }
+
+    /**
+     * The complex's own skin around its level (D320): a foundation under every column the level uses, and solid fill
+     * in every rock cell beside a section's or silo's cell and over a section's ceiling, so a cave or loose terrain
+     * never opens onto a floor, a wall or a ceiling, nor shows through a floor or wall that wear breaks open. Pure
+     * raster arithmetic, so each window writes its own columns the same whatever ran before. Written through the
+     * shell's (cut-off) sink before the marks pass, so marks that reach below the floor (a pool) overwrite it.
+     *
+     * @param ownedFrom the layer from which another pass writes the column (the escape ladder and its backing)
+     * @return blocks written
+     */
+    private int skin(ComplexRaster r, int lx, int lz, int x, int z, int floorY, int ownedFrom, WindowedSink sink) {
+        int top = -1;
+        for (int y = ComplexRaster.LEVELS - 1; y >= 0; y--) {
+            if (r.at(lx, y, lz) != Cell.NONE) {
+                top = y;
+                break;
+            }
+        }
+        int n = 0;
+        if (top >= 0 && floorY - 1 >= 1) n += solid(x, floorY - 1, z, sink);
+        for (int y = 0; y < Math.min(ComplexRaster.LEVELS, ownedFrom); y++) {
+            if (r.at(lx, y, lz) != Cell.NONE) continue;
+            boolean beside = r.at(lx + 1, y, lz) != Cell.NONE || r.at(lx - 1, y, lz) != Cell.NONE
+                || r.at(lx, y, lz + 1) != Cell.NONE
+                || r.at(lx, y, lz - 1) != Cell.NONE;
+            boolean over = y > 0 && r.at(lx, y - 1, lz) != Cell.NONE;
+            if (beside || over) n += solid(x, floorY + y, z, sink);
+        }
+        // Over the tallest sections; a silo's column above the level is the shaft pass's ring and bore.
+        if (top == ComplexRaster.LEVELS - 1 && ComplexRaster.LEVELS < ownedFrom && !siloColumn(r, lx, lz)) {
+            n += solid(x, floorY + ComplexRaster.LEVELS, z, sink);
+        }
+        return n;
+    }
+
+    private int solid(int x, int y, int z, WindowedSink sink) {
+        ResolvedBlock b = blocks.named("foundation", x, y, z);
+        return b != null && sink.setBlock(x, y, z, b.block, b.meta) ? 1 : 0;
     }
 
     /** How far above the ground a surface opening is cleared of leaves, logs and snow. */
@@ -516,7 +767,6 @@ public final class ComplexPlacer implements ComplexWriter {
             case Cell.DOOR_FRAME:
             case Cell.FURN_TABLE:
             case Cell.FURN_CONSOLE:
-            case Cell.FURN_BUNK:
             case Cell.FURN_SHELF:
                 return true;
             default:
@@ -606,14 +856,18 @@ public final class ComplexPlacer implements ComplexWriter {
         HeightProbe probe) {
         int n = 0;
         Block air = blocks.air();
+        int index = 0;
         for (SiloSlot s : cp.silos()) {
+            String id = plan.chestSeedBase() + "#" + index++;
             int sx = plan.anchorX() + s.bounds().minX, sz = plan.anchorZ() + s.bounds().minZ;
             for (int x = Math.max(sx, window.minX()); x <= Math.min(sx + 4, window.maxX()); x++) {
                 for (int z = Math.max(sz, window.minZ()); z <= Math.min(sz + 4, window.maxZ()); z++) {
                     int g = probe.landY(x, z);
+                    int top = g == HeightProbe.NONE ? HeightProbe.NONE : Math.min(g, BUILD_HEIGHT - 8);
+                    // The finish (D319) puts the mouth back to this once everything around it has populated.
+                    if (mouths != null) mouths.record(world, id, sx, sz, floorY, s.variant(), x, z, top);
                     if (g == HeightProbe.NONE) continue;
                     boolean bore = x > sx && x < sx + 4 && z > sz && z < sz + 4;
-                    int top = Math.min(g, BUILD_HEIGHT - 8);
                     // The mouth writes the top cell itself (cap, or air up to build height), so the bore stops under
                     // it.
                     boolean mouthOwnsTop = bore && (s.variant() == SurfaceVariant.CLOSED
@@ -624,7 +878,11 @@ public final class ComplexPlacer implements ComplexWriter {
                             : b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
                     }
                     n += mouth(s.variant(), bore, x, z, sx, sz, top, sink);
-                    if (!(bore && s.variant() == SurfaceVariant.CLOSED)) n += clearAbove(sink, x, z, Math.max(top, g));
+                    // A closed mouth's open cells are air to build height already; its capped cells lose their cover
+                    // like every other cell (snow and trunks on the old ground would stand on the cap, S3-2).
+                    boolean hole = bore && s.variant() == SurfaceVariant.CLOSED
+                        && !SiloMouth.capped(s.variant(), sx, sz, x, z);
+                    if (!hole) n += clearAbove(sink, x, z, Math.max(top, g));
                 }
             }
         }
@@ -642,12 +900,7 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         // Closed: nine cells capped, two of the eight non-center cells stay air all the way up (D17).
         int n = 0;
-        int cell = (x - sx - 1) * 3 + (z - sz - 1);
-        long h = StructureHash.mix(sx * 31L + sz);
-        int hole1 = (int) Math.floorMod(h, 8), hole2 = (int) Math.floorMod(h >>> 8, 8);
-        int idx = cell > 4 ? cell - 1 : cell; // index among the eight non-center cells
-        boolean center = cell == 4;
-        if (!center && (idx == hole1 || idx == hole2)) {
+        if (!SiloMouth.capped(v, sx, sz, x, z)) {
             for (int y = top; y <= BUILD_HEIGHT; y++) if (sink.setBlock(x, y, z, blocks.air(), 0)) n++;
         } else if (cap != null && sink.setBlock(x, top, z, cap.block, cap.meta)) {
             n++;

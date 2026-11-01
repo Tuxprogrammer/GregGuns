@@ -92,9 +92,9 @@ class WorldgenGateTest {
     }
 
     @Test
-    void onlyTheAlienBugNestIsOffByDefault() {
+    void everyStructureIsOnByDefault() {
         for (StructureId s : StructureId.values()) {
-            assertEquals(s != StructureId.ALIEN_BUG_NEST, s.enabledByDefault(), s.id());
+            assertTrue(s.enabledByDefault(), s.id());
             assertEquals(s.enabledByDefault(), WorldgenSettings.enabled(s), s.id());
         }
     }

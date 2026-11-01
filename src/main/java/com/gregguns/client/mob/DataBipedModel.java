@@ -28,6 +28,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class DataBipedModel extends ModelBiped {
 
+    /** Set by the renderer: the mob carries a gun. With no aim the file's {@code carrying} poses (hip carry) apply. */
+    boolean carryingGun;
     private final ModelRig rig;
     private float partial;
 
@@ -84,6 +86,7 @@ public final class DataBipedModel extends ModelBiped {
     @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
         float headPitch, float scale, Entity entity) {
+        rig.setCarrying(carryingGun);
         rig.pose(
             limbSwing,
             limbSwingAmount,

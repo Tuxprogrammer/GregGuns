@@ -169,8 +169,26 @@ public final class DevStructureBuilder {
     }
 
     /**
-     * Builds the Missile Silo around the controller at the position, with the hatches in the glass rings (the bus and
-     * the maintenance hatch beside the controller, the energy and fuel hatches below them).
+     * Where {@link #buildSilo} puts each part, as {dx, dy} from a north-facing controller (the face is the controller's
+     * z; a viewer looking south at it has the west, -x, on the right). The owner's layout (D299): the right hatch
+     * column holds the Input Bus over the Energy Hatch with the Launch Control on top, the left one the Input Hatch
+     * over
+     * the Maintenance Hatch, and the 3x3 window around the controller stays clear glass. Scenarios read the parts
+     * through these.
+     */
+    public static final int[] SILO_BUS = { -2, 0 };
+    /** See {@link #SILO_BUS}. */
+    public static final int[] SILO_ENERGY = { -2, -1 };
+    /** See {@link #SILO_BUS}: the Input Hatch, for the rocket fuel. */
+    public static final int[] SILO_FUEL = { 2, 0 };
+    /** See {@link #SILO_BUS}. */
+    public static final int[] SILO_MAINTENANCE = { 2, -1 };
+    /** See {@link #SILO_BUS}. */
+    public static final int[] SILO_LC = { -2, com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_RISE };
+
+    /**
+     * Builds the Missile Silo around the controller at the position, in the owner's layout ({@link #SILO_BUS}): the
+     * construct pass puts concrete in the two hatch columns, then the hatches and the Launch Control replace it.
      *
      * @param world  the world
      * @param x      controller x
@@ -198,10 +216,17 @@ public final class DevStructureBuilder {
         }
         ((com.gregguns.icbm.silo.MTEMissileSilo) controller.getMetaTileEntity())
             .construct(new ItemStack(Items.stick, 1), false);
-        hatch(world, x - 1, y, z, ItemList.Hatch_Input_Bus_HV, ForgeDirection.NORTH);
-        hatch(world, x + 1, y, z, ItemList.Hatch_Maintenance, ForgeDirection.NORTH);
-        hatch(world, x, y - 1, z, energy, ForgeDirection.NORTH);
-        hatch(world, x + 1, y - 1, z, ItemList.Hatch_Input_HV, ForgeDirection.NORTH);
+        hatch(world, x + SILO_BUS[0], y + SILO_BUS[1], z, ItemList.Hatch_Input_Bus_HV, ForgeDirection.NORTH);
+        hatch(world, x + SILO_ENERGY[0], y + SILO_ENERGY[1], z, energy, ForgeDirection.NORTH);
+        hatch(world, x + SILO_FUEL[0], y + SILO_FUEL[1], z, ItemList.Hatch_Input_HV, ForgeDirection.NORTH);
+        hatch(
+            world,
+            x + SILO_MAINTENANCE[0],
+            y + SILO_MAINTENANCE[1],
+            z,
+            ItemList.Hatch_Maintenance,
+            ForgeDirection.NORTH);
+        place(world, x + SILO_LC[0], y + SILO_LC[1], z, GregGunsMTEIDs.LAUNCH_CONTROL, ForgeDirection.NORTH);
         return finish(world, x, y, z, "Missile Silo");
     }
 
@@ -324,5 +349,9 @@ public final class DevStructureBuilder {
         base.setFrontFacing(facing);
         base.setOwnerName(OWNER);
         base.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
+        // GT's placement order: owner and front, then the default modes (a Maintenance Hatch switches itself active,
+        // or it shows the duct-tape cross; a bus or hatch reads its owner's preferences). See GtMachineHook.placeMte.
+        base.getMetaTileEntity()
+            .initDefaultModes(null);
     }
 }

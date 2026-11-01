@@ -66,19 +66,27 @@ public final class SiloScenarios {
     /** @param registry where to add the scenarios */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Structure());
+        registry.register(new HatchLayout());
+        registry.register(new FormedPad());
         registry.register(new Tiers());
         registry.register(new Refusals());
         registry.register(new T3Launch());
         registry.register(new T3EmpLaunch());
+        registry.register(new SiloClimbScenario());
         registry.register(new Fuels());
         registry.register(new PowerLoss());
+        registry.register(new PowerGate());
         registry.register(new Resume());
         registry.register(new UnformedPad());
+        registry.register(new OwnControl());
+        registry.register(new LcPower());
         registry.register(new HandStack());
+        SiloSequenceScenarios.registerAll(registry);
         registry.register(new ShaftChunkScenario());
         LaunchSequenceScenarios.registerAll(registry);
         registry.register(new LaunchSequenceMpScenario());
         registry.register(new LaunchControlGuiShots());
+        SiloGuiShots.registerAll(registry);
         registry.register(new I4SiloSetup());
     }
 
@@ -111,6 +119,14 @@ public final class SiloScenarios {
         return t instanceof IGregTechTileEntity ? (IGregTechTileEntity) t : null;
     }
 
+    /**
+     * @param at a part's {dx, dy} from {@link DevStructureBuilder} ({@code SILO_BUS}, {@code SILO_ENERGY}, ...)
+     * @return the GT tile of that part of the dev-built silo, or null
+     */
+    static IGregTechTileEntity part(ScenarioContext ctx, int[] at) {
+        return tile(ctx, at[0], at[1], 0);
+    }
+
     static MTEMissileSilo silo(ScenarioContext ctx) {
         IGregTechTileEntity b = tile(ctx, 0, 0, 0);
         return b != null && b.getMetaTileEntity() instanceof MTEMissileSilo ? (MTEMissileSilo) b.getMetaTileEntity()
@@ -122,7 +138,7 @@ public final class SiloScenarios {
     }
 
     static void power(ScenarioContext ctx) {
-        IGregTechTileEntity energy = tile(ctx, 0, -1, 0);
+        IGregTechTileEntity energy = part(ctx, DevStructureBuilder.SILO_ENERGY);
         if (energy != null) {
             energy.increaseStoredEnergyUnits(50_000_000L, true);
         }
@@ -130,7 +146,7 @@ public final class SiloScenarios {
 
     /** Puts 16,000 mB of a fluid in the fuel hatch; fails the scenario when the fluid is not registered. */
     static void fuel(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
-        IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
+        IGregTechTileEntity hatch = part(ctx, DevStructureBuilder.SILO_FUEL);
         Fluid f = FluidRegistry.getFluid(fluid);
         out.check(f != null, "the test fluid " + fluid + " is a registered fluid");
         out.check(
@@ -142,8 +158,8 @@ public final class SiloScenarios {
     }
 
     /** @return how much the fuel hatch still holds, mB */
-    private static int hatchMb(ScenarioContext ctx) {
-        IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
+    static int hatchMb(ScenarioContext ctx) {
+        IGregTechTileEntity hatch = part(ctx, DevStructureBuilder.SILO_FUEL);
         if (hatch == null || !(hatch.getMetaTileEntity() instanceof MTEHatchInput)) {
             return 0;
         }
@@ -151,16 +167,16 @@ public final class SiloScenarios {
         return fs == null ? 0 : fs.amount;
     }
 
-    private static void putBus(ScenarioContext ctx, ItemStack... stacks) {
-        IGregTechTileEntity bus = tile(ctx, -1, 0, 0);
+    static void putBus(ScenarioContext ctx, ItemStack... stacks) {
+        IGregTechTileEntity bus = part(ctx, DevStructureBuilder.SILO_BUS);
         for (int i = 0; i < stacks.length; i++) {
             bus.setInventorySlotContents(i, stacks[i]);
         }
     }
 
     /** @return how many stacks the input bus holds, wherever the bus keeps them */
-    private static int busItems(ScenarioContext ctx) {
-        IGregTechTileEntity bus = tile(ctx, -1, 0, 0);
+    static int busItems(ScenarioContext ctx) {
+        IGregTechTileEntity bus = part(ctx, DevStructureBuilder.SILO_BUS);
         int n = 0;
         for (int i = 0; i < bus.getSizeInventory(); i++) {
             if (bus.getStackInSlot(i) != null) {
@@ -170,7 +186,7 @@ public final class SiloScenarios {
         return n;
     }
 
-    private static ItemStack warhead(WarheadCasing c, String explosive) {
+    static ItemStack warhead(WarheadCasing c, String explosive) {
         return WarheadStacks.make(net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(c)), c, explosive, 1);
     }
 
@@ -311,6 +327,310 @@ public final class SiloScenarios {
     }
 
     // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * The owner's layout forms (D299): a 3x3 clear glass window around the controller with a hatch column on each side
+     * (Input Bus over Energy Hatch on the viewer's right, the Launch Control on top; Input Hatch over Maintenance
+     * Hatch on the left, concrete on top). The hatch columns are required; the window is glass or hatches only.
+     */
+    private static final class HatchLayout implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.hatch_layout";
+        }
+
+        @Override
+        public String description() {
+            return "The dev-built owner layout forms: each hatch is the right GT type at its place in the two hatch columns beside the 3x3 glass window (Input Bus over Energy Hatch on the viewer's right with the bound Launch Control on top, Input Hatch over Maintenance on the left), the window's eight cells are clear glass; concrete in the window or stone in a hatch column does not form, a hatch in the window does (D117), and the old three-wide front (hatches inside the window, the hatch columns empty) does not form.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        /** Puts a GT machine (a hatch) at the position, as a player would. */
+        private static void machine(World w, int x, int y, int z, int id) {
+            w.setBlock(
+                x,
+                y,
+                z,
+                GregTechAPI.sBlockMachines,
+                GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType(),
+                3);
+            ((IGregTechTileEntity) w.getTileEntity(x, y, z)).setInitialValuesAsNBT(null, (short) id);
+        }
+
+        private static int id(ItemList item) {
+            return item.get(1)
+                .getItemDamage();
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            DevStructureBuilder.Outcome first = build(ctx, ItemList.Hatch_Energy_LuV);
+            out.note("first attempt: " + first);
+            int[] stage = { 0 };
+            return ScenarioResult.pending(name(), 600, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                World w = ctx.world();
+                int x = ctx.originX();
+                int y = ctx.originY() + CY;
+                int z = ctx.originZ();
+                switch (stage[0]) {
+                    case 0: {
+                        if (!formed(ctx) && ticks < WARMUP + 40) {
+                            return null;
+                        }
+                        out.check(formed(ctx), "the owner's layout (hatch columns beside a 3x3 glass window) forms");
+                        out.check(
+                            part(ctx, DevStructureBuilder.SILO_BUS) != null && part(ctx, DevStructureBuilder.SILO_BUS)
+                                .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchInputBus,
+                            "the Input Bus stands in the right hatch column, in the controller's row");
+                        out.check(
+                            part(ctx, DevStructureBuilder.SILO_ENERGY) != null
+                                && part(ctx, DevStructureBuilder.SILO_ENERGY)
+                                    .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchEnergy,
+                            "the Energy Hatch stands under the Input Bus");
+                        out.check(
+                            part(ctx, DevStructureBuilder.SILO_FUEL) != null && part(ctx, DevStructureBuilder.SILO_FUEL)
+                                .getMetaTileEntity() instanceof MTEHatchInput,
+                            "the Input Hatch stands in the left hatch column, in the controller's row");
+                        out.check(
+                            part(ctx, DevStructureBuilder.SILO_MAINTENANCE) != null
+                                && part(ctx, DevStructureBuilder.SILO_MAINTENANCE)
+                                    .getMetaTileEntity() instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance,
+                            "the Maintenance Hatch stands under the Input Hatch");
+                        out.check(
+                            part(ctx, DevStructureBuilder.SILO_MAINTENANCE) != null
+                                && part(ctx, DevStructureBuilder.SILO_MAINTENANCE).isActive(),
+                            "the Maintenance Hatch is switched on as a placed one is (no duct-tape cross on its face)");
+                        MTEMissileSilo silo = silo(ctx);
+                        int[] lc = DevStructureBuilder.SILO_LC;
+                        out.check(
+                            silo != null && silo.hasLaunchControlAt(x + lc[0], y + lc[1], z),
+                            "the Launch Control on top of the right hatch column is the silo's own");
+                        out.check(
+                            lc[0] == DevStructureBuilder.SILO_BUS[0] && Math.abs(lc[0]) == 2,
+                            "the Launch Control stands outside the window, over the Input Bus");
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dy = -1; dy <= 1; dy++) {
+                                if (dx == 0 && dy == 0) continue;
+                                out.check(
+                                    SiloGlass
+                                        .accepts(w.getBlock(x + dx, y + dy, z), w.getBlockMetadata(x + dx, y + dy, z)),
+                                    "clear glass at window cell " + dx + ", " + dy);
+                            }
+                        }
+                        out.check(
+                            w.getBlock(x + 2, y + 1, z) == GregTechAPI.sBlockConcretes,
+                            "concrete tops the left hatch column");
+                        // Concrete in the window does not form; the window is glass or hatches only.
+                        Block glass = w.getBlock(x - 1, y + 1, z);
+                        int glassMeta = w.getBlockMetadata(x - 1, y + 1, z);
+                        w.setBlock(x - 1, y + 1, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        out.check(!formed(ctx), "concrete in a window cell does not form the silo");
+                        w.setBlock(x - 1, y + 1, z, glass, glassMeta, 2);
+                        // The hatch columns are required: stone there does not form.
+                        w.setBlock(x + 2, y + 1, z, Blocks.stone, 0, 2);
+                        out.check(!formed(ctx), "stone in a hatch column does not form the silo");
+                        w.setBlock(x + 2, y + 1, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        out.check(formed(ctx), "the silo forms again with the concrete back");
+                        // D117: a hatch may still replace a window pane.
+                        machine(w, x + 1, y - 1, z, id(ItemList.Hatch_Input_Bus_HV));
+                        stage[0] = 1;
+                        return null;
+                    }
+                    case 1: {
+                        out.check(formed(ctx), "a second Input Bus in a window cell forms the silo (D117)");
+                        Block glass = w.getBlock(x - 1, y - 1, z);
+                        int glassMeta = w.getBlockMetadata(x - 1, y - 1, z);
+                        w.setBlock(x + 1, y - 1, z, glass, glassMeta, 2);
+                        // The old three-wide front: the hatches inside the window, the hatch columns empty.
+                        for (int dy = -1; dy <= 1; dy++) {
+                            w.setBlockToAir(x - 2, y + dy, z);
+                            w.setBlockToAir(x + 2, y + dy, z);
+                        }
+                        machine(w, x - 1, y, z, id(ItemList.Hatch_Input_Bus_HV));
+                        machine(w, x + 1, y, z, id(ItemList.Hatch_Maintenance));
+                        machine(w, x, y - 1, z, id(ItemList.Hatch_Energy_LuV));
+                        machine(w, x + 1, y - 1, z, id(ItemList.Hatch_Input_HV));
+                        stage[0] = 2;
+                        return null;
+                    }
+                    case 2: {
+                        out.check(
+                            !formed(ctx),
+                            "the old three-wide front (hatches inside the window, the hatch columns empty) does not form");
+                        for (int dy = -1; dy <= 1; dy++) {
+                            w.setBlock(x - 2, y + dy, z, GregTechAPI.sBlockConcretes, 8, 2);
+                            w.setBlock(x + 2, y + dy, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        }
+                        out.check(formed(ctx), "the same hatches with concrete in the hatch columns form (D117)");
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    }
+                    default:
+                        return out.build();
+                }
+            });
+        }
+    }
+
+    /**
+     * The shaft floor as a player makes it: nine Galacticraft launch pad blocks that Galacticraft forms into its pad
+     * (the Full block at the center, dummy blocks on the other eight). The silo forms with every state of it.
+     */
+    private static final class FormedPad implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.formed_pad";
+        }
+
+        @Override
+        public String description() {
+            return "A silo whose nine shaft-floor pad blocks are placed one at a time as a player would, until Galacticraft forms the pad (Full block at the center, dummy blocks on the other eight), forms; so does the unformed pad; a buggy pad block (meta 1) or a stone cell in the floor does not.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Block pad = GalacticraftParts.findBlock(GalacticraftParts.PAD);
+            Block full = GalacticraftParts.findBlock(GalacticraftParts.PAD_FULL);
+            Block multi = GalacticraftParts.findBlock(GalacticraftParts.PAD_MULTI);
+            out.check(pad != null && full != null && multi != null, "Galacticraft's three pad blocks resolve");
+            if (pad == null || full == null || multi == null) {
+                return out.build();
+            }
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] since = { 0 };
+            return ScenarioResult.pending(name(), 900, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                World w = ctx.world();
+                int x = ctx.originX();
+                int y = ctx.originY() + CY - 2;
+                int z = ctx.originZ() + 2;
+                switch (stage[0]) {
+                    case 0:
+                        if (!formed(ctx) && ticks < WARMUP + 40) {
+                            return null;
+                        }
+                        out.check(formed(ctx), "the silo forms from the builder's pad blocks");
+                        // Tear the floor out and lay nine pad blocks one at a time.
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlockToAir(x + dx, y, z + dz);
+                            }
+                        }
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 3);
+                            }
+                        }
+                        stage[0] = 1;
+                        since[0] = ticks;
+                        return null;
+                    case 1:
+                        if (w.getBlock(x, y, z) != full && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(
+                            w.getBlock(x, y, z) == full,
+                            "Galacticraft formed the pad: the Full block at the center");
+                        int dummies = 0;
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                if ((dx != 0 || dz != 0) && w.getBlock(x + dx, y, z + dz) == multi) {
+                                    dummies++;
+                                }
+                            }
+                        }
+                        out.check(dummies == 8, "dummy blocks on the other eight: " + dummies);
+                        out.check(formed(ctx), "the silo forms with the formed Galacticraft pad");
+                        // As a player finds it: the pad forms while the silo is unformed (a pane out), the pane goes
+                        // back, and the silo forms by itself with no update-structure click.
+                        stage[0] = 4;
+                        since[0] = ticks;
+                        return null;
+                    case 4:
+                        // Unform the silo, rebuild the pad from nine blocks and put the missing pane back after GC
+                        // has formed it: only the silo's own recheck can notice.
+                        w.setBlock(x + 1, y + 4, z - 2, Blocks.stone, 0, 2);
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlockToAir(x + dx, y, z + dz);
+                            }
+                        }
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 3);
+                            }
+                        }
+                        stage[0] = 5;
+                        since[0] = ticks;
+                        return null;
+                    case 5:
+                        if (w.getBlock(x, y, z) != full && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(w.getBlock(x, y, z) == full, "Galacticraft formed the pad again");
+                        out.check(!formed(ctx), "the silo is unformed with a stone block in the wall");
+                        w.setBlock(x + 1, y + 4, z - 2, GregTechAPI.sBlockConcretes, 8, 2);
+                        stage[0] = 6;
+                        since[0] = ticks;
+                        return null;
+                    case 6: {
+                        boolean controller = silo(ctx) != null && silo(ctx).isFormed();
+                        if (!controller && ticks - since[0] < 200) {
+                            return null;
+                        }
+                        out.check(controller, "the silo's controller reports formed by itself within 200 ticks");
+                        stage[0] = 2;
+                        return null;
+                    }
+                    case 2:
+                        // The unformed state: a lone block of the pad in each cell, no Galacticraft forming.
+                        w.setBlockToAir(x, y, z);
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        for (int dx = -1; dx <= 1; dx++) {
+                            for (int dz = -1; dz <= 1; dz++) {
+                                w.setBlock(x + dx, y, z + dz, pad, 0, 2);
+                            }
+                        }
+                        out.check(formed(ctx), "the silo forms with the nine unformed pad blocks");
+                        w.setBlock(x + 1, y, z + 1, pad, 1, 2);
+                        out.check(!formed(ctx), "a buggy fueling pad block in the floor does not form the silo");
+                        w.setBlock(x + 1, y, z + 1, Blocks.stone, 0, 2);
+                        out.check(!formed(ctx), "a stone block in the pad floor does not form the silo");
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    default:
+                        return out.build();
+                }
+            });
+        }
+    }
 
     /** The Energy Hatch tier sets the missiles the silo launches, and the silo's factors apply (D70). */
     private static final class Tiers implements Scenario {
@@ -455,7 +775,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "The silo does not mate a body without a warhead, a damaged (salvage) body, or a body with a warhead too heavy for it, keeps the items in the bus, and does not pump a fluid the missile does not accept.";
+            return "The silo stands a body on the pad but does not seat a warhead too heavy for it or an inert warhead, which stay in the bus with their status; a damaged (salvage) body is never taken and its warhead waits for a body; a fluid the missile does not accept is not pumped.";
         }
 
         @Override
@@ -473,7 +793,7 @@ public final class SiloScenarios {
             int[] stage = { 0 };
             int[] mark = { 0 };
             EntityMissile[] m = new EntityMissile[1];
-            return ScenarioResult.pending(name(), 900, ticks -> {
+            return ScenarioResult.pending(name(), 1100, ticks -> {
                 if (ticks < WARMUP) {
                     return null;
                 }
@@ -481,32 +801,49 @@ public final class SiloScenarios {
                     case 0:
                         out.check(formed(ctx), "the silo forms");
                         power(ctx);
-                        putBus(ctx, MissileBodies.body(MissileTier.T3));
+                        // A T1 body with a T2 warhead: the body goes up (D286), the warhead is too heavy for it.
+                        putBus(ctx, MissileBodies.body(MissileTier.T1), warhead(WarheadCasing.T2, "thermobaric"));
                         mark[0] = ticks;
                         stage[0] = 1;
                         return null;
                     case 1:
                         power(ctx);
-                        if (ticks < mark[0] + 100) {
-                            return null;
+                        if (silo(ctx).stage() != SiloSequence.Stage.BODY_DONE) {
+                            return ticks > mark[0] + SiloRules.BODY_TICKS + 200
+                                ? ScenarioResult.fail(name(), "the body never finished its cycle")
+                                : null;
                         }
-                        out.check(silo(ctx).missile() == null, "no warhead, no mating");
-                        out.check(tile(ctx, -1, 0, 0).getStackInSlot(0) != null, "the body stays in the bus");
-                        // A T1 body with a T2 warhead.
-                        putBus(ctx, MissileBodies.body(MissileTier.T1), warhead(WarheadCasing.T2, "thermobaric"));
+                        if (ticks < mark[0] + SiloRules.BODY_TICKS + 100) {
+                            return null; // give the silo time to (wrongly) take the warhead
+                        }
+                        out.check(silo(ctx).missile() == null, "a warhead heavier than the body is not mated");
+                        out.check(SiloSequenceScenarios.bodyStands(ctx), "the body stands on the pad");
+                        out.check(!SiloSequenceScenarios.warheadSeated(ctx), "no warhead sits on its nose");
+                        out.checkEquals("the heavy warhead stays in the bus", 1, busItems(ctx));
+                        out.check(
+                            SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_wrong_warhead"),
+                            "the silo says the warhead is too heavy");
+                        // D282: an inert warhead (a payload, no charges) is not a warhead to the silo.
+                        putBus(
+                            ctx,
+                            (ItemStack) null,
+                            com.gregguns.icbm.warhead.InertWarheads.stack(WarheadCasing.T1, "shrapnel"));
                         mark[0] = ticks;
-                        stage[0] = 2;
+                        stage[0] = 6;
                         return null;
-                    case 2:
+                    case 6:
                         power(ctx);
                         if (ticks < mark[0] + 100) {
                             return null;
                         }
-                        out.check(silo(ctx).missile() == null, "a warhead heavier than the body is not mated");
+                        out.check(silo(ctx).missile() == null, "an inert warhead is not mated (D282)");
+                        out.check(!SiloSequenceScenarios.warheadSeated(ctx), "nothing is seated on the nose");
+                        out.checkEquals("the inert warhead stays in the bus", 1, busItems(ctx));
                         out.check(
-                            tile(ctx, -1, 0, 0).getStackInSlot(0) != null
-                                && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
-                            "both items stay in the bus");
+                            SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_inert_warhead"),
+                            "the silo says the warhead is inert");
+                        // Take the body away (no drop: the scenario is done with it) for the salvage check.
+                        SiloSequenceScenarios.removeBody(ctx);
                         // A damaged body (a silo complex's salvage) with a fitting warhead: not a body.
                         ItemStack damaged = MissileBodies.body(MissileTier.T1);
                         damaged.setItemDamage(com.gregguns.icbm.missile.ItemBlockMissileBody.SALVAGE_DAMAGE);
@@ -520,10 +857,11 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(silo(ctx).missile() == null, "a damaged body is salvage, never mated (D17)");
+                        out.check(!SiloSequenceScenarios.bodyStands(ctx), "no body is stood on the pad");
+                        out.checkEquals("the damaged body and the warhead stay in the bus", 2, busItems(ctx));
                         out.check(
-                            tile(ctx, -1, 0, 0).getStackInSlot(0) != null
-                                && tile(ctx, -1, 0, 0).getStackInSlot(1) != null,
-                            "the damaged body and the warhead stay in the bus");
+                            SiloSequenceScenarios.status(silo(ctx), "gregguns_silo_waiting_body"),
+                            "the warhead waits for a body");
                         putBus(ctx, (ItemStack) null, (ItemStack) null);
                         // Wrong fuel into a T3 standing in the shaft.
                         m[0] = stand(ctx, MissileTier.T3);
@@ -549,7 +887,7 @@ public final class SiloScenarios {
                         }
                         out.checkEquals("a T1 fuel is not pumped into a T3", 0, m[0].fuelMb());
                         out.checkEquals("the hatch kept its T1 fuel", 16000, hatchMb(ctx));
-                        IGregTechTileEntity none = tile(ctx, 1, -1, 0);
+                        IGregTechTileEntity none = part(ctx, DevStructureBuilder.SILO_FUEL);
                         ((MTEHatchInput) none.getMetaTileEntity()).setFillableStack(null);
                         out.checkEquals(
                             "no fuel, no launch",
@@ -594,20 +932,7 @@ public final class SiloScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
             out.note("build: " + built);
-            // The Launch Control, in the silo's reach.
-            int id = GregGunsMTEIDs.LAUNCH_CONTROL;
-            ctx.setBlock(
-                5,
-                CY,
-                -2,
-                GregTechAPI.sBlockMachines,
-                GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
-            IGregTechTileEntity cb = (IGregTechTileEntity) ctx.world()
-                .getTileEntity(ctx.originX() + 5, ctx.originY() + CY, ctx.originZ() - 2);
-            cb.setInitialValuesAsNBT(null, (short) id);
-            cb.setFrontFacing(ForgeDirection.NORTH);
-            cb.setOwnerName("gregguns-test");
-            cb.setOwnerUuid(UUID.nameUUIDFromBytes("gregguns-test".getBytes(StandardCharsets.UTF_8)));
+            // The Launch Control is the silo's own: the builder puts it on top of the right hatch column (D288, D299).
             WarheadCasing casing = WarheadCasing.T1;
             for (WarheadCasing c : WarheadCasing.values()) {
                 if (c.tier()
@@ -636,7 +961,7 @@ public final class SiloScenarios {
                 if (ticks < WARMUP) {
                     return null;
                 }
-                IGregTechTileEntity cbase = tile(ctx, 5, 0, -2);
+                IGregTechTileEntity cbase = ownControl(ctx);
                 MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
                 power(ctx);
                 if (stage[0] < 3) {
@@ -648,7 +973,7 @@ public final class SiloScenarios {
                         blocksBefore[0] = countBlocks(ctx);
                         // The player puts a body and a warhead in the bus and nothing else.
                         putBus(ctx, MissileBodies.body(MissileTier.T3), warhead(used, explosive));
-                        cbase.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        // The silo's own Launch Control runs on the silo's EU (D300): power(ctx) charged it.
                         c.setXText(Integer.toString(ctx.originX()));
                         c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
                         out.checkEquals("nothing to fire yet", ControlStatus.NO_MISSILE, c.fire(null));
@@ -661,7 +986,10 @@ public final class SiloScenarios {
                         }
                         out.checkEquals("a T3 missile was mated", MissileTier.T3, m[0].tier());
                         out.check(m[0].onPad(), "it stands in the shaft");
-                        out.checkEquals("the bus is empty", null, tile(ctx, -1, 0, 0).getStackInSlot(0));
+                        out.checkEquals(
+                            "the bus is empty",
+                            null,
+                            part(ctx, DevStructureBuilder.SILO_BUS).getStackInSlot(0));
                         mark[0] = ticks;
                         stage[0] = 2;
                         return null;
@@ -778,7 +1106,7 @@ public final class SiloScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
             out.note("build: " + built);
-            IGregTechTileEntity cb = launchControl(ctx, 5, -2);
+            IGregTechTileEntity cb = ownControl(ctx);
             final net.minecraft.world.World w = ctx.world();
             final int tx = ctx.originX();
             final int ty = ctx.originY();
@@ -821,7 +1149,7 @@ public final class SiloScenarios {
                 if (ticks < WARMUP) {
                     return null;
                 }
-                IGregTechTileEntity cbase = tile(ctx, 5, 0, -2);
+                IGregTechTileEntity cbase = ownControl(ctx);
                 MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
                 power(ctx);
                 if (stage[0] < 3) {
@@ -839,7 +1167,7 @@ public final class SiloScenarios {
                             ((gregtech.api.metatileentity.BaseMetaTileEntity) t).setStoredEU(10_000L);
                         }
                         putBus(ctx, MissileBodies.body(MissileTier.T3), empWarhead());
-                        cbase.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        // The silo's own Launch Control runs on the silo's EU (D300): power(ctx) charged it.
                         c.setXText(Integer.toString(ctx.originX()));
                         c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
                         stage[0] = 1;
@@ -931,11 +1259,143 @@ public final class SiloScenarios {
 
     // ------------------------------------------------------------------------------------------------------------
 
+    /**
+     * D300: the silo's own Launch Control checks and pays its shot from the silo's Energy Hatch and ignores its own
+     * buffer while it is bound.
+     */
+    private static final class LcPower implements Scenario {
+
+        /** EU put in the silo's Energy Hatch: well under a LuV hatch's capacity, and enough for the shot. */
+        private static final long SILO_EU = 100_000L;
+
+        @Override
+        public String name() {
+            return "icbm.silo.lc_power";
+        }
+
+        @Override
+        public String description() {
+            return "A silo's own Launch Control with an empty buffer is ready once the silo's Energy Hatch holds EU, fires, and the 300 EU come out of the silo's hatch while its own buffer stays empty; with the silo's hatch drained and its own buffer full it reports silo_no_power (D300).";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            out.note("build: " + build(ctx, ItemList.Hatch_Energy_LuV));
+            int[] stage = { 0 };
+            EntityMissile[] m = new EntityMissile[1];
+            return ScenarioResult.pending(name(), 600, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                IGregTechTileEntity cb = ownControl(ctx);
+                IGregTechTileEntity energy = part(ctx, DevStructureBuilder.SILO_ENERGY);
+                MTEMissileSilo silo = silo(ctx);
+                if (cb == null || !(cb.getMetaTileEntity() instanceof MTELaunchControl)
+                    || energy == null
+                    || silo == null) {
+                    return ScenarioResult.fail(name(), "the silo, its Energy Hatch or its Launch Control is missing");
+                }
+                MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
+                switch (stage[0]) {
+                    case 0: {
+                        if (!formed(ctx) && ticks < WARMUP + 40) {
+                            return null;
+                        }
+                        out.check(formed(ctx), "the silo forms");
+                        m[0] = stand(ctx, MissileTier.T1);
+                        if (m[0] == null) {
+                            return ScenarioResult.fail(name(), "no missile stood");
+                        }
+                        m[0].fill(m[0].capacityMb(), true);
+                        c.setXText(Integer.toString(ctx.originX()));
+                        c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
+                        cb.decreaseStoredEnergyUnits(cb.getStoredEU(), true);
+                        // An exact amount under the hatch's capacity: GT reports at most the capacity, so the 50M EU
+                        // of power(ctx) would hide the payment.
+                        ((gregtech.api.metatileentity.BaseMetaTileEntity) energy).setStoredEU(SILO_EU);
+                        stage[0] = 1;
+                        return null;
+                    }
+                    case 1: {
+                        out.checkEquals("the Launch Control's own buffer is empty", 0L, cb.getStoredEU());
+                        out.check(c.siloPowered(), "the bound Launch Control runs on the silo's EU");
+                        out.check(c.shotEu() >= MTELaunchControl.EU_PER_SHOT, "it sees the silo's EU: " + c.shotEu());
+                        out.checkEquals("ready on the silo's EU alone", ControlStatus.READY, c.currentStatus());
+                        long before = energy.getStoredEU();
+                        out.checkEquals("it fires", ControlStatus.FIRED, c.fire(null));
+                        long paid = before - energy.getStoredEU();
+                        out.check(
+                            paid >= MTELaunchControl.EU_PER_SHOT && before <= SILO_EU,
+                            "the shot came out of the silo's Energy Hatch: " + paid + " EU of " + before);
+                        out.checkEquals("its own buffer is still empty", 0L, cb.getStoredEU());
+                        out.check(
+                            silo.site()
+                                .abort(),
+                            "the countdown aborts");
+                        // No EU in the silo, a full own buffer: the bound block still asks the silo.
+                        ((gregtech.api.metatileentity.BaseMetaTileEntity) energy).setStoredEU(0L);
+                        cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        stage[0] = 2;
+                        return null;
+                    }
+                    default: {
+                        out.checkEquals("the silo's hatch is empty", 0L, energy.getStoredEU());
+                        out.checkEquals(
+                            "its own buffer does not count while it is bound",
+                            ControlStatus.SILO_NO_POWER,
+                            c.currentStatus());
+                        out.check(
+                            net.minecraft.util.StatCollector.canTranslate(ControlStatus.SILO_NO_POWER.langKey()),
+                            "the status has its text");
+                        if (m[0] != null) {
+                            m[0].setDead();
+                        }
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    }
+                }
+            });
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @return the silo's own Launch Control, which {@link #build} puts on top of the right hatch column (D288, D299)
+     */
+    static IGregTechTileEntity ownControl(ScenarioContext ctx) {
+        return part(ctx, DevStructureBuilder.SILO_LC);
+    }
+
+    /**
+     * Places a free-standing Launch Control (part of no silo) at the controller's level.
+     *
+     * @return its tile
+     */
     static IGregTechTileEntity launchControl(ScenarioContext ctx, int dx, int dz) {
+        return launchControl(ctx, dx, 0, dz);
+    }
+
+    /** As {@link #launchControl(ScenarioContext, int, int)}, {@code dy} above the controller's level. */
+    static IGregTechTileEntity launchControl(ScenarioContext ctx, int dx, int dy, int dz) {
         int id = GregGunsMTEIDs.LAUNCH_CONTROL;
-        ctx.setBlock(dx, CY, dz, GregTechAPI.sBlockMachines, GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
+        ctx.setBlock(
+            dx,
+            CY + dy,
+            dz,
+            GregTechAPI.sBlockMachines,
+            GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
         IGregTechTileEntity cb = (IGregTechTileEntity) ctx.world()
-            .getTileEntity(ctx.originX() + dx, ctx.originY() + CY, ctx.originZ() + dz);
+            .getTileEntity(ctx.originX() + dx, ctx.originY() + CY + dy, ctx.originZ() + dz);
         cb.setInitialValuesAsNBT(null, (short) id);
         cb.setFrontFacing(ForgeDirection.NORTH);
         cb.setOwnerName("gregguns-test");
@@ -1017,7 +1477,8 @@ public final class SiloScenarios {
                     case 0:
                         out.check(formed(ctx), "the silo forms");
                         out.check(base.isAllowedToWork(), "a formed silo is switched on");
-                        w.setBlockToAir(x, y - 1, z); // the Energy Hatch
+                        int ex = x + DevStructureBuilder.SILO_ENERGY[0], ey = y + DevStructureBuilder.SILO_ENERGY[1];
+                        w.setBlockToAir(ex, ey, z); // the Energy Hatch
                         out.check(!formed(ctx), "without its Energy Hatch the silo is not formed");
                         mark[0] = ticks;
                         stage[0] = 1;
@@ -1037,8 +1498,8 @@ public final class SiloScenarios {
                             w,
                             ItemList.Hatch_Energy_LuV.get(1)
                                 .getItemDamage(),
-                            x,
-                            y - 1,
+                            x + DevStructureBuilder.SILO_ENERGY[0],
+                            y + DevStructureBuilder.SILO_ENERGY[1],
                             z);
                         out.check(formed(ctx), "the silo forms again with its part back");
                         mark[0] = ticks;
@@ -1081,7 +1542,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "Cutting the power during a mating cycle keeps the body and warhead pending; when the power and the machine are back the same parts finish as a missile and the next parts in the bus are untouched.";
+            return "Cutting the power during the warhead's mating cycle keeps the body and warhead standing in the shaft; when the power and the machine are back the same parts finish as a missile and the next parts in the bus are untouched.";
         }
 
         @Override
@@ -1103,7 +1564,7 @@ public final class SiloScenarios {
                     return null;
                 }
                 MTEMissileSilo s = silo(ctx);
-                IGregTechTileEntity energy = tile(ctx, 0, -1, 0);
+                IGregTechTileEntity energy = part(ctx, DevStructureBuilder.SILO_ENERGY);
                 switch (stage[0]) {
                     case 0:
                         out.check(formed(ctx), "the silo forms");
@@ -1113,11 +1574,18 @@ public final class SiloScenarios {
                         return null;
                     case 1:
                         power(ctx);
-                        if (s.pendingTier() == 0) {
-                            return ticks > 400 ? ScenarioResult.fail(name(), "the cycle never started") : null;
+                        if (s.stage() != SiloSequence.Stage.WARHEAD) {
+                            return ticks > 800 ? ScenarioResult.fail(name(), "the mating cycle never started") : null;
                         }
-                        out.checkEquals("the cycle took the body", null, tile(ctx, -1, 0, 0).getStackInSlot(0));
-                        out.checkEquals("the cycle took the warhead", null, tile(ctx, -1, 0, 0).getStackInSlot(1));
+                        out.checkEquals(
+                            "the silo took the body",
+                            null,
+                            part(ctx, DevStructureBuilder.SILO_BUS).getStackInSlot(0));
+                        out.checkEquals(
+                            "the silo took the warhead",
+                            null,
+                            part(ctx, DevStructureBuilder.SILO_BUS).getStackInSlot(1));
+                        out.check(SiloSequenceScenarios.warheadSeated(ctx), "the warhead sits on the body's nose");
                         // The next parts wait in the bus; they must still be there at the end.
                         putBus(
                             ctx,
@@ -1134,7 +1602,10 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(s.missile() == null, "no missile while the power is out");
-                        out.checkEquals("the parts stay pending", MissileTier.T1.number(), s.pendingTier());
+                        out.checkEquals("the mating stays pending", SiloSequence.Stage.WARHEAD, s.stage());
+                        out.check(
+                            SiloSequenceScenarios.bodyStands(ctx) && SiloSequenceScenarios.warheadSeated(ctx),
+                            "the body and warhead still stand in the shaft");
                         out.check(
                             !s.getBaseMetaTileEntity()
                                 .isActive(),
@@ -1155,8 +1626,138 @@ public final class SiloScenarios {
                             MissileTier.T1,
                             s.missile()
                                 .tier());
-                        out.checkEquals("nothing is pending any more", 0, s.pendingTier());
+                        out.checkEquals("nothing is pending any more", SiloSequence.Stage.NONE, s.stage());
+                        out.check(
+                            !SiloSequenceScenarios.bodyStands(ctx) && !SiloSequenceScenarios.warheadSeated(ctx),
+                            "the blocks became the missile");
                         out.checkEquals("the resume took no new parts from the bus", 2, busItems(ctx));
+                        s.missile()
+                            .setDead();
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
+
+    /** An unpowered silo refuses to start work, stays quiet, and starts on its own once power arrives. */
+    private static final class PowerGate implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.power_gate";
+        }
+
+        @Override
+        public String description() {
+            return "A formed silo with no EU in its hatch, given a body and warhead, takes nothing, never power-fails and does not churn recipe checks; the same for fuel pumped into a missile in the shaft; both start by themselves once the hatch is charged.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            int[] checks = { 0 };
+            return ScenarioResult.pending(name(), 4000, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                MTEMissileSilo s = silo(ctx);
+                IGregTechTileEntity energy = part(ctx, DevStructureBuilder.SILO_ENERGY);
+                switch (stage[0]) {
+                    case 0:
+                        out.check(formed(ctx), "the silo forms");
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        putBus(ctx, MissileBodies.body(MissileTier.T1), warhead(WarheadCasing.T1, "condensed"));
+                        mark[0] = ticks;
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        if (ticks < mark[0] + 5) {
+                            checks[0] = s.checks();
+                        }
+                        if (ticks < mark[0] + 200) {
+                            return null;
+                        }
+                        out.checkEquals("no power: the body and warhead stay in the bus", 2, busItems(ctx));
+                        out.checkEquals("no power: no part went into the shaft", SiloSequence.Stage.NONE, s.stage());
+                        out.check(!SiloSequenceScenarios.bodyStands(ctx), "no power: no body stands on the pad");
+                        out.checkEquals("no power: the silo never power-failed", 0, s.powerStops());
+                        out.check(s.waitingForPower(), "no power: the silo reports that it waits for power");
+                        out.check(
+                            s.getBaseMetaTileEntity()
+                                .isAllowedToWork(),
+                            "no power: the silo is not switched off");
+                        out.check(
+                            s.checks() - checks[0] <= 3,
+                            "no power: the silo did not churn recipe checks (" + (s.checks() - checks[0]) + ")");
+                        power(ctx);
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        power(ctx);
+                        if (s.stage() == SiloSequence.Stage.NONE && s.missile() == null) {
+                            return ticks > mark[0] + 200 ? ScenarioResult.fail(name(), "powering never started it")
+                                : null;
+                        }
+                        out.checkEquals("powered: the body went up first; the warhead waits for it", 1, busItems(ctx));
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        power(ctx);
+                        if (s.missile() == null) {
+                            return ticks > mark[0] + 1500 ? ScenarioResult.fail(name(), "the missile never stood")
+                                : null;
+                        }
+                        // Now the fuel: cut the power, offer fuel, and nothing may move.
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        fuel(ctx, out, "nitrofuel");
+                        mark[0] = ticks;
+                        checks[0] = s.checks();
+                        stage[0] = 4;
+                        return null;
+                    case 4:
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        if (ticks < mark[0] + 200) {
+                            return null;
+                        }
+                        out.checkEquals("no power: the fuel stays in the hatch", 16000, hatchMb(ctx));
+                        out.checkEquals(
+                            "no power: the missile took no fuel",
+                            0,
+                            s.missile()
+                                .fuelMb());
+                        out.checkEquals("no power: still no power failure", 0, s.powerStops());
+                        out.check(
+                            s.checks() - checks[0] <= 3,
+                            "no power: the pump did not churn recipe checks (" + (s.checks() - checks[0]) + ")");
+                        power(ctx);
+                        mark[0] = ticks;
+                        stage[0] = 5;
+                        return null;
+                    case 5:
+                        power(ctx);
+                        if (s.missile()
+                            .fuelMb() <= 0) {
+                            return ticks > mark[0] + 400 ? ScenarioResult.fail(name(), "powering never pumped fuel")
+                                : null;
+                        }
+                        out.check(hatchMb(ctx) < 16000, "powered: the pump drew fuel from the hatch");
+                        out.checkEquals("powered: still no power failure", 0, s.powerStops());
                         s.missile()
                             .setDead();
                         ctx.clearArea(14, CLEAR_HEIGHT);
@@ -1178,7 +1779,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "With a T3 standing in a silo whose structure is broken, the Launch Control and the pad API both refuse with the silo-only status and the missile stays; a T1 on the same floor still fires from the pad.";
+            return "With a T3 standing in a silo whose structure is broken, the silo's own Launch Control refuses because its silo is not formed; a free Launch Control set against the floor pad's edge and the pad API both refuse with the silo-only status, and the missile stays.";
         }
 
         @Override
@@ -1193,9 +1794,9 @@ public final class SiloScenarios {
             }
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             build(ctx, ItemList.Hatch_Energy_LuV);
-            // Beside the shaft floor pad (pad reach 4), outside the silo.
-            IGregTechTileEntity cb = launchControl(ctx, 3, 0);
+            IGregTechTileEntity own = ownControl(ctx);
             int[] stage = { 0 };
+            IGregTechTileEntity[] free = new IGregTechTileEntity[1];
             EntityMissile[] m = new EntityMissile[1];
             return ScenarioResult.pending(name(), 800, ticks -> {
                 if (ticks < WARMUP) {
@@ -1205,7 +1806,6 @@ public final class SiloScenarios {
                 int x = ctx.originX();
                 int y = ctx.originY() + CY;
                 int z = ctx.originZ();
-                MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
                 switch (stage[0]) {
                     case 0: {
                         out.check(formed(ctx), "the silo forms");
@@ -1216,6 +1816,9 @@ public final class SiloScenarios {
                         w.setBlock(x - 1, y + 9, z, GregTechAPI.sBlockMachines, hatchId, 3);
                         ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 9, z))
                             .setInitialValuesAsNBT(null, (short) hatchId);
+                        // A free Launch Control in the floor ring, against the east edge of the floor pad, level with
+                        // it.
+                        free[0] = launchControl(ctx, 2, -2, 2);
                         stage[0] = 1;
                         return null;
                     }
@@ -1224,9 +1827,19 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(!formed(ctx), "the silo no longer forms");
-                        cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
-                        c.setXText(Integer.toString(x));
-                        c.setZText(Integer.toString(z + DISTANCE));
+                        MTELaunchControl mine = (MTELaunchControl) own.getMetaTileEntity();
+                        MTELaunchControl c = (MTELaunchControl) free[0].getMetaTileEntity();
+                        for (IGregTechTileEntity b : new IGregTechTileEntity[] { own, free[0] }) {
+                            b.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        }
+                        for (MTELaunchControl lc : new MTELaunchControl[] { mine, c }) {
+                            lc.setXText(Integer.toString(x));
+                            lc.setZText(Integer.toString(z + DISTANCE));
+                        }
+                        out.checkEquals(
+                            "the silo's own Launch Control waits for its silo",
+                            ControlStatus.SILO_UNFORMED,
+                            mine.fire(null));
                         out.checkEquals(
                             "the pad API refuses a silo-only missile",
                             LaunchResult.SILO_ONLY,
@@ -1237,6 +1850,141 @@ public final class SiloScenarios {
                             ControlStatus.SILO_ONLY,
                             c.fire(null));
                         out.check(m[0].onPad() && !m[0].isDead, "the T3 still stands on the floor");
+                        m[0].setDead();
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    }
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
+
+    /**
+     * The owner's report (D288): a Launch Control between two silos said "no missile". Now each silo fires through the
+     * Launch Control built into its own structure, and a Launch Control standing free between them belongs to neither.
+     */
+    private static final class OwnControl implements Scenario {
+
+        /** Silo B's controller, east of silo A's. */
+        private static final int B = 8;
+
+        @Override
+        public String name() {
+            return "icbm.silo.own_control";
+        }
+
+        @Override
+        public String description() {
+            return "Two silos side by side, each with a Launch Control in its window and a fueled missile in silo B only: B's control names B and fires it, A's names A and says no missile without touching B's, and a free Launch Control between them is bound to neither (no pad adjacent).";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            World w = ctx.world();
+            int x = ctx.originX();
+            int y = ctx.originY() + CY;
+            int z = ctx.originZ();
+            ctx.setBlock(
+                B,
+                CY,
+                0,
+                GregTechAPI.sBlockMachines,
+                GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.MISSILE_SILO].getTileEntityBaseType());
+            ((IGregTechTileEntity) w.getTileEntity(x + B, y, z))
+                .setInitialValuesAsNBT(null, (short) GregGunsMTEIDs.MISSILE_SILO);
+            out.note("silo B: " + DevStructureBuilder.buildSilo(w, x + B, y, z, ItemList.Hatch_Energy_LuV));
+            // Halfway between the two controllers, where the old search tied and took the western silo.
+            IGregTechTileEntity free = launchControl(ctx, B / 2, 0);
+            int[] stage = { 0 };
+            EntityMissile[] m = new EntityMissile[1];
+            return ScenarioResult.pending(name(), 600, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                IGregTechTileEntity ownA = ownControl(ctx);
+                IGregTechTileEntity ownB = tile(
+                    ctx,
+                    B + DevStructureBuilder.SILO_LC[0],
+                    DevStructureBuilder.SILO_LC[1],
+                    0);
+                if (ownA == null || ownB == null
+                    || !(ownA.getMetaTileEntity() instanceof MTELaunchControl)
+                    || !(ownB.getMetaTileEntity() instanceof MTELaunchControl)) {
+                    return ScenarioResult.fail(name(), "a silo's own Launch Control is missing");
+                }
+                MTELaunchControl a = (MTELaunchControl) ownA.getMetaTileEntity();
+                MTELaunchControl b = (MTELaunchControl) ownB.getMetaTileEntity();
+                MTELaunchControl f = (MTELaunchControl) free.getMetaTileEntity();
+                MTEMissileSilo siloA = silo(ctx);
+                IGregTechTileEntity bTile = tile(ctx, B, 0, 0);
+                MTEMissileSilo siloB = (MTEMissileSilo) bTile.getMetaTileEntity();
+                switch (stage[0]) {
+                    case 0: {
+                        out.check(siloA.isFormed() && siloB.isFormed(), "both silos form");
+                        out.check(siloA.launchControl() == a, "silo A knows its Launch Control");
+                        out.check(siloB.launchControl() == b, "silo B knows its Launch Control");
+                        m[0] = EntityMissile.create(MissileTier.T1, w);
+                        m[0].setLocationAndAngles(x + B + 0.5, y - 2 + EntityMissile.PAD_SURFACE, z + 2.5, 0.0F, 0.0F);
+                        m[0].configure(0, "condensed", 1, 1, null);
+                        w.spawnEntityInWorld(m[0]);
+                        m[0].fill(m[0].capacityMb(), true);
+                        // Each silo's own control runs on its silo's Energy Hatch (D300); the free one on its own
+                        // buffer.
+                        power(ctx);
+                        tile(ctx, B + DevStructureBuilder.SILO_ENERGY[0], DevStructureBuilder.SILO_ENERGY[1], 0)
+                            .increaseStoredEnergyUnits(50_000_000L, true);
+                        free.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        for (MTELaunchControl c : new MTELaunchControl[] { a, b, f }) {
+                            c.setXText(Integer.toString(x));
+                            c.setZText(Integer.toString(z + DISTANCE));
+                        }
+                        stage[0] = 1;
+                        return null;
+                    }
+                    case 1: {
+                        com.gregguns.icbm.control.SiteLine la = a.siteLine();
+                        com.gregguns.icbm.control.SiteLine lb = b.siteLine();
+                        out.checkEquals(
+                            "A's control is bound to a silo",
+                            com.gregguns.icbm.control.SiteLine.Kind.SILO,
+                            la.kind());
+                        out.checkEquals("A's control names silo A's shaft", x, la.x());
+                        out.checkEquals("B's control names silo B's shaft", x + B, lb.x());
+                        out.checkEquals("the shaft's Z", z + 2, lb.z());
+                        out.checkEquals(
+                            "A's control: its own silo is empty",
+                            ControlStatus.NO_MISSILE,
+                            a.currentStatus());
+                        out.checkEquals("B's control: its missile is ready", ControlStatus.READY, b.currentStatus());
+                        out.checkEquals(
+                            "the free control between them belongs to neither silo",
+                            ControlStatus.NO_PAD,
+                            f.currentStatus());
+                        out.checkEquals("and names no site", com.gregguns.icbm.control.SiteLine.NONE, f.siteLine());
+                        out.checkEquals(
+                            "A's control does not fire B's missile",
+                            ControlStatus.NO_MISSILE,
+                            a.fire(null));
+                        out.check(m[0].onPad() && !m[0].isDead, "B's missile still stands after A's refusal");
+                        out.checkEquals("B's control fires silo B", ControlStatus.FIRED, b.fire(null));
+                        out.checkEquals("the countdown runs in silo B", ControlStatus.COUNTDOWN, b.currentStatus());
+                        out.checkEquals("A's control still sees nothing", ControlStatus.NO_MISSILE, a.currentStatus());
+                        out.check(
+                            siloB.site()
+                                .abort(),
+                            "the countdown aborts");
                         m[0].setDead();
                         ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();

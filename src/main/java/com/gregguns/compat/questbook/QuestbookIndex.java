@@ -3,6 +3,7 @@ package com.gregguns.compat.questbook;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -10,7 +11,8 @@ import com.google.gson.JsonParser;
 
 /**
  * {@code index.json}: the list of files that make up the shipped quest line. Format 1 has the keys {@code format},
- * {@code line}, {@code linePositions}, {@code quests} and {@code orderEntry}.
+ * {@code line}, {@code linePositions}, {@code quests}, {@code orderEntry} and the optional {@code retired}: the ids, as
+ * UUID strings, of quests an earlier GregGuns shipped and this one removes from the database.
  */
 public final class QuestbookIndex {
 
@@ -21,12 +23,16 @@ public final class QuestbookIndex {
     public final List<String> quests;
     /** A {@code QuestLinesOrder.txt} line; only the text before the first colon is the line id. */
     public final String orderEntry;
+    /** Retired quest ids (uuid5 of keys that are never reused); empty when the file has no {@code retired}. */
+    public final List<UUID> retired;
 
-    private QuestbookIndex(String line, List<String> linePositions, List<String> quests, String orderEntry) {
+    private QuestbookIndex(String line, List<String> linePositions, List<String> quests, String orderEntry,
+        List<UUID> retired) {
         this.line = line;
         this.linePositions = Collections.unmodifiableList(linePositions);
         this.quests = Collections.unmodifiableList(quests);
         this.orderEntry = orderEntry;
+        this.retired = Collections.unmodifiableList(retired);
     }
 
     /** The Base64 line id from {@link #orderEntry} (the text before the first colon), or "" when there is none. */
@@ -55,11 +61,16 @@ public final class QuestbookIndex {
             if (line.isEmpty()) {
                 throw new QuestbookException("index.json names no quest line");
             }
+            List<UUID> retired = new ArrayList<>();
+            for (String id : strings(root, "retired")) {
+                retired.add(UUID.fromString(id));
+            }
             return new QuestbookIndex(
                 line,
                 strings(root, "linePositions"),
                 strings(root, "quests"),
-                string(root, "orderEntry"));
+                string(root, "orderEntry"),
+                retired);
         } catch (RuntimeException e) {
             throw new QuestbookException("index.json has a malformed entry", e);
         }

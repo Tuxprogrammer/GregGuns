@@ -7,22 +7,18 @@ import com.gregguns.worldgen.loot.LootCategoryDefs;
  * layout uses (an unknown tag fails the build instead of silently producing an empty chest).
  *
  * <p>
- * Outside the Military Base the tier is the structure's loot ceiling. Camp parts (PLAN-M8 section 2, Military Base
- * row) are fixed: barracks use the barracks category, the closed bunker's and props' weapon and reinforced crates are
- * MV ({@code _t2}), and the factory's vanilla chests sit at the LV ceiling ({@code _t1}).
+ * Weapon crates draw the weapon chest, reinforced crates the reinforced chest, and a structure's plain vanilla chests
+ * the
+ * supply chest (the general mix of pack loot with a little GregGuns gear). Outside the Military Base the tier is the
+ * structure's loot ceiling. Camp parts (PLAN-M8 section 2, Military Base row) are fixed: barracks use the barracks
+ * category, the closed bunker's and props' weapon and reinforced crates are MV ({@code _t2}), and the factory's vanilla
+ * chests sit at the LV ceiling ({@code _t1}).
  */
-// Spec: docs/gregguns-spec/11-worldgen/structure-loot.md (Military Base row, GGS-11-20)
+// Spec: docs/gregguns-spec/11-worldgen/structure-loot.md (Military Base row, GGS-11-20, GGS-11-26)
 public final class ChestTags {
 
     /** The kinds a layout may use after {@code chest.}. */
     public static final String[] KINDS = { "weapon", "reinforced", "vanilla", "barracks" };
-
-    private static final String[] WEAPON = { LootCategoryDefs.WEAPONCHEST_T1, LootCategoryDefs.WEAPONCHEST_T2,
-        LootCategoryDefs.WEAPONCHEST_T3, LootCategoryDefs.WEAPONCHEST_T4, LootCategoryDefs.WEAPONCHEST_T5,
-        LootCategoryDefs.WEAPONCHEST_T6, LootCategoryDefs.WEAPONCHEST_T7 };
-    private static final String[] REINFORCED = { LootCategoryDefs.REINFORCEDCHEST_T1,
-        LootCategoryDefs.REINFORCEDCHEST_T2, LootCategoryDefs.REINFORCEDCHEST_T3, LootCategoryDefs.REINFORCEDCHEST_T4,
-        LootCategoryDefs.REINFORCEDCHEST_T5, LootCategoryDefs.REINFORCEDCHEST_T6, LootCategoryDefs.REINFORCEDCHEST_T7 };
 
     private ChestTags() {}
 
@@ -55,11 +51,11 @@ public final class ChestTags {
             case "barracks":
                 return LootCategoryDefs.BARRACKS;
             case "reinforced":
-                return REINFORCED[(camp ? campT : t) - 1];
+                return LootCategoryDefs.reinforcedChest(camp ? campT : t);
             case "weapon":
-                return WEAPON[(camp ? campT : t) - 1];
+                return LootCategoryDefs.weaponChest(camp ? campT : t);
             case "vanilla":
-                return WEAPON[camp ? 0 : t - 1];
+                return LootCategoryDefs.supplyChest(camp ? 1 : t);
             default:
                 return null;
         }

@@ -6,8 +6,9 @@ import gregtech.api.recipe.RecipeMapBuilder;
 
 /**
  * The ICBM module's own GT recipe map: a display-only list of what the NASA Workbench's missile pages make, so the
- * hand build shows in NEI beside the Assembly Line (every non-GT process is visible, D44). Its rows are fake recipes;
- * no machine runs them. Its NEI tab is the client's {@code MissileWorkbenchHandler} (the schematic in the shape of the
+ * hand build shows in NEI beside the machine-built body (the Assembler below LuV, the Assembly Line from LuV, D281;
+ * every non-GT process is visible, D44). Its rows are fake recipes; no machine runs them. Its NEI tab is the client's
+ * {@code MissileWorkbenchHandler} (the schematic in the shape of the
  * missile), not GT's grid. Load it from the module's preInit, so NEI badges the tab as GregGuns' (see
  * {@code GregGunsRecipeMaps}). Common side.
  */

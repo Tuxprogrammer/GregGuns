@@ -38,6 +38,10 @@ public final class GunSoundEvents {
 
     /** Action: the first shot after a pause of a continuous-fire gun (the Flamethrower). */
     public static final String START = "start";
+    /** Action: a rotary gun's barrels winding up, {@code guns.<name>.spin_up} (client side, follows the rotor). */
+    public static final String SPIN_UP = "spin_up";
+    /** Action: a rotary gun's barrels winding down, {@code guns.<name>.spin_down}. */
+    public static final String SPIN_DOWN = "spin_down";
     /** Suffix of the sound a charge gun plays when the charge begins: {@code guns.<name>.charge}. */
     public static final String CHARGE = "charge";
 

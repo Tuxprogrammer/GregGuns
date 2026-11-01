@@ -30,14 +30,15 @@ DUMP = K.WORK / "complex.json"
 
 # Cell bytes (Cell.java): 0 rock, 1 wall, 2 air, 3/4 rail, 5 silo concrete, 6 silo glass, 7 gantry beam, 8 pad,
 # 9 controller, 10 to 13 hatches, 14 ladder, 15 radar controller, 16 floor, 17 ceiling, 18 lamp, 19 door frame,
-# 20 window, 21 to 24 furniture (table, console, bunk, shelf), 25 basin.
+# 20 window, 21, 22 and 24 furniture (table, console, shelf; 23 unused), 25 basin, 26 the silo's launch control,
+# 27 a blueprint prop (bed, crate, container, furnace ...).
 CELL = {
     0: (14, 18, 24), 1: (96, 112, 132), 2: (184, 194, 206), 3: (214, 168, 92), 4: (214, 168, 92),
     5: (138, 150, 164), 6: (126, 214, 240), 7: (236, 170, 44), 8: (230, 232, 236), 9: (56, 198, 217),
     10: (255, 138, 31), 11: (255, 138, 31), 12: (255, 138, 31), 13: (255, 138, 31), 14: (150, 110, 60),
     15: (56, 198, 217), 16: (120, 126, 136), 17: (120, 126, 136), 18: (255, 240, 170), 19: (150, 160, 176),
     20: (126, 214, 240), 21: (122, 92, 64), 22: (70, 84, 104), 23: (92, 110, 84), 24: (104, 88, 70),
-    25: (60, 120, 200),
+    25: (60, 120, 200), 26: (56, 198, 217), 27: (150, 116, 84),
 }
 
 # Hall tints: the floor color of the hub's halls, so the network reads at a glance.
@@ -47,11 +48,12 @@ HALLS = {"major": (206, 212, 222), "minor": (160, 168, 180), "gallery": (255, 21
 ROLES = [
     ("Command", (122, 168, 255), ["LAUNCH_CONTROL", "RADAR_TRACKING", "COMMS", "COMMANDER_OFFICE", "SERVER_ROOM"]),
     ("Weapons and stores", (255, 128, 112), ["WARHEAD_MAGAZINE", "ARMORY", "STOCKPILE", "FUEL_DEPOT",
-                                             "MISSILE_ASSEMBLY"]),
+                                             "MISSILE_ASSEMBLY", "COLD_STORAGE"]),
     ("Power and works", (255, 184, 72), ["GENERATOR_HALL", "AIR_HANDLING", "PUMP_ROOM", "WORKSHOP", "VEHICLE_BAY",
-                                         "WATER_TREATMENT"]),
-    ("Crew", (126, 218, 140), ["BUNKS", "MESS_GALLEY", "INFIRMARY", "CAFETERIA"]),
-    ("Guard posts and airlock", (196, 150, 240), ["GUARD_POST", "DECON_AIRLOCK"]),
+                                         "WATER_TREATMENT", "CHEM_LAB", "INCINERATOR"]),
+    ("Crew", (126, 218, 140), ["BUNKS", "MESS_GALLEY", "INFIRMARY", "CAFETERIA", "REC_LOUNGE", "SHOWERS_LAUNDRY",
+                               "UNDERGROUND_FARM", "MUSHROOM_CELLAR"]),
+    ("Security", (196, 150, 240), ["GUARD_POST", "DECON_AIRLOCK", "BRIG", "SHOOTING_RANGE"]),
     ("Assembly bay (hall)", (236, 240, 246), ["ASSEMBLY_BAY"]),
 ]
 ROLE_OF = {k: (name, rgb) for name, rgb, kinds in ROLES for k in kinds}
@@ -65,6 +67,9 @@ NAMES = {
     "MESS_GALLEY": "Mess Galley", "INFIRMARY": "Infirmary", "ARMORY": "Armory", "DECON_AIRLOCK": "Airlock",
     "GUARD_POST": "Guard", "VEHICLE_BAY": "Vehicle Bay", "SERVER_ROOM": "Server Room",
     "MISSILE_ASSEMBLY": "Missile Assembly", "CAFETERIA": "Cafeteria", "WATER_TREATMENT": "Water Treatment",
+    "UNDERGROUND_FARM": "Farm", "MUSHROOM_CELLAR": "Mushroom Cellar", "COLD_STORAGE": "Cold Storage",
+    "SHOOTING_RANGE": "Shooting Range", "BRIG": "Brig", "CHEM_LAB": "Chem Lab", "SHOWERS_LAUNDRY": "Showers",
+    "REC_LOUNGE": "Lounge", "INCINERATOR": "Incinerator",
 }
 
 MARKS = {  # kind -> (css color, shape)
@@ -125,7 +130,7 @@ def _label(name: str, w: float, fs: float) -> list[str]:
 
 
 def overlay(d: dict, p: dict, px: int, labels: bool = True, markers: bool = True, fs: float = 12) -> str:
-    """The SVG that sits on the raster: silo outlines, room names, chest/guard/machine marks, the ladder, the radar."""
+    """The SVG that sits on the raster: silo outlines, room names, chest/guard/machine marks, blast doors, the ladder, the radar."""
     n = d["size"] * px
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{n}" height="{n}" viewBox="0 0 {n} {n}" '
            f'style="position:absolute;left:0;top:0;font-family:\'Segoe UI\',\'Fira Sans\',\'Noto Sans\',sans-serif">']
@@ -144,6 +149,19 @@ def overlay(d: dict, p: dict, px: int, labels: bool = True, markers: bool = True
                 out.append(f'<polygon points="{cx:.1f},{cz - r:.1f} {cx + r:.1f},{cz:.1f} {cx:.1f},{cz + r:.1f} {cx - r:.1f},{cz:.1f}" fill="{color}" stroke="#0e1217" stroke-width="1.2"/>')
             else:
                 out.append(f'<circle cx="{cx:.1f}" cy="{cz:.1f}" r="{r:.1f}" fill="{color}" stroke="#0e1217" stroke-width="1.2"/>')
+    if markers:
+        # Blast doors: a bar across the hall mouth, the hall's interior width, at the mark.
+        for m in p["marks"]:
+            if m["kind"] != "BLAST_DOOR":
+                continue
+            hall = next((h["box"] for h in p["halls"] if h["box"][0] <= m["x"] <= h["box"][2] and h["box"][1] <= m["z"] <= h["box"][3]), None)
+            if hall is None:
+                continue
+            hx0, hz0, hx1, hz1 = hall
+            if hz1 - hz0 > hx1 - hx0:   # the hall runs north-south: the door spans x
+                out.append(f'<rect x="{(hx0 + 1) * px}" y="{m["z"] * px - px * .1:.1f}" width="{(hx1 - hx0 - 2) * px}" height="{px * 1.2:.1f}" fill="#1b2129" stroke="#ffd23f" stroke-width="1.6"/>')
+            else:
+                out.append(f'<rect x="{m["x"] * px - px * .1:.1f}" y="{(hz0 + 1) * px}" width="{px * 1.2:.1f}" height="{(hz1 - hz0 - 2) * px}" fill="#1b2129" stroke="#ffd23f" stroke-width="1.6"/>')
     for s in p["silos"]:
         x0, z0, x1, z1 = s["box"]
         out.append(f'<rect x="{x0 * px - 4}" y="{z0 * px - 4}" width="{(x1 - x0) * px + 8}" height="{(z1 - z0) * px + 8}" fill="none" stroke="#ff8a1f" stroke-width="3"/>')

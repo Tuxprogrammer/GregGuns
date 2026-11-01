@@ -69,7 +69,7 @@ public final class LaunchSequenceMpScenario implements Scenario {
         IcbmConfig.countdownTicks = 200;
         IcbmConfig.doorOpenTicks = 40;
         SiloScenarios.build(ctx, ItemList.Hatch_Energy_LuV);
-        final IGregTechTileEntity cb = SiloScenarios.launchControl(ctx, 5, -2);
+        final IGregTechTileEntity cb = SiloScenarios.ownControl(ctx);
         for (EntityPlayerMP p : players) {
             p.setGameType(WorldSettings.GameType.CREATIVE);
             p.capabilities.allowFlying = true;
@@ -97,7 +97,6 @@ public final class LaunchSequenceMpScenario implements Scenario {
             SiloScenarios.power(ctx);
             m[0] = SiloScenarios.stand(ctx, MissileTier.T1);
             m[0].fill(m[0].capacityMb(), true);
-            cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
             MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
             c.setXText(Integer.toString(ctx.originX()));
             c.setZText(Integer.toString(ctx.originZ() + 300));

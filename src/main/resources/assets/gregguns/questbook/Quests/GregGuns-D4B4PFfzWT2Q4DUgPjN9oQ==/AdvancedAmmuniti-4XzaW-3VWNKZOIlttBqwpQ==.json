@@ -21,10 +21,10 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "EV ammo: advanced magazines and minigun drums.",
+      "desc:8": "EV ammunition is made with titanium. Advanced Bullets (16 titanium foil, 16 titanium rounds and a TNT block make 16) fill Advanced Magazines, while 64 Rifle Bullets fill four Minigun Ammo Drums in one run. Both families have their own empty-magazine recipe in the EV press.\n\nEither an Advanced Magazine or a Minigun Ammo Drum counts. Hold eight magazines or four drums to finish this quest.\n\n[note]Only an EV press runs these recipes. Titanium plates and Mechanical Parts T3 are the gate inputs.[/note]",
       "globalShare:1": 1,
       "icon:10": {
-        "Count:3": 8,
+        "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
         "id:8": "gregguns:mag_advanced"
@@ -33,7 +33,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Advanced Ammunition",
+      "name:8": "§8§lAdvanced Ammunition",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -62,7 +62,58 @@
   },
   "questIDHigh:4": -2198642429696583470,
   "questIDLow:4": -7406018482944692059,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1705,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:mcpamItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_advanced"
+        },
+        "1:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_advanced_bullet"
+        },
+        "2:10": {
+          "Count:3": 6,
+          "Damage:2": 17028,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -71,13 +122,19 @@
       "ignoreNBT:1": 1,
       "index:3": 0,
       "partialMatch:1": 1,
-      "requireOnlyOneItem:1": 0,
+      "requireOnlyOneItem:1": 1,
       "requiredItems:9": {
         "0:10": {
           "Count:3": 8,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:mag_advanced"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_minigun_drum"
         }
       },
       "taskID:8": "bq_standard:retrieval"

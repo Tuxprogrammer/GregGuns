@@ -12,6 +12,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.module.ModuleState;
+import com.gregguns.recipe.recycling.RecyclingDerivation;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
@@ -218,12 +219,12 @@ public final class ComponentRecipes {
                 continue;
             }
             MaterialStack main = stacks.get(0);
-            GTOreDictUnificator.addItemData(
-                stack,
-                new ItemData(
-                    main,
-                    stacks.subList(1, stacks.size())
-                        .toArray(new MaterialStack[0])));
+            ItemData data = new ItemData(
+                main,
+                stacks.subList(1, stacks.size())
+                    .toArray(new MaterialStack[0]));
+            // GGS-06-23: the nuclear components lead with a Uranium-235 marker so GT irradiates the holder.
+            GTOreDictUnificator.addItemData(stack, RecyclingDerivation.withRadiationMarker(row.output(), data));
         }
     }
 }

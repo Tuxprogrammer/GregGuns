@@ -42,10 +42,11 @@ public final class BetterQuestingInstall {
             }
             QuestbookInstaller.Plan plan = QuestbookInstaller.install(bundle, new BetterQuestingTarget());
             GregGuns.LOG.info(
-                "Installed/updated GregGuns quest line: {} quests ({} added, {} updated)",
+                "Installed/updated GregGuns quest line: {} quests ({} added, {} updated, {} retired)",
                 plan.questCount(),
                 plan.addedQuests.size(),
-                plan.replacedQuests.size());
+                plan.replacedQuests.size(),
+                plan.retiredQuests.size());
         } catch (QuestbookException e) {
             GregGuns.LOG.error("Could not install the GregGuns quest line; the quest database is unchanged", e);
         } catch (RuntimeException | LinkageError e) {

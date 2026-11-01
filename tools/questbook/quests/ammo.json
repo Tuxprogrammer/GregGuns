@@ -1,0 +1,1179 @@
+{
+  "chapter": "ammo",
+  "quests": [
+    {
+      "key": "gg.ammo.intro",
+      "title": "Ammo Logistics",
+      "tier": "LV",
+      "desc": [
+        "A gun is only as good as its supply line. In GregGuns, ammunition is not crafted: it is produced, from GregTech parts, in a machine of its own. This chapter teaches that production line from the first brass foil to a multi-bay Ammunition Works, and it is why a big arsenal is a base project rather than a pocketful of lucky drops.",
+        "The plan: make the parts (foil cases and lead or steel slugs), press the three LV calibers in the Ammo Press, turn rounds into magazines, automate the line with item pipes, and stockpile. Later quests cover grenades, heavy rounds, charging electric gear, fuel tanks, and the Works that runs the whole thing in bulk.",
+        "To open the chapter, hold any LV round: sixteen 9mm or rifle bullets, or eight shotgun shells. If you finished the LV Ammo Press and 9mm quests, you already have them.",
+        "[note]Ammo Press recipes have their own tab in NEI. Press U on a round to see where it is used.[/note]"
+      ],
+      "pre": [
+        "gg.lv.ammo_9mm",
+        88
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 16,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:toastItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 24,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 742,
+      "y": 330,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:ammo_9mm_bullet",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.lv.ammo_9mm"
+      ]
+    },
+    {
+      "key": "gg.ammo.casings",
+      "title": "Cases and Slugs",
+      "tier": "LV",
+      "desc": [
+        "Every loose round in the LV press is two small GregTech parts plus gunpowder. The case is a foil: a thin brass sheet made in the Bending Machine. The slug is a round: a small metal ball made in a Lathe from a nugget, or by hand with a file. Lead rounds go into pistol bullets and shotgun pellets; steel rounds go into rifle bullets.",
+        "Hold sixteen brass foils, sixteen lead rounds and sixteen steel rounds to finish. Each recipe takes sixteen of a part, so that is one run's worth of each. Brass is a copper and zinc alloy; check NEI for how to make it.",
+        "[note]Make plenty. A single 9mm batch eats sixteen of each part.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 29301
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 25089
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 25305
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:toastItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 29301
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 25089
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 25305
+            }
+          ]
+        }
+      ],
+      "x": 814,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregtech:gt.metaitem.01",
+        "count": 1,
+        "damage": 29301
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.press",
+      "title": "Run the Press",
+      "tier": "LV",
+      "desc": [
+        "The LV Ammo Press makes three loose calibers, each from its own recipe: 9mm bullets (16 brass foil, 16 lead rounds and 2 gunpowder make 16), Shotgun Shells (8 brass foil, 24 lead rounds and 4 gunpowder make 8) and Rifle Bullets (16 brass foil, 16 steel rounds and 4 gunpowder make 16). The press picks the recipe from what you load, so no circuit is needed.",
+        "Run one batch of each and hold all three. Ammo is slow by design, so scale up with more presses, higher tiers, or the Works later. 9mm feeds the pistol, revolver and SMGs, shells feed the shotguns, and rifle bullets feed the bolt rifle and the assault rifle and LMG magazines.",
+        "[note]Every recipe shows in the press's NEI tab with its exact inputs.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.casings"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 40,
+              "damage": 29301
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 40,
+              "damage": 25089
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 25305
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 10,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hamburgerItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 64,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 850,
+      "y": 348,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20101
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.magazines",
+      "title": "Magazines in the Press",
+      "tier": "LV",
+      "desc": [
+        "Magazines are two press runs. The first makes eight empties from two steel plates, eight small steel springs and Mechanical Parts T2. The second fills them: four empties and twelve 9mm bullets make four loaded pistol magazines. One machine covers the whole chain.",
+        "Hold four empty and four loaded magazines to finish. For a quick single refill you can also craft an empty magazine with three bullets at a crafting table.",
+        "[note]Sneak and right-click a loaded magazine to unload it, and the press can start over.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.press"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17305
+            },
+            {
+              "id": "gregtech:gt.metaitem.02",
+              "count": 8,
+              "damage": 23305
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol_empty",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:hotdogItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 886,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:mag_9mm_pistol",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.pipes",
+      "title": "Pipe It",
+      "tier": "LV",
+      "desc": [
+        "A press you feed by hand is a hobby. A press fed by item pipes is a factory. Run a pipe from a chest of parts to the press and another from its output to a second chest, with conveyor covers on the pipe ends to do the pulling. The press has room for six inputs and three outputs.",
+        "Let the line run until it has made sixteen loaded pistol magazines. That is four filling runs, and it is the sort of job you do not want to babysit. The pack's Basic Transport: Items quest covers the pipe basics.",
+        "[note]Pull rounds and empties from separate chests so a full output cannot starve the inputs.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.magazines",
+        114
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol_empty",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 48,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:beefjerkyItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305
+            }
+          ]
+        }
+      ],
+      "x": 922,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:mag_9mm_pistol",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.depot",
+      "title": "Ammo Depot",
+      "tier": "LV",
+      "desc": [
+        "A stockpile is the sign of a working line. Fill a chest with two hundred and fifty-six 9mm bullets and sixty-four shotgun shells, so a fight never ends with an empty gun.",
+        "Keep the stock in chests next to the press or in the Ammo Pouch from the Gear chapter. Guns look for ammo in the pouch first, then in your main inventory.",
+        "[note]Sneak and right-click a loaded magazine to turn it back into loose stock.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.pipes"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 256,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 64,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "lv",
+              "count": 1
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "harvestcraft:trailmixItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17305
+            }
+          ]
+        }
+      ],
+      "x": 958,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:ammo_9mm_bullet",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.explosives",
+      "title": "Explosives Handling",
+      "tier": "MV",
+      "desc": [
+        "Grenade Launcher ammo is made in an MV Ammo Press: two aluminum plates, two TNT blocks and a gunpowder make eight 40mm grenades. Hold eight to finish this quest.",
+        "Explosives want a separate room. Keep the TNT and gunpowder in a chest well away from the press, away from the furnace, and away from any creeper that could drift in.",
+        "[warn]A chain explosion will empty your entire stockpile. Do not leave TNT lying next to the press.[/warn]"
+      ],
+      "pre": [
+        "gg.ammo.depot",
+        762,
+        1598
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17019
+            },
+            {
+              "id": "minecraft:tnt",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_40mm_grenade",
+              "count": 8,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "mv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:cornbreadItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 5,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_40mm_grenade",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:frag_grenade",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17019
+            }
+          ]
+        }
+      ],
+      "x": 994,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:ammo_40mm_grenade",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.heavy",
+      "title": "Heavy Rounds",
+      "tier": "HV",
+      "desc": [
+        "HV ammunition is a different class. High Caliber Rounds feed the AS50 anti-materiel rifle: eight brass casings, sixteen stainless steel rounds and four gunpowder make eight, in an HV Ammo Press. Rockets feed the Rocket Launcher: four stainless plates, two TNT, four gunpowder and an HV circuit make four.",
+        "Either one completes this quest. Rounds this big are slow and expensive, so build up a stock before the fight, and check NEI for the exact inputs.",
+        "[note]An HV press also runs every LV and MV recipe, faster.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.explosives",
+        160
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_high_caliber_round",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 4,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_high_caliber_round",
+              "count": 16,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17306
+            }
+          ]
+        }
+      ],
+      "x": 1030,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:ammo_rocket",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.charging",
+      "title": "Charging at the Right Tier",
+      "tier": "HV",
+      "desc": [
+        "A GregGuns electric item has one tier, and only a GregTech charger or battery buffer of exactly that tier will charge it. A higher-tier charger does not work, which is how GregTech treats its own tools. The Night Vision Goggles are MV, and the Tactical Mask is HV.",
+        "Hold either one to finish this quest, then match your charger to it. The pack's Battery Buffer and charger quests show how to build them.",
+        "[note]The tooltip shows the charge but not the tier, so remember: goggles MV, mask HV. If it will not charge, you probably have the wrong tier of buffer.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.intro",
+        619,
+        1082,
+        1142
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:night_vision_goggles",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:tactical_mask",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17306
+            },
+            {
+              "id": "gregguns:part_mechanical_2",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 814,
+      "y": 384,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:night_vision_goggles",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.fuel",
+      "title": "Fuel Tanks",
+      "tier": "HV",
+      "desc": [
+        "Fuel Tanks hold GregTech fuel for the Flamethrower and the Chainsaw. A GregTech Fluid Canner fills an empty tank with a thousand millibuckets of an accepted liquid fuel; Diesel from the oil line works. A full tank is worth a hundred rounds for the Flamethrower and three hundred for the Chainsaw.",
+        "Fill two Fuel Tanks to the brim and hold them to finish this quest; an empty or part-filled tank does not count. A gun only loads a completely full tank and hands the empty one back, so keep spares in rotation.",
+        "[note]The tank itself is an HV Assembler recipe from stainless steel.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.explosives",
+        553,
+        160
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:tank_fuel",
+              "count": 2,
+              "damage": 0,
+              "tag": {
+                "Fluid": {
+                  "Amount": 1000
+                }
+              }
+            }
+          ],
+          "matchNBT": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:sundayroastItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:tank_fuel",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17306
+            },
+            {
+              "id": "gregguns:ammo_rocket",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 994,
+      "y": 384,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:tank_fuel",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.advanced",
+      "title": "Advanced Ammunition",
+      "tier": "EV",
+      "desc": [
+        "EV ammunition is made with titanium. Advanced Bullets (16 titanium foil, 16 titanium rounds and a TNT block make 16) fill Advanced Magazines, while 64 Rifle Bullets fill four Minigun Ammo Drums in one run. Both families have their own empty-magazine recipe in the EV press.",
+        "Either an Advanced Magazine or a Minigun Ammo Drum counts. Hold eight magazines or four drums to finish this quest.",
+        "[note]Only an EV press runs these recipes. Titanium plates and Mechanical Parts T3 are the gate inputs.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.fuel",
+        176
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_advanced",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_minigun_drum",
+              "count": 4,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_advanced",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_advanced_bullet",
+              "count": 48,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17028
+            }
+          ]
+        }
+      ],
+      "x": 1030,
+      "y": 384,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:mag_advanced",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.works",
+      "title": "Ammunition Works",
+      "tier": "HV",
+      "desc": [
+        "The Ammunition Works is a multiblock press hall with high parallels: four per press bay per voltage tier, so a long hall at HV runs dozens of presses' worth of work at once. Build it when one press cannot keep up. It is a 5-wide, 7-tall strip that grows three blocks per bay (two to eight bays).",
+        "The controller is an HV hand recipe with a Works Casing in each corner. The casings are stainless steel from an Assembler, each bay holds three Ram Housings, and an item pipe casing floor sets the belt tier. Each bay needs an interior lamp or the hall will not form. Use the structure hologram for the layout.",
+        "[note]Parts go in at the feeder end and finished ammunition comes out of the packing end.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.heavy",
+        160
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:casings",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:casings",
+              "count": 6,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.blockmachines",
+              "count": 1,
+              "damage": 20105
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:ploughmanslunchItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_lmg",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 17306
+            },
+            {
+              "id": "gregguns:ammo_high_caliber_round",
+              "count": 16,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1066,
+      "y": 348,
+      "size": 24,
+      "main": true,
+      "icon": {
+        "id": "gregtech:gt.blockmachines",
+        "count": 1,
+        "damage": 20105
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ammo.filling_bench",
+      "title": "Filling Bench (optional)",
+      "tier": "HV",
+      "desc": [
+        "An optional annex behind the packing end of the Works, built around six workbench tables. The bench takes finished rounds from the packing end and empty magazines from its own input bus, and puts loaded magazines in its own output bus, so the hall delivers finished magazines instead of loose rounds.",
+        "Hold eight AS50 or LMG magazines made by the Works to finish. The structure hologram shows the bench when you set its height channel to 1, and the Works scanner reports whether the bench is active.",
+        "[note]The bench uses the same loaded-magazine recipes as the single presses.[/note]"
+      ],
+      "pre": [
+        "gg.ammo.works"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_as50",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_lmg",
+              "count": 8,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "hv",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:baconcheeseburgerItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_as50",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_lmg",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 6,
+              "damage": 17306
+            }
+          ]
+        }
+      ],
+      "x": 1102,
+      "y": 348,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:mag_as50",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    }
+  ]
+}

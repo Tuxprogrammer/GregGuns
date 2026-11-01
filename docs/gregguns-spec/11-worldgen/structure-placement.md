@@ -22,6 +22,7 @@
 | Grid points at chunk multiples of 16/32/64, so a BIG structure sits at chunk (0,0), the world spawn | Each grid cell holds one attempt at a seeded offset inside the cell | Roguelike-Dungeons does the same; no structure on the spawn point |
 | Hard-coded dimension 0 check; the dimension list is never consulted (WGEN-28) | One allow-list of dimension IDs from config, default `[0]` | Excludes every pack dimension without naming it |
 | Terrain checked on an unrotated box (WGEN-05, 06, 07, 08) | Terrain checked on the rotated footprint, with a water-depth test for ships | Fixes the listed bugs |
+| The Submarine lies on the sea floor ([A8](../../techguns-spec/11-worldgen/structure-catalog.md#a8-submarine-submarine)) | **Deviation (D291):** the Submarine floats. Like the Aircraft Carrier it is anchored at the lowest water surface of its footprint, so its hull's bottom row replaces the top water block and the conning tower stands above the sea | Owner decision: a player finds it from a boat or the shore without hunting the sea floor ([DECISIONS D291](../../gregguns-icbm-spec/DECISIONS.md)) |
 | `SpawnStructures` plus three spacing keys | Keep the keys. Add one `enabled` flag per structure (0005: "each config-gated") | Admin control |
 | Village bunker (dormant) | Not built (0005) | No integration point; see the index |
 
@@ -80,11 +81,11 @@
 - **Biomes:** placement uses per-structure *blacklists* of biome types (GGS-11-05), so the vanilla biomes of Ross128b and the moon's one biome pass every land structure without a list change. The Alien Bug Nest whitelist (sandy or wasteland) already matches Ross128b's deserts and badlands; Galacticraft does not register types for the moon biome, so the nest does not generate on Ross128ba unless an admin adds a type for it. Ross128b's mushroom and Thaumcraft biomes are re-skinned only in its chunk data, so the biome manager still reports them; mushroom islands are ocean-adjacent and rejected for land by the terrain check as they are in the Overworld.
 - **Pack-side change:** none. (Setting Galacticraft's `enableOtherModsFeatures` would also work but lets every mod's generator run on every planet; the hook avoids that.)
 
-### Roguelike-Dungeons and vanilla villages: no coordination possible
+### Roguelike-Dungeons and vanilla villages
 
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/roguelike_dungeons/roguelike.cfg`: `dimensionWL` = `0`, `spawnFrequency` = `16`, `doNaturalSpawn` = `true`. `reference/gtnh/2.9.0-RC-2/.minecraft/config/VillageNames4/general.cfg` only names and signs vanilla villages.
-- **Source:** [`Dungeon#canSpawnInChunk`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/dungeon/Dungeon.java#L112-L143): with frequency 16 the cell is 51 chunks wide (`max = 32*16/10`), with one dungeon per cell at a seeded offset. [`validLocation`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/dungeon/Dungeon.java#L165-L211) checks biome type and ground only, never other structures. RWG's [`func_147416_a`](https://github.com/GTNewHorizons/Realistic-World-Gen/blob/alpha-1.5.2/src/main/java/rwg/world/ChunkGeneratorRealistic.java#L775-L779) answers only for strongholds, so GregGuns cannot ask the chunk provider "is there a village here".
-- **GregGuns does:** nothing about dungeons (underground with a small entrance; overlap is rare and harmless). For vanilla villages it skips a footprint that already contains village-style blocks (planks, cobblestone, glass panes, doors) that GregGuns did not place.
+- **Source:** [`Dungeon#canSpawnInChunk`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/dungeon/Dungeon.java#L112-L143): with frequency 16 the cell is 51 chunks wide (`max = 32*16/10`), with one dungeon per cell at a seeded offset. [`validLocation`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/dungeon/Dungeon.java#L165-L211) checks biome type and ground only, never other structures. RWG's [`func_147416_a`](https://github.com/GTNewHorizons/Realistic-World-Gen/blob/alpha-1.5.2/src/main/java/rwg/world/ChunkGeneratorRealistic.java#L775-L779) answers only for strongholds, but a village start is still a pure function of the seed and the biome or noise source (`MapGenVillage#canSpawnStructureAtCoords` and its `Start`), so it can be computed without asking the provider.
+- **GregGuns does:** for ordinary structures, skips a footprint that already contains village-style blocks (planks, cobblestone, glass panes, doors) that GregGuns did not place (GGS-11-14). The ICBM silo complex reads village and temple starts from their start rule instead and sinks under one (D302), and keeps Roguelike Dungeons out of its box (D303); see [planets-and-placement](../../gregguns-icbm-spec/08-worldgen/planets-and-placement.md#structure-starts-d302).
 - **Pack-side change:** none.
 
 ## Requirements
@@ -98,13 +99,13 @@
 - **GGS-11-13** The terrain check runs on the rotated footprint. A ship needs water at its sampled columns, at least as deep as its hull.
 - **GGS-11-14** A footprint that contains village-style blocks not placed by GregGuns is skipped.
 - **GGS-11-12a** On Ross128b and Ross128ba the dimension gate is the BartWorks IDs plus `structureRoss128`; no code compares them with a literal.
-- **GGS-11-15** Each structure has its own `enabled` flag, default `true`, except the Alien Bug Nest, which defaults to `false` (0005: gated content).
+- **GGS-11-15** Each structure has its own `enabled` flag, default `true`, the Alien Bug Nest included.
 
 ### Generator wiring (M8 G9)
 
 - **Code:** `StructureGenerator` (the `IWorldGenerator`), `StructurePopulator` (the pure pipeline), `StructureCatalog` (size classes, pools), `StructureHooks` (spawner and flag no-ops for G11 and G10). Registered in `WorldgenModule.postInit` after the layouts load, only when `generatorWanted()`.
 - **Order per populate:** gate on dimension and world type, `plansForWindow`, `StructureState.decideOnce` (biome, then land or water check on the rotated footprint from this window's columns, then the village scan), flatten to the recorded Y, stamp at anchor Y = recorded Y + 1 (the layout's `ground` layer sits on top of the ground), then marks. All inside a `PopulateGuard` scope and a `ClippingSink`.
-- **Mark tags:** `chest.vanilla` (the layout places a vanilla chest; the generator fills it now), `chest.weapon` and `chest.reinforced` (the layout places the GregGuns chest block; the generator attaches a `LootPending`, filled on first access), `spawner*` and `flag` (hooks). Chest category is `weaponchest_t<ceiling>` or `reinforcedchest_t<ceiling>` (Q11), seeded by `StructurePlan.chestSeed(index)` where the index is the chest's place among the layout's chest marks.
+- **Mark tags:** `chest.vanilla` (the layout places a vanilla chest; the generator fills it now), `chest.weapon` and `chest.reinforced` (the layout places the GregGuns chest block; the generator attaches a `LootPending`, filled on first access), `spawner*` and `flag` (hooks). Chest category is `weaponchest_t<ceiling>`, `reinforcedchest_t<ceiling>` or, for `chest.vanilla`, `supplychest_t<ceiling>` (Q11; [ChestTags](structure-loot.md#integration-points)), seeded by `StructurePlan.chestSeed(index)` where the index is the chest's place among the layout's chest marks.
 - **Deviation:** a window that sees only a sliver of a multi-window footprint decides from that sliver (after the coarse sample grid finds nothing it samples every column it has), so a slope visible only to other windows is not seen (PLAN-M8 Q3, accepted). Pool weights are equal per structure.
 
 ### Spawner marks
@@ -137,4 +138,4 @@
 
 - **Answered by the G9 headless run (PLAN-M8 Q4):** GT's ore pass runs after ours and DOES replace a structure's `minecraft:stone` (a stamped slab came back as a GT ore block with huge metadata). Structure layouts must not use raw stone; use bricks, Chisel or concrete palette keys. Original question: does GT's ore pass replace only natural stone, or also a structure's stone-type blocks? If it replaces them, structure walls must use blocks GT ignores.
 - A multi-chunk structure needs one ground height. The default above is the owner-column height. The alternative is one Y per structure derived from the seed, which fails on RWG's hills. Needs a design record before M8 starts if the default proves too bumpy.
-- Villages cannot be detected through the chunk provider (RWG answers only for strongholds). Is the block-scan skip (GGS-11-14) enough, or do we drop the check?
+- Villages cannot be detected through the chunk provider (RWG answers only for strongholds). Is the block-scan skip (GGS-11-14) enough, or do we drop the check? *Answered for the silo complex by D302: the start rule gives every village start, built or not; ordinary structures keep the block scan.*

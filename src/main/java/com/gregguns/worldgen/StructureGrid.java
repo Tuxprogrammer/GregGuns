@@ -64,6 +64,16 @@ public final class StructureGrid {
         }
     }
 
+    /** @return blocks on one side of a cell of the class */
+    public int cellBlocks(SizeClass sizeClass) {
+        return cellBlocks.get(sizeClass);
+    }
+
+    /** @return whether the class has any entry to draw, so its cells can hold a plan */
+    public boolean hasPool(SizeClass sizeClass) {
+        return totalWeight.get(sizeClass) > 0;
+    }
+
     private static int spacingBlocks(int chunks) {
         if (chunks < 1) throw new IllegalArgumentException("spacing must be at least 1 chunk: " + chunks);
         return chunks * 16;

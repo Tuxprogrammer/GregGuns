@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 2440541608117360002,
-      "questIDLow:4": -8271371114421986887
+      "questIDHigh:4": -8809701622927961595,
+      "questIDLow:4": -7060213232097561593
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Light armor. Each piece adds to your armor value; read the tooltips.",
+      "desc:8": "The Bandit set is the lightest armor in the tab: plain leather with a little Tanned Leather, held together with a few bronze plates. Each piece adds to your armor value, and none of them needs a machine. The Bandit Vest is the quest item: two Tanned Leather, six leather and a bronze plate in a crafting grid. Check NEI for the pattern of each piece: mask, vest, pants and boots.\n\nTier 1 armor will not stop much damage, but it costs little and keeps you in the fight until you can afford steel. Each piece comes in several camo patterns, and the Camo Bench cycles them later.\n\n[note]Build a full set if you can: the armor values add up.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "T1 Scout Armor",
+      "name:8": "§c§lT1 Scout Armor",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,16 +58,97 @@
   },
   "questIDHigh:4": 1013776215800043663,
   "questIDLow:4": -7755872620052902935,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:cornbreadItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "Backpack:tannedLeather"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:leather"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
-      "allowAnvil:1": 0,
-      "allowCraft:1": 1,
-      "allowCraftedFromStatistics:1": 0,
-      "allowSmelt:1": 1,
-      "ignoreNBT:1": 0,
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
       "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "Backpack:tannedLeather"
+        },
+        "1:10": {
+          "Count:3": 6,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:leather"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 17300,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
           "Count:3": 1,
@@ -76,7 +157,7 @@
           "id:8": "gregguns:t1_scout_chestplate"
         }
       },
-      "taskID:8": "bq_standard:crafting"
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

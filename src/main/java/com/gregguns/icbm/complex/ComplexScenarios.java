@@ -48,6 +48,9 @@ public final class ComplexScenarios {
         registry.register(new Places());
         registry.register(new Skips());
         ComplexDimScenarios.registerAll(registry);
+        ComplexStartScenarios.registerAll(registry);
+        ComplexShellScenarios.registerAll(registry);
+        com.gregguns.icbm.complex.gen.LocateScenarios.registerAll(registry);
     }
 
     private static StructurePlan plan(World world) {
@@ -87,6 +90,82 @@ public final class ComplexScenarios {
             }
         }
         return h;
+    }
+
+    /**
+     * The owner's layout (D299): a 3x3 clear glass window around the controller and a hatch column on each side of it,
+     * two out from the controller: the Input Bus over the Energy Hatch on the viewer's right with the silo's own Launch
+     * Control on top, the Input Hatch over the Maintenance Hatch on the left with concrete on top, and a concrete band
+     * over the five-wide face. The left and right of the viewer in front of the controller are computed from the facing
+     * here, not from the shape's columns.
+     */
+    private static void siloHatchLayout(World world, SiloSlot s, int ax, int az, int floor,
+        ScenarioResult.Builder out) {
+        // A viewer in front of the controller faces opposite to it: facing 0 (north) looks south, so their right is
+        // west; 1 (east) looks west, right is north; 2 looks north, right is east; 3 looks east, right is south.
+        int rx = new int[] { -1, 0, 1, 0 }[s.facing()];
+        int rz = new int[] { 0, -1, 0, 1 }[s.facing()];
+        int cx = ax + s.controllerX(), cz = az + s.controllerZ();
+        int y = floor + 2;
+        boolean energyThere = s.missing() != MissingPart.ENERGY_HATCH;
+        Block conc = gregtech.api.GregTechAPI.sBlockConcretes;
+        out.check(hatchIs(world, cx + 2 * rx, y, cz + 2 * rz, 'B'), "Input Bus in the right hatch column");
+        out.check(
+            energyThere ? hatchIs(world, cx + 2 * rx, y - 1, cz + 2 * rz, 'E')
+                : world.getBlock(cx + 2 * rx, y - 1, cz + 2 * rz) == conc,
+            "Energy Hatch under the Input Bus, or concrete where it is the missing part (" + s.missing() + ")");
+        out.check(hatchIs(world, cx - 2 * rx, y, cz - 2 * rz, 'H'), "Input Hatch in the left hatch column");
+        out.check(hatchIs(world, cx - 2 * rx, y - 1, cz - 2 * rz, 'M'), "Maintenance Hatch under the Input Hatch");
+        TileEntity mt = world.getTileEntity(cx - 2 * rx, y - 1, cz - 2 * rz);
+        out.check(
+            mt instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) mt).isActive(),
+            "the Maintenance Hatch is switched on as a placed one is (no duct-tape cross on its face)");
+        out.check(hatchIs(world, cx + 2 * rx, y + 1, cz + 2 * rz, 'L'), "the Launch Control tops the right column");
+        out.check(world.getBlock(cx - 2 * rx, y + 1, cz - 2 * rz) == conc, "concrete tops the left column");
+        for (int a = -1; a <= 1; a++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (a == 0 && dy == 0) continue;
+                int gx = cx + a * rx, gz = cz + a * rz, gy = y + dy;
+                out.check(
+                    com.gregguns.icbm.silo.SiloGlass
+                        .accepts(world.getBlock(gx, gy, gz), world.getBlockMetadata(gx, gy, gz)),
+                    "clear glass at window cell (" + a + ", " + dy + ") of a silo facing " + s.facing());
+            }
+        }
+        // The walkway in front of the face is open across all five columns, from the floor to the band over the
+        // window, and the band itself is the silo's concrete.
+        int fx = s.frontX() - s.controllerX(), fz = s.frontZ() - s.controllerZ();
+        for (int a = -2; a <= 2; a++) {
+            out.check(
+                world.getBlock(cx + a * rx, y + 2, cz + a * rz) == conc,
+                "concrete over the window at column " + a + " of a silo facing " + s.facing());
+            for (int dy = -1; dy <= 2; dy++) {
+                int wx = cx + a * rx + fx, wz = cz + a * rz + fz;
+                boolean sign = a == 0 && dy == 2;
+                out.check(
+                    sign || world.isAirBlock(wx, y + dy, wz),
+                    "the walkway is open at column " + a + ", height " + (dy + 2) + " of a silo facing " + s.facing());
+            }
+        }
+    }
+
+    private static boolean hatchIs(World world, int x, int y, int z, char kind) {
+        TileEntity t = world.getTileEntity(x, y, z);
+        if (!(t instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity)) return false;
+        Object m = ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) t).getMetaTileEntity();
+        switch (kind) {
+            case 'E':
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchEnergy;
+            case 'B':
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchInputBus;
+            case 'H':
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchInput;
+            case 'L':
+                return m instanceof com.gregguns.icbm.control.MTELaunchControl;
+            default:
+                return m instanceof gregtech.api.metatileentity.implementations.MTEHatchMaintenance;
+        }
     }
 
     /** Our facing index (0 north, 1 east, 2 south, 3 west) as a ForgeDirection ordinal. */
@@ -239,11 +318,26 @@ public final class ComplexScenarios {
                 out.check(
                     world.isAirBlock(plan.anchorX() + s.frontX(), floor + 2, plan.anchorZ() + s.frontZ()),
                     "the walkway in front of the controller is open");
+                // "Silo N" hangs on the concrete over the window, in the controller's column, facing the hall (D299).
+                int[] sg = com.gregguns.icbm.complex.gen.ComplexSigns.siloSignAt(s);
+                int number = com.gregguns.icbm.complex.gen.ComplexSigns.siloOrder(cp)
+                    .indexOf(s) + 1;
+                TileEntity st = world.getTileEntity(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2]);
+                out.check(
+                    world.getBlock(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2]) == Blocks.wall_sign
+                        && world.getBlockMetadata(plan.anchorX() + sg[0], floor + sg[1], plan.anchorZ() + sg[2])
+                            == sg[3],
+                    "silo " + number + " has its wall sign over the window, facing the hall");
+                out.check(
+                    st instanceof net.minecraft.tileentity.TileEntitySign
+                        && ("Silo " + number).equals(((net.minecraft.tileentity.TileEntitySign) st).signText[1]),
+                    "the sign reads Silo " + number);
                 TileEntity t = world.getTileEntity(cx, floor + 2, cz);
                 boolean hasController = t instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity;
                 out.check(
                     hasController == (s.missing() != MissingPart.CONTROLLER),
                     "controller present exactly when it is not the missing part (" + s.missing() + ")");
+                siloHatchLayout(world, s, plan.anchorX(), plan.anchorZ(), floor, out);
                 boolean complete = com.gregguns.machine.DevStructureBuilder.check(world, cx, floor + 2, cz);
                 out.check(!complete, "a silo missing a part must not be formed");
                 // Add the part the way a player would, with the item the chests hold: the silo then forms.
@@ -254,12 +348,13 @@ public final class ComplexScenarios {
                     null);
                 out.check(part != null, "the chest item for " + s.missing() + " resolves");
                 if (part != null) {
+                    int[] energy = s.hatchCell(Cell.HATCH_ENERGY);
                     GtMachineHook.placeMte(
                         world,
                         part.getItemDamage(),
-                        cx,
-                        floor + (noController ? 2 : 1),
-                        cz,
+                        noController ? cx : plan.anchorX() + energy[0],
+                        floor + (noController ? 2 : energy[1]),
+                        noController ? cz : plan.anchorZ() + energy[2],
                         net.minecraftforge.common.util.ForgeDirection.values()[FACING_TO_FORGE[s.facing()]]);
                     // A formed silo registers with GT's power-failure tracker, which needs an owner.
                     TileEntity ctl = world.getTileEntity(cx, floor + 2, cz);
@@ -271,6 +366,15 @@ public final class ComplexScenarios {
                     out.check(
                         com.gregguns.machine.DevStructureBuilder.check(world, cx, floor + 2, cz),
                         "a silo forms once its missing " + s.missing() + " is added");
+                    // Its own Launch Control, on top of the right hatch column, is part of it (D288, D299).
+                    TileEntity formed = world.getTileEntity(cx, floor + 2, cz);
+                    out.check(
+                        formed instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity
+                            && ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) formed)
+                                .getMetaTileEntity() instanceof com.gregguns.icbm.silo.MTEMissileSilo
+                            && ((com.gregguns.icbm.silo.MTEMissileSilo) ((gregtech.api.interfaces.tileentity.IGregTechTileEntity) formed)
+                                .getMetaTileEntity()).launchControl() != null,
+                        "a formed generated silo has its own Launch Control");
                 }
             }
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
@@ -291,7 +395,9 @@ public final class ComplexScenarios {
         public String description() {
             return "A complex over water, over ground too low, over a steep ridge, or in a biome off the Overworld"
                 + " whitelist is rejected once with a reason, writes nothing, and leaves the terrain as it was;"
-                + " flat dry ground in the same place is placed (skip-and-log, D128).";
+                + " flat dry ground in the same place is placed (skip-and-log, D128). Under a village start the"
+                + " complex sinks 10 to 20 blocks, the same from opposite corner windows, and is skipped for the"
+                + " village only where it cannot sink (D302).";
         }
 
         @Override
@@ -299,21 +405,35 @@ public final class ComplexScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World world = ctx.world();
             StructurePlan plan = plan(world);
-            String[] names = { "water", "low", "steep", "biome", "flat" };
+            String[] names = { "water", "low", "steep", "biome", "flat", "village", "village_reverse", "village_deep" };
+            // A village start over the whole box (D302); the real start rule has its own scenario.
+            com.gregguns.worldgen.StructureStarts village = (x0, z0, x1,
+                z1) -> new com.gregguns.worldgen.StructureStarts.Blocker("village", "scenario start");
+            int villageSink = -1;
             try {
                 load(world, plan);
                 for (String c : names) {
                     if (c.equals("biome") && world.provider.dimensionId != 0) continue; // the whitelist is Overworld
                                                                                         // only
+                    boolean underVillage = c.startsWith("village");
                     java.util.function.IntBinaryOperator ground = (x, z) -> c.equals("low") ? 20
-                        : c.equals("steep") && ((x >> 3) + (z >> 3) & 1) == 0 ? GROUND + 24 : GROUND; // the check sees
-                                                                                                      // only the first
-                                                                                                      // window's slice,
-                                                                                                      // so the relief
-                                                                                                      // repeats within
-                                                                                                      // every window
-                    slab(world, plan, true);
-                    slab(world, plan, false, ground, c.equals("water") ? 4 : 0);
+                        : c.equals("village_deep") ? 34
+                            : c.equals("steep") && ((x >> 3) + (z >> 3) & 1) == 0 ? GROUND + 24 : GROUND; // the check
+                                                                                                          // sees
+                                                                                                          // only the
+                                                                                                          // first
+                                                                                                          // window's
+                                                                                                          // slice,
+                                                                                                          // so the
+                                                                                                          // relief
+                                                                                                          // repeats
+                                                                                                          // within
+                                                                                                          // every
+                                                                                                          // window
+                    // A sunk complex lies up to 20 blocks under the usual floor: the slab reaches that far down.
+                    int base = underVillage ? GROUND - ComplexPlacer.SINK_MAX : GROUND;
+                    ComplexArena.slab(world, plan, true, (x, z) -> GROUND, 0, base);
+                    ComplexArena.slab(world, plan, false, ground, c.equals("water") ? 4 : 0, base);
                     long before = snapshot(world, plan);
                     java.util.List<String> reasons = new java.util.ArrayList<String>();
                     final boolean ocean = c.equals("biome");
@@ -340,7 +460,8 @@ public final class ComplexScenarios {
                     StructureState state = new StructureState("gregguns_complex_skip_" + c);
                     StructurePopulator populator = com.gregguns.worldgen.PlacementHarnessAccess.populator();
                     int rejected = 0;
-                    for (int[] w : com.gregguns.worldgen.PlacementHarnessAccess.windowsOf(plan, false)) {
+                    for (int[] w : com.gregguns.worldgen.PlacementHarnessAccess
+                        .windowsOf(plan, c.equals("village_reverse"))) {
                         PopulateWindow window = new PopulateWindow(w[0], w[1]);
                         ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
                         try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
@@ -352,7 +473,8 @@ public final class ComplexScenarios {
                                 new WorldColumnReader(world),
                                 (x, z) -> Collections
                                     .singleton(ocean && world.provider.dimensionId == 0 ? Type.OCEAN : Type.PLAINS),
-                                state);
+                                state,
+                                underVillage ? village : com.gregguns.worldgen.StructureStarts.NONE);
                         }
                         rejected += sink.rejectedWrites();
                     }
@@ -362,6 +484,24 @@ public final class ComplexScenarios {
                     if (c.equals("flat")) {
                         out.check(d.isPlaced(), "flat dry ground is placed: " + d);
                         out.checkEquals("flat: no skip logged", 0, reasons.size());
+                        out.checkEquals("flat: not sunk", 0, d.sink());
+                    } else if (c.equals("village") || c.equals("village_reverse")) {
+                        out.check(d.isPlaced(), c + ": a complex under a village is kept: " + d);
+                        out.check(
+                            d.sink() >= ComplexPlacer.SINK_MIN && d.sink() <= ComplexPlacer.SINK_MAX,
+                            c + ": sunk 10 to 20 blocks, got " + d.sink());
+                        if (villageSink < 0) villageSink = d.sink();
+                        else out.checkEquals("the same sink from the opposite corner", villageSink, d.sink());
+                        ComplexPlan cp = ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ());
+                        int floor = ComplexPlacer.floorY(world, d.groundY(), d.sink());
+                        int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
+                        out.check(
+                            world.getBlock(ex, floor + cp.escapeTop(), ez) == Blocks.ladder,
+                            c + ": the escape ladder starts at the sunk level (floor y " + floor + ")");
+                        out.check(
+                            world.getBlock(ex, GROUND, ez) == Blocks.trapdoor,
+                            c + ": the trapdoor stays at the surface");
+                        out.note(c + " -> sunk " + d.sink() + ", floor y " + floor);
                     } else {
                         out.check(!d.isPlaced(), c + ": rejected, got " + d);
                         out.checkEquals(c + ": logged once", 1, reasons.size());
@@ -371,7 +511,7 @@ public final class ComplexScenarios {
                     out.checkEquals(c + ": writes dropped outside a window", 0, rejected);
                 }
             } finally {
-                slab(world, plan, true);
+                ComplexArena.slab(world, plan, true, (x, z) -> GROUND, 0, GROUND - ComplexPlacer.SINK_MAX);
             }
             return out.build();
         }

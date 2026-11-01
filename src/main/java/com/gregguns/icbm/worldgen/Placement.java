@@ -39,7 +39,25 @@ public final class Placement {
         /** A lit light fixture. */
         LIGHT,
         /** A cave-in: fill part of {@link #box()} with rubble. */
-        COLLAPSE
+        COLLAPSE,
+        /**
+         * A wooden crate with no inventory: a chest spot the chest budget left over (D315). {@link #key()} is the wood
+         * (0 to 5) and {@link #facing()} the way the spot faces.
+         */
+        CRATE,
+        /**
+         * One block by registry name, {@link #block()} at {@link #meta()}: a room's look at its activity level (D309),
+         * written over what the marks pass put there (a cold furnace, a crop, coarse dirt, a metal prop, a rubble
+         * pile). A name that does not resolve this run tries {@link #fallback()}, then writes nothing.
+         */
+        BLOCK,
+        /**
+         * What a placed piece of furniture holds (D323): {@link #key()} is the stock source
+         * ({@link FurnitureStock}), {@link #block()} the piece's name, {@link #category()} and {@link #extra()} the
+         * room's chest category and table, {@link #roomState()} the room's state, {@link #variant()} how many things
+         * and {@link #chestIndex()} the seed of its draw. Written after the piece, into its tile entity.
+         */
+        STOCK
     }
 
     /** Extra things a chest may hold beyond its table (D17, D36, D128). */
@@ -71,6 +89,7 @@ public final class Placement {
     private final boolean dead;
     private final int chestIndex;
     private final int richness;
+    private final RoomState roomState;
     private final Set<Bonus> bonuses = EnumSet.noneOf(Bonus.class);
     private String extra;
     private int ceiling = SiloCeiling.EV;
@@ -78,6 +97,12 @@ public final class Placement {
     private final Box box;
     private final int facing;
     private final int extent;
+    private final int variant;
+    private final String block;
+    private final int meta;
+    private final String fallback;
+    private final boolean stocked;
+    private final String roomKind;
 
     private Placement(Builder b) {
         this.kind = b.kind;
@@ -91,12 +116,29 @@ public final class Placement {
         this.dead = b.dead;
         this.chestIndex = b.chestIndex;
         this.richness = b.richness;
+        this.roomState = b.roomState;
         this.bonuses.addAll(b.bonuses);
         this.extra = b.extra;
         this.key = b.key;
         this.box = b.box;
         this.facing = b.facing;
         this.extent = b.extent;
+        this.variant = b.variant;
+        this.block = b.block;
+        this.meta = b.meta;
+        this.fallback = b.fallback;
+        this.stocked = b.stocked;
+        this.roomKind = b.roomKind;
+    }
+
+    /** @return the {@code RoomKind.name()} of the room a {@link Kind#STOCK} stands in, else null */
+    public String roomKind() {
+        return roomKind;
+    }
+
+    /** @return for a working machine, whether its output slots hold finished work (D323) */
+    public boolean stocked() {
+        return stocked;
     }
 
     static Builder at(Kind kind, int x, int y, int z) {
@@ -143,6 +185,29 @@ public final class Placement {
         return tier;
     }
 
+    /**
+     * @return for a machine, which of its role's machines comes first
+     *         ({@link MachinePicker#pick(MachineRole, int, boolean, int)})
+     */
+    public int variant() {
+        return variant;
+    }
+
+    /** @return the registry name ({@code mod:name}) of a {@link Kind#BLOCK}, else null */
+    public String block() {
+        return block;
+    }
+
+    /** @return the metadata of a {@link Kind#BLOCK} */
+    public int meta() {
+        return meta;
+    }
+
+    /** @return the registry name a {@link Kind#BLOCK} falls back to (at meta 0) when its own is absent, or null */
+    public String fallback() {
+        return fallback;
+    }
+
     /** @return true for a machine that is a dead husk */
     public boolean dead() {
         return dead;
@@ -156,6 +221,11 @@ public final class Placement {
     /** @return chest richness 0 to 2 */
     public int richness() {
         return richness;
+    }
+
+    /** @return the state of the room a loot chest stands in, or null for a chest placed without one */
+    public RoomState roomState() {
+        return roomState;
     }
 
     /** @return the extra items a chest holds; never null, read only */
@@ -200,6 +270,11 @@ public final class Placement {
         return facing;
     }
 
+    /** @return the side a machine's front prefers: 0 north, 1 east, 2 south, 3 west (the machine's room door side) */
+    public int front() {
+        return facing;
+    }
+
     /** @return the frame count of a frame wall, one every second cell along it (+X or +Z), else 1 */
     public int extent() {
         return extent;
@@ -215,7 +290,8 @@ public final class Placement {
             + z
             + (category != null ? " " + category : "")
             + (spawner != null ? " " + spawner : "")
-            + (role != null ? " " + role + "/" + tier + (dead ? " dead" : "") : "");
+            + (role != null ? " " + role + "/" + tier + (dead ? " dead" : "") : "")
+            + (block != null ? " " + block + ":" + meta : "");
     }
 
     /** Builds a placement. */
@@ -232,12 +308,19 @@ public final class Placement {
         private boolean dead;
         private int chestIndex = -1;
         private int richness;
+        private RoomState roomState;
         private final Set<Bonus> bonuses = EnumSet.noneOf(Bonus.class);
         private String extra;
         private String key;
         private Box box;
         private int facing;
         private int extent = 1;
+        private int variant;
+        private String block;
+        private int meta;
+        private String fallback;
+        private boolean stocked;
+        private String roomKind;
 
         private Builder(Kind kind, int x, int y, int z) {
             this.kind = kind;
@@ -269,6 +352,15 @@ public final class Placement {
             return this;
         }
 
+        /** A loot chest of a room in {@code state}: its richness follows the state ({@link RoomLootDraw}). */
+        Builder chest(int index, RoomState state) {
+            chestIndex = index;
+            roomState = state;
+            richness = RoomLootDraw.profile(state)
+                .richness();
+            return this;
+        }
+
         Builder bonus(Bonus b) {
             bonuses.add(b);
             return this;
@@ -287,6 +379,33 @@ public final class Placement {
         Builder frames(int facingDir, int count) {
             facing = facingDir;
             extent = count;
+            return this;
+        }
+
+        Builder front(int compassIndex) {
+            facing = compassIndex;
+            return this;
+        }
+
+        Builder variant(int v) {
+            variant = v;
+            return this;
+        }
+
+        Builder block(String ref, int m, String fallbackRef) {
+            block = ref;
+            meta = m;
+            fallback = fallbackRef;
+            return this;
+        }
+
+        Builder room(String kindName) {
+            roomKind = kindName;
+            return this;
+        }
+
+        Builder stocked(boolean v) {
+            stocked = v;
             return this;
         }
 

@@ -17,19 +17,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Armed skeletons shoot back. Use cover.",
+      "desc:8": "Armed skeletons shoot back with revolvers, Thompsons and the occasional Hand Cannon, and some wear Soldier\u0027s or Bandit helmets and boots. They are more accurate than zombies, so use cover and keep moving.\n\nFive kills earns the reward. They drop bones, coal and gunpowder.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 71,
         "OreDict:8": "",
         "id:8": "gregguns:npc_egg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Skeleton Soldiers",
+      "name:8": "§c§lSkeleton Soldiers",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -65,12 +65,49 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 16,
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:cornbreadItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:ammo_stone_bullet"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:coal"
         }
-      }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {

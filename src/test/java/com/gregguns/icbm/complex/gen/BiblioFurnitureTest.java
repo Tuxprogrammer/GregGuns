@@ -14,12 +14,28 @@ import com.gregguns.icbm.complex.FurniturePiece;
 /** D259, D262: the BiblioCraft facts the furniture is placed with, and the vanilla fallback of a seat. */
 class BiblioFurnitureTest {
 
+    /** The pieces BiblioCraft supplies; the rest are GregTech's, vanilla or Chisel props, or style cubes. */
+    private static final java.util.Set<FurniturePiece> BIBLIO = java.util.EnumSet.of(
+        FurniturePiece.CHAIR,
+        FurniturePiece.STOOL,
+        FurniturePiece.WOOD_TABLE,
+        FurniturePiece.DESK,
+        FurniturePiece.TYPEWRITER,
+        FurniturePiece.CLIPBOARD,
+        FurniturePiece.BOOKCASE,
+        FurniturePiece.WALL_SHELF,
+        FurniturePiece.MEDICINE_SHELF,
+        FurniturePiece.TOOL_RACK,
+        FurniturePiece.ARMOR_STAND,
+        FurniturePiece.ARMOR_STAND_TOP,
+        FurniturePiece.DINNER_PLATE,
+        FurniturePiece.COOKIE_JAR);
+
     @Test
     void everyBiblioPieceHasARegistryName() {
         for (FurniturePiece p : FurniturePiece.values()) {
             String n = BiblioFurniture.registryName(p);
-            boolean ours = p == FurniturePiece.LOCKER || p == FurniturePiece.SERVER_RACK;
-            assertEquals(ours, n == null, p.name());
+            assertEquals(BIBLIO.contains(p), n != null, p.name());
         }
         assertEquals("BiblioSeats", BiblioFurniture.registryName(FurniturePiece.CHAIR));
         assertEquals("Armor Stand", BiblioFurniture.registryName(FurniturePiece.ARMOR_STAND_TOP));

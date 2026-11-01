@@ -19,6 +19,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 final class ObjDraw {
 
+    /**
+     * A brightness factor on every face, 1 by default. The inert warhead's item renderer dims its model with it while
+     * it draws (D282) and puts it back after; the client renders on one thread.
+     */
+    static float tint = 1.0F;
+
     private ObjDraw() {}
 
     /**
@@ -40,7 +46,7 @@ final class ObjDraw {
             for (Face face : group.faces) {
                 Vertex n = face.faceNormal != null ? face.faceNormal : face.calculateFaceNormal();
                 // Simple directional shading: top bright, bottom dark, sides in between.
-                float shade = 0.8F + 0.2F * n.y;
+                float shade = (0.8F + 0.2F * n.y) * tint;
                 t.setColorOpaque_F(shade, shade, shade);
                 int count = face.vertices.length;
                 for (int i = 0; i < 4; i++) {

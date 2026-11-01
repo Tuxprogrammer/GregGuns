@@ -6,6 +6,7 @@ import java.util.List;
 import com.gregguns.icbm.complex.Box;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
+import com.gregguns.icbm.complex.LootKeys;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.complex.Mark;
 import com.gregguns.icbm.complex.Room;
@@ -30,8 +31,15 @@ import com.gregguns.worldgen.spawner.SpawnerKind;
 public final class ComplexContents {
 
     /** Salts, one per roll family, so two rolls on one cell are independent. */
-    private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_SPAWN = 0x59A, S_ELITE = 0xE11,
-        S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1;
+    private static final long S_COLLAPSE = 0xC011, S_CELL = 0xCE11, S_LIGHT = 0x116, S_ELITE = 0xE11, S_SPAWN_N = 0x59B,
+        S_MACHINE = 0x3AC, S_DEAD = 0xDEAD, S_CARRIER = 0xCA2, S_ROLL = 0x201, S_RUBBLE = 0x2B1, S_ABSENT = 0xAB5,
+        S_VARIANT = 0x7A2, S_STOCK = 0x570E;
+
+    /**
+     * Share of working machines whose output slots hold finished work, by state: staffed, in service, mothballed,
+     * gutted (D323). A machine never holds an input or a job in progress.
+     */
+    static final double[] STOCKED = { 0.8, 0.6, 0.3, 0.1 };
 
     private ComplexContents() {}
 
@@ -49,22 +57,52 @@ public final class ComplexContents {
         List<Placement> out = new ArrayList<>();
         int[] chestCounter = { 0 };
         List<Placement> chests = new ArrayList<>();
+        java.util.Set<Integer> collapsedRooms = new java.util.HashSet<>();
+        java.util.Map<Integer, RoomState> states = new java.util.HashMap<>();
         Box hall = plan.hall()
             .bounds();
-
-        mark(plan.hall(), hall, false, p, seed, ceiling, hall, out, chests, chestCounter, level);
+        states.put(
+            plan.hall()
+                .id(),
+            roomState(seed, plan.hall(), level));
         for (Room r : plan.rooms()) {
-            boolean collapsed = mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p);
+            if (mayCollapse(r.kind()) && collapseRoll(seed, r.id(), p)) {
+                collapsedRooms.add(r.id());
+            }
+            states.put(r.id(), roomState(seed, r, level));
+        }
+        // The chest budget (D315): exactly the configured number of chest spots become loot chests.
+        Chests c = new Chests(
+            ChestBudget.choose(plan, level, states, collapsedRooms, ChestBudget.target(level)),
+            chests,
+            chestCounter);
+
+        mark(plan, plan.hall(), hall, false, p, seed, ceiling, hall, out, c, level);
+        for (Room r : plan.rooms()) {
+            boolean collapsed = collapsedRooms.contains(r.id());
             if (collapsed) {
                 collapses.add(
                     Placement.at(Kind.COLLAPSE, r.bounds().minX, r.bounds().minY, r.bounds().minZ)
                         .box(r.bounds())
                         .build());
             }
-            mark(r, r.bounds(), collapsed, p, seed, ceiling, hall, out, chests, chestCounter, level);
+            mark(plan, r, r.bounds(), collapsed, p, seed, ceiling, hall, out, c, level);
         }
         for (Tunnel t : plan.tunnels()) {
-            marks(t.marks(), t.bounds(), "tunnel", false, p, seed, ceiling, hall, out, chests, chestCounter, level);
+            marks(
+                t.marks(),
+                roomState(seed, t.id(), level),
+                t.bounds(),
+                null,
+                -1,
+                false,
+                p,
+                seed,
+                ceiling,
+                hall,
+                out,
+                c,
+                level);
         }
         bonuses(plan, p, seed, other, ceiling, chests);
         List<Placement> all = new ArrayList<>(collapses);
@@ -80,6 +118,16 @@ public final class ComplexContents {
      */
     static boolean mayCollapse(RoomKind kind) {
         return kind != RoomKind.GUARD_POST && kind != RoomKind.DECON_AIRLOCK && kind != RoomKind.LAUNCH_CONTROL;
+    }
+
+    /**
+     * @param seed  the plan seed
+     * @param room  a room
+     * @param level the complex's level
+     * @return whether the room caves in at this level (its contents, notices and stock are then not written)
+     */
+    public static boolean collapsed(long seed, Room room, ActivityLevel level) {
+        return mayCollapse(room.kind()) && collapseRoll(seed, room.id(), ActivityProfile.of(level));
     }
 
     /** @return whether a room's collapse roll comes up, before {@link #mayCollapse} is asked */
@@ -140,14 +188,51 @@ public final class ComplexContents {
         return ((long) x << 40) ^ ((long) y << 20) ^ z;
     }
 
-    private static void mark(Room r, Box bounds, boolean collapsed, ActivityProfile p, long seed, int ceiling, Box hall,
-        List<Placement> out, List<Placement> chests, int[] counter, ActivityLevel level) {
+    /** The chest budget's picks and the running chest list of one build. */
+    private static final class Chests {
+
+        final java.util.Set<Mark> chosen;
+        final List<Placement> list;
+        final int[] counter;
+
+        Chests(java.util.Set<Mark> chosen, List<Placement> list, int[] counter) {
+            this.chosen = chosen;
+            this.list = list;
+            this.counter = counter;
+        }
+    }
+
+    private static void mark(ComplexPlan plan, Room r, Box bounds, boolean collapsed, ActivityProfile p, long seed,
+        int ceiling, Box hall, List<Placement> out, Chests chests, ActivityLevel level) {
+        RoomState state = roomState(seed, r.id(), level);
+        // The room's look at its state (D309): worn, lit or cold, grown or bare; whole groups at a time.
+        int from = out.size();
+        FurnitureWear.room(plan, r.id(), r.kind(), r.marks(), bounds, state, collapsed, seed, ceiling, out);
+        if (!collapsed) {
+            // What the standing pieces hold, by the same state (D323).
+            String table = RoomLoot.table(
+                r.kind() == null ? null
+                    : r.kind()
+                        .name(),
+                null);
+            FurnitureStock.room(
+                r.kind(),
+                r.marks(),
+                state,
+                table,
+                SiloLootTables.categoryName(table, ceiling),
+                seed,
+                new ArrayList<>(out.subList(from, out.size())),
+                out);
+        }
         marks(
             r.marks(),
+            state,
             bounds,
-            r.kind() == null ? ""
+            r.kind() == null ? null
                 : r.kind()
                     .name(),
+            r.id(),
             collapsed,
             p,
             seed,
@@ -155,37 +240,79 @@ public final class ComplexContents {
             hall,
             out,
             chests,
-            counter,
             level);
     }
 
-    private static void marks(List<Mark> marks, Box bounds, String owner, boolean collapsed, ActivityProfile p,
-        long seed, int ceiling, Box hall, List<Placement> out, List<Placement> chests, int[] counter,
+    /**
+     * The wood of a room's crates, 0 to 5, by a hash of the plan seed and the room (the room furniture's own woods:
+     * spruce, dark oak, birch, oak).
+     */
+    static int crateWood(long seed, int roomId) {
+        int[] woods = { 1, 5, 2, 0, 1, 5 };
+        long h = seed * 0x9E3779B97F4A7C15L + roomId * 0xBF58476D1CE4E5B9L;
+        h ^= h >>> 31;
+        return woods[(int) Math.floorMod(h, (long) woods.length)];
+    }
+
+    private static void marks(List<Mark> marks, RoomState state, Box bounds, String owner, int roomId,
+        boolean collapsed, ActivityProfile p, long seed, int ceiling, Box hall, List<Placement> out, Chests chests,
         ActivityLevel level) {
         int band = depthBand(bounds, hall);
-        boolean controlRoom = "LAUNCH_CONTROL".equals(owner);
         for (Mark m : marks) {
             long h = Mix.of(seed, S_CELL, m.x() * 4096L + m.z(), m.y());
             double u = Mix.unit(h);
             switch (m.kind()) {
                 case LOOT_CHEST: {
-                    int index = counter[0]++;
+                    if (collapsed) {
+                        break; // a caved-in room holds neither chests nor crates
+                    }
+                    if (!chests.chosen.contains(m)) {
+                        // a spot the budget left over: an empty wooden crate, never an empty chest (D315)
+                        out.add(
+                            Placement.at(Kind.CRATE, m.x(), m.y(), m.z())
+                                .key(Integer.toString(crateWood(seed, roomId)))
+                                .front(m.facing())
+                                .build());
+                        break;
+                    }
+                    String table = RoomLoot.table(owner, m.key());
                     Placement c = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
-                        .category(SiloLootTables.categoryName(m.key(), ceiling))
-                        .key(m.key())
-                        .chest(index, p.richness())
+                        .category(SiloLootTables.categoryName(table, ceiling))
+                        .key(table)
+                        .chest(chests.counter[0]++, state)
+                        .front(m.facing())
                         .build();
-                    chests.add(c);
+                    chests.list.add(c);
                     out.add(c);
                     break;
                 }
                 case ITEM_FRAME_WALL:
+                    // display frames sit outside the chest budget (owner, alpha 7)
                     out.add(
                         Placement.at(Kind.FRAME_WALL, m.x(), m.y(), m.z())
                             .category(SiloLootTables.categoryName(m.key(), ceiling))
                             .key(m.key())
                             .frames(m.facing(), m.extent())
                             .build());
+                    break;
+                case GUN_DISPLAY:
+                    // every display unit of a standing armory, at every level, outside the chest budget (owner, alpha
+                    // 7)
+                    if (!collapsed) {
+                        Placement chest = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
+                            .category(SiloLootTables.categoryName(LootKeys.ARMORY_AMMO, ceiling))
+                            .key(LootKeys.ARMORY_AMMO)
+                            .chest(chests.counter[0]++, state)
+                            .build();
+                        chests.list.add(chest);
+                        out.add(chest);
+                        out.add(
+                            Placement.at(Kind.FRAME_WALL, m.x(), ArmoryDisplay.FRAME_Y, m.z())
+                                .category(SiloLootTables.categoryName(m.key(), ceiling))
+                                .key(m.key())
+                                .frames(m.facing(), 1)
+                                .build());
+                    }
                     break;
                 case LIGHT:
                     if (Mix.unit(lightRoll(seed, m, level)) < p.litChance()) {
@@ -212,17 +339,18 @@ public final class ComplexContents {
                     }
                     break;
                 case SPAWNER:
-                    spawner(m, band, controlRoom, p, seed, ceiling, out);
-                    break;
+                    break; // a room's spawners are rolled as a set, in spawners()
                 case MACHINE:
-                    machine(m, p, seed, ceiling, out);
+                    machine(m, state, p, seed, ceiling, out);
                     break;
                 case FURNITURE:
-                    FurnitureWear.wear(m, collapsed, level, seed, out);
-                    break;
+                    break; // a room's furniture wears as a whole, in FurnitureWear.room
                 default:
-                    break; // signs and blast doors are the layout's own
+                    break; // signs are the layout's own; blast doors are fixtures (ComplexFixtures)
             }
+        }
+        if (roomId >= 0) {
+            spawners(marks, band, collapsed, p, seed, roomId, out);
         }
     }
 
@@ -299,46 +427,128 @@ public final class ComplexContents {
     }
 
     /**
-     * @param ceiling the complex's ceiling
-     * @return the factor guard spawner chances grow by: 1 at EV, 1.5 at the top (UMV), in even steps
+     * How many spawners a room holds (D326): a roll per room from the plan seed and the room, against the level's
+     * weights ({@link ActivityProfile#spawnerWeights()}). The same in every populate window.
+     *
+     * @param seed   the plan seed
+     * @param roomId the room's section id (the hub included)
+     * @param level  the complex's level
+     * @return 0 to 2
      */
-    public static double guardScale(int ceiling) {
-        int c = Math.max(SiloCeiling.EV, Math.min(SiloCeiling.UMV, ceiling));
-        return 1.0 + 0.5 * (c - SiloCeiling.EV) / (SiloCeiling.UMV - SiloCeiling.EV);
+    public static int spawnersIn(long seed, int roomId, ActivityLevel level) {
+        double u = Mix.unit(Mix.of(seed, S_SPAWN_N, roomId, 0));
+        double[] w = ActivityProfile.of(level)
+            .spawnerWeights();
+        double acc = 0;
+        for (int n = 0; n < w.length; n++) {
+            acc += w[n];
+            if (u < acc) {
+                return n;
+            }
+        }
+        return w.length - 1;
     }
 
-    private static void spawner(Mark m, int band, boolean controlRoom, ActivityProfile p, long seed, int ceiling,
-        List<Placement> out) {
-        double chance = Math.min(1.0, p.spawnerChance(band) * guardScale(ceiling));
-        if ("post".equals(m.key()) && p.level() != ActivityLevel.ABANDONED) {
-            chance = Math.min(1.0, chance + 0.25);
-        }
-        if (controlRoom || "deep".equals(m.key())) {
-            chance = Math.max(chance, p.shaftSpawnerChance());
-        }
-        if (Mix.unit(Mix.of(seed, S_SPAWN, m.x() * 4096L + m.z(), m.y())) >= chance) {
+    /**
+     * The spawners of one room (D326): the first {@link #spawnersIn} of its spawner spots, in the spots' order (the
+     * layout lists the farthest-apart first). A caved-in room holds none. A spot makes an elite spawner at the deeper
+     * bands 40% of the time, never at the abandoned level (D284's weaker holdouts).
+     */
+    private static void spawners(List<Mark> marks, int band, boolean collapsed, ActivityProfile p, long seed,
+        int roomId, List<Placement> out) {
+        if (collapsed) {
             return;
         }
-        boolean elite = "deep".equals(m.key()) || "room".equals(m.key()) && band >= 2
-            && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
-        out.add(
-            Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
-                .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
-                .build());
+        int n = spawnersIn(seed, roomId, p.level());
+        for (Mark m : marks) {
+            if (n <= 0) {
+                break;
+            }
+            if (m.kind() != com.gregguns.icbm.complex.MarkKind.SPAWNER) {
+                continue;
+            }
+            n--;
+            boolean elite = p.level() != ActivityLevel.ABANDONED && band >= 2
+                && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
+            out.add(
+                Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
+                    .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
+                    .build());
+        }
     }
 
-    private static void machine(Mark m, ActivityProfile p, long seed, int ceiling, List<Placement> out) {
+    /**
+     * How lived-in a section is (D309). An operational complex is staffed throughout and an abandoned one gutted. In a
+     * partly abandoned complex a section is in service when its lamps burn, by the very roll that lights them (D231's
+     * whole-section roll), and mothballed when they are dark: a lit room is a staffed room and a dark one is shut, so
+     * its lamps, machines, wear, crops and chests all agree. Pure; the same in every populate window.
+     *
+     * @param seed  the plan seed
+     * @param room  a room (the hub included)
+     * @param level the complex's level
+     * @return the room's state
+     */
+    public static RoomState roomState(long seed, Room room, ActivityLevel level) {
+        return roomState(seed, room.id(), level);
+    }
+
+    /** As {@link #roomState(long, Room, ActivityLevel)}, by section id (a room, the hub or a tunnel). */
+    public static RoomState roomState(long seed, int section, ActivityLevel level) {
+        switch (level) {
+            case OPERATIONAL:
+                return RoomState.STAFFED;
+            case PARTLY_ABANDONED:
+                return Mix.unit(Mix.of(seed, S_LIGHT, section, -1)) < ActivityProfile.of(level)
+                    .litChance() ? RoomState.IN_SERVICE : RoomState.MOTHBALLED;
+            default:
+                return RoomState.GUTTED;
+        }
+    }
+
+    /** Share of machines that are husks in a room in service (D309). */
+    static final double IN_SERVICE_DEAD = 0.10;
+    /** Share of machines that are husks in a mothballed room (D309). */
+    static final double MOTHBALLED_DEAD = 0.90;
+
+    /**
+     * @return the chance a machine of a room in this state is a husk: none staffed, 10% in service, 90% mothballed, and
+     *         the level's (D284) when gutted
+     */
+    static double deadChance(RoomState state, ActivityProfile p) {
+        switch (state) {
+            case STAFFED:
+                return 0;
+            case IN_SERVICE:
+                return IN_SERVICE_DEAD;
+            case MOTHBALLED:
+                return MOTHBALLED_DEAD;
+            default:
+                return p.deadMachineChance();
+        }
+    }
+
+    private static void machine(Mark m, RoomState state, ActivityProfile p, long seed, int ceiling,
+        List<Placement> out) {
         MachineRole role;
         try {
             role = MachineRole.valueOf(m.key());
         } catch (IllegalArgumentException e) {
             return; // an unknown role is left empty rather than guessed
         }
-        long h = Mix.of(seed, S_MACHINE, m.x() * 4096L + m.z(), m.y());
-        boolean dead = Mix.unit(Mix.of(seed, S_DEAD, m.x() * 4096L + m.z(), m.y())) < p.deadMachineChance();
+        long cell = m.x() * 4096L + m.z();
+        long h = Mix.of(seed, S_MACHINE, cell, m.y());
+        // Only a gutted room has machines stripped to the floor (D284); a mothballed one keeps its hulls.
+        if (state == RoomState.GUTTED && Mix.unit(Mix.of(seed, S_ABSENT, cell, m.y())) < p.absentMachineChance()) {
+            return;
+        }
+        boolean dead = Mix.unit(Mix.of(seed, S_DEAD, cell, m.y())) < deadChance(state, p);
+        boolean stocked = !dead && Mix.unit(Mix.of(seed, S_STOCK, cell, m.y())) < STOCKED[state.ordinal()];
         out.add(
             Placement.at(Kind.MACHINE, m.x(), m.y(), m.z())
                 .machine(role, machineTier(role, ceiling, h), dead)
+                .stocked(stocked)
+                .variant((int) (Mix.of(seed, S_VARIANT, cell, m.y()) >>> 33))
+                .front(m.facing())
                 .build());
     }
 
@@ -346,8 +556,10 @@ public final class ComplexContents {
      * @param role    the machine role
      * @param ceiling the ceiling
      * @param h       a hash of the cell
-     * @return the voltage index asked for: 0 for roles with no tier, else the ceiling or one or two below it, at least
-     *         HV (3); never above the ceiling. The world side steps down further when GT has no machine that high.
+     * @return the voltage index asked for: 0 for roles with no tier; the radar and comms gear at the ceiling or one or
+     *         two below it, at least HV (3); every other room machine from the same tier ladder as the metal props
+     *         (D330, after D308): LV and MV common, the ceiling's own tier a find. Never above the ceiling. The world
+     *         side steps down further when GT has no machine that high.
      */
     public static int machineTier(MachineRole role, int ceiling, long h) {
         switch (role) {
@@ -355,10 +567,35 @@ public final class ComplexContents {
             case LAUNCH_CONTROL:
             case MAGAZINE_CASING:
                 return 0;
-            default:
+            case RADAR:
+            case COMMS:
                 int below = (int) Long.remainderUnsigned(h, 3);
                 return Math.max(Math.min(3, ceiling), ceiling - below);
+            default:
+                return roomMachineTier(ceiling, h);
         }
+    }
+
+    /**
+     * The balance pass's limit on the free machines of a complex (D330): a room machine's tier is drawn from the metal
+     * props' ladder ({@link com.gregguns.icbm.complex.gen.MetalProps#weight}), so most are LV and MV and the ceiling's
+     * own tier is a find, while the room keeps every machine its activity level gives it.
+     *
+     * @param ceiling the complex's ceiling (voltage index)
+     * @param h       a hash of the cell
+     * @return 1 to the ceiling
+     */
+    static int roomMachineTier(int ceiling, long h) {
+        int c = Math.max(1, ceiling);
+        int total = 0;
+        for (int t = 1; t <= c; t++) total += com.gregguns.icbm.complex.gen.MetalProps.weight(t, c);
+        if (total <= 0) return c;
+        long r = Long.remainderUnsigned(h, total);
+        for (int t = 1; t <= c; t++) {
+            r -= com.gregguns.icbm.complex.gen.MetalProps.weight(t, c);
+            if (r < 0) return t;
+        }
+        return c;
     }
 
     /** @return depth band 0 (the hall) to 3 from the box's distance to the hall, 30 blocks per band */

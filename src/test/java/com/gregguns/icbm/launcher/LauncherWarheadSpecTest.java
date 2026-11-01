@@ -89,6 +89,17 @@ class LauncherWarheadSpecTest {
     }
 
     @Test
+    void plasticExplosiveIsTheOnlyExplosiveAnyLauncherWarheadTakes() {
+        for (LauncherWarhead w : LauncherWarhead.values()) {
+            for (Ing in : w.inputs()) {
+                assertTrue(
+                    in.src() != Ing.Src.TNT && in.src() != Ing.Src.INDUSTRIAL_TNT,
+                    w + " takes " + in.src() + " besides Plastic Explosive");
+            }
+        }
+    }
+
+    @Test
     void everyFamilyHasAWarheadAndNoUnknownGuns() {
         for (LauncherKind k : LauncherKind.values()) {
             boolean any = false;

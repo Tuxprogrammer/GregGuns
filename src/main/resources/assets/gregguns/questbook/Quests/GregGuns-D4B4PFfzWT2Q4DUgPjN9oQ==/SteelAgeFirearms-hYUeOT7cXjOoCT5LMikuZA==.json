@@ -25,19 +25,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "LV opens steel guns. The last step of each recipe is an LV machine.",
+      "desc:8": "Steel changes everything. At LV your guns move from the crafting table to the GregTech Assembler, your ammunition moves to the GregGuns Ammo Press, and a handful of new weapons become possible: a pistol, a revolver, a sawed-off shotgun and a bolt-action rifle, plus steel armor and the first melee tools.\n\nThe gate is steel. Nearly every LV recipe in this chapter uses it, and the last step is always an LV machine. Hold eight steel plates to open the chapter; you will use them up quickly.\n\nStart with the Ammo Press, because every gun in this chapter is useless without it. Then make 9mm bullets, build the parts for your first pistol, and branch out to the rifle and shotgun when you have lead and brass to spare. The grenade, bandages and armor quests are optional, but the loot bags are worth the trip.\n\n[note]Press R on any gun in NEI to see its recipe. Every LV gun is built in an LV Assembler.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:pistol_9mm"
+        "id:8": "gregguns:revolver"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Steel-Age Firearms",
+      "name:8": "§2§lSteel-Age Firearms",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -66,11 +66,76 @@
   },
   "questIDHigh:4": -8825614663546020301,
   "questIDLow:4": -6338466507862233500,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1702,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:hotdogItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17305,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_2"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 8,
+          "Damage:2": 17305,
+          "OreDict:8": "plateSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

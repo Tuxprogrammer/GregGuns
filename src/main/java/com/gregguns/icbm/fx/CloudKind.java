@@ -7,12 +7,12 @@ package com.gregguns.icbm.fx;
 // Spec: docs/gregguns-icbm-spec/07-visuals-audio/blast-visuals.md
 public enum CloudKind {
 
-    /** The Chemical warhead: a sickly yellow. */
-    CHEMICAL(0.85F, 0.80F, 0.20F, 1.0),
+    /** The Chemical warhead: a sickly yellow, saturated and warm so it stands off green grass as well as gray stone. */
+    CHEMICAL(0.98F, 0.82F, 0.10F, 1.0),
     /** The Debilitation warhead: violet. */
     DEBILITATION(0.55F, 0.30F, 0.80F, 1.0),
-    /** The Contagious warhead: a dull green. */
-    CONTAGIOUS(0.30F, 0.75F, 0.30F, 1.0),
+    /** The Contagious warhead: a pale, cool green, lighter and bluer than grass so it does not sink into it. */
+    CONTAGIOUS(0.40F, 0.95F, 0.65F, 1.0),
     /** The Smoke warhead: dense gray smoke, twice the particles. */
     SMOKE(0.55F, 0.55F, 0.55F, 2.0),
     /** The plume of a large conventional blast: a dark column that rises. */

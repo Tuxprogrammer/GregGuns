@@ -8,7 +8,8 @@ package com.gregguns.icbm.missile;
  * zero or dive (ICBM-03-17), and a missing target is not the world origin (ICBM-03-19: the caller must pass one).
  * Because the position is a pure function of the tick, a reloaded missile resumes exactly where it was and the client
  * can extrapolate the same line. Past the arrival tick the curve keeps descending, so a missile that missed its target
- * height still hits the ground. No Minecraft types, both sides.
+ * height still hits the ground. It begins at the top of the vertical climb ({@link FlightPath}, D287), above the launch
+ * point. No Minecraft types, both sides.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/flight.md (The arc)
 public final class ArcPath {
@@ -19,6 +20,12 @@ public final class ArcPath {
     public static final double APEX_PER_BLOCK = 0.3;
     /** Highest apex above the chord, blocks. */
     public static final double APEX_MAX = 300.0;
+    /**
+     * Fastest vertical speed at the end of the arc, blocks per tick (D287). The arc starts at the build height, well
+     * above most targets, so a short flight would otherwise drop that height in a few ticks; it is slowed down
+     * instead, which keeps every dive within reach of a SAM (D126).
+     */
+    public static final double MAX_DIVE = 6.0;
 
     private final double sx;
     private final double sy;
@@ -47,22 +54,38 @@ public final class ArcPath {
         this.dz = tz - sz;
         double flat = Math.sqrt(dx * dx + dz * dz);
         double s = speed > 0.0 ? speed : 1.0;
-        this.ticks = Math.max(1, (int) Math.ceil(flat / s));
         this.apex = Math.min(APEX_MAX, APEX_BASE + APEX_PER_BLOCK * flat);
+        // The last step falls (4 * apex - dy) / ticks blocks; take at least enough ticks to keep that within MAX_DIVE.
+        double fall = 4.0 * apex - dy;
+        int byDive = fall > 0.0 ? (int) Math.ceil(fall / MAX_DIVE) : 1;
+        this.ticks = Math.max(1, Math.max((int) Math.ceil(flat / s), byDive));
     }
 
     /**
-     * The speed a missile has at the end of its arc when the target is level with where the arc began: the horizontal
-     * speed and the vertical speed {@code 4 * apex / ticks} of the parabola's last step, as a magnitude. It is the
-     * steepest dive a flight of that length makes (a target below the arc's start dives faster still; a missile never
-     * flies a level target faster than this), and what the SAM's speed must beat (D126).
+     * The speed a missile has at the end of its arc when the target is level with where the arc began.
      *
      * @param speed horizontal blocks per tick, above 0
      * @param flat  flat distance to the target, blocks
      * @return the magnitude of the velocity of the last step, blocks per tick
+     * @see #terminalSpeed(double, double, double)
      */
     public static double terminalSpeed(double speed, double flat) {
-        ArcPath p = new ArcPath(0.0, 0.0, 0.0, flat, 0.0, 0.0, speed);
+        return terminalSpeed(speed, flat, 0.0);
+    }
+
+    /**
+     * The speed a missile has at the end of its arc: the horizontal speed and the vertical speed
+     * {@code (4 * apex + drop) / ticks} of the parabola's last step, as a magnitude. The arc begins at the build height
+     * (D287), so the drop is the build height less the target's height. The vertical part never exceeds
+     * {@link #MAX_DIVE}; this is what the SAM's speed must beat (D126).
+     *
+     * @param speed horizontal blocks per tick, above 0
+     * @param flat  flat distance to the target, blocks
+     * @param drop  how far the target lies below the arc's start, blocks
+     * @return the magnitude of the velocity of the last step, blocks per tick
+     */
+    public static double terminalSpeed(double speed, double flat, double drop) {
+        ArcPath p = new ArcPath(0.0, drop, 0.0, flat, 0.0, 0.0, speed);
         double[] v = p.velocity(p.ticks() - 1);
         return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     }

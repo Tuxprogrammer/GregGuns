@@ -15,6 +15,7 @@ from pathlib import Path
 import gt
 import kit as K
 import scenes as S
+import thirdparty as TP
 import vanilla as V
 from kit import chip, esc, url
 from pages import MOJANG_CREDIT, POINT, img, page_doc
@@ -52,6 +53,8 @@ VANILLA = {"cobblestone": ("cobblestone", "Cobblestone"), "stone": ("stone", "St
            "blockWool": ("wool", "Wool"), "leather": ("leather", "Leather"), "mc:string": ("string", "String"),
            "slimeball": ("slimeball", "Slimeball"), "flint_and_steel": ("flint_and_steel", "Flint and Steel"),
            "craftingPiston": ("piston", "Piston"), "crafting_table": ("crafting_table", "Crafting Table")}
+# Other mods' items the recipes name by id (ProductionTable.Input.external, hand keys item:<modid>:<name>).
+EXTERNAL = {"Backpack:tannedLeather": (TP.BACKPACK_TANNED_LEATHER, "Tanned Leather")}
 META = {"motor_lv": "LV Electric Motor", "conveyor_lv": "LV Conveyor Module", "piston_lv": "LV Electric Piston",
         "robot_arm_lv": "LV Robot Arm", "circuit_lv": "LV Circuit"}
 TOOLS = {"File": "File", "Hammer": "Hammer", "Saw": "Saw"}
@@ -82,8 +85,8 @@ def recipes_json() -> dict:
 
 
 def thing(key: str) -> tuple[Path, str]:
-    """An ingredient key as (icon, display name). Keys: gt:prefix:Material, mod:name, v:name, meta:name, tool:Kind,
-    hull:Tier, cable:Material, machine:name:Tier."""
+    """An ingredient key as (icon, display name). Keys: gt:prefix:Material, mod:name, v:name, x:modid:name (another
+    mod's item), meta:name, tool:Kind, hull:Tier, cable:Material, machine:name:Tier."""
     kind, _, rest = key.partition(":")
     if kind == "gt":
         prefix, mat = rest.split(":")
@@ -97,6 +100,14 @@ def thing(key: str) -> tuple[Path, str]:
     if kind == "v":
         name, label = VANILLA[rest]
         return V.icon(name), label
+    if kind == "x":
+        if rest in EXTERNAL:
+            return EXTERNAL[rest]
+        mod, _, name = rest.partition(":")
+        if mod == "minecraft":
+            name, label = VANILLA[name]
+            return V.icon(name), label
+        raise KeyError(key)
     if kind == "meta":
         return gt.metaitem(rest), META[rest]
     if kind == "tool":
@@ -118,6 +129,8 @@ def row_key(inp: dict) -> str:
     if inp["item"]:
         return f"mod:{inp['item']}"
     other = inp["special"] or inp["ore"]
+    if other.startswith("item:"):
+        return f"x:{other[5:]}"
     return f"v:{other}"
 
 
@@ -208,13 +221,14 @@ STEAM_CRAFTS = [
     dict(title="Steam Ammo Press", pattern=["XXX", "PMP", "BBB"],
          keys={"X": "gt:pipeSmall:Bronze", "P": "v:craftingPiston", "M": "hull:Steam", "B": "gt:plate:Bronze"},
          out="machine:ammo_press:Steam", note="Runs on steam from your boilers, and runs every LV ammo recipe below too."),
-    # ArmorParts.addRecipes (RC-21)
-    dict(title="Heavy Cloth", pattern=[" W ", "WLW", " W "], keys={"W": "v:blockWool", "L": "v:leather"},
-         out="mod:part_heavy_cloth", n=3, note="Any color of wool."),
+    # ArmorTable.STEAM (AR-35): the armor lining is the pack's Tanned Leather
+    dict(title="Steam Chestplate", pattern="hand:AR-35", out="mod:steam_chestplate",
+         note="Tanned Leather is the pack's: dry Bound Leather on a drying rack, or bathe two leather in phosphoric "
+              "acid in an LV Chemical Bath."),
     # ArmorTable.SCOUT (AR-01): the rest of the set follows the armor shapes
     dict(title="Bandit Mask", pattern="hand:AR-01", out="mod:t1_scout_helmet",
-         note="The rest of the Bandit set takes the usual armor shapes in Heavy Cloth with one Bronze Plate. "
-              "The Miner set uses Cast Iron."),
+         note="The rest of the Bandit set takes the usual armor shapes in leather and Tanned Leather with one Bronze "
+              "Plate. The Miner set uses Cast Iron."),
 ]
 
 LV_CRAFTS = [
@@ -238,6 +252,8 @@ def _hand(dump, rid, title, out, note):
         kind, _, name = v.partition(":")
         if kind == "mod":
             keys[ch] = f"mod:{name}"
+        elif kind == "item":
+            keys[ch] = f"x:{name}"
         else:
             m = re.match(r"(plate|nugget)([A-Z]\w+)", name)
             keys[ch] = f"gt:{m.group(1)}:{m.group(2)}" if m else f"v:{name}"
@@ -251,8 +267,8 @@ def recipes():
 
     steam = []
     for c in STEAM_CRAFTS:
-        if c["pattern"] == "hand:AR-01":
-            steam.append(_hand(dump, "AR-01", c["title"], c["out"], c["note"]))
+        if isinstance(c["pattern"], str) and c["pattern"].startswith("hand:"):
+            steam.append(_hand(dump, c["pattern"][5:], c["title"], c["out"], c["note"]))
             continue
         note = c.get("note", "").replace(
             "{press}", f"Or {press['count']} per run in the Steam Ammo Press, from the same "
@@ -276,7 +292,7 @@ def recipes():
     ammo = "".join(machine_row(rows[i], "Ammo Press") for i in ("RC-28", "RC-29", "RC-30", "RC-37", "RC-44"))
     combat = [rows[i] for i in ("AR-09", "AR-10", "AR-11", "AR-12")]
     rest = ", ".join(f"{NAMES.get(r['output'], r['output'])}: {r['inputs'][0]['count']} plates and "
-                     f"{r['inputs'][1]['count']} cloth" for r in combat[1:])
+                     f"{r['inputs'][1]['count']} Tanned Leather" for r in combat[1:])
     gear = "".join([machine_row(rows["GR-05"], asm), machine_row(rows["GR-06"], asm),
                     machine_row(rows["GR-07"], asm), machine_row(combat[0], asm, note=f"The rest of the set: {rest}."),
                     machine_row(rows["RC-61"], asm)])
@@ -295,7 +311,7 @@ def recipes():
 {_guide()}"""
     return page_doc("Recipes &middot; <b>Steam and LV</b>",
                     "The crafting chains behind your first guns, ammo and armor. Past LV, NEI shows the way.",
-                    body, extra=RECIPE_CSS, credit=MOJANG_CREDIT)
+                    body, extra=RECIPE_CSS, credit=[MOJANG_CREDIT, TP.BACKPACK_CREDIT])
 
 
 def _guide():

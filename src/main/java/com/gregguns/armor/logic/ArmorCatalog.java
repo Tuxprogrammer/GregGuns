@@ -22,8 +22,20 @@ import com.gregguns.combat.DamageType;
 // Spec: docs/techguns-spec/05-armor/armor-catalog.md sections 2 and 5.1 to 5.3; docs/design/0001-tier-map.md
 public final class ArmorCatalog {
 
-    /** Registry name of the cloth part all T1 sets are repaired with. */
-    public static final String HEAVY_CLOTH = "part_heavy_cloth";
+    /**
+     * The pack's Tanned Leather, as a {@code modid:name} id: the lining the steam-age and later sets are crafted and
+     * repaired with. It belongs to the Backpack mod and has no ore-dictionary name, so the recipes name the item. In
+     * GTNH it is a Stone Age material (Bound Leather dried on a Tinkers' drying rack) and an LV Chemical Bath product
+     * (two leather in phosphoric acid).
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/Minecraft-Backpack-Mod/blob/2.6.18-GTNH/src/main/java/de/eydamos/backpack/item/ItemsBackpack.java#L30-L35
+    // (registered as "tannedLeather", damage 0, no ore name);
+    // https://github.com/GTNewHorizons/NewHorizonsCoreMod/blob/2.9.84/src/main/java/com/dreammaster/scripts/ScriptBackpack.java#L202-L205
+    // (drying rack) and
+    // https://github.com/GTNewHorizons/NewHorizonsCoreMod/blob/2.9.84/src/main/java/com/dreammaster/gthandler/recipes/ChemicalBathRecipes.java#L49-L57
+    // (LV Chemical Bath).
+    public static final String TANNED_LEATHER = "Backpack:tannedLeather";
 
     private static final ArmorMaterialDef T1_COMBAT_MATERIAL = ArmorMaterialDef.uniform("t1_combat", 60, 15.0);
     private static final ArmorMaterialDef T1_SCOUT_MATERIAL = ArmorMaterialDef.uniform("t1_scout", 60, 13.0);
@@ -38,19 +50,19 @@ public final class ArmorCatalog {
         BonusMap.EMPTY,
         PieceDef.builder(ArmorSlot.HELMET, "Soldier's Helmet")
             .bonuses(BonusMap.of(ArmorBonus.KNOCKBACK_RESISTANCE, 0.05))
-            .repair(new RepairSpec("plate", "Steel", HEAVY_CLOTH, 0.5, 2))
+            .repair(new RepairSpec("plate", "Steel", TANNED_LEATHER, 0.5, 2))
             .build(),
         PieceDef.builder(ArmorSlot.CHESTPLATE, "Soldier's Vest")
             .bonuses(BonusMap.of(ArmorBonus.KNOCKBACK_RESISTANCE, 0.20))
-            .repair(new RepairSpec("plate", "Steel", HEAVY_CLOTH, 0.5, 4))
+            .repair(new RepairSpec("plate", "Steel", TANNED_LEATHER, 0.5, 4))
             .build(),
         PieceDef.builder(ArmorSlot.LEGGINGS, "Soldier's Pants")
             .bonuses(BonusMap.of(ArmorBonus.KNOCKBACK_RESISTANCE, 0.10))
-            .repair(new RepairSpec("plate", "Steel", HEAVY_CLOTH, 1.0 / 3.0, 3))
+            .repair(new RepairSpec("plate", "Steel", TANNED_LEATHER, 1.0 / 3.0, 3))
             .build(),
         PieceDef.builder(ArmorSlot.BOOTS, "Soldier's Boots")
             .bonuses(BonusMap.of(ArmorBonus.KNOCKBACK_RESISTANCE, 0.05))
-            .repair(new RepairSpec("plate", "Steel", HEAVY_CLOTH, 0.5, 2))
+            .repair(new RepairSpec("plate", "Steel", TANNED_LEATHER, 0.5, 2))
             .build());
 
     /** T1 Scout, "Bandit ...": Steam/ULV, fast and light, four camos, cloth-only repair. */
@@ -62,15 +74,15 @@ public final class ArmorCatalog {
         BonusMap.EMPTY,
         PieceDef.builder(ArmorSlot.HELMET, "Bandit Mask")
             .bonuses(BonusMap.of(ArmorBonus.SPEED, 0.125, ArmorBonus.JUMP, 0.02))
-            .repair(new RepairSpec(null, null, HEAVY_CLOTH, 0.0, 2))
+            .repair(new RepairSpec(null, null, TANNED_LEATHER, 0.0, 2))
             .build(),
         PieceDef.builder(ArmorSlot.CHESTPLATE, "Bandit Vest")
             .bonuses(BonusMap.of(ArmorBonus.SPEED, 0.125, ArmorBonus.JUMP, 0.02))
-            .repair(new RepairSpec(null, null, HEAVY_CLOTH, 0.0, 4))
+            .repair(new RepairSpec(null, null, TANNED_LEATHER, 0.0, 4))
             .build(),
         PieceDef.builder(ArmorSlot.LEGGINGS, "Bandit Pants")
             .bonuses(BonusMap.of(ArmorBonus.SPEED, 0.125, ArmorBonus.JUMP, 0.02))
-            .repair(new RepairSpec(null, null, HEAVY_CLOTH, 0.0, 3))
+            .repair(new RepairSpec(null, null, TANNED_LEATHER, 0.0, 3))
             .build(),
         PieceDef.builder(ArmorSlot.BOOTS, "Bandit Boots")
             .bonuses(
@@ -83,7 +95,7 @@ public final class ArmorCatalog {
                     0.2,
                     ArmorBonus.FREE_FALL_HEIGHT,
                     1.0))
-            .repair(new RepairSpec(null, null, HEAVY_CLOTH, 0.0, 2))
+            .repair(new RepairSpec(null, null, TANNED_LEATHER, 0.0, 2))
             .build());
 
     /** T1 Miner, "Miner's ...": Steam/ULV, faster digging, four camos. */
@@ -95,15 +107,15 @@ public final class ArmorCatalog {
         BonusMap.EMPTY,
         PieceDef.builder(ArmorSlot.HELMET, "Miner's Helmet")
             .bonuses(BonusMap.of(ArmorBonus.SPEED, 0.08, ArmorBonus.BREAK_SPEED, 0.05))
-            .repair(new RepairSpec("plate", "CastIron", HEAVY_CLOTH, 0.5, 2))
+            .repair(new RepairSpec("plate", "CastIron", TANNED_LEATHER, 0.5, 2))
             .build(),
         PieceDef.builder(ArmorSlot.CHESTPLATE, "Miner's Jacket")
             .bonuses(BonusMap.of(ArmorBonus.SPEED, 0.08, ArmorBonus.BREAK_SPEED, 0.05))
-            .repair(new RepairSpec("plate", "CastIron", HEAVY_CLOTH, 0.5, 4))
+            .repair(new RepairSpec("plate", "CastIron", TANNED_LEATHER, 0.5, 4))
             .build(),
         PieceDef.builder(ArmorSlot.LEGGINGS, "Miner's Pants")
             .bonuses(BonusMap.of(ArmorBonus.SPEED, 0.08, ArmorBonus.BREAK_SPEED, 0.05))
-            .repair(new RepairSpec("plate", "CastIron", HEAVY_CLOTH, 1.0 / 3.0, 3))
+            .repair(new RepairSpec("plate", "CastIron", TANNED_LEATHER, 1.0 / 3.0, 3))
             .build(),
         PieceDef.builder(ArmorSlot.BOOTS, "Miner's Boots")
             .bonuses(
@@ -118,13 +130,10 @@ public final class ArmorCatalog {
                     0.2,
                     ArmorBonus.FREE_FALL_HEIGHT,
                     1.0))
-            .repair(new RepairSpec("plate", "CastIron", HEAVY_CLOTH, 0.5, 2))
+            .repair(new RepairSpec("plate", "CastIron", TANNED_LEATHER, 0.5, 2))
             .build());
 
     // ---- M3 wave B: T2 and T3 sets and steam armor ---------------------------------------------------------------
-
-    /** Registry name of the Treated Leather the Ranger Veteran set is repaired with (RC-22). */
-    public static final String TREATED_LEATHER = "part_treated_leather";
 
     private static final double[] REPAIR_RATIO = { 0.5, 0.5, 1.0 / 3.0, 0.5 };
     private static final int[] REPAIR_MATS = { 2, 4, 3, 2 };
@@ -222,7 +231,7 @@ public final class ArmorCatalog {
                     jump,
                     ArmorBonus.KNOCKBACK_RESISTANCE,
                     T2_COMBAT_KB[slot.ordinal()]))
-            .repair(repairFor(slot, "plate", "Aluminium", HEAVY_CLOTH))
+            .repair(repairFor(slot, "plate", "Aluminium", TANNED_LEATHER))
             .build();
     }
 
@@ -287,7 +296,7 @@ public final class ArmorCatalog {
                     ArmorBonus.KNOCKBACK_RESISTANCE,
                     T2_RIOT_KB[slot.ordinal()]))
             .partialHazards(HazardFlag.RADIOLOGICAL)
-            .repair(repairFor(slot, "plate", "Aluminium", TREATED_LEATHER))
+            .repair(repairFor(slot, "plate", "Aluminium", TANNED_LEATHER))
             .build();
     }
 
@@ -303,7 +312,7 @@ public final class ArmorCatalog {
         PieceDef.builder(ArmorSlot.HELMET, "Beret")
             .registryName("t2_beret")
             .bonuses(BonusMap.of(ArmorBonus.SPEED, 0.10))
-            .repair(new RepairSpec(null, null, HEAVY_CLOTH, 0.0, 2))
+            .repair(new RepairSpec(null, null, TANNED_LEATHER, 0.0, 2))
             .build());
 
     /** T3 Combat, "Advanced Combat ...": EV, three camos, penetration resistance 15%. */
@@ -328,7 +337,7 @@ public final class ArmorCatalog {
                     jump,
                     ArmorBonus.KNOCKBACK_RESISTANCE,
                     T3_COMBAT_KB[slot.ordinal()]))
-            .repair(repairFor(slot, "plate", "EpoxidFiberReinforced", HEAVY_CLOTH))
+            .repair(repairFor(slot, "plate", "EpoxidFiberReinforced", TANNED_LEATHER))
             .build();
     }
 
@@ -370,7 +379,7 @@ public final class ArmorCatalog {
                         STEAM_KB[slot.ordinal()])
                     .plus(extra))
             .partialHazards(HazardFlag.HEAT)
-            .repair(repairFor(slot, "plate", "Bronze", HEAVY_CLOTH))
+            .repair(repairFor(slot, "plate", "Bronze", TANNED_LEATHER))
             .build();
     }
 
@@ -415,7 +424,7 @@ public final class ArmorCatalog {
                     .plus(extra))
             .partialHazards(HazardFlag.BIOLOGICAL, HazardFlag.GAS, HazardFlag.RADIOLOGICAL)
             .poweredPartialHazards(HazardFlag.HEAT, HazardFlag.FROST, HazardFlag.ELECTRICAL)
-            .repair(repairFor(slot, "plate", "EpoxidFiberReinforced", HEAVY_CLOTH))
+            .repair(repairFor(slot, "plate", "EpoxidFiberReinforced", TANNED_LEATHER))
             .build();
     }
 
@@ -529,7 +538,7 @@ public final class ArmorCatalog {
                         EXO_KB[slot.ordinal()])
                     .plus(extra))
             .poweredPartialHazards(HazardFlag.HEAT, HazardFlag.FROST, HazardFlag.ELECTRICAL)
-            .repair(repairFor(slot, "plate", "EpoxidFiberReinforced", HEAVY_CLOTH))
+            .repair(repairFor(slot, "plate", "EpoxidFiberReinforced", TANNED_LEATHER))
             .build();
     }
 

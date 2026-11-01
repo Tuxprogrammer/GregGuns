@@ -13,7 +13,7 @@ Each roadmap content area is a module. **A flag never changes what GregGuns regi
 - its items and blocks are hidden from NEI and the GregGuns creative tab;
 - items that already exist stay intact, with a tooltip line "Disabled by the server's GregGuns config (modules.X)".
 
-**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M8 are met, so every module flag defaults to `true`, `worldgen` (M8) included. The exception is `icbm`, which defaults to `false` until the ICBM beta gate ([ROADMAP-ICBM](ROADMAP-ICBM.md)). The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
+**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M8 are met, and the ICBM beta checkpoint ([ROADMAP-ICBM](ROADMAP-ICBM.md)) is met, so every module flag defaults to `true`, `worldgen` (M8) and `icbm` included. `icbm` also needs the Galacticraft mod. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
 
 A module also needs the modules listed in "Needs". If a flag is on but a needed module is off, the module behaves as off and a warning is logged. This is a behavior rule only; it never gates registration.
 
@@ -26,7 +26,7 @@ A module also needs the modules listed in "Needs". If a flag is on but a needed 
 | `modules.utility` | boolean | `true` | n/a | login packet | `machines` | M6 | Utility and defense machines |
 | `modules.npcs` | boolean | `true` | n/a | login packet | `guns` | M7 | NPCs and spawning |
 | `modules.worldgen` | boolean | `true` | n/a | login packet | `npcs` | M8 | Structures and worldgen loot |
-| `modules.icbm` | boolean | `false` | n/a | login packet | `guns`, `machines`, and the Galacticraft mod | ICBM I0 | ICBM missiles and warheads. Off by default until the ICBM beta gate. With the flag on and Galacticraft not installed, the module turns itself off and logs one warning (D9); the flag then reads as off, also in the login packet. |
+| `modules.icbm` | boolean | `true` | n/a | login packet | `guns`, `machines`, and the Galacticraft mod | ICBM I0 | ICBM missiles and warheads. On by default. With the flag on and Galacticraft not installed, the module turns itself off and logs one warning (D9); the flag then reads as off, also in the login packet. |
 
 All module flags need a game restart. **The server's flags win on a multiplayer client.** At login the server sends which modules are active on it (`PacketModuleSync`, on the `gregguns` channel); the client uses those for behavior and visibility (tooltips, NEI, the creative tab, accuracy and gating) until it disconnects, and its own flags in single player. One exception: recipes are registered at startup from each side's own config, so a client whose module is off shows no recipes for it in its crafting grid and NEI.
 
@@ -46,6 +46,9 @@ In-memory pack-fit hooks ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md)). Eac
 | `compat.thaumcraftMobAspects` | boolean | `true` | n/a | no | Registers Thaumcraft scan aspects for the GregGuns NPCs. |
 | `compat.listHooks` | boolean | `true` | n/a | no | Adds `gregguns.` to AngerMod's `butcherItems` and `gregguns.SimpleTurret` to Mobs Info's `MobBlacklist`. |
 | `compat.enderioSpawnerBlacklist` | boolean | `true` | n/a | no | Puts every GregGuns NPC on EnderIO's Powered Spawner blacklist by IMC: a broken GregGuns spawner drops no Broken Spawner and releases no burst, and GregGuns NPCs stay out of the Powered Spawner. |
+| `compat.vendingTrades` | boolean | `true` | n/a | no | Server only. Adds the GregGuns trades (176 with every module on: guns, ammo, magazines, parts, armor, gear and NPC spawn eggs, priced in GregGuns Coins) to the Vending Machine in memory once the server has started; `tradeDatabase.json` is never written. With the GregGuns quest line installed, each tier's trades open with that tier's intro quest. Off removes them at the next start. Needs the Vending Machine; ignored without it. See [coins-and-vending.md](gregguns-spec/06-items/coins-and-vending.md). |
+| `compat.lootBags` | boolean | `true` | n/a | no | Adds the GregGuns loot bag groups (EnhancedLootBags ids 1701 to 1714, the quest rewards) to EnhancedLootBags' group list at startup, from the jar or from `config/gregguns-lootbags.xml` when that file exists. `LootBags.xml` is never written. Turn it off only when the pack defines these groups itself; GregGuns still keeps a bag whose group is missing from crashing (the use is denied with a chat line). |
+| `compat.roguelikeKeepOutOfComplexes` | boolean | `true` | n/a | no | Keeps Roguelike Dungeons out of silo complexes: a dungeon whose entrance would lie near a complex tries another spot, and none of its blocks are written inside one. Needs Roguelike Dungeons and the ICBM module. The startup log says whether it attached; if it cannot, Roguelike Dungeons runs unchanged. |
 
 ## Debug (`debug`)
 
@@ -53,7 +56,6 @@ Hidden from the in-game config GUI (developer aids; edit the file).
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Reserved for developers: nothing reads it yet, so changing it has no effect. Kept from Techguns' `enableDebugKeybinds`. |
 | `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
 
 ## Bio Gun (`bioGun`)
@@ -75,7 +77,7 @@ Turret, explosive charge, Bio Blob and Camp Flag tuning (M6). Server-side only, 
 | `utility.turretRange` | int | `24` | 4 to 64 | no | Blocks within which a Turret looks for targets. |
 | `utility.chargeMaxHardness` | float | `30.0` | 0 to 100000 | no | Hardest block the Explosive Charge bores (exclusive). |
 | `utility.chargeAdvancedMaxHardness` | float | `100.0` | 0 to 100000 | no | Hardest block the Advanced Explosive Charge bores (inclusive). |
-| `utility.bioBlobSparesPlayers` | boolean | `false` | n/a | no | Bio Blob poison skips players. |
+| `utility.bioBlobSparesPlayers` | boolean | `true` | n/a | no | Bio Blob poison skips players. |
 | `utility.bioBlobDecayTicks` | int | `60` | 1 to 24000 | no | Ticks per Bio Blob decay step. |
 | `utility.campFlagSpawnIntervalTicks` | int | `200` | 20 to 24000 | no | Ticks between Camp Flag spawn attempts. |
 | `utility.campFlagCapFactor` | float | `0.75` | 0 to 10 | no | NPC cap is int(((sizeX + sizeZ) / 2) * factor). |
@@ -88,8 +90,8 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
 | `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids where NPCs spawn naturally. |
-| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. |
-| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `false` | n/a | no | Switches for the special mobs. |
+| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. `zombies`, `military` and `bandits` gate natural spawning; `miniBosses` and `mutants` also refuse eggs, camps and spawners. |
+| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. `alienBug` and `cyberdemon` refuse the egg, camp and spawner spawns; `helicopter` gates the camp and Camp Flag helicopter. |
 | `npcs.weightZombieFarmer` / `weightZombieMiner` | int | `100` | 0 to 10000 | no | Spawn weights (half of Techguns). |
 | `npcs.weightZombieSoldier` / `weightSkeletonSoldier` | int | `50` | 0 to 10000 | no | Spawn weights. |
 | `npcs.weightBandit` | int | `25` | 0 to 10000 | no | Spawn weight. |
@@ -99,7 +101,7 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 | `npcs.perPlayerCap` | int | `8` | 0 to 1024 | no | Most NPCs around one player before natural spawning stops. |
 | `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
 | `npcs.infernalTieredLoot` | boolean | `true` | n/a | no | Elite, ultra and infernal GregGuns NPCs add tiered GregGuns drops (needs Infernal Mobs). |
-| `npcs.infernalAllowSpawnerNpcs` | boolean | `false` | n/a | no | NPCs from spawner blocks may roll as infernal mobs. |
+| `npcs.infernalSpawnerOptOut` | boolean | `false` | n/a | no | NPCs from spawner blocks never roll as infernal mobs when true (farm guard). Off, they roll at Infernal Mobs' own rates like every other NPC. |
 
 ## Worldgen (`worldgen`)
 
@@ -111,10 +113,10 @@ Structure placement, gating and loot tuning (M8). Read only while `modules.world
 | `worldgen.spacingSmall` / `spacingMedium` / `spacingBig` | int | `16` / `32` / `64` | 2 to 1024 | no | Grid cell size in chunks per size class. |
 | `worldgen.structureDimensions` | int list | `[0]` | any | no | Dimension ids where structures are placed. |
 | `worldgen.structureWorldTypes` | string list | `default`, `RWG`, `largeBiomes`, `amplified` | any | no | World type names that allow structures (case-insensitive). Flat and unknown types are out. |
-| `worldgen.enabled<Id>` | boolean | `true` (`false` for `AlienBugNest`) | n/a | no | Place that structure. |
+| `worldgen.enabled<Id>` | boolean | `true` | n/a | no | Place that structure. |
 | `worldgen.biomeBlacklist<Id>` | string list | none | any | no | BiomeDictionary type names in which that structure is never placed. |
-| `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot category. |
-| `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; scales counts and weights only. |
+| `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot table of each chest kind (supply, weapon, reinforced), and with it the tier of the guns, ammo, parts and GT metals in it. |
+| `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; adds picks to every chest and weight to the table's top-tier lines. Guns keep their weight, so a richer chest holds more ammo and gear, not more guns. |
 
 ## Damage factors (`damagefactors`)
 
@@ -165,9 +167,10 @@ Every key is synced except the `icbm.siloComplex*` keys, which only the server r
 | `icbm.siloComplexEnabled` | boolean | `true` | n/a | no | Whether silo complexes (D128) generate. Also needs `modules.worldgen` and `worldgen.spawnStructures`. |
 | `icbm.siloComplexDimensions` | string list | Overworld and every D38 planet except T Ceti E, an ocean world (D239) | n/a | no | Dimensions that get complexes, by the dimension's key (case-insensitive): "Overworld", or a Galacticraft planet's own unlocalized name such as `moon`, `iojupiter`, `ganymed`, `barnarda2`, `vega1`, `ross128b`. Remove a name to keep complexes out of that planet; a name the D38 table lacks gets no complexes, and the log says so once. A complex that already generated keeps generating after its dimension is removed. |
 | `icbm.siloComplexChancePercent` | int | `25` | 0 to 100 | no | Share of the sparse grid's cells (one per 64 x 64 chunks) that attempt a complex. Complexes already generated stay whatever the value; only new decisions follow it. |
+| `icbm.siloComplexChestTargets` | int list | `100, 200, 300` | three whole numbers, 0 or more | no | How many loot chests a whole complex holds: abandoned, partly abandoned, operational. The same on every planet. Every chest holds loot; a chest spot left over is an empty wooden crate. Armory display chests come on top. Other lists keep the default. |
 | `icbm.siloComplexRoss128Weights` | int list | `30, 22, 16, 11, 8, 6, 4, 2, 1` | nine values | no | Weights, EV first to UMV last, of the loot ceiling a complex on Ross128b or Ross128ba rolls. |
 | `icbm.siloComplexOverworldBiomes` | string list | dry and temperate land types | n/a | no | Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all. |
-| `icbm.siloComplexActivityWeights` | int list | `50, 35, 15` | three weights, 0 or more | no | Relative weights of the activity levels (abandoned, partly abandoned, operational) a complex rolls from its seed. Other lists keep the default. |
+| `icbm.siloComplexActivityWeights` | int list | `30, 40, 30` | three weights, 0 or more | no | Relative weights of the activity levels (abandoned, partly abandoned, operational) a complex rolls from its seed. Other lists keep the default. Each complex rolls once, when it is first placed, and keeps that level. |
 | `icbm.maxMissilesInFlight` | int | `20` | 1 to 100 | yes | Most missiles in flight at once, server wide (D11). Each holds at most two chunks. |
 | `icbm.missileFuelFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's fuel tank (D20, D60). |
 | `icbm.missileRangeFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's range (D60). |
@@ -185,6 +188,8 @@ Every key is synced except the `icbm.siloComplex*` keys, which only the server r
 | `icbm.empMissileTriggerChance` | double | `0.1` | 0 to 1 | yes | Chance, among the rest, that a pulse sets a missile's warhead off where it is. |
 | `icbm.enderMaxTeleports` | int | `64` | 1 to 1024 | yes | Most entities one ender warhead teleports (D80); the rest are only pulled. |
 | `icbm.antigravMaxBlocks` | int | `512` | 0 to 4096 | yes | Most blocks one anti-gravitational warhead lifts into flying blocks (D80), top layer first. |
+
+**Finding structures.** Ops (permission level 2, and the console) can list them with `/gregguns locate <kind> [radius_cells] [generate]`, where the kind is `complex` (silo complexes), `military_base`, `big_bunker`, `factory_small`, `train_station`, `gas_station`, `house_medium`, `alien_bug_nest`, `aircraft_carrier`, `submarine` or `any`. It prints the sites within the radius (1 to 16 cells of 1,024 blocks, default 3) that the seed and the spacing, pool and chance settings select, nearest first, each as built, skipped (with the reason) or not generated yet. Add `generate` to make the nearest five undecided sites decide now, one chunk per tick, with a progress line per site. Click a built site's line to land on the surface at it. It works in the dimension you stand in, and only where that dimension generates the kind.
 
 ## Equipment (`equipment`)
 
@@ -250,20 +255,20 @@ Server side of aim down sights. Read on the server; none is synced.
 | `aim.adsEnabled` | boolean | `true` | n/a | no | Lets sights-only guns aim on a right-click. Off: the server ignores the request and drops a running aim. Scope zoom is unaffected. |
 | `aim.adsSpreadMultiplier` | float | `0.75` | 0.0 to 1.0 | no | Multiplier on spread while aiming a gun with no scope zoom of its own (0.75 is 25 percent tighter). A scoped gun keeps its own zoom multiplier. |
 
-## Hidden keys
+## Questbook (`questbook`)
 
-These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their class carries GTNHLib's `@Config.ExcludeFromAutoGui`). They are for server owners and are edited in the file. The `debug` category is hidden the same way.
+Server only. The key is in the in-game config GUI and in `config/gregguns.cfg`. (The `debug` category is hidden from the GUI and edited in the file.)
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `questbook.install` | boolean | `false` | n/a | no | On server start, installs the GregGuns quest line from this jar into BetterQuesting's database (design record 0015). Needs BetterQuesting; with it absent the key is ignored (one INFO line). Needs a server restart. |
+| `questbook.install` | boolean | `true` | n/a | no | On server start, installs the GregGuns quest line from this jar into BetterQuesting's database (design record 0015). Needs BetterQuesting; with it absent the key is ignored (one INFO line). Needs a server restart. |
 
-**Questbook install.** Set `questbook.install=true` and restart the server. After BetterQuesting has loaded its database, GregGuns reads the quest line from `assets/gregguns/questbook/` in its own jar and upserts it by fixed quest ID, marks the database for BetterQuesting's next world save, syncs connected players and logs `Installed/updated GregGuns quest line: N quests`.
+**Questbook install.** With `questbook.install` on (the default), the server installs the line on each start. After BetterQuesting has loaded its database, GregGuns reads the quest line from `assets/gregguns/questbook/` in its own jar and upserts it by fixed quest ID, marks the database for BetterQuesting's next world save, syncs connected players and logs `Installed/updated GregGuns quest line: N quests`.
 
 - **Safe to leave on.** It only touches the GregGuns quests and the GregGuns line. Every other quest and line stays as it is. Player progress is kept: completion and claims live per quest ID, and task progress is restored after the definition is replaced. The install rewrites GregGuns quest text and positions on each start.
 - **Tab order.** The GregGuns tab is added after the existing tabs the first time. If an admin later moves it, the move is kept. **In the GTNH pack this does not hold:** while the pack's `config/modpack-update` marker is present, DreamCoreMod runs `/bq_admin default load` on every start, which rebuilds the database from the pack's DefaultQuests. The install then adds the GregGuns line again (the log says "121 added") and the tab goes back to last. Player progress is still kept.
-- **Off is not removal.** Setting the key back to `false` does nothing at all: an installed line stays in the world's database. To remove it, open the questbook in edit mode (`/bq_admin edit`) and delete the GregGuns line and its quests, or delete the quests by ID with the `/bq_admin` commands. Back up `betterquesting/` in the world folder first; deleting a quest also deletes its progress. While the key stays `true`, a removed quest comes back on the next start, so turn the key off first.
-- **Retired quests.** The install never removes a quest. Delete one by hand if you want it gone.
+- **Off is not removal.** Setting the key to `false` does nothing at all: an installed line stays in the world's database. To remove it, open the questbook in edit mode (`/bq_admin edit`) and delete the GregGuns line and its quests, or delete the quests by ID with the `/bq_admin` commands. Back up `betterquesting/` in the world folder first; deleting a quest also deletes its progress. While the key stays `true`, a removed quest comes back on the next start, so turn the key off first.
+- **Retired quests.** The install deletes exactly the quest IDs that `index.json` retires, together with their progress, and touches no other quest.
 
 ## Rules for new options
 

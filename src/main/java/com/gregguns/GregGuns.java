@@ -13,6 +13,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -27,8 +28,20 @@ public class GregGuns {
 
     public static final String MODID = "gregguns";
     public static final String NAME = "GregGuns";
-    /** Hard dependencies: GregGuns is built on GT5-Unofficial and GTNHLib and cannot load without them. */
-    public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib;before:EnderZoo;after:betterquesting";
+    /**
+     * Hard dependencies: GregGuns is built on GT5-Unofficial and GTNHLib and cannot load without them. Soft order:
+     * after BetterQuesting and EnhancedLootBags (whose group list GregGuns adds its loot bag groups to in preInit),
+     * before EnderZoo.
+     *
+     * <p>
+     * This string is the only source of load order: {@code mcmod.info} sets {@code "useDependencyInformation": false}.
+     * With it true, Forge ignores this string and reads the ordering from {@code mcmod.info} alone.
+     */
+    // Source:
+    // https://github.com/MinecraftForge/FML/blob/a099592d3d1418245e3af65eda195da244287188/src/main/java/cpw/mods/fml/common/FMLModContainer.java#L160
+    // (bindMetadata: the @Mod dependencies string is parsed by Loader.computeDependencies only when the annotation
+    // overrides metadata or mcmod.info has useDependencyInformation false; otherwise modMetadata's lists are used)
+    public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib;before:EnderZoo;after:betterquesting;after:enhancedlootbags";
     public static final Logger LOG = LogManager.getLogger(MODID);
 
     /** The mod instance, needed by Forge's entity registry. */
@@ -61,6 +74,11 @@ public class GregGuns {
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         proxy.serverStarting(event);
+    }
+
+    @Mod.EventHandler
+    public void serverStarted(FMLServerStartedEvent event) {
+        proxy.serverStarted(event);
     }
 
     @Mod.EventHandler

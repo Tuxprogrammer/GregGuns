@@ -23,6 +23,12 @@ public interface QuestbookTarget {
     /** Adds the quest, or replaces its definition and keeps every player's progress on it. */
     void putQuest(UUID id, JsonObject definition);
 
+    /**
+     * Deletes a quest: its definition, every player's progress on it, its entry in every line, and its place in
+     * other quests' prerequisites. Called only for ids the shipped index retires.
+     */
+    void removeQuest(UUID id);
+
     /** Adds the line, or replaces it (its properties and the quest positions on it). Other lines are untouched. */
     void putLine(UUID id, JsonObject definition, Map<UUID, JsonObject> positions);
 

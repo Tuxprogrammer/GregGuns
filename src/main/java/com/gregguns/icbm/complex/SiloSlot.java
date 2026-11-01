@@ -77,6 +77,53 @@ public final class SiloSlot {
         }
     }
 
+    /** The four hatch roles a generated silo carries. */
+    public static final byte[] HATCH_ROLES = { Cell.HATCH_ENERGY, Cell.HATCH_BUS, Cell.HATCH_FUEL,
+        Cell.HATCH_MAINTENANCE };
+
+    /**
+     * Where a generated silo's hatch stands, seen by a viewer in front of the controller (D299, the owner's build): the
+     * face is five wide in its three window rows, a 3x3 clear glass window around the controller with a hatch column on
+     * each side, flush with the glass. The Launch Control tops the right column; concrete tops the left one.
+     *
+     * <pre>
+     *   viewer's left                                    viewer's right
+     *   concrete      glass  glass         glass  Launch Control   (y 3)
+     *   Input Hatch   glass  [controller]  glass  Input Bus        (y 2)
+     *   Maintenance   glass  glass         glass  Energy Hatch     (y 1)
+     * </pre>
+     *
+     * @param role one of {@link #HATCH_ROLES}
+     * @return complex-local {x, y, z}, y being the layer above the floor layer 0 (the controller is at y 2)
+     */
+    public int[] hatchCell(byte role) {
+        // This turn puts shape column 0 on the viewer's right (see SiloShape.HATCH_COLUMN_RIGHT).
+        int right = com.gregguns.icbm.silo.SiloShape.HATCH_COLUMN_RIGHT;
+        int left = com.gregguns.icbm.silo.SiloShape.HATCH_COLUMN_LEFT;
+        int col, y;
+        switch (role) {
+            case Cell.HATCH_BUS:
+                col = right;
+                y = 2;
+                break;
+            case Cell.HATCH_ENERGY:
+                col = right;
+                y = 1;
+                break;
+            case Cell.HATCH_FUEL:
+                col = left;
+                y = 2;
+                break;
+            case Cell.HATCH_MAINTENANCE:
+                col = left;
+                y = 1;
+                break;
+            default:
+                throw new IllegalArgumentException("not a hatch role: " + role);
+        }
+        return new int[] { x(col, 0), y, z(col, 0) };
+    }
+
     /** @return complex-local x of the controller (y 2) */
     public int controllerX() {
         return x(2, 0);

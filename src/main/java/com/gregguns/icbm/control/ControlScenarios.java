@@ -50,7 +50,9 @@ public final class ControlScenarios {
                 (m, sync) -> new LaunchControlGui((MTELaunchControl) m).registerSyncValues(sync)));
         registry.register(new PadAndGate());
         registry.register(new Stick());
+        registry.register(new GunInSlot());
         registry.register(new Redstone());
+        registry.register(new PadChoice());
         registry.register(new com.gregguns.icbm.missile.ControlLaunchScenario());
     }
 
@@ -177,7 +179,7 @@ public final class ControlScenarios {
 
         @Override
         public String description() {
-            return "No target, then no pad, then (with a pad but no missile) no missile; the pad is found two blocks away and not eight.";
+            return "No target, then no pad, then (with a pad but no missile) no missile; only a pad whose edge the block touches, level with it, counts: a pad far off, one a block away, one touching only at a corner and one a level above are not adjacent.";
         }
 
         @Override
@@ -198,6 +200,11 @@ public final class ControlScenarios {
                 if (stage[0] == 0) {
                     base.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 3L, true);
                     out.checkEquals("unset target", ControlStatus.NO_TARGET, c.currentStatus());
+                    // The target line says the target is missing, so the status line reports the site instead.
+                    out.checkEquals(
+                        "no target: the status line names the pad",
+                        ControlStatus.NO_PAD,
+                        c.currentSiteStatus());
                     out.check(
                         !c.target()
                             .isSet(),
@@ -210,21 +217,150 @@ public final class ControlScenarios {
                     c.setZText("-700");
                     out.checkEquals("target", LaunchTarget.of(500, -700), c.target());
                     out.checkEquals("no pad", ControlStatus.NO_PAD, c.currentStatus());
-                    // A pad eight blocks off is out of reach; one whose center is three blocks off is found.
+                    // Galacticraft's rule (D288): the block must stand against a pad's edge, level with it.
                     pad(ctx, 8, 0, 0);
-                    out.checkEquals("far pad ignored", ControlStatus.NO_PAD, c.currentStatus());
+                    out.checkEquals("a far pad is not adjacent", ControlStatus.NO_PAD, c.currentStatus());
                     pad(ctx, 3, 0, 0);
+                    out.checkEquals("a pad one block off is not adjacent", ControlStatus.NO_PAD, c.currentStatus());
+                    pad(ctx, -2, 0, 2);
+                    out.checkEquals("a pad touching a corner is not adjacent", ControlStatus.NO_PAD, c.currentStatus());
+                    pad(ctx, 0, 1, -2);
+                    out.checkEquals("a pad a level above is not adjacent", ControlStatus.NO_PAD, c.currentStatus());
+                    out.checkEquals("bound to nothing", SiteLine.NONE, c.siteLine());
+                    pad(ctx, 0, 0, -2);
+                    out.checkEquals(
+                        "the touching pad is named",
+                        new SiteLine(SiteLine.Kind.PAD, ctx.originX(), ctx.originZ() - 2, ""),
+                        c.siteLine());
                     stage[0] = 1;
                     return null;
                 }
                 ControlStatus st = c.fire(null);
                 out.checkEquals("pad found, no missile", ControlStatus.NO_MISSILE, st);
                 out.checkEquals("nothing was charged", MTELaunchControl.EU_PER_SHOT * 3L, base.getStoredEU());
+                // With the target cleared the status line reports the pad's own problem, then that the missile is
+                // ready, and never repeats the target line's "no target".
+                c.setXText("");
+                out.checkEquals("cleared target", ControlStatus.NO_TARGET, c.currentStatus());
+                out.checkEquals(
+                    "no target: the status line says no missile",
+                    ControlStatus.NO_MISSILE,
+                    c.currentSiteStatus());
+                com.gregguns.icbm.missile.EntityMissile ready = missileOn(ctx, 0, -2);
+                out.checkEquals("no target, missile ready", ControlStatus.READY, c.currentSiteStatus());
+                out.checkEquals(
+                    "the status line then reads armed and fueled",
+                    LaunchGate.SITE_READY_KEY,
+                    LaunchGate.statusLineKey(c.currentStatus(), c.currentSiteStatus()));
+                ready.setDead();
+                c.setXText("500");
                 // Without power the block says so before it looks at the missile.
                 base.decreaseStoredEnergyUnits(base.getStoredEU(), true);
                 out.checkEquals("no power", ControlStatus.NO_POWER, c.fire(null));
                 empty(base);
                 return out.build();
+            });
+        }
+    }
+
+    /** A missile standing on a pad, armed and with a full tank. */
+    private static com.gregguns.icbm.missile.EntityMissile missileOn(ScenarioContext ctx, int cx, int cz) {
+        com.gregguns.icbm.missile.EntityMissile m = com.gregguns.icbm.missile.EntityMissile
+            .create(com.gregguns.icbm.missile.MissileTier.T1, ctx.world());
+        m.setLocationAndAngles(
+            ctx.originX() + cx + 0.5,
+            ctx.originY() + com.gregguns.icbm.missile.EntityMissile.PAD_SURFACE,
+            ctx.originZ() + cz + 0.5,
+            0.0F,
+            0.0F);
+        m.configure(0, "condensed", 1, 1, null);
+        ctx.world()
+            .spawnEntityInWorld(m);
+        m.fill(m.capacityMb(), true);
+        return m;
+    }
+
+    /**
+     * The owner's report (D288): a Launch Control between two sites said "no missile" because it took the first site
+     * whatever stood on it. Between two pads it now takes the one with a ready missile, and a tie goes to the fixed
+     * side
+     * order.
+     */
+    private static final class PadChoice extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.control.pad_choice";
+        }
+
+        @Override
+        public String description() {
+            return "A Launch Control between two pads it touches, an empty one first in the side order and one with a fueled missile second, binds the loaded one and is ready, not \"no missile\"; with missiles on both it binds the first in the order, and it never flips between them.";
+        }
+
+        @Override
+        ScenarioResult go(ScenarioContext ctx) {
+            ctx.clearArea(10, 8);
+            for (int a = -6; a <= 6; a++) {
+                for (int b = -4; b <= 4; b++) {
+                    ctx.setBlock(a, -1, b, Blocks.stone, 0);
+                }
+            }
+            place(ctx, 0, 0, 0);
+            // East comes before west in the side order; the missile stands on the west pad.
+            pad(ctx, 2, 0, 0);
+            pad(ctx, -2, 0, 0);
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final com.gregguns.icbm.missile.EntityMissile[] m = new com.gregguns.icbm.missile.EntityMissile[2];
+            final int[] stage = { 0 };
+            return ScenarioResult.pending(name(), WARMUP_TICKS + 80, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                IGregTechTileEntity base = live(ctx, 0, 0, 0);
+                MTELaunchControl c = mte(base);
+                if (c == null) {
+                    return ScenarioResult.fail(name(), "the Launch Control is gone after the warm-up");
+                }
+                switch (stage[0]) {
+                    case 0:
+                        base.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 3L, true);
+                        c.setXText(Integer.toString(ctx.originX()));
+                        c.setZText(Integer.toString(ctx.originZ() + 300));
+                        out.checkEquals(
+                            "two empty pads: the first in the side order",
+                            new SiteLine(SiteLine.Kind.PAD, ctx.originX() + 2, ctx.originZ(), ""),
+                            c.siteLine());
+                        out.checkEquals("and it has no missile", ControlStatus.NO_MISSILE, c.currentStatus());
+                        m[0] = missileOn(ctx, -2, 0);
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        out.checkEquals(
+                            "the loaded pad wins over the empty one",
+                            new SiteLine(SiteLine.Kind.PAD, ctx.originX() - 2, ctx.originZ(), ""),
+                            c.siteLine());
+                        out.checkEquals("ready, not \"no missile\"", ControlStatus.READY, c.currentStatus());
+                        m[1] = missileOn(ctx, 2, 0);
+                        stage[0] = 2;
+                        return null;
+                    default:
+                        for (int i = 0; i < 3; i++) {
+                            out.checkEquals(
+                                "two ready pads: the first in the side order, every time",
+                                new SiteLine(SiteLine.Kind.PAD, ctx.originX() + 2, ctx.originZ(), ""),
+                                c.siteLine());
+                        }
+                        out.checkEquals("still ready", ControlStatus.READY, c.currentStatus());
+                        for (com.gregguns.icbm.missile.EntityMissile e : m) {
+                            if (e != null) {
+                                e.setDead();
+                            }
+                        }
+                        empty(base);
+                        ctx.clearArea(10, 8);
+                        return out.build();
+                }
             });
         }
     }
@@ -302,6 +438,69 @@ public final class ControlScenarios {
                     ctx.originX(),
                     c.target()
                         .x());
+                empty(base);
+                return out.build();
+            });
+        }
+    }
+
+    /** A Radar Gun in the target slot sets the target like a data stick does, and stays in the slot. */
+    private static final class GunInSlot extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.control.radar_gun_slot";
+        }
+
+        @Override
+        public String description() {
+            return "The target slot takes a Radar Gun: a gun holding a target loads it, an empty gun gives a message and changes nothing, a foreign-dimension target is refused, and the gun stays in the slot.";
+        }
+
+        @Override
+        ScenarioResult go(ScenarioContext ctx) {
+            ctx.clearArea(10, 4);
+            place(ctx, 0, 0, 0);
+            TestPlayer near = new TestPlayer((WorldServer) ctx.world(), "[GGLaunchGun]");
+            near.setPosition(ctx.originX() + 0.5, ctx.originY() + 1, ctx.originZ() + 2.5);
+            return afterWarmup(name(), () -> {
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                IGregTechTileEntity base = live(ctx, 0, 0, 0);
+                MTELaunchControl c = mte(base);
+                if (c == null) {
+                    return ScenarioResult.fail(name(), "the Launch Control is gone after the warm-up");
+                }
+                net.minecraft.item.Item gunItem = com.gregguns.icbm.defense.DefenseMachines.radarGunItem();
+                ItemStack gun = new ItemStack(gunItem);
+                out.check(c.isItemValidForSlot(MTELaunchControl.SLOT_STICK, gun), "the slot accepts a Radar Gun");
+                out.check(
+                    c.isItemValidForSlot(MTELaunchControl.SLOT_STICK, ItemList.Tool_DataStick.get(1)),
+                    "the slot still accepts a data stick");
+                out.check(
+                    !c.isItemValidForSlot(MTELaunchControl.SLOT_STICK, new ItemStack(net.minecraft.init.Items.apple)),
+                    "the slot refuses other items");
+                base.setInventorySlotContents(MTELaunchControl.SLOT_STICK, gun);
+                // A gun with no target: a message, no crash, no target.
+                c.loadFromStick(near);
+                out.checkEquals("untargeted gun", TargetStick.Outcome.EMPTY_STICK, c.lastStick());
+                out.check(
+                    !c.target()
+                        .isSet(),
+                    "an untargeted gun sets no target");
+                // A targeted gun.
+                com.gregguns.icbm.defense.ItemRadarGun.store(gun, ctx.world(), 321, -654);
+                c.loadFromStick(near);
+                out.checkEquals("targeted gun", TargetStick.Outcome.LOADED, c.lastStick());
+                out.checkEquals("target after load", LaunchTarget.of(321, -654), c.target());
+                out.check(
+                    base.getStackInSlot(MTELaunchControl.SLOT_STICK) == gun,
+                    "the gun stays in the slot after loading");
+                // A target from another dimension is refused and leaves the target alone.
+                int dim = ctx.world().provider.dimensionId;
+                TargetStick.write(gun.getTagCompound(), LaunchTarget.of(9, 9), dim + 7);
+                c.loadFromStick(near);
+                out.checkEquals("foreign dimension", TargetStick.Outcome.WRONG_DIMENSION, c.lastStick());
+                out.checkEquals("target unchanged", LaunchTarget.of(321, -654), c.target());
                 empty(base);
                 return out.build();
             });

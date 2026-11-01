@@ -42,7 +42,7 @@ Press **R** to swap in a loaded magazine. The empty one comes back to your inven
 
 ## 6. Repair, then climb the tiers
 
-Worn armor and guns go back on a Repair Bench of at least their tier, with GregTech plates and cloth.
+Worn armor and guns go back on a Repair Bench of at least their tier, with GregTech plates and Tanned Leather.
 
 <ItemImage id="gregtech:gt.blockmachines:20109" label="right" />
 

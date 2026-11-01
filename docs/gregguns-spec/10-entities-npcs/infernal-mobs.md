@@ -101,11 +101,12 @@ How each enabled modifier meets a GregGuns NPC:
   - Loot tier ceilings come from [0005](../../design/0005-world-presence.md). The tables, and which items sit in which band, belong to [06-items](../06-items/pack-loot.md#infernal-mobs-handler). This sheet owns only the trigger.
 - **Pack-side change:** none by default. Alternative (route A in [pack-loot.md](../06-items/pack-loot.md#infernal-mobs)): append GregGuns items to `droppedItemIDs*`. That is the only way to make them show in NEI's Infernal Drops page (see [mob-drops-nei.md](mob-drops-nei.md)), but it makes **every** infernal mob in the pack drop them.
 
-### Infernal Mobs: opt-out for farmable sources
+### Infernal Mobs: optional opt-out for spawner NPCs
 
 - **Pack config:** none.
 - **Source:** if the entity's persistent data already holds a non-empty modifier string, the join handler calls `addEntityModifiersByString` and **skips** the rolling path, and an unparseable string adds no modifiers. [EntityEventHandler#L70-L80](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/events/EntityEventHandler.java#L70-L80), [InfernalMobsCore#L582-L595](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L582-L595). The key is `InfernalMobsCore.getNBTTag()`.
-- **GregGuns does:** NPCs placed by a GregGuns structure spawner (a vanilla mob spawner with GregGuns `SpawnData`, see [spawning](spawning.md#spawner-npcs)) get a non-modifier marker string in that key while they read their spawn data, before they join the world, unless `infernal.allowSpawnerNpcs` is true (default false). A spawner is a farm, and the pack has anti-farming off. This relies on internal behavior, so it is guarded by the soft-dependency check and covered by a test.
+- **GregGuns does:** nothing by default. NPCs placed by a GregGuns structure spawner (a vanilla mob spawner with GregGuns `SpawnData`, see [spawning](spawning.md#spawner-npcs)) join the world unmarked, so Infernal Mobs rolls them like every other NPC, at its own rates (`eliteRarity`, `ultraRarity`, `infernoRarity`). An owner who wants a farm guard sets `npcs.infernalSpawnerOptOut=true`: those NPCs then get a non-modifier marker string in that key while they read their spawn data, before they join the world. The marker relies on internal behavior, so it is guarded by the soft-dependency check and covered by a test. The Attack Helicopter always takes the same marker ([PACK-CHANGES](../PACK-CHANGES.md)); the turret is not an `IMob`.
+- **Why the default is on:** the first design (GGS-10-13 as first written) opted spawner NPCs out by default, as a farm guard. A pack owner reported that no GregGuns mob spawned infernal: structure guards come from spawners, and the guard hid every one of them. The report overrides the guard, so spawner NPCs are eligible and the guard is a switch.
 - **Pack-side change:** none.
 
 ## Requirements
@@ -124,7 +125,7 @@ How each enabled modifier meets a GregGuns NPC:
 | GGS-10-10 | The infernal loot handler is a soft dependency in its own class. It runs at `EventPriority.HIGH` and acts only for GregGuns NPCs where `getIsRareEntity` is true and `recentlyHit` is true. The config toggle `infernal.tieredLoot` (default true) disables it. |
 | GGS-10-11 | The handler's tier bands match the core: up to 5 modifiers is `ELITE`, up to 10 `ULTRA`, above that `INFERNAL`. It rolls `ceil(modSize / 5)` items. The band logic is a pure function with unit tests. |
 | GGS-10-12 | Items added by the handler come from the tier tables in [pack-loot.md](../06-items/pack-loot.md#infernal-mobs-handler) and never exceed the tier ceiling in [0005](../../design/0005-world-presence.md). |
-| GGS-10-13 | NPCs from spawner blocks skip infernal rolling unless `infernal.allowSpawnerNpcs` is true. |
+| GGS-10-13 | NPCs from spawner blocks roll for infernal like any other NPC. They skip the roll only when `npcs.infernalSpawnerOptOut` is true (default false). |
 | GGS-10-14 | NPC code never replaces, clears or rewrites `getEntityData()`. Infernal Mobs stores its modifier string there, and it persists through the entity's normal save. |
 
 ## Tests
@@ -140,7 +141,7 @@ How each enabled modifier meets a GregGuns NPC:
 | GGS-10-08 | `/gregguns test` scenario: Ghastly Army Soldier fires fireballs at a player in view. |
 | GGS-10-09 | Unit test: a canceled `LivingDeathEvent` leaves no gore request. |
 | GGS-10-10 to 12 | Unit tests for the band function and roll count. `/gregguns test` scenario: kill 50 elite and 50 ultra spawns and check that every drop is in the table for its band. |
-| GGS-10-13 | Scenario `worldgen.spawner_infernal_marker`: every NPC a GregGuns spawner places carries the marker when it joins the world (with Infernal Mobs loaded). runServer check: a Big Bunker spawner spawns 100 NPCs and none has a modifier. |
+| GGS-10-13 | Unit test `InfernalLootTableTest` for the pure rule. Scenario `worldgen.spawner_infernal_marker`: a spawner NPC carries the marker at join only with the opt-out on. Scenario `npc.infernal_roll` (needs Infernal Mobs): of 400 natural-path and 400 spawner-path NPCs some roll infernal; with the opt-out on, none of the spawner path does. |
 | GGS-10-14 | Unit test: write and read an NPC with a modifier string in its persistent data. The string survives. |
 
 Spawn note for tests: `/spawninfernal x y z <EntityList name> <modifiers>` builds the entity by constructor only. [InfernalCommandSpawnInfernal#L45-L62](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/commands/InfernalCommandSpawnInfernal.java#L45-L62). It does not run the equipment roll, so the NPC is unarmed. Give it a gun first, or spawn from an egg and then add modifiers.

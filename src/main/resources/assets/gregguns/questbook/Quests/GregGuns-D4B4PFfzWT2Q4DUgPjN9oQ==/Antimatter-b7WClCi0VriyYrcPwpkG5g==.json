@@ -2,8 +2,11 @@
   "preRequisites:9": {
     "0:10": {
       "questIDHigh:4": -6811307739137288999,
-      "questIDLow:4": -7103462764511784255,
-      "type:1": 1
+      "questIDLow:4": -7103462764511784255
+    },
+    "1:10": {
+      "questIDHigh:4": 0,
+      "questIDLow:4": 2613
     }
   },
   "properties:10": {
@@ -18,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges, made in the Assembler at UV from 8 naquadria plates, 2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. A full warhead blasts 80 blocks, and nothing living in the inner 60 percent (48 blocks) survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.",
+      "desc:8": "Antimatter is the Tier 4 casing: naquadria plates, two blocks tall, up to 128 charges. The Assembler makes the Inert T4 Warhead at UV from 8 naquadria plates, a Fuze Assembly Mk III, a Heavy Duty Nose Cone Tier 3, 12 Heavy Duty Plates Tier 6, a UV Sensor, a UV Emitter and 2 UV circuits, fits the antimatter payload at UV (2 UV Field Generators, a Quantum Eye and 4 plutonium-241 ingots), and fills it with 128 Plastic Explosive. Check NEI.\n\nA full warhead blasts 80 blocks, and nothing living in the inner 48 survives, bosses included. It leaves no fallout, and it ends any Red Matter within 200 blocks. The Tier 3 missile carries it from the silo. Make one.\n\n[warn]Bosses are not safe and neither are you. Launch it from far away.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -30,7 +33,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Antimatter",
+      "name:8": "§2§l§nAntimatter",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -59,7 +62,64 @@
   },
   "questIDHigh:4": 8049483481844307640,
   "questIDLow:4": -5592706508923533594,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1713,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:rainbowcurryItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 3,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 16,
+          "Damage:2": 17327,
+          "OreDict:8": "plateNaquadria",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:inert_warhead_t4"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 32677,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 32724,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

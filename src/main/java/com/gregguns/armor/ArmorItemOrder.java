@@ -121,8 +121,6 @@ public final class ArmorItemOrder {
     /** The tier each {@link ArmorParts#NAMES} part declares. */
     private static final List<Extra> PARTS = Collections.unmodifiableList(
         Arrays.asList(
-            new Extra(ArmorCatalog.HEAVY_CLOTH, Tier.STEAM, Kind.PART),
-            new Extra(ArmorCatalog.TREATED_LEATHER, Tier.LV, Kind.PART),
             new Extra(ArmorParts.GAS_MASK_FILTER, Tier.MV, Kind.PART),
             new Extra(ArmorParts.TANK_AIR, Tier.HV, Kind.PART),
             new Extra(ArmorParts.GLIDER_BACKPACK, Tier.HV, Kind.PART),

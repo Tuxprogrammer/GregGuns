@@ -33,9 +33,7 @@ public final class PartCatalog {
         /** A use-to-heal consumable ({@link ItemConsumable}). */
         CONSUMABLE,
         /** A nuclear power cell ({@link ItemPart}), not an electric item. */
-        CELL,
-        /** A cell that is only made by use, hidden from the creative tab ({@link ItemPartHidden}). */
-        CELL_HIDDEN
+        CELL
     }
 
     /** The class that registers the item, so the registry name is never added twice. */
@@ -149,38 +147,14 @@ public final class PartCatalog {
         // Tanks, cells and consumables.
         list.add(new Entry("tank_fuel", Tier.HV, Kind.TANK, Owner.COMPONENT_ITEMS, "RC-52 ComponentTable", null));
         list.add(new Entry("tank_bio", Tier.EV, Kind.TANK, Owner.COMPONENT_ITEMS, "RC-53 ComponentTable", null));
-        list.add(
-            new Entry(
-                "cell_nuclear",
-                Tier.ZPM,
-                Kind.CELL,
-                Owner.COMPONENT_ITEMS,
-                "RC-59 and RC-60 ComponentTable",
-                null));
-        list.add(
-            new Entry(
-                "cell_nuclear_depleted",
-                Tier.ZPM,
-                Kind.CELL_HIDDEN,
-                Owner.COMPONENT_ITEMS,
-                null,
-                "made by use: a reload consumes cell_nuclear and returns this (GGS-06-42)"));
+        list.add(new Entry("cell_nuclear", Tier.ZPM, Kind.CELL, Owner.COMPONENT_ITEMS, "RC-59 ComponentTable", null));
         list.add(new Entry("bandages", Tier.LV, Kind.CONSUMABLE, Owner.COMPONENT_ITEMS, "RC-61 ComponentTable", null));
         list.add(new Entry("medkit", Tier.MV, Kind.CONSUMABLE, Owner.COMPONENT_ITEMS, "RC-62 ComponentTable", null));
         // Registered by other classes; reused, never re-added. Their recipes are written by their owners.
         list.add(
-            new Entry(
-                "part_heavy_cloth",
-                Tier.STEAM,
-                Kind.PART,
-                Owner.ARMOR_PARTS,
-                "RC-21 ArmorParts (crafting table)",
-                null));
-        list.add(
             new Entry("part_gas_mask_filter", Tier.MV, Kind.PART, Owner.ARMOR_PARTS, "RC-25 EquipmentTable", null));
         list.add(new Entry("tank_air", Tier.HV, Kind.TANK, Owner.ARMOR_PARTS, "RC-54 EquipmentTable", null));
         // Registered by ArmorParts on the m3 branches (armor-t2-t3, flight-gear), with their own recipes.
-        list.add(new Entry("part_treated_leather", Tier.LV, Kind.PART, Owner.ARMOR_PARTS, "RC-22 armor (m3)", null));
         list.add(
             new Entry(
                 "part_glider_backpack",

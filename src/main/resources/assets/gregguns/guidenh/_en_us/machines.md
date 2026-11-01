@@ -36,7 +36,7 @@ Its multiblock is the [Ammunition Works](ammunition-works.md).
 
 ## Repair Bench
 
-LV to IV. Restores worn armor and guns with GregTech plates and cloth. Its tier must be at least the item's.
+LV to IV. Restores worn armor and guns with GregTech plates and Tanned Leather. Its tier must be at least the item's.
 
 <ItemImage id="gregtech:gt.blockmachines:20109" label="right" /> <ItemImage id="gregtech:gt.blockmachines:20110" label="right" /> <ItemImage id="gregtech:gt.blockmachines:20111" label="right" /> <ItemImage id="gregtech:gt.blockmachines:20112" label="right" /> <ItemImage id="gregtech:gt.blockmachines:20113" label="right" />
 

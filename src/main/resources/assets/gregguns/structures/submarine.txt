@@ -1,5 +1,6 @@
 # Submarine, 7 x 10 x 33. Long axis is z, bow at high z, stern at low z. ground: 0, so layer 0 (the hull's
-# lowest row) replaces the sea-floor surface. Interiors are sealed with air so they stay dry.
+# lowest row) replaces the top water block: the boat floats on the surface like the carrier (D291). Interiors are
+# sealed with air so they stay dry.
 # Beds use @door: a bed's low two bits cycle south, west, north, east exactly like a door's, and the head bit
 # (8) is kept, so foot and head turn together. Door upper halves (meta 8) carry no direction bits.
 # The ladder at the tower centre rests on a pillar (command room) and the tower wall; the trapdoor tops it.
@@ -10,12 +11,12 @@ ground: 0
 
 palette:
 a = air
-P = plating
+P = hull_dark
 W = factory_wall
-F = factory_floor
-K = brick
+F = plating
+K = factory_floor
 Z = hazard
-L = lantern
+L = lamp
 B = minecraft:iron_bars
 M = minecraft:planks
 2 = minecraft:ladder#2@facing

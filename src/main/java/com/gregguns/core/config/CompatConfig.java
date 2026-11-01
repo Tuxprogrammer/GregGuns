@@ -31,4 +31,23 @@ public class CompatConfig {
         "GregGuns structure spawner drops no Broken Spawner and releases no burst of extra mobs, and GregGuns NPCs",
         "cannot be farmed in a Powered Spawner. Needs EnderIO; ignored without it. Default: true." })
     public static boolean enderioSpawnerBlacklist = true;
+
+    @Config.Comment({ "Server only. Adds the GregGuns trades (guns, ammo, magazines, parts, armor, gear and NPC spawn",
+        "eggs, priced in GregGuns Coins) to the pack's Vending Machine when the server starts, in memory; its",
+        "tradeDatabase.json is never written. With the GregGuns quest line installed, each tier's trades open with",
+        "the tier's intro quest. Needs the Vending Machine mod; ignored without it. Off removes them at the next",
+        "start. Default: true." })
+    public static boolean vendingTrades = true;
+
+    @Config.Comment({ "Adds the GregGuns loot bag groups (the quest rewards, EnhancedLootBags ids 1701-1714) to",
+        "EnhancedLootBags' group list at startup, from the jar or from config/gregguns-lootbags.xml when present.",
+        "LootBags.xml is never written. Turn off only if the pack defines these groups itself. Needs",
+        "EnhancedLootBags; ignored without it. Default: true." })
+    public static boolean lootBags = true;
+
+    @Config.Comment({ "Server only. Keeps Roguelike Dungeons out of GregGuns silo complexes: a dungeon whose entrance",
+        "would lie near a complex tries another spot, and none of its blocks are written inside a complex.",
+        "Needs Roguelike Dungeons and the ICBM module; ignored without them. The log says at startup whether it",
+        "attached. Default: true." })
+    public static boolean roguelikeKeepOutOfComplexes = true;
 }

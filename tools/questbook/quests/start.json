@@ -1,0 +1,447 @@
+{
+  "chapter": "start",
+  "quests": [
+    {
+      "key": "gg.start.welcome",
+      "title": "Welcome to GregGuns",
+      "tier": "Steam",
+      "desc": [
+        "GregGuns is a gun and armor line that grows with your GregTech progression instead of sitting beside it. Every weapon here is built in the machines you already know, from a hand-crafted bronze Hand Cannon at the start to missiles that cross the map at the end.",
+        "The chapters climb the tiers in order: Steam, LV, MV, HV, EV, IV, LuV and ZPM. Each one opens with the gate material of its tier (bronze, steel, aluminum, stainless steel, titanium, tungstensteel and onward), adds a few guns and a set of armor, and asks you to build the ammunition for them. Side chapters cover ammo production, machines, gear, structures, mobs and the ICBM module, so you can wander off the main path whenever you like.",
+        "You do not have to read everything. Start with the four quests next to this one: they cover controls, ammo, parts and tiers, and each asks you to hold something real. Then follow the thick lines into the Steam chapter and build your first gun.",
+        "[note]This is the only quest that asks you to check a box. Everything after it wants something you built, found or killed.[/note]"
+      ],
+      "pre": [
+        11,
+        44
+      ],
+      "tasks": [
+        {
+          "type": "checkbox"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:potatocakesItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 1
+            }
+          ]
+        }
+      ],
+      "x": 58,
+      "y": 22,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:pistol_9mm",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [],
+      "logic": "OR"
+    },
+    {
+      "key": "gg.start.controls",
+      "title": "Fire, Reload, Zoom",
+      "tier": "Steam",
+      "desc": [
+        "Every gun here uses the same three controls. Hold left click to fire (hold it down on automatic guns), press the Reload key (R by default) to put in fresh ammunition, and right-click to zoom on guns that have a scope. Rebind the keys under GregGuns in the Controls menu.",
+        "This quest wants any one of the early guns in your inventory: the Hand Cannon from the Steam chapter, or a 9mm Pistol, Revolver, Sawed Off or Bolt Action Rifle from LV. If you have not built one yet, pick a path and come back, or open the Steam chapter and craft the Hand Cannon first.",
+        "Reloading puts a short lockout on the gun, and each gun has its own reload time. Press Reload before the fight, not in the middle of it.",
+        "[note]Hold a gun and read its tooltip: the ammo it takes, the rounds loaded and its damage. Hold Shift for clip size, range and reload time.[/note]"
+      ],
+      "pre": [
+        "gg.start.welcome"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:handcannon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:pistol_9mm",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:revolver",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:sawed_off",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:bolt_action_rifle",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:chickensandwichItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17300
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 130,
+      "y": 22,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:handcannon",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.start.ammo_types",
+      "title": "Ammo and Magazines",
+      "tier": "Steam",
+      "desc": [
+        "Each gun takes one kind of ammunition. Loose rounds (Stone Bullets, 9mm Bullets, Shotgun Shells, Rifle Bullets) go straight into guns such as the Hand Cannon, Revolver, Sawed Off and Bolt Action Rifle. Pistols, SMGs and assault rifles take magazines, which are filled from loose rounds.",
+        "Hold any round or a loaded magazine to complete this quest. Stone Bullets are the easy ones: three cobblestone, a gunpowder and a bronze nugget at a crafting table make sixteen.",
+        "Sneak and right-click a magazine to empty it back into loose rounds and an empty magazine, so nothing you press is ever wasted.",
+        "[note]Ammo is the real cost of a gun. The Ammo Logistics chapter shows how to build a proper production line.[/note]"
+      ],
+      "pre": [
+        "gg.start.controls"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "minecraft:cobblestone",
+              "count": 3,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 9300
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_9mm_bullet",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_shotgun_shell",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_9mm_pistol",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:pbandjItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:ammo_stone_bullet",
+              "count": 32,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:gunpowder",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 9300
+            }
+          ]
+        }
+      ],
+      "x": 166,
+      "y": 22,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:ammo_stone_bullet",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.start.find_gear",
+      "title": "Where Gear Comes From",
+      "tier": "Steam",
+      "desc": [
+        "Nothing here appears from thin air. Guns are assembled from parts, and the parts come from the same GregTech materials as everything else you build. Besides crafting, you can find gear in quest loot bags, in chests at ruins and bunkers, and on hostile soldiers. NEI lists every recipe and drop.",
+        "Start with the two simplest parts. A Stone Barrel is stone around a tiny bronze pipe, worked with a file and a hammer. A Wooden Stock is three logs and a saw. Hold both to finish this quest, and the Hand Cannon is one crafting grid away.",
+        "[note]Press R on any item in NEI to see how it is made, or U to see what it is used for.[/note]"
+      ],
+      "pre": [
+        "gg.start.welcome"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "minecraft:stone",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:log",
+              "count": 3,
+              "damage": 32767
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_stone",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_wooden",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:bakedbeansItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17300
+            },
+            {
+              "id": "gregguns:part_mechanical_1",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "minecraft:flint_and_steel",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 130,
+      "y": 58,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_barrel_stone",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.start.tiers",
+      "title": "Reading a Tier",
+      "tier": "Steam",
+      "desc": [
+        "Every item has a tier, and the tier tells you what it takes. A tier is a machine voltage plus a gate material: Steam is bronze, LV is steel, MV is aluminum, HV is stainless steel, EV is titanium, IV is tungstensteel, and so on up the GregTech ladder. NEI shows the machine and voltage of every recipe, so you can read the tier there.",
+        "So an LV recipe needs an LV machine and steel, an MV recipe needs an MV machine and aluminum, and a machine of a lower tier cannot run it at all. Higher machines can run lower recipes, and they run them faster.",
+        "Bronze plates are the Steam gate. Hold four to complete this quest and you are ready for the first chapter.",
+        "[note]If a recipe in NEI shows a plate you cannot make yet, you are one tier early.[/note]"
+      ],
+      "pre": [
+        "gg.start.find_gear"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17300,
+              "ore": "plateBronze"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "steam",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:fishandchipsItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 1,
+              "damage": 1
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 8,
+              "damage": 9300
+            },
+            {
+              "id": "minecraft:coal",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "Backpack:tannedLeather",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 166,
+      "y": 58,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregtech:gt.metaitem.01",
+        "count": 1,
+        "damage": 17300
+      },
+      "implicit": []
+    }
+  ]
+}

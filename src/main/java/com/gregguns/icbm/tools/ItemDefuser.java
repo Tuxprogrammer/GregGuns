@@ -27,8 +27,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * The defuser: right-click a lit warhead block to put its fuse out, left-click an unlaunched missile standing on a pad
  * or in a silo to take it apart (the body and warhead drop as items, the fuel is lost, as with the sneak-click
- * disarm). Once the countdown runs or the engines have lit, it refuses (D120). It takes durability, not energy: 32
- * successful uses, then it breaks (D121). Anyone may use it: defusing only makes a device safer (D120). Both sides; the
+ * disarm). Once the countdown runs or the engines have lit, it refuses (D120). In a crafting grid it de-arms a live
+ * warhead, up to 8 charges per craft (D283). It takes durability, not energy: 32 successful uses, then it breaks
+ * (D121). Anyone may use it: defusing only makes a device safer (D120). Both sides; the
  * work is server side.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/handheld-tools.md (Defuser)
@@ -96,6 +97,29 @@ public final class ItemDefuser extends Item implements Tiered {
         }
     }
 
+    /**
+     * The Defuse Kit is the tool of the crafting-grid de-arm (D283, {@code WarheadUnloadRecipe}): it stays in the grid
+     * and each craft spends one use, so the 32nd breaks it. It is no other recipe's ingredient.
+     */
+    @Override
+    public boolean hasContainerItem(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public ItemStack getContainerItem(ItemStack stack) {
+        ItemStack worn = stack.copy();
+        worn.stackSize = 1;
+        // Past the last use SlotCrafting sees damage above the maximum and lets the kit break (PlayerDestroyItemEvent).
+        worn.setItemDamage(stack.getItemDamage() + com.gregguns.icbm.warhead.WarheadDearming.DEFUSER_WEAR_PER_CRAFT);
+        return worn;
+    }
+
+    @Override
+    public boolean doesContainerItemLeaveCraftingGrid(ItemStack stack) {
+        return false;
+    }
+
     @Override
     public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
         return false;
@@ -154,6 +178,10 @@ public final class ItemDefuser extends Item implements Tiered {
         details.add(StatCollector.translateToLocal("gregguns.icbm.defuser.tooltip.block"));
         details.add(StatCollector.translateToLocal("gregguns.icbm.defuser.tooltip.missile"));
         details.add(StatCollector.translateToLocal("gregguns.icbm.defuser.tooltip.refused"));
+        details.add(
+            String.format(
+                StatCollector.translateToLocal("gregguns.icbm.defuser.tooltip.dearm"),
+                com.gregguns.icbm.warhead.WarheadDearming.MAX_PER_CRAFT));
         details.add(
             String.format(
                 StatCollector.translateToLocal("gregguns.icbm.defuser.tooltip.uses"),

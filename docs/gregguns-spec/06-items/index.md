@@ -22,6 +22,8 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | [hazards-and-tooltips.md](hazards-and-tooltips.md) | dreamcraft hazards, tooltips and fuels; GT radiation for nuclear items |
 | [nei-visibility.md](nei-visibility.md) | NEI hiding and collapsing of ammo variants, spawn eggs and technical items |
 | [nei-order.md](nei-order.md) | The one NEI and creative-tab order of every GregGuns item and block, and how NEI applies it in existing worlds |
+| [coins-and-vending.md](coins-and-vending.md) | The GregGuns Coin (five values, change and exchange recipes) and the GregGuns trades in the pack's Vending Machine: prices by tier and kind, spawn eggs, quest gates, the runtime merge, recommended quest payouts |
+| [recycling.md](recycling.md) | GT recycling: the material data of every GregGuns item, block and machine, how the rest is derived from recipes the way GT derives its own machines', and the exclusion list |
 | [thaumcraft-aspects.md](thaumcraft-aspects.md) | Aspects for items through GT's Thaumcraft bridge; mob aspects contract |
 
 ## Integration map
@@ -32,7 +34,8 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | Structure chest categories | Registered `gregguns:*` categories | Forge `ChestGenHooks`, TooMuchLoot | [pack-loot.md](pack-loot.md#gregguns-loot-categories) |
 | Minigame rewards | Follow `chest1..4` ADD files | LootGames 2.2.14 | [pack-loot.md](pack-loot.md#lootgames) |
 | Dungeon chests | Pack JSON loot rules | Roguelike-Dungeons 1.6.6-GTNH | [pack-loot.md](pack-loot.md#roguelike-dungeons) |
-| Quest rewards | Entries in the tier groups | EnhancedLootBags 1.3.5 | [pack-loot.md](pack-loot.md#enhancedlootbags) |
+| None (no currency in Techguns) | GregGuns Coin; trades merged into the Vending Machine at server start | VendingMachine 0.4.101, BetterQuesting 3.8.89-GTNH | [coins-and-vending.md](coins-and-vending.md) |
+| Quest rewards | GregGuns bag groups 1701 to 1714, added at startup from the jar | EnhancedLootBags 1.3.5 | [pack-loot.md](pack-loot.md#enhancedlootbags) |
 | NPC drops | Infernal drop lists, or a soft-dependency handler | Infernal-Mobs 1.10.7-GTNH | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | Fixed per-mob drops | Optional `CustomDrop` entries | dreamcraft CustomDrops | [pack-loot.md](pack-loot.md#gtnh-customdrops) |
 | Metals, plates, wires, circuits, plastic, rubber | Not registered; GT parts through the unificator | GT5-Unofficial 5.09.54.205 | [components-and-materials.md](components-and-materials.md#gregtech-parts-through-the-unificator) |
@@ -44,7 +47,8 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | Chem Lab tank fill | GT Fluid Canner fills `IFluidContainerItem` tanks | GT `cannerRecipes` | [recipes.md](recipes.md#filling-tanks) |
 | Energy Cell | Dropped: energy weapons are their own IC2 batteries ([0010](../../design/0010-material-remap-and-tier-additions.md)) | IC2 `IElectricItem`, GT chargers | [recipes.md](recipes.md#energy-cell-note) |
 | Bullets from nuggets | Built from GT `round` parts; `bulletGt*` prefixes unused by GT | GT `OrePrefixes` | [ammo.md](ammo.md#gregtech-bullet-prefixes-and-round) |
-| Nuclear Power Cell and warhead | Radioactive through GT `ItemData` | GT radiation, hazard protection | [hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items) |
+| None (no recycling in Techguns) | GT `ItemData` on every stack; GT writes the Macerator, Arc Furnace and other recycling recipes | GT5-Unofficial recycling | [recycling.md](recycling.md) |
+| Nuclear Power Cell, warhead, Rad Emitter and nuke rocket | Radioactive through GT `ItemData` | GT radiation, hazard protection | [hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items) |
 | Item hazards, tooltips, fuels | No entries needed | dreamcraft modules | [hazards-and-tooltips.md](hazards-and-tooltips.md) |
 | Creative-tab listing of 110 metas | Hide technical items, collapse variants | NEI 2.8.155-GTNH | [nei-visibility.md](nei-visibility.md) |
 | No aspects | Aspects through GT's bridge | Thaumcraft 4.2.3.5, GT compat | [thaumcraft-aspects.md](thaumcraft-aspects.md) |
@@ -57,7 +61,6 @@ These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHori
 | File | Change | Why | Sheet |
 |---|---|---|---|
 | `config/TooMuchLoot/loot/gregguns_<category>.xml` (new, one per category) | `loading_mode="ADD"` files for `bonusChest`, `dungeonChest`, `mineshaftCorridor`, `villageBlacksmith`, `pyramidDesertyChest`, `pyramidJungleChest`, `strongholdCorridor`, `strongholdCrossing`, `chest1`, `chest2`, `chest3`, `chest4` | The vanilla and pack categories ship as `OVERRIDE`, so code-side additions are wiped | [pack-loot.md](pack-loot.md#draft-add-files) |
-| `config/EnhancedLootBags/LootBags.xml` | Add `Loot` lines to `steam_age` and `tier_1_lv` to `tier_7_zpm` | Quest-reward bags are data only | [pack-loot.md](pack-loot.md#enhancedlootbags) |
 | `config/roguelike_dungeons/settings/loot_weapons.json`, `loot_supplies.json`, `loot_armor.json` | Add GregGuns loot rules per dungeon level | Dungeon chests are JSON only | [pack-loot.md](pack-loot.md#roguelike-dungeons) |
 | `config/InfernalMobs.cfg` | Append GregGuns entries to `droppedItemIDsElite`, `droppedItemIDsUltra`, `droppedItemIDsInfernal` (route A only) | Drop lists are global config | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | `config/InfernalMobs.cfg` | Optional: set `permittedentities` or `entitiesalwaysinfernal` keys for GregGuns NPCs, by simple class name | `useSimpleEntityClassnames=true` in the pack | [pack-loot.md](pack-loot.md#infernal-mobs) |

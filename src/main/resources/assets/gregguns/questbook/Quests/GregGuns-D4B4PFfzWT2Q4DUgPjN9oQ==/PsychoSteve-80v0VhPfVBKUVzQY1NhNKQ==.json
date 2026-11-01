@@ -17,11 +17,11 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A chainsaw mini-boss. His drop is tier-legal for the Overworld, not an HV saw.",
+      "desc:8": "A chainsaw-wielding mini-boss in miner gear, Steve is rare (a spawn weight of 1) and has 75 health, so he soaks up bullets while he runs you down. Keep your distance.\n\nHe always drops his Chainsaw and a handful of fuel tanks.\n\n[warn]He is a melee threat. Do not fight him in a corridor.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 73,
         "OreDict:8": "",
         "id:8": "gregguns:npc_egg"
       },
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Psycho Steve",
+      "name:8": "§2§lPsycho Steve",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -66,11 +66,54 @@
       "rewards:9": {
         "0:10": {
           "Count:3": 1,
-          "Damage:2": 4,
+          "Damage:2": 1702,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:potatocakesItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 48,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_shotgun_shell"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 17305,
+          "OreDict:8": "plateSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:bandages"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {

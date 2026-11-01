@@ -336,6 +336,13 @@ public final class SelfCheckRunner {
                 if (recipe.mEUt > com.gregguns.api.Tier.ZPM.voltage() && makesAnnihilationWarhead(recipe.mOutputs)) {
                     continue;
                 }
+                // D283: a Cutting Machine de-arm gives back what a warhead was built from (a Plastic Explosive, a
+                // canister, a fuze), so its outputs sit below the warhead's tier by design. The D1 tier map judges
+                // what a recipe makes, not salvage; WarheadDearmingTest and the icbm.warhead.dearm scenarios check
+                // these recipes instead.
+                if (isCutter(map) && holdsWarhead(recipe.mInputs)) {
+                    continue;
+                }
                 List<StackDescriptor> inputs = new ArrayList<>();
                 addStacks(recipe.mInputs, inputs, true);
                 addFluids(recipe.mFluidInputs, inputs);
@@ -348,11 +355,35 @@ public final class SelfCheckRunner {
         }
     }
 
+    private static boolean isCutter(RecipeMap<?> map) {
+        return "gt.recipe.cuttingsaw".equals(map.unlocalizedName)
+            || "gt.recipe.fakecuttingsaw".equals(map.unlocalizedName);
+    }
+
+    private static boolean holdsWarhead(ItemStack[] stacks) {
+        if (stacks == null) {
+            return false;
+        }
+        for (ItemStack stack : stacks) {
+            if (com.gregguns.icbm.warhead.InertWarheads.is(stack)
+                || stack != null && stack.getItem() instanceof com.gregguns.icbm.warhead.ItemBlockWarhead) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static boolean makesAnnihilationWarhead(ItemStack[] stacks) {
         if (stacks == null) {
             return false;
         }
         for (ItemStack stack : stacks) {
+            // D282: the inert T4 and T5 warheads and their payloads are made at UV and UHV too.
+            if (com.gregguns.icbm.warhead.InertWarheads.is(stack)
+                && com.gregguns.icbm.warhead.InertWarheads.casing(stack)
+                    .number() >= 4) {
+                return true;
+            }
             if (stack != null
                 && net.minecraft.block.Block
                     .getBlockFromItem(stack.getItem()) instanceof com.gregguns.icbm.warhead.BlockWarhead

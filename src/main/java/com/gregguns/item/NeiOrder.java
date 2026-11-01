@@ -10,13 +10,15 @@ import com.gregguns.armor.ArmorItemOrder;
 import com.gregguns.block.GregGunsCasings;
 import com.gregguns.entity.npc.NpcRegistry;
 import com.gregguns.gun.def.ToolProbeDef;
+import com.gregguns.item.coin.ItemCoin;
 import com.gregguns.utility.UtilityItemOrder;
 import com.gregguns.worldgen.nest.NestBlockRegistration;
 
 /**
  * The one list of every GregGuns item and block, in the order a player should meet them in NEI and the creative tab.
  * It stitches the per-module orders ({@link GunsItemOrder}, {@link ArmorItemOrder}, {@link UtilityItemOrder}) together
- * in module registration order (guns, armor, utility, npcs, worldgen), so the sequence is also the order Forge assigns
+ * in module registration order (guns, armor, utility, npcs, worldgen); the coin registers with the guns module, so the
+ * sequence is also the order Forge assigns
  * numeric ids in a NEW world. An existing world keeps the ids it saved, so NEI cannot rely on them: the client reads
  * this list through {@code NeiOrderRemap} and sorts by it instead. The table in
  * {@code docs/gregguns-spec/06-items/nei-order.md} documents the same blocks, and a unit test keeps the two equal.
@@ -34,6 +36,8 @@ public final class NeiOrder {
         WEAPONS_AND_AMMO,
         /** Gun parts and components, tier by tier. */
         GUN_PARTS,
+        /** The GregGuns Coin (its five denominations are subtypes). */
+        COINS,
         /** The Ammunition Works casings (the one GregGuns machine block outside GT's MTE list). */
         MACHINE_BLOCKS,
         /** Armor pieces, set by set, tier by tier. */
@@ -68,6 +72,8 @@ public final class NeiOrder {
             out.get(part ? Category.GUN_PARTS : Category.WEAPONS_AND_AMMO)
                 .add(slot.name());
         }
+        out.get(Category.COINS)
+            .add(ItemCoin.NAME);
         out.get(Category.MACHINE_BLOCKS)
             .add(GregGunsCasings.NAME);
         for (ArmorItemOrder.Slot slot : ArmorItemOrder.build()) {

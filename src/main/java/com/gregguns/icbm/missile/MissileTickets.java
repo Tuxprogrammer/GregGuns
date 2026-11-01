@@ -107,15 +107,31 @@ public final class MissileTickets {
         }
     }
 
-    /** Registers the loading callback: tickets loaded from disk are released, a missile asks for its own again. */
+    /**
+     * Registers GregGuns' one chunk-loading callback (a mod has one): a live missile in flight adopts its ticket, every
+     * other GregGuns ticket loaded from disk is released, the scenario holds of a test server included.
+     */
     public static void registerCallback() {
         ForgeChunkManager.setForcedChunkLoadingCallback(GregGuns.instance, MissileTickets::onTicketsLoaded);
     }
 
     /**
      * The world loaded these tickets from disk. Forge has already re-bound each entity ticket and loaded its chunk, so
-     * a live missile in flight adopts its ticket (its next tick trims it to the wanted window); every other ticket,
-     * including one whose entity is gone, is released, so none outlives the entity that wanted it (D25).
+     * a live missile in flight adopts its ticket and forces its window again at once; every other ticket, including
+     * one whose entity is gone, is released, so none outlives the entity that wanted it (D25).
+     *
+     * <p>
+     * Forge saves a ticket without its chunk list, so an adopted ticket forces nothing until the missile asks again.
+     * The missile cannot ask: an entity whose chunk is not forced ticks only when the chunks two around it are loaded,
+     * and after a load only its own chunk is. Left so, it hung in the air, its chunk unloaded later, and it kept the
+     * ticket for good (I7 soak, D333).
+     *
+     * <p>
+     * Source: Forge 1.7.10-10.13.4.1614 {@code ForgeChunkManager.saveWorld} writes a ticket's type, mod data and, for
+     * an entity ticket, the entity's chunk and id, but no forced chunks (checked with {@code javap} against the
+     * pack's Forge jar: the NBT keys it writes are Type, ChunkListDepth, ModId, Player, ModData, chunkX, chunkZ and the
+     * persistent id); {@code World.updateEntityWithOptionalForce} ticks an entity in a forced chunk without the
+     * 32-block loaded check. The I7 restart soak showed both on the real pack.
      *
      * @param tickets the loaded tickets
      * @param world   the world
@@ -124,8 +140,11 @@ public final class MissileTickets {
         for (Ticket t : tickets) {
             Entity e = t.getEntity();
             if (e instanceof EntityMissile && !e.isDead && ((EntityMissile) e).phase() != FlightPhase.PAD) {
-                ((EntityMissile) e).tickets()
+                EntityMissile m = (EntityMissile) e;
+                m.tickets()
                     .adopt(t);
+                m.tickets()
+                    .update(m, ChunkWindow.wanted(m.posX, m.posZ, m.motionX, m.motionZ));
             } else {
                 ForgeChunkManager.releaseTicket(t);
             }

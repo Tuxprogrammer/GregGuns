@@ -2,33 +2,47 @@
 
 - **ICBM baseline:** [launcher platform](../../icbm-spec/03-missiles/index.md) (ICBM launches from a launcher block; GregGuns builds a multiblock)
 - **Design records:** [0018 §8](../../design/0018-icbm-program.md), [0011](../../design/0011-machine-policy.md)
-- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D19](../DECISIONS.md), [D22](../DECISIONS.md), [D32](../DECISIONS.md), [D70 to D75](../DECISIONS.md)
+- **Decisions:** [D8](../DECISIONS.md#d8-in-detail), [D19](../DECISIONS.md), [D22](../DECISIONS.md), [D32](../DECISIONS.md), [D70 to D75](../DECISIONS.md), [D286](../DECISIONS.md), [D288](../DECISIONS.md), [D299](../DECISIONS.md), [D300](../DECISIONS.md)
 - **Pack mods:** GT5-Unofficial (`5.09.54.205`): multiblock base, StructureLib, hatches; Galacticraft (`3.4.34-GTNH`): the pad block, `RocketFuels`; NewHorizonsCoreMod (`2.9.84`): the Tier 3 rocket parts
 - **Roadmap:** [I3](../../ROADMAP-ICBM.md#i3--the-silo-and-heavy-warheads-t3-nuclear)
 - **MTE id:** 20141 (`GregGunsMTEIDs.MISSILE_SILO`)
 
 ## What changes from ICBM
 
-ICBM's launchers are single blocks that take a missile item. GregGuns' T3 missile does not fit the 3x3 pad plate, so it launches from a GT multiblock, the **Missile Silo**: a 5x5 tower dug into the ground, with an open 3x3 shaft. The player puts a body and a warhead in an Input Bus and fuel in an Input Hatch; the silo mates them into an armed missile in the shaft and fuels it. The player never touches the missile. The Launch Control fires it.
+ICBM's launchers are single blocks that take a missile item. GregGuns' T3 missile does not fit the 3x3 pad plate, so it launches from a GT multiblock, the **Missile Silo**: a 5x5 tower dug into the ground, with an open 3x3 shaft. The player puts a body and a warhead in an Input Bus and fuel in an Input Hatch; the silo stands the body on the pad, seats the warhead on it, arms the stack and fuels it, each step in view (D286). The player never touches the missile. The Launch Control fires it.
 
 ## Structure
 
-One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns cut (so it is not a cube). Source of truth: `SiloShape`.
+One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns cut (so it is not a cube), except in the front face's three glass rings, where the face is five wide. Source of truth: `SiloShape`.
 
 | Layer (1 = floor) | Cells |
 |---|---|
 | 12, the rim | ring of 12 Gantry Beam |
 | 5 to 11 | ring of 12 **Light or Dark Concrete** per layer (84); hatches allowed (D117) |
-| 2, 3, 4 | ring of 12 **glass** per layer, so the missile shows (36 cells with the controller) |
+| 2, 3, 4 | ring of 12 **glass** per layer, so the missile shows, plus the two front corners (the **hatch columns**, `H`) |
 | 1, the floor | outer ring of 12 **Light or Dark Concrete** (hatches allowed), inner 3x3 **Galacticraft launch pad** |
+
+**The front face (D299, the owner's build):** a clear 3x3 glass window around the controller, with a hatch column on each side, flush with the glass. Seen by a viewer facing the controller:
+
+```
+ layer   viewer's left                                      viewer's right
+   5     (cut)   concrete  concrete  concrete   (cut)        the "Silo N" sign hangs on the middle concrete
+   4     H       glass     glass     glass      H
+   3     H       glass     [ctrl]    glass      H
+   2     H       glass     glass     glass      H
+```
 
 - **Glass (D115):** purely visual, so the missile can be seen: it never gates a launch, and there is no glass tier or effect on range, tiers or anything else; the Energy Hatch alone sets the silo's tier. The glass rings accept **Tinkers' Construct Clear Glass** (`TConstruct:GlassBlock`) and **EnderIO Quite Clear Glass** (`EnderIO:blockFusedQuartz` meta 1) or its **Enlightened Clear Glass** (meta 3, the same glass giving off light), mixed freely, and nothing else: GT's borosilicate frames made a Tier 3 missile hard to see. Dark Clear Glass and the Fused Quartz metas are refused. Blocks are found by registry name (`SiloGlass`), so no Tinkers' or EnderIO class loads. The hologram and auto-build place Tinkers' Clear Glass, or EnderIO's when Tinkers' is absent. When neither mod is loaded (the dev environment) the rings accept vanilla glass instead, with one logged warning. The ring no longer shares the `BOROGLASS` structure channel.
 - **Walls and floor ring (D116):** GT's concrete block `gregtech:gt.blockconcretes` (`GregTechAPI.sBlockConcretes`), metas 0 to 7 Dark and 8 to 15 Light, mixed freely. Accepted: stone (0, 8), bricks (3, 11), cracked bricks (4, 12), mossy bricks (5, 13), chiseled (6, 14), smooth (7, 15). Cobblestone and mossy cobblestone (1, 2, 9, 10) are refused: they are the rubble form the plain stone drops as. The hologram and auto-build place Light Concrete (meta 8). GT gives concrete no casing texture index, so a hatch in the silo still wears the Gantry Casing texture.
-- **Hatches (D117, amends D71):** the Input Bus, Input Hatch, Energy Hatch and Maintenance Hatch may replace any wall block (layers 5 to 11), any glass pane (layers 2 to 4) or any outer-ring cell of the floor. Never the rim (layer 12, Gantry Beam), and never the inner 3x3 pad floor, which a hatch would break. At least 84 of the 96 concrete positions must stay concrete.
+- **Hatches (D117, amends D71):** the Input Bus, Input Hatch, Energy Hatch and Maintenance Hatch may replace any wall block (layers 5 to 11), any hatch-column cell, any glass pane (layers 2 to 4) or any outer-ring cell of the floor. Never the rim (layer 12, Gantry Beam), and never the inner 3x3 pad floor, which a hatch would break. At least 84 of the 102 concrete positions must stay concrete.
 - **Controller:** the middle of the front wall, in the middle glass ring (layer 3).
+- **Hatch columns (D299, owner 2026-10-30):** the six front-face cells beside the window (`H` in `SiloShape`, shape columns 0 and 4 of the front aisle, layers 2 to 4) are required: the wall's concrete, a hatch or the Launch Control, and they count as casing. A front with those cells empty (the cut-corner, three-wide front) does not form. The window itself is clear glass or hatches only: concrete in a window cell does not form.
+- **Generated and dev-built layout:** seen by a viewer standing in front of the controller (looking at it, so the controller faces them): the **right** hatch column holds the Input Bus (controller row) over the Energy Hatch, with the Launch Control on top; the **left** one holds the Input Hatch (controller row) over the Maintenance Hatch, with concrete on top. All eight window cells around the controller are clear glass. Shape column 0 is on that viewer's right (`SiloShape.HATCH_COLUMN_RIGHT`; column 4 is `HATCH_COLUMN_LEFT`). A generated silo missing its Energy Hatch has the column's concrete in its place. A player-built silo may put its hatches in any hatch position.
+- **Launch Control (D288, D299):** optional, at most one, in any hatch position (a wall, hatch-column, glass or floor-ring cell; `SiloLaunchControl`, a hatch element in every hatch adder). The structure check binds it, so the silo fires through its own Launch Control and no other; a second one fails its position. It keeps its own texture. Generated and dev-built silos put it on top of the right hatch column, level with the window's top row (`SiloShape.LAUNCH_CONTROL_COLUMN`, `LAUNCH_CONTROL_RISE`), outside the window. It runs on the silo's EU (D300, [launch-control-block](../04-launch-control/launch-control-block.md#power)). The controller's tooltip lists it.
+- **Name sign:** the Launch Control's screen names the silo by the first written line of a wall sign hanging on the silo's face two blocks above the controller (`SiloShape.NAME_SIGN_RISE`), on the concrete over the window, where the generated complex hangs `Silo N`. With no sign there the screen says `Silo at x, z`.
 - **Pad:** the nine blocks accept either the unformed Galacticraft pad blocks (`tile.landingPad`) or the formed pad (`tile.landingPadFull` at the center and `tile.dummyblock` meta 2 on the other eight), found by registry name through `GalacticraftPads` so no Galacticraft class loads. Without Galacticraft the module is off and the silo inert. The launch never removes or damages the pad (D32): a missile does not extend `EntityAutoRocket`.
-- **Counts:** 96 concrete positions (84 needed, the rest may be hatches), 35 glass panes plus the controller, 12 beams, 9 pad blocks.
-- **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out; keep the opening above the rim free of blocks.
+- **Counts:** 102 concrete positions (84 walls, 12 floor ring, 6 hatch columns; 84 needed, the rest may be hatches), 35 glass cells plus the controller, 12 beams, 9 pad blocks.
+- **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out and on up to the build height before it turns (D287, [flight.md](flight.md#the-climb)), so a roof or a chimney built around the opening is safe; keep the opening itself free of blocks for 12 blocks above the pad plus the body, or the launch is `BLOCKED`.
 
 ## The doors (D89, D90)
 
@@ -39,15 +53,27 @@ Two hinged panels lie across the 3x3 opening at the rim, each 1.5 x 3 blocks and
 - **Abort:** doors turn around from the angle they are at and take only the way back.
 - **Unformed mid-sequence:** a gap of 200 ticks aborts a launch still in its warm-up, resets the doors and removes the carrier; after ignition the missile flies on. A T3 also stands down by itself when no formed silo stands under it for 300 ticks.
 
-## Mating (0018 §8)
+## The assembly sequence (D286)
 
-Each cycle the controller does the next job (`checkProcessing`):
+The silo builds the missile in the shaft where the player can watch it, one part at a time, and **each part stands in the shaft before its working cycle starts**. The order is always body, warhead, fuel. The stage machine is `SiloSequence` (pure data, unit-tested); the controller saves only its stage (`NONE`, `BODY`, `BODY_DONE`, `WARHEAD`). The parts are blocks in the world, never items inside the controller.
 
-1. **A missile stands in the shaft:** pump fuel (below).
-2. **A hand-stacked body block stands in the shaft:** the controller waits ("arm it by hand, or take it apart"). A body placed on the pad by hand, a warhead on its nose and a sneak right-click arm it exactly as on an open pad.
-3. **The shaft is empty:** look in the Input Buses for a missile body and a warhead block item whose casing tier the body carries (a body carries its own tier or lighter, D60). Take one of each, run `MATE_TICKS` = 400 (20 s) and, when the cycle ends, spawn an armed missile entity on the pad with the body's guidance and the warhead's explosive, fill and casing. If something took the shaft meanwhile, the parts drop as items. A pending mating is saved in the controller's NBT.
+| Step | What the player sees | Cycle | Status line |
+|---|---|---|---|
+| 1. Body | A missile body from the Input Bus stands on the pad's center as a body block (the block a player places by hand, D31), unfueled, no warhead | `SiloRules.BODY_TICKS` = 200 (10 s) | "Setting up the missile body on the pad" |
+| Wait | The body stands; no warhead the body carries is in the bus | none | "The body stands on the pad: waiting for a warhead in the Input Bus", or the warhead is too heavy, or inert |
+| 2. Warhead | A warhead the body carries (D60) is seated on the nose as a warhead block | `WARHEAD_TICKS` = 200 (10 s); its end arms the stack into the missile entity (`MissileStacks.armIntoEntity`, as a sneak right-click does; no drops) | "Mating the warhead to the missile body" |
+| 3. Fuel | The armed missile stands in the shaft throughout | `PUMP_TICKS` per portion (below) | "Fueling the missile", then "The missile is fueled and ready" |
 
-Refusals show on the controller as the cycle result: no body, no warhead, a warhead too heavy, a hatch too weak.
+- **Any order:** parts may arrive in any order or together. A warhead with no body waits in the bus ("Waiting for a missile body"); fuel waits in the hatch until a missile stands. A body alone goes up, runs its cycle and waits. The warhead stays in the bus for the whole body cycle.
+- **Power and tier:** every step keeps the power gate (below) and the hatch tier rule (D70): no part leaves the bus, and no cycle starts, without both. A body too heavy for the Energy Hatch stays in the bus with GT's "insufficient machine tier".
+- **The world wins:** the controller looks into the shaft every second (`watchShaft`). A body that is gone ends the sequence; a warhead taken off the nose steps back to waiting for one; a running cycle whose part is gone stops at once. Any change in the shaft asks GT for a check, because GT only checks on hatch events.
+- **Nothing dupes or vanishes:** breaking the silo mid-sequence leaves the body and warhead standing; each drops its own item once when broken (or the player arms the stack by hand). A body broken under a seated warhead stops the mating cycle, and the silo breaks the loose warhead so it drops as one item, whichever look notices first: the shaft watch, a recipe check (after a wait for power) or the end of the cycle. Arming happens only when the stack is complete and fits.
+- **Adoption:** a body found on the pad with no sequence of the silo's (stacked by hand, or left by a controller that was broken and rebuilt) gets the body cycle and the sequence continues; a warhead seated on it by hand is mated like the silo's own. Arming by hand works at any point. A warhead on the nose that is too heavy or lit is not mated ("take it off"); a body off the pad's center, a loose warhead or a block in the column above the pad stops the silo ("Something in the shaft is in the way").
+- **The Launch Control** sees a standing body or stack as present but not armed (`NOT_ARMED`), as on an open pad.
+- **A launch keeps the shaft (D342):** from the moment a missile starts its countdown until it has climbed out of the column above the shaft (`PadMissiles.LAUNCH_COLUMN`, 24 blocks above the pad), the shaft counts as busy (`Shaft.LAUNCHING`): no part leaves the bus ("A launch is under way"). An aborted or stood-down missile (D88, D90) is back on its pad with its column clear, so it fires again with no player clearing the shaft; once a missile has climbed out, a body waiting in the bus goes up.
+- No fuel gauge is drawn: the missile model and WAILA have none.
+
+Refusals show on the controller as the cycle result: no body, a warhead waiting for a body, no warhead, a warhead too heavy, an inert warhead, a hatch too weak, something in the way, a launch under way.
 
 ## Fuel (D22)
 
@@ -65,7 +91,7 @@ A missile launched from a silo gets scatter x0.5 (`icbm.siloScatterFactor`, on t
 
 ## The launch site API
 
-`com.gregguns.icbm.missile.LaunchSite` (`centerX/Z`, `status`, `maxRange`, `expectedRadius`, `hold`, `launch`). `PadMissiles.site(world, x, y, z)` wraps the unchanged static pad API; `MTEMissileSilo.site()` is the silo. The Launch Control reaches both through `LaunchSites.find`, the silo first (its floor is a pad too, but a silo launch must obey the silo), within 6 blocks horizontally and 4 vertically of the silo controller (`SiloSearch`).
+`com.gregguns.icbm.missile.LaunchSite` (`centerX/Z`, `status`, `maxRange`, `expectedRadius`, `hold`, `launch`). `PadMissiles.site(world, x, y, z)` wraps the unchanged static pad API; `MTEMissileSilo.site()` is the silo. The Launch Control reaches both through `LaunchSites.find`: its own silo when the silo's structure holds it, else a Galacticraft pad it touches (D288, [launch-control-block](../04-launch-control/launch-control-block.md)). A formed silo's floor is never fired as a bare pad. `MTEMissileSilo.signName()` reads the first written line of a wall sign on the face two blocks above the controller (`SiloShape.NAME_SIGN_RISE`), on the concrete over the window, for the Launch Control's site line.
 
 ## T3 missiles
 
@@ -77,7 +103,7 @@ A missile launched from a silo gets scatter x0.5 (`icbm.siloScatterFactor`, on t
 | Scatter | 6 blocks base (3 from a silo); no guidance steps (Mk III is IV, below the body's LuV) |
 | Health | 60 |
 | Warhead | T3 or lighter |
-| Build | LuV chip and schematic (yellow lens), Assembly Line at LuV behind a research scan: 4 compressed titanium plates, 4 Heavy Duty Rocket Fins Tier 3, 1 Heavy Duty Rocket Engine Tier 3 (NewHorizonsCoreMod, found by registry name), 2 Master circuits, lubricant; Assembler fit of a Mk III computer |
+| Build | LuV chip and schematic (yellow lens), Assembly Line at LuV behind a research scan: the Tier 4 rocket's hull, fins and engine (4 Heavy Duty Plates Tier 4 from NewHorizonsCoreMod, 4 heavy rocket fins, 1 heavy rocket engine, found by registry name; all buildable at LuV, D343), 2 Master circuits, lubricant; Assembler fit of a Mk III computer |
 | Recycling | the compressed titanium comes back |
 
 Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,300 for the body, one T3 rocket launch with its warhead. The nuclear coder owns the T3 and nuclear warheads; the silo mates whatever `BlockWarhead` item carries `{explosive, fill}`.
@@ -86,12 +112,14 @@ Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,3
 
 - **GGS-ICBM-03-30** The silo forms from clear glass rings (other glass is refused), the pad floor and hatches in the glass or the floor ring, and not with a hatch above the glass or without the pad. Scenario `icbm.silo.structure`.
 - **GGS-ICBM-03-31** From a body and a fitting warhead in a bus and Purple fuel in the hatch, the silo mates, fuels and, fired by the Launch Control, launches a T3 that detonates on target, leaving the silo intact and no chunk ticket. Scenario `icbm.silo.t3_launch`.
-- **GGS-ICBM-03-32** The silo refuses a body with no warhead, a warhead too heavy and an unaccepted fluid, and loses nothing. Scenario `icbm.silo.refusals`.
+- **GGS-ICBM-03-32** The silo stands a body but does not seat a warhead too heavy or inert, never takes a salvage body, does not pump an unaccepted fluid, and loses nothing. Scenario `icbm.silo.refusals`.
+- **GGS-ICBM-03-34** Each part stands in the shaft before its cycle, in the order body, warhead, fuel, whatever order the parts arrive in; no part moves without power; breaking a part or the silo mid-sequence drops each part exactly once. Scenarios `icbm.silo.sequence`, `icbm.silo.sequence_any_order`, `icbm.silo.sequence_break`, `icbm.silo.power_gate`.
 - **GGS-ICBM-03-33** An HV hatch launches a T1 and refuses a T3; a LuV hatch launches a T3; the silo's range and scatter factors apply. Scenario `icbm.silo.tiers`.
+- **GGS-ICBM-03-34** A silo under a stone roof with a chimney around its opening launches a missile that stays on the shaft's column up to the build height, breaks no block of the silo, roof or chimney, and hits its target (D287). Scenario `icbm.silo.climb_clear`.
 
 ## Tests
 
-`SiloDoorsTest`, `SiloShapeTest`, `SiloRulesTest`, `SiloSearchTest`, `MissileTierTest`, `ScatterTest`; scenarios above.
+`SiloDoorsTest`, `SiloShapeTest`, `SiloRulesTest`, `SiloSequenceTest`, `LaunchControlPairingTest`, `MissileTierTest`, `ScatterTest`; scenarios above and `icbm.silo.own_control`.
 
 ## Open questions
 
@@ -99,4 +127,18 @@ None.
 
 ## Unloaded shaft chunks (I4 carry-over)
 
-Mating, pumping and spawning wait for every chunk of the shaft to be loaded, and the parts stay in the bus. The refusal is remembered; once the shaft loads, the controller asks GT for an immediate recheck (GT's multiblock checks are event-driven, so without it the silo would stay idle). Scenario: `icbm.silo.shaft_chunk_guard` ([D123](../DECISIONS.md)).
+Every step (placing a part, a cycle, arming, pumping) waits for every chunk of the shaft to be loaded, and the parts stay in the bus. The refusal is remembered; once the shaft loads, the controller asks GT for an immediate recheck (GT's multiblock checks are event-driven, so without it the silo would stay idle). Scenario: `icbm.silo.shaft_chunk_guard` ([D123](../DECISIONS.md)).
+
+## Power gate
+
+The silo draws the body tier's voltage for every body, mating and pump cycle (HV T1, EV T2, LuV T3). GT stops a
+multiblock for good ("power loss") on the first tick it cannot pay, so the silo checks before it takes anything:
+
+- A step (placing a body or warhead, a body or mating cycle, a pump cycle) starts only when the Energy Hatches hold at least
+  `SiloRules.MIN_BUFFER_TICKS` (2) ticks of its draw. Otherwise the silo moves no body, warhead or fuel, shows the
+  `gregguns_silo_no_power` status ("No power") and stays idle. It is not switched off and no power-fail is recorded.
+- While it waits, the silo looks at the hatches every 10 ticks and asks GT for a recipe check as soon as they hold
+  enough, so it starts on its own when power arrives. No machine-side packet, sound or state change happens meanwhile.
+- Power that runs out mid-cycle still stops the machine as GT does (the parts stay standing in the shaft and the silo
+  switches itself back on); the cycle then runs again, gated the same way. The doors and the launch draw no EU.
+- Tests: `SiloRulesTest` (the gate rule), scenario `icbm.silo.power_gate`.

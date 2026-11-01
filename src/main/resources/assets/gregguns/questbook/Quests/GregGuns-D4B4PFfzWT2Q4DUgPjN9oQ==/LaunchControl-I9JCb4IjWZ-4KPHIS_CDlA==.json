@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Place a Launch Control block within 4 blocks of the pad and power it at HV. Type the target X and Z, or load them from a Data Stick. The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect.",
+      "desc:8": "The Launch Control is the button. It\u0027s a GregTech single block at HV, made in the Assembler from an HV machine hull, an HV sensor, an HV emitter, an empty data stick and 2 Advanced circuits. Check NEI.\n\nSet it against one edge of the pad, level with it (corners don\u0027t count, the way Galacticraft\u0027s own launch controller attaches) and power it at HV. Get a target with a Radar Gun: aim it at the spot, then right-click the Launch Control with it, or drop the gun in the slot and press Load target. You can also type the target X and Z or press Use My Position. The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,10 +26,10 @@
         "id:8": "gregtech:gt.blockmachines"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Launch Control",
+      "name:8": "§5§lLaunch Control",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,64 @@
   },
   "questIDHigh:4": 2581198583128873375,
   "questIDLow:4": -5176621929092578412,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:ploughmanslunchItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 6,
+          "Damage:2": 9,
+          "OreDict:8": "compressedSteel",
+          "id:8": "GalacticraftCore:item.basicItem"
+        },
+        "3:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:fuze_assembly_mk1"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +123,48 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 13,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.blockmachines"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 32692,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 32682,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "3:10": {
+          "Count:3": 1,
+          "Damage:2": 32708,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "4:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "circuitAdvanced",
+          "id:8": "IC2:itemPartCircuitAdv"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

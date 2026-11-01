@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The Ammo Press builds 9mm rounds from a GT round, a foil casing and gunpowder. Check the Ammo Press tab in NEI.",
+      "desc:8": "The 9mm bullet feeds the pistol and the revolver, and it is the cheapest round you will make. A single run in the Ammo Press takes sixteen brass foils, sixteen lead rounds and two gunpowder and produces sixteen bullets.\n\nBrass foil comes from the Bending Machine, and lead rounds from the Lathe or from a nugget and a file. Check the Ammo Press tab in NEI for the exact recipe. Rounds take a while by design, so queue several runs.\n\n[note]One batch makes sixteen bullets, enough to fill five pistol magazines.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -26,10 +26,10 @@
         "id:8": "gregguns:ammo_9mm_bullet"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "9mm Rounds",
+      "name:8": "§2§l9mm Rounds",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -65,12 +65,55 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1702,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
           "Count:3": 32,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:hamburgerItem"
+        },
+        "3:10": {
+          "Count:3": 4,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_9mm_bullet"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 29301,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 25089,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
@@ -84,7 +127,37 @@
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {
         "0:10": {
-          "Count:3": 1,
+          "Count:3": 16,
+          "Damage:2": 29301,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 25089,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 16,
           "Damage:2": 0,
           "OreDict:8": "",
           "id:8": "gregguns:ammo_9mm_bullet"

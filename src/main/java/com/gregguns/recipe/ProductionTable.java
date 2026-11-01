@@ -56,6 +56,9 @@ public final class ProductionTable {
     /** One input of a row: a GT part or a GregGuns item, and how many. */
     public static final class Input {
 
+        /** The {@link #special()} prefix of an {@link #external} input. */
+        public static final String EXTERNAL = "item:";
+
         private final String prefix;
         private final String material;
         private final String itemName;
@@ -131,8 +134,20 @@ public final class ProductionTable {
         }
 
         /**
-         * @return {@code "gt:<ItemList name>"} or {@code "mc:<registry name>"} for {@link #itemList}/{@link #vanilla}
-         *         inputs, else null
+         * Another mod's item that has no ore-dictionary name, such as the pack's Tanned Leather. The recipe is skipped
+         * when the item is not registered.
+         *
+         * @param id    a {@code modid:name} item id, for example {@code "Backpack:tannedLeather"}
+         * @param count stack size
+         * @return an item input, damage 0
+         */
+        public static Input external(String id, int count) {
+            return new Input(null, null, null, EXTERNAL + id, null, count);
+        }
+
+        /**
+         * @return {@code "gt:<ItemList name>"}, {@code "mc:<registry name>"} or {@code "item:<modid>:<name>"} for
+         *         {@link #itemList}/{@link #vanilla}/{@link #external} inputs, else null
          */
         public String special() {
             return special;
@@ -467,9 +482,9 @@ public final class ProductionTable {
      * Outputs exempt from the "at least one input of the tier's gate material" rule (GGS-06-36). Their gate is the LV
      * machine voltage and the Brass case instead. The list is fixed: adding to it needs a spec change.
      */
-    // Spec: GGS-06-36 (RC-22 is gated by the LV Chemical Bath voltage; a metal input in a bath is artificial)
+    // Spec: GGS-06-36
     public static final Set<String> GATE_EXEMPT = Collections
-        .unmodifiableSet(new HashSet<>(Arrays.asList(BULLET, SHELL, "part_treated_leather")));
+        .unmodifiableSet(new HashSet<>(Arrays.asList(BULLET, SHELL)));
 
     /**
      * Parts that are made at the crafting table (ULV, RC-02 and RC-03; see {@code PartCraftingRecipes}), so no

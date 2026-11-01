@@ -40,14 +40,14 @@ Totals: 3 vanilla, 3 reinforced, 8 weapon, 2 spawners. Spawner behavior (5 nearb
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
 | Main concrete (blockhouse, vault walls) | `concrete` | stone brick | the bulk of the solid shell |
-| Dark concrete / frame looks | `brick`, `factory_wall` (a few steel-frame accents) | stone brick / iron block | interior walls, columns |
+| Interior concrete looks | `concrete` weight 4, `concrete_panel` weight 2, `concrete_dark` weight 1; columns `concrete_dark` | stone brick | interior walls, columns |
 | Light slab | `concrete` | stone brick | hall floor at layer 5, roof slab |
 | Berm soil | `minecraft:dirt#2` (podzol) | same | berm outside |
-| Sandbags | no key yet (future GregGuns block); use `minecraft:stained_hardened_clay#12` as a stand-in | same | berm and pill-boxes |
+| Sandbags | `sandbag` (Chisel brown hempcrete; stained clay is overwritten by GT stone layers) | same | berm and pill-boxes |
 | Camo net | no key yet; `minecraft:leaves#4` (non-decaying) as a stand-in | same | roof cover |
 | Stairs | `minecraft:stone_brick_stairs@stairs`, `minecraft:spruce_stairs@stairs` | same | ramps, rim, pill-box steps |
 | Doors | `minecraft:iron_door` with `@door`, both halves | same | pill-boxes and interior (about 20 doors in all) |
-| Lamps | `lantern` | glowstone | hall and vault |
+| Lamps | `lamp` | glowstone | hall and vault |
 | Spawner holes | direct block once G11 lands; layout uses the mark `spawner.zombie_hole`, not a block | the mark is the contract | two places |
 | Air | `air` | air | all rooms |
 

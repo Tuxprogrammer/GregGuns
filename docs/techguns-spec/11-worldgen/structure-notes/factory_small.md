@@ -41,13 +41,13 @@ An L-shaped, two-story light-industrial shed.
 
 | Role | `PaletteKeys` key | Vanilla fallback | Where |
 |---|---|---|---|
-| Hall walls | `factory_wall` | iron block | most wall cells |
-| Wall accent / lower band | `concrete` | stone brick | skirting, annex walls (mix about 3 to 1 with `factory_wall`) |
-| Floor | `factory_floor` | double stone slab | hall and annex floor; `concrete` for the border |
+| Hall walls | `rust_wall` | hardened clay | most wall cells |
+| Wall accent / lower band | `concrete` weight 3, `concrete_dark` weight 1 | stone brick | skirting, annex walls |
+| Floor | `factory_floor` (steel grate) | smooth stone slab | hall and annex floor; `concrete` for the border |
 | Roof and terrace deck | `concrete` | stone brick | upper-room roof slab, terrace |
 | Railing / yard fence | `minecraft:iron_bars` | same | terrace edge, yard |
 | Windows | `glass_pane` | glass pane | walls |
-| Lamps | `lantern` | glowstone | ceiling and door sides |
+| Lamps | `lamp` | glowstone | ceiling and door sides |
 | Doors | `minecraft:iron_door` with `@door`, both halves | same | north entrance, annex back door |
 | Ladders | `minecraft:ladder@facing` | same | two climbs |
 | Furniture | `minecraft:crafting_table`, `minecraft:furnace@facing` | same | hall east wall |

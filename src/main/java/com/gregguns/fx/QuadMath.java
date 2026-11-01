@@ -10,36 +10,47 @@ public final class QuadMath {
 
     /**
      * The four UV pairs of a sprite, in the vertex order {@link #corners} returns. The cell is
-     * {@code 1/columns} by {@code 1/rows}; frames count left to right, then top to bottom. With a quarter-turn
-     * count the pairs are rotated among the corners.
+     * {@code 1/columns} by {@code 1/rows}; frames count left to right, then top to bottom. The orientation mirrors the
+     * cell (D311): 0 is as drawn, 1 mirrors U, 2 mirrors both (a half turn) and 3 mirrors V.
      *
      * <p>
-     * Deviation: Techguns divides the sheet by its column count in both directions; this uses the row count.
+     * Every orientation keeps vanilla's layout, an axis-aligned rectangle where vertices 0 and 1 share u and vertices
+     * 1 and 2 share v. Angelica's particle decoder instances only that layout; a quad it can't decode is replayed into
+     * the layer batch without its texture, which drew the block atlas on our particles (GGS-04-17).
      *
-     * @param frame    the sprite, 0 up to columns times rows minus 1
-     * @param columns  sheet columns
-     * @param rows     sheet rows
-     * @param rotation quarter turns, 0 to 3
+     * <p>
+     * Deviation: Techguns turns the sprite by quarter turns and divides the sheet by its column count in both
+     * directions; this mirrors instead and uses the row count.
+     *
+     * @param frame       the sprite, 0 up to columns times rows minus 1
+     * @param columns     sheet columns
+     * @param rows        sheet rows
+     * @param orientation 0 to 3 (taken modulo 4): none, mirror U, mirror U and V, mirror V
      * @return {u0, v0, u1, v1, u2, v2, u3, v3}, one pair per vertex
      */
-    public static float[] uv(int frame, int columns, int rows, int rotation) {
+    // Source:
+    // https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/rendering/particles/ParticleQuadDecoder.java#L36
+    public static float[] uv(int frame, int columns, int rows, int orientation) {
         int col = frame % columns;
         int row = frame / columns;
         float u0 = (float) col / columns;
         float u1 = (float) (col + 1) / columns;
         float v0 = (float) row / rows;
         float v1 = (float) (row + 1) / rows;
-        // Vertex order matches vanilla's particle quad: (u1,v1) (u1,v0) (u0,v0) (u0,v1).
-        float[] us = { u1, u1, u0, u0 };
-        float[] vs = { v1, v0, v0, v1 };
-        float[] out = new float[8];
-        int r = Math.floorMod(rotation, 4);
-        for (int i = 0; i < 4; i++) {
-            int src = (i + r) % 4;
-            out[i * 2] = us[src];
-            out[i * 2 + 1] = vs[src];
+        int o = Math.floorMod(orientation, 4);
+        // 1 and 2 mirror U; 2 and 3 mirror V.
+        if (o == 1 || o == 2) {
+            float swap = u0;
+            u0 = u1;
+            u1 = swap;
         }
-        return out;
+        if (o >= 2) {
+            float swap = v0;
+            v0 = v1;
+            v1 = swap;
+        }
+        // Vertex order matches vanilla's particle quad: (u1,v1) (u1,v0) (u0,v0) (u0,v1).
+        return new float[] { u1, v1, u1, v0, u0, v0, u0, v1 };
     }
 
     /**

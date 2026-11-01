@@ -39,6 +39,104 @@ final class NpcEggScenarios {
                 () -> com.gregguns.entity.npc.NpcRegistry.isRegistered(NpcMob.NPC_TEST),
                 "needs the dev-only test NPC (NpcMob.NPC_TEST), which the pack does not register"));
         registry.register(new AllEggsScenario());
+        registry.register(new EveryEggSpawnsScenario());
+    }
+
+    /**
+     * Every egg subtype the creative tab offers, bosses included, spawns its own mob when used, with every boss spawn
+     * switch off: the switches stop natural spawns only (the eggs are the single-player way to the bosses, and the
+     * Vending Machine sells them).
+     */
+    private static final class EveryEggSpawnsScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "npc.egg_every_mob";
+        }
+
+        @Override
+        public String description() {
+            return "Using the egg of every registered egg mob (the Cyberdemon, Alien Bug, Attack Helicopter and"
+                + " Dictator Dave included) on a block spawns exactly that mob's class and consumes one egg, with the"
+                + " npcs.helicopter switch off (that flag gates camps, not the egg). The flags that do gate eggs are covered"
+                + " by npc.spawn_flags_refuse.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            ItemNpcEgg egg = NpcRegistry.egg();
+            out.check(egg != null, "the npc_egg item should be registered");
+            if (egg == null) {
+                return out.build();
+            }
+            World world = ctx.world();
+            ctx.clearArea(6, 6);
+            ctx.setBlock(0, -1, 0, Blocks.stone, 0);
+            int x = ctx.originX();
+            int y = ctx.originY() - 1;
+            int z = ctx.originZ();
+            FakePlayer player = new FakePlayer(
+                (WorldServer) world,
+                new GameProfile(UUID.nameUUIDFromBytes("npc_egg_all".getBytes(StandardCharsets.UTF_8)), "npc_egg_all"));
+            boolean helicopter = com.gregguns.core.config.NpcConfig.helicopter;
+            int checked = 0;
+            try {
+                com.gregguns.core.config.NpcConfig.helicopter = false;
+                for (NpcMob mob : NpcRegistry.eggMobs()) {
+                    if (mob.isDevOnly()) {
+                        continue;
+                    }
+                    List<Entity> before = new ArrayList<>(entities(world));
+                    ItemStack stack = new ItemStack(egg, 2, mob.entityId());
+                    boolean used = egg.onItemUse(stack, player, world, x, y, z, 1, 0.5F, 1.0F, 0.5F);
+                    List<Entity> spawned = new ArrayList<>(entities(world));
+                    spawned.removeAll(before);
+                    Class<?> bound = NpcRegistry.boundClass(mob);
+                    int exact = 0;
+                    for (Entity e : spawned) {
+                        if (e.getClass() == bound) {
+                            exact++;
+                        }
+                    }
+                    out.check(used, mob + ": using the egg should succeed");
+                    out.checkEquals(
+                        mob + ": spawned entities of " + (bound == null ? "?" : bound.getSimpleName()),
+                        1,
+                        exact);
+                    out.checkEquals(mob + ": eggs left after one use", 1, stack.stackSize);
+                    for (Entity e : spawned) {
+                        world.removeEntity(e);
+                    }
+                    checked++;
+                }
+            } finally {
+                com.gregguns.core.config.NpcConfig.helicopter = helicopter;
+            }
+            out.check(
+                NpcRegistry.eggMobs()
+                    .contains(NpcMob.CYBER_DEMON)
+                    && NpcRegistry.eggMobs()
+                        .contains(NpcMob.ALIEN_BUG)
+                    && NpcRegistry.eggMobs()
+                        .contains(NpcMob.DICTATOR_DAVE)
+                    && NpcRegistry.eggMobs()
+                        .contains(NpcMob.ATTACK_HELICOPTER),
+                "the boss eggs should all be offered");
+            out.check(checked >= 18, "every egg mob should have been tried: " + checked);
+            return out.build();
+        }
+
+        private static List<Entity> entities(World world) {
+            List<Entity> list = new ArrayList<>();
+            for (Object o : world.loadedEntityList) {
+                if (o instanceof Entity && !((Entity) o).isDead
+                    && !(o instanceof net.minecraft.entity.player.EntityPlayer)) {
+                    list.add((Entity) o);
+                }
+            }
+            return list;
+        }
     }
 
     /** Every catalog mob except the exempt turret has a class, a registered entity and an egg subtype. */

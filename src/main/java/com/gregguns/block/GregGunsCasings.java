@@ -1,13 +1,23 @@
 package com.gregguns.block;
 
+import java.util.List;
+
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.registry.Naming;
+import com.gregguns.core.text.AddedBy;
+import com.gregguns.core.text.TierText;
+import com.gregguns.icbm.TooltipWrap;
+import com.gregguns.icbm.defense.RadarCasingTooltipFormat;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -143,6 +153,30 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
     @Override
     public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
         return 0xFFFFFF;
+    }
+
+    /**
+     * The Radar Casing's tooltip (D41, D338), through GT's casing tooltip hook: {@link ItemCasings#addInformation} adds
+     * GT's two casing lines (no mob spawning, not a tile entity), then calls this. The other metas keep GT's lines
+     * only.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/blocks/ItemCasings.java#L41-L47
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/blocks/BlockCasingsAbstract.java#L169-L171
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+        super.addInformation(stack, player, tooltip, advanced);
+        if (stack.getItemDamage() != RADAR_CASING) {
+            return;
+        }
+        boolean shift = GuiScreen.isShiftKeyDown();
+        TooltipWrap.addAll(
+            tooltip,
+            RadarCasingTooltipFormat.lines(StatCollector::translateToLocal, TierText.colored(Tier.HV), shift));
+        if (shift) {
+            tooltip.add(AddedBy.line());
+        }
     }
 
     @Override

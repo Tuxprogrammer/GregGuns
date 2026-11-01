@@ -100,16 +100,12 @@ public final class ComplexRaster {
     }
 
     private static byte furniture(String key) {
-        // A small room's furniture piece (D259): its style cube, or open where it has none.
+        // A room's piece (D259, D305): its style cube, a prop cell the marks pass fills, or open where it has none.
         FurniturePiece piece = FurniturePiece.of(key);
-        if (piece != null) return piece.fallbackRole();
+        if (piece != null) return piece.role();
         switch (key) {
             case "TABLE":
                 return Cell.FURN_TABLE;
-            case "CONSOLE":
-                return Cell.FURN_CONSOLE;
-            case "BUNK":
-                return Cell.FURN_BUNK;
             case "BASIN":
                 return Cell.BASIN;
             default:
@@ -183,6 +179,7 @@ public final class ComplexRaster {
             switch (ch) {
                 case 'C':
                 case 'F':
+                case 'H':
                     cell = Cell.SILO_CONCRETE;
                     break;
                 case 'G':
@@ -203,11 +200,27 @@ public final class ComplexRaster {
             }
             set(s.x(c, a), 11 - r, s.z(c, a), cell);
         }
-        // Hatches around the controller (column 2, y 2, front aisle): bus and maintenance beside it, energy and power
-        // below.
-        set(s.x(1, 0), 2, s.z(1, 0), Cell.HATCH_BUS);
-        set(s.x(3, 0), 2, s.z(3, 0), Cell.HATCH_MAINTENANCE);
-        set(s.x(3, 0), 1, s.z(3, 0), Cell.HATCH_POWER);
-        if (s.missing() != MissingPart.ENERGY_HATCH) set(s.x(2, 0), 1, s.z(2, 0), Cell.HATCH_ENERGY);
+        // The hatches stand in the hatch columns beside the glass window, two high; a missing Energy Hatch leaves the
+        // column's concrete (D299).
+        for (byte role : SiloSlot.HATCH_ROLES) {
+            if (role == Cell.HATCH_ENERGY && s.missing() == MissingPart.ENERGY_HATCH) continue;
+            int[] at = s.hatchCell(role);
+            set(at[0], at[1], at[2], role);
+        }
+        launchControl(s);
+    }
+
+    /**
+     * The silo's own Launch Control (D288, D299): in the front face, on top of the right hatch column
+     * ({@link com.gregguns.icbm.silo.SiloShape#LAUNCH_CONTROL_COLUMN}), one above the controller, outside the glass
+     * window. Every generated silo has one; the part a silo misses is never the Launch Control.
+     */
+    private void launchControl(SiloSlot s) {
+        int col = com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_COLUMN;
+        set(
+            s.x(col, 0),
+            com.gregguns.icbm.silo.SiloShape.LAUNCH_CONTROL_RISE + 2,
+            s.z(col, 0),
+            Cell.SILO_LAUNCH_CONTROL);
     }
 }

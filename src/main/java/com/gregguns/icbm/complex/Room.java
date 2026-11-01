@@ -32,6 +32,15 @@ public final class Room {
         marks.add(new Mark(k, x, y, z, key, facing, extent));
     }
 
+    /** Removes the marks of a kind on one cell (a floor light tile a blueprint built over, D321). */
+    void remove(MarkKind k, int x, int y, int z) {
+        java.util.Iterator<Mark> it = marks.iterator();
+        while (it.hasNext()) {
+            Mark m = it.next();
+            if (m.kind() == k && m.x() == x && m.y() == y && m.z() == z) it.remove();
+        }
+    }
+
     void bounds(Box b) {
         this.bounds = b;
     }

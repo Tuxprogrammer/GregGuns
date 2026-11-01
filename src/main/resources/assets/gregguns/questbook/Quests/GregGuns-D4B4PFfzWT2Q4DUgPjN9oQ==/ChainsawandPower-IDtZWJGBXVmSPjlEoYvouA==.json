@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 3212918691310555476,
-      "questIDLow:4": -8970666791205812621
+      "questIDHigh:4": -6134077024384296075,
+      "questIDLow:4": -8802940280543237016
     },
     "1:10": {
       "questIDHigh:4": 0,
@@ -21,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Electric tools charge only in a charger or battery buffer of exactly their tier: HV.",
+      "desc:8": "Two tools that happen to be weapons. The Chainsaw is a fuel-hungry melee weapon whose right click also fires a short ranged cut. The Power Hammer charges a shockwave that hits everything and breaks blocks in a small cube in front of you.\n\nThe Chainsaw takes a Fuel Tank. The Power Hammer takes a Compressed Air Tank, a sibling of the Fuel Tank built from an aluminum Large Fluid Cell. Both are HV Assembler builds around an Iron Receiver, an HV Electric Piston and stainless steel plates and screws, and both come unloaded. Check NEI for either recipe and build whichever you like.\n\n[note]Hold right click to charge the hammer: the longer the charge, the more air it spends and the harder it hits.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -33,7 +33,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Chainsaw and Power Hammer",
+      "name:8": "§5§lChainsaw and Power Hammer",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -62,7 +62,58 @@
   },
   "questIDHigh:4": 2322548269772791129,
   "questIDLow:4": -7908820928685152072,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1704,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:sundayroastItem"
+        },
+        "2:10": {
+          "Count:3": 1,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:tank_fuel"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:tank_air"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -70,6 +121,36 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_receiver_iron"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 17306,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 27306,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 1,
       "requiredItems:9": {

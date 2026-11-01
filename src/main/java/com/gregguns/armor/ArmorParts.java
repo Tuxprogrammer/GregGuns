@@ -4,10 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
 import com.gregguns.api.Tier;
 import com.gregguns.armor.logic.ArmorCatalog;
 import com.gregguns.core.registry.ModuleRegistrar;
@@ -15,14 +11,13 @@ import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.ItemPart;
 import com.gregguns.item.part.ItemTank;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-
 /**
- * The cloth component every T1 set is crafted and repaired with: Heavy Cloth, {@code part_heavy_cloth}, and its
- * hand recipe (RC-21). Registered by the armor module because the armor sets are its only consumers.
+ * The armor module's own parts: the Gas Mask Filter, the Compressed Air Tank and the glider parts.
+ * Registered by the armor module because the armor and equipment recipes are their only consumers. The cloth lining of
+ * the armor sets is the pack's Tanned Leather ({@link ArmorCatalog#TANNED_LEATHER}), not a part of ours.
  *
  * <p>
- * Common side. Spec: docs/gregguns-spec/06-items/recipes.md (RC-21).
+ * Common side. Spec: docs/gregguns-spec/06-items/recipes.md.
  */
 public final class ArmorParts {
 
@@ -37,21 +32,13 @@ public final class ArmorParts {
     public static final String GLIDER_WING = "part_glider_wing";
 
     /** The armor module's own parts, in declaration order ({@code ArmorItemOrder} sorts them into tiers). */
-    public static final List<String> NAMES = Collections.unmodifiableList(
-        Arrays.asList(
-            ArmorCatalog.HEAVY_CLOTH,
-            ArmorCatalog.TREATED_LEATHER,
-            GAS_MASK_FILTER,
-            TANK_AIR,
-            GLIDER_BACKPACK,
-            GLIDER_WING));
+    public static final List<String> NAMES = Collections
+        .unmodifiableList(Arrays.asList(GAS_MASK_FILTER, TANK_AIR, GLIDER_BACKPACK, GLIDER_WING));
 
-    private static ItemPart heavyCloth;
     private static ItemPart gliderBackpack;
     private static ItemPart gliderWing;
     private static ItemPart gasMaskFilter;
     private static ItemTank tankAir;
-    private static ItemPart treatedLeather;
 
     private ArmorParts() {}
 
@@ -71,19 +58,13 @@ public final class ArmorParts {
      * Registers one part by registry name. Area 06 owns these items; they stay registered here because the armor
      * module can run without the guns module's ComponentItems. The filter is a plain part (RC-25); the Compressed Air
      * Tank is the 1,000 mB IFluidContainerItem of GGS-06-40; the glider parts come from the armor recipes sheet
-     * (recipes.md, HV); Treated Leather is RC-22 (RC-23, Steam Armor Plating, is retired: design record 0022).
+     * (recipes.md, HV).
      *
      * @param registrar the armor module's registrar
      * @param name      one of {@link #NAMES}
      */
     public static void registerOne(ModuleRegistrar registrar, String name) {
         switch (name) {
-            case ArmorCatalog.HEAVY_CLOTH:
-                heavyCloth = registrar.registerItem(name, new ItemPart(Tier.STEAM));
-                break;
-            case ArmorCatalog.TREATED_LEATHER:
-                treatedLeather = registrar.registerItem(name, new ItemPart(Tier.LV));
-                break;
             case GAS_MASK_FILTER:
                 gasMaskFilter = registrar.registerItem(name, new ItemPart(Tier.MV));
                 break;
@@ -99,16 +80,6 @@ public final class ArmorParts {
             default:
                 throw new IllegalArgumentException("not an armor part: " + name);
         }
-    }
-
-    /** @return Treated Leather; null before registration */
-    public static ItemPart treatedLeather() {
-        return treatedLeather;
-    }
-
-    /** @return Heavy Cloth; null before registration */
-    public static ItemPart heavyCloth() {
-        return heavyCloth;
     }
 
     /** @return the Gas Mask Filter; null before registration */
@@ -129,21 +100,5 @@ public final class ArmorParts {
     /** @return the Compressed Air Tank; null before registration */
     public static ItemTank tankAir() {
         return tankAir;
-    }
-
-    /** Adds RC-21: four wool blocks around a leather make three Heavy Cloth. Call from {@code ArmorModule.init}. */
-    public static void addRecipes() {
-        // Source: Forge 1.7.10 ShapedOreRecipe; "blockWool" is the ore name of every wool color (RC-21, unchanged from
-        // Techguns).
-        GameRegistry.addRecipe(
-            new ShapedOreRecipe(
-                new ItemStack(heavyCloth, 3),
-                " W ",
-                "WLW",
-                " W ",
-                'W',
-                "blockWool",
-                'L',
-                new ItemStack(Items.leather)));
     }
 }

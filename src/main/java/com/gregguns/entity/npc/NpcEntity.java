@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import com.gregguns.core.config.NpcConfig;
 import com.gregguns.entity.npc.ai.EntityAIGunAttack;
 import com.gregguns.entity.npc.ai.EntityAIHurtByFaction;
 import com.gregguns.entity.npc.ai.EntityAINpcMelee;
@@ -96,6 +97,21 @@ public class NpcEntity extends EntityMob
                     && NpcTargetRules.canSeekPlayer(((EntityPlayer) e).capabilities.disableDamage)));
         // The held item is empty here, so this installs the melee task; setting a gun re-runs it.
         setCombatTask();
+        noHeldItemDrop();
+    }
+
+    /**
+     * The held item's vanilla equipment drop chance: below anything Looting can lift it to. Vanilla drops slot
+     * {@code j} when {@code nextFloat() - looting * 0.01 < chance}, so a chance of 0 still drops 1% per Looting level.
+     */
+    public static final float NO_HELD_DROP = -Float.MAX_VALUE;
+
+    /**
+     * The carried weapon never drops through vanilla's equipment roll (D312): {@link NpcGunDropsHandler} drops the gun
+     * at its own rare rate. Armor keeps vanilla's chance.
+     */
+    private void noHeldItemDrop() {
+        equipmentDropChances[0] = NO_HELD_DROP;
     }
 
     @Override
@@ -145,7 +161,7 @@ public class NpcEntity extends EntityMob
     public static final int DANGER_UNSET = -1;
 
     private static final String DANGER_TAG = "GGDanger";
-    private static final int EGG_DANGER_RANGE = 4;
+    static final int EGG_DANGER_RANGE = 4;
 
     private int danger = DANGER_UNSET;
 
@@ -214,13 +230,12 @@ public class NpcEntity extends EntityMob
         }
     }
 
+    /**
+     * Vanilla's rare drop (5 in 200 on a player kill) drops nothing: the rare gun drop is {@link NpcGunDropsHandler}'s,
+     * at {@link NpcDrops#rareGunChance} (D312).
+     */
     @Override
-    protected void dropRareDrop(int stage) {
-        NpcProfile profile = npcProfile();
-        if (profile != null) {
-            NpcDrops.dropRareDrop(this, profile);
-        }
-    }
+    protected void dropRareDrop(int stage) {}
 
     @Override
     public void writeEntityToNBT(NBTTagCompound tag) {
@@ -273,6 +288,8 @@ public class NpcEntity extends EntityMob
     @Override
     public void readEntityFromNBT(NBTTagCompound tag) {
         super.readEntityFromNBT(tag);
+        // Vanilla reads the saved DropChances list back over the constructor value; the held-item rule is a constant.
+        noHeldItemDrop();
         danger = tag.hasKey(DANGER_TAG) ? tag.getInteger(DANGER_TAG) : DANGER_UNSET;
         setCombatTask();
         if (SpawnerData.isFromSpawner(tag) && worldObj != null && !worldObj.isRemote) {
@@ -284,8 +301,10 @@ public class NpcEntity extends EntityMob
      * A vanilla spawner with GregGuns {@code SpawnData} is placing this NPC: the data was just read, and the NPC has
      * not joined the world yet. Does what the spawner's own path skips: the egg-style setup that rolls the equipment.
      * When the spawner stands on its worldgen origin ({@link SpawnerOrigin#placedFromOrigin}) the danger is the spawn
-     * position's raised to the spawner's floor, and the NPC takes the Infernal Mobs opt-out (before Infernal sees the
-     * join). A spawner carried away from its origin acts as a plain vanilla spawner of the NPC at the lowest danger,
+     * position's raised to the spawner's floor, and, only when {@code infernalSpawnerOptOut} is on, the NPC takes the
+     * Infernal Mobs
+     * opt-out (before Infernal sees the join; by default it rolls like any other NPC). A spawner carried away from its
+     * origin acts as a plain vanilla spawner of the NPC at the lowest danger,
      * 0, so moving a deep post into a base farms nothing better than the weakest gear. The key is never written back,
      * so a reload does not repeat this.
      *
@@ -316,6 +335,9 @@ public class NpcEntity extends EntityMob
      */
     @Override
     public boolean getCanSpawnHere() {
+        if (!NpcSpawnGate.allowed(NpcMob.byName(EntityList.getEntityString(this)))) {
+            return false; // the kind's npcs.* flag is off
+        }
         if (!naturalCandidate && worldObj != null && !worldObj.isRemote) {
             if (!SpawnerOrigin.canSpawnFromSpawner(this)) {
                 return false; // vanilla's answer too: these checks are part of it
@@ -353,7 +375,7 @@ public class NpcEntity extends EntityMob
         // Difficulty damage once, here; the NPC-to-player factor is applied at the hit by DamageSources.hit.
         for (ShotOffset offset : offsets) {
             Projectiles.launcher()
-                .launch(worldObj, this, stats, offset, (float) scaling.damageFactor());
+                .launch(worldObj, this, stats, offset, NpcFiring.damageScale(scaling, NpcConfig.gunDamageEnabled));
         }
         GunSoundPlayer.playFire(this, gun.fireEvent(), null);
         swingItem();

@@ -305,7 +305,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
 **Entry gate:** `0.3.0-beta` is published.
 
 **Scope, polish (in the jar):**
-- **Questbook from the jar.** The GregGuns quest line ([12-questbook](gregguns-spec/12-questbook/index.md)) ships as resources in our jar. A hidden config key (not in the config GUI, off by default) installs it into the server's BetterQuesting database. Quest IDs stay stable so an install is repeatable.
+- **Questbook from the jar.** The GregGuns quest line ([12-questbook](gregguns-spec/12-questbook/index.md)) ships as resources in our jar. The `questbook.install` config key (on by default, switchable off) installs it into the server's BetterQuesting database. Quest IDs stay stable so an install is repeatable.
 - **PACK-CHANGES in the jar.** Each row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md) is done from our jar or written up as an optional server-owner step. No PR to GTNH.
 - **The rest of the polish:**
   - a balance pass along the GTNH tier progression;

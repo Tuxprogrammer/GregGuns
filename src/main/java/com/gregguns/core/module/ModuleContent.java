@@ -63,6 +63,21 @@ public final class ModuleContent {
     }
 
     /**
+     * @param module a module
+     * @return every item recorded for that module (a block's item form included), in no particular order; the
+     *         per-damage owners of {@link #assignByDamage} are not expanded
+     */
+    public static java.util.List<Item> itemsOf(ModuleId module) {
+        java.util.List<Item> out = new java.util.ArrayList<>();
+        for (Map.Entry<Item, ModuleId> e : ITEMS.entrySet()) {
+            if (e.getValue() == module) {
+                out.add(e.getKey());
+            }
+        }
+        return out;
+    }
+
+    /**
      * @param stack a stack, may be {@code null}
      * @return the GregGuns module that owns it, or {@code null} for anything else (also for an empty stack)
      */

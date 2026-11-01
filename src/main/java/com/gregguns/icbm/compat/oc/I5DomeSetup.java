@@ -36,7 +36,7 @@ import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
  * types, so it is registered only when OpenComputers is loaded.
  *
  * <pre>
- *   adapter (0,0,0); Launch Control east (1,0,0); pad centre (4,0,0); radar west (-1,0,0);
+ *   adapter (0,0,0); Launch Control east (1,0,0), against the pad; pad center (3,0,0); radar west (-1,0,0);
  *   air defense north (0,0,-1); EMP tower south (0,0,1); case (0,1,0); screen (0,1,1) facing south;
  *   keyboard (0,2,1); disk drive (1,1,0)
  * </pre>
@@ -74,7 +74,7 @@ public final class I5DomeSetup extends I5ClientSetups.Setup {
         DefenseScenarios.place(ctx, GregGunsMTEIDs.EMP_TOWER, 0, 0, 1);
         for (int a = -1; a <= 1; a++) {
             for (int b = -1; b <= 1; b++) {
-                ctx.setBlock(4 + a, 0, b, GCBlocks.landingPad, 0);
+                ctx.setBlock(3 + a, 0, b, GCBlocks.landingPad, 0);
             }
         }
         ctx.setBlock(0, 0, 0, block("adapter"), 0);
@@ -115,7 +115,7 @@ public final class I5DomeSetup extends I5ClientSetups.Setup {
             p.setPositionAndUpdate(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 3.5);
             p.playerNetServerHandler
                 .setPlayerLocation(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 3.5, 180.0F, -20.0F);
-            I5ClientSetups.log(ctx, "dome ready: screen at 0,1,1; player at 0.5,0,3.5; missile on the pad at 4,1,0");
+            I5ClientSetups.log(ctx, "dome ready: screen at 0,1,1; player at 0.5,0,3.5; missile on the pad at 3,1,0");
             return res.build();
         });
     }
@@ -129,12 +129,12 @@ public final class I5DomeSetup extends I5ClientSetups.Setup {
 
     private static boolean armMissile(ScenarioContext ctx, ScenarioResult.Builder out) {
         if (ctx.world()
-            .getBlock(ctx.originX() + 4, ctx.originY(), ctx.originZ()) != GCBlocks.landingPadFull) {
+            .getBlock(ctx.originX() + 3, ctx.originY(), ctx.originZ()) != GCBlocks.landingPadFull) {
             return false;
         }
-        int[] b = MissileScenarios.buildStack(ctx, MissileTier.T1, WarheadCasing.T1, "condensed", 3, 4, 1, 0, true, 0);
+        int[] b = MissileScenarios.buildStack(ctx, MissileTier.T1, WarheadCasing.T1, "condensed", 3, 3, 1, 0, true, 0);
         MissileStacks.arm(ctx.world(), b[0], b[1], b[2], null);
-        EntityMissile m = PadMissiles.find(ctx.world(), ctx.originX() + 4, ctx.originY(), ctx.originZ());
+        EntityMissile m = PadMissiles.find(ctx.world(), ctx.originX() + 3, ctx.originY(), ctx.originZ());
         if (m == null) {
             return false;
         }

@@ -81,7 +81,7 @@ public final class LaunchControlGuiShots implements Scenario {
         IcbmConfig.countdownTicks = 600;
         IcbmConfig.doorOpenTicks = 60;
         SiloScenarios.build(ctx, ItemList.Hatch_Energy_LuV);
-        final IGregTechTileEntity cb = SiloScenarios.launchControl(ctx, 5, -2);
+        final IGregTechTileEntity cb = SiloScenarios.ownControl(ctx);
         cb.setOwnerName(p.getCommandSenderName());
         cb.setOwnerUuid(p.getUniqueID());
         p.setGameType(WorldSettings.GameType.CREATIVE);
@@ -95,9 +95,9 @@ public final class LaunchControlGuiShots implements Scenario {
         final EntityMissile[] m = { null };
         final double cx = ctx.originX() + 0.5;
         final double cz = ctx.originZ() + 2.5;
-        final int bx = ctx.originX() + 5;
-        final int by = ctx.originY() + SiloScenarios.CY;
-        final int bz = ctx.originZ() - 2;
+        final int bx = ctx.originX() + com.gregguns.machine.DevStructureBuilder.SILO_LC[0];
+        final int by = ctx.originY() + SiloScenarios.CY + com.gregguns.machine.DevStructureBuilder.SILO_LC[1];
+        final int bz = ctx.originZ();
         final MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
 
         plan.after(5, () -> MissileShotsScenario.signal(p, "hud", "off"));
@@ -110,7 +110,6 @@ public final class LaunchControlGuiShots implements Scenario {
             ctx.world()
                 .spawnEntityInWorld(m[0]);
             m[0].fill(m[0].capacityMb(), true);
-            cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
             c.setXText(Integer.toString(ctx.originX()));
             c.setZText(Integer.toString(ctx.originZ() + 300));
             // Beside the block, looking at it, the way a player stands to use it.

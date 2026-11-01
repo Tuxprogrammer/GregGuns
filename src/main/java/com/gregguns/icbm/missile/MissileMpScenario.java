@@ -181,6 +181,9 @@ public final class MissileMpScenario implements Scenario {
                 out.check(e != null && e.isDead, "the missile detonated");
                 final double tx = last[0];
                 final double tz = last[1];
+                // The ground where it came down, read now that the cams have loaded it: at the start the impact chunk
+                // was not loaded, so the start-time height read 0 (a camera in the stone on a deep world).
+                final int gy = Math.max(w.getHeightValue((int) Math.floor(tx) + 60, (int) Math.floor(tz)), 1);
                 plan.after(15, () -> {
                     for (int i = 0; i < players.size(); i++) {
                         double[] v = views[i % views.length];
@@ -190,6 +193,37 @@ public final class MissileMpScenario implements Scenario {
                 plan.after(150, () -> {
                     for (EntityPlayerMP p : players) {
                         MissileShotsScenario.signal(p, "shot", "icbm-mp-impact");
+                    }
+                });
+                plan.after(20, () -> {
+                    // I7: every client logs the crater as it sees it, so a session can compare them (cstate, dev only).
+                    out.note(String.format("impact near %d,%d,%d", (int) tx, gy, (int) tz));
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(
+                            p,
+                            "cstate",
+                            "icbm-mp-impact",
+                            String.valueOf((int) tx - 40),
+                            String.valueOf(gy - 30),
+                            String.valueOf((int) tz - 40),
+                            String.valueOf((int) tx + 40),
+                            String.valueOf(gy + 20),
+                            String.valueOf((int) tz + 40));
+                    }
+                });
+                plan.after(600, () -> {
+                    for (EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(p, "shot", "icbm-mp-later");
+                        MissileShotsScenario.signal(
+                            p,
+                            "cstate",
+                            "icbm-mp-later",
+                            String.valueOf((int) tx - 40),
+                            String.valueOf(gy - 30),
+                            String.valueOf((int) tz - 40),
+                            String.valueOf((int) tx + 40),
+                            String.valueOf(gy + 20),
+                            String.valueOf((int) tz + 40));
                     }
                 });
             }

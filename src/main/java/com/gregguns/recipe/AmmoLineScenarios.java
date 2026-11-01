@@ -7,7 +7,6 @@ import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.item.ammo.def.NukeRocketAmmo;
-import com.gregguns.item.part.ComponentItems;
 
 import gregtech.api.util.GTUtility;
 
@@ -39,7 +38,7 @@ public final class AmmoLineScenarios {
 
         @Override
         public String description() {
-            return "RC-35 (Tactical Nuke Rocket) and RC-36 (Nether Charge) are Assembly Line recipes with the sheet's EU/t, time, count and research; the nuke rocket and the depleted cell are radioactive.";
+            return "RC-35 (Tactical Nuke Rocket) and RC-36 (Nether Charge) are Assembly Line recipes with the sheet's EU/t, time, count and research; the nuke rocket is radioactive (the other nuclear items: recycling.radioactivity).";
         }
 
         @Override
@@ -48,13 +47,11 @@ public final class AmmoLineScenarios {
             for (ComponentTable.Spec spec : AmmoLineTable.SPECS) {
                 ComponentScenarios.ComponentRecipesScenario.checkAssemblyLine(out, spec);
             }
-            for (String item : new String[] { NukeRocketAmmo.TYPE.roundItemName(),
-                ComponentItems.CELL_NUCLEAR_DEPLETED }) {
-                ItemStack stack = ProductionRecipes.modStack(item, 1);
-                out.check(stack != null, item + " should be registered");
-                if (stack != null) {
-                    out.check(GTUtility.getRadioactivityLevel(stack) > 0, item + " should be radioactive through GT");
-                }
+            String item = NukeRocketAmmo.TYPE.roundItemName();
+            ItemStack stack = ProductionRecipes.modStack(item, 1);
+            out.check(stack != null, item + " should be registered");
+            if (stack != null) {
+                out.check(GTUtility.getRadioactivityLevel(stack) > 0, item + " should be radioactive through GT");
             }
             return out.build();
         }

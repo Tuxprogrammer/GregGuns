@@ -22,7 +22,7 @@
 
 ## Recipe and cost
 
-An Assembler recipe at UV, circuit 1: 8 naquadria plates (the casing), 2 UV Field Generators, a Quantum Eye, 4 plutonium-241 ingots, 8 Industrial TNT, 4 Plastic Explosive and a Fuze Assembly Mk III. About 130 plate equivalents ([D134](../DECISIONS.md)). It recycles into its 8 naquadria plates.
+Built in the warhead chain ([D282](../DECISIONS.md), [warheads-and-fill](warheads-and-fill.md#recipes)). The Inert T4 Warhead is made in the Assembler at UV from 8 naquadria plates and a Fuze Assembly Mk III. The antimatter payload is fitted at UV on circuit 1: 2 UV Field Generators, a Quantum Eye and 4 plutonium-241 ingots. Then 128 Plastic Explosive charges go in, either in the Assembler or a few at a time in a crafting grid. A full warhead costs about 256 plate equivalents (D134). It recycles into its 8 naquadria plates.
 
 ## Requirements
 

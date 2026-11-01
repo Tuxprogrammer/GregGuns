@@ -86,12 +86,13 @@ One item, `defuser` (HV).
 | A missile standing on a Galacticraft pad or in a silo (`FlightPhase.PAD`) | Left-click | Taken apart exactly like the sneak-click disarm: the body and the warhead drop as items, the fuel is lost |
 | A missile whose launch countdown runs (`WARMUP`) | (cannot be clicked) | Abort the launch at the Launch Control first (D88); the defuser API answers `counting_down` |
 | A missile that has ignited or flies (`CLIMB`, `ARC`) | Left-click | Refused: `ignited` |
+| A live warhead **item** (D283) | In a crafting grid with the warhead, nothing else | Up to 8 Plastic Explosive come out, whole, into the inventory; the warhead comes back with that many fewer charges, or inert with its payload once empty ([de-arming](../02-explosives/warheads-and-fill.md#de-arming-d283)) |
 
 Anyone may use it: defusing only makes things safer. The refusal after ignition is the rule that the missile is a rocket in the air by then, not a device.
 
 ### Durability (D121)
 
-32 successful uses, then it breaks (vanilla damage; no energy, no repair, Unbreaking does not apply). Failed or refused uses cost nothing. A creative player pays nothing.
+32 successful uses, then it breaks (vanilla damage; no energy, no repair, Unbreaking does not apply). Failed or refused uses cost nothing. A creative player pays nothing in the world. In a crafting grid the kit is a container item that stays in the grid, and each de-arm craft costs one use, in creative too (vanilla's crafting slot wears it); the craft that spends the last use still de-arms, then the kit breaks.
 
 ## Recipes
 
@@ -111,7 +112,7 @@ All Assembler recipes (`RecipeMaps.assemblerRecipes`, D69: nothing ICBM below HV
 
 ## Scenarios
 
-`icbm.tools.remote_detonator` (link, every refusal, the range per tier, the fuse), `icbm.tools.defuser` (fuse out, missile disarm, refusals after ignition, durability). Unit tests: `HandheldRulesTest`.
+`icbm.tools.remote_detonator` (link, every refusal, the range per tier, the fuse), `icbm.tools.defuser` (fuse out, missile disarm, refusals after ignition, durability), `icbm.warhead.dearm.grid` (the grid de-arm and the kit's wear). Unit tests: `HandheldRulesTest`.
 
 ## One click, one action (I4 fix C)
 

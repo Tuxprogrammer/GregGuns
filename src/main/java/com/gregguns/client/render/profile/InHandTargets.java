@@ -29,7 +29,7 @@ public final class InHandTargets {
      * One gun's targets.
      *
      * @param fpLength first-person length from rear tip to muzzle tip, camera blocks
-     * @param fpCentre first-person box centre {@code (right, up, depth)}, camera blocks
+     * @param fpCentre first-person box center {@code (right, up, depth)}, camera blocks
      * @param fpMuzzle first-person muzzle {@code (right, up, depth)}, camera blocks
      * @param tpLength third-person length, world blocks
      */
@@ -52,7 +52,7 @@ public final class InHandTargets {
             return fpLength;
         }
 
-        /** @return first-person box centre (right, up, depth), camera blocks */
+        /** @return first-person box center (right, up, depth), camera blocks */
         public double[] fpCentre() {
             return fpCentre.clone();
         }
@@ -71,7 +71,7 @@ public final class InHandTargets {
     private static final Map<String, Target> TABLE = new HashMap<>();
 
     static {
-        // name, fp length, centre (R, U, D), muzzle (R, U, D), tp length. Section 7 of the in-hand notes.
+        // name, fp length, center (R, U, D), muzzle (R, U, D), tp length. Section 7 of the in-hand notes.
         put("handcannon", 2.44, 0.75, -0.78, 0.98, 0.75, -0.72, 2.20, 1.37);
         put("pistol_9mm", 0.75, 0.74, -0.59, 1.14, 0.74, -0.44, 1.51, 0.53);
         // The Golden Gun wears the 9mm Pistol's model and shares its fitted transforms.
@@ -83,8 +83,8 @@ public final class InHandTargets {
         put("thompson_smg", 2.34, 0.59, -0.63, 0.84, 0.59, -0.40, 2.01, 1.40);
         put("m4", 2.42, 0.60, -0.57, 1.31, 0.60, -0.42, 2.52, 1.29);
         // Deviation: the notes give 3.81 camera blocks for a 109-texel Infiltrator; ours is the 76-texel rifle part, so
-        // the M4's ratio is used (2.42 per 69 texels = 2.665), the centre keeps the M4's right and up, and the butt
-        // stays on the camera plane (centre and muzzle depths grow by half the extra length).
+        // the M4's ratio is used (2.42 per 69 texels = 2.665), the center keeps the M4's right and up, and the butt
+        // stays on the camera plane (center and muzzle depths grow by half the extra length).
         put("infiltrator", 2.665, 0.60, -0.57, 1.43, 0.60, -0.42, 2.76, 1.42);
         put("ak47", 3.43, 0.60, -0.67, 1.40, 0.60, -0.45, 3.11, 1.61);
         put("aug", 2.45, 0.59, -0.57, 1.29, 0.60, -0.42, 2.52, 1.31);
@@ -116,11 +116,16 @@ public final class InHandTargets {
         // M5 tool guns (section 7; third-person length from section 3). The Advanced hammer has the same geometry.
         put("power_hammer", 1.16, 0.34, -0.40, 0.70, 0.34, -0.33, 1.28, 1.05);
         put("power_hammer_adv", 1.16, 0.34, -0.40, 0.70, 0.34, -0.33, 1.28, 1.05);
-        // Deviation: the bar is 5.5 texels off the box centre's side, so with the centre on 1.06 the bar tip lands at
-        // 1.26
-        // right (the notes put the tip on the centre line); the centre, length and depth keep the notes' figures.
-        // Grim Reaper: the far tip is the muzzle (the notes' section 8); the row uses the turned geometry.
-        put("grim_reaper", 2.57, 0.66, -0.41, 0.59, 0.66, -0.20, 1.88, 1.72);
+        // Grim Reaper: the far tip is the muzzle (the notes' section 8). Deviation: the notes' first-person row
+        // (length 2.57, center 0.66, -0.41, 0.59, muzzle 0.66, -0.20, 1.88) puts the box center 0.59 in front of the
+        // eye with the rear 0.70 behind it, so this 22-texel-tall, 14-wide launcher fills the lower right third of the
+        // screen and reaches the top of the frame. GregGuns holds it like the Rocket Launcher instead: a little
+        // shorter, lower and further out, with the rear vent 0.15 in front of the eye and the whole gun below the
+        // crosshair. The muzzle row is where the fitted model puts the cap's front face. Third person keeps the notes'
+        // length.
+        put("grim_reaper", 2.30, 0.80, -0.82, 1.30, 0.68, -0.63, 2.45, 1.72);
+        // Deviation: the bar is 5.5 texels off the box center's side, so with the center on 1.06 the bar tip lands at
+        // 1.26 right (the notes put the tip on the center line); the center, length and depth keep the notes' figures.
         put("chainsaw", 2.36, 1.06, -0.58, 1.75, 1.26, -0.74, 2.93, 2.13);
         // Section 7 as written: the double idle step of the Nuclear Death Ray (section 2) is already in these figures.
         put("nuclear_death_ray", 1.18, 0.45, -0.30, 0.61, 0.45, -0.28, 1.20, 1.26);

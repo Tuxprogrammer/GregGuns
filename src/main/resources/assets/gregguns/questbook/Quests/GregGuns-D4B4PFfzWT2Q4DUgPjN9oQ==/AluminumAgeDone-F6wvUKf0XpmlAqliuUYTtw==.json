@@ -1,12 +1,17 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 8746655411135533738,
-      "questIDLow:4": -5073945424422504426
+      "questIDHigh:4": -9155091264545991745,
+      "questIDLow:4": -7247369939883627491
     },
     "1:10": {
       "questIDHigh:4": -3868161045475664142,
       "questIDLow:4": -8425909997733185232,
+      "type:1": 1
+    },
+    "2:10": {
+      "questIDHigh:4": 8746655411135533738,
+      "questIDLow:4": -5073945424422504426,
       "type:1": 1
     }
   },
@@ -22,19 +27,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "HV brings heavy weapons and stainless steel.",
+      "desc:8": "You have an SMG, an assault rifle and aluminum armor, and the supply line to feed them. The combat shotgun and grenades round out the kit if you have not built them yet. MV is done. Stainless steel is the next gate, and with it come heavy weapons, high-caliber rifles and rockets.\n\nStainless steel needs a proper alloy line: iron, nickel, manganese and chromium, smelted in the Electric Blast Furnace. It is a long project, so get comfortable. Everything you built at MV keeps working, and an HV Ammo Press will run MV recipes faster.\n\nHold four stainless steel plates to close the chapter and collect the big loot bag. Stock up on ammo before you go.\n\n[note]The HV chapter opens from the pack\u0027s HV quests. You can start it any time.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 17306,
         "OreDict:8": "",
-        "id:8": "gregguns:thompson_smg"
+        "id:8": "gregtech:gt.metaitem.01"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Aluminum Age Done",
+      "name:8": "§6§lAluminum Age Done",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -70,18 +75,75 @@
       "rewardID:8": "bq_standard:item",
       "rewards:9": {
         "0:10": {
-          "Count:3": 1,
-          "Damage:2": 5,
+          "Count:3": 3,
+          "Damage:2": 1703,
           "OreDict:8": "",
           "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:steakandchipsItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
         }
       }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 16,
+          "Damage:2": 17019,
+          "OreDict:8": "",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_assault_rifle"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_smg"
+        },
+        "3:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:frag_grenade"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
     }
   },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17306,
+          "OreDict:8": "plateStainlessSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

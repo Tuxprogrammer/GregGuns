@@ -14,6 +14,11 @@ import com.gregguns.entity.npc.spawn.WeightedPick;
  * <p>
  * Richness (0 to 2, the old {@code lootTier}) changes only how many picks a chest gets and how heavily the
  * category's top-tier lines are weighted. It never adds a line, so the ceiling holds at every richness (GGS-11-23).
+ * Gun lines are the exception to the weighting: they keep their base weight at every richness, so a rich chest holds
+ * more ammo and better gear but guns stay rare (GGS-11-26).
+ *
+ * <p>
+ * A line with a companion (a gun's ammo) brings the companion stack along in the same pick (GGS-11-26).
  */
 // Spec: docs/gregguns-spec/11-worldgen/structure-loot.md (GGS-11-20, GGS-11-23)
 public final class LootDraw {
@@ -28,20 +33,33 @@ public final class LootDraw {
 
         private final LootEntry entry;
         private final int count;
+        private final boolean companion;
 
-        Roll(LootEntry entry, int count) {
+        Roll(LootEntry entry, int count, boolean companion) {
             this.entry = entry;
             this.count = count;
+            this.companion = companion;
         }
 
-        /** @return the line that was picked */
+        /** @return the line that was picked (for a companion stack, the line that brought it) */
         public LootEntry entry() {
             return entry;
+        }
+
+        /** @return the item reference of this stack: the line's, or its companion's */
+        public String ref() {
+            return companion ? entry.companion()
+                .ref() : entry.ref();
         }
 
         /** @return the stack size */
         public int count() {
             return count;
+        }
+
+        /** @return true when this stack is the companion of the line, not the line itself */
+        public boolean companion() {
+            return companion;
         }
     }
 
@@ -83,6 +101,19 @@ public final class LootDraw {
     }
 
     /**
+     * The weight of a category line at a richness: {@link #weight(int, Tier, Tier, int)}, except that a gun line
+     * ({@link Arsenal#GUN} pool) keeps its base weight.
+     *
+     * @param line     the line
+     * @param topTier  the highest tier any line in the category declares
+     * @param richness 0..2
+     * @return the weight to draw with
+     */
+    public static int weight(LootEntry line, Tier topTier, int richness) {
+        return Arsenal.GUN.equals(line.pool()) ? line.weight() : weight(line.weight(), line.tier(), topTier, richness);
+    }
+
+    /**
      * @param category a category
      * @return the highest tier any of its lines declares
      */
@@ -101,15 +132,14 @@ public final class LootDraw {
      * @param category a category
      * @param richness 0..2
      * @param rand     the chest's random source
-     * @return the picked lines with their stack sizes, in draw order
+     * @return the picked lines with their stack sizes, in draw order; a companion follows its line
      */
     public static List<Roll> draw(LootCategory category, int richness, Random rand) {
         List<LootEntry> entries = category.entries();
         Tier top = topTier(category);
         int[] weights = new int[entries.size()];
         for (int i = 0; i < weights.length; i++) {
-            LootEntry e = entries.get(i);
-            weights[i] = weight(e.weight(), e.tier(), top, richness);
+            weights[i] = weight(entries.get(i), top, richness);
         }
         int n = pickCount(category.minItems(), category.maxItems(), richness, rand);
         List<Roll> out = new ArrayList<>(n);
@@ -123,7 +153,16 @@ public final class LootDraw {
                 new Roll(
                     e,
                     e.drop()
-                        .count(rand)));
+                        .count(rand),
+                    false));
+            if (e.companion() != null) {
+                out.add(
+                    new Roll(
+                        e,
+                        e.companion()
+                            .count(rand),
+                        true));
+            }
         }
         return out;
     }

@@ -155,9 +155,32 @@ def counts(r):
 IGNORE_COUNTS = False
 
 
-def fits(small, big):
-    """Every (key -> count) of small is in big with at least that count (just the key with IGNORE_COUNTS)."""
+def plain(key):
+    """gregguns:x:0#nbt1f -> gregguns:x:0: the dump tags our stack's key with the hash of its NBT."""
+    return key.split("#", 1)[0]
+
+
+def ignores_nbt(row):
+    """A GT row that takes any tag on its inputs: not flagged NBT-sensitive ("nbt") and not a display-only fake map
+    (which never runs, so its copies of NBT-sensitive recipes lose the flag)."""
+    return not row.get("nbt") and not row["map"].startswith("gt.recipe.fake")
+
+
+def fits(small, big, any_tag=False):
+    """Every (key -> count) of small is in big with at least that count (just the key with IGNORE_COUNTS).
+
+    With any_tag (small's recipe ignores NBT), a key of small matches big's keys of the same item whatever their tags:
+    a payload recipe's bare inert warhead fires on a fitted one."""
+    if any_tag:
+        small, big = plain_counts(small), plain_counts(big)
     return all(k in big and (IGNORE_COUNTS or big[k] >= n) for k, n in small.items())
+
+
+def plain_counts(counts_):
+    out = {}
+    for k, n in counts_.items():
+        out[plain(k)] = out.get(plain(k), 0) + n
+    return out
 
 
 def can_fire_on(p, r):
@@ -172,7 +195,7 @@ def can_fire_on(p, r):
         return False
     pi, pf = counts(p)
     ri, rf = counts(r)
-    return fits(pi, ri) and fits(pf, rf)
+    return fits(pi, ri, ignores_nbt(p)) and fits(pf, rf)
 
 
 def input_sig(r):
@@ -208,10 +231,15 @@ def find_subsets(rows):
         for p in rows_in_map:
             for k in row_keys(p):
                 posting[k].append(p)
+        for p in rows_in_map:
+            if ignores_nbt(p):
+                for k in row_keys(p):
+                    if "#" in k:
+                        posting[plain(k)].append(p)  # so a tagged key of r finds p's plain key below
         for r in ours_rows:
             sig = input_sig(r)
             seen = set()
-            for k in row_keys(r):
+            for k in row_keys(r) | {plain(k) for k in row_keys(r)}:
                 for p in posting[k]:
                     if p is not r and id(p) not in seen and input_sig(p) != sig and can_fire_on(p, r):
                         seen.add(id(p))

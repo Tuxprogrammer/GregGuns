@@ -43,7 +43,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  * {@code look <yaw> <pitch>} (sets the player's rotation, which a server {@code tp} cannot), {@code use} (a real
  * right-click with the held item), {@code usesneak} (the same while sneaking, which StructureLib needs to build),
  * {@code scope <texturePath|off>} (draws a scope
- * overlay on the HUD, loaded at the bounded size), {@code close}, {@code quit}. Dev autotest only.
+ * overlay on the HUD, loaded at the bounded size), {@code cstate <label> <x0> <y0> <z0> <x1> <y1> <z1>} (logs this
+ * client's blocks, tiles and entities in a box, see {@link StateProbe}), {@code close}, {@code quit}. Dev autotest
+ * only.
  * Client only.
  */
 @SideOnly(Side.CLIENT)
@@ -384,6 +386,38 @@ final class AutotestCommands {
             player
                 .sendChatMessage(AutotestSignal.format("ack", "hold", expected.replace('_', '-'), ok ? "ok" : "fail"));
         }
+    }
+
+    /** Angelica's particle instancer, whose static counters {@link #fxStats} reads; absent without Angelica. */
+    private static final String ANGELICA_INSTANCER = "com.gtnewhorizons.angelica.rendering.particles.ParticleInstancer";
+
+    /**
+     * {@code fxstats <tag>}: logs Angelica's particle counters, {@code fxstats <tag> captured=.. spilled=..
+     * undecodable=.. direct=..}, or {@code fxstats <tag> angelica=absent}. A quad Angelica can't decode is replayed
+     * without its texture state (GGS-04-17), so a showcase run must not grow the undecodable count.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/rendering/particles/ParticleInstancer.java#L79-L97
+    static void fxStats(String[] args) {
+        String tag = args.length > 0 ? args[0] : "-";
+        StringBuilder line = new StringBuilder("fxstats ").append(tag);
+        try {
+            Class<?> c = Class.forName(ANGELICA_INSTANCER);
+            for (String counter : new String[] { "Captured", "Spilled", "Undecodable", "Direct" }) {
+                Object v = c.getMethod("get" + counter)
+                    .invoke(null);
+                line.append(' ')
+                    .append(counter.toLowerCase(java.util.Locale.ROOT))
+                    .append('=')
+                    .append(v);
+            }
+        } catch (ClassNotFoundException e) {
+            line.append(" angelica=absent");
+        } catch (ReflectiveOperationException e) {
+            line.append(" angelica=error ")
+                .append(e);
+        }
+        ClientAutotest.logLine(line.toString());
     }
 
     /** {@code sync}: runs in command order, so answering it proves every earlier queued command has finished. */

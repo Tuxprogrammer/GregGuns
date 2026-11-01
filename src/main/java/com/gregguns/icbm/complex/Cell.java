@@ -22,7 +22,8 @@ public final class Cell {
     public static final byte HATCH_BUS = 10;
     public static final byte HATCH_MAINTENANCE = 11;
     public static final byte HATCH_ENERGY = 12;
-    public static final byte HATCH_POWER = 13;
+    /** The silo's Input Hatch, for its rocket fuel. */
+    public static final byte HATCH_FUEL = 13;
     /** Air plus a ladder (the escape shaft inside the level). */
     public static final byte LADDER = 14;
     /** The HV radar controller of a radar station on the surface (a GT machine, like {@link #CONTROLLER}). */
@@ -40,22 +41,33 @@ public final class Cell {
     public static final byte DOOR_FRAME = 19;
     /** A clear glass block in a wall (Launch Control over the silo gallery). */
     public static final byte WINDOW = 20;
-    /** Furniture: a table, a console, a bunk or a shelf, from the style. */
+    /** Furniture: a table, a console or a shelf, from the style. Byte 23 (the old bunk cube) stays unused. */
     public static final byte FURN_TABLE = 21;
     public static final byte FURN_CONSOLE = 22;
-    public static final byte FURN_BUNK = 23;
     public static final byte FURN_SHELF = 24;
     /** A basin of standing water sunk into the floor layer (water treatment). */
     public static final byte BASIN = 25;
+    /** The silo's own Launch Control, a GT machine in the silo's face (D288). */
+    public static final byte SILO_LAUNCH_CONTROL = 26;
+    /**
+     * A solid prop of a room blueprint (a bed, a crate, a container, a furnace, a metal block; D305): the shell writes
+     * air and the marks pass fills the cell. Never open for walking, and not a floor, wall or ceiling role.
+     */
+    public static final byte PROP = 27;
 
     private Cell() {}
+
+    /** @return whether the cell is a GT machine of a silo: the controller, a hatch or its Launch Control */
+    public static boolean siloMachine(byte c) {
+        return c >= CONTROLLER && c <= HATCH_FUEL || c == SILO_LAUNCH_CONTROL;
+    }
 
     /** @return whether a player walks through the cell at foot or head height */
     public static boolean open(byte c) {
         return c == AIR || c == RAIL_NS || c == RAIL_EW || c == LADDER;
     }
 
-    /** @return whether the cell is one of the four furniture roles */
+    /** @return whether the cell is one of the style's furniture cubes */
     public static boolean furniture(byte c) {
         return c >= FURN_TABLE && c <= FURN_SHELF;
     }

@@ -10,7 +10,8 @@ import net.minecraft.nbt.NBTTagList;
 /**
  * Reads and writes a {@link PlanLedger} as NBT. Tolerant on read, because saved data outlives code: unknown tags are
  * ignored, an entry with no key, no decision flag, or a placed entry with no ground Y is skipped (an unrecorded plan is
- * decided afresh, which is safer than guessing a Y), and a flag array is cut to whole triples.
+ * decided afresh, which is safer than guessing a Y), and a flag array is cut to whole triples. A placed entry with no
+ * {@code Variant} reads as {@link Decision#NO_VARIANT} and one with no {@code Sink} as 0 (D304, D302).
  */
 // Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (GGS-11-10); PLAN-M8 Q3
 public final class StateNbt {
@@ -22,6 +23,8 @@ public final class StateNbt {
     static final String REASON = "Reason";
     static final String GROUND_Y = "GroundY";
     static final String FLAGS = "Flags";
+    static final String VARIANT = "Variant";
+    static final String SINK = "Sink";
 
     static final int CURRENT_VERSION = 2;
     // Version 1 keys had no structure id ("SIZE:x:z"). None shipped; they still load as opaque strings and never
@@ -56,6 +59,9 @@ public final class StateNbt {
                     flat[i++] = f.z;
                 }
                 t.setIntArray(FLAGS, flat);
+                // Written only when recorded, so other structures' entries stay as small as before.
+                if (d.variant() != Decision.NO_VARIANT) t.setInteger(VARIANT, d.variant());
+                if (d.sink() > 0) t.setInteger(SINK, d.sink());
             } else {
                 t.setString(REASON, d.reason());
             }
@@ -92,7 +98,9 @@ public final class StateNbt {
                         flags.add(new FlagPos(flat[j], flat[j + 1], flat[j + 2]));
                     }
                 }
-                d = Decision.placed(t.getInteger(GROUND_Y), flags);
+                int variant = t.hasKey(VARIANT, TAG_INT) ? t.getInteger(VARIANT) : Decision.NO_VARIANT;
+                int sink = t.hasKey(SINK, TAG_INT) ? t.getInteger(SINK) : 0;
+                d = Decision.placed(t.getInteger(GROUND_Y), flags, variant, sink);
             } else {
                 d = Decision.rejected(t.hasKey(REASON, TAG_STRING) ? t.getString(REASON) : null);
             }

@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 1978121859357299656,
-      "questIDLow:4": -4626955924831022287
+      "questIDHigh:4": -3932084639685190522,
+      "questIDLow:4": -8621084850355824541
     }
   },
   "properties:10": {
@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Strength and carry bonuses.",
+      "desc:8": "The Exo Suit is the lighter powered suit. It trades some of the power armor\u0027s resistance for a better jump and a lower build cost, and it is the upgrade path for the Advanced Combat armor you built at EV.\n\nEach piece is an upgrade in the IV Assembler: an Advanced Combat piece, Mechanical Parts T3, an IV circuit, an IV electric motor and one or two tungstensteel plates. The Advanced Combat piece is used up and the Exo piece comes out fresh. Charge the chestplate at an IV buffer for the bonuses.\n\n[note]You need both tiers: the Advanced Combat piece is EV work, the upgrade is IV.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +29,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Exo Suit",
+      "name:8": "§9§lExo Suit",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +58,58 @@
   },
   "questIDHigh:4": -7746967404129463531,
   "questIDLow:4": -9106493811079250933,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1706,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:beefwellingtonItem"
+        },
+        "2:10": {
+          "Count:3": 5,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t3_exo_boots"
+        },
+        "2:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,
@@ -66,6 +117,36 @@
       "groupDetect:1": 0,
       "ignoreNBT:1": 1,
       "index:3": 0,
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:t3_combat_chestplate"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 17316,
+          "OreDict:8": "plateTungstenSteel",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:optional_retrieval"
+    },
+    "1:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
+      "index:3": 1,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
       "requiredItems:9": {

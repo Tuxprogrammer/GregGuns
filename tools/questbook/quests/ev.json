@@ -1,0 +1,1284 @@
+{
+  "chapter": "ev",
+  "quests": [
+    {
+      "key": "gg.ev.intro",
+      "title": "Energy Weapons",
+      "tier": "EV",
+      "desc": "Titanium changes the game. EV brings lasers, pulse rifles, a drum-fed minigun, the Tesla and Sonic rifles, and armor that tells poison gas and radiation to keep out. Most of it is built from titanium and Epoxid Fiber Reinforced plates, so stock up before you start.\n\nEV recipes run in the EV Assembler at 1,920 EU/t. The energy weapons take a full battery hull and a dab of soldering alloy as part of their build, and they come out empty. A GregGuns electric item only charges in a GT charger or battery buffer of exactly its own tier, so an EV laser needs an EV buffer. An HV one will refuse it.\n\nAmmo steps up as well: advanced bullets and magazines for the pulse rifle, and ammo drums for the minigun. Start with the carbon parts, because most of this tier shares them.\n\n[note]Press R over any gun in NEI for the exact recipe. Quests only check what you carry and never take anything from you.[/note]",
+      "pre": [
+        "gg.hv.intro",
+        176,
+        860
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_advanced",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1036,
+      "y": 94,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:laser_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.carbon_parts",
+      "title": "Carbon Gun Parts",
+      "tier": "EV",
+      "desc": "The pulse rifle, the PDW, the Tesla and Sonic rifles and every later energy weapon share three parts: a Carbon Barrel, a Carbon Receiver and a Carbon Gunstock. Build one of each and you can start on most of the tier.\n\nNone of them is true carbon: they are titanium with Epoxid Fiber Reinforced plates. The barrel uses a small titanium pipe and rings, the receiver is a hardened frame with titanium and epoxy plates, and the stock is epoxy and plastic with titanium screws. The Receiver also wants Mechanical Parts T3, made from titanium gears, springs and screws. NEI has all the numbers.\n\n[note]Mechanical Parts T3 are also needed by the Laser Rifle, the Exo Suit and the Anti Gravity Device, so make extras.[/note]",
+      "pre": [
+        "gg.ev.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_carbon",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 4,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1036,
+      "y": 148,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:part_receiver_carbon",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.adv_ammo",
+      "title": "Advanced Ammunition",
+      "tier": "EV",
+      "desc": "Advanced bullets are the EV ammo step up: titanium-jacketed rounds with a little TNT in the load. The PDW and the Pulse Rifle shoot them from Advanced Magazines.\n\nMake the bullets in an EV Ammo Press from titanium foil, titanium rounds and a block of TNT. Build empty Advanced Magazines, then load them in the same machine, four at a time with three advanced bullets each. NEI will tell you the circuit that selects each recipe.\n\nThis quest asks for a loaded magazine, so you know the whole line works.",
+      "pre": [
+        "gg.ev.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:ammo_advanced_bullet",
+              "count": 12,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_advanced_empty",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:mag_advanced",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_advanced",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_advanced_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 1102,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:mag_advanced",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.pulse",
+      "title": "Pulse Rifle or PDW",
+      "tier": "EV",
+      "desc": "Two ballistic guns that eat advanced magazines. The Pulse Rifle adds a fire-control circuit to the build. The PDW is a compact personal defense weapon and needs no circuit. Build either one to move on.\n\nBoth are built in the EV Assembler from a Carbon Barrel, a Carbon Receiver and a Carbon Gunstock, plus titanium plates and screws. The Pulse Rifle adds a diamond lens, an EV circuit and soldering alloy; the PDW takes small titanium springs instead.\n\nNeither is an electric item, so they need no charger. The ammo is the work.",
+      "pre": [
+        "gg.ev.adv_ammo",
+        "gg.ev.carbon_parts"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:pulse_rifle",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:pdw",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_advanced",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_advanced_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 1102,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:pulse_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.ev.carbon_parts"
+      ]
+    },
+    {
+      "key": "gg.ev.minigun",
+      "title": "Minigun",
+      "tier": "EV",
+      "desc": "A rotating-barrel wall of metal. The Minigun has an enormous rate of fire and burns through ammo just as fast, so bring a supply of drums.\n\nBuild it in the EV Assembler from six Hardened Steel Barrels, a Hardened Receiver, an EV electric motor, and titanium plates and screws. The motor spins the barrels. It is a ballistic gun, so it needs no charger. Its ammo drums are built empty, then filled with rifle bullets in the Ammo Press.\n\n[note]Hardened Receivers come from your HV days. If you have none, make some in the HV Assembler first.[/note]",
+      "pre": [
+        "gg.ev.pulse"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_hardened",
+              "count": 6,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 3,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:minigun",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:mag_minigun_drum",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:mag_minigun_drum",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:ammo_rifle_bullet",
+              "count": 64,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        }
+      ],
+      "x": 1102,
+      "y": 268,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:minigun",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.exotics",
+      "title": "Tesla or Sonic Rifle",
+      "tier": "EV",
+      "desc": "Two specialist energy weapons: the Tesla Rifle is built around an emitter coil, and the Sonic Rifle fires focused sound. Pick whichever suits the job.\n\nBoth run on a full EV battery hull and charge only in an EV charger or battery buffer. The Tesla Rifle uses an EV emitter as its coil. The Sonic Rifle uses a Sonic Emitter, which you build in the Assembler from an EV emitter, an electric piston and Mechanical Parts T3. Each also takes a Carbon Receiver and Gunstock.\n\n[note]An HV buffer will not accept an EV item. Make sure you have an EV charger first.[/note]",
+      "pre": [
+        "gg.ev.carbon_parts"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_receiver_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_carbon",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_sonic_emitter",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:tesla_rifle",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:sonic_rifle",
+              "count": 1,
+              "damage": 0
+            }
+          ],
+          "any": true
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_sonic_emitter",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1048,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:tesla_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.laser_focus",
+      "title": "Laser Focus",
+      "tier": "EV",
+      "desc": "The Laser Focus is the heart of every laser weapon: a ruby cut to a tight beam. Without it there is no Laser Barrel, and without a Laser Barrel there is no Laser Rifle.\n\nCut it in a GT Laser Engraver (EV) from a ruby and an EV emitter, with a white lens in the machine. The lens is not used up, but the emitter is. NEI shows the recipe if you press R on the focus.\n\n[note]A Laser Barrel is built later in the Assembler from the focus, a lens and electrum foil. Make a few at once.[/note]",
+      "pre": [
+        "gg.ev.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 8502,
+              "ore": "gemRuby"
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 1,
+              "damage": 32683
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_laser_focus",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_laser_focus",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1156,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_laser_focus",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.laser",
+      "title": "Laser Rifle",
+      "tier": "EV",
+      "desc": "No magazines, no brass, no reloading: the Laser Rifle runs on stored energy as long as you keep it charged. It is your first real energy weapon.\n\nBuild it in the EV Assembler from a Laser Barrel, a Hardened Receiver, a Plastic Gun Stock, Mechanical Parts T3, an EV circuit, a full EV battery hull and soldering alloy. It comes out uncharged, and you charge it in an EV charger or battery buffer. An HV buffer will not accept it.\n\n[note]The Laser Rifle is an IC2 electric item of tier 4. Check the tooltip for its charge.[/note]",
+      "pre": [
+        "gg.ev.laser_focus",
+        1262
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_hardened",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_plastic",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:laser_rifle",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_barrel_laser",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1156,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:laser_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.t3_armor",
+      "title": "T3 Combat Armor",
+      "tier": "EV",
+      "desc": "Advanced Combat armor resists armor-piercing hits better than any earlier set, and it needs no charge. It is the base for the Exo Suit later, so even if you plan to go powered, you want a set.\n\nEach piece is an EV Assembler recipe of Epoxid Fiber Reinforced and titanium plates, with a programmed circuit to pick the helmet, chestplate, leggings or boots. A chestplate is six epoxy plates and two titanium plates. The quest checks the chestplate, but wear the whole set for the bonuses.\n\n[note]Check NEI for the exact circuit numbers.[/note]",
+      "pre": [
+        "gg.ev.intro"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t3_combat_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:t3_combat_helmet",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t3_combat_boots",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1210,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:t3_combat_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.hev",
+      "title": "Hazardous Environment Armor",
+      "tier": "EV",
+      "desc": "The HEV suit is built for places that want you dead. Worn as a full set, it protects against biological hazards, pollution gas and radiation, and it adds heat, cold and electrical protection while the chestplate holds a charge.\n\nEach piece is an EV Assembler recipe of Epoxid Fiber Reinforced and titanium plates and EV circuits. The chestplate is the electric part, charged in an EV charger or battery buffer. The quest wants the chestplate, but wear all four pieces: GT only counts the protection when the whole set has it.\n\n[note]Check NEI for the circuit number on each piece.[/note]",
+      "pre": [
+        "gg.ev.t3_armor"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 4,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:t3_hev_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:t3_hev_helmet",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t3_hev_boots",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1210,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:t3_hev_chestplate",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.bio_culture",
+      "title": "E. coli Culture",
+      "tier": "EV",
+      "desc": "The Bio Gun runs on E. coli culture fluid, and the same fluid becomes a Plasma Membrane, a part you need for Cybernetic Parts. So this quest asks you to make the whole chain once and hand over the Cybernetic Parts.\n\nStart in the HV Bio Lab: an empty petri dish, a fermented spider eye and water make an E. coli dish. Put the dish in a BartWorks Bacterial Vat (EV) with Biomass and distilled water to grow culture fluid. An HV Centrifuge turns 1,000 mB of it into a Plasma Membrane.\n\nCraft Cybernetic Parts in the EV Assembler from fine electrum wire, EV circuits, plastic, redstone, soul sand and that membrane. Check NEI for the recipe.\n\n[note]You will fill the Bio Tank from the same fluid in the next quest.[/note]",
+      "pre": [
+        "gg.ev.intro"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_cybernetic",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:part_cybernetic",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1318,
+      "y": 160,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:part_cybernetic",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.bio_tank",
+      "title": "Bio Tank",
+      "tier": "EV",
+      "desc": "The Bio Tank is the ammo container for the Bio Gun. It holds 1,000 mB, and a full one is 30 rounds.\n\nBuild four tanks at a time in the EV Assembler from a titanium Large Fluid Cell, two titanium plates and two plastic plates. Then fill it with E. coli culture fluid in a GT Fluid Canner. If you need the fluid, the E. coli Culture quest tells you how.\n\n[note]The tank item is the same with or without fluid, so check the tooltip to see how full it is.[/note]",
+      "pre": [
+        "gg.ev.bio_culture"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:tank_bio",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:tank_bio",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 16,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:tank_fuel",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1318,
+      "y": 214,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:tank_bio",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.bio_gun",
+      "title": "Bio Gun",
+      "tier": "EV",
+      "desc": "A gun that fires globs of biological culture. Its glob deals poison damage and leaves the target poisoned, unless the target wears full biological hazmat.\n\nBuild it in the EV Assembler from a Pump Mechanism, a Steel Receiver, a Plastic Gun Stock, a small titanium pipe, and titanium plates and screws. It comes out empty. Load a full Bio Tank and fire. The right button charges up for a stronger shot that costs more rounds.\n\n[note]Bio blobs on the ground need explosions.blockDamage enabled on the server. With it off, the glob still poisons targets but leaves no blobs.[/note]",
+      "pre": [
+        "gg.ev.bio_tank"
+      ],
+      "tasks": [
+        {
+          "type": "optional_retrieval",
+          "items": [
+            {
+              "id": "gregguns:part_pump_mechanism",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_receiver_steel",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_stock_plastic",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 2,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            }
+          ]
+        },
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:bio_gun",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 1
+            },
+            {
+              "id": "harvestcraft:extremechiliItem",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 2,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregguns:tank_bio",
+              "count": 4,
+              "damage": 0
+            },
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 32,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:part_pump_mechanism",
+              "count": 2,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1318,
+      "y": 268,
+      "size": 24,
+      "main": false,
+      "icon": {
+        "id": "gregguns:bio_gun",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": []
+    },
+    {
+      "key": "gg.ev.summary",
+      "title": "Energy Weapons Done",
+      "tier": "EV",
+      "desc": "You made it through the electric age. A Laser Rifle in your hands and a Hazardous Environment suit on your back put you ahead of most of what EV can throw at you, including pollution gas, radiation and the occasional unfriendly creature.\n\nKeep your charger and your battery buffer close. Everything in this tier that uses energy needs a charger of exactly the right tier, and a flat laser is just an expensive club.\n\nIV is next, with tungstensteel, blasters, power armor and the anti-gravity device. The IV Assembler runs at 7,680 EU/t and the energy guns take a Lapotronic Orb for a battery, so start planning your power and your orbs.\n\n[note]This capstone pays extra, with three bags. Spend the coins at the Vending Machine.[/note]",
+      "pre": [
+        "gg.ev.laser",
+        "gg.ev.hev",
+        "gg.ev.minigun",
+        "gg.ev.exotics",
+        "gg.ev.bio_gun"
+      ],
+      "tasks": [
+        {
+          "type": "retrieval",
+          "items": [
+            {
+              "id": "gregguns:laser_rifle",
+              "count": 1,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:t3_hev_chestplate",
+              "count": 1,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "item",
+          "items": [
+            {
+              "bag": "ev",
+              "count": 3
+            },
+            {
+              "id": "harvestcraft:mcpamItem",
+              "count": 2,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:coin",
+              "count": 8,
+              "damage": 2
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "items": [
+            {
+              "id": "gregtech:gt.metaitem.01",
+              "count": 64,
+              "damage": 17028,
+              "ore": "plateTitanium"
+            },
+            {
+              "id": "gregguns:mag_advanced",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:part_mechanical_3",
+              "count": 8,
+              "damage": 0
+            },
+            {
+              "id": "gregguns:tank_bio",
+              "count": 4,
+              "damage": 0
+            }
+          ]
+        }
+      ],
+      "x": 1144,
+      "y": 256,
+      "size": 48,
+      "main": true,
+      "icon": {
+        "id": "gregguns:laser_rifle",
+        "count": 1,
+        "damage": 0
+      },
+      "implicit": [
+        "gg.ev.hev",
+        "gg.ev.minigun",
+        "gg.ev.exotics",
+        "gg.ev.bio_gun"
+      ]
+    }
+  ]
+}

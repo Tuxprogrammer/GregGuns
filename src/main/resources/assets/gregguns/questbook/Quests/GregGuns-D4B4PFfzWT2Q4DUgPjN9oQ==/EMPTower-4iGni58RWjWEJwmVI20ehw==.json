@@ -3,6 +3,10 @@
     "0:10": {
       "questIDHigh:4": -8714470493268190476,
       "questIDLow:4": -5832135832674557470
+    },
+    "1:10": {
+      "questIDHigh:4": 0,
+      "questIDLow:4": 176
     }
   },
   "properties:10": {
@@ -17,7 +21,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The EMP Tower sends one pulse when you press Fire, on a redstone rising edge or from a computer. The radius is yours, 4 to 100 blocks, and the pulse costs 25 EU per square block of radius: 90,000 EU at 60. It drains the 64 nearest machines, batteries and Battery Buffers to zero and gives each multiblock one maintenance issue. A missile in range is destroyed 50 percent of the time, has its guidance fried 40 percent and has its warhead set off 1 percent. Build one, and keep it away from your own base.",
+      "desc:8": "The EMP Tower sends one pulse when you press Fire, on a redstone rising edge or from a computer. You pick the radius, 4 to 100 blocks, and the pulse costs 25 EU per square block of radius: 90,000 EU at 60. It\u0027s an EV Assembler recipe; check NEI.\n\nThe pulse drains the 64 nearest machines, batteries and Battery Buffers to zero and gives each multiblock one maintenance issue. A missile in range is destroyed 50 percent of the time, has its guidance fried 40 percent of the time and has its warhead set off 1 percent of the time.\n\n[warn]The pulse doesn\u0027t care whose machines it drains. Keep the tower away from your own base.[/warn]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -29,7 +33,7 @@
       "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "EMP Tower",
+      "name:8": "§8§lEMP Tower",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -58,7 +62,64 @@
   },
   "questIDHigh:4": -2152254928795379147,
   "questIDLow:4": -8924153600462217593,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1710,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:mcpamItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 32704,
+          "OreDict:8": "circuitData",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:sam"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:launcher_warhead_demolition"
+        },
+        "3:10": {
+          "Count:3": 16,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
       "autoConsume:1": 0,

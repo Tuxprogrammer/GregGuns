@@ -8,9 +8,6 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -55,7 +52,7 @@ final class SoldierScenarios {
             world,
             new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
         // The entity tracker crashes sending a connectionless fake player's metadata.
-        new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
+        com.gregguns.core.testing.QuietConnection.attach(p);
         return p;
     }
 

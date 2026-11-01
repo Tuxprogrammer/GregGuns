@@ -22,19 +22,19 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Soldiers, bandits and zombies roam the Overworld. Some carry guns; some drop ammo.",
+      "desc:8": "Soldiers, bandits and the walking dead share the Overworld with you, and most of them are armed. Some carry real guns, some drop real ammo, and a few drop things you cannot easily make yet. Hunting them is the cheapest way to stock up on rounds and cloth, and every hunt in this chapter pays out.\n\nZombies, skeletons, bandits and Psycho Steve spawn on their own in the Overworld. The rest come from structures: camp flags send out soldiers, and a Big Bunker or a silo complex holds ordinary vanilla mob spawners with an NPC spinning inside. A spawner only works while you are within 24 blocks, caps how many of its mob stand around it, and drops nothing when broken. GregTech makes spawners very slow to mine by hand, so treat them as a farm, not a trophy.\n\nSome spawns are Infernal: a glowing name, a boss bar and a pile of modifiers. Elite mobs have up to five, ultra up to ten, infernal more, and each rank drops better GregGuns gear (LV, MV, and MV with a rare HV roll). Structure guards from spawners roll for Infernal too, at the same odds.\n\n[note]Go armed: hold a Hand Cannon and 16 stone bullets to start the chapter.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
-        "Damage:2": 0,
+        "Damage:2": 61,
         "OreDict:8": "",
         "id:8": "gregguns:npc_egg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Hostile Factions",
+      "name:8": "§c§lHostile Factions",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -63,11 +63,88 @@
   },
   "questIDHigh:4": 7745480837216032772,
   "questIDLow:4": -8842383105339084275,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1701,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:cornbreadItem"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 1,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_stone_bullet"
+        },
+        "1:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "Backpack:tannedLeather"
+        },
+        "2:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:coal"
+        },
+        "3:10": {
+          "Count:3": 8,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "minecraft:gunpowder"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:handcannon"
+        },
+        "1:10": {
+          "Count:3": 16,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:ammo_stone_bullet"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

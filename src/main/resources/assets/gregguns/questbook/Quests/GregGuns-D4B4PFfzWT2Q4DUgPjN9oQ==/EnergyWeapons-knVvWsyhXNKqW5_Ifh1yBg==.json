@@ -25,7 +25,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "EV adds lasers, pulse rifles and electric ammo. Titanium is the gate.",
+      "desc:8": "Titanium changes the game. EV brings lasers, pulse rifles, a drum-fed minigun, the Tesla and Sonic rifles, and armor that tells poison gas and radiation to keep out. Most of it is built from titanium and Epoxid Fiber Reinforced plates, so stock up before you start.\n\nEV recipes run in the EV Assembler at 1,920 EU/t. The energy weapons take a full battery hull and a dab of soldering alloy as part of their build, and they come out empty. A GregGuns electric item only charges in a GT charger or battery buffer of exactly its own tier, so an EV laser needs an EV buffer. An HV one will refuse it.\n\nAmmo steps up as well: advanced bullets and magazines for the pulse rifle, and ammo drums for the minigun. Start with the carbon parts, because most of this tier shares them.\n\n[note]Press R over any gun in NEI for the exact recipe. Quests only check what you carry and never take anything from you.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
@@ -34,10 +34,10 @@
         "id:8": "gregguns:laser_rifle"
       },
       "isGlobal:1": 0,
-      "isMain:1": 0,
+      "isMain:1": 1,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
-      "name:8": "Energy Weapons",
+      "name:8": "§8§lEnergy Weapons",
       "notification_duration:5": -1.0,
       "notification_effect:3": -1,
       "notification_fade_in:5": -1.0,
@@ -66,11 +66,76 @@
   },
   "questIDHigh:4": -7893280336126059310,
   "questIDLow:4": -6171163180922998266,
-  "rewards:9": {},
+  "rewards:9": {
+    "0:10": {
+      "ignoreDisabled:1": 0,
+      "index:3": 0,
+      "rewardID:8": "bq_standard:item",
+      "rewards:9": {
+        "0:10": {
+          "Count:3": 1,
+          "Damage:2": 1705,
+          "OreDict:8": "",
+          "id:8": "enhancedlootbags:lootbag"
+        },
+        "1:10": {
+          "Count:3": 1,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "harvestcraft:extremechiliItem"
+        },
+        "2:10": {
+          "Count:3": 4,
+          "Damage:2": 2,
+          "OreDict:8": "",
+          "id:8": "gregguns:coin"
+        }
+      }
+    },
+    "1:10": {
+      "choices:9": {
+        "0:10": {
+          "Count:3": 32,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        },
+        "1:10": {
+          "Count:3": 4,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:part_mechanical_3"
+        },
+        "2:10": {
+          "Count:3": 2,
+          "Damage:2": 0,
+          "OreDict:8": "",
+          "id:8": "gregguns:mag_advanced"
+        }
+      },
+      "ignoreDisabled:1": 0,
+      "index:3": 1,
+      "rewardID:8": "bq_standard:choice"
+    }
+  },
   "tasks:9": {
     "0:10": {
+      "autoConsume:1": 0,
+      "consume:1": 0,
+      "groupDetect:1": 0,
+      "ignoreNBT:1": 1,
       "index:3": 0,
-      "taskID:8": "bq_standard:checkbox"
+      "partialMatch:1": 1,
+      "requireOnlyOneItem:1": 0,
+      "requiredItems:9": {
+        "0:10": {
+          "Count:3": 4,
+          "Damage:2": 17028,
+          "OreDict:8": "plateTitanium",
+          "id:8": "gregtech:gt.metaitem.01"
+        }
+      },
+      "taskID:8": "bq_standard:retrieval"
     }
   }
 }

@@ -25,7 +25,7 @@ import com.gregguns.recipe.ProductionTable.Target;
 // Spec: docs/gregguns-spec/05-armor/recipes.md (Gas Mask, refilter and Night Vision Goggles; HV: Oxygen gear, Tactical
 // Mask); docs/gregguns-spec/06-items/recipes.md (RC-25, RC-54); GGS-05-29, GGS-05-30, GGS-05-33, GGS-05-39
 // Deviation: the Ammo Pouch has no recipe in any spec sheet (recipes.md assumes area 06 supplies it, area 06 does not).
-// EQ-03 is new: MV, Aluminum gate, Heavy Cloth and leather like the Techguns tactical gear.
+// EQ-03 is new: MV, Aluminum gate, Tanned Leather and leather like the Techguns tactical gear.
 public final class EquipmentTable {
 
     /** Oxygen Mask registry name (a Galacticraft subclass or the fallback). */
@@ -33,7 +33,7 @@ public final class EquipmentTable {
     /** Oxygen Tanks registry name. */
     public static final String OXYGEN_TANKS = "oxygen_tanks";
 
-    private static final String CLOTH = ArmorCatalog.HEAVY_CLOTH;
+    private static final String CLOTH = ArmorCatalog.TANNED_LEATHER;
 
     /** The rows, in sheet order. */
     public static final List<Row> ROWS = Collections.unmodifiableList(
@@ -71,7 +71,7 @@ public final class EquipmentTable {
                 18,
                 2,
                 Input.gt("plate", "Rubber", 2),
-                Input.mod(CLOTH, 1),
+                Input.external(CLOTH, 1),
                 Input.gt("circuit", "Good", 2),
                 Input.itemList("Sensor_MV", 1),
                 Input.vanilla("glass", 2),
@@ -84,7 +84,7 @@ public final class EquipmentTable {
                 Target.ASSEMBLER,
                 10,
                 1,
-                Input.mod(CLOTH, 3),
+                Input.external(CLOTH, 3),
                 Input.vanilla("leather", 2),
                 Input.gt("plate", "Aluminium", 1)),
             new Row(

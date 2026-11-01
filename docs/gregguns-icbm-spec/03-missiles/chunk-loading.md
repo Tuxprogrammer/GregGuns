@@ -33,7 +33,7 @@ ICBM simulates a missile with a tracker while its chunk is unloaded, with one sh
 | Timeout | the timeout path is `detonateAt` |
 | Shot down | the same |
 | Disarmed, or any other `setDead` | `setDead` releases it |
-| Unload | Forge saves the entity ticket and, when the world loads, re-binds it to the missile and loads the missile's chunk before our loading callback runs. The callback hands the ticket back to a live missile that is in flight (`MissileTickets.adopt`; its next step trims it to the window) and releases every other ticket, such as one whose entity is gone. A flight therefore resumes where it was after a restart without a player nearby (its position is a function of its saved tick) |
+| Unload | Forge saves the entity ticket and, when the world loads, re-binds it to the missile and loads the missile's chunk before our loading callback runs. The callback hands the ticket back to a live missile that is in flight (`MissileTickets.adopt`) and forces the missile's window again at once, because Forge saves a ticket without its chunk list and a missile whose chunk is not forced does not tick with only its own chunk loaded (D333). It releases every other ticket, such as one whose entity is gone, and the scenario holds of a test server: it is GregGuns' only loading callback. A flight therefore resumes where it was after a restart without a player nearby (its position is a function of its saved tick) |
 
 ## Requirements
 
@@ -45,8 +45,8 @@ ICBM simulates a missile with a tracker while its chunk is unloaded, with one sh
 
 ## Tests
 
-`ChunkWindowTest`; scenario `icbm.missile.chunk_tickets` (a 200-block flight; checks the maximum chunks and tickets at every tick and that the window moved across several chunks), `icbm.missile.timeout` (a short `missileTimeoutTicks` fires the timeout branch mid-air), `icbm.missile.restart_adopt` (the load callback on a live and a stray ticket, a save and reload of the entity), and `icbm.missile.launch_detonate_t1` (released on impact).
+`ChunkWindowTest`; scenario `icbm.missile.chunk_tickets` (a 200-block flight; checks the maximum chunks and tickets at every tick and that the window moved across several chunks), `icbm.missile.timeout` (a short `missileTimeoutTicks` fires the timeout branch mid-air), `icbm.missile.restart_adopt` (the load callback on a live and a stray ticket, a save and reload of the entity, and the adopted ticket forcing the missile's chunk), the real-pack restart soak (`icbm_soak.py restart`, [soak.md](../01-core/soak.md)), and `icbm.missile.launch_detonate_t1` (released on impact).
 
 ## Open questions
 
-- Whether a restart should keep a flying missile loaded without a player nearby. The first build lets it wait; a persistent-ticket mode can be added in I7 if playtests ask for it.
+None. Whether a restart keeps a flying missile going with no player nearby is settled by D333: it does. The missile forces its window again when it adopts its ticket.

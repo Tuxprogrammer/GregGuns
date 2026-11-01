@@ -83,8 +83,8 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 
 | Registry name | Display name | Techguns (meta) | Tier | Gate | Recipe | Consumed by |
 |---|---|---|---|---|---|---|
-| `part_heavy_cloth` | Heavy Cloth | Heavy Cloth (39) | ULV | none | [RC-21](#part-heavy-cloth) | 05 |
-| `part_treated_leather` | Treated Leather | Treated Leather (109) | LV | Steel (Bath at LV) | [RC-22](#part-treated-leather) | 05 |
+| ~~`part_heavy_cloth`~~ | Heavy Cloth | Heavy Cloth (39) | ULV | none | Retired 2026-10-30; RC-21 is not reused | 05: the pack's Tanned Leather (`Backpack:tannedLeather`) takes its place |
+| ~~`part_treated_leather`~~ | Treated Leather | Treated Leather (109) | LV | none | Retired 2026-10-30 (D292); RC-22 is not reused | 05: the pack's Tanned Leather (`Backpack:tannedLeather`) takes its place in the Riot set |
 | ~~`part_steam_armor_plating`~~ | Steam Armor Plating | Steam Armor Plating (67) | EV | Titanium | Retired by [0022](../../design/0022-steam-armor-steam-age.md); RC-23 is not reused | 05 Steam armor (now hand-crafted from bronze plate) |
 | `part_power_plating` | Power Plating | Power Plating (89) | IV | Tungstensteel | [RC-24](#part-power-plating) | 05 Power armor, exo suit |
 | `part_gas_mask_filter` | Gas Mask Filter | Gas Mask Filter (74) | MV | Aluminum | [RC-25](#part-gas-mask-filter) | 05 Gas Mask |
@@ -121,8 +121,8 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 | `tank_bio` | Bio Tank | Bio Tank (10, 11) | EV | Titanium | [RC-53](#tank-bio), [RC-57](#tank-fill-bio) | Bio Gun |
 | `tank_air` | Compressed Air Tank | Compressed Air Tank (28, 29) | HV | Stainless steel | [RC-54](#tank-air), [RC-58](#tank-fill-air) | Power Hammers, Jump Pack, Oxygen Tanks (05) |
 | `cell_energy` | Energy Cell | Energy Cell (15, 16) | withdrawn | none | [RC-55](#cell-energy), withdrawn | Not built. Energy weapons are their own batteries ([note](#energy-cell-note)) |
-| `cell_nuclear` | Nuclear Power Cell | Nuclear Power Cell (106) | ZPM | Naquadah alloy | [RC-59](#nuclear-power-cell), [RC-60](#nuclear-power-cell) | Nuclear Death Ray, Anti Gravity Device (05) |
-| `cell_nuclear_depleted` | Nuclear Power Cell (Depleted) | (107) | ZPM | Naquadah alloy | not craftable; made by use | Returned on reload; input of RC-60 |
+| `cell_nuclear` | Nuclear Power Cell | Nuclear Power Cell (106) | ZPM | Naquadah alloy | [RC-59](#nuclear-power-cell) | The Nuclear Death Ray's recipe (GR-103), one cell as its power core (D293) |
+| ~~`cell_nuclear_depleted`~~ | Nuclear Power Cell (Depleted) | (107) | ZPM | none | Retired 2026-10-30 (D293); RC-60 is not reused | Nothing: no gun reloads from a cell |
 
 ### Consumables and tools
 
@@ -215,20 +215,14 @@ Replaces the Fabricator plans ([fabricator.md](../../techguns-spec/08-machines-p
 Replaces [R09, R25, R29](../../techguns-spec/06-items/recipes.md#1-gun-parts-and-components) and the Metal Press, Chem Lab and Fabricator rows for these items.
 
 <a id="part-heavy-cloth"></a>
-**RC-21 · `part_heavy_cloth` ×3** · ULV · shaped crafting · no gate · replaces R09
+**RC-21 · ~~`part_heavy_cloth`~~** · **Retired** (owner request 2026-10-30): the armor recipes and repairs take the pack's Tanned Leather (`Backpack:tannedLeather`, the Backpack mod's item; Bound Leather on a drying rack, or two leather in phosphoric acid in the LV Chemical Bath) instead, so GregGuns no longer has a cloth of its own (GT first: the pack already has the material). The id RC-21 is never reused. It was four `blockWool` around a leather, ×3, from Techguns R09.
 
-```
-· W ·
-W L W
-· W ·
-```
-
-`W` = ore name `blockWool` ×4 (any color), `L` = vanilla leather. Unchanged from Techguns.
+<a id="part-treated-leather"></a>
+**RC-22 · ~~`part_treated_leather`~~** · **Retired** (D292, 2026-10-30): the Riot (Ranger Veteran) set and its repairs take the pack's Tanned Leather (`Backpack:tannedLeather`) at the same counts, as every other cloth input already does. The id RC-22 is never reused. It was two leather and 500 mB of sulfuric acid in the LV Chemical Bath, ×2, from Chem Lab recipe 15.
 
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
-| RC-22<a id="part-treated-leather"></a> | `part_treated_leather` ×2 | LV | Bath | Vanilla leather ×2; fluid `Materials.SulfuricAcid.getFluid(500)` | `RECIPE_LV`, 10 s | The Bath's own LV voltage. Replaces Chem Lab recipe 15 (leather, slimeball, creeper acid). Creeper acid is dropped ([fluids.md](fluids.md#fluid-mapping)); GT sulfuric acid takes its place and the slimeball is dropped |
-| RC-23<a id="part-steam-armor-plating"></a> | ~~`part_steam_armor_plating`~~ | retired | | | | **Retired** by [0022](../../design/0022-steam-armor-steam-age.md) (2026-10-25): the Steam armor is hand-crafted from bronze plates and Heavy Cloth. The id RC-23 is never reused. History: titanium x2 until [0021](../../design/0021-tier-balance-pass.md), then x1 |
+| RC-23<a id="part-steam-armor-plating"></a> | ~~`part_steam_armor_plating`~~ | retired | | | | **Retired** by [0022](../../design/0022-steam-armor-steam-age.md) (2026-10-25): the Steam armor is hand-crafted from bronze plates and cloth (Tanned Leather since 2026-10-30). The id RC-23 is never reused. History: titanium x2 until [0021](../../design/0021-tier-balance-pass.md), then x1 |
 | RC-24<a id="part-power-plating"></a> | `part_power_plating` ×2 | IV | Asm | `plate.TungstenSteel` ×2, `plate.EpoxidFiberReinforced` ×4, `part_mechanical_3` ×1, `circuit.EV` ×2 | `RECIPE_IV`, 15 s | `TungstenSteel`. Replaces Fabricator plan 3 (2 titanium ingots, 4 basic circuits, T3 parts, 4 carbon plates, ×2) |
 | RC-25<a id="part-gas-mask-filter"></a> | `part_gas_mask_filter` ×1 | MV | Asm | `ItemList.ActivatedCarbonFilterMesh` ×1, `plate.Aluminium` ×1, `ring.Aluminium` ×1 | `RECIPE_MV`, 4 s | `Aluminium`. Replaces R25. The mesh is GT's ([ItemList#L2205](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L2205)); confirm it is obtainable by MV in the pack |
 | RC-26<a id="part-nuclear-warhead"></a> | `part_nuclear_warhead` ×2 | ZPM | AL | `plate.Lead` ×4, `dust.TNT` ×4, `circuit.LuV` ×2, `dust.Uranium235` ×2; fluid `Materials.SolderingAlloy.getMolten(144)` | `RECIPE_ZPM`, 20 s | Research item `ammo_rocket`, `Scanning(1 * MINUTES, RECIPE_EV)`. Replaces R29 (lead plates, circuits, 2 TGX, enriched uranium). TGX becomes `Materials.TNT`; `Materials.TNT` exists ([Materials.java#L389](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java#L389)) |
@@ -373,14 +367,13 @@ RC-55 is withdrawn (see below). RC-56 to RC-58 are the three dynamic fills, whic
 
 ### Nuclear Power Cell
 
-`cell_nuclear` is **not** an electric item. It is a consumable: a reload consumes the full cell and returns `cell_nuclear_depleted` ([Techguns reload table](../../techguns-spec/06-items/ammo.md#gun--ammo-table)). Both items are radioactive through GT ([hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items)).
+`cell_nuclear` is **not** an electric item and not ammo. It is a component: one cell is the power core in the Nuclear Death Ray's Assembly Line recipe (GR-103, D293), and the gun runs on EU. Techguns' reload, which consumed a full cell and returned a depleted one ([Techguns reload table](../../techguns-spec/06-items/ammo.md#gun--ammo-table)), is not carried over, so there is no depleted cell and no refill recipe (RC-60 is retired and never reused). The cell is radioactive through GT ([GGS-06-23](hazards-and-tooltips.md#requirements)): its recycling data, derived from its plates, leads with a Uranium-235 marker too small for any recycler to return ([hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items)).
 
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
-| RC-59<a id="cell-nuclear"></a> | `cell_nuclear` ×2 | ZPM | AL | `plate.NaquadahAlloy` ×4, `plate.Lead` ×4, `dust.Uranium235` ×8, `dust.Redstone` ×4, `circuit.ZPM` ×1; fluid `Materials.SolderingAlloy.getMolten(288)` | `RECIPE_ZPM`, 30 s | Research item `part_power_plating` (GregGuns' own; GT's scanner already takes `Energy_LapotronicOrb` for its own line research), `Scanning(1 * MINUTES, RECIPE_EV)` (was `cell_energy`, withdrawn). `NaquadahAlloy`. Replaces Fabricator plan 6 plus Chem Lab plan 13 as one step from raw material |
-| RC-60<a id="cell-nuclear-refuel"></a> | `cell_nuclear` ×1 | ZPM | Asm, `c=1` | `cell_nuclear_depleted` ×1, `dust.Uranium235` ×4 | `RECIPE_ZPM`, 20 s | `Uranium235` plus a ZPM Assembler. Replaces Chem Lab plan 13 (depleted cell, enriched uranium, water). **Exception to the Assembly Line rule**: it converts a returned item, not a new craft. See [Open questions](#open-questions) |
+| RC-59<a id="cell-nuclear"></a> | `cell_nuclear` ×1 | ZPM | AL | `plate.NaquadahAlloy` ×2, `plate.Lead` ×2, `dust.Uranium235` ×4, `dust.Redstone` ×2, `circuit.ZPM` ×1; fluid `Materials.SolderingAlloy.getMolten(144)` | `RECIPE_ZPM`, 30 s | Research item `part_power_plating` (GregGuns' own; GT's scanner already takes `Energy_LapotronicOrb` for its own line research), `Scanning(1 * MINUTES, RECIPE_EV)` (was `cell_energy`, withdrawn). `NaquadahAlloy`. Replaces Fabricator plan 6 plus Chem Lab plan 13 as one step from raw material. One cell per run, one per Death Ray (D293): the inputs that divide are halved, the circuit is kept |
 
-`cell_nuclear_depleted` has no crafting recipe. Techguns' Fabricator plan 6 for an empty cell is dropped: the full-cell recipe above starts from raw material.
+Techguns' Fabricator plan 6 for an empty cell is dropped: the full-cell recipe above starts from raw material.
 
 ## Consumables
 
@@ -440,17 +433,17 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 
 - **GGS-06-34.** The sheet has 63 rows, one of them (RC-55) withdrawn: 59 registered rows (67 recipes, counting the 7 magazine refills and 3 camo-net variants) and 3 dynamic tank fills that GT builds itself. Every registered recipe is added from a `sBeforeGTPostload` callback or later. The dev self-check fails the boot if any input resolves to `null`.
 - **GGS-06-35.** Every machine recipe's `eut` is the `TierEU.RECIPE_*` constant of the output's [0001](../../design/0001-tier-map.md) tier. No recipe is craftable below its tier.
-- **GGS-06-36.** Every machine recipe (RC-61 included) has at least one input of the tier's gate material, except the loose LV ammo `ammo_9mm_bullet` and `ammo_shotgun_shell`, whose gate is the LV machine voltage and the Brass case, and RC-22 `part_treated_leather`, gated by the LV Chemical Bath voltage (a metal input in a bath is artificial). The exemption list is fixed in code and in this requirement.
+- **GGS-06-36.** Every machine recipe (RC-61 included) has at least one input of the tier's gate material, except the loose LV ammo `ammo_9mm_bullet` and `ammo_shotgun_shell`, whose gate is the LV machine voltage and the Brass case. The exemption list is fixed in code and in this requirement.
 - **GGS-06-37.** Loose ammo, magazine and tank recipes use the output counts, circuit numbers and durations in this sheet. Circuit numbers are unique per (map, inputs).
 - **GGS-06-38.** Bullet recipes take slugs and cases from GT `round`, `foil` and `itemCasing`, and powder from `dust.Gunpowder`. GregGuns registers no casing item. Every loose-ammo and magazine recipe is registered to `gregguns.ammoPress` only, not to GT's Assembler, Forming Press or Extruder ([0011](../../design/0011-machine-policy.md)). The Stone Bullet also keeps its shapeless hand recipe.
-- **GGS-06-39.** Crafting-table recipes exist only for the ULV rows (RC-01 to RC-03, RC-21, RC-27, RC-63) and the magazine refill (RC-51). Every other output is made on a GT recipe map.
+- **GGS-06-39.** Crafting-table recipes exist only for the ULV rows (RC-01 to RC-03, RC-27, RC-63) and the magazine refill (RC-51). Every other output is made on a GT recipe map.
 - **GGS-06-40.** `tank_fuel`, `tank_bio` and `tank_air` implement `IFluidContainerItem`, capacity 1,000 mB. A GT Fluid Canner fills an empty tank only from at least 1,000 mB of an accepted fluid.
 - **GGS-06-41.** (withdrawn by [0010](../../design/0010-material-remap-and-tier-additions.md)) There is no `cell_energy` item and no recipe produces one.
-- **GGS-06-42.** `cell_nuclear` is not an `IElectricItem`. `cell_nuclear_depleted` has no crafting recipe, and RC-60 is its only way back to a full cell.
-- **GGS-06-43.** Every LuV and ZPM craft (RC-19, RC-26, RC-35, RC-36, RC-59) is an Assembly Line recipe with both `RESEARCH_ITEM` and `SCANNING` metadata. RC-60 is the stated exception.
+- **GGS-06-42.** `cell_nuclear` is not an `IElectricItem`. RC-59 is its only recipe, and the Nuclear Death Ray's recipe (GR-103) takes one (D293).
+- **GGS-06-43.** Every LuV and ZPM craft (RC-19, RC-26, RC-35, RC-36, RC-59) is an Assembly Line recipe with both `RESEARCH_ITEM` and `SCANNING` metadata.
 - **GGS-06-44.** Dropped items (the last table) have no registry entry, and no recipe in any area names them.
 - **GGS-06-45.** Magazine refill and sneak-empty use the bullet counts in the Magazines table. The bulk Assembler recipes use four times those counts.
-- **GGS-06-46.** Every kept item made from GT materials carries `ItemData` ([GGS-06-12](components-and-materials.md#requirements)) so GT recycling returns its metals.
+- **GGS-06-46.** Every kept item made from GT materials carries `ItemData` ([GGS-06-12](components-and-materials.md#requirements)) so GT recycling returns its metals. Items without hand-written data get it derived from their recipes ([recycling.md](recycling.md)).
 - **GGS-06-47.** The registry names in the component index are reserved. Renaming one needs a design record, because areas 02, 05 and 07 to 09 and [pack-loot.md](pack-loot.md) reference them.
 - **GGS-06-48.** Recipes in areas 02, 05 and 07 to 09 name GregGuns components only by a registry name from the component index.
 
@@ -466,7 +459,7 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 | GGS-06-39 | Unit test: the crafting registry's GregGuns outputs equal the listed set |
 | GGS-06-40 | Unit test on `fill`; `/gregguns test` scenario that fills each tank through a Fluid Canner |
 | GGS-06-41 | (withdrawn) Unit test: the registry has no `cell_energy` entry |
-| GGS-06-42 | Unit test: no `IElectricItem`; no recipe outputs `cell_nuclear_depleted` |
+| GGS-06-42 | Unit test: no `IElectricItem`; no refill row (`ComponentTableTest`); GR-103 takes one cell (`NuclearDeathRayDefinitionTest`) |
 | GGS-06-43 | Unit test: the five recipes in the Assembly Line map carry both metadata keys |
 | GGS-06-44 | Unit test: registry has no entry from the dropped list; grep check on the recipe packages |
 | GGS-06-45 | Unit test comparing the refill table, the bulk recipes and the sneak-empty return counts |
@@ -478,11 +471,10 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 
 Implemented in `ComponentTable`, `ComponentRecipes` and `PartCatalog`. Where the code departs from the rows above:
 
-- **RC-22 Treated Leather (and RC-23, retired by 0022).** Registered and recipe'd by the armor branch (`ArmorParts`, m3); this pass leaves them alone. (The Bath rows there should carry a Steel input for the gate, as GGS-06-36 asks.)
+- **RC-22 Treated Leather and RC-23 Steam Armor Plating.** Both retired: RC-23 by 0022, RC-22 by D292 (the pack's Tanned Leather takes its place).
 - **RC-26 Small Nuclear Warhead.** One `plate.NaquadahAlloy` (the casing) joins the inputs: the sheet's inputs have no ZPM gate material. The research item is `ItemList.Sensor_EV` (the proximity fuze) instead of `ammo_rocket`, which the ammo session registers; switch it when `ammo_rocket` exists.
 - **Tank bodies and the Plasma Membrane (pack integration).** RC-52 to RC-54 take the pack's Large Fluid Cell (`ItemList.Large_Fluid_Cell_<Material>`) instead of `Cell_Empty` plus loose plates and rings, and one cell makes four tanks (the old cost per tank, kept roughly equal). The cell's capacity (32,000 to 128,000 mB) is far above the tank's fixed 1,000 mB, so the tank item still enforces its own cap. RC-20 gains `ItemList.PlasmaMembrane` so the Bio Lab chain feeds a second EV product. No pack config changes. Done by the `m4/pack-integration` branch; see [pack-integration-audit.md](../../research/pack-integration-audit.md) rows 20 and 31 to 33.
 - **No TNT or soul sand dust.** `Materials.TNT` and `Materials.SoulSand` resolve to no dust item in the pinned GT, so RC-26 takes the vanilla TNT block (4) and RC-20 the vanilla soul sand block.
-- **RC-60 refuel.** One `plate.NaquadahAlloy` (the fresh seal) joins the spent cell and uranium, for the same gate reason.
 - **Gate rule.** `GateRule` now defines LuV (`HSSG`) and ZPM (`NaquadahAlloy`), and accepts a GT part of the row's own tier as carrying the gate: `circuit.<tier>` (RC-20 "Titanium via circuit.EV") and `ItemList.*_<tier>` (RC-19 "through the ZPM emitter").
 - **Material names.** GT names Polyethylene `Plastic` and the circuit materials `Basic`, `Good`, `Advanced`, `Data`, `Elite`, `Master`, `Ultimate` (LV to ZPM); the table uses those `mName`s.
 - **RC-61 Bandages.** The slimeball is the ore name `slimeball`; string and leather are vanilla items.
@@ -504,7 +496,7 @@ Each needs a decision before this sheet is final.
 - **Brass in the pack.** `foil.Brass` and `itemCasing.Brass` should exist for `Materials.Brass`; confirm in GTNH 2.9.0-RC-2 before M2.
 - **Energy Cell (closed).** Dropped by [0010](../../design/0010-material-remap-and-tier-additions.md) decision 4: [02](../02-guns/energy-electric-items.md) makes each energy gun its own battery.
 - **LuV and ZPM voltage.** RC-19, RC-26, RC-35, RC-36 and RC-59 use the item's own tier. GT's LuV motor uses one tier less. 02 proposes keeping 0001 as written for weapons ([02 open questions](../02-guns/recipes.md#open-questions)); this sheet follows that proposal. A record is needed only if components must follow GT's one-tier-below precedent.
-- **Nuclear refuel route.** RC-60 uses the plain Assembler at ZPM. If the Assembly Line rule must hold for conversions, RC-60 becomes an Assembly Line recipe.
+- **Nuclear refuel route (closed).** D293 retires the depleted cell and RC-60: the cell is a recipe input of the Nuclear Death Ray, not a refillable consumable.
 - **Tank capacity (closed).** 1,000 mB, fixed by [0010](../../design/0010-material-remap-and-tier-additions.md) decision 3; [02's fluid-ammo sheet](../02-guns/fluid-ammo.md) restates per-shot consumption against it.
 - **Gas Mask Filter progression.** `ActivatedCarbonFilterMesh` may be later than MV in the pack's progression (GGS-06-35).
 - **Ammo cost balance.** The cost note under the ammo table: GT rounds make a 9mm bullet about 1.5 times the Techguns cost. Tune batch sizes in M2.

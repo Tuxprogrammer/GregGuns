@@ -89,6 +89,26 @@ public final class ComplexApplier {
         return this;
     }
 
+    /** Which world columns of the window the level is written in: false for a column the terrain cut off (D207). */
+    public interface Columns {
+
+        boolean written(int x, int z);
+    }
+
+    private Columns columns;
+
+    /**
+     * @param columns the window's written columns; null when every column of the window is written
+     * @return this
+     */
+    public ComplexApplier withColumns(Columns columns) {
+        this.columns = columns;
+        return this;
+    }
+
+    /** The chests this applier wrote and not yet settled: world x, y, z and the meta each must keep. */
+    private final java.util.List<int[]> chests = new java.util.ArrayList<int[]>();
+
     /** @param p a placement */
     public void apply(Placement p) {
         int x = ox + p.x();
@@ -113,11 +133,24 @@ public final class ComplexApplier {
                 else sink.setBlock(x, y, z, Blocks.glowstone, 0);
                 break;
             }
-            case CHEST:
-                if (sink.setBlock(x, y, z, Blocks.chest, 2)) {
+            case CHEST: {
+                int meta = CHEST_META[p.facing() & 3];
+                if (sink.setBlock(x, y, z, Blocks.chest, meta)) {
                     sink.setTile(x, y, z, SiloChests.filledChest(p, worldSeed, cellX, cellZ));
+                    chests.add(new int[] { x, y, z, meta });
                 }
                 break;
+            }
+            case CRATE: {
+                // An empty wooden crate on a chest spot the budget left over (D315): Chisel's crate planks in the
+                // room's wood, vanilla planks of that wood without Chisel.
+                int wood = crateWood(p.key());
+                Block crate = cpw.mods.fml.common.registry.GameRegistry
+                    .findBlock("chisel", CRATE_WOODS[wood] + "_planks");
+                if (crate != null) sink.setBlock(x, y, z, crate, CRATE_META);
+                else sink.setBlock(x, y, z, Blocks.planks, wood);
+                break;
+            }
             case SPAWNER:
                 spawner(p.spawner(), x, y, z);
                 break;
@@ -129,6 +162,12 @@ public final class ComplexApplier {
                 break;
             case FRAME_WALL:
                 frameWall(p);
+                break;
+            case BLOCK:
+                block(p, x, y, z);
+                break;
+            case STOCK:
+                stock(p, x, y, z);
                 break;
             default:
                 break;
@@ -162,7 +201,8 @@ public final class ComplexApplier {
                 y,
                 z - FRAME_DZ[p.facing()],
                 p.facing());
-            String ref = SiloFrames.gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, GUN);
+            String ref = SiloFrames
+                .gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, ArmoryDisplay.IS_GUN);
             ItemStack gun = ref == null ? null : com.gregguns.worldgen.loot.LootCategories.stack(ref, 1);
             if (gun != null) {
                 frame.setDisplayedItem(gun);
@@ -178,10 +218,33 @@ public final class ComplexApplier {
     private static final int[] FRAME_DX = { 0, -1, 0, 1 };
     private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
 
-    private static final java.util.function.Predicate<String> GUN = ref -> {
-        net.minecraft.item.Item it = com.gregguns.entity.npc.NpcItems.item(ref);
-        return it instanceof com.gregguns.item.gun.ItemGun;
-    };
+    /** Chest metas by a mark's facing (0 south, 1 west, 2 north, 3 east): the way the chest's front looks. */
+    static final int[] CHEST_META = { 3, 4, 2, 5 };
+
+    /**
+     * @param facing a chest placement's facing (0 south, 1 west, 2 north, 3 east)
+     * @return the chest meta it is written with: 3 south, 4 west, 2 north, 5 east
+     */
+    public static int chestMeta(int facing) {
+        return CHEST_META[facing & 3];
+    }
+
+    /**
+     * Chisel's plank blocks in vanilla's plank order (0 oak to 5 dark oak); meta 10 is the crate. Source:
+     * https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java#L4377
+     */
+    private static final String[] CRATE_WOODS = { "oak", "spruce", "birch", "jungle", "acacia", "dark_oak" };
+    private static final int CRATE_META = 10;
+
+    /** @return the wood a crate placement names, 0 to 5; spruce for a bad key */
+    static int crateWood(String key) {
+        try {
+            int w = Integer.parseInt(key);
+            return w >= 0 && w < CRATE_WOODS.length ? w : 1;
+        } catch (NumberFormatException e) {
+            return 1;
+        }
+    }
 
     private static Block rubble(int x, int y, int z) {
         return ((x * 31 + y * 17 + z * 13) & 3) == 0 ? Blocks.gravel : Blocks.cobblestone;
@@ -224,7 +287,7 @@ public final class ComplexApplier {
             placeCasing(x, y, z);
             return;
         } else {
-            MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead());
+            MachinePicker.Pick pick = MachinePicker.pick(role, Math.max(1, p.tier()), p.dead(), p.variant());
             if (pick == null) {
                 GregGuns.LOG.warn("No GT machine for {} at tier {}", role, p.tier());
                 return;
@@ -232,10 +295,10 @@ public final class ComplexApplier {
             mteId = pick.stack()
                 .getItemDamage();
         }
-        placeMte(x, y, z, mteId);
+        placeMte(x, y, z, mteId, p.front(), p);
     }
 
-    private void placeMte(int x, int y, int z, int mteId) {
+    private void placeMte(int x, int y, int z, int mteId, int front, Placement p) {
         IMetaTileEntity proto = mteId >= 0 && mteId < GregTechAPI.METATILEENTITIES.length
             ? GregTechAPI.METATILEENTITIES[mteId]
             : null;
@@ -243,11 +306,108 @@ public final class ComplexApplier {
             return;
         }
         if (sink.setBlock(x, y, z, GregTechAPI.sBlockMachines, proto.getTileEntityBaseType())) {
-            gregtech.api.metatileentity.BaseMetaTileEntity tile = new gregtech.api.metatileentity.BaseMetaTileEntity();
-            tile.setInitialValuesAsNBT(null, (short) mteId);
-            com.gregguns.icbm.complex.gen.GtMachineHook.claim(tile);
-            sink.setTile(x, y, z, tile);
+            gregtech.api.metatileentity.BaseMetaTileEntity tile = MachineFacing
+                .build(mteId, front, com.gregguns.icbm.complex.gen.GtMachineHook::claim);
+            if (tile == null) return;
+            MachineFacingAudit.check(tile, "ComplexApplier.placeMte " + p, x, y, z);
+            if (sink.setTile(x, y, z, tile)) {
+                initDefaultModes(tile);
+                if (p.stocked()) {
+                    GtMachineStock.fill(
+                        tile,
+                        p.tier(),
+                        new java.util.Random(
+                            com.gregguns.worldgen.loot.LootPending
+                                .seed(worldSeed, cellX, cellZ, 0x6D7C0000 ^ (p.x() * 4096 + p.z()) ^ p.y() << 24)));
+                }
+            }
         }
+    }
+
+    /**
+     * A {@link Placement.Kind#STOCK}: what the piece placed in this cell holds (D323), put into its tile entity. Needs
+     * the world (the piece's tile is the world's own); a window without one, or a piece whose mod is absent, is left
+     * as placed. Only the piece's own block is filled: a cut-off column (D207) never had the piece written, and
+     * whatever stands there (a dungeon chest, another mod's container) is left alone (D345).
+     */
+    private void stock(Placement p, int x, int y, int z) {
+        if (world == null || !sink.window()
+            .contains(x, z)) return;
+        if (columns != null && !columns.written(x, z)) return;
+        if (!com.gregguns.icbm.complex.gen.FurnitureFiller.placed(world.getBlock(x, y, z), p.block())) return;
+        net.minecraft.tileentity.TileEntity te = world.getTileEntity(x, y, z);
+        if (FurnitureStocker.fill(te, p, worldSeed, cellX, cellZ, ceiling)) te.markDirty();
+    }
+
+    /**
+     * Writes the facing of the chests this applier placed again, once the window's contents are all in (D345). A
+     * vanilla chest re-aims itself by its neighbors when it is placed, and re-aims a chest beside it as well, so the
+     * meta it was written with does not stick: a bed-foot chest with air on both sides always turns south. A chest
+     * just past the window that one of this window's chests re-aimed is restored from its own placement; it lies in a
+     * chunk the populate already holds, and only its meta is written. Needs the world; without one it does nothing.
+     *
+     * @param all every placement of the complex, for the chests past the window
+     */
+    public void settleChests(java.util.List<Placement> all) {
+        if (world == null || chests.isEmpty()) {
+            chests.clear();
+            return;
+        }
+        java.util.Map<Long, Integer> outside = null;
+        for (int[] c : chests) {
+            keepChestMeta(c[0], c[1], c[2], c[3]);
+            for (int d = 0; d < 4; d++) {
+                int nx = c[0] + NEIGHBOR_DX[d], nz = c[2] + NEIGHBOR_DZ[d];
+                if (sink.window()
+                    .contains(nx, nz) || !world.blockExists(nx, c[1], nz)
+                    || world.getBlock(nx, c[1], nz) != Blocks.chest) continue;
+                if (outside == null) outside = chestMetas(all);
+                Integer m = outside.get(cellKey(nx - ox, c[1] - oy, nz - oz));
+                if (m != null) keepChestMeta(nx, c[1], nz, m);
+            }
+        }
+        chests.clear();
+    }
+
+    private void keepChestMeta(int x, int y, int z, int meta) {
+        if (world.getBlock(x, y, z) == Blocks.chest && world.getBlockMetadata(x, y, z) != meta) {
+            world.setBlockMetadataWithNotify(x, y, z, meta, 2);
+        }
+    }
+
+    /** @return the meta of every chest placement, by complex-local cell */
+    private static java.util.Map<Long, Integer> chestMetas(java.util.List<Placement> all) {
+        java.util.Map<Long, Integer> m = new java.util.HashMap<Long, Integer>();
+        for (Placement p : all) {
+            if (p.kind() == Placement.Kind.CHEST) m.put(cellKey(p.x(), p.y(), p.z()), CHEST_META[p.facing() & 3]);
+        }
+        return m;
+    }
+
+    private static long cellKey(int x, int y, int z) {
+        return ((long) x << 40) ^ ((long) (y & 0xFF) << 32) ^ (z & 0xFFFFFFFFL);
+    }
+
+    /** The four horizontal neighbors: north, south, west, east. */
+    private static final int[] NEIGHBOR_DX = { 0, 0, -1, 1 };
+    private static final int[] NEIGHBOR_DZ = { -1, 1, 0, 0 };
+
+    /**
+     * Gives a generated machine its default modes, as GT's own placement does: owner first (the claim in
+     * {@link MachineFacing#build}), then the front, then the modes. A hatch left without them draws GT's inactive
+     * face. A basic machine's default modes only set its main facing to its front and read its owner's client
+     * preferences (none for a generated machine), and {@link MachineFacing#build} already set the main facing the
+     * room wants (D208), so a basic machine is left as built: its modes would turn the main facing to the output side.
+     * Needs the tile in its world, so it runs after the tile is set; a window without a world skips it.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/blocks/ItemMachines.java#L286-L305
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEBasicMachine.java#L517-L534
+    static void initDefaultModes(gregtech.api.metatileentity.BaseMetaTileEntity tile) {
+        IMetaTileEntity mte = tile.getMetaTileEntity();
+        if (mte == null || tile.getWorld() == null
+            || mte instanceof gregtech.api.metatileentity.implementations.MTEBasicMachine) return;
+        mte.initDefaultModes(null);
     }
 
     /**
@@ -272,7 +432,55 @@ public final class ComplexApplier {
 
     /** @return one machine item for a placement, for scenarios that check what would be placed */
     public static ItemStack stackFor(Placement p) {
-        MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead());
+        MachinePicker.Pick pick = MachinePicker.pick(p.role(), Math.max(1, p.tier()), p.dead(), p.variant());
         return pick == null ? null : pick.stack();
+    }
+
+    /**
+     * A {@link Placement.Kind#BLOCK}: the named block at its meta, else its fallback at meta 0, else nothing (logged
+     * once per name). A lit furnace gets a tile that burns for a long while with coal in the fuel slot and sand to
+     * smelt, so it is still lit when a player walks in (D309). A furnace re-aims itself by its neighbors when placed,
+     * so its meta is written again afterwards, inside the window only.
+     */
+    private void block(Placement p, int x, int y, int z) {
+        Block b = resolve(p.block());
+        int meta = p.meta();
+        if (b == null) {
+            b = resolve(p.fallback());
+            meta = 0;
+        }
+        if (b == null) {
+            if (MISSING.add(p.block())) {
+                GregGuns.LOG.info("Complex block {} is absent this run; left as built", p.block());
+            }
+            return;
+        }
+        if (!sink.setBlock(x, y, z, b, meta)) {
+            return;
+        }
+        if (b == Blocks.lit_furnace) {
+            net.minecraft.tileentity.TileEntityFurnace f = new net.minecraft.tileentity.TileEntityFurnace();
+            f.furnaceBurnTime = LIT_BURN_TICKS;
+            f.currentItemBurnTime = LIT_BURN_TICKS;
+            f.setInventorySlotContents(0, new ItemStack(Blocks.sand, 64));
+            f.setInventorySlotContents(1, new ItemStack(net.minecraft.init.Items.coal, 32));
+            sink.setTile(x, y, z, f);
+        }
+        if ((b == Blocks.lit_furnace || b == Blocks.furnace) && world != null
+            && sink.window()
+                .contains(x, z)) {
+            world.setBlockMetadataWithNotify(x, y, z, meta, 2);
+        }
+    }
+
+    /** Ticks a placed lit furnace burns before it needs its fuel slot (the most a furnace saves: a short). */
+    static final int LIT_BURN_TICKS = Short.MAX_VALUE;
+
+    private static final java.util.Set<String> MISSING = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static Block resolve(String name) {
+        if (name == null) return null;
+        Block b = Block.getBlockFromName(name);
+        return b == null || b == Blocks.air && !"minecraft:air".equals(name) ? null : b;
     }
 }

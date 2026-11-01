@@ -19,12 +19,12 @@ Natural spawns, Overworld only. The danger level rises the farther you travel fr
 
 | Enemy | Danger | Carries | Drops |
 | --- | --- | --- | --- |
-| Zombie Farmer | 0+ | A hoe or a Hand Cannon, in Miner's clothes. | Wheat, seeds, leather, bread, apples, Heavy Cloth. |
-| Zombie Miner | 0+ | A pickaxe or a Hand Cannon, and a Miner's Helmet. | Coal, redstone, iron, gunpowder, Heavy Cloth. |
-| Zombie Soldier | 1+ | A revolver, a Thompson or a shovel, in Soldier armor. | Shotgun shells, 9mm bullets, iron, gunpowder, Heavy Cloth. |
+| Zombie Farmer | 0+ | A hoe or a Hand Cannon, in Miner's clothes. | Wheat, seeds, leather, bread, apples, Tanned Leather. |
+| Zombie Miner | 0+ | A pickaxe or a Hand Cannon, and a Miner's Helmet. | Coal, redstone, iron, gunpowder, Tanned Leather. |
+| Zombie Soldier | 1+ | A revolver, a Thompson or a shovel, in Soldier armor. | Shotgun shells, 9mm bullets, iron, gunpowder, Tanned Leather. |
 | Skeleton Soldier | 1+ | A revolver, Thompson or Hand Cannon; a helmet and boots. | Bones, coal, gunpowder. |
 | Psycho Steve | 1+, rare boss | A Chainsaw and red Miner armor. Very fast, very angry. | Always his Chainsaw and 4 to 8 Fuel Tanks. |
-| Bandit | 2+ | A pistol, revolver, Sawed Off, Thompson, AK47 or Bolt Action Rifle, in Bandit armor. | Ammo, iron, gunpowder, Heavy Cloth. |
+| Bandit | 2+ | A pistol, revolver, Sawed Off, Thompson, AK47 or Bolt Action Rifle, in Bandit armor. | Ammo, iron, gunpowder, Tanned Leather. |
 
 ## At camps and nests
 
@@ -32,7 +32,7 @@ Military Camps and Aircraft Carriers fly a <ItemLink id="gregguns:camp_flag" /> 
 
 | Enemy | Where | Carries | Drops |
 | --- | --- | --- | --- |
-| Army Soldier | Camps | An M4, Combat Shotgun or Bolt Action Rifle; Combat armor or a beret. | Shotgun shells, rifle bullets, iron, Heavy Cloth. |
+| Army Soldier | Camps | An M4, Combat Shotgun or Bolt Action Rifle; Combat armor or a beret. | Shotgun shells, rifle bullets, iron, Tanned Leather. |
 | Commando | Aircraft Carriers | An M4 and full Commando armor. | Steel, rubber, rifle bullets, Explosive Charges. |
 | Camp Turret | Camps | An AK47 behind iron plating. Shoots you and your turrets. | Nothing; just break it. |
 | Attack Helicopter | Boss: break a camp flag | Machine-gun bursts and rockets from the air. | 16 to 31 rifle bullets, 8 to 15 rockets, 2 or 3 Cybernetic Parts, 4 to 7 iron blocks. |
@@ -62,6 +62,6 @@ Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only mons
 
 ## What they drop
 
-Up to two picks from their loot list, plus one more per level of Looting. A player kill has a small chance to drop the gun they hold, and sometimes the armor they wear.
+Up to two picks from their loot list, plus one more per level of Looting. A player kill has a small chance to drop the gun they hold, and sometimes the armor they wear. Every kill also drops some ammo for the gun they carried (a full tank for flame and bio guns, a few parts for energy guns).
 
 With Infernal Mobs installed, any of them can spawn with an Elite, Ultra or Infernal rank and better loot: LV items for Elite, MV for Ultra, and a rare HV drop from Infernal. The helicopter and camp turrets never do.

@@ -900,6 +900,18 @@ def _(c, x):
     c.pix(4, 5, COPPER[HL])
 
 
+@icon("inert_warhead")
+def _(c, x):
+    # An empty warhead casing, nose up: a gray steel cone over a short body, with the blue band that marks inert
+    # (training) munitions and an open fuze well at the tip (D282).
+    c.poly([(7, 1), (8, 1), (12, 8), (3, 8)], x.m)
+    c.rect(3, 8, 12, 14, x.m)
+    c.rect(3, 10, 12, 11, ramp((70, 110, 190)))
+    c.hline(4, 11, 14, x.m[DK])
+    c.pix(7, 1, x.m[HL]); c.pix(8, 2, x.m[DK])
+    c.vline(5, 4, 9, x.m[LT])
+
+
 @icon("part_uv_emitter")
 def _(c, x):
     c.rect(1, 3, 14, 12, x.m)
@@ -955,27 +967,6 @@ def _(c, x):
     for p in pts:
         c.pix(p[0], p[1], VIOLET_G[BS])
     c.pix(5, 5, CYAN[HL])
-
-
-@icon("part_heavy_cloth")
-def _(c, x):
-    cl = ramp((128, 88, 52))
-    c.rect(2, 3, 13, 12, cl)
-    c.hline(2, 13, 6, cl[SH]); c.hline(2, 13, 9, cl[SH])
-    c.hline(2, 13, 7, cl[HL]); c.hline(2, 13, 10, cl[LT])
-    c.rect(11, 3, 13, 12, cl[SH], bevel=False)
-    c.vline(11, 3, 12, cl[HL])
-    c.dither([(a, b) for a in range(2, 11) for b in (4, 5)], cl[BS], cl[LT])
-
-
-@icon("part_treated_leather")
-def _(c, x):
-    lt = ramp((52, 66, 54))
-    c.poly([(2, 4), (5, 2), (11, 3), (14, 6), (13, 12), (8, 14), (3, 12)], lt)
-    speckle(c, x, [(a, b) for a in range(2, 14) for b in range(3, 14)], lt, 10, DK)
-    speckle(c, x, [(a, b) for a in range(2, 14) for b in range(3, 14)], lt, 6, LT)
-    for yy in (5, 8, 11):
-        c.pix(4, yy, lt[HL]); c.pix(11, yy, lt[HL]) if yy < 11 else None
 
 
 @icon("part_power_plating")
@@ -1271,16 +1262,6 @@ def _(c, x):
     c.hline(4, 11, 3, LEAD[DK]); c.hline(4, 11, 12, LEAD[DK])
     c.pix(5, 2, LEAD[HL]); c.pix(10, 13, LEAD[DK])
     c.pix(8, 2, (250, 210, 30)); c.pix(7, 13, (250, 210, 30))
-
-
-@icon("cell_nuclear_depleted")
-def _(c, x):
-    dull = ramp((104, 94, 82))
-    c.rect(4, 1, 11, 14, LEAD)
-    c.rect(5, 4, 10, 11, dull, bevel=False)
-    c.line(6, 5, 8, 8, dull[DK]); c.line(8, 8, 7, 10, dull[DK])
-    c.hline(4, 11, 3, LEAD[DK]); c.hline(4, 11, 12, LEAD[DK])
-    c.pix(5, 2, LEAD[HL]); c.pix(10, 13, LEAD[DK])
 
 
 # ======================================================== misc items
