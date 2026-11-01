@@ -89,6 +89,26 @@ public final class ComplexApplier {
         return this;
     }
 
+    /** Which world columns of the window the level is written in: false for a column the terrain cut off (D207). */
+    public interface Columns {
+
+        boolean written(int x, int z);
+    }
+
+    private Columns columns;
+
+    /**
+     * @param columns the window's written columns; null when every column of the window is written
+     * @return this
+     */
+    public ComplexApplier withColumns(Columns columns) {
+        this.columns = columns;
+        return this;
+    }
+
+    /** The chests this applier wrote and not yet settled: world x, y, z and the meta each must keep. */
+    private final java.util.List<int[]> chests = new java.util.ArrayList<int[]>();
+
     /** @param p a placement */
     public void apply(Placement p) {
         int x = ox + p.x();
@@ -113,11 +133,14 @@ public final class ComplexApplier {
                 else sink.setBlock(x, y, z, Blocks.glowstone, 0);
                 break;
             }
-            case CHEST:
-                if (sink.setBlock(x, y, z, Blocks.chest, CHEST_META[p.facing() & 3])) {
+            case CHEST: {
+                int meta = CHEST_META[p.facing() & 3];
+                if (sink.setBlock(x, y, z, Blocks.chest, meta)) {
                     sink.setTile(x, y, z, SiloChests.filledChest(p, worldSeed, cellX, cellZ));
+                    chests.add(new int[] { x, y, z, meta });
                 }
                 break;
+            }
             case CRATE: {
                 // An empty wooden crate on a chest spot the budget left over (D315): Chisel's crate planks in the
                 // room's wood, vanilla planks of that wood without Chisel.
@@ -196,7 +219,15 @@ public final class ComplexApplier {
     private static final int[] FRAME_DZ = { 1, 0, -1, 0 };
 
     /** Chest metas by a mark's facing (0 south, 1 west, 2 north, 3 east): the way the chest's front looks. */
-    private static final int[] CHEST_META = { 3, 4, 2, 5 };
+    static final int[] CHEST_META = { 3, 4, 2, 5 };
+
+    /**
+     * @param facing a chest placement's facing (0 south, 1 west, 2 north, 3 east)
+     * @return the chest meta it is written with: 3 south, 4 west, 2 north, 5 east
+     */
+    public static int chestMeta(int facing) {
+        return CHEST_META[facing & 3];
+    }
 
     /**
      * Chisel's plank blocks in vanilla's plank order (0 oak to 5 dark oak); meta 10 is the crate. Source:
@@ -296,14 +327,70 @@ public final class ComplexApplier {
     /**
      * A {@link Placement.Kind#STOCK}: what the piece placed in this cell holds (D323), put into its tile entity. Needs
      * the world (the piece's tile is the world's own); a window without one, or a piece whose mod is absent, is left
-     * as placed.
+     * as placed. Only the piece's own block is filled: a cut-off column (D207) never had the piece written, and
+     * whatever stands there (a dungeon chest, another mod's container) is left alone (D345).
      */
     private void stock(Placement p, int x, int y, int z) {
         if (world == null || !sink.window()
             .contains(x, z)) return;
+        if (columns != null && !columns.written(x, z)) return;
+        if (!com.gregguns.icbm.complex.gen.FurnitureFiller.placed(world.getBlock(x, y, z), p.block())) return;
         net.minecraft.tileentity.TileEntity te = world.getTileEntity(x, y, z);
         if (FurnitureStocker.fill(te, p, worldSeed, cellX, cellZ, ceiling)) te.markDirty();
     }
+
+    /**
+     * Writes the facing of the chests this applier placed again, once the window's contents are all in (D345). A
+     * vanilla chest re-aims itself by its neighbors when it is placed, and re-aims a chest beside it as well, so the
+     * meta it was written with does not stick: a bed-foot chest with air on both sides always turns south. A chest
+     * just past the window that one of this window's chests re-aimed is restored from its own placement; it lies in a
+     * chunk the populate already holds, and only its meta is written. Needs the world; without one it does nothing.
+     *
+     * @param all every placement of the complex, for the chests past the window
+     */
+    public void settleChests(java.util.List<Placement> all) {
+        if (world == null || chests.isEmpty()) {
+            chests.clear();
+            return;
+        }
+        java.util.Map<Long, Integer> outside = null;
+        for (int[] c : chests) {
+            keepChestMeta(c[0], c[1], c[2], c[3]);
+            for (int d = 0; d < 4; d++) {
+                int nx = c[0] + NEIGHBOR_DX[d], nz = c[2] + NEIGHBOR_DZ[d];
+                if (sink.window()
+                    .contains(nx, nz) || !world.blockExists(nx, c[1], nz)
+                    || world.getBlock(nx, c[1], nz) != Blocks.chest) continue;
+                if (outside == null) outside = chestMetas(all);
+                Integer m = outside.get(cellKey(nx - ox, c[1] - oy, nz - oz));
+                if (m != null) keepChestMeta(nx, c[1], nz, m);
+            }
+        }
+        chests.clear();
+    }
+
+    private void keepChestMeta(int x, int y, int z, int meta) {
+        if (world.getBlock(x, y, z) == Blocks.chest && world.getBlockMetadata(x, y, z) != meta) {
+            world.setBlockMetadataWithNotify(x, y, z, meta, 2);
+        }
+    }
+
+    /** @return the meta of every chest placement, by complex-local cell */
+    private static java.util.Map<Long, Integer> chestMetas(java.util.List<Placement> all) {
+        java.util.Map<Long, Integer> m = new java.util.HashMap<Long, Integer>();
+        for (Placement p : all) {
+            if (p.kind() == Placement.Kind.CHEST) m.put(cellKey(p.x(), p.y(), p.z()), CHEST_META[p.facing() & 3]);
+        }
+        return m;
+    }
+
+    private static long cellKey(int x, int y, int z) {
+        return ((long) x << 40) ^ ((long) (y & 0xFF) << 32) ^ (z & 0xFFFFFFFFL);
+    }
+
+    /** The four horizontal neighbors: north, south, west, east. */
+    private static final int[] NEIGHBOR_DX = { 0, 0, -1, 1 };
+    private static final int[] NEIGHBOR_DZ = { -1, 1, 0, 0 };
 
     /**
      * Gives a generated machine its default modes, as GT's own placement does: owner first (the claim in

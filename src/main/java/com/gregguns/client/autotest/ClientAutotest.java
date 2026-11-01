@@ -352,6 +352,8 @@ public final class ClientAutotest {
             case "see" -> holdWait = new AutotestCommands.SeeWait(args[0]);
             case "cblock" -> AutotestCommands.logBlock(args);
             case "cstate" -> StateProbe.log(args);
+            case "rerender" -> Minecraft.getMinecraft().renderGlobal.loadRenderers();
+            case "chat" -> Minecraft.getMinecraft().thePlayer.sendChatMessage(String.join(" ", args));
             case "sync" -> AutotestCommands.syncAck();
             case "fxstats" -> AutotestCommands.fxStats(args);
             case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);

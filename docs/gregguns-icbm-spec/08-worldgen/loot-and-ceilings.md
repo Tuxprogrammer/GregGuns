@@ -22,6 +22,7 @@ A whole complex holds exactly **100** loot chests when abandoned, **200** when p
   4. Inside a room, the chests spread evenly through the blueprint's spot order (`floor((i + 0.5) x spots / chests)`), so they are not bunched at one end.
 - **Left-over spots** become an empty wooden crate (Chisel's crate planks in the room's wood, `chisel:<wood>_planks` meta 10, vanilla planks without Chisel).
 - **Pure and window-safe.** The answer depends on the plan, the level and the room states only, so every populate window agrees.
+- **Per plan, not per world.** The budget cannot see terrain. A chosen chest in a column the terrain cuts off (D207) is not written, so a complex under a valley or a lake holds fewer than the target (D345).
 
 ## Room tables (`SiloLootTables`)
 

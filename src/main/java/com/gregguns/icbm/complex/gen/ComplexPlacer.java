@@ -575,9 +575,13 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
         if (tagSink != null) tagSink.as(RoleAudit.SIGNS);
-        // The silo numbers belong to the silo, so the shell pass writes them (shell-only runs read them back too).
-        ComplexSigns.writeSilos(cp, ax, floorY, az, new QuietSink(masked ? new ColumnMaskSink(sink, mask) : sink));
+        // The signs go through the cut-off mask too (D207): no sign hangs in rock, water or valley air where no room
+        // was built. The silo numbers belong to the silo, so the shell pass writes them (shell-only runs read them
+        // back too).
+        WindowedSink signs = new QuietSink(masked ? new ColumnMaskSink(sink, mask) : sink);
+        ComplexSigns.writeSilos(cp, ax, floorY, az, signs);
         if (contents) {
+            final boolean[] cut = mask;
             ComplexApplier applier = new ComplexApplier(
                 new QuietSink(under),
                 world,
@@ -587,17 +591,21 @@ public final class ComplexPlacer implements ComplexWriter {
                 plan.chestSeedBase(),
                 plan.cellX(),
                 plan.cellZ(),
-                ceilingOf(plan)).withLamps(st::litLamp);
-            for (Placement p : contentsOf(plan, cp)) {
+                ceilingOf(plan)).withLamps(st::litLamp)
+                    .withColumns(masked ? (x, z) -> !cut[ColumnMaskSink.index(window, x, z)] : null);
+            java.util.List<Placement> placements = contentsOf(plan, cp);
+            for (Placement p : placements) {
                 if (tagUnder != null)
                     tagUnder.as(p.kind() == Placement.Kind.LIGHT ? RoleAudit.LIGHT : RoleAudit.CONTENTS);
                 applier.apply(p);
             }
+            // A chest turns itself and the chest beside it as it is placed: their facings go back on once all are in.
+            applier.settleChests(placements);
             if (tagUnder != null) tagUnder.as(RoleAudit.CONTENTS);
             // The blast doors and service runs (D335 to D337), clipped to the window.
             new FixtureWriter(new QuietSink(under), ax, floorY, az, ceilingOf(plan), st::doorPlate)
                 .write(fixturesOf(plan, raster));
-            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(plan), new QuietSink(sink));
+            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(plan), signs);
         }
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;

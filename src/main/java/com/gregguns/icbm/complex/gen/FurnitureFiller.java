@@ -39,7 +39,10 @@ public final class FurnitureFiller implements MarkFiller {
         int facing = mark.facing() & 3;
         PropBlocks.Ref prop = PropBlocks.block(mark.key(), facing);
         if (prop != null) {
-            sink.setBlock(x, y, z, prop.block, prop.meta);
+            if (sink.setBlock(x, y, z, prop.block, prop.meta) && world != null && aimsItself(prop.block)) {
+                // The block turned itself by its neighbors as it was placed; the piece faces the way its mark does.
+                world.setBlockMetadataWithNotify(x, y, z, prop.meta, 2);
+            }
             if (p == FurniturePiece.MYCELIUM_BED) {
                 PropBlocks.Ref m = PropBlocks.mushroom(mark.key());
                 sink.setBlock(x, y + 1, z, m.block, m.meta);
@@ -57,6 +60,38 @@ public final class FurnitureFiller implements MarkFiller {
         int wood = FurniturePiece.woodOf(mark.key());
         if (BiblioFurniture.place(world, sink, p, wood, facing, x, y, z)) return;
         if (p.seat()) sink.setBlock(x, y, z, stairs(wood), stairMeta(facing));
+    }
+
+    /**
+     * @param b a block
+     * @return whether the block picks its own facing from its neighbors when it is placed (a vanilla furnace, chest,
+     *         dispenser or dropper), so the meta it was written with must be written again (D345)
+     */
+    public static boolean aimsItself(Block b) {
+        return b == Blocks.furnace || b == Blocks.lit_furnace
+            || b == Blocks.chest
+            || b == Blocks.trapped_chest
+            || b == Blocks.dispenser
+            || b == Blocks.dropper;
+    }
+
+    /**
+     * Whether a cell holds the block this filler (or the contents pass, for a lit furnace) writes for a piece, so its
+     * stock goes into the piece and not into a container that was there before (D345).
+     *
+     * @param b     the block standing in the cell
+     * @param piece the piece's name ({@link FurniturePiece#name()}) or mark key
+     * @return whether {@code b} is one of the piece's blocks: its BiblioCraft block, its prop block, or a furnace of
+     *         either state
+     */
+    public static boolean placed(Block b, String piece) {
+        FurniturePiece p = FurniturePiece.of(piece);
+        if (b == null || p == null) return false;
+        String name = BiblioFurniture.registryName(p);
+        if (name != null && BiblioFurniture.loaded() && b == BiblioFurniture.block(name)) return true;
+        if (p == FurniturePiece.FURNACE) return b == Blocks.furnace || b == Blocks.lit_furnace;
+        PropBlocks.Ref prop = PropBlocks.block(piece, 0);
+        return prop != null && b == prop.block;
     }
 
     /** @return the vanilla stair of a wood: oak, spruce, birch, jungle, acacia, dark oak */

@@ -47,5 +47,6 @@ public final class IcbmClientModule implements ClientModule {
         MissileBodyItemRenderer.register();
         WarheadItemRenderer.register();
         InertWarheadItemRenderer.register();
+        GarageDoorRedraw.install();
     }
 }
