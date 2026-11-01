@@ -50,6 +50,8 @@ public final class KeepRule {
         pair("minecraft:lit_redstone_ore", "minecraft:redstone_ore");
         pair("minecraft:flowing_water", "minecraft:water");
         pair("minecraft:flowing_lava", "minecraft:lava");
+        // Et Futurum Requiem swaps vanilla coarse dirt (dirt meta 1) for its own block.
+        pair("etfuturum:coarse_dirt", "minecraft:dirt");
     }
 
     private static void pair(String state, String base) {

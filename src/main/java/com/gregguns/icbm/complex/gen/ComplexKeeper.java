@@ -130,8 +130,9 @@ public final class ComplexKeeper {
     private long keptChunks, checkedCells, setBack, spentNanos, recordNanos;
     /** What the cells set back held, by block name (the first 64 names), for the log and the real-pack check. */
     private final Map<String, Long> replaced = new LinkedHashMap<String, Long>();
-    /** The first cells set back since boot, as "x,y,z kept<-was", for the real-pack check. */
+    /** Up to three cells set back since boot per pair of blocks, as "x,y,z kept<-was", for the real-pack check. */
     private final List<String> examples = new java.util.ArrayList<String>();
+    private final Map<String, Integer> examplePairs = new HashMap<String, Integer>();
 
     ComplexKeeper(MachineHook machines, Store store) {
         this.machines = machines;
@@ -406,7 +407,10 @@ public final class ComplexKeeper {
                 Long c = replaced.get(was);
                 replaced.put(was, c == null ? 1L : c + 1L);
             }
-            if (examples.size() < 200) {
+            String pair = keptName + "<-" + was;
+            Integer seen = examplePairs.get(pair);
+            if ((seen == null || seen < 3) && examples.size() < 400) {
+                examplePairs.put(pair, seen == null ? 1 : seen + 1);
                 examples.add(x + "," + y + "," + z + " " + keptName + ":" + keptMeta + "<-" + was + ":" + nowMeta);
             }
             world.setBlock(x, y, z, kept, keptMeta, 2);
