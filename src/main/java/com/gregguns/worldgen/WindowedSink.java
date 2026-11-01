@@ -16,6 +16,15 @@ public interface WindowedSink {
     /** Writes a block; returns false (and counts a rejection) when the column is outside the window. */
     boolean setBlock(int x, int y, int z, Block block, int meta);
 
+    /**
+     * Puts a block's meta back to {@code meta} when the block standing there is {@code block}, without placing it again
+     * (a chest or furnace turns itself when placed, D351). Same clipping as {@link #setBlock}, but not counted. The
+     * default writes the block again, which is enough for a sink that does not turn blocks.
+     */
+    default boolean restoreMeta(int x, int y, int z, Block block, int meta) {
+        return window().contains(x, z) && setBlock(x, y, z, block, meta);
+    }
+
     /** Attaches a tile entity at the position; same clipping as {@link #setBlock}. */
     boolean setTile(int x, int y, int z, TileEntity tile);
 
@@ -32,6 +41,11 @@ public interface WindowedSink {
     interface Target {
 
         void setBlock(int x, int y, int z, Block block, int meta);
+
+        /** As {@link WindowedSink#restoreMeta}, unclipped; the default writes the block again. */
+        default void restoreMeta(int x, int y, int z, Block block, int meta) {
+            setBlock(x, y, z, block, meta);
+        }
 
         void setTile(int x, int y, int z, TileEntity tile);
 

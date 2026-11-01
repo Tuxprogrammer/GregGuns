@@ -76,6 +76,29 @@ class StructureCatalogTest {
         assertEquals(4, f.sizeZ());
     }
 
+    /** D351: every land structure carves its site and carries the bank as its apron; ships and the nest opt out. */
+    @Test
+    void landStructuresCarveTheirSiteAndReachOverTheBank() {
+        for (StructureId s : StructureId.values()) {
+            StructureCatalog.SiteRule want = StructureCatalog.isWater(s) ? StructureCatalog.SiteRule.OPEN_WATER
+                : s == StructureId.ALIEN_BUG_NEST ? StructureCatalog.SiteRule.UNDERGROUND
+                    : StructureCatalog.SiteRule.CARVE;
+            assertEquals(want, StructureCatalog.siteRule(s), s.id());
+        }
+        assertEquals(StructureCatalog.SiteRule.CARVE, StructureCatalog.siteRule(null), "an unknown layout carves");
+        Map<SizeClass, List<PoolEntry>> pools = StructureCatalog
+            .pools(registry("factory_small", "big_bunker", "submarine"), s -> true, true, true);
+        for (List<PoolEntry> pool : pools.values()) {
+            for (PoolEntry e : pool) {
+                StructureCatalog.SiteRule rule = StructureCatalog.siteRule(StructureCatalog.byId(e.id()));
+                int want = rule == StructureCatalog.SiteRule.CARVE ? SitePrep.BANK : 0;
+                if (e.sized()) want = com.gregguns.worldgen.camp.PlacedCamp.REACH;
+                assertEquals(want, e.apron(), e.id());
+            }
+        }
+        assertTrue(com.gregguns.worldgen.camp.PlacedCamp.REACH >= SitePrep.BANK, "the camp's reach covers its bank");
+    }
+
     @Test
     void disabledStructuresAreLeftOut() {
         Map<SizeClass, List<PoolEntry>> pools = StructureCatalog

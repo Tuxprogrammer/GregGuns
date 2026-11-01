@@ -15,6 +15,7 @@ import com.gregguns.worldgen.camp.CampWriter;
 import com.gregguns.worldgen.camp.PlacedCamp;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.LayoutRegistry;
+import com.gregguns.worldgen.layout.MarkListener;
 import com.gregguns.worldgen.layout.Rotations;
 import com.gregguns.worldgen.layout.StampPlan;
 import com.gregguns.worldgen.layout.Stamper;
@@ -34,7 +35,7 @@ import com.gregguns.worldgen.nest.NestPlan;
 // Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (GGS-11-08 to GGS-11-15); fixes WGEN-04, 05, 06, 15, 26
 public final class StructurePopulator {
 
-    /** Largest land height spread a footprint may have before it is rejected (also the flatten band). */
+    /** Largest land height spread a footprint's sampled columns may have before it is rejected. */
     public static final int LAND_MAX_DIFF = 8;
     /** Sample spacing for the terrain checks; the far edge is always sampled (WGEN-15). */
     public static final int SAMPLE_STEP = 4;
@@ -115,6 +116,7 @@ public final class StructurePopulator {
     private final LayoutRegistry layouts;
     private final Stamper stamper;
     private final Block fill;
+    private Block deep;
     private final Block air;
     private final Rules rules;
     private final CampWriter camps;
@@ -126,8 +128,8 @@ public final class StructurePopulator {
      * @param grid    the seeded plans
      * @param layouts the loaded layouts
      * @param stamper writes a layout into a window
-     * @param fill    the block that raises low columns (dirt)
-     * @param air     the block that cuts high columns
+     * @param fill    the upper foundation block under a site (dirt, {@link SitePrep})
+     * @param air     the block that clears a site
      * @param rules   per-structure settings
      */
     public StructurePopulator(StructureGrid grid, LayoutRegistry layouts, Stamper stamper, Block fill, Block air,
@@ -148,8 +150,20 @@ public final class StructurePopulator {
         this.layouts = layouts;
         this.stamper = stamper;
         this.fill = fill;
+        this.deep = fill;
         this.air = air;
         this.rules = rules;
+    }
+
+    /**
+     * Sets the block of a site's foundation deeper than {@link SitePrep#SOIL_DEPTH} under the ground (stone in the
+     * world); without it the whole foundation is {@code fill}.
+     *
+     * @return this
+     */
+    public StructurePopulator withDeepFill(Block block) {
+        this.deep = block;
+        return this;
     }
 
     /**
@@ -434,14 +448,15 @@ public final class StructurePopulator {
                 layout.sizeZ(),
                 plan.rotation());
             boolean water = id != null && StructureCatalog.isWater(id);
+            // A window that only touches the bank around the box cannot sample the footprint, so it must not decide:
+            // it waits for a record (one populated first misses its strip of bank; accepted, as the camp road tails).
+            if (state.get(PlanKey.of(plan)) == null && !window.overlapsBox(fp.minX(), fp.minZ(), fp.maxX(), fp.maxZ()))
+                continue;
             HeightProbe probe = new WindowedHeightProbe(window, reader);
             Decision d = state.decideOnce(
                 PlanKey.of(plan),
                 () -> decide(layout.sizeY() - layout.ground(), id, water, fp, window, reader, probe, biomes));
             if (!d.isPlaced()) continue;
-            if (!water) {
-                shapeLand(sink, probe, reader, window, fp, d.groundY());
-            }
             StampPlan sp = new StampPlan(
                 layout,
                 plan.anchorX(),
@@ -449,9 +464,17 @@ public final class StructurePopulator {
                 plan.anchorZ(),
                 plan.rotation(),
                 plan.variant());
+            if (StructureCatalog.siteRule(id) == StructureCatalog.SiteRule.CARVE) {
+                // A dry run names the cells the layout writes; the site prep leaves them to it.
+                SitePrep.Own own = new SitePrep.Own();
+                stamper.write(new ClippingSink(window, own), sp, window);
+                // A buried layout (the Big Bunker) also gets a foundation under its lowest layer.
+                prepareSite(sink, reader, fp, d.groundY(), d.groundY() + 1 - layout.ground(), SitePrep.NONE, own);
+            }
             String key = PlanKey.of(plan);
+            // A chest or furnace keeps its layout facing whatever stands beside it yet (FacingKeeper).
             int written = stamper.write(
-                sink,
+                new FacingKeeper(sink),
                 sp,
                 window,
                 (tag, x, y, z) -> mark(plan, id, key, tag, x, y, z, chestIndex(sp, x, y, z), marks));
@@ -496,11 +519,16 @@ public final class StructurePopulator {
         if (!d.isPlaced() || cp == null) return 0;
         PlacedCamp camp = cp.place(plan.anchorX(), d.groundY() + 1, plan.anchorZ(), plan.rotation());
         if (!camp.overlaps(window)) return 0;
-        shapeLand(sink, probe, reader, window, fp, d.groundY());
         // Camo comes from the biome at the base center (WGEN-32), read without loading a chunk.
         StructureBiomes.CampColor color = StructureBiomes
             .campColor(biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2));
-        int written = camps.write(sink, camp, window, color, (tag, x, y, z) -> {
+        // A dry run names the cells the camp writes (the flag's too); the site prep leaves them to it. The road tails
+        // past the fence are level: they get a foundation and a clear cut through the bank.
+        SitePrep.Own own = new SitePrep.Own();
+        camps.write(new ClippingSink(window, own), camp, window, color, MarkListener.NONE);
+        own.setBlock(camp.flagPos().x, camp.flagPos().y, camp.flagPos().z, flagBlock, 0);
+        prepareSite(sink, reader, fp, d.groundY(), d.groundY(), camp::isRoad, own);
+        int written = camps.write(new FacingKeeper(sink), camp, window, color, (tag, x, y, z) -> {
             // The flag is the post-step's; camp parts carry only chest and spawner marks. The chest index is
             // the position hash, so a chest's seed does not depend on which window reports it (GGS-11-20).
             if (tag.equals("flag")) return;
@@ -588,17 +616,26 @@ public final class StructurePopulator {
         return Decision.placed(r.y);
     }
 
-    /** Flattens the footprint columns of this window to the recorded height and clears trees above them. */
-    private void shapeLand(WindowedSink sink, HeightProbe probe, ColumnReader reader, PopulateWindow window,
-        PlacedFootprint fp, int groundY) {
-        TerrainShaper.apply(sink, Flatten.planToBand(probe, fp, groundY, LAND_MAX_DIFF), fill, 0, air);
-        for (int x = Math.max(fp.minX(), window.minX()); x <= Math.min(fp.maxX(), window.maxX()); x++) {
-            for (int z = Math.max(fp.minZ(), window.minZ()); z <= Math.min(fp.maxZ(), window.maxZ()); z++) {
-                for (int y : TerrainShaper.junkY(window, reader, x, z)) {
-                    sink.setBlock(x, y, z, air, 0);
-                }
-            }
-        }
+    /**
+     * Carves and founds the window's part of a land structure's site at the recorded ground: foundation under,
+     * clearance over, a bank around ({@link SitePrep}, the general rule of D351). The structure is written after.
+     */
+    private void prepareSite(WindowedSink sink, ColumnReader reader, PlacedFootprint fp, int groundY, int floorY,
+        SitePrep.Columns extra, SitePrep.Own own) {
+        SitePrep.apply(
+            sink,
+            reader,
+            fp.minX(),
+            fp.minZ(),
+            fp.maxX(),
+            fp.maxZ(),
+            groundY,
+            floorY,
+            extra,
+            own,
+            fill,
+            deep,
+            air);
     }
 
     private void mark(StructurePlan plan, StructureId id, String planKey, String tag, int x, int y, int z,

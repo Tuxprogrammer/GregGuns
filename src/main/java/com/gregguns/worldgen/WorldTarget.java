@@ -23,6 +23,14 @@ public final class WorldTarget implements WindowedSink.Target {
     }
 
     @Override
+    public void restoreMeta(int x, int y, int z, Block block, int meta) {
+        // Meta only: placing the block again would run its onBlockAdded, which turns a chest or furnace once more.
+        if (world.getBlock(x, y, z) == block && world.getBlockMetadata(x, y, z) != meta) {
+            world.setBlockMetadataWithNotify(x, y, z, meta, 2);
+        }
+    }
+
+    @Override
     public void setTile(int x, int y, int z, TileEntity tile) {
         world.setTileEntity(x, y, z, tile);
     }

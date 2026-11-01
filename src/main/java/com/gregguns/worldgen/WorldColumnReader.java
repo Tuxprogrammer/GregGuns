@@ -59,7 +59,9 @@ public final class WorldColumnReader implements ColumnReader {
         if (m == Material.wood || block.isWood(world, x, y, z)) {
             return BlockKind.WOOD;
         }
+        // Snow blocks (crafted-snow material) are natural cover on snowy slopes: ground, so a site clears them.
         if (m == Material.ground || m == Material.grass
+            || m == Material.craftedSnow
             || m == Material.rock
             || m == Material.sand
             || m == Material.clay) {
