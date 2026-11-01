@@ -89,14 +89,22 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids where NPCs spawn naturally. |
-| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. `zombies`, `military` and `bandits` gate natural spawning; `miniBosses` and `mutants` also refuse eggs, camps and spawners. |
-| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. `alienBug` and `cyberdemon` refuse the egg, camp and spawner spawns; `helicopter` gates the camp and Camp Flag helicopter. |
+| `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids that use the Overworld spawn table. A dimension in no spawn list has no natural NPC spawns. |
+| `npcs.netherSpawnDimensions` | int list | `[-1]` | any | no | Dimension ids that use the Nether spawn table (Zombie Pigman Soldiers, Super Mutants, the Cyberdemon), in Nether biomes. |
+| `npcs.endSpawnDimensions` | int list | `[1]` | any | no | Dimension ids that use the End spawn table (Commando squads), in End biomes. |
+| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. `zombies` (with the Nether's Pigman Soldier), `military` (with the End's Commandos) and `bandits` gate natural spawning; `miniBosses` (Psycho Steve, and Dictator Dave at red bases) and `mutants` also refuse eggs, camps and spawners. |
+| `npcs.alienBug` / `cyberdemon` / `outcast` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. `alienBug`, `cyberdemon` and `outcast` refuse every spawn of their mob (natural, egg, camp and spawner); `helicopter` gates the camp and Camp Flag helicopter. |
 | `npcs.weightZombieFarmer` / `weightZombieMiner` | int | `100` | 0 to 10000 | no | Spawn weights (half of Techguns). |
 | `npcs.weightZombieSoldier` / `weightSkeletonSoldier` | int | `50` | 0 to 10000 | no | Spawn weights. |
 | `npcs.weightBandit` | int | `25` | 0 to 10000 | no | Spawn weight. |
 | `npcs.weightPsychoSteve` | int | `1` | 0 to 10000 | no | Spawn weight. |
-| `npcs.distanceLevel0` / `1` / `2` | int | `500` / `1000` / `2500` | 0 to 100000 | no | Blocks from world spawn where each distance danger step begins. |
+| `npcs.weightNetherPigmanSoldier` | int | `15` | 0 to 10000 | no | Nether spawn weight of the Zombie Pigman Soldier, anywhere in the Nether. |
+| `npcs.weightNetherMutantBasic` / `Heavy` / `Elite` | int | `6` / `3` / `2` | 0 to 10000 | no | Nether spawn weights of the Super Mutants, from Nether danger 2, 3 and 4. |
+| `npcs.weightNetherCyberdemon` | int | `1` | 0 to 10000 | no | Nether spawn weight of the Cyberdemon, from Nether danger 4, always alone. |
+| `npcs.weightEndCommando` | int | `1` | 0 to 10000 | no | End spawn weight of a Commando squad of 2 to 3. |
+| `npcs.endMinDistance` | int | `256` | 0 to 100000 | no | No natural NPC spawns closer than this to the End's center. |
+| `npcs.bossSpacing` | int | `128` | 0 to 1024 | no | A natural Cyberdemon does not spawn while another is within this many blocks. |
+| `npcs.distanceLevel0` / `1` / `2` | int | `500` / `1000` / `2500` | 0 to 100000 | no | Blocks from world spawn where each distance danger step begins. The Nether counts its distance times 8 and adds 1; the End counts from its center and adds 2. |
 | `npcs.perChunkCap` | int | `4` | 0 to 256 | no | Most NPCs per chunk before natural spawning stops. |
 | `npcs.perPlayerCap` | int | `8` | 0 to 1024 | no | Most NPCs around one player before natural spawning stops. |
 | `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
@@ -116,6 +124,7 @@ Structure placement, gating and loot tuning (M8). Read only while `modules.world
 | `worldgen.enabled<Id>` | boolean | `true` | n/a | no | Place that structure. |
 | `worldgen.biomeBlacklist<Id>` | string list | none | any | no | BiomeDictionary type names in which that structure is never placed. |
 | `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot table of each chest kind (supply, weapon, reinforced), and with it the tier of the guns, ammo, parts and GT metals in it. |
+| `worldgen.redBaseChanceMilitaryBase` | int | `20` | 0 to 100 | no | Percent of Military Bases that are red: red flag, pad and standards, and Dictator Dave at his post. The rest are blue. |
 | `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; adds picks to every chest and weight to the table's top-tier lines. Guns keep their weight, so a richer chest holds more ammo and gear, not more guns. |
 
 ## Damage factors (`damagefactors`)
