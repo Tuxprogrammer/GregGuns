@@ -194,22 +194,30 @@ public final class MissileRecipes {
     }
 
     /**
-     * The metal of the compressed plates comes back from a T1 or T2 body (GT's own amount for the item); the
-     * Galacticraft fins and engine, the T3 body's heavy duty plates and the computer have no GT metal data.
+     * The metal of the plates comes back from a body. A T1 or T2 body returns its compressed plates (GT's own amount
+     * for
+     * the item). The T3 body's Galacticraft Heavy Duty Plates Tier 4 carry no GT metal data, so it returns four
+     * compressed Tungstensteel plates, the metal of the LuV band they are built in (D343); the fins, the engine and the
+     * computer carry none either and return nothing.
      */
     private static void recycle(MissileBuildSpec spec) {
         Item body = MissileBodies.item(MissileTier.byNumber(spec.number()));
-        if (body == null || spec.plates()
-            .src() != Ing.Src.GT) {
-            return; // the T3 body's heavy duty plates carry no GT metal data, as the fins and engine do not
+        if (body == null) {
+            return;
         }
-        Materials main = Materials.get(
-            spec.plates()
-                .id()
-                .substring(
-                    spec.plates()
-                        .id()
-                        .indexOf(':') + 1));
+        Materials main;
+        if (spec.plates()
+            .src() == Ing.Src.GT) {
+            main = Materials.get(
+                spec.plates()
+                    .id()
+                    .substring(
+                        spec.plates()
+                            .id()
+                            .indexOf(':') + 1));
+        } else {
+            main = Materials.TungstenSteel;
+        }
         ItemData data = new ItemData(
             new MaterialStack(
                 main,
