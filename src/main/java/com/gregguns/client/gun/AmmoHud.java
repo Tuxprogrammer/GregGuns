@@ -111,8 +111,16 @@ public final class AmmoHud {
                     "gregguns.hud.rounds",
                     roundColor.toString() + state.loaded() + EnumChatFormatting.RESET,
                     stats.magazineSize()));
-            int magazines = new PlayerAmmoStore(player).count(stats.ammoType());
+            PlayerAmmoStore store = new PlayerAmmoStore(player);
+            int magazines = store.count(stats.ammoType());
             lines.add(StatCollector.translateToLocalFormatted("gregguns.hud.magazines", magazines));
+            if (stats.loadsSingleRounds()) {
+                // The loose rounds a magazine gun loads one at a time when no magazine is at hand (design 0026).
+                int loose = store.count(stats.looseAmmoType());
+                if (loose > 0) {
+                    lines.add(StatCollector.translateToLocalFormatted("gregguns.hud.loose_rounds", loose));
+                }
+            }
         }
         if (reloading) {
             lines.add(

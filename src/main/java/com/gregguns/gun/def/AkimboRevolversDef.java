@@ -16,7 +16,8 @@ import com.gregguns.recipe.AkimboRecipes;
  * Spec: sheets-handguns-smgs.md, "Akimbo Revolvers", section 3: damage 8 falling to 6 between 12 and 20 blocks,
  * lifetime 25 ticks at 1.5 blocks per tick, spread 0.035, semi-auto every 4 ticks, alternating hands, 12 rounds loaded
  * straight from two 9mm bullet items (no magazine, no empty container), 70 tick reload, AI range 18 / attack time 90 /
- * burst 6 / delay 20, recoil 6 ticks and muzzle flash 5 ticks.
+ * burst 6 / delay 20, recoil 6 ticks and muzzle flash 5 ticks. Deviation (design record 0026): the pair loads one
+ * chamber at a time across both guns, 70 / 12 ticks each, from one shared chamber credit.
  *
  * <p>
  * Recipe: crafting table only (GGS-02-07), two Revolvers shapeless, and one Akimbo Revolvers splits back into two. The
@@ -36,7 +37,7 @@ public final class AkimboRevolversDef {
         .fire(FireMode.SEMI, 4)
         .magazine(12)
         .ammoType(AmmoIds.NINE_MM)
-        .reloadMode(ReloadMode.MAGAZINE, 2)
+        .reloadMode(ReloadMode.CHAMBER, 2)
         .reloadTicks(70)
         .projectile(1.5, 25)
         .penetration(0)

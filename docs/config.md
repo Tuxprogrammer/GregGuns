@@ -255,6 +255,14 @@ Server side of aim down sights. Read on the server; none is synced.
 | `aim.adsEnabled` | boolean | `true` | n/a | no | Lets sights-only guns aim on a right-click. Off: the server ignores the request and drops a running aim. Scope zoom is unaffected. |
 | `aim.adsSpreadMultiplier` | float | `0.75` | 0.0 to 1.0 | no | Multiplier on spread while aiming a gun with no scope zoom of its own (0.75 is 25 percent tighter). A scoped gun keeps its own zoom multiplier. |
 
+## Guns (`guns`)
+
+Server side of gun handling. Read on the server; none is synced, because the server starts every reload and the client animates its reload message.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `guns.idleReloadDelayTicks` | int | `40` | 0 to 1200 | no | Ticks a held chamber gun (Revolvers, Golden Revolvers, Combat Shotgun, Sawed Off) goes without a shot, a trigger pull or a reload before it loads its empty chambers by itself, when the player carries its ammo. A trigger pull stops it. `0` turns the idle reload off. Design record [0026](design/0026-single-round-and-chamber-reloads.md). |
+
 ## Questbook (`questbook`)
 
 Server only. The key is in the in-game config GUI and in `config/gregguns.cfg`. (The `debug` category is hidden from the GUI and edited in the file.)

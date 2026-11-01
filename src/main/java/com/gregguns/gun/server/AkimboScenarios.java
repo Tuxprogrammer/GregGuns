@@ -16,6 +16,7 @@ import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.gun.logic.AkimboNbt;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunStats;
+import com.gregguns.gun.logic.ReloadMode;
 import com.gregguns.item.gun.GunItems;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -126,7 +127,9 @@ public final class AkimboScenarios {
                 + " ticks from two ammo items: the clip fills to "
                 + def.stats()
                     .magazineSize()
-                + " and, for a magazine gun, two empty magazines come back.";
+                + (def.stats()
+                    .reloadMode() == ReloadMode.CHAMBER ? ", one chamber at a time across both guns."
+                        : " and, for a magazine gun, two empty magazines come back.");
         }
 
         @Override
@@ -150,7 +153,11 @@ public final class AkimboScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(started, "the dry trigger should have started a reload");
-                out.checkEquals("rounds one tick before the end", 0, loadedAt[reloadTicks - 1]);
+                boolean chambers = stats.reloadMode() == ReloadMode.CHAMBER;
+                out.checkEquals(
+                    "rounds one tick before the end",
+                    chambers ? stats.magazineSize() - 1 : 0,
+                    loadedAt[reloadTicks - 1]);
                 out.checkEquals("rounds at the end of the reload", stats.magazineSize(), loadedAt[reloadTicks]);
                 out.checkEquals("ammo items left", 0, rig.count(stats.ammoType()));
                 if (stats.emptyContainerType() != null) {
@@ -177,6 +184,11 @@ public final class AkimboScenarios {
 
         @Override
         public String description() {
+            if (def.stats()
+                .reloadMode() == ReloadMode.CHAMBER) {
+                return "The reload key on a " + def.name()
+                    + " missing 3 rounds loads the 3 empty chambers from one 9mm bullet, refunds nothing and keeps the bullet's other 3 rounds as chamber credit: the single gun's rate.";
+            }
             return "The reload key on a part-loaded " + def.name()
                 + " swaps both ammo items and refunds one loose round per "
                 + GunItems.roundsPerLooseItem(def.stats())
@@ -201,7 +213,16 @@ public final class AkimboScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(started, "the reload key should start a forced reload");
-                out.checkEquals("rounds after the swap", stats.magazineSize(), rig.loaded());
+                out.checkEquals("rounds after the reload", stats.magazineSize(), rig.loaded());
+                if (stats.reloadMode() == ReloadMode.CHAMBER) {
+                    out.checkEquals("bullets left (one paid for three chambers)", 1, rig.count(stats.ammoType()));
+                    out.checkEquals(
+                        "chamber credit",
+                        stats.roundsPerItem() - 3,
+                        GunNbt.read(rig.gun.getTagCompound(), stats)
+                            .credit());
+                    return out.build();
+                }
                 out.checkEquals("loose rounds refunded", loaded / perItem, rig.count(stats.looseAmmoType()));
                 if (stats.emptyContainerType() != null) {
                     out.checkEquals("empty magazines returned", 2, rig.count(stats.emptyContainerType()));

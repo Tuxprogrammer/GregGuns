@@ -19,9 +19,10 @@ import com.gregguns.recipe.ProductionTable.Row;
  * Spec: sheets-rifles-shotguns.md, "Combat Shotgun", section 3: 4 damage per pellet falling to 1.5 between 2 and 5
  * blocks, lifetime 15 ticks at 1.5 blocks per tick, spread 0.01, 7 extra pellets at spread 0.15 (8 projectiles in
  * all, one round per shot), 15% armor penetration, full-auto every 14 ticks, 8 rounds, 50 tick reload, AI range 12 /
- * attack time 30 / no burst, recoil 12 ticks and muzzle flash 5 ticks. It loads shell by shell: up to 8 shells per
- * reload, one round each, and the rounds already in the gun stay (so a forced reload tops up). The pump works after
- * every shot, which plays the rechamber sound.
+ * attack time 30 / no burst, recoil 12 ticks and muzzle flash 5 ticks. It loads shell by shell, one round each, and
+ * the rounds already in the gun stay. Deviation (design record 0026): each shell takes its own share of the reload
+ * time (50 / 8 ticks) and goes in at the end of it, so a trigger pull mid-reload fires the shells loaded so far. The
+ * pump works after every shot, which plays the rechamber sound.
  *
  * <p>
  * Recipe (recipes.md, MV table): Hardened Steel Barrel, Steel Receiver, Plastic Gun Stock, 2 steel sticks (the pump
@@ -43,7 +44,7 @@ public final class CombatShotgunDef {
         .fire(FireMode.AUTO, 14)
         .magazine(8)
         .ammoType(AmmoIds.SHOTGUN_SHELL)
-        .reloadMode(ReloadMode.INCREMENTAL, 8)
+        .reloadMode(ReloadMode.CHAMBER, 8)
         .reloadTicks(50)
         .projectile(1.5, 15)
         .penetration(0.15)

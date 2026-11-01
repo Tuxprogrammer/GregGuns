@@ -16,7 +16,8 @@ import com.gregguns.recipe.AkimboRecipes;
  * Spec: sheets-handguns-smgs.md, "Akimbo Golden Revolvers", section 3: damage 16 falling to 6 between 15 and 30
  * blocks, lifetime 25 ticks at 1.5 blocks per tick, spread 0.035, semi-auto every 6 ticks, alternating hands, 12 rounds
  * loaded straight from two 9mm bullet items (no magazine, no empty container), 70 tick reload, AI range 24 / attack
- * time 60 / burst 6 / delay 15, recoil 8 ticks and muzzle flash 5 ticks.
+ * time 60 / burst 6 / delay 15, recoil 8 ticks and muzzle flash 5 ticks. Deviation (design record 0026): the pair
+ * loads one chamber at a time across both guns, as the Akimbo Revolvers do.
  *
  * <p>
  * Deviation: none in the numbers. The pair does 16 damage against the single gun's 14, which is a Techguns quirk the
@@ -39,7 +40,7 @@ public final class AkimboGoldenRevolversDef {
         .fire(FireMode.SEMI, 6)
         .magazine(12)
         .ammoType(AmmoIds.NINE_MM)
-        .reloadMode(ReloadMode.MAGAZINE, 2)
+        .reloadMode(ReloadMode.CHAMBER, 2)
         .reloadTicks(70)
         .projectile(1.5, 25)
         .penetration(0)
