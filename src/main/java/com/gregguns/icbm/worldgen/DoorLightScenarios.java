@@ -67,6 +67,9 @@ public final class DoorLightScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
+            if (!com.gregguns.core.module.ModuleState.isActive(com.gregguns.core.module.ModuleId.ICBM)) {
+                return ScenarioResult.skip(name(), com.gregguns.icbm.IcbmAvailability.offReason());
+            }
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final World world = ctx.world();
             final Block door = FixtureWriter.garageDoor();
@@ -122,6 +125,9 @@ public final class DoorLightScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
+            if (!com.gregguns.core.module.ModuleState.isActive(com.gregguns.core.module.ModuleId.ICBM)) {
+                return ScenarioResult.skip(name(), com.gregguns.icbm.IcbmAvailability.offReason());
+            }
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final World world = ctx.world();
             final Block door = FixtureWriter.garageDoor();

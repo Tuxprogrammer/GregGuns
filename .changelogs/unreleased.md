@@ -50,7 +50,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - **Fallout.** Nuclear strikes leave Irradiated Earth, and the strongest ones leave Trinitite and Fallout Goo, which GT machines process into a small share of the core's fuel. The **Antidote** clears radiation sickness and gas effects.
 - **Launcher warheads.** Craft a warhead charge onto the Rocket Launcher, Grim Reaper, Grenade Launcher or Nuke Launcher; NEI's **Launcher Loading** page shows which loads where.
 - **Abandoned silo complexes** on the Overworld and on every Galacticraft, GalaxySpace and Amun-Ra planet with solid ground: an underground base about 240 by 240 blocks across, 24 blocks down, with a 51 by 40 hub, three or four major halls behind blast doors, 35 to 40 rooms from 32 room kinds, and a silo gallery of 4 to 10 real silos, each missing one part for you to put back. Three activity levels (Alpha, Bravo, Charlie) set how ruined, lit, stocked and guarded a complex is. The loot ceiling rises with the planet's rocket tier, from EV on the Overworld and the Moon to UMV, and is rolled per complex on Ross128.
-- **Guides and quests.** Nine ICBM guide sheets (ICBM banner, Warheads, Heavy Warheads, ICBM Recipes, Your First Missile, Missile Silo, Detection and Defense, Fallout, Abandoned Silos) and the ICBM quests in the GregGuns questbook tab.
+- **Guides and quests.** Ten ICBM guide sheets (ICBM banner, Warheads, Heavy Warheads, ICBM Recipes, Your First Missile, Missile Silo, Detection and Defense, Fallout, Abandoned Silos, Computer Control) and the ICBM quests in the GregGuns questbook tab.
 
 ## Changed since the alpha
 
@@ -83,6 +83,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - No recipe takes both Industrial TNT and Plastic Explosive: payloads carry no explosive, and the launcher warheads take only Plastic Explosive.
 - Scrapping a bare inert warhead in the Cutting Machine returns its plates, fuze, nose cone and hull plates; the arming electronics are spent. Macerating or arc smelting a warhead also returns its fuze's metal.
 - New ICBM quest: De-arming.
+- Gas clouds (chemical, debilitation, contagious, smoke) are a thick, clearly colored haze that reads at a glance from a distance, on grass as well as on stone.
 
 ### Silo complexes
 
@@ -108,6 +109,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - **GT recycling for nearly every GregGuns item, block and machine,** returning the materials of the cheapest recipe that makes it. Not recyclable on purpose: coins, spawn eggs, fallout, silo complex walls, world blocks from structures, cloth, leather and wooden parts, the Antidote, launcher warheads and guidance chips.
 - **GregGuns Coins and the Vending Machine.** A GregGuns Coin in five values, and 176 trades in the pack's Vending Machine priced in coins by tier, unlocked by each tier's intro quest when the quest line is installed. Spawn eggs are offered only for NPC kinds that can spawn under the server's config.
 - **Quest loot bags.** GregGuns quests reward GregGuns EnhancedLootBags bags (ids 1701 to 1714): eight tier bags, Spoils of War and the ICBM Ordnance crates.
+- In single player with `compat.lootBags` off, a GregGuns loot bag says why it cannot open instead of "try again".
 - **Tanned Leather.** GregGuns armor, its repairs, the Night Vision Goggles, the Ammo Pouch and the glider parts take the pack's Tanned Leather; mobs and loot bags drop it.
 - **Nuclear Power Cell.** The Nuclear Death Ray takes one as its power core; the cell recipe makes one cell from half the materials. The cell, the Small Nuclear Warhead and the Rad Emitter are radioactive to carry without full hazmat.
 - **Structure loot.** Structure chests hold a range of pack loot as well as GregGuns gear; guns are rarer and ammo common, and a gun always comes with some of its ammo. Fuel and Bio Tanks in chests are full.
@@ -153,7 +155,6 @@ Soaked on the GTNH 2.9.0-RC-2 server pack with every module on, at the default c
 - **T Ceti E** (an ocean world) has no complexes.
 - **Spawners are slow to mine.** GregTech makes every mob spawner very hard, so a guard spawner takes a long time to break by hand. A warhead destroys it.
 - **Blast doors stop a walk, not a pickaxe.** Their slats are thin and break quickly. A GT cable or lever placed beside a door can open or shut it, as with any Carpenter's door.
-- The T1 chemical gas cloud is faint against grass.
 - The T3 conventional warheads share the T1 model at full size.
 - Everything listed for [0.3.3-beta](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) still applies.
 
