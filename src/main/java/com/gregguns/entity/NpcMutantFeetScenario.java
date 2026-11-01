@@ -106,6 +106,7 @@ final class NpcMutantFeetScenario implements Scenario {
         EnumDifficulty prior = world.difficultySetting;
         world.difficultySetting = EnumDifficulty.NORMAL;
         long priorTime = world.getWorldTime();
+        player.playerNetServerHandler.setPlayerLocation(ox + 0.5, oy, oz - 7.5, 0.0F, 12.0F);
         SuperMutantBasic[] mutants = new SuperMutantBasic[TIERS.length];
         ScenarioResult.Builder out = ScenarioResult.builder(NAME);
         for (int i = 0; i < TIERS.length; i++) {
@@ -118,6 +119,8 @@ final class NpcMutantFeetScenario implements Scenario {
                 continue;
             }
             SuperMutantBasic m = (SuperMutantBasic) e;
+            // A mob more than 128 blocks from every player despawns on its first tick; the player is still far off.
+            m.func_110163_bv();
             m.tasks.taskEntries.clear();
             m.targetTasks.taskEntries.clear();
             m.setAttackTarget(null);
