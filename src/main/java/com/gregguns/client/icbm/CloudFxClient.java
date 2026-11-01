@@ -21,8 +21,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Animates the blast clouds the server announces ({@code PacketBlastCloud}): each client tick, every running cloud
- * spawns a bounded handful of vanilla smoke particles, small, translucent and varied in size and brightness, tinted per
- * gas kind, scattered through the cloud's sphere (or
+ * spawns a bounded handful of vanilla smoke particles, translucent and varied in size and brightness, tinted per gas
+ * kind, scattered through the cloud's sphere (or
  * up a rising column for the plume). The particles are added to the effect renderer directly, because the world's own
  * {@code spawnParticle} drops anything farther than 16 blocks from the camera, which would hide a large cloud seen from
  * outside. Counts come from {@link CloudPlan}, are scaled down by the player's particle setting, and a cloud far from
@@ -119,7 +119,7 @@ public final class CloudFxClient {
             @Override
             public void onUpdate() {
                 super.onUpdate();
-                // Vanilla shrinks the sprite to a dot with age; a haze keeps its full puff (CloudPlan.puffFrame).
+                // Vanilla shrinks the sprite to a dot with age; a gas puff keeps its full shape (CloudPlan.puffFrame).
                 setParticleTextureIndex(CloudPlan.puffFrame(c.kind, particleAge, particleMaxAge));
                 // Soft edges in time: thin, and fading in and out, so puffs blend instead of popping.
                 setAlphaF(alpha * CloudPlan.fade(particleAge, particleMaxAge));
