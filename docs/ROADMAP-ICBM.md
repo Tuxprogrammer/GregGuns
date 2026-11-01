@@ -350,11 +350,11 @@ The one owner review before the beta.
 **Entry gate:** I0–I6 done.
 
 **Exit gate:**
-- [ ] A completeness audit of I0–I6: every exit box is met or deferred with a recorded reason.
-- [ ] A batched client pass with no crash or invisible-render bugs.
-- [ ] The visuals gallery holds every ICBM visual so far, and the review guide links it.
-- [ ] Tag `0.4.0-alpha-pre` as a pre-release, with `modules.icbm` still off by default. The notes give the owner a review guide: what to enable, a test world, and what to look at.
-- [ ] The owner has reviewed it once, and their notes are written up as the I7 fix list.
+- [x] A completeness audit of I0–I6: every exit box is met or deferred with a recorded reason.
+- [x] A batched client pass with no crash or invisible-render bugs.
+- [x] The visuals gallery holds every ICBM visual so far, and the review guide links it.
+- [x] Tag `0.4.0-alpha-pre` as a pre-release, with `modules.icbm` still off by default. The notes give the owner a review guide: what to enable, a test world, and what to look at.
+- [x] The owner has reviewed it once, and their notes are written up as the I7 fix list.
 
 ## I7 · Hardening
 
@@ -378,13 +378,13 @@ The one owner review before the beta.
 - **Modeled radar (D125, owner, pre-beta):** the single-block HV and EV radars give way to a small radar multiblock whose formed controller spawns a spinning dish (an entity or a TESR, like the silo doors). The Radar Tower gets the same dish. Look for an NTM dish model first (D47). The old blocks 20142 and 20143 convert in place (D190).
 
 **Exit gate:**
-- [ ] The fix list is closed.
+- [x] The fix list is closed. The owner's alpha play sessions were fixed in batches 6–8 (D297–D326) and played on their server.
 - [x] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
-- [ ] The soak runs meet the playable bar (D332): nothing crashes or runs away, the server comes back near its baseline after every burst, and no chunk ticket or forced chunk is left. Lag while 10 or more blasts run is accepted. See [soak.md](gregguns-icbm-spec/01-core/soak.md).
+- [x] The soak runs meet the playable bar (D332): nothing crashes or runs away, the server comes back near its baseline after every burst, and no chunk ticket or forced chunk is left. Lag while 10 or more blasts run is accepted. See [soak.md](gregguns-icbm-spec/01-core/soak.md).
 - [x] The recipe-clash review finds no unresolved clash with ICBM content. Evidence: [icbm-recipe-clash-review.md](gregguns-spec/08-machines-production/icbm-recipe-clash-review.md), exact 0 on a real-pack dump, rerun on the balance pass recipes (D340).
-- [ ] Every ICBM guide sheet matches the code after the balance pass.
+- [x] Every ICBM guide sheet matches the code after the balance pass. The sheets were rebuilt from the real-pack recipe export after the tier fixes (D343), and `icbm-computer-control` was added (D347).
 - [x] `modules.icbm` defaults to on (D339). Evidence: `IcbmModuleRulesTest`, `ModulesConfig`, and the no-Galacticraft boot still logs "turns itself off" once (D46).
-- [ ] The milestone review fix list is closed.
+- [x] The milestone review fix list is closed. Four area reviews, fixed by F1–F6 (D342–D347). The beta checkpoint passed on both halves of the full suite (D68).
 
 ## Beta gate · 0.4.0-beta
 
