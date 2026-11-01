@@ -234,14 +234,19 @@ final class NpcMutantFeetScenario implements Scenario {
                 continue;
             }
             GregGuns.LOG.info(
-                "[mutant-feet] {} {} posY={} boxMinY={} floorTop={} onGround={} limbSwingAmount={}",
+                "[mutant-feet] {} {} posY={} boxMinY={} floorTop={} onGround={} limbSwingAmount={} dead={} age={} inWorld={}"
+                    + " difficulty={}",
                 when,
                 TIERS[i],
                 String.format("%.4f", m.posY),
                 String.format("%.4f", m.boundingBox.minY),
                 floorTop,
                 m.onGround,
-                String.format("%.3f", m.limbSwingAmount));
+                String.format("%.3f", m.limbSwingAmount),
+                m.isDead,
+                m.ticksExisted,
+                m.worldObj.loadedEntityList.contains(m),
+                m.worldObj.difficultySetting);
         }
     }
 
