@@ -86,6 +86,17 @@ public final class ComplexPlacer implements ComplexWriter {
 
     private Styles.Factory styles = Styles.Factory.NONE;
     private SiloMouthKeeper mouths;
+    private ComplexKeeper keeper;
+
+    /**
+     * @param keeper where each window records what it wrote, so a later generator's changes are set back (D348):
+     *               {@link ComplexKeeper#game()} in the game, an in-memory one in a scenario, none (null) in unit tests
+     * @return this
+     */
+    public ComplexPlacer withKeeper(ComplexKeeper keeper) {
+        this.keeper = keeper;
+        return this;
+    }
 
     /**
      * @param keeper where each silo's mouth is recorded for its finish (D319): {@link SiloMouthKeeper#game()} in the
@@ -510,6 +521,10 @@ public final class ComplexPlacer implements ComplexWriter {
             }
         }
         int[] seal = sealFloors(raster, probe, window, floorY, mask, x0, x1, z0, z1, ax, az);
+        // The keep (D348): every pass below writes through the recorder, and what the window leaves is read back at
+        // the end, so the generators that run after it (GregTech's ore veins last of all) cannot keep what they change.
+        ComplexKeeper.Recorder recorder = keeper != null && world != null ? keeper.recorder(sink) : null;
+        if (recorder != null) sink = recorder;
         WindowedSink under = masked ? new ColumnMaskSink(sink, mask) : sink;
         Styles st = stylesOf(plan);
         // The role audit (D267): tag every write with the pass that made it, then read the complex back once its
@@ -607,6 +622,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 .write(fixturesOf(plan, raster));
             ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), levelOf(plan), signs);
         }
+        if (recorder != null) keeper.capture(world, recorder);
         if (summarize(plan, floorY, window, n, maskedColumns, sink) && auditKey != null) RoleAudit.complete(auditKey);
         return n;
     }

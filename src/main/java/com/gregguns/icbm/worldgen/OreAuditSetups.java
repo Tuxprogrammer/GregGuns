@@ -276,6 +276,21 @@ public final class OreAuditSetups {
         };
     }
 
+    /** @return the game keeper's totals since boot, in words */
+    private static String keepStats() {
+        long[] s = com.gregguns.icbm.complex.gen.ComplexKeeper.game()
+            .stats();
+        return s[0] + " chunks kept, "
+            + s[1]
+            + " cells checked, "
+            + s[2]
+            + " set back, keeping "
+            + s[3] / 1_000_000L
+            + " ms, recording "
+            + s[4] / 1_000_000L
+            + " ms";
+    }
+
     /** Kinds of cell the audit counts, by where in the complex they lie. */
     private enum Where {
         LEVEL,
@@ -380,7 +395,7 @@ public final class OreAuditSetups {
             + ore[Where.SHAFT.ordinal()]
             + ore[Where.LADDER.ordinal()];
         GregGuns.LOG.info(
-            "ORE audit cell {},{} anchor {},{} floor {} level {} silos {}: ore in complex cells {} ({}), unloaded columns {}, cut-off columns {}",
+            "ORE audit cell {},{} anchor {},{} floor {} level {} silos {}: ore in complex cells {} ({}), unloaded columns {}, cut-off columns {}; keep: {} records pending, {}",
             cellX,
             cellZ,
             ax,
@@ -393,7 +408,10 @@ public final class OreAuditSetups {
             sum.toString()
                 .trim(),
             unloaded,
-            cutOff);
+            cutOff,
+            com.gregguns.icbm.complex.gen.ComplexKeeper.game()
+                .pendingCount(world),
+            keepStats());
         if (examples.length() > 0) GregGuns.LOG.info("ORE audit examples:{}", examples);
     }
 
