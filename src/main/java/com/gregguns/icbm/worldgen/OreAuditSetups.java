@@ -150,6 +150,14 @@ public final class OreAuditSetups {
                     return true;
                 };
             }
+            case "keepwhy":
+                return w -> {
+                    GregGuns.LOG.info(
+                        "ORE keep waiting: {}",
+                        com.gregguns.icbm.complex.gen.ComplexKeeper.game()
+                            .waiting(w));
+                    return true;
+                };
             case "keepexamples":
                 return w -> {
                     List<String> ex = com.gregguns.icbm.complex.gen.ComplexKeeper.game()

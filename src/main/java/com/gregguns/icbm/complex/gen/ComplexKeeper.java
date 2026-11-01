@@ -287,6 +287,33 @@ public final class ComplexKeeper {
     }
 
     /**
+     * Why each of a world's records still waits, for the log and the real-pack check: the first unmet condition of
+     * {@link #ready}.
+     *
+     * @return counts by reason: "record chunk unloaded", "a writing chunk unloaded", "a writing chunk unpopulated",
+     *         "GregTech ore job queued", "ready"
+     */
+    public Map<String, Integer> waiting(World world) {
+        Map<String, Integer> out = new java.util.TreeMap<String, Integer>();
+        Set<Long> gtQueued = GtOreQueue.queuedChunks(world);
+        IChunkProvider p = world.getChunkProvider();
+        for (KeptChunk k : records(world).values()) {
+            String why = p.chunkExists(k.chunkX(), k.chunkZ()) ? "ready" : "record chunk unloaded";
+            for (int cx = reachMin(k.chunkX()); cx <= reachMax(k.chunkX()) && "ready".equals(why); cx++) {
+                for (int cz = reachMin(k.chunkZ()); cz <= reachMax(k.chunkZ()) && "ready".equals(why); cz++) {
+                    if (!p.chunkExists(cx, cz)) why = "a writing chunk unloaded";
+                    else if (!world.getChunkFromChunkCoords(cx, cz).isTerrainPopulated)
+                        why = "a writing chunk unpopulated";
+                    else if (gtQueued.contains(key(cx, cz))) why = "GregTech ore job queued";
+                }
+            }
+            Integer n = out.get(why);
+            out.put(why, n == null ? 1 : n + 1);
+        }
+        return out;
+    }
+
+    /**
      * Drops a chunk's record without keeping it: a rebuild clears the chunk and writes the complex again, and the
      * write records afresh.
      */
