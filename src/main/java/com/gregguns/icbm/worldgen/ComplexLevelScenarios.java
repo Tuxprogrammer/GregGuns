@@ -584,7 +584,8 @@ public final class ComplexLevelScenarios {
                 switch (p.kind()) {
                     case SPAWNER:
                         t.spawners++;
-                        if (p.spawner() == SpawnerKind.SILO_ELITE) t.elite++;
+                        if (p.spawner() != null && p.spawner()
+                            .isEliteSiloPost()) t.elite++;
                         else t.guard++;
                         NBTTagCompound st = VanillaSpawners.read(world.getTileEntity(x, y, z));
                         if (b != Blocks.mob_spawner || st == null

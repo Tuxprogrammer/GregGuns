@@ -269,6 +269,32 @@ class ComplexContentsTest {
     }
 
     @Test
+    void eliteSpawnersBecomeCommandPostsFromLuV() {
+        assertEquals(SpawnerKind.SILO_ELITE, ComplexContents.elitePost(4));
+        assertEquals(SpawnerKind.SILO_ELITE, ComplexContents.elitePost(5));
+        assertEquals(SpawnerKind.SILO_COMMAND, ComplexContents.elitePost(6));
+        assertEquals(SpawnerKind.SILO_COMMAND, ComplexContents.elitePost(12));
+        int ivElite = 0;
+        int luvCommand = 0;
+        for (long s = 0; s < 40; s++) {
+            ComplexPlan plan = ComplexLayout.generate(s, 9, 9);
+            for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 5, null)) {
+                if (p.kind() == Kind.SPAWNER) {
+                    assertTrue(p.spawner() != SpawnerKind.SILO_COMMAND, "no Outcast post below LuV");
+                    ivElite += p.spawner() == SpawnerKind.SILO_ELITE ? 1 : 0;
+                }
+            }
+            for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 6, null)) {
+                if (p.kind() == Kind.SPAWNER) {
+                    assertTrue(p.spawner() != SpawnerKind.SILO_ELITE, "every LuV elite post is a command post");
+                    luvCommand += p.spawner() == SpawnerKind.SILO_COMMAND ? 1 : 0;
+                }
+            }
+        }
+        assertTrue(ivElite > 0 && luvCommand == ivElite, "same posts, other kind: " + ivElite + " " + luvCommand);
+    }
+
+    @Test
     void salvageChestsHoldADamagedBody() {
         boolean body = false;
         for (long s = 0; s < 40; s++) {
