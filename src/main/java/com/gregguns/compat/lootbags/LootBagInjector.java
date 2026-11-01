@@ -199,6 +199,27 @@ public final class LootBagInjector {
     }
 
     /**
+     * The guard's test. A group with no drops is the client-safe header that {@link #ensureClientSafe()} adds: in
+     * single player the client and the server share ELB's list, so the header is in the server's list too, and ELB
+     * would answer a use with "try again" instead of opening anything.
+     *
+     * @param id a group id
+     * @return true if ELB's local list has a group with this id that has at least one drop
+     */
+    public static synchronized boolean canOpen(int id) {
+        if (elb == null) return false;
+        try {
+            for (Object g : elb.table(elb.localGroups())) {
+                if (elb.id(g) == id && !elb.drops(g)
+                    .isEmpty()) return true;
+            }
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            GregGuns.LOG.error("Could not read EnhancedLootBags' groups", e);
+        }
+        return false;
+    }
+
+    /**
      * Puts back every GregGuns group ELB's local list lost (after {@code /lootbags reload}). Does nothing with
      * {@code compat.lootBags} off.
      *
@@ -249,6 +270,11 @@ public final class LootBagInjector {
             ensurePresent();
             return;
         }
+        addStubs();
+    }
+
+    /** Appends an empty header for each GregGuns group ELB's local list lacks. */
+    private static void addStubs() {
         try {
             List<Object> stubs = new ArrayList<>();
             for (LootBagGroups.Group h : headers) {
@@ -305,6 +331,32 @@ public final class LootBagInjector {
      */
     public static synchronized void suspendForTest(boolean value) {
         suspended = value;
+    }
+
+    /**
+     * Scenario hook: adds the client-safe empty headers to ELB's local list, as {@link #ensureClientSafe()} does with
+     * {@code compat.lootBags} off (in single player that list is the server's too).
+     */
+    public static synchronized void stubForTest() {
+        if (elb != null) addStubs();
+    }
+
+    /**
+     * Scenario hook: takes every group in the GregGuns id range out of ELB's local list (ours and stubs alike).
+     *
+     * @return true if the list changed
+     */
+    public static synchronized boolean removeReservedForTest() {
+        if (elb == null) return false;
+        try {
+            List<Object> reserved = new ArrayList<>();
+            for (Object g : elb.table(elb.localGroups())) {
+                if (LootBagGroups.isReservedId(elb.id(g))) reserved.add(g);
+            }
+            return elb.replaceLocal(Collections.emptyList(), reserved);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
