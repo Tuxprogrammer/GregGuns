@@ -38,6 +38,7 @@ public final class NpcScenarios {
         SoldierScenarios.registerAll(registry);
         EnergySoldierScenarios.registerAll(registry);
         NpcSpawnScenarios.registerAll(registry);
+        NpcRealmScenarios.registerAll(registry);
         ZombieScenarios.registerAll(registry);
         BanditScenarios.registerAll(registry);
         UndeadScenarios.registerAll(registry);

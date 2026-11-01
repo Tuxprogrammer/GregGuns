@@ -195,16 +195,18 @@ final class CyberDemonScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             boolean prior = NpcConfig.cyberdemon;
             out.check(prior, "the cyberdemon flag should default to on");
-            out.check(CyberDemonRules.canSpawnAt(-1, true), "Nether with the flag on");
-            out.check(!CyberDemonRules.canSpawnAt(-1, false), "Nether with the flag off");
-            out.check(!CyberDemonRules.canSpawnAt(0, true), "Overworld with the flag on");
-            out.check(!CyberDemonRules.canSpawnAt(1, true), "End with the flag on");
+            int[] nethers = { CyberDemonRules.NETHER };
+            out.check(CyberDemonRules.canSpawnAt(-1, nethers, true), "Nether with the flag on");
+            out.check(!CyberDemonRules.canSpawnAt(-1, nethers, false), "Nether with the flag off");
+            out.check(!CyberDemonRules.canSpawnAt(0, nethers, true), "Overworld with the flag on");
+            out.check(!CyberDemonRules.canSpawnAt(1, nethers, true), "End with the flag on");
             ctx.clearArea(4, 4);
             CyberDemon demon = new CyberDemon(ctx.world());
             demon.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
             ctx.spawn(demon);
             try {
-                boolean nether = ctx.world().provider.dimensionId == CyberDemonRules.NETHER;
+                boolean nether = CyberDemonRules
+                    .canSpawnAt(ctx.world().provider.dimensionId, NpcConfig.netherSpawnDimensions, true);
                 NpcConfig.cyberdemon = true;
                 if (!nether) {
                     out.check(!demon.getCanSpawnHere(), "outside the Nether it may not spawn even with the flag on");

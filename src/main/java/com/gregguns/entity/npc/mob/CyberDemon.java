@@ -15,9 +15,9 @@ import com.gregguns.entity.npc.loot.NpcProfiles;
  *
  * <p>
  * Gear: spawned by egg, command or camp it rolls its profile, which is the Nether Blaster only; loaded from save data
- * it keeps what it was saved with. Spawning: {@link #getCanSpawnHere()} is the Nether-only, flag-gated check
- * ({@link CyberDemonRules}); eggs and commands skip it. Deviation: Techguns spawned it naturally in the Nether;
- * design 0005 does not. Both sides; the AI runs on the server.
+ * it keeps what it was saved with. Spawning: a rare boss of the Nether spawn table, deep in the Nether and one at a
+ * time (D353); {@link #getCanSpawnHere()} is the Nether-only, flag-gated check ({@link CyberDemonRules}); eggs and
+ * commands skip it. Both sides; the AI runs on the server.
  */
 // Spec: docs/techguns-spec/10-entities-npcs/per-mob.md (11. Cyberdemon), BUGS NPC-06 (aggro sound not reproduced)
 public class CyberDemon extends NpcEntity {
@@ -68,7 +68,8 @@ public class CyberDemon extends NpcEntity {
 
     @Override
     public boolean getCanSpawnHere() {
-        return CyberDemonRules.canSpawnAt(worldObj.provider.dimensionId, NpcConfig.cyberdemon)
+        return CyberDemonRules
+            .canSpawnAt(worldObj.provider.dimensionId, NpcConfig.netherSpawnDimensions, NpcConfig.cyberdemon)
             && super.getCanSpawnHere();
     }
 

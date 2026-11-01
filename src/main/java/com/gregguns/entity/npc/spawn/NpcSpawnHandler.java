@@ -1,7 +1,10 @@
 package com.gregguns.entity.npc.spawn;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -27,66 +30,99 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 
 /**
  * Natural NPC spawning. {@link #registerSpawns} adds the real NPC classes to the vanilla {@code monster} spawn lists
- * (so they share the monster cap, GGS-10-25, and the pack can retune them with EnderZoo, GGS-10-27). The
- * {@code CheckSpawn} handler then denies a candidate that fails {@link SpawnGate} (dimension, faction flag, danger,
- * caps), and the {@code SpecialSpawn} handler gives a freshly spawned NPC its danger and rolls its equipment with it.
- * No placeholder entity exists (GGS-10-26). Eggs and camps do not pass through here. Server side.
+ * of their realm's biomes (so they share the monster cap, GGS-10-25, Mobs Info lists their biomes, and the pack can
+ * retune them with EnderZoo, GGS-10-27): the Overworld rows in every biome that is neither Nether nor End, the Nether
+ * rows in the Nether biomes and the End rows in the End biomes (Hardcore Ender Expansion's End keeps other mods' rows
+ * with its pack config, {@code overrideBiomeMobs=false}). The {@code CheckSpawn} handler then denies a candidate that
+ * fails {@link SpawnGate} (realm, faction flag, danger, the End keep-out, caps, boss spacing), and the
+ * {@code SpecialSpawn} handler gives a freshly spawned NPC its danger and rolls its equipment with it. No placeholder
+ * entity exists (GGS-10-26). Eggs and camps do not pass through here. Server side.
  *
  * <p>
  * Usage: {@code NpcSpawnHandler.registerSpawns()} in postInit; register an instance on the Forge event bus.
  */
-// Spec: docs/gregguns-spec/10-entities-npcs/spawning.md (GGS-10-23 to GGS-10-27),
+// Spec: docs/gregguns-spec/10-entities-npcs/spawning.md (GGS-10-23 to GGS-10-27, GGS-10-41 to GGS-10-43),
 // docs/techguns-spec/10-entities-npcs/spawning.md (1.3)
+// Source: Hardcore Ender Expansion 1.12.28-GTNH swaps the End biome in preInit and keeps other mods' monster rows
+// unless overrideBiomeMobs is on (the pack has it off):
+// https://github.com/GTNewHorizons/Hardcore-Ender-Expansion/blob/1.12.28-GTNH/src/main/java/chylex/hee/world/DimensionOverride.java#L27-L33
+// https://github.com/GTNewHorizons/Hardcore-Ender-Expansion/blob/1.12.28-GTNH/src/main/java/chylex/hee/world/biome/BiomeGenHardcoreEnd.java#L29-L43
 public final class NpcSpawnHandler {
 
-    private static final int GROUP_MIN = 1;
-    private static final int GROUP_MAX = 2;
-
     /**
-     * Registers every natural-spawn mob that is enabled, has weight above 0 and is bound to a class, in every biome
-     * except the Nether and End ones. Mobs not implemented yet are skipped. Call once in postInit.
+     * Registers every natural-spawn row that is enabled, has weight above 0 and is bound to a class, in the biomes of
+     * its realm. Mobs not implemented yet are skipped. Call once in postInit.
      */
     public static void registerSpawns() {
         SpawnTable table = SpawnTable.build(SpawnTable.Settings.fromConfig(), NpcRegistry::isRegistered);
-        List<BiomeGenBase> biomes = new ArrayList<>();
-        for (BiomeGenBase b : BiomeGenBase.getBiomeGenArray()) {
-            if (b != null && !BiomeDictionary.isBiomeOfType(b, Type.NETHER)
-                && !BiomeDictionary.isBiomeOfType(b, Type.END)) {
-                biomes.add(b);
-            }
+        Map<SpawnRealm, BiomeGenBase[]> biomes = new EnumMap<>(SpawnRealm.class);
+        for (SpawnRealm realm : SpawnRealm.values()) {
+            biomes.put(realm, biomesOf(realm));
         }
-        BiomeGenBase[] array = biomes.toArray(new BiomeGenBase[0]);
         for (SpawnTable.Entry e : table.entries()) {
             Class<? extends EntityLiving> clazz = NpcRegistry.boundClass(e.mob());
-            if (clazz != null) {
-                EntityRegistry.addSpawn(clazz, e.weight(), GROUP_MIN, GROUP_MAX, EnumCreatureType.monster, array);
+            BiomeGenBase[] array = biomes.get(e.realm());
+            if (clazz != null && array.length > 0) {
+                EntityRegistry.addSpawn(clazz, e.weight(), e.groupMin(), e.groupMax(), EnumCreatureType.monster, array);
                 GregGuns.LOG.debug(
-                    "Spawn: {} weight {} in {} biomes",
+                    "Spawn: {} weight {} in {} {} biomes",
                     e.mob()
                         .fullName(),
                     e.weight(),
-                    array.length);
+                    array.length,
+                    e.realm());
             }
         }
+    }
+
+    /**
+     * @param realm a realm
+     * @return the registered biomes whose spawn lists hold that realm's rows
+     */
+    public static BiomeGenBase[] biomesOf(SpawnRealm realm) {
+        List<BiomeGenBase> out = new ArrayList<>();
+        for (BiomeGenBase b : BiomeGenBase.getBiomeGenArray()) {
+            if (b != null && realmOfBiome(b) == realm) {
+                out.add(b);
+            }
+        }
+        return out.toArray(new BiomeGenBase[0]);
+    }
+
+    private static SpawnRealm realmOfBiome(BiomeGenBase b) {
+        if (BiomeDictionary.isBiomeOfType(b, Type.NETHER)) {
+            return SpawnRealm.NETHER;
+        }
+        return BiomeDictionary.isBiomeOfType(b, Type.END) ? SpawnRealm.END : SpawnRealm.OVERWORLD;
     }
 
     /**
      * @param world a world
      * @param x     block X
      * @param z     block Z
-     * @return the spawn danger 0 to 5 there: distance from the world spawn plus the biome
+     * @return the spawn danger 0 to 5 there: by the rule of the dimension's realm ({@link SpawnRealm#danger}); a
+     *         dimension in no spawn list (a planet with a silo complex) uses the Overworld rule
      */
     public static int dangerAt(World world, double x, double z) {
-        ChunkCoordinates spawn = world.getSpawnPoint();
-        double dx = x - spawn.posX;
-        double dz = z - spawn.posZ;
-        int distance = SpawnDanger.distance(
-            Math.sqrt(dx * dx + dz * dz),
+        SpawnRealm realm = SpawnRealm.of(world.provider.dimensionId, SpawnRealm.Dimensions.fromConfig());
+        double distance;
+        if (realm == SpawnRealm.END) {
+            distance = Math.sqrt(x * x + z * z);
+        } else {
+            ChunkCoordinates spawn = world.getSpawnPoint();
+            // In the Nether the spawn point is the Overworld's (shared world info): measure where the spot leads.
+            double scale = realm == SpawnRealm.NETHER ? SpawnRealm.NETHER_SCALE : 1.0;
+            double dx = x - spawn.posX / scale;
+            double dz = z - spawn.posZ / scale;
+            distance = Math.sqrt(dx * dx + dz * dz);
+        }
+        BiomeGenBase biome = world.getBiomeGenForCoords((int) Math.floor(x), (int) Math.floor(z));
+        return (realm == null ? SpawnRealm.OVERWORLD : realm).danger(
+            distance,
+            biomeClass(biome).danger(),
             NpcConfig.distanceLevel0,
             NpcConfig.distanceLevel1,
             NpcConfig.distanceLevel2);
-        BiomeGenBase biome = world.getBiomeGenForCoords((int) Math.floor(x), (int) Math.floor(z));
-        return SpawnDanger.total(distance, biomeClass(biome).danger());
     }
 
     /**
@@ -150,26 +186,46 @@ public final class NpcSpawnHandler {
             return SpawnGate.Decision.NOT_MANAGED;
         }
         int danger = dangerAt(world, x, z);
-        int dim = world.provider.dimensionId;
-        // Cheap rules first: a pass with caps at 0 and no counting yields the rule-only answer.
+        SpawnRealm realm = SpawnRealm.of(world.provider.dimensionId, SpawnRealm.Dimensions.fromConfig());
+        double center = Math.sqrt(x * x + z * z);
+        SpawnGate.Limits limits = SpawnGate.Limits.fromConfig();
+        // Cheap rules first: a pass with no caps and nothing counted yields the rule-only answer.
         SpawnGate.Decision rules = SpawnGate
-            .decide(table, mob, dim, NpcConfig.spawnDimensions, danger, 0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+            .decide(table, mob, realm, danger, center, 0, 0, 0, SpawnGate.Limits.rulesOnly(limits.endMinDistance));
         if (rules != SpawnGate.Decision.ALLOW) {
             return rules;
         }
         int inChunk = NpcCounter.countInChunk(world, (int) Math.floor(x) >> 4, (int) Math.floor(z) >> 4);
         EntityPlayer near = world.getClosestPlayer(x, y, z, -1.0);
         int nearPlayer = near == null ? 0 : NpcCounter.countNearPlayer(world, near);
-        return SpawnGate.decide(
-            table,
-            mob,
-            dim,
-            NpcConfig.spawnDimensions,
-            danger,
-            inChunk,
-            nearPlayer,
-            NpcConfig.perChunkCap,
-            NpcConfig.perPlayerCap);
+        SpawnTable.Entry entry = table.entry(mob, realm);
+        int bosses = entry != null && entry.boss() ? bossesNear(world, mob, x, z, NpcConfig.bossSpacing) : 0;
+        return SpawnGate.decide(table, mob, realm, danger, center, inChunk, nearPlayer, bosses, limits);
+    }
+
+    /**
+     * Counts the loaded NPCs of one kind within a square of the given half-size around a spot, full height. Never
+     * loads a chunk (WGEN-27).
+     *
+     * @param world   the world
+     * @param mob     the kind
+     * @param x       block X
+     * @param z       block Z
+     * @param spacing the half-size, blocks
+     * @return how many stand there
+     */
+    public static int bossesNear(World world, NpcMob mob, double x, double z, int spacing) {
+        int bx = (int) Math.floor(x);
+        int bz = (int) Math.floor(z);
+        return NpcCounter.countInBox(
+            world,
+            Collections.singletonList(mob.registryName()),
+            bx - spacing,
+            0,
+            bz - spacing,
+            bx + spacing,
+            255,
+            bz + spacing);
     }
 
     /**
