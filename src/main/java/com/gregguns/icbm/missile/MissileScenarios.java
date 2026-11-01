@@ -50,6 +50,7 @@ public final class MissileScenarios {
         registry.register(new PadBreak());
         registry.register(new MissileShotsScenario());
         registry.register(new MissileShotsScenario(true));
+        registry.register(new GasGroundShotsScenario());
         registry.register(new MissileMpScenario());
         registry.register(new C3MpBlastScenario("testing.icbm_c3_mp_nuclear", MissileTier.T3, 3, "nuclear", 4, 400));
         registry
