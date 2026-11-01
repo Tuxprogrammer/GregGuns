@@ -22,6 +22,7 @@ import net.minecraft.block.BlockFenceGate;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.BlockLever;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.BlockRedstoneDiode;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.BlockSnow;
@@ -462,6 +463,7 @@ public final class ComplexKeeper {
             || b instanceof BlockRedstoneWire
             || b instanceof BlockRedstoneDiode
             || b instanceof BlockLeavesBase
+            || b instanceof BlockRailBase
             || b instanceof BlockCauldron
             || b instanceof BlockSnow) {
             return KeepRule.Kind.STATEFUL;

@@ -10,7 +10,8 @@ import java.util.Map;
  * <p>
  * A cell is intact when it holds the same block and meta. The same block with another meta is intact too when the
  * block changes its own meta in play: a tile entity's block (a chest's or a machine's facing; its contents are never
- * compared), a plant or crop that grows, a door or a lever, a liquid. A block that changes into its partner block in
+ * compared), a plant or crop that grows, a door or a lever, a rail that bends to meet its neighbor, a liquid. A block
+ * that changes into its partner block in
  * play (a lamp or furnace lighting up or going out, a torch, a repeater or comparator switching, flowing and still
  * liquid) is intact in either state; a tile entity's block that turned into another tile entity's block (Galacticraft's
  * landing pads forming one full pad) is intact; and so is a falling block (gravel rubble) that has fallen out of its
@@ -30,7 +31,7 @@ public final class KeepRule {
         PLAIN,
         /** Carries a tile entity: its block must match, its meta and contents are its own. */
         TILE,
-        /** Changes its own meta (grows, opens, switches): its block must match. */
+        /** Changes its own meta (grows, opens, switches, a rail bending to its neighbor): its block must match. */
         STATEFUL,
         /** A liquid: flows, so only the liquid matters. */
         LIQUID,
