@@ -26,6 +26,7 @@ public final class NpcScenarios {
         NpcGunDropScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
         NpcHoldShowcaseScenario.register(registry);
+        NpcMutantFeetScenario.register(registry);
         NpcSuperMutantScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
         NpcBossScenarios.registerAll(registry);
