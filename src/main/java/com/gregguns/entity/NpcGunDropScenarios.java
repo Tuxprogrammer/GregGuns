@@ -191,7 +191,7 @@ final class NpcGunDropScenarios {
         @Override
         public String description() {
             return "For every NPC-carried gun, 200 kills without a player: ammo, a full tank or recipe salvage on every"
-                + " death, in range; never the gun, never a battery.";
+                + " death, in range and within one stack; never the gun, never a battery.";
         }
 
         @Override
@@ -246,6 +246,10 @@ final class NpcGunDropScenarios {
                             if (!allowed.contains(s.getItem())) {
                                 bad++;
                                 out.check(false, name + " dropped " + s + ", not part of its rule");
+                            }
+                            if (s.stackSize > s.getMaxStackSize()) {
+                                bad++;
+                                out.check(false, name + " dropped " + s + ", more than one stack");
                             }
                             items += s.stackSize;
                             stacks++;

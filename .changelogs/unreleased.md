@@ -114,7 +114,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - **Nuclear Power Cell.** The Nuclear Death Ray takes one as its power core; the cell recipe makes one cell from half the materials. The cell, the Small Nuclear Warhead and the Rad Emitter are radioactive to carry without full hazmat.
 - **Structure loot.** Structure chests hold a range of pack loot as well as GregGuns gear; guns are rarer and ammo common, and a gun always comes with some of its ammo. Fuel and Bio Tanks in chests are full.
 - **Structures: calmer palettes.** Each structure is built from one material family; no more speckled walls or radiation-sign trim.
-- **NPC drops.** A player kill drops a copy of the NPC's gun at 2% plus 1% per Looting level (never from bosses), and every NPC drops rounds for its gun, or parts of an energy gun. Mobs Info lists the drops.
+- **NPC drops.** A player kill drops a copy of the NPC's gun at 2% plus 1% per Looting level (never from bosses), and every NPC drops a quarter to three quarters of a magazine of loose rounds for its gun (a Thompson gives 5 to 15 9mm bullets), a full tank, or parts of an energy gun. Zombie Farmers and Miners, Skeleton Soldiers, Zombie Pigman Soldiers and Super Mutants also drop ammo for their guns, Stormtroopers drop energy-weapon parts, and the Outcast has a full loot table. Mobs Info lists the drops.
 - **NPCs** carry their gun at the hip when idle, hold it muzzle forward, and their armor follows their arms. Structure spawner NPCs can roll Elite, Ultra or Infernal.
 - **Aim down sights** lines up on the Golden Gun, 9mm Pistol, Mac10, LMG, Thompson and Combat Shotgun.
 - The Minigun's barrels whine as they wind up and down.

@@ -16,8 +16,10 @@ import com.gregguns.armor.logic.ArmorCatalog;
  * registry names without the mod id.
  *
  * <p>
- * Item references: {@code mod:name} for a registered item, {@code ore:Name} for an ore dictionary entry (GT first, so
- * steel and rubber come from GregTech). A weapon that holds an item with a colon is a vanilla tool (hoe, shovel,
+ * Item references are {@link com.gregguns.worldgen.loot.LootCategories#stack} references: {@code mod:name} for a
+ * registered item, {@code ore:Name} for an ore dictionary entry (GT first, so steel and rubber come from GregTech),
+ * {@code gt:prefix.Material} for a GT material part, and a {@code ~full} suffix for a full tank. A weapon that holds an
+ * item with a colon is a vanilla tool (hoe, shovel,
  * pick); a bare name is a GregGuns gun.
  *
  * <p>
@@ -39,6 +41,19 @@ public final class NpcProfiles {
     private static final LootDrop NINE_MM = LootDrop.range(G + "ammo_9mm_bullet", 1, 3);
     private static final LootDrop STEEL_INGOT = LootDrop.one("ore:ingotSteel");
     private static final LootDrop CYBERNETIC = LootDrop.one(G + "part_cybernetic");
+    /** Stone bullets for a Hand Cannon carrier (Steam): a small handful (D349). */
+    private static final LootDrop STONE = LootDrop.range(G + "ammo_stone_bullet", 2, 6);
+    private static final LootDrop ROCKETS = LootDrop.range(G + "ammo_rocket", 1, 2);
+    /** A full Fuel Tank: the {@code ~full} suffix fills it, as structure loot does (LootCategories). */
+    private static final LootDrop FUEL_TANK = LootDrop.one(G + "tank_fuel~full");
+    private static final LootDrop BIO_TANK = LootDrop.one(G + "tank_bio~full");
+    // Energy-gun components (D349): the GregGuns parts of the Laser, Tesla and Blaster Rifle recipe trees.
+    private static final LootDrop LASER_BARREL = LootDrop.one(G + "part_barrel_laser");
+    private static final LootDrop LASER_FOCUS = LootDrop.one(G + "part_laser_focus");
+    private static final LootDrop CARBON_RECEIVER = LootDrop.one(G + "part_receiver_carbon");
+    private static final LootDrop HARDENED_RECEIVER = LootDrop.one(G + "part_receiver_hardened");
+    private static final LootDrop CARBON_STOCK = LootDrop.one(G + "part_stock_carbon");
+    private static final LootDrop MECHANICAL_3 = LootDrop.one(G + "part_mechanical_3");
 
     private static final Map<String, NpcProfile> ALL = build();
 
@@ -94,6 +109,7 @@ public final class NpcProfiles {
                         .slot(LootDrop.range("minecraft:leather", 1, 3))
                         .slot(LootDrop.range("minecraft:bread", 1, 2))
                         .slot(LootDrop.range("minecraft:apple", 1, 2))
+                        .slot(STONE)
                         .build())
                 .equipment(
                     EquipmentProfile.builder()
@@ -117,6 +133,7 @@ public final class NpcProfiles {
                         .slot(GUNPOWDER)
                         .slot(IRON)
                         .slot(LootDrop.one("minecraft:redstone"))
+                        .slot(STONE)
                         .build())
                 .equipment(
                     EquipmentProfile.builder()
@@ -142,6 +159,9 @@ public final class NpcProfiles {
                         .slot(LootDrop.range("minecraft:gunpowder", 1, 5))
                         .slot(LootDrop.range(G + "ammo_shotgun_shell", 1, 7))
                         .slot(RIFLE)
+                        .slot(NINE_MM)
+                        .slot(ROCKETS)
+                        .slot(FUEL_TANK)
                         .build())
                 .equipment(
                     EquipmentProfile.builder()
@@ -166,7 +186,11 @@ public final class NpcProfiles {
                     LootTable.builder()
                         .slot(LootDrop.range("minecraft:bone", 1, 2))
                         .slot(LootDrop.range("minecraft:coal", 1, 3))
+                        .slot(TANNED_LEATHER)
+                        .slot(IRON)
                         .slot(GUNPOWDER)
+                        .slots(LootDrop.range(G + "ammo_9mm_bullet", 1, 4), 2)
+                        .slot(STONE)
                         .build())
                 .equipment(
                     EquipmentProfile.builder()
@@ -247,10 +271,32 @@ public final class NpcProfiles {
                         .armor(3, 100, 0, "t2_commando")
                         .build())
                 .build());
-        // Outcast: no loot table (Techguns gives none); equipment can still drop. Power Armor camo 1 or 2 per piece.
+        // Outcast: Techguns gives it no table; ours (D349) pays a LuV mob for each of its guns (rifle bullets for the
+        // Minigun and LMG, rockets for the Grim Reaper, full tanks for the Flamethrower and Bio Gun, energy-gun parts
+        // for the Laser and Tesla), its Power Armor's plating, and LuV metals. Power Armor camo 1 or 2 per piece.
         add(
             m,
             NpcProfile.builder("Outcast", Tier.LUV)
+                .table(
+                    LootTable.builder()
+                        .slots(LootDrop.range(G + "ammo_rifle_bullet", 8, 24), 3)
+                        .slot(LootDrop.range(G + "ammo_rocket", 1, 3))
+                        .slot(FUEL_TANK)
+                        .slot(BIO_TANK)
+                        .slot(LASER_BARREL)
+                        .slot(CARBON_RECEIVER)
+                        .slot(CARBON_STOCK)
+                        .slot(MECHANICAL_3)
+                        .slot(LootDrop.one(G + "part_power_plating"))
+                        // Source:
+                        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L2224-L2228
+                        // the LuV machine casing is Rhodium-Plated Palladium plates. A bartworks material, so an
+                        // ore dictionary reference; its ore name keeps the hyphen (getVarName drops only spaces):
+                        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/system/material/Werkstoff.java#L527-L529
+                        .slots(LootDrop.range("ore:plateRhodium-PlatedPalladium", 1, 2), 2)
+                        .slots(LootDrop.range("gt:ingot.HSSG", 1, 2), 2)
+                        .slot(LootDrop.range("gt:plate.TungstenSteel", 1, 3))
+                        .build())
                 .equipment(
                     EquipmentProfile.builder()
                         .weapon("laser_rifle", 1)
@@ -266,8 +312,10 @@ public final class NpcProfiles {
                         .randomCamo(3, 100, 2, "t3_power")
                         .build())
                 .build());
-        // Stormtrooper: nextInt(9) table; plastic sheet is GT rubber plate, circuit board and energy cell are GT
-        // ore-dictionary stand-ins (the redstone count is never zero, NPC-05).
+        // Stormtrooper: Techguns' nextInt(9) table (plastic sheet is GT rubber plate, circuit board and energy cell are
+        // GT
+        // ore-dictionary stand-ins; the redstone count is never zero, NPC-05), plus ten slots of energy-gun components
+        // (D349): both its guns are energy guns, so it drops parts of their recipe trees instead of ammo.
         add(
             m,
             NpcProfile.builder("Stormtrooper", Tier.IV)
@@ -278,6 +326,14 @@ public final class NpcProfiles {
                         .slots(LootDrop.one("minecraft:redstone"), 3)
                         .slot(LootDrop.one("ore:circuitBasic"))
                         .slot(LootDrop.one("ore:batteryBasic"))
+                        .slot(LASER_BARREL)
+                        .slot(LASER_FOCUS)
+                        .slot(CARBON_RECEIVER)
+                        .slot(HARDENED_RECEIVER)
+                        .slot(CARBON_STOCK)
+                        .slots(LootDrop.range("gt:plate.TungstenSteel", 1, 2), 2)
+                        .slots(LootDrop.range("gt:screw.TungstenSteel", 2, 4), 2)
+                        .slot(LootDrop.range("gt:plate.Titanium", 1, 2))
                         .build())
                 .equipment(
                     EquipmentProfile.builder()
@@ -293,7 +349,8 @@ public final class NpcProfiles {
             m,
             NpcProfile.builder("PsychoSteve", Tier.HV)
                 .fixed(LootDrop.one(G + "chainsaw"))
-                .fixed(LootDrop.range(G + "tank_fuel", 4, 8))
+                // Full tanks (D349): a plain tank_fuel stack is an empty container, not Chainsaw ammo.
+                .fixed(LootDrop.range(G + "tank_fuel~full", 4, 8))
                 .rareDrop(false)
                 .equipment(
                     EquipmentProfile.builder()
@@ -339,6 +396,10 @@ public final class NpcProfiles {
                             .slot(LootDrop.one("minecraft:ghast_tear"))
                             .slots(LootDrop.one("minecraft:blaze_rod"), 4)
                             .slots(CYBERNETIC, 15)
+                            // D349: ammo for the Rocket Launcher, AK-47 and Combat Shotgun they carry.
+                            .slots(ROCKETS, 2)
+                            .slots(LootDrop.range(G + "ammo_rifle_bullet", 3, 9), 3)
+                            .slots(LootDrop.range(G + "ammo_shotgun_shell", 2, 8), 3)
                             .build())
                     .equipment(
                         EquipmentProfile.builder()
