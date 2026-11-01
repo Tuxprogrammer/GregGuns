@@ -130,6 +130,8 @@ public final class ComplexKeeper {
     private long keptChunks, checkedCells, setBack, spentNanos, recordNanos;
     /** What the cells set back held, by block name (the first 64 names), for the log and the real-pack check. */
     private final Map<String, Long> replaced = new LinkedHashMap<String, Long>();
+    /** The first cells set back since boot, as "x,y,z kept<-was", for the real-pack check. */
+    private final List<String> examples = new java.util.ArrayList<String>();
 
     ComplexKeeper(MachineHook machines, Store store) {
         this.machines = machines;
@@ -271,6 +273,11 @@ public final class ComplexKeeper {
         return java.util.Collections.unmodifiableMap(replaced);
     }
 
+    /** @return the first cells set back since boot, as "x,y,z kept&lt;-was" */
+    public List<String> examples() {
+        return java.util.Collections.unmodifiableList(examples);
+    }
+
     /** @return a world's records by chunk key (scenarios), never null */
     Map<Long, KeptChunk> records(World world) {
         Map<Long, KeptChunk> pending = store.pending(world, false);
@@ -398,6 +405,9 @@ public final class ComplexKeeper {
             if (replaced.containsKey(was) || replaced.size() < 64) {
                 Long c = replaced.get(was);
                 replaced.put(was, c == null ? 1L : c + 1L);
+            }
+            if (examples.size() < 200) {
+                examples.add(x + "," + y + "," + z + " " + keptName + ":" + keptMeta + "<-" + was + ":" + nowMeta);
             }
             world.setBlock(x, y, z, kept, keptMeta, 2);
             if (tile != null) {

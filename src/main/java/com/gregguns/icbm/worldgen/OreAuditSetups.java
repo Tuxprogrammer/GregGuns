@@ -150,6 +150,15 @@ public final class OreAuditSetups {
                     return true;
                 };
             }
+            case "keepexamples":
+                return w -> {
+                    List<String> ex = com.gregguns.icbm.complex.gen.ComplexKeeper.game()
+                        .examples();
+                    for (int i = 0; i < ex.size(); i += 10) {
+                        GregGuns.LOG.info("ORE keep set back: {}", ex.subList(i, Math.min(ex.size(), i + 10)));
+                    }
+                    return true;
+                };
             case "column": {
                 // column <x> <z> <y0> <y1>: logs every block of one column, for a look at what replaced what
                 final int x = Integer.parseInt(t[1]), z = Integer.parseInt(t[2]), y0 = Integer.parseInt(t[3]),
