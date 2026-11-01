@@ -21,7 +21,7 @@ import com.gregguns.icbm.explosive.IcbmBlasts;
 
 /**
  * {@code testing.icbm_gas_ground_shots}: how well a gas cloud reads against the ground from about 30 blocks. For each
- * ground (grass, stone) and each gas it photographs (chemical, contagious), it lays a 61 by 61 floor at the world's
+ * ground (grass, stone) and each gas warhead, it lays a 61 by 61 floor at the world's
  * own ground level, sets off a full warhead two blocks above it, and has the first player look at the cloud from 30
  * blocks away: once at eye height, once from 12 blocks up, and once more later in the cloud's life. Labels are
  * {@code gasground-<ground>-<gas>-<eye|high|late>}. Needs one connected client; not part of {@code test all}. Dev
@@ -37,7 +37,7 @@ public final class GasGroundShotsScenario implements Scenario {
     private static final int HALF = 30;
     /** Spots sit this far apart along x, so one cloud never shows in the next spot's frame. */
     private static final int SPACING = 160;
-    private static final String[] GASES = { "chemical", "contagious" };
+    private static final String[] GASES = { "chemical", "contagious", "debilitation", "smoke" };
     private static final String[] GROUNDS = { "grass", "stone" };
 
     @Override
@@ -47,8 +47,8 @@ public final class GasGroundShotsScenario implements Scenario {
 
     @Override
     public String description() {
-        return "Photographs the chemical and contagious clouds on grass and on stone from 30 blocks (eye height, high,"
-            + " late). Needs 1 client; not part of test all.";
+        return "Photographs every gas cloud on grass and on stone from 30 blocks (eye height, high, late). Needs 1"
+            + " client; not part of test all.";
     }
 
     @Override
@@ -87,7 +87,7 @@ public final class GasGroundShotsScenario implements Scenario {
             }
         }
         plan.after(20, () -> MissileShotsScenario.signal(p, "hud", "on"));
-        return ScenarioResult.pending(NAME, 9000, t -> {
+        return ScenarioResult.pending(NAME, 16000, t -> {
             plan.run(t);
             return plan.idle() ? out.note("read the gasground-*.png shots")
                 .build() : null;
