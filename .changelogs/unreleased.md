@@ -97,6 +97,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - **Armories** show their guns on two display walls across the room, each gun in an item frame over a chest of its ammo.
 - **Silo signs** ("Silo 1", "Silo 2"...) hang over each silo's window, and the hub's class sign has an activity sign under it (Alpha, Bravo or Charlie). Every silo in a complex comes with its own Launch Control.
 - **Placement.** A complex under a village or temple generates 10 to 20 blocks deeper instead of being skipped. Roguelike Dungeons keep out of complexes. A silo's bore is open from its pad to the surface, and every room and hall stands on its own foundation, so caves never open under a floor.
+- **Complexes stay whole after world generation.** GregTech ore veins and stone layers (however tall, Fortunate One included), lava lakes, dungeons and other mods' generation leave no ore, stone or holes in rooms, halls, shafts or the escape ladder; the complex puts back whatever they changed, once. Ore inside the complex is lost; the rock between rooms keeps its ore.
 - Lights are always light-emitting blocks; GT machines in complexes face the room's door side; generated Maintenance Hatches start in GT's default mode.
 
 ### NEI and tooltips
