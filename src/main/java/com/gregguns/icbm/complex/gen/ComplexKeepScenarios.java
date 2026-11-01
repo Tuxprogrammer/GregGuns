@@ -166,6 +166,38 @@ public final class ComplexKeepScenarios {
                 List<Target> targets = new ArrayList<Target>();
                 lateWrites(out, world, records, targets);
 
+                // Before the keep: the cells that differ from the record are exactly the late writes.
+                java.util.Set<String> want = new java.util.HashSet<String>();
+                for (Target t : targets) want.add(t.x + "," + t.y + "," + t.z);
+                int stray = 0;
+                StringBuilder strays = new StringBuilder();
+                Map<String, Block> cache = new java.util.HashMap<String, Block>();
+                for (KeptChunk k : records.values()) {
+                    net.minecraft.world.chunk.Chunk c = world.getChunkFromChunkCoords(k.chunkX(), k.chunkZ());
+                    for (int i = 0; i < k.size(); i++) {
+                        if (ComplexKeeper.changed(c, k, i, cache) == null) continue;
+                        int pos = k.posAt(i);
+                        String at = k.x(pos) + "," + KeptChunk.y(pos) + "," + k.z(pos);
+                        if (want.contains(at)) continue;
+                        stray++;
+                        if (strays.length() < 600) strays.append(' ')
+                            .append(at)
+                            .append(' ')
+                            .append(k.blockAt(i))
+                            .append(':')
+                            .append(k.metaAt(i))
+                            .append("<-")
+                            .append(
+                                Block.blockRegistry
+                                    .getNameForObject(world.getBlock(k.x(pos), KeptChunk.y(pos), k.z(pos))))
+                            .append(':')
+                            .append(world.getBlockMetadata(k.x(pos), KeptChunk.y(pos), k.z(pos)));
+                    }
+                }
+                out.check(
+                    stray == 0,
+                    "only the late writes differ from the record"
+                        + (stray == 0 ? "" : " (" + stray + " more:" + strays + ")"));
                 int loadedBefore = cps.getLoadedChunkCount();
                 int kept = keeper.keepReady(world, false);
                 st = keeper.stats();

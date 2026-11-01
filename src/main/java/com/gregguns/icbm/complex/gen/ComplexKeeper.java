@@ -384,24 +384,15 @@ public final class ComplexKeeper {
         Map<String, Block> blocks = new HashMap<String, Block>();
         int n = 0;
         for (int i = 0; i < k.size(); i++) {
-            int pos = k.posAt(i);
-            int lx = pos >> 4 & 15, y = KeptChunk.y(pos), lz = pos & 15;
-            String keptName = k.blockAt(i);
-            Block kept = blocks.get(keptName);
-            if (kept == null) {
-                kept = Block.getBlockFromName(keptName);
-                if (kept == null) continue; // its mod is gone: nothing to put back
-                blocks.put(keptName, kept);
-            }
-            int keptMeta = k.metaAt(i);
-            Block now = chunk.getBlock(lx, y, lz);
-            int nowMeta = chunk.getBlockMetadata(lx, y, lz);
+            Block kept = changed(chunk, k, i, blocks);
             checkedCells++;
-            if (now == kept && nowMeta == keptMeta) continue;
-            NBTTagCompound tile = k.tile(pos);
-            KeepRule.Kind keptKind = tile != null ? KeepRule.Kind.TILE : kind(kept, keptMeta);
-            if (KeepRule.intact(keptName, keptMeta, keptKind, name(now), nowMeta, kind(now, nowMeta))) continue;
-            int x = k.x(pos), z = k.z(pos);
+            if (kept == null) continue;
+            int pos = k.posAt(i);
+            int x = k.x(pos), y = KeptChunk.y(pos), z = k.z(pos);
+            int keptMeta = k.metaAt(i);
+            String keptName = k.blockAt(i);
+            Block now = chunk.getBlock(x & 15, y, z & 15);
+            int nowMeta = chunk.getBlockMetadata(x & 15, y, z & 15);
             String was = name(now);
             if (replaced.containsKey(was) || replaced.size() < 64) {
                 Long c = replaced.get(was);
@@ -414,9 +405,14 @@ public final class ComplexKeeper {
                 examples.add(x + "," + y + "," + z + " " + keptName + ":" + keptMeta + "<-" + was + ":" + nowMeta);
             }
             world.setBlock(x, y, z, kept, keptMeta, 2);
+            NBTTagCompound tile = k.tile(pos);
             if (tile != null) {
                 TileEntity te = TileEntity.createAndLoadEntity((NBTTagCompound) tile.copy());
                 if (te != null) world.setTileEntity(x, y, z, te);
+            }
+            // A chest or furnace turns itself as it is placed (D345): its written facing goes back on.
+            if (world.getBlock(x, y, z) == kept && world.getBlockMetadata(x, y, z) != keptMeta) {
+                world.setBlockMetadataWithNotify(x, y, z, keptMeta, 2);
             }
             n++;
         }
@@ -425,6 +421,29 @@ public final class ComplexKeeper {
         // The chunk is saved again soon, without the record.
         chunk.setChunkModified();
         return n;
+    }
+
+    /**
+     * @param blocks a cache of blocks by name
+     * @return the block the complex wrote in the {@code i}-th cell when a later write changed it, else null (intact, or
+     *         its mod is gone and nothing can be put back)
+     */
+    static Block changed(Chunk chunk, KeptChunk k, int i, Map<String, Block> blocks) {
+        int pos = k.posAt(i);
+        int lx = pos >> 4 & 15, y = KeptChunk.y(pos), lz = pos & 15;
+        String keptName = k.blockAt(i);
+        Block kept = blocks.get(keptName);
+        if (kept == null) {
+            kept = Block.getBlockFromName(keptName);
+            if (kept == null) return null;
+            blocks.put(keptName, kept);
+        }
+        int keptMeta = k.metaAt(i);
+        Block now = chunk.getBlock(lx, y, lz);
+        int nowMeta = chunk.getBlockMetadata(lx, y, lz);
+        if (now == kept && nowMeta == keptMeta) return null;
+        KeepRule.Kind keptKind = k.tile(pos) != null ? KeepRule.Kind.TILE : kind(kept, keptMeta);
+        return KeepRule.intact(keptName, keptMeta, keptKind, name(now), nowMeta, kind(now, nowMeta)) ? null : kept;
     }
 
     /** @return how a block changes by itself in play */
