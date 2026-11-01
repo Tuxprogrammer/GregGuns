@@ -246,7 +246,8 @@ public final class OreAuditSetups {
             boolean any = false;
             for (int a = door.a0(); a <= door.a1(); a++) {
                 for (int y = door.y0(); y <= door.y1(); y++) {
-                    if (world.getBlock(p.anchorX() + door.x(a), floor + y, p.anchorZ() + door.z(a)) == garage) any = true;
+                    if (world.getBlock(p.anchorX() + door.x(a), floor + y, p.anchorZ() + door.z(a)) == garage)
+                        any = true;
                 }
                 if (door.column(a) == ComplexFixtures.Column.OPEN) open++;
             }
@@ -254,7 +255,8 @@ public final class OreAuditSetups {
         }
         for (int x = p.anchorX(); x < p.anchorX() + ComplexLayout.SIZE; x++) {
             for (int z = p.anchorZ(); z < p.anchorZ() + ComplexLayout.SIZE; z++) {
-                for (int y = floor; y < floor + ComplexRaster.LEVELS; y++) if (world.getBlock(x, y, z) == garage) pieces++;
+                for (int y = floor; y < floor + ComplexRaster.LEVELS; y++)
+                    if (world.getBlock(x, y, z) == garage) pieces++;
             }
         }
         GregGuns.LOG.info(

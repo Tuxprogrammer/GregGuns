@@ -475,12 +475,14 @@ public final class ComplexScenarios {
                 }
                 if (written < 1000) {
                     slab(world, plan, true);
-                    return ScenarioResult.fail(name(), "the complex round the escape column was not written: " + written);
+                    return ScenarioResult
+                        .fail(name(), "the complex round the escape column was not written: " + written);
                 }
                 // Wake the terrain round the column: water starts to flow and sand to fall where it can.
                 for (int x = ex - REACH; x <= ex + REACH; x++) {
                     for (int z = ez - REACH; z <= ez + REACH; z++) {
-                        for (int y = bed - 4; y <= GROUND + 2; y++) world.notifyBlocksOfNeighborChange(x, y, z, Blocks.air);
+                        for (int y = bed - 4; y <= GROUND + 2; y++)
+                            world.notifyBlocksOfNeighborChange(x, y, z, Blocks.air);
                     }
                 }
             } catch (RuntimeException e) {
@@ -529,14 +531,23 @@ public final class ComplexScenarios {
             }
         }
 
-        private void check(World world, ScenarioResult.Builder out, int ex, int ez, int bx, int bz, int meta,
-            int floor, int base, int bed) {
+        private void check(World world, ScenarioResult.Builder out, int ex, int ez, int bx, int bz, int meta, int floor,
+            int base, int bed) {
             // The ground is at GROUND: on land the trapdoor replaces the top sand; over the river (water up to
             // GROUND - 1, iced in places) the riser's top is one block over it, level with the bank.
             int top = GROUND;
             out.note(
-                name() + ": escape column " + ex + "," + ez + " ladder meta " + meta + ", floor y " + floor + ", shaft"
-                    + " from y " + base);
+                name() + ": escape column "
+                    + ex
+                    + ","
+                    + ez
+                    + " ladder meta "
+                    + meta
+                    + ", floor y "
+                    + floor
+                    + ", shaft"
+                    + " from y "
+                    + base);
             out.check(world.getBlock(ex, top, ez) == Blocks.trapdoor, "a trapdoor tops the shaft at y " + top);
             out.checkEquals(
                 "the trapdoor is closed, in the top half, hinged on the ladder's wall",
@@ -584,7 +595,10 @@ public final class ComplexScenarios {
                     if (world.getBlock(ex + d[0], top, ez + d[1])
                         .isNormalCube() && world.isAirBlock(ex + d[0], top + 1, ez + d[1])) stand++;
                 }
-                out.checkEquals("the riser's four sides are concrete from the bed to its top", 4 * (top - bed + 1), walls);
+                out.checkEquals(
+                    "the riser's four sides are concrete from the bed to its top",
+                    4 * (top - bed + 1),
+                    walls);
                 out.checkEquals("a riser top to stand on beside the hatch on every side", 4, stand);
             }
         }
