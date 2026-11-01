@@ -9,6 +9,7 @@
   - OpenComputers (`OpenComputers`, 1.12.64-GTNH)
   - OpenSecurity (`opensecurity`, 1.2.2-GTNH), for precedent only
 - **Roadmap:** [ROADMAP-ICBM](../../ROADMAP-ICBM.md): the components in I4, the floppy and its programs in I5, behind `modules.icbm`
+- **Player guide:** the `icbm-computer-control` sheet (D347): the Adapter setup, the floppy's recipe, the four programs and the component table, checked against this code and the Lua at build time
 
 ## What changes from ICBM
 
