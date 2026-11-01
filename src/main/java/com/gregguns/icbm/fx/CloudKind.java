@@ -7,27 +7,32 @@ package com.gregguns.icbm.fx;
 // Spec: docs/gregguns-icbm-spec/07-visuals-audio/blast-visuals.md
 public enum CloudKind {
 
-    /** The Chemical warhead: a sickly yellow. */
-    CHEMICAL(0.85F, 0.80F, 0.20F, 1.0),
+    /**
+     * The Chemical warhead: a sickly yellow haze. Saturated and warm, so it stands off green grass as well as gray
+     * stone.
+     */
+    CHEMICAL(0.98F, 0.82F, 0.10F, 1.0, true),
     /** The Debilitation warhead: violet. */
-    DEBILITATION(0.55F, 0.30F, 0.80F, 1.0),
-    /** The Contagious warhead: a dull green. */
-    CONTAGIOUS(0.30F, 0.75F, 0.30F, 1.0),
+    DEBILITATION(0.55F, 0.30F, 0.80F, 1.0, false),
+    /** The Contagious warhead: a pale, cool green haze, lighter and bluer than grass so it does not sink into it. */
+    CONTAGIOUS(0.40F, 0.95F, 0.65F, 1.0, true),
     /** The Smoke warhead: dense gray smoke, twice the particles. */
-    SMOKE(0.55F, 0.55F, 0.55F, 2.0),
+    SMOKE(0.55F, 0.55F, 0.55F, 2.0, false),
     /** The plume of a large conventional blast: a dark column that rises. */
-    PLUME(0.20F, 0.20F, 0.20F, 1.0);
+    PLUME(0.20F, 0.20F, 0.20F, 1.0, false);
 
     private final float red;
     private final float green;
     private final float blue;
     private final double density;
+    private final boolean haze;
 
-    CloudKind(float red, float green, float blue, double density) {
+    CloudKind(float red, float green, float blue, double density, boolean haze) {
         this.red = red;
         this.green = green;
         this.blue = blue;
         this.density = density;
+        this.haze = haze;
     }
 
     /** @return red, 0 to 1 */
@@ -48,6 +53,15 @@ public enum CloudKind {
     /** @return the particle count factor against the base rate */
     public double density() {
         return density;
+    }
+
+    /**
+     * @return true for a gas drawn as a haze: larger, denser puffs that keep their full shape, so the cloud reads at a
+     *         glance from a distance on any ground (see {@link CloudPlan#puffSize}, {@link CloudPlan#puffAlpha} and
+     *         {@link CloudPlan#puffFrame}). Looks only: the radius, the length and the effects do not change.
+     */
+    public boolean haze() {
+        return haze;
     }
 
     /** @return true for the gas kinds, which fill a sphere; false for the plume, which is a column */

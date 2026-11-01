@@ -119,6 +119,8 @@ public final class CloudFxClient {
             @Override
             public void onUpdate() {
                 super.onUpdate();
+                // Vanilla shrinks the sprite to a dot with age; a haze keeps its full puff (CloudPlan.puffFrame).
+                setParticleTextureIndex(CloudPlan.puffFrame(c.kind, particleAge, particleMaxAge));
                 // Soft edges in time: thin, and fading in and out, so puffs blend instead of popping.
                 setAlphaF(alpha * CloudPlan.fade(particleAge, particleMaxAge));
             }

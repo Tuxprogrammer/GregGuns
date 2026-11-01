@@ -124,6 +124,17 @@ public final class CloudPlan {
      */
     private static final float RADIUS_GROWTH = 0.5F;
     private static final int RADIUS_GROWTH_CAP = 32;
+    /**
+     * How much larger a haze puff ({@link CloudKind#haze()}) is than a plain gas puff. Vanilla smoke at the plain size
+     * is about half a block across and mostly empty sprite, which reads as a sparse speckle from 30 blocks.
+     */
+    public static final float HAZE_SIZE = 2.0F;
+    /** Smallest opacity of a haze puff at full strength. */
+    public static final float HAZE_ALPHA_MIN = 0.34F;
+    /** Largest opacity of a haze puff at full strength. */
+    public static final float HAZE_ALPHA_MAX = 0.56F;
+    /** The largest frame of the vanilla smoke sprite row (frames 0 to 7, a dot to a full puff). */
+    public static final int SMOKE_FRAMES = 8;
 
     /**
      * @param kind   the cloud kind
@@ -138,17 +149,39 @@ public final class CloudPlan {
         }
         float base = GAS_SIZE_MIN + rnd.nextFloat() * (GAS_SIZE_MAX - GAS_SIZE_MIN);
         float grow = Math.min(Math.max(radius, 0), RADIUS_GROWTH_CAP) / (float) RADIUS_GROWTH_CAP;
-        return base * (1.0F + RADIUS_GROWTH * grow);
+        return base * (1.0F + RADIUS_GROWTH * grow) * (kind.haze() ? HAZE_SIZE : 1.0F);
     }
 
     /**
      * @param kind the cloud kind
      * @param rnd  the random source
      * @return the opacity a puff reaches at full strength, 0 to 1: gas is thin so overlapping puffs build up density
-     *         softly instead of reading as solid squares; the plume is denser
+     *         softly instead of reading as solid squares; a haze is thicker, so it reads against grass; the plume is
+     *         denser still
      */
     public static float puffAlpha(CloudKind kind, Random rnd) {
+        if (kind.haze()) {
+            return HAZE_ALPHA_MIN + rnd.nextFloat() * (HAZE_ALPHA_MAX - HAZE_ALPHA_MIN);
+        }
         return kind.isGas() ? 0.22F + rnd.nextFloat() * 0.2F : 0.45F + rnd.nextFloat() * 0.25F;
+    }
+
+    /**
+     * Which frame of the vanilla smoke sprite a puff shows. Vanilla smoke shrinks from its full puff (frame 7) to a
+     * single dot (frame 0) over its life, which is what makes a thin cloud read as specks; a haze keeps the full puff
+     * and lets {@link #fade} soften it instead.
+     *
+     * @param kind   the cloud kind
+     * @param age    the puff's age, ticks
+     * @param maxAge the puff's life, ticks
+     * @return the frame, 0 to {@link #SMOKE_FRAMES} - 1, as vanilla's {@code EntitySmokeFX} picks it for a plain puff
+     */
+    public static int puffFrame(CloudKind kind, int age, int maxAge) {
+        int last = SMOKE_FRAMES - 1;
+        if (kind.haze() || maxAge <= 0) {
+            return last;
+        }
+        return Math.max(0, Math.min(last, last - age * SMOKE_FRAMES / maxAge));
     }
 
     /**
