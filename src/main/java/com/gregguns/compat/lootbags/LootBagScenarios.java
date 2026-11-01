@@ -1,6 +1,7 @@
 package com.gregguns.compat.lootbags;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +11,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -47,6 +51,7 @@ public final class LootBagScenarios {
         register(registry, new OpenEvery());
         register(registry, new Reload());
         register(registry, new Guard());
+        register(registry, new StubHeader());
     }
 
     private static void register(ScenarioRegistry registry, Scenario s) {
@@ -279,6 +284,65 @@ public final class LootBagScenarios {
                 LootBagInjector.suspendForTest(false);
                 LootBagInjector.ensurePresent();
             }
+            return out.build();
+        }
+    }
+
+    /**
+     * Single player with {@code compat.lootBags} off: the client's empty header for a GregGuns group sits in the
+     * server's list too (one JVM, one ELB list). The guard must still deny the use with its own chat line, not let
+     * ELB answer "try again" (review R3-19).
+     */
+    static final class StubHeader implements Scenario {
+
+        private static final GameProfile CHAT_PROFILE = new GameProfile(
+            UUID.fromString("5d7e0b1c-2f43-4e8a-9c61-7a0f3b2c1d71"),
+            "[GregGunsLootBagChat]");
+
+        @Override
+        public String name() {
+            return "lootbag.stub_header";
+        }
+
+        @Override
+        public String description() {
+            return "A GregGuns bag whose group is only the client-safe empty header is denied with gregguns.lootbag.missing";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            try {
+                LootBagInjector.suspendForTest(true);
+                out.check(LootBagInjector.removeForTest(), "the GregGuns groups are taken out");
+                LootBagInjector.stubForTest();
+                out.check(LootBagInjector.hasGroup(1702), "group 1702 is back as a header");
+                out.check(!LootBagInjector.canOpen(1702), "the header has no drops");
+                List<IChatComponent> chat = new ArrayList<>();
+                FakePlayer listener = new FakePlayer((WorldServer) ctx.world(), CHAT_PROFILE) {
+
+                    @Override
+                    public void addChatMessage(IChatComponent message) {
+                        chat.add(message);
+                    }
+                };
+                out.check(LootBagGuard.deny(listener, bag(1702)), "the guard denies the bag");
+                out.check(
+                    chat.size() == 1 && chat.get(0) instanceof ChatComponentTranslation
+                        && LootBagGuard.MISSING_KEY.equals(((ChatComponentTranslation) chat.get(0)).getKey()),
+                    "the player is told " + LootBagGuard.MISSING_KEY + ": " + chat);
+                Use guarded = rightClick(ctx, bag(1702), true);
+                out.check(guarded.denied, "a right click is denied");
+                out.check(guarded.error == null, "no error: " + guarded.error);
+                out.check(!guarded.consumed, "the bag is kept");
+                out.check(guarded.dropped == 0, "nothing drops");
+            } finally {
+                // The headers would block ensurePresent (it puts back only ids the list lacks): take them out first.
+                LootBagInjector.removeReservedForTest();
+                LootBagInjector.suspendForTest(false);
+                LootBagInjector.ensurePresent();
+            }
+            out.check(LootBagInjector.canOpen(1702), "group 1702 is restored with its drops");
             return out.build();
         }
     }

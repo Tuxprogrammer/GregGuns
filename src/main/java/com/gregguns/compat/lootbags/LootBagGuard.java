@@ -20,7 +20,8 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  *
  * <ul>
  * <li>Server, right click: before the bag is used, a missing group is put back; if it still is missing, the use is
- * denied with a chat line.</li>
+ * denied with a chat line. A group with no drops counts as missing: it is the client's empty header, which single
+ * player shares with the server.</li>
  * <li>Server, {@code /lootbags reload} (alias {@code /lbag}): the command runs here, and our groups go back in the same
  * call, so no tick ever sees them missing; then every player gets the headers again.</li>
  * <li>Client, every second: see {@link LootBagInjector#ensureClientSafe()} (the tooltip path).</li>
@@ -70,9 +71,11 @@ public final class LootBagGuard {
      * @return true if the use must be denied; the player has been told why
      */
     static boolean deny(EntityPlayer player, ItemStack bag) {
-        if (LootBagInjector.hasGroup(bag.getItemDamage())) return false;
+        // canOpen, not hasGroup: a group with no drops is the client-safe header, which in single player sits in the
+        // server's list too; ELB would answer it with "try again", so it counts as missing.
+        if (LootBagInjector.canOpen(bag.getItemDamage())) return false;
         LootBagInjector.ensurePresent();
-        if (LootBagInjector.hasGroup(bag.getItemDamage())) return false;
+        if (LootBagInjector.canOpen(bag.getItemDamage())) return false;
         player.addChatMessage(
             new ChatComponentTranslation(MISSING_KEY).setChatStyle(new ChatStyle().setColor(EnumChatFormatting.RED)));
         return true;

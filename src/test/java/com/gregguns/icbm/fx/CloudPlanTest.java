@@ -165,7 +165,7 @@ class CloudPlanTest {
     }
 
     @Test
-    void puffsAreSmallTranslucentAndVaried() {
+    void puffsAreTranslucentAndVaried() {
         Random rnd = new Random(7);
         float minSize = Float.MAX_VALUE;
         float maxSize = 0;
@@ -175,11 +175,12 @@ class CloudPlanTest {
             for (CloudKind k : CloudKind.values()) {
                 float a = CloudPlan.puffAlpha(k, rnd);
                 float sh = CloudPlan.puffShade(rnd);
+                // Translucent everywhere: overlapping puffs build up, a single puff never paints a solid square.
                 assertTrue(a > 0.1F && a < 0.75F, k + " alpha " + a);
                 assertTrue(sh >= 0.7F && sh <= 1.0F, "shade " + sh);
                 if (k.isGas()) {
                     float s = CloudPlan.puffSize(k, 32, rnd);
-                    assertTrue(a <= 0.45F, "gas stays thin");
+                    assertTrue(a >= CloudPlan.GAS_ALPHA_MIN && a <= CloudPlan.GAS_ALPHA_MAX, k + " gas alpha " + a);
                     assertTrue(s >= CloudPlan.GAS_SIZE_MIN && s <= CloudPlan.GAS_SIZE_MAX * 1.5F, "gas size " + s);
                     minSize = Math.min(minSize, s);
                     maxSize = Math.max(maxSize, s);
@@ -193,8 +194,45 @@ class CloudPlanTest {
         }
         assertTrue(maxSize - minSize > 1.0F, "sizes vary");
         assertTrue(maxAlpha - minAlpha > 0.1F, "opacity varies");
-        // formerly 6.0 for every gas puff: now well under that at small radii
-        assertTrue(CloudPlan.puffSize(CloudKind.CHEMICAL, 4, new Random(1)) < 4.5F);
+    }
+
+    @Test
+    void gasPuffsAreLargeEnoughToReadAsAHazeFromThirtyBlocks() {
+        // EntitySmokeFX draws a puff 0.15 to 0.3 blocks across per unit of size. The average gas puff is more than a
+        // block across, so the cloud reads as a haze, not specks, from 30 blocks.
+        float average = (CloudPlan.GAS_SIZE_MIN + CloudPlan.GAS_SIZE_MAX) / 2.0F;
+        assertTrue(average * 0.225F >= 1.0F, "average puff " + average * 0.225F + " blocks");
+        assertTrue(CloudPlan.GAS_ALPHA_MIN >= 0.3F, "thick enough to show against grass");
+        assertTrue(CloudPlan.GAS_ALPHA_MAX < 0.75F, "still translucent");
+    }
+
+    @Test
+    void gasKeepsItsFullPuffWhileThePlumeShrinksLikeVanillaSmoke() {
+        int last = CloudPlan.SMOKE_FRAMES - 1;
+        for (CloudKind k : CloudKind.values()) {
+            if (!k.isGas()) continue;
+            for (int age = 0; age <= 40; age++) {
+                assertEquals(last, CloudPlan.puffFrame(k, age, 40), k + " age " + age);
+            }
+        }
+        // EntitySmokeFX: 7 - age * 8 / maxAge
+        assertEquals(7, CloudPlan.puffFrame(CloudKind.PLUME, 0, 40));
+        assertEquals(3, CloudPlan.puffFrame(CloudKind.PLUME, 20, 40));
+        assertEquals(0, CloudPlan.puffFrame(CloudKind.PLUME, 39, 40));
+        assertEquals(0, CloudPlan.puffFrame(CloudKind.PLUME, 40, 40));
+        assertEquals(last, CloudPlan.puffFrame(CloudKind.PLUME, 0, 0));
+    }
+
+    @Test
+    void theYellowAndGreenGasesStandOffGrass() {
+        // Plains grass is tinted 0x91BD59 (145, 189, 89): mostly green. The chemical yellow's red channel clearly beats
+        // grass's and its blue is near zero, so it shifts grass toward yellow instead of vanishing into it.
+        assertTrue(CloudKind.CHEMICAL.red() - 145 / 255.0F > 0.3F);
+        assertTrue(CloudKind.CHEMICAL.red() > CloudKind.CHEMICAL.green());
+        assertTrue(CloudKind.CHEMICAL.blue() < 0.2F);
+        // The contagious green stays green but is lighter and bluer than grass.
+        assertTrue(CloudKind.CONTAGIOUS.green() > 189 / 255.0F + 0.15F);
+        assertTrue(CloudKind.CONTAGIOUS.blue() > 89 / 255.0F + 0.2F);
     }
 
     @Test
