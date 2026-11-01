@@ -41,6 +41,15 @@ public final class ClippingSink implements WindowedSink {
     }
 
     @Override
+    public boolean restoreMeta(int x, int y, int z, Block block, int meta) {
+        if (!window.contains(x, z)) {
+            return false;
+        }
+        target.restoreMeta(x, y, z, block, meta);
+        return true;
+    }
+
+    @Override
     public boolean spawn(Entity entity, double x, double y, double z) {
         // floor, not a cast: (int) -0.5 is 0 but the entity stands in block -1
         if (!admit((int) Math.floor(x), (int) Math.floor(z))) {

@@ -57,6 +57,7 @@ public final class WorldgenModule implements GregGunsModule {
             SpawnerScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             NestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ShowcaseScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            SiteScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 

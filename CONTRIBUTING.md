@@ -171,6 +171,7 @@ GregGuns must feel native to GTNH. These are the coupling rules.
 **World**
 - No ore generation; the GTNH ore system owns ores.
 - Structures and spawning are config-gated, respect dimension rules, and never generate across chunks (no cascading worldgen).
+- Every structure carves its space out of the world and brings its own foundation (`SitePrep`, D351): a new structure gets it by default through `StructurePopulator`. A structure that is not on land opts out in `StructureCatalog.siteRule` with its reason, and gets a `worldgen.site_slope_` scenario otherwise.
 
 **Pack fit**
 - Tooltips, names, sounds and textures follow GTNH style (see D6).
