@@ -366,7 +366,7 @@ public final class OreAuditSetups {
                         : r.at(lx + 1, y, lz) != Cell.NONE || r.at(lx - 1, y, lz) != Cell.NONE
                             || r.at(lx, y, lz + 1) != Cell.NONE
                             || r.at(lx, y, lz - 1) != Cell.NONE
-                            || r.at(lx, y - 1, lz) != Cell.NONE)
+                            || r.at(lx, y - 1, lz) != Cell.NONE && !siloColumn(r, lx, lz))
                         k = Where.SKIN;
                     else if (inBox) k = Where.ROCK;
                     else continue;
@@ -374,7 +374,8 @@ public final class OreAuditSetups {
                 }
                 boolean silo = siloColumn(r, lx, lz);
                 boolean escape = lx == ex && lz == ez || lx == bx && lz == bz;
-                if (silo || escape) {
+                // The writer builds a shaft or the ladder only up through land: under a lake there is none.
+                if ((silo || escape) && probe.landY(x, z) != com.gregguns.worldgen.HeightProbe.NONE) {
                     int from = silo ? floor + ComplexRaster.LEVELS + 1 : floor + cp.escapeTop();
                     int to = world.getHeightValue(x, z);
                     for (int y = from; y <= to; y++) {
