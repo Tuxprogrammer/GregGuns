@@ -90,6 +90,13 @@ public final class IcbmModule implements GregGunsModule {
         cpw.mods.fml.common.FMLCommonHandler.instance()
             .bus()
             .register(new com.gregguns.icbm.complex.gen.SiloMouthKeeper.Ticker());
+        // The complex keep (D348): sets back what later generators (GregTech's ore veins) change in a complex, once
+        // its surroundings have populated. The records travel with their chunks' saved data.
+        cpw.mods.fml.common.FMLCommonHandler.instance()
+            .bus()
+            .register(new com.gregguns.icbm.complex.gen.ComplexKeeper.Ticker());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS
+            .register(new com.gregguns.icbm.complex.gen.ComplexKeeper.Events());
         WarheadRegistration.init();
         com.gregguns.icbm.missile.MissileRegistration.init();
         com.gregguns.icbm.production.MissileRecipes.init();

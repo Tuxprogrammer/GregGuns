@@ -151,6 +151,9 @@ final class ComplexRebuild implements LocateGeneration.Run {
     }
 
     private void clearChunk(int[] ch) {
+        // A record from the first write would set the old complex back over the cleared ground (D348).
+        ComplexKeeper.game()
+            .forget(world, ch[0], ch[1]);
         clearColumns(ch);
         // At once, before an item, a creature or a player stuck in the new rock is pushed up out of it.
         sweep((ch[0] << 4), (ch[1] << 4), (ch[0] << 4) + 15, (ch[1] << 4) + 15);

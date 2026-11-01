@@ -48,8 +48,9 @@ final class PaletteSets {
     // except where a set says otherwise. RoleBlocksTest checks every set's three roles share no block at any level.
     //
     // GregTech's stone layers overwrite plain stone, stained clay, cobblestone and its own granite and marble/basalt
-    // blocks wherever a blob passes, after the complex is written. So at most one role of a set may name any of
-    // those blocks (GT_REPLACEABLE), or a blob through two roles would leave them sharing its block.
+    // blocks wherever a blob passes, after the complex is written. The complex keep (D348) sets those cells back once
+    // the surroundings have populated; until then, and as a second line, at most one role of a set may name any of
+    // those blocks (GT_REPLACEABLE), so a blob through two roles never leaves them sharing its block.
 
     private static BlockRef.Entry gtConcrete(int meta) {
         return e(GT, "gt.blockconcretes", meta);
