@@ -81,7 +81,9 @@ class MobFootingTest {
     @Test
     void shortLegsAreLoweredToTheFloor() {
         // Legs ending one unit above the foot line: lowered by 1/16 in the scaled space, on the floor at any scale.
-        MobModelDef def = biped(leg("rightLeg", null, 11, 0, box(0, 12, 0)), leg("leftLeg", null, 11, 0, box(0, 12, 0)));
+        MobModelDef def = biped(
+            leg("rightLeg", null, 11, 0, box(0, 12, 0)),
+            leg("leftLeg", null, 11, 0, box(0, 12, 0)));
         assertEquals(23.0F, MobFooting.restFootY(def), 1.0e-4F);
         float lift = MobFooting.groundingTranslation(23.0F);
         assertEquals(1.0F / 16.0F, lift, 1.0e-6F);
@@ -101,11 +103,14 @@ class MobFootingTest {
             new float[] { 0, 6, 0 },
             new float[] { 0, 0, 0 },
             false,
-            Collections.singletonList(new MobBoxDef("b", 0, 0, new float[] { -2, 0, -2 }, new int[] { 4, 7, 4 }, 0.5F, false, "x")));
+            Collections.singletonList(
+                new MobBoxDef("b", 0, 0, new float[] { -2, 0, -2 }, new int[] { 4, 7, 4 }, 0.5F, false, "x")));
         MobModelDef def = biped(right, leg("leftLeg", null, 11, 0, box(0, 12, 0)), boot);
         assertEquals(24.5F, MobFooting.restFootY(def), 1.0e-4F);
         // A leg tilted 90 degrees about X at rest lies flat: its lowest point is the box's depth edge, not its length.
-        MobModelDef flat = biped(leg("rightLeg", null, 20, 90, box(0, 12, 0)), leg("leftLeg", null, 20, 90, box(0, 12, 0)));
+        MobModelDef flat = biped(
+            leg("rightLeg", null, 20, 90, box(0, 12, 0)),
+            leg("leftLeg", null, 20, 90, box(0, 12, 0)));
         assertEquals(22.0F, MobFooting.restFootY(flat), 1.0e-3F);
     }
 
@@ -117,8 +122,12 @@ class MobFootingTest {
             new float[] { 0, 0, 0 },
             new float[] { 0, 0, 0 },
             false,
-            Collections.singletonList(new MobBoxDef("c", 0, 0, new float[] { -4, 0, -2 }, new int[] { 8, 30, 4 }, 0.0F, false, "x")));
-        MobModelDef def = biped(leg("rightLeg", null, 12, 0, box(0, 12, 0)), leg("leftLeg", null, 12, 0, box(0, 12, 0)), coat);
+            Collections.singletonList(
+                new MobBoxDef("c", 0, 0, new float[] { -4, 0, -2 }, new int[] { 8, 30, 4 }, 0.0F, false, "x")));
+        MobModelDef def = biped(
+            leg("rightLeg", null, 12, 0, box(0, 12, 0)),
+            leg("leftLeg", null, 12, 0, box(0, 12, 0)),
+            coat);
         assertEquals(24.0F, MobFooting.restFootY(def), 1.0e-4F);
     }
 
@@ -137,7 +146,15 @@ class MobFootingTest {
     }
 
     private static MobBoxDef box(float x, int height, float z) {
-        return new MobBoxDef("leg", 0, 0, new float[] { x - 2, 0, z - 2 }, new int[] { 4, height, 4 }, 0.0F, false, "x");
+        return new MobBoxDef(
+            "leg",
+            0,
+            0,
+            new float[] { x - 2, 0, z - 2 },
+            new int[] { 4, height, 4 },
+            0.0F,
+            false,
+            "x");
     }
 
     private static MobPartDef leg(String name, String parent, float pivotY, float pitch, MobBoxDef box) {

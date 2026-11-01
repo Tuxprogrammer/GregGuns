@@ -20,7 +20,7 @@ import com.gregguns.mob.model.MobPartDef;
  * {@code (24 - footY) / 16} in the scaled space right after the scale, which lands its feet on the ground at every
  * scale too.
  */
-// Spec: tools/asset-gen/entity_models.md (units and origin); docs/techguns-spec/10-entities-npcs/rendering-and-models.md
+// Spec: tools/asset-gen/entity_models.md; docs/techguns-spec/10-entities-npcs/rendering-and-models.md
 final class MobFooting {
 
     /** Model Y, in model units, that the renderer puts on the entity's feet. */
@@ -77,7 +77,8 @@ final class MobFooting {
                 float g = b.inflate();
                 for (int corner = 0; corner < 8; corner++) {
                     float[] v = { (corner & 1) == 0 ? o[0] - g : o[0] + s[0] + g,
-                        (corner & 2) == 0 ? o[1] - g : o[1] + s[1] + g, (corner & 4) == 0 ? o[2] - g : o[2] + s[2] + g };
+                        (corner & 2) == 0 ? o[1] - g : o[1] + s[1] + g,
+                        (corner & 4) == 0 ? o[2] - g : o[2] + s[2] + g };
                     lowest = Math.max(lowest, toModel(def, p, v, legPitchDegrees)[1]);
                 }
             }
