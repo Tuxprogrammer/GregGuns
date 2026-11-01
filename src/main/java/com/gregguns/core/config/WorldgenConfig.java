@@ -180,6 +180,11 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierMilitaryBase = 1;
 
+    @Config.Comment({ "Chance in percent that a Military Base is a red base: Dictator Dave's regime, with red flag,",
+        "pad and standards, and Dave himself at his post by the flag. The others are blue garrisons.", "Default: 20." })
+    @Config.RangeInt(min = 0, max = 100)
+    public static int redBaseChanceMilitaryBase = 20;
+
     @Config.Comment({ "Place the Aircraft Carrier. Default: true." })
     public static boolean enabledAircraftCarrier = true;
 

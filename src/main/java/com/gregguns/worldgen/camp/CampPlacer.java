@@ -17,8 +17,9 @@ import com.gregguns.worldgen.layout.StampPlan;
 import com.gregguns.worldgen.layout.Stamper;
 
 /**
- * Writes a {@link PlacedCamp} one populate window at a time: fence, roads, the parts of every leaf and the cobblestone
- * fallback. Never reads the world and never requests a chunk (GGS-11-09): every write goes through the window-clipped
+ * Writes a {@link PlacedCamp} one populate window at a time: fence, roads, the parts of every leaf, the cobblestone
+ * fallback and the {@link CommandPost} pad in the flag leaf. Never reads the world and never requests a chunk
+ * (GGS-11-09): every write goes through the window-clipped
  * sink and only touches columns of the window. The flag is a separate post-step ({@link #flagStep}).
  *
  * <p>
@@ -74,14 +75,31 @@ public final class CampPlacer implements CampWriter {
                 n += writeLeaf(sink, camp, leaf, window, color, ground, marks);
             }
         }
+        // The flag leaf holds no building: only the command pad in the base's colors (D353).
+        n += CommandPost.write(sink, camp, window, ground, factionOf(camp), keys);
         return n;
     }
 
     @Override
     public CampFlags.FlagPostStep flagStep(PlacedCamp camp, Block flagBlock, float capFactor,
         CampFlags.Recorder recorder) {
-        FlagSpec spec = camp.flagSpec(capFactor);
+        CampFaction faction = factionOf(camp);
+        FlagSpec spec = camp.flagSpec(capFactor)
+            .withCommand(
+                faction,
+                faction.hasCommander() ? CommandPost.COMMANDER : null,
+                faction.hasCommander() ? CommandPost.post(camp) : new int[3]);
         return (sink, window) -> CampFlags.place(sink, window, flagBlock, spec, tiles, recorder);
+    }
+
+    /**
+     * @param camp a placed camp
+     * @return its side, from its plan seed and {@code worldgen.redBaseChanceMilitaryBase}
+     */
+    public static CampFaction factionOf(PlacedCamp camp) {
+        return CampFaction.of(
+            camp.plan()
+                .seed());
     }
 
     // ---- surface: roads and fence -------------------------------------------------------------------------------

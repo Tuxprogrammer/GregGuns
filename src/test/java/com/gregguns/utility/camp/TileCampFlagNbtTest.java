@@ -33,6 +33,21 @@ class TileCampFlagNbtTest {
     }
 
     @Test
+    void theCommanderAndWhetherHeWasPlacedAreSaved() {
+        TileCampFlag flag = new TileCampFlag();
+        flag.init(32, 32, 1, 2, 3, new int[] { 1, 0, 1 }, Arrays.asList("ArmySoldier"), 9);
+        assertFalse(flag.commanderPending(), "no commander by default");
+        assertFalse(roundTrip(flag).commanderPending());
+        flag.setCommander("DictatorDave", 0, 0, -2);
+        TileCampFlag loaded = roundTrip(flag);
+        assertTrue(loaded.commanderPending());
+        assertEquals("DictatorDave", loaded.commander());
+        assertEquals(Arrays.toString(new int[] { 0, 0, -2 }), Arrays.toString(loaded.commanderPost()));
+        assertFalse(loaded.placeCommander(), "no world: nothing is placed and nothing throws");
+        assertTrue(loaded.commanderPending());
+    }
+
+    @Test
     void defaultCapUsesTheFormula() {
         TileCampFlag flag = new TileCampFlag();
         flag.init(32, 32, 0, 0, 0, null, null, -1);

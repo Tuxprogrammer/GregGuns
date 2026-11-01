@@ -12,9 +12,10 @@ import com.gregguns.worldgen.StructureState;
 import com.gregguns.worldgen.WindowedSink;
 
 /**
- * The flag post-step: places the Camp Flag block, initializes its tile with the cap and NPC names, and records the
- * position. Worldgen only places and initializes; it never spawns an NPC and never touches {@code NpcCampPort}
- * (Q12). The flag's own tick spawns later, only in loaded chunks.
+ * The flag post-step: places the Camp Flag block (its metadata is the faction's cloth), initializes its tile with the
+ * cap, the NPC names and, on a red base, the commander and his post (D353), and records the position. Worldgen only
+ * places and initializes; it never spawns an NPC and never touches {@code NpcCampPort} (Q12). The flag's own tick
+ * spawns later, only in loaded chunks; that includes the commander.
  *
  * <p>
  * The tile is built here and attached through the sink, so nothing reads a tile back out of the world (a read that
@@ -63,7 +64,7 @@ public final class CampFlags {
         if (flagBlock == null || !window.contains(spec.x, spec.z)) {
             return false;
         }
-        if (!sink.setBlock(spec.x, spec.y, spec.z, flagBlock, 0)) {
+        if (!sink.setBlock(spec.x, spec.y, spec.z, flagBlock, spec.faction.flagMeta())) {
             return false; // the block did not go down: no tile setup (WGEN-12)
         }
         TileCampFlag tile = tiles.get();
@@ -80,6 +81,10 @@ public final class CampFlags {
             spec.spawnPoints(),
             spec.names(),
             spec.cap);
+        if (spec.commander != null) {
+            int[] post = spec.post();
+            tile.setCommander(spec.commander, post[0], post[1], post[2]);
+        }
         if (!sink.setTile(spec.x, spec.y, spec.z, tile)) {
             return false;
         }

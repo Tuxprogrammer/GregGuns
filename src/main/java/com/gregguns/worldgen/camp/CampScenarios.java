@@ -51,6 +51,7 @@ public final class CampScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new CampFlagInitScenario());
         BaseScenarios.registerAll(registry);
+        CampFactionScenarios.registerAll(registry);
     }
 
     /** Counts what a camp does in the world: spawn calls through the sink, and every changed block for undo. */
