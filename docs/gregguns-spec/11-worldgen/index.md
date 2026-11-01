@@ -6,6 +6,7 @@ Techguns' world generation is ore veins, ore clusters, oil holes and structures 
 
 - **No ore generation of any kind.** GT owns ores and dreamcraft owns oil.
 - **Overworld-only structures.** Each is config-gated, uses dictionary-type biome rules and never cascades worldgen (WGEN-04).
+- **Every structure carves its site and brings its own foundation** (D351, [structure-placement § Site preparation](structure-placement.md#site-preparation-carve-and-found-d351)).
 - **No village bunker.**
 - **Tier-appropriate loot.**
 
@@ -30,6 +31,7 @@ The pack makes four things matter: it forces the RWG world generator, it ships A
 | `WorldGenTGStructureSpawn`, weight 4 | Kept at weight 4, runs before GT ores | GT5-Unofficial `GTWorldgenerator` | [structure-placement.md](structure-placement.md) |
 | Structures reaching into ungenerated chunks (WGEN-04) | Writes limited to the populate window; seeded plans | ArchaicFix cascade detector, Hodgepodge throttle | [structure-placement.md](structure-placement.md) |
 | Hard-coded dimension 0 (WGEN-28) | Config allow-list, default `[0]` | TwilightForest, PersonalSpace, Galacticraft, GalaxySpace | [structure-placement.md](structure-placement.md) |
+| Per-structure ground prep (`cleanUpwards`, `placeFoundation`, the camp's `flattenArea`) | **Cross-structure rule (D351):** every structure carves its space out of the world and brings its own foundation: footprint level at the recorded ground, cleared above, a one-to-one bank around it, filled down to natural ground. Ships and the bug nest opt out with a reason | GregGuns only | [structure-placement.md § Site preparation](structure-placement.md#site-preparation-carve-and-found-d351) |
 | Grid at chunk multiples (a BIG structure at spawn) | Seeded offset inside each grid cell | Roguelike-Dungeons (same idea) | [structure-placement.md](structure-placement.md) |
 | Chest fill from `DUNGEON_CHEST` plus TG tables | GregGuns categories with a tier ceiling per structure, each a mix of pack loot (after Roguelike Dungeons' top floors) and GregGuns gear, guns rare and ammo common | TooMuchLoot, Roguelike Dungeons (as the model) | [structure-loot.md](structure-loot.md) |
 | Chisel blocks in palettes (WGEN-24); `MultiMBlock` mixes | Palette roles with fallback chains; a weighted mix stays in one family (0025) | Chisel, GregTech | [chisel-palette.md](chisel-palette.md) |

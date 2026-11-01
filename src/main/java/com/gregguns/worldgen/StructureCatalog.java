@@ -52,6 +52,29 @@ public final class StructureCatalog {
         return s == StructureId.AIRCRAFT_CARRIER || s == StructureId.SUBMARINE;
     }
 
+    /** How a structure's site is prepared before it is written (D351). */
+    public enum SiteRule {
+        /** Carve and found ({@link SitePrep}): level footprint, clearance over it, cut bank, foundation under. */
+        CARVE,
+        /** Floats on open water: the water check already demands open sea under every sampled column (D291). */
+        OPEN_WATER,
+        /** Underground by design: it carves its own chambers and shaft into the rock and stands on rock. */
+        UNDERGROUND
+    }
+
+    /**
+     * The site rule of a structure. Every land structure carves and founds its site, the default for any structure
+     * added later; only a structure that is not on land opts out, with the reason its rule names.
+     *
+     * @param s a structure, or null for a test layout the catalog does not know (carved like any land structure)
+     * @return the rule
+     */
+    public static SiteRule siteRule(StructureId s) {
+        if (s != null && isWater(s)) return SiteRule.OPEN_WATER;
+        if (s == StructureId.ALIEN_BUG_NEST) return SiteRule.UNDERGROUND;
+        return SiteRule.CARVE;
+    }
+
     /**
      * @param layoutId a layout id
      * @return the matching structure, or null for an id the catalog does not know (a test layout)
@@ -120,8 +143,16 @@ public final class StructureCatalog {
             }
             Layout l = layouts.get(s.id());
             if (l == null) continue;
+            // A carved site's bank lies past its box: the apron lets the windows over the bank find the plan.
             out.get(sizeClass(s))
-                .add(new PoolEntry(s.id(), 1, VARIANTS, new Footprint(l.sizeX(), l.sizeY(), l.sizeZ())));
+                .add(
+                    new PoolEntry(
+                        s.id(),
+                        1,
+                        VARIANTS,
+                        new Footprint(l.sizeX(), l.sizeY(), l.sizeZ()),
+                        null,
+                        siteRule(s) == SiteRule.CARVE ? SitePrep.BANK : 0));
         }
         return Collections.unmodifiableMap(out);
     }
