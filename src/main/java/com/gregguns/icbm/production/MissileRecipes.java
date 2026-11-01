@@ -195,8 +195,7 @@ public final class MissileRecipes {
 
     /**
      * The metal of the plates comes back from a body. A T1 or T2 body returns its compressed plates (GT's own amount
-     * for
-     * the item). The T3 body's Galacticraft Heavy Duty Plates Tier 4 carry no GT metal data, so it returns four
+     * for the item). The T3 body's Galacticraft Heavy Duty Plates Tier 4 carry no GT metal data, so it returns four
      * compressed Tungstensteel plates, the metal of the LuV band they are built in (D343); the fins, the engine and the
      * computer carry none either and return nothing.
      */
