@@ -281,7 +281,7 @@ public final class ComplexKeeper {
     }
 
     /** @return a world's records by chunk key (scenarios), never null */
-    Map<Long, KeptChunk> records(World world) {
+    public Map<Long, KeptChunk> records(World world) {
         Map<Long, KeptChunk> pending = store.pending(world, false);
         return pending == null ? java.util.Collections.<Long, KeptChunk>emptyMap() : pending;
     }

@@ -87,6 +87,8 @@ public final class FurnitureWear {
             if (m.kind() != MarkKind.FURNITURE) continue;
             piece(m, kind, state, collapsed, seed, ceiling, top, mine);
         }
+        // The dining hall's Vending Machine (D355): its controller by the room's state.
+        VendingEgg.room(marks, state, collapsed, mine);
         out.addAll(mine);
         if (state == RoomState.GUTTED && !collapsed && kind != null) {
             piles(plan, section, marks, bounds, seed, mine, out);

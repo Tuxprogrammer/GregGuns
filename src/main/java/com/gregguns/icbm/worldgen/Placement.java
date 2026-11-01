@@ -57,7 +57,14 @@ public final class Placement {
          * room's chest category and table, {@link #roomState()} the room's state, {@link #variant()} how many things
          * and {@link #chestIndex()} the seed of its draw. Written after the piece, into its tile entity.
          */
-        STOCK
+        STOCK,
+        /**
+         * A cell of a dining hall's Vending Machine (D355, {@link VendingEgg}): {@link #key()} is
+         * {@link VendingEgg#LIVE} or {@link VendingEgg#DEAD} for its controller, facing {@link #front()}, or
+         * {@link VendingEgg#GAP} for the casing a gutted room has lost. Written only when the Vending Machine mod is
+         * loaded.
+         */
+        VENDING
     }
 
     /** Extra things a chest may hold beyond its table (D17, D36, D128). */

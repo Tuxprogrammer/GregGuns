@@ -283,6 +283,35 @@ public final class I6VisualSetups {
 
     // --- the dump ----------------------------------------------------------------------------------------------
 
+    /** Logs the dining hall's Vending Machine (D355) in world coordinates: its controller, front and hall. */
+    private static void logVending(int ax, int az, int floor, ComplexPlan cp) {
+        for (Room r : cp.rooms()) {
+            List<int[]> cols = new ArrayList<int[]>();
+            int hang = 0, bottom = Integer.MAX_VALUE;
+            for (Mark m : r.marks()) {
+                if (m.kind() != MarkKind.FURNITURE || com.gregguns.icbm.complex.FurniturePiece.of(m.key())
+                    != com.gregguns.icbm.complex.FurniturePiece.VENDING_MACHINE) continue;
+                hang = m.facing() & 3;
+                bottom = Math.min(bottom, m.y());
+                boolean seen = false;
+                for (int[] c : cols) seen |= c[0] == m.x() && c[1] == m.z();
+                if (!seen) cols.add(new int[] { m.x(), m.z() });
+            }
+            if (cols.size() != 2) continue;
+            int[] c = VendingEgg.controllerColumn(cols.get(0), cols.get(1), hang);
+            if (c == null) continue;
+            GregGuns.LOG.info(
+                "I6C VENDING hall={} id={} controller={},{},{} hang={} front={}",
+                r.kind(),
+                r.id(),
+                ax + c[0],
+                floor + bottom + 1,
+                az + c[1],
+                hang,
+                MachineFacing.compass((hang + 2) & 3));
+        }
+    }
+
     private static void dump(World world, StructurePlan plan, int floor, String tag) {
         ComplexPlan cp = ComplexLayout.fromSeed(plan.chestSeedBase(), plan.cellX(), plan.cellZ());
         lastPlan = plan;
@@ -304,6 +333,7 @@ public final class I6VisualSetups {
             cp.radarStations()
                 .size());
         logRoom(ax, az, floor, cp.hall(), "HALL");
+        logVending(ax, az, floor, cp);
         for (Room r : cp.rooms()) {
             logRoom(ax, az, floor, r, "ROOM");
             // The wall block at the room's low corner tells which style set drew it.
@@ -543,7 +573,7 @@ public final class I6VisualSetups {
 
         @Override
         public String description() {
-            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, silocam, hatchradar, breakblock, shellcheck, planet, dim, complexinfo). Not part of test all.";
+            return "I6 client-session setup (dev only): runs the operations in i6c-ops.txt (cell, cam, tp, mode, cut, sig, part, placepart, silocam, hatchradar, breakblock, use, shellcheck, planet, dim, complexinfo). Not part of test all.";
         }
 
         @Override
@@ -786,6 +816,15 @@ public final class I6VisualSetups {
                 case "kill":
                     killEntities(lastWorld, lastPlan);
                     break;
+                case "use": {
+                    // use <player> <x> <y> <z> <side>: the player right-clicks the block's side (a machine's GUI)
+                    EntityPlayerMP p = player(t[1]);
+                    int x = Integer.parseInt(t[2]), y = Integer.parseInt(t[3]), z = Integer.parseInt(t[4]);
+                    boolean ok = p.worldObj.getBlock(x, y, z)
+                        .onBlockActivated(p.worldObj, x, y, z, p, Integer.parseInt(t[5]), 0.5f, 0.5f, 0.5f);
+                    GregGuns.LOG.info("I6C use {},{},{} -> {}", x, y, z, ok);
+                    break;
+                }
                 default:
                     GregGuns.LOG.warn("I6C unknown op {}", t[0]);
             }

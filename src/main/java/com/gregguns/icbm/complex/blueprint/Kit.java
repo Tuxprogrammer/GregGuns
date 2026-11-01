@@ -939,6 +939,14 @@ public final class Kit {
         return seen;
     }
 
+    /**
+     * @return the cells a walk from the doorway reaches over open floor and walked pieces, index {@code a * depth + d}
+     *         (a fresh array)
+     */
+    boolean[] walked() {
+        return flood();
+    }
+
     private boolean touches(boolean[] seen, int a, int d) {
         for (Dir x : Dir.REAL) {
             int ca = a + x.da, cd = d + x.dd;

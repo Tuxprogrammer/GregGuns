@@ -169,6 +169,9 @@ public final class ComplexApplier {
             case STOCK:
                 stock(p, x, y, z);
                 break;
+            case VENDING:
+                vending(p, x, y, z);
+                break;
             default:
                 break;
         }
@@ -322,6 +325,21 @@ public final class ComplexApplier {
                 }
             }
         }
+    }
+
+    /**
+     * A {@link Placement.Kind#VENDING} (D355): the Vending Machine's controller, working or dead, facing into its
+     * hall, owned by the complex like every generated machine; or the knocked-out casing of a gutted hall's machine.
+     * Nothing without the Vending Machine mod: the marks pass then left the style's cabinet, which stays whole.
+     */
+    private void vending(Placement p, int x, int y, int z) {
+        if (!sink.window()
+            .contains(x, z) || !com.gregguns.icbm.complex.gen.VendingMachinePiece.present()) return;
+        if (VendingEgg.GAP.equals(p.key())) {
+            sink.setBlock(x, y, z, Blocks.air, 0);
+            return;
+        }
+        placeMte(x, y, z, com.gregguns.icbm.complex.gen.VendingMachinePiece.controllerId(), p.front(), p);
     }
 
     /**
