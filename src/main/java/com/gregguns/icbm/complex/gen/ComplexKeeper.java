@@ -286,6 +286,15 @@ public final class ComplexKeeper {
         return pending == null ? java.util.Collections.<Long, KeptChunk>emptyMap() : pending;
     }
 
+    /**
+     * Drops a chunk's record without keeping it: a rebuild clears the chunk and writes the complex again, and the
+     * write records afresh.
+     */
+    public void forget(World world, int chunkX, int chunkZ) {
+        Map<Long, KeptChunk> pending = store.pending(world, false);
+        if (pending != null) pending.remove(key(chunkX, chunkZ));
+    }
+
     /** @return whether a world holds a record for the chunk */
     public boolean pending(World world, int chunkX, int chunkZ) {
         Map<Long, KeptChunk> pending = store.pending(world, false);
