@@ -34,13 +34,23 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 
 **No integration point** (see [the Techguns spec](../../techguns-spec/02-guns/index.md) and the [design records](../../design/README.md)): gun stats and catalog, firing algorithm, spread and zoom math, reload rules, NBT layout, tooltips and lang keys, NPC firing, the weapon-stats config, grenade behavior. Their pack-facing parts (keybinds, networking, config library) are in [01-core](../01-core/).
 
+## Reloading (beta): deviations
+
+Design record [0026](../../design/0026-single-round-and-chamber-reloads.md) (D350). Techguns' reload is one step ([gun-lifecycle.md § 7](../../techguns-spec/02-guns/gun-lifecycle.md#7-reloading)); GregGuns already loads at the end of the reload. On top of that:
+
+- **Single loose rounds.** A magazine-fed gun (`GunStats.loadsSingleRounds()`: a `mag_*` ammo type with a different loose round) with fewer loaded magazines at hand than a reload takes, but with its loose round, loads one shot's worth of loose rounds (one; two on the Akimbo Mac10s) for the full reload time, one loose item per round, nothing ejected or refunded, never past the clip. A magazine is always preferred. Akimbo pairs load one shot's worth per reload in total.
+- **Chambers.** The Revolver, Golden Revolver, both akimbo revolver pairs, the Combat Shotgun and the Sawed Off use `ReloadMode.CHAMBER`. Each chamber takes `reloadTicks / magazine` (odd ticks spread so a reload from empty takes the sheet's time), the run goes on while ammo lasts, and a trigger pull made during the run stops it and fires at once. A held automatic trigger from the dry click does not stop it. A revolver bullet is paid at its first chamber and its other rounds stay on the gun as chamber credit (NBT `chamber_credit`). The launchers and the Hand Cannon are unchanged.
+- **Idle reload.** A held chamber gun that is not full and has gone `guns.idleReloadDelayTicks` (40) ticks without a shot, pull or reload starts a chamber run by itself. Server side only; 0 turns it off.
+- **Messages.** `RELOAD_STARTED` carries the run's length (`ReloadStateMachine.totalTicks()`), so the existing animation plays once over a chamber run; the reload sound plays once per run. A reload-key press during a running reload no longer rolls back the shooter's animation.
+- **No dupe.** `ReloadEconomyTest` proves that no mix of single loads, magazine swaps with the floored refund, refills and unloads raises the loose rounds a player could recover, and that chamber guns conserve every round.
+
 ## Pistol, Revolver, Sawed Off and Hand Cannon (M1 and early M2): deviations
 
 9mm Pistol (`pistol_9mm`, LV), Revolver (`revolver`, LV), Sawed Off (`sawed_off`, LV) and Hand Cannon (`handcannon`, Steam tier). Their stats are the Techguns sheets' unchanged (`GunCatalogTest` pins each one). What differs:
 
 - **NPC attack time.** The sheets' attack-time variance (10 and 20 ticks) is dropped; `GunStats` has no such field. Range, base attack time and burst are kept.
 - **GUN-16 not reproduced.** The pistol has one drop-off and one muzzle flash, not two (`GunCatalogTest.doesNotReproduceGUN16_pistolHasOneDropOffAndOneMuzzleFlash`).
-- **Loading.** The Revolver takes one `ammo_9mm_bullet` for all 6 rounds and returns no container; the Sawed Off loads its 2 shells one by one (`ReloadMode.INCREMENTAL`) and keeps the rounds already in it; the Hand Cannon takes one `ammo_stone_bullet` per round with no magazine and no refund.
+- **Loading.** The Revolver takes one `ammo_9mm_bullet` for all 6 rounds and returns no container; the Sawed Off loads its 2 shells one by one and keeps the rounds already in it; both load one chamber at a time (`ReloadMode.CHAMBER`, see [Reloading](#reloading-beta-deviations)); the Hand Cannon takes one `ammo_stone_bullet` per round with no magazine and no refund.
 - **Sawed Off pellets.** One round spawns 8 projectiles (the centre one at the main spread, 7 at the pellet spread of 0.2) and costs one round.
 - **Hand Cannon tier.** It has no machine row, because no machine exists at ULV, so it is crafted at the crafting table from the Stone Barrel (RC-01, Bronze gate) and stone bullets (RC-27). Its tier is Steam. The ball falls under 0.015 gravity (`SimpleProjectile`).
 - **Recipes.** The Pistol, Revolver and Sawed Off are LV Assembler rows with circuits 1, 2 and 3 (GR-01 to GR-03); the Steel gate and the part chains are in `GunTable`.
