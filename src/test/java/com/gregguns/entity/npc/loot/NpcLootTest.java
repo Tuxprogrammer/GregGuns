@@ -116,7 +116,7 @@ class NpcLootTest {
         Set<String> refs = refs(t);
         for (String want : new String[] { "gregguns:ammo_rifle_bullet", "gregguns:ammo_rocket",
             "gregguns:tank_fuel~full", "gregguns:tank_bio~full", "gregguns:part_barrel_laser",
-            "gregguns:part_power_plating", "ore:plateRhodiumPlatedPalladium", "gt:ingot.HSSG" }) {
+            "gregguns:part_power_plating", "ore:plateRhodium-PlatedPalladium", "gt:ingot.HSSG" }) {
             assertTrue(refs.contains(want), want + " in " + refs);
         }
     }

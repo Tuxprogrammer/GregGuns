@@ -290,9 +290,10 @@ public final class NpcProfiles {
                         .slot(LootDrop.one(G + "part_power_plating"))
                         // Source:
                         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L2224-L2228
-                        // the LuV machine casing is Rhodium-Plated Palladium plates (a bartworks material, so an ore
-                        // dictionary reference rather than a GT Materials one).
-                        .slots(LootDrop.range("ore:plateRhodiumPlatedPalladium", 1, 2), 2)
+                        // the LuV machine casing is Rhodium-Plated Palladium plates. A bartworks material, so an
+                        // ore dictionary reference; its ore name keeps the hyphen (getVarName drops only spaces):
+                        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/system/material/Werkstoff.java#L527-L529
+                        .slots(LootDrop.range("ore:plateRhodium-PlatedPalladium", 1, 2), 2)
                         .slots(LootDrop.range("gt:ingot.HSSG", 1, 2), 2)
                         .slot(LootDrop.range("gt:plate.TungstenSteel", 1, 3))
                         .build())
