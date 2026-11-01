@@ -109,6 +109,7 @@ Every room's blueprint (see [silo-layout](silo-layout.md#furnishing-d208-d305-d3
 | Tool rack | `BiblioRack` | wood | `rackAngle` | the style's shelf |
 | Armor stand | `Armor Stand` | angle below, angle + 4 above | the meta | none |
 | Locker | GregTech's ULV Locker (`gregtech:gt.blockmachines`, the `Locker_ULV` item), facing into the room (D263) | | GT front facing | the GT Locker (the style's shelf only without a world, or when the pack has no Locker) |
+| Vending Machine | the pack's Vending Machine: `vendingmachine:casing` (meta 0) in all six cells, then its controller (`gregtech:gt.blockmachines`, MTE 2741) in the middle of the right column, facing into the room (D355) | | GT front facing | the style's shelf, three high (without the mod, or without a world) |
 | Server rack | the style's console block, two high | | | the same |
 
 - **Wood:** one per room, spruce, dark oak, birch or oak, from the plan seed and the room id.

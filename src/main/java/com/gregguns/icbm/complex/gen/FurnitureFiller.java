@@ -13,11 +13,11 @@ import com.gregguns.worldgen.WindowedSink;
 
 /**
  * Sets the rooms' pieces over what the shell wrote (D259, D305): the BiblioCraft piece when BiblioCraft is loaded, a
- * GT Locker for a locker, a vanilla stair for a chair or a stool without BiblioCraft, and every prop's block from
- * {@link PropBlocks} (beds, crates, containers, furnaces, inlays). It writes the state-free look: a cold furnace, an
- * empty cauldron, bare wet farmland; the contents pass sets what the room's state changes, and places the metal
- * props, whose rung follows the ceiling. Each mark is one cell, so a bed's halves or a door's are written by the
- * window that owns each one. Writes only inside the window. Server side.
+ * GT Locker for a locker, the Vending Machine's casing (D355), a vanilla stair for a chair or a stool without
+ * BiblioCraft, and every prop's block from {@link PropBlocks} (beds, crates, containers, furnaces, inlays). It writes
+ * the state-free look: a cold furnace, an empty cauldron, bare wet farmland; the contents pass sets what the room's
+ * state changes, and places the metal props, whose rung follows the ceiling. Each mark is one cell, so a bed's halves
+ * or a door's are written by the window that owns each one. Writes only inside the window. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Furnishing); D259; D262; D305; D306
 public final class FurnitureFiller implements MarkFiller {
@@ -55,6 +55,12 @@ public final class FurnitureFiller implements MarkFiller {
             if (world != null && GtMachineHook.lockerAvailable() && sink.setBlock(x, y, z, Blocks.air, 0)) {
                 GtMachineHook.placeLocker(world, x, y, z, facing);
             }
+            return;
+        }
+        if (p == FurniturePiece.VENDING_MACHINE) {
+            // D355: the Vending Machine's casing in all six cells; the contents pass sets its controller. Without the
+            // mod (or without a world) the style's cabinet stays.
+            if (world != null && VendingMachinePiece.present()) sink.setBlock(x, y, z, VendingMachinePiece.casing(), 0);
             return;
         }
         int wood = FurniturePiece.woodOf(mark.key());
