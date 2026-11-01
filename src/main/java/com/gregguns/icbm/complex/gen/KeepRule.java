@@ -12,7 +12,9 @@ import java.util.Map;
  * block changes its own meta in play: a tile entity's block (a chest's or a machine's facing; its contents are never
  * compared), a plant or crop that grows, a door or a lever, a liquid. A block that changes into its partner block in
  * play (a lamp or furnace lighting up or going out, a torch, a repeater or comparator switching, flowing and still
- * liquid) is intact in either state, and so is a falling block (gravel rubble) that has fallen out of its cell, and the
+ * liquid) is intact in either state; a tile entity's block that turned into another tile entity's block (Galacticraft's
+ * landing pads forming one full pad) is intact; and so is a falling block (gravel rubble) that has fallen out of its
+ * cell, and the
  * empty cell it landed in. Every
  * other difference was made by something that ran after the complex: an ore vein, a stone layer, another mod's
  * populate.
@@ -81,6 +83,10 @@ public final class KeepRule {
                 || keptKind == Kind.LIQUID;
         }
         if (family(kept).equals(family(world))) return true;
+        // A tile entity's block that became another tile entity's block is the piece's own doing: Galacticraft forms
+        // nine landing pads into one full pad and its dummy blocks on the pads' first tick. Accepted cost: a container
+        // another generator replaced with its own container (a dungeon's chest or spawner) stays.
+        if (keptKind == Kind.TILE && worldKind == Kind.TILE) return true;
         // Rubble that fell: its old cell is empty and the cell it landed in holds it.
         return keptKind == Kind.FALLING && AIR.equals(world) || worldKind == Kind.FALLING && AIR.equals(kept);
     }

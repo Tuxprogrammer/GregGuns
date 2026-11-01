@@ -42,9 +42,26 @@ class KeepRuleTest {
         assertTrue(intact("minecraft:lit_furnace", 3, Kind.TILE, "minecraft:furnace", 3, Kind.TILE), "burnt out");
         assertTrue(intact("minecraft:redstone_lamp", 0, Kind.PLAIN, "minecraft:lit_redstone_lamp", 0, Kind.PLAIN));
         assertTrue(intact("minecraft:water", 0, Kind.LIQUID, "minecraft:flowing_water", 1, Kind.LIQUID));
+        assertTrue(intact("minecraft:dirt", 1, Kind.PLAIN, "etfuturum:coarse_dirt", 0, Kind.PLAIN), "Et Futurum's own");
         assertEquals("minecraft:furnace", KeepRule.family("minecraft:lit_furnace"));
         assertEquals("gregguns:complex_wall", KeepRule.family("gregguns:complex_wall"));
         assertFalse(intact("minecraft:water", 0, Kind.LIQUID, "minecraft:lava", 0, Kind.LIQUID));
+    }
+
+    @Test
+    void aPieceThatBuildsItselfIntoAMultiblockIsLeftAlone() {
+        assertTrue(
+            intact("GalacticraftCore:tile.landingPad", 0, Kind.TILE, "GalacticraftCore:tile.dummyblock", 2, Kind.TILE),
+            "nine pads formed one full pad");
+        assertTrue(
+            intact(
+                "GalacticraftCore:tile.landingPad",
+                0,
+                Kind.TILE,
+                "GalacticraftCore:tile.landingPadFull",
+                0,
+                Kind.TILE));
+        assertFalse(intact("minecraft:air", 0, Kind.PLAIN, "Thaumcraft:blockAiry", 0, Kind.TILE), "a node in a room");
     }
 
     @Test
