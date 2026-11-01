@@ -252,19 +252,26 @@ public final class ClientGunMirror implements GunClientSync {
 
     /** Copies the synced round count into the mirror when it changed, or after a quiet spell. */
     private void syncRounds(GunStats stats, ItemStack held) {
-        int serverLoaded = GunNbt.read(held.getTagCompound(), stats)
-            .loaded();
+        GunState server = GunNbt.read(held.getTagCompound(), stats);
+        int serverLoaded = server.loaded();
         if (serverLoaded != lastServerLoaded || quietTicks >= RESYNC_QUIET_TICKS && !isReloading()) {
             state.setLoaded(stats, serverLoaded);
+            // The chamber credit changes only with the rounds, so it follows them (design record 0026).
+            state.setCredit(stats, server.credit());
             lastServerLoaded = serverLoaded;
             quietTicks = 0;
         }
     }
 
-    private static void announce(EntityPlayer player, GunStats stats, ReloadStateMachine.Event event) {
+    private void announce(EntityPlayer player, GunStats stats, ReloadStateMachine.Event event) {
         if (event == ReloadStateMachine.Event.STARTED) {
+            // The run's own length: a chamber reload animates over the chambers it planned, as the server's does.
             GunClientHooks.events()
-                .onReloadStarted(player, stats, stats.reloadTicks());
+                .onReloadStarted(
+                    player,
+                    stats,
+                    controller.reload()
+                        .totalTicks());
         } else if (event == ReloadStateMachine.Event.CANCELED) {
             GunClientHooks.events()
                 .onReloadCanceled(player);

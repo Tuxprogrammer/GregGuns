@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.server.GunKeybinds;
+import com.gregguns.item.gun.GunTooltipFormat;
 
 /** GGS-01-13: every key, category and gun string has a lang entry. */
 class GunKeybindsTest {
@@ -48,10 +49,13 @@ class GunKeybindsTest {
     void everyHudAndTooltipKeyIsDefined() throws IOException {
         Set<String> keys = langKeys();
         for (String key : new String[] { "gregguns.hud.rounds", "gregguns.hud.magazines", "gregguns.hud.reloading",
-            "gregguns.gun.tooltip.ammo", "gregguns.gun.tooltip.loaded", "gregguns.gun.tooltip.damage",
-            "gregguns.gun.tooltip.shift", "gregguns.gun.tooltip.damage_type", "gregguns.gun.tooltip.range",
-            "gregguns.gun.tooltip.spread", "gregguns.gun.tooltip.clipsize", "gregguns.gun.tooltip.reload_time",
-            "gregguns.gun.tooltip.armor_pen", "gregguns.gun.tooltip.zoom", "item.gregguns.pistol_9mm.name" }) {
+            "gregguns.hud.loose_rounds", "gregguns.gun.tooltip.ammo", "gregguns.gun.tooltip.loaded",
+            "gregguns.gun.tooltip.damage", "gregguns.gun.tooltip.shift", "gregguns.gun.tooltip.damage_type",
+            "gregguns.gun.tooltip.range", "gregguns.gun.tooltip.spread", "gregguns.gun.tooltip.clipsize",
+            "gregguns.gun.tooltip.reload_time", "gregguns.gun.tooltip.armor_pen", "gregguns.gun.tooltip.zoom",
+            "item.gregguns.pistol_9mm.name", GunTooltipFormat.RELOAD_SINGLE_KEY,
+            GunTooltipFormat.RELOAD_SINGLE_PAIR_KEY, GunTooltipFormat.RELOAD_SINGLE_PAIR_DOUBLE_KEY,
+            GunTooltipFormat.RELOAD_CHAMBER_KEY }) {
             assertTrue(keys.contains(key), key);
         }
     }

@@ -362,6 +362,11 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
                 StatCollector.translateToLocalFormatted(
                     "gregguns.gun.tooltip.reload_time",
                     GunTooltipFormat.reloadSeconds(stats)));
+            String reloadRule = GunTooltipFormat.reloadRuleKey(stats);
+            if (reloadRule != null) {
+                tooltip
+                    .add(StatCollector.translateToLocalFormatted(reloadRule, GunTooltipFormat.chamberSeconds(stats)));
+            }
         }
         if (stats.penetration() > 0) {
             tooltip.add(

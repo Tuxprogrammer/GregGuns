@@ -23,6 +23,7 @@ public final class GregGunsConfig {
             ModulesConfig.class,
             DebugConfig.class,
             AimConfig.class,
+            GunsConfig.class,
             BioGunConfig.class,
             ClientConfig.class,
             DamageFactorsConfig.class,

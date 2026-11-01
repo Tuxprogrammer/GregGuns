@@ -138,8 +138,8 @@ public final class GunStats {
         require(chargeFullTicks == 0 || euPerShot == 0, "a charge-hold gun cannot also be an energy gun");
         require(ammoItemsPerReload >= 1, "ammoItemsPerReload");
         require(
-            reloadMode != ReloadMode.INCREMENTAL || magazineSize % ammoItemsPerReload == 0,
-            "INCREMENTAL magazineSize must divide evenly by ammoItemsPerReload");
+            reloadMode == ReloadMode.MAGAZINE || magazineSize % ammoItemsPerReload == 0,
+            "INCREMENTAL and CHAMBER magazineSize must divide evenly by ammoItemsPerReload");
         require(reloadTicks >= 1, "reloadTicks");
         require(projectileSpeed > 0 && lifetimeTicks >= 1, "projectile speed / lifetime");
         require(bulletsPerShot >= 1, "bulletsPerShot");
@@ -280,6 +280,42 @@ public final class GunStats {
     /** Reload duration in ticks, from start to the rounds being loaded. */
     public int reloadTicks() {
         return reloadTicks;
+    }
+
+    /**
+     * True for a magazine-fed gun: it reloads from a magazine item ({@link ReloadMode#MAGAZINE}) whose loose round is
+     * a different item ({@code looseAmmoType} set and not the ammo type). With no full reload's magazines at hand, such
+     * a gun loads loose rounds one shot's worth per reload instead (design record 0026). Guns that load straight from
+     * loose rounds, tanks, energy guns and charge guns are not magazine-fed.
+     */
+    public boolean loadsSingleRounds() {
+        return reloadMode == ReloadMode.MAGAZINE && looseAmmoType != null
+            && !looseAmmoType.equals(ammoType)
+            && !isEnergy()
+            && !isCharge();
+    }
+
+    /**
+     * How long chamber {@code index} (0-based, the slot the round goes into) of a {@link ReloadMode#CHAMBER} gun takes
+     * to load: the reload time split evenly over the magazine, the odd ticks spread so that the chambers of a reload
+     * from empty add up to exactly {@link #reloadTicks()}.
+     *
+     * @param index the chamber being loaded, 0 to magazine size - 1
+     * @return ticks, at least 1
+     */
+    public int chamberTicks(int index) {
+        return Math.max(1, chamberTicksBetween(index, index + 1));
+    }
+
+    /**
+     * Ticks to load chambers {@code from} (inclusive) to {@code to} (exclusive) one after another; {@code 0} to the
+     * magazine size is {@link #reloadTicks()}. Chamber guns only; the result is meaningless for others.
+     */
+    public int chamberTicksBetween(int from, int to) {
+        int lo = Math.max(0, Math.min(magazineSize, from));
+        int hi = Math.max(lo, Math.min(magazineSize, to));
+        long t = reloadTicks;
+        return (int) (hi * t / magazineSize - lo * t / magazineSize);
     }
 
     /** Projectile speed in blocks per tick. */
@@ -607,7 +643,10 @@ public final class GunStats {
             return this;
         }
 
-        /** Magazine swap, or the shell-by-shell top-up with {@code itemsPerReload} items at most. */
+        /**
+         * Magazine swap, the shell-by-shell top-up with {@code itemsPerReload} items at most, or chamber by chamber
+         * ({@code itemsPerReload} items fill the gun, so each is worth magazine / items rounds).
+         */
         public Builder reloadMode(ReloadMode mode, int itemsPerReload) {
             reloadMode = mode;
             ammoItemsPerReload = itemsPerReload;

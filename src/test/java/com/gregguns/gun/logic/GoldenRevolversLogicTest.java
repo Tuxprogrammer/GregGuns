@@ -81,9 +81,12 @@ class GoldenRevolversLogicTest {
     }
 
     @Test
-    void doesNotReproduceGun14_theAkimboPairRefundsAtTheSingleGunsRate() {
-        // Two items fill 12 rounds, so each item is 6 rounds, the same as one bullet in the single gun.
+    void doesNotReproduceGun14_theAkimboPairChambersAtTheSingleGunsRate() {
+        // Two items fill 12 rounds, so each item is 6 rounds, the same as one bullet in the single gun. The pair loads
+        // one chamber at a time (design record 0026): its missing round costs one bullet and the bullet's other five
+        // rounds wait as chamber credit, so nothing is handed back and nothing is lost.
         assertEquals(GunItems.roundsPerLooseItem(GOLD), GunItems.roundsPerLooseItem(PAIR));
+        assertEquals(6, PAIR.roundsPerItem());
         GunController c = new GunController();
         GunState st = new GunState(11);
         MapAmmoInventory inv = new MapAmmoInventory().with(AmmoIds.NINE_MM, 2);
@@ -92,9 +95,9 @@ class GoldenRevolversLogicTest {
             c.tick(PAIR, st, inv, true, false);
         }
         assertEquals(12, st.loaded());
-        assertEquals(0, inv.items(AmmoIds.NINE_MM));
-        assertEquals(11, inv.rounds(AmmoIds.NINE_MM), "the controller hands back what was loaded");
-        assertEquals(1, 11 / GunItems.roundsPerLooseItem(PAIR), "which the store turns into one bullet, floored");
+        assertEquals(1, inv.items(AmmoIds.NINE_MM));
+        assertEquals(5, st.credit());
+        assertEquals(0, inv.rounds(AmmoIds.NINE_MM), "a chamber gun hands nothing back");
     }
 
     @Test
