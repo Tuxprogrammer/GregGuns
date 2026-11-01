@@ -150,6 +150,24 @@ public final class OreAuditSetups {
                     return true;
                 };
             }
+            case "column": {
+                // column <x> <z> <y0> <y1>: logs every block of one column, for a look at what replaced what
+                final int x = Integer.parseInt(t[1]), z = Integer.parseInt(t[2]), y0 = Integer.parseInt(t[3]),
+                    y1 = Integer.parseInt(t[4]);
+                return w -> {
+                    StringBuilder b = new StringBuilder();
+                    for (int y = y0; y <= y1; y++) {
+                        b.append(' ')
+                            .append(y)
+                            .append('=')
+                            .append(Block.blockRegistry.getNameForObject(w.getBlock(x, y, z)))
+                            .append(':')
+                            .append(w.getBlockMetadata(x, y, z));
+                    }
+                    GregGuns.LOG.info("ORE column {},{}:{}", x, z, b);
+                    return true;
+                };
+            }
             default:
                 GregGuns.LOG.warn("ORE unknown op {}", t[0]);
                 return null;
