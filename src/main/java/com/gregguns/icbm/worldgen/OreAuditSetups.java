@@ -282,7 +282,8 @@ public final class OreAuditSetups {
         ComplexRaster r = placer.rasterOf(plan);
         ComplexPlan cp = r.plan();
         int ax = plan.anchorX(), az = plan.anchorZ();
-        long[] ore = new long[Where.values().length], cells = new long[Where.values().length];
+        long[] ore = new long[Where.values().length], cells = new long[Where.values().length],
+            stone = new long[Where.values().length];
         long unloaded = 0, cutOff = 0;
         StringBuilder examples = new StringBuilder();
         int ex = cp.escapeX(), ez = cp.escapeZ(), em = cp.escapeMeta();
@@ -319,7 +320,7 @@ public final class OreAuditSetups {
                         k = Where.SKIN;
                     else if (inBox) k = Where.ROCK;
                     else continue;
-                    count(world, x, floor + y, z, k, c, ore, cells, examples);
+                    count(world, x, floor + y, z, k, c, ore, cells, stone, examples);
                 }
                 boolean silo = siloColumn(r, lx, lz);
                 boolean escape = lx == ex && lz == ez || lx == bx && lz == bz;
@@ -327,7 +328,17 @@ public final class OreAuditSetups {
                     int from = silo ? floor + ComplexRaster.LEVELS + 1 : floor + cp.escapeTop();
                     int to = world.getHeightValue(x, z);
                     for (int y = from; y <= to; y++) {
-                        count(world, x, y, z, silo ? Where.SHAFT : Where.LADDER, (byte) -1, ore, cells, examples);
+                        count(
+                            world,
+                            x,
+                            y,
+                            z,
+                            silo ? Where.SHAFT : Where.LADDER,
+                            (byte) -1,
+                            ore,
+                            cells,
+                            stone,
+                            examples);
                     }
                 }
             }
@@ -339,7 +350,9 @@ public final class OreAuditSetups {
                 .append('=')
                 .append(ore[k.ordinal()])
                 .append('/')
-                .append(cells[k.ordinal()]);
+                .append(cells[k.ordinal()])
+                .append(" stone ")
+                .append(stone[k.ordinal()]);
         }
         long own = ore[Where.LEVEL.ordinal()] + ore[Where.SKIN.ordinal()]
             + ore[Where.SHAFT.ordinal()]
@@ -363,9 +376,29 @@ public final class OreAuditSetups {
     }
 
     private static void count(World world, int x, int y, int z, Where k, byte cell, long[] ore, long[] cells,
-        StringBuilder examples) {
+        long[] stone, StringBuilder examples) {
         if (y < 0 || y > 255) return;
         cells[k.ordinal()]++;
+        if (isGtStone(world, x, y, z)) {
+            stone[k.ordinal()]++;
+            if (k != Where.ROCK && examples.length() < 3000) {
+                examples.append(" S:")
+                    .append(k)
+                    .append('@')
+                    .append(x)
+                    .append(',')
+                    .append(y)
+                    .append(',')
+                    .append(z)
+                    .append('=')
+                    .append(Block.blockRegistry.getNameForObject(world.getBlock(x, y, z)))
+                    .append(':')
+                    .append(world.getBlockMetadata(x, y, z))
+                    .append("(cell ")
+                    .append(cell)
+                    .append(')');
+            }
+        }
         if (!isOre(world, x, y, z)) return;
         ore[k.ordinal()]++;
         if (k != Where.ROCK && examples.length() < 1500) {
@@ -392,6 +425,18 @@ public final class OreAuditSetups {
             String n = String.valueOf(Block.blockRegistry.getNameForObject(b));
             return n.toLowerCase(java.util.Locale.ROOT)
                 .contains("ore");
+        }
+    }
+
+    /**
+     * @return whether the block is one GregTech's ore veins replace (plain stone, raw granite, marble or basalt,
+     *         deepslate and the rest of its stone types in this dimension)
+     */
+    static boolean isGtStone(World world, int x, int y, int z) {
+        try {
+            return gregtech.api.enums.StoneType.findStoneType(world, x, y, z) != null;
+        } catch (Exception | LinkageError e) {
+            return false;
         }
     }
 
