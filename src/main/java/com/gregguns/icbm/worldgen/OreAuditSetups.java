@@ -288,7 +288,11 @@ public final class OreAuditSetups {
             + s[3] / 1_000_000L
             + " ms, recording "
             + s[4] / 1_000_000L
-            + " ms";
+            + " ms, "
+            + s[5]
+            + " records read from saved chunks; set back cells held "
+            + com.gregguns.icbm.complex.gen.ComplexKeeper.game()
+                .replaced();
     }
 
     /** Kinds of cell the audit counts, by where in the complex they lie. */

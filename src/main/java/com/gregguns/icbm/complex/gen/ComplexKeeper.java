@@ -109,6 +109,8 @@ public final class ComplexKeeper {
     };
 
     private static ComplexKeeper game;
+    /** Records read back from chunks' saved data since boot (a restart between write and keep). */
+    private static long loadedFromSave;
 
     /** @return the keeper the game's writer records into, made on first use */
     public static synchronized ComplexKeeper game() {
@@ -126,6 +128,8 @@ public final class ComplexKeeper {
     private final Store store;
     /** Totals since boot, for the log and the scenarios: chunks kept, cells checked, cells set back, nanoseconds. */
     private long keptChunks, checkedCells, setBack, spentNanos, recordNanos;
+    /** What the cells set back held, by block name (the first 64 names), for the log and the real-pack check. */
+    private final Map<String, Long> replaced = new LinkedHashMap<String, Long>();
 
     ComplexKeeper(MachineHook machines, Store store) {
         this.machines = machines;
@@ -262,6 +266,11 @@ public final class ComplexKeeper {
         return pending == null ? 0 : pending.size();
     }
 
+    /** @return what the cells set back since boot held, by block name and count */
+    public Map<String, Long> replaced() {
+        return java.util.Collections.unmodifiableMap(replaced);
+    }
+
     /** @return a world's records by chunk key (scenarios), never null */
     Map<Long, KeptChunk> records(World world) {
         Map<Long, KeptChunk> pending = store.pending(world, false);
@@ -274,9 +283,12 @@ public final class ComplexKeeper {
         return pending != null && pending.containsKey(key(chunkX, chunkZ));
     }
 
-    /** @return chunks kept, cells checked, cells set back, nanoseconds spent keeping, nanoseconds spent recording */
+    /**
+     * @return chunks kept, cells checked, cells set back, nanoseconds spent keeping, nanoseconds spent recording, and
+     *         records the game read back from saved chunks
+     */
     public long[] stats() {
-        return new long[] { keptChunks, checkedCells, setBack, spentNanos, recordNanos };
+        return new long[] { keptChunks, checkedCells, setBack, spentNanos, recordNanos, loadedFromSave };
     }
 
     /**
@@ -382,6 +394,11 @@ public final class ComplexKeeper {
             KeepRule.Kind keptKind = tile != null ? KeepRule.Kind.TILE : kind(kept, keptMeta);
             if (KeepRule.intact(keptName, keptMeta, keptKind, name(now), nowMeta, kind(now, nowMeta))) continue;
             int x = k.x(pos), z = k.z(pos);
+            String was = name(now);
+            if (replaced.containsKey(was) || replaced.size() < 64) {
+                Long c = replaced.get(was);
+                replaced.put(was, c == null ? 1L : c + 1L);
+            }
             world.setBlock(x, y, z, kept, keptMeta, 2);
             if (tile != null) {
                 TileEntity te = TileEntity.createAndLoadEntity((NBTTagCompound) tile.copy());
@@ -512,6 +529,7 @@ public final class ComplexKeeper {
             if (kept == null) return;
             GAME_STORE.pending(world, true)
                 .put(key(c.xPosition, c.zPosition), kept);
+            loadedFromSave++;
         }
 
         @SubscribeEvent
