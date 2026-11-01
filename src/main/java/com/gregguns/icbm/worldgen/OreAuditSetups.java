@@ -185,6 +185,15 @@ public final class OreAuditSetups {
                     return true;
                 };
             }
+            case "doors": {
+                // doors <cellX> <cellZ>: the blast doors the complex plans and how many of them stand in the world
+                // (any Carpenter's garage door piece in the door's plane), plus every garage door piece in the box
+                final int cx = Integer.parseInt(t[1]), cz = Integer.parseInt(t[2]);
+                return w -> {
+                    doors(w, cx, cz);
+                    return true;
+                };
+            }
             case "slice": {
                 // slice <x0> <z0> <x1> <z1> <y>: one layer as a letter grid (s stone, a air, o ore, w complex wall,
                 // . anything else), a row per z
@@ -211,6 +220,54 @@ public final class OreAuditSetups {
                 GregGuns.LOG.warn("ORE unknown op {}", t[0]);
                 return null;
         }
+    }
+
+    /** Logs the planned blast doors of a complex and how many stand ("ORE doors" line). */
+    private static void doors(World world, int cellX, int cellZ) {
+        StructurePlan p = plan(world, cellX, cellZ);
+        Decision d = StructureState.forWorld(world)
+            .get(PlanKey.of(p));
+        Block garage = FixtureWriter.garageDoor();
+        if (d == null || !d.isPlaced() || garage == null) {
+            GregGuns.LOG.info("ORE doors cell {},{}: decision {}, garage door {}", cellX, cellZ, d, garage);
+            return;
+        }
+        ComplexPlacer placer = com.gregguns.icbm.complex.gen.ConfigSettings.writer();
+        placer.enabledIn(world);
+        ComplexRaster raster = placer.rasterOf(p);
+        ComplexFixtures f = placer.fixturesOf(p, raster);
+        int floor = ComplexPlacer.floorY(world, d.groundY(), d.sink());
+        int planned = 0, standing = 0, pieces = 0, open = 0;
+        StringBuilder states = new StringBuilder();
+        for (ComplexFixtures.BlastDoor door : f.doors()) {
+            planned++;
+            states.append(' ')
+                .append(door.state());
+            boolean any = false;
+            for (int a = door.a0(); a <= door.a1(); a++) {
+                for (int y = door.y0(); y <= door.y1(); y++) {
+                    if (world.getBlock(p.anchorX() + door.x(a), floor + y, p.anchorZ() + door.z(a)) == garage) any = true;
+                }
+                if (door.column(a) == ComplexFixtures.Column.OPEN) open++;
+            }
+            if (any) standing++;
+        }
+        for (int x = p.anchorX(); x < p.anchorX() + ComplexLayout.SIZE; x++) {
+            for (int z = p.anchorZ(); z < p.anchorZ() + ComplexLayout.SIZE; z++) {
+                for (int y = floor; y < floor + ComplexRaster.LEVELS; y++) if (world.getBlock(x, y, z) == garage) pieces++;
+            }
+        }
+        GregGuns.LOG.info(
+            "ORE doors cell {},{} level {}: {} planned, {} standing (a garage door piece in the plane), {} garage door"
+                + " pieces in the box, {} open columns; states{}",
+            cellX,
+            cellZ,
+            placer.levelOf(p),
+            planned,
+            standing,
+            pieces,
+            open,
+            states);
     }
 
     private static StructurePlan plan(World world, int cellX, int cellZ) {

@@ -880,7 +880,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 for (int z = Math.max(sz, window.minZ()); z <= Math.min(sz + 4, window.maxZ()); z++) {
                     int g = probe.landY(x, z);
                     // Under water the shaft rises through it to one block over its surface (D354).
-                    if (g == HeightProbe.NONE) g = riserTop(probe, floorY, x, z);
+                    if (g == HeightProbe.NONE) g = riserTopAt(probe, floorY, x, z);
                     int top = g == HeightProbe.NONE ? HeightProbe.NONE : Math.min(g, BUILD_HEIGHT - 8);
                     // The finish (D319) puts the mouth back to this once everything around it has populated.
                     if (mouths != null) mouths.record(world, id, sx, sz, floorY, s.variant(), x, z, top);
@@ -962,7 +962,7 @@ public final class ComplexPlacer implements ComplexWriter {
             for (int dz = -1; dz <= 1; dz++) {
                 int wx = x + dx, wz = z + dz;
                 if (dx == 0 && dz == 0 || !window.contains(wx, wz)) continue;
-                int top = riserTop(probe, floorY, wx, wz);
+                int top = riserTopAt(probe, floorY, wx, wz);
                 if (top == HeightProbe.NONE) continue;
                 int bed = probe.seaFloorY(wx, wz);
                 boolean behind = wx == bx && wz == bz;
@@ -983,12 +983,10 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         if (!window.contains(x, z)) return n;
         int g = probe.landY(x, z);
-        int hinge = 0;
         if (g == HeightProbe.NONE) {
             // Under water: the ladder climbs through the bed and the water to the riser's top (D354).
-            g = riserTop(probe, floorY, x, z);
+            g = riserTopAt(probe, floorY, x, z);
             if (g == HeightProbe.NONE) return n;
-            hinge = trapdoorHinge(meta);
         }
         for (int y = base; y < g; y++) {
             ResolvedBlock b = blocks.ladder(meta, x, y, z);
@@ -996,8 +994,10 @@ public final class ComplexPlacer implements ComplexWriter {
         }
         // landY is the top solid block, so the trapdoor replaces it; a top-half trapdoor then lies flush with the
         // surface (its top face at g + 1, level with the terrain around it). On a riser it lies flush with the riser.
+        // It hinges on the backed column (D354): that column's top block rests on the backing or is the riser, so sand
+        // falling away beside the hatch never takes its support.
         ResolvedBlock t = blocks.named("trapdoor", x, g, z);
-        if (t != null && sink.setBlock(x, g, z, t.block, t.meta | hinge)) n++;
+        if (t != null && sink.setBlock(x, g, z, t.block, t.meta | trapdoorHinge(meta))) n++;
         n += clearAbove(sink, x, z, g);
         return n;
     }
@@ -1009,21 +1009,37 @@ public final class ComplexPlacer implements ComplexWriter {
      *
      * @return the riser's top y, or {@link HeightProbe#NONE} when the column is dry, has no bed, or is cut off
      */
-    static int riserTop(HeightProbe probe, int floorY, int x, int z) {
+    public static int riserTop(HeightProbe probe, int floorY, int x, int z) {
         int w = probe.waterSurfaceY(x, z), bed = probe.seaFloorY(x, z);
         if (w == HeightProbe.NONE || bed == HeightProbe.NONE || cutOffAt(bed, floorY)) return HeightProbe.NONE;
         return Math.min(w + 1, BUILD_HEIGHT - 8);
     }
 
     /**
+     * {@link #riserTop} in the populate world: a frozen top layer (ice over the water, as on a cold river) counts as
+     * the water's own, so a river that froze in places still gives every column the same top, one block over the ice.
+     * Reads only a column of this window.
+     */
+    private int riserTopAt(HeightProbe probe, int floorY, int x, int z) {
+        int top = riserTop(probe, floorY, x, z);
+        if (top == HeightProbe.NONE || world == null
+            || !probe.window()
+                .contains(x, z)
+            || top >= BUILD_HEIGHT - 8) return top;
+        Material m = world.getBlock(x, top, z)
+            .getMaterial();
+        return m == Material.ice || m == Material.packedIce ? top + 1 : top;
+    }
+
+    /**
      * The direction bits of a trapdoor hinged on the wall a ladder clings to: a trapdoor drops when the block on its
-     * hinge side goes, and on a riser that wall is the one riser cell sure to stand (1.7.10 trapdoor metadata: 0 hinged
+     * hinge side goes, and the backed column is the one neighbor sure to stand (1.7.10 trapdoor metadata: 0 hinged
      * on +z, 1 on -z, 2 on +x, 3 on -x).
      *
      * @param ladderMeta the ladder's metadata, 2 to 5 (2 clings to +z, 3 to -z, 4 to +x, 5 to -x)
      * @return the trapdoor's direction bits, 0 to 3
      */
-    static int trapdoorHinge(int ladderMeta) {
+    public static int trapdoorHinge(int ladderMeta) {
         switch (ladderMeta) {
             case 3:
                 return 1;

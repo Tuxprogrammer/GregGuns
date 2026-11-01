@@ -340,6 +340,10 @@ class ComplexPlacerTest {
         }
         // The surface block beside the trapdoor is the terrain's own, so the trapdoor stays camouflaged.
         assertNull(r.cells.get(bx + "," + GROUND + "," + bz), "no backing at the surface cell");
+        // The trapdoor hinges on that backed column (D354), so its support never falls away.
+        assertEquals(
+            System.identityHashCode(named.get("trapdoor")) + ":" + ComplexPlacer.trapdoorHinge(meta),
+            r.cells.get(x + "," + GROUND + "," + z));
         assertEquals(0, r.duplicates);
     }
 

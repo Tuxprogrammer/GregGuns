@@ -348,6 +348,28 @@ public final class ComplexDimScenarios {
             return false;
         }
 
+        /** @return whether any column of a size x size square is cut off (D207) */
+        private static boolean anyCutOff(World w, int floor, int x, int z, int size) {
+            for (int dx = 0; dx < size; dx++) for (int dz = 0; dz < size; dz++) {
+                if (cutOff(w, floor, x + dx, z + dz)) return true;
+            }
+            return false;
+        }
+
+        /**
+         * {@link #top}, or for a column under water one block over its water (the height a riser beside it rises to,
+         * D354).
+         */
+        private static int surface(World w, int x, int z) {
+            if (!underWater(w, x, z)) return top(w, x, z);
+            for (int y = 254; y > 0; y--) {
+                if (w.getBlock(x, y, z)
+                    .getMaterial()
+                    .isLiquid()) return y + 1;
+            }
+            return -1;
+        }
+
         /** Y of the topmost block that stops movement (trees and plants skipped), or -1. */
         private static int top(World w, int x, int z) {
             for (int y = 254; y > 0; y--) {
@@ -422,17 +444,21 @@ public final class ComplexDimScenarios {
                     + " chunkLoaded "
                     + w.getChunkProvider()
                         .chunkExists(ex >> 4, ez >> 4));
-            if (underWater(w, ex, ez)) {
-                // A lake over the escape column: the placer writes no trapdoor into water, by design (landY is none).
-                out.note(label + ": the escape column lies under water; no trapdoor there, as designed");
+            if (cutOff(w, floor, ex, ez)) {
+                // A lake bed too close over the level cuts the escape column off (D207): nothing rises there.
+                out.note(label + ": the escape column is cut off; no shaft there, as designed");
             } else {
                 out.check(w.getBlock(ex, ty, ez) == Blocks.trapdoor, label + ": the escape ladder ends in a trapdoor");
-                out.checkEquals(label + ": trapdoor is closed and in the top half", 8, w.getBlockMetadata(ex, ty, ez));
-                // Flush: on a slope the neighbors up and down the slope differ, the two across it are level.
+                out.checkEquals(
+                    label + ": trapdoor is closed, in the top half, hinged on the ladder's wall",
+                    8 | ComplexPlacer.trapdoorHinge(cp.escapeMeta()),
+                    w.getBlockMetadata(ex, ty, ez));
+                // Flush: on a slope the neighbors up and down the slope differ, the two across it are level. Over
+                // water the riser's own walls are its neighbors (D354), and the water's surface counts as their top.
                 int level = 0;
                 StringBuilder around = new StringBuilder();
                 for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
-                    int ny = top(w, ex + d[0], ez + d[1]);
+                    int ny = surface(w, ex + d[0], ez + d[1]);
                     around.append(ny)
                         .append(' ');
                     if (Math.abs(ny - ty) <= 1) level++;
@@ -453,15 +479,15 @@ public final class ComplexDimScenarios {
             }
             for (SiloSlot s : cp.silos()) {
                 int ox = plan.anchorX() + s.bounds().minX, oz = plan.anchorZ() + s.bounds().minZ;
-                if (anyUnderWater(w, ox, oz, 5)) {
-                    // A lake over the silo: the shaft is not written into water (landY is none), by design.
-                    out.note(label + ": a silo shaft lies under water; no mouth there, as designed");
+                if (anyCutOff(w, floor, ox, oz, 5)) {
+                    // A lake bed too close over the level cuts the silo off (D207): no shaft rises there.
+                    out.note(label + ": a silo shaft is cut off; no mouth there, as designed");
                     continue;
                 }
                 int ry = top(w, ox, oz);
                 int near = 99;
                 for (int[] d : new int[][] { { -1, 2 }, { 5, 2 }, { 2, -1 }, { 2, 5 } }) {
-                    near = Math.min(near, Math.abs(top(w, ox + d[0], oz + d[1]) - ry));
+                    near = Math.min(near, Math.abs(surface(w, ox + d[0], oz + d[1]) - ry));
                 }
                 out.check(
                     w.getBlock(ox, ry, oz) == gregtech.api.GregTechAPI.sBlockConcretes && !w.getBlock(ox, ry + 1, oz)
@@ -480,9 +506,8 @@ public final class ComplexDimScenarios {
             for (int[] st : cp.radarStations()) {
                 int hx = plan.anchorX() + st[0], hz = plan.anchorZ() + st[1];
                 if (anyUnderWater(w, hx, hz, 5)) {
-                    // A hut is built only on land; over a lake its columns are left alone, by design.
-                    out.note(label + ": a radar hut stands over water; left unbuilt there, as designed");
-                    continue;
+                    // Over water the hut stands on a foundation from the bed (D354); its floor is the recorded ground.
+                    out.note(label + ": a radar hut stands over water, on its foundation");
                 }
                 Block corner = w.getBlock(hx, groundY + 1, hz);
                 out.check(
