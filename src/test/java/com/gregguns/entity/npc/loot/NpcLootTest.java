@@ -381,7 +381,13 @@ class NpcLootTest {
                 }
                 checkGun(p, d.ref(), gunTiers);
                 Tier t = ownItemTier(d.ref());
-                if (t != null) {
+                // The one accepted exception (D349): the Attack Helicopter's Techguns fixed drop of Cybernetic Parts
+                // (per-mob.md section 16), EV over its HV.
+                boolean accepted = p.id()
+                    .equals("AttackHelicopter")
+                    && d.ref()
+                        .equals("gregguns:part_cybernetic");
+                if (t != null && !accepted) {
                     assertTrue(
                         t.ordinal() <= p.ceiling()
                             .ordinal(),

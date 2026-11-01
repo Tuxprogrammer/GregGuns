@@ -348,7 +348,8 @@ public final class NpcProfiles {
             m,
             NpcProfile.builder("PsychoSteve", Tier.HV)
                 .fixed(LootDrop.one(G + "chainsaw"))
-                .fixed(LootDrop.range(G + "tank_fuel", 4, 8))
+                // Full tanks (D349): a plain tank_fuel stack is an empty container, not Chainsaw ammo.
+                .fixed(LootDrop.range(G + "tank_fuel~full", 4, 8))
                 .rareDrop(false)
                 .equipment(
                     EquipmentProfile.builder()
