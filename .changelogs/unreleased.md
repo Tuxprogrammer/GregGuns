@@ -117,6 +117,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - **Structures: calmer palettes.** Each structure is built from one material family; no more speckled walls or radiation-sign trim.
 - **NPC drops.** A player kill drops a copy of the NPC's gun at 2% plus 1% per Looting level (never from bosses), and every NPC drops a quarter to three quarters of a magazine of loose rounds for its gun (a Thompson gives 5 to 15 9mm bullets), a full tank, or parts of an energy gun. Zombie Farmers and Miners, Skeleton Soldiers, Zombie Pigman Soldiers and Super Mutants also drop ammo for their guns, Stormtroopers drop energy-weapon parts, and the Outcast has a full loot table. Mobs Info lists the drops.
 - **NPCs** carry their gun at the hip when idle, hold it muzzle forward, and their armor follows their arms. Structure spawner NPCs can roll Elite, Ultra or Infernal.
+- Super Mutants stand on the ground; their legs no longer sink into the floor.
 - **Reloading.** A magazine gun with no loaded magazine at hand loads one loose round per reload. The Revolvers, Golden Revolvers, Combat Shotgun and Sawed Off load one chamber at a time, a trigger pull stops the reload and fires what is loaded, and held without firing for 2 seconds they top themselves up (`guns.idleReloadDelayTicks`).
 - **Aim down sights** lines up on the Golden Gun, 9mm Pistol, Mac10, LMG, Thompson and Combat Shotgun.
 - The Minigun's barrels whine as they wind up and down.

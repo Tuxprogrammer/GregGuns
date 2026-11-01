@@ -25,7 +25,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  * The renderer of a humanoid NPC drawn with a {@link DataBipedModel}. It is a vanilla {@link RenderBiped}, so the four
  * armor layers, the helmet slot and the held item work as for a zombie. On top of that it:
  * <ul>
- * <li>scales the model about the mob's feet (the shadow stays unscaled, as in the spec);</li>
+ * <li>scales the model about the mob's feet (the shadow stays unscaled, as in the spec), and moves a model whose legs
+ * do not end at the standard foot line onto the ground ({@link MobFooting}), so it stands on the floor at any
+ * scale;</li>
  * <li>sets {@code aimedBow} on the model, so the file's {@code when: aiming} poses apply: true when the entity
  * implements {@link MobAnimSource} and says it aims, or else when a gun is in the right hand;</li>
  * <li>makes every armor model drawn for the NPC take the model's pose ({@link ArmorPose}, D310): the vanilla armor
@@ -43,7 +45,8 @@ public final class RenderDataBiped extends RenderBiped {
     private final DataBipedModel model;
     private final ResourceLocation texture;
     private final float scale;
-    private final float yOffset;
+    /** Translation after the scale that puts the legs' rest bottom on the ground; 0 for a standard biped. */
+    private final float footLift;
     private final float gunX;
     private final float gunY;
     private final float gunZ;
@@ -59,23 +62,8 @@ public final class RenderDataBiped extends RenderBiped {
      */
     public RenderDataBiped(DataBipedModel model, ResourceLocation texture, float scale, float shadow, float gunX,
         float gunY, float gunZ) {
-        this(model, texture, scale, shadow, gunX, gunY, gunZ, 0.0F);
-    }
-
-    /**
-     * @param model   the biped model
-     * @param texture the skin sheet
-     * @param scale   uniform scale about the feet, 1.0 for normal size
-     * @param shadow  shadow radius in blocks
-     * @param gunX    held-gun offset in blocks, in the right arm's frame
-     * @param gunY    held-gun offset in blocks
-     * @param gunZ    held-gun offset in blocks
-     * @param yOffset lift applied after scaling, in blocks: positive moves the model up, negative down; 0 for none
-     */
-    public RenderDataBiped(DataBipedModel model, ResourceLocation texture, float scale, float shadow, float gunX,
-        float gunY, float gunZ, float yOffset) {
         super(model, shadow);
-        this.yOffset = yOffset;
+        this.footLift = MobFooting.groundingTranslation(MobFooting.restFootY(model.def()));
         this.model = model;
         this.texture = texture;
         this.scale = scale;
@@ -94,8 +82,9 @@ public final class RenderDataBiped extends RenderBiped {
         if (scale != 1.0F) {
             GL11.glScalef(scale, scale, scale);
         }
-        if (yOffset != 0.0F) {
-            GL11.glTranslatef(0.0F, MobYOffset.scaledTranslation(yOffset, scale), 0.0F);
+        if (footLift != 0.0F) {
+            // In the scaled, Y-down space: the renderer's -24 unit translation comes next and is scaled too.
+            GL11.glTranslatef(0.0F, footLift, 0.0F);
         }
         model.carryingGun = holdsGun(living);
         boolean aiming = isAiming(living);
