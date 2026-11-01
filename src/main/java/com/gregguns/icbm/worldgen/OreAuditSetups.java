@@ -283,7 +283,7 @@ public final class OreAuditSetups {
         ComplexPlan cp = r.plan();
         int ax = plan.anchorX(), az = plan.anchorZ();
         long[] ore = new long[Where.values().length], cells = new long[Where.values().length];
-        long unloaded = 0;
+        long unloaded = 0, cutOff = 0;
         StringBuilder examples = new StringBuilder();
         int ex = cp.escapeX(), ez = cp.escapeZ(), em = cp.escapeMeta();
         int bx = ex + (em == 4 ? 1 : em == 5 ? -1 : 0), bz = ez + (em == 2 ? 1 : em == 3 ? -1 : 0);
@@ -293,6 +293,14 @@ public final class OreAuditSetups {
                 if (!world.getChunkProvider()
                     .chunkExists(x >> 4, z >> 4)) {
                     unloaded++;
+                    continue;
+                }
+                // A column the cut-off mask (D207) left natural, under a lake or a valley, holds no complex.
+                com.gregguns.worldgen.HeightProbe probe = new com.gregguns.worldgen.WindowedHeightProbe(
+                    new com.gregguns.worldgen.PopulateWindow((x - 8) >> 4, (z - 8) >> 4),
+                    new com.gregguns.worldgen.WorldColumnReader(world));
+                if (!siloColumn(r, lx, lz) && ComplexPlacer.cutOff(probe, floor, x, z)) {
+                    cutOff++;
                     continue;
                 }
                 boolean inBox = lx >= 0 && lz >= 0 && lx < ComplexLayout.SIZE && lz < ComplexLayout.SIZE;
@@ -337,7 +345,7 @@ public final class OreAuditSetups {
             + ore[Where.SHAFT.ordinal()]
             + ore[Where.LADDER.ordinal()];
         GregGuns.LOG.info(
-            "ORE audit cell {},{} anchor {},{} floor {} level {} silos {}: ore in complex cells {} ({}), unloaded columns {}",
+            "ORE audit cell {},{} anchor {},{} floor {} level {} silos {}: ore in complex cells {} ({}), unloaded columns {}, cut-off columns {}",
             cellX,
             cellZ,
             ax,
@@ -349,7 +357,8 @@ public final class OreAuditSetups {
             own,
             sum.toString()
                 .trim(),
-            unloaded);
+            unloaded,
+            cutOff);
         if (examples.length() > 0) GregGuns.LOG.info("ORE audit examples:{}", examples);
     }
 
