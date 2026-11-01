@@ -394,7 +394,7 @@ Context: how GTNH fuels rockets. The evidence is the SpaceRace quest line, Galac
 | **Dictator Dave** | none | none | **egg only** |
 | **Outcast** | none | none | **egg only** |
 
-**New homes.** Shares are of the monster spawn picks in that place: the dev Nether's Hell list (vanilla Ghast 50, Zombie Pigman 100, Magma Cube 1, plus GregGuns' 27) and the End's (Enderman 10 plus 1). Every natural spawn still counts toward the vanilla monster cap and GregGuns' own caps (`npcs.perChunkCap` 4, `npcs.perPlayerCap` 8), and despawns by distance like any monster.
+**New homes.** Shares are of the monster spawn picks in that place: the dev Nether's Hell list (vanilla Ghast 50, Zombie Pigman 100, Magma Cube 1, plus GregGuns' 27) and the End's (Enderman 10 plus 1). Every natural spawn still counts toward the vanilla monster cap and GregGuns' own caps (`npcs.perChunkCap` 4, `npcs.perPlayerCap` 8), and despawns by distance like any monster. Measured in the real pack (GTNH 2.9.0-RC-2 with Hardcore Ender Expansion, 4,000 draws of the world's own picker), the shares are lower in the Nether, whose list holds more mods' rows: Pigman Soldier 5.0%, Basic 2.5%, Heavy 1.0%, Elite 0.6%, Cyberdemon 0.35%; End Commando 8.7%.
 
 | Mob | Where | How often | Condition | Config |
 |---|---|---|---|---|
