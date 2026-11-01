@@ -105,6 +105,7 @@ final class NpcSpawnScenarios {
                     SpawnGate.Decision.DENY_DIMENSION,
                     NpcSpawnHandler
                         .decide(table, NpcMob.ZOMBIE_FARMER, world, ctx.originX(), ctx.originY(), ctx.originZ()));
+                NpcConfig.spawnDimensions = new int[] { dim };
                 out.checkEquals(
                     "a Nether kind has no row in an Overworld-table dimension",
                     SpawnGate.Decision.DENY_REALM,
