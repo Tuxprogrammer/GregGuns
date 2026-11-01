@@ -163,12 +163,12 @@ class ComplexPlacerTest {
 
                 @Override
                 public int landY(int x, int z) {
-                    return w.contains(x, z) ? GROUND : NONE;
+                    return w.contains(x, z) && !inPond(x, z) ? GROUND : NONE;
                 }
 
                 @Override
                 public int waterSurfaceY(int x, int z) {
-                    return NONE;
+                    return w.contains(x, z) && inPond(x, z) ? pond[5] : NONE;
                 }
 
                 @Override
@@ -204,7 +204,18 @@ class ComplexPlacerTest {
      */
     private Map<String, String> readBack;
 
+    /**
+     * Water over part of the footprint (D354): x0, z0, x1, z1 (exclusive), its bed y and its surface y (the top water
+     * block), or null for none. Its columns have no land; their sea floor is the bed.
+     */
+    private int[] pond;
+
+    private boolean inPond(int x, int z) {
+        return pond != null && x >= pond[0] && z >= pond[1] && x < pond[2] && z < pond[3];
+    }
+
     private int seaFloorAt(int x, int z) {
+        if (inPond(x, z)) return pond[4];
         if (readBack != null) {
             String airId = Integer.toString(System.identityHashCode(air));
             Block role = named.get("c" + Cell.AIR);
@@ -541,6 +552,243 @@ class ComplexPlacerTest {
             com.gregguns.icbm.worldgen.ActivityLevel.OPERATIONAL,
             lastPlacer.levelOf(plan),
             "the level recorded with the decision");
+    }
+
+    /**
+     * The escape column of {@link #plan()}: x, z, ladder meta, the backing column's x and z, and the shaft's base y.
+     */
+    private int[] escape(StructurePlan p) {
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        int x = p.anchorX() + cp.escapeX(), z = p.anchorZ() + cp.escapeZ(), meta = cp.escapeMeta();
+        int bx = x + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = z + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
+        return new int[] { x, z, meta, bx, bz, GROUND - ComplexPlacer.DEPTH + cp.escapeTop() };
+    }
+
+    private String id(String role) {
+        Block b = named.get(role);
+        return b == null ? "none" : Integer.toString(System.identityHashCode(b));
+    }
+
+    private Result runWithPond(StructurePlan p, int[] water, boolean reverse) {
+        pond = water;
+        try {
+            return run(p, reverse);
+        } finally {
+            pond = null;
+        }
+    }
+
+    /**
+     * D354: an escape column under a river gets a 3 x 3 riser of the shaft-ring block from the bed up to one block
+     * over the water, the ladder climbs through the bed and the water inside it, and the trapdoor lies flush with the
+     * riser's top, hinged on the wall the ladder clings to. The same in either window order.
+     */
+    @Test
+    void anEscapeColumnUnderWaterRisesInsideARiserToOneBlockOverTheWater() {
+        StructurePlan p = plan();
+        int[] e = escape(p);
+        int x = e[0], z = e[1], base = e[5], bed = GROUND - 8, surface = GROUND - 2, top = surface + 1;
+        int[] water = { x - 4, z - 4, x + 5, z + 5, bed, surface };
+        Result fwd = runWithPond(p, water, false);
+        Result back = runWithPond(p, water, true);
+        assertEquals(fwd.cells, back.cells, "the window order does not change the riser");
+        assertEquals(0, fwd.outside);
+        assertEquals(0, fwd.duplicates, "no cell is written twice");
+        String ladder = id("ladder"), ring = id("ring"), backing = id("backing"), trapdoor = id("trapdoor");
+        for (int y = base; y < top; y++) {
+            String v = fwd.cells.get(x + "," + y + "," + z);
+            assertTrue(v != null && v.startsWith(ladder + ":"), "ladder through the bed and the water at y " + y);
+        }
+        assertEquals(
+            trapdoor + ":" + ComplexPlacer.trapdoorHinge(e[2]),
+            fwd.cells.get(x + "," + top + "," + z),
+            "a trapdoor one block over the water, hinged on the ladder's wall");
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                if (dx == 0 && dz == 0) continue;
+                int wx = x + dx, wz = z + dz;
+                boolean behind = wx == e[3] && wz == e[4];
+                for (int y = bed; y <= top; y++) {
+                    String v = fwd.cells.get(wx + "," + y + "," + wz);
+                    assertTrue(
+                        v != null && v.startsWith(ring + ":"),
+                        "riser wall at " + dx + "," + dz + " y " + y + ": " + v);
+                }
+                assertNull(fwd.cells.get(wx + "," + (top + 1) + "," + wz), "nothing over the riser");
+                if (behind) {
+                    for (int y = base; y < bed; y++) {
+                        String v = fwd.cells.get(wx + "," + y + "," + wz);
+                        assertTrue(v != null && v.startsWith(backing + ":"), "stone behind the ladder at y " + y);
+                    }
+                }
+            }
+        }
+        // Past the riser the river is left alone.
+        assertNull(fwd.cells.get((x + 3) + "," + surface + "," + z));
+    }
+
+    /** D354: a riser neighbor on dry land keeps its terrain; only the columns under water are walled. */
+    @Test
+    void aRiserOnTheBankWallsOnlyTheColumnsUnderWater() {
+        StructurePlan p = plan();
+        int[] e = escape(p);
+        int x = e[0], z = e[1], bed = GROUND - 8, surface = GROUND - 2, top = surface + 1;
+        // The water ends at the escape column's west edge: the column west of it is the bank.
+        Result r = runWithPond(p, new int[] { x, z - 4, x + 5, z + 5, bed, surface }, false);
+        String ring = id("ring");
+        for (int dz = -1; dz <= 1; dz++) {
+            for (int y = bed; y <= GROUND; y++) {
+                String v = r.cells.get((x - 1) + "," + y + "," + (z + dz));
+                assertTrue(v == null || !v.startsWith(ring + ":"), "the bank stays as it is at y " + y);
+            }
+            String east = r.cells.get((x + 1) + "," + top + "," + (z + dz));
+            assertTrue(east != null && east.startsWith(ring + ":"), "the river side is walled");
+        }
+        assertTrue(
+            r.cells.get(x + "," + top + "," + z)
+                .startsWith(id("trapdoor") + ":"),
+            "the trapdoor tops the riser");
+        assertEquals(0, r.duplicates);
+    }
+
+    /** D354, D207: an escape column whose bed lies too close over the level is cut off: no riser, no ladder up. */
+    @Test
+    void aCutOffEscapeColumnGetsNoRiser() {
+        StructurePlan p = plan();
+        int[] e = escape(p);
+        int x = e[0], z = e[1], floor = GROUND - ComplexPlacer.DEPTH;
+        Result r = runWithPond(p, new int[] { x - 4, z - 4, x + 5, z + 5, floor + 6, GROUND - 2 }, false);
+        for (String k : r.cells.keySet()) {
+            String[] c = k.split(",");
+            int cx = Integer.parseInt(c[0]), y = Integer.parseInt(c[1]), cz = Integer.parseInt(c[2]);
+            assertTrue(
+                !(Math.abs(cx - x) <= 1 && Math.abs(cz - z) <= 1 && y >= e[5]),
+                "nothing over a cut-off escape column: " + k);
+        }
+    }
+
+    /** D354: a silo under water gets its ring and bore up through the water to one block over it. */
+    @Test
+    void aSiloShaftUnderWaterRisesToOneBlockOverTheWater() {
+        StructurePlan p = plan();
+        ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
+            .plan();
+        com.gregguns.icbm.complex.SiloSlot s = cp.silos()
+            .get(0);
+        int sx = p.anchorX() + s.bounds().minX, sz = p.anchorZ() + s.bounds().minZ;
+        int bed = GROUND - 8, surface = GROUND - 2, top = surface + 1;
+        int floor = GROUND - ComplexPlacer.DEPTH;
+        Result r = runWithPond(p, new int[] { sx - 2, sz - 2, sx + 7, sz + 7, bed, surface }, false);
+        String ring = id("ring"), airId = Integer.toString(System.identityHashCode(air));
+        for (int x = sx; x <= sx + 4; x++) {
+            for (int z = sz; z <= sz + 4; z++) {
+                boolean bore = x > sx && x < sx + 4 && z > sz && z < sz + 4;
+                for (int y = floor + com.gregguns.icbm.complex.ComplexLayout.SILO_HEIGHT; y < top; y++) {
+                    String v = r.cells.get(x + "," + y + "," + z);
+                    assertTrue(
+                        v != null && v.startsWith((bore ? airId : ring) + ":"),
+                        (bore ? "bore air" : "ring") + " through the water at " + x + "," + y + "," + z + ": " + v);
+                }
+            }
+        }
+        String corner = r.cells.get(sx + "," + top + "," + sz);
+        assertTrue(corner != null && corner.startsWith(ring + ":"), "the ring stands one block over the water");
+        assertEquals(0, r.duplicates);
+    }
+
+    /** D354: a radar hut over water stands on a foundation from the bed. */
+    @Test
+    void aRadarHutOverWaterStandsOnAFoundationFromTheBed() {
+        StructureGrid g = new StructureGrid(
+            64,
+            64,
+            64,
+            Collections.singletonMap(
+                SizeClass.BIG,
+                Collections.singletonList(new PoolEntry(ComplexWriter.ID, 1, 1, new Footprint(240, 12, 240)))));
+        for (int cell = 3; cell < 40; cell++) {
+            StructurePlan p = g.planAt(77L, 0, SizeClass.BIG, cell, 4)
+                .get();
+            java.util.List<int[]> stations = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings)
+                .rasterOf(p)
+                .plan()
+                .radarStations();
+            if (stations.isEmpty()) continue;
+            int hx = p.anchorX() + stations.get(0)[0], hz = p.anchorZ() + stations.get(0)[1];
+            int bed = GROUND - 8;
+            Result r = runWithPond(p, new int[] { hx - 1, hz - 1, hx + 6, hz + 6, bed, GROUND - 1 }, false);
+            String wall = id("hutWall");
+            for (int x = hx; x < hx + 5; x++) {
+                for (int z = hz; z < hz + 5; z++) {
+                    for (int y = bed + 1; y <= GROUND; y++) {
+                        String v = r.cells.get(x + "," + y + "," + z);
+                        assertTrue(v != null && v.startsWith(wall + ":"), "foundation at " + x + "," + y + "," + z);
+                    }
+                }
+            }
+            String corner = r.cells.get(hx + "," + (GROUND + 1) + "," + hz);
+            assertTrue(corner != null && corner.startsWith(wall + ":"), "the hut's wall stands on it");
+            assertEquals(0, r.duplicates);
+            return;
+        }
+        throw new AssertionError("no complex with a radar station in the cells tried");
+    }
+
+    /** D354: the riser's top is the column's own: one over its water, none on land or over a cut-off bed. */
+    @Test
+    void theRiserTopIsOneBlockOverTheColumnsOwnWater() {
+        int floor = 40;
+        assertEquals(63, ComplexPlacer.riserTop(column(HeightProbe.NONE, 62, 55), floor, 0, 0), "a river");
+        assertEquals(
+            HeightProbe.NONE,
+            ComplexPlacer.riserTop(column(70, HeightProbe.NONE, 70), floor, 0, 0),
+            "dry land has no riser");
+        assertEquals(
+            HeightProbe.NONE,
+            ComplexPlacer.riserTop(column(HeightProbe.NONE, 62, floor + 13), floor, 0, 0),
+            "a bed under 14 blocks over the floor is cut off (D207)");
+        assertEquals(63, ComplexPlacer.riserTop(column(HeightProbe.NONE, 62, floor + 14), floor, 0, 0));
+        assertEquals(
+            HeightProbe.NONE,
+            ComplexPlacer.riserTop(column(HeightProbe.NONE, 62, HeightProbe.NONE), floor, 0, 0),
+            "water to the bottom has no bed to stand on");
+        assertEquals(247, ComplexPlacer.riserTop(column(HeightProbe.NONE, 252, 200), floor, 0, 0), "under the cap");
+    }
+
+    @Test
+    void theTrapdoorHingesOnTheWallTheLadderClingsTo() {
+        // Ladder 2 clings to +z, 3 to -z, 4 to +x, 5 to -x; trapdoor 0 hinges on +z, 1 on -z, 2 on +x, 3 on -x.
+        assertEquals(0, ComplexPlacer.trapdoorHinge(2));
+        assertEquals(1, ComplexPlacer.trapdoorHinge(3));
+        assertEquals(2, ComplexPlacer.trapdoorHinge(4));
+        assertEquals(3, ComplexPlacer.trapdoorHinge(5));
+    }
+
+    /** A one-column probe that answers the same for every column. */
+    private static HeightProbe column(int land, int water, int bed) {
+        return new HeightProbe() {
+
+            @Override
+            public PopulateWindow window() {
+                return new PopulateWindow(0, 0);
+            }
+
+            @Override
+            public int landY(int x, int z) {
+                return land;
+            }
+
+            @Override
+            public int waterSurfaceY(int x, int z) {
+                return water;
+            }
+
+            @Override
+            public int seaFloorY(int x, int z) {
+                return bed;
+            }
+        };
     }
 
     private static int minY(Result r) {

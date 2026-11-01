@@ -879,6 +879,8 @@ public final class ComplexPlacer implements ComplexWriter {
             for (int x = Math.max(sx, window.minX()); x <= Math.min(sx + 4, window.maxX()); x++) {
                 for (int z = Math.max(sz, window.minZ()); z <= Math.min(sz + 4, window.maxZ()); z++) {
                     int g = probe.landY(x, z);
+                    // Under water the shaft rises through it to one block over its surface (D354).
+                    if (g == HeightProbe.NONE) g = riserTop(probe, floorY, x, z);
                     int top = g == HeightProbe.NONE ? HeightProbe.NONE : Math.min(g, BUILD_HEIGHT - 8);
                     // The finish (D319) puts the mouth back to this once everything around it has populated.
                     if (mouths != null) mouths.record(world, id, sx, sz, floorY, s.variant(), x, z, top);
@@ -924,10 +926,20 @@ public final class ComplexPlacer implements ComplexWriter {
         return n;
     }
 
-    /** The 1 x 1 escape ladder from the level up to a trapdoor at the surface. */
+    /**
+     * The 1 x 1 escape ladder from the level up to a trapdoor at the surface. On land the trapdoor replaces the
+     * column's top block and nothing is built around it (D128, D218). Under water (D354) the shaft rises through the
+     * water inside a 3 x 3 riser of the shaft-ring block to one block over the water surface, where the trapdoor lies
+     * flush with the riser's top, hinged on the wall the ladder clings to.
+     * <p>
+     * Every column of the riser decides from its own column alone (is it under water, and how high is its surface),
+     * so no window reads another window's writes and the result is the same in any window order. Water lies level,
+     * so the escape column and its neighbors agree on the top. A neighbor on dry land keeps its terrain.
+     */
     private int ladder(ComplexPlan cp, StructurePlan plan, int floorY, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
         int x = plan.anchorX() + cp.escapeX(), z = plan.anchorZ() + cp.escapeZ();
+        int base = floorY + cp.escapeTop();
         int n = 0;
         // A ladder clings to the block behind it, and a natural cave the shaft crosses has none: the cell behind the
         // whole climb is written solid, from the level up to just under that column's own surface block. The surface
@@ -938,25 +950,90 @@ public final class ComplexPlacer implements ComplexWriter {
         if (window.contains(bx, bz)) {
             int bg = probe.landY(bx, bz);
             if (bg != HeightProbe.NONE) {
-                for (int y = floorY + cp.escapeTop(); y < bg; y++) {
+                for (int y = base; y < bg; y++) {
                     ResolvedBlock b = blocks.named("backing", bx, y, bz);
                     if (b != null && sink.setBlock(bx, y, bz, b.block, b.meta)) n++;
                 }
             }
         }
+        // The riser's walls (D354): each neighbor under water is the shaft-ring block from its bed up to one block over
+        // its water. Behind the ladder the stone backing runs up to the bed first.
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                int wx = x + dx, wz = z + dz;
+                if (dx == 0 && dz == 0 || !window.contains(wx, wz)) continue;
+                int top = riserTop(probe, floorY, wx, wz);
+                if (top == HeightProbe.NONE) continue;
+                int bed = probe.seaFloorY(wx, wz);
+                boolean behind = wx == bx && wz == bz;
+                // Under the bed the other neighbors are the terrain's (or the level's skin, D320); never lower than
+                // the shaft's own start.
+                int from = Math.max(bed, behind ? base : floorY + ComplexRaster.LEVELS + 1);
+                if (behind) {
+                    for (int y = base; y < from; y++) {
+                        ResolvedBlock b = blocks.named("backing", wx, y, wz);
+                        if (b != null && sink.setBlock(wx, y, wz, b.block, b.meta)) n++;
+                    }
+                }
+                for (int y = from; y <= top; y++) {
+                    ResolvedBlock b = blocks.named("ring", wx, y, wz);
+                    if (b != null && sink.setBlock(wx, y, wz, b.block, b.meta)) n++;
+                }
+            }
+        }
         if (!window.contains(x, z)) return n;
         int g = probe.landY(x, z);
-        if (g == HeightProbe.NONE) return n;
-        for (int y = floorY + cp.escapeTop(); y < g; y++) {
+        int hinge = 0;
+        if (g == HeightProbe.NONE) {
+            // Under water: the ladder climbs through the bed and the water to the riser's top (D354).
+            g = riserTop(probe, floorY, x, z);
+            if (g == HeightProbe.NONE) return n;
+            hinge = trapdoorHinge(meta);
+        }
+        for (int y = base; y < g; y++) {
             ResolvedBlock b = blocks.ladder(meta, x, y, z);
             if (b != null && sink.setBlock(x, y, z, b.block, b.meta)) n++;
         }
         // landY is the top solid block, so the trapdoor replaces it; a top-half trapdoor then lies flush with the
-        // surface (its top face at g + 1, level with the terrain around it).
+        // surface (its top face at g + 1, level with the terrain around it). On a riser it lies flush with the riser.
         ResolvedBlock t = blocks.named("trapdoor", x, g, z);
-        if (t != null && sink.setBlock(x, g, z, t.block, t.meta)) n++;
+        if (t != null && sink.setBlock(x, g, z, t.block, t.meta | hinge)) n++;
         n += clearAbove(sink, x, z, g);
         return n;
+    }
+
+    /**
+     * The top of a riser over a column whose surface is water (D354): one block over the water's top, when the bed
+     * under it is not cut off (D207). Ice over the water is passed through like any cover, so on a frozen river the
+     * top is the ice's own layer.
+     *
+     * @return the riser's top y, or {@link HeightProbe#NONE} when the column is dry, has no bed, or is cut off
+     */
+    static int riserTop(HeightProbe probe, int floorY, int x, int z) {
+        int w = probe.waterSurfaceY(x, z), bed = probe.seaFloorY(x, z);
+        if (w == HeightProbe.NONE || bed == HeightProbe.NONE || cutOffAt(bed, floorY)) return HeightProbe.NONE;
+        return Math.min(w + 1, BUILD_HEIGHT - 8);
+    }
+
+    /**
+     * The direction bits of a trapdoor hinged on the wall a ladder clings to: a trapdoor drops when the block on its
+     * hinge side goes, and on a riser that wall is the one riser cell sure to stand (1.7.10 trapdoor metadata: 0 hinged
+     * on +z, 1 on -z, 2 on +x, 3 on -x).
+     *
+     * @param ladderMeta the ladder's metadata, 2 to 5 (2 clings to +z, 3 to -z, 4 to +x, 5 to -x)
+     * @return the trapdoor's direction bits, 0 to 3
+     */
+    static int trapdoorHinge(int ladderMeta) {
+        switch (ladderMeta) {
+            case 3:
+                return 1;
+            case 4:
+                return 2;
+            case 5:
+                return 3;
+            default:
+                return 0;
+        }
     }
 
     /** Radar hut footprint: a 5 x 5 floor, walls three high, a roof, and the small radar (D125) standing on it. */
@@ -970,7 +1047,7 @@ public final class ComplexPlacer implements ComplexWriter {
      * Maintenance Hatch, with the Energy Hatch left out. Everything is built off the recorded ground height, so a hut
      * that straddles
      * windows stays level; each column's own ground fills the foundation below the floor or clears the bump above
-     * it. A column with no land (water) is left alone.
+     * it. A column under water stands on a foundation from its bed up through the water (D354).
      */
     private int radars(ComplexPlan cp, StructurePlan plan, int groundY, PopulateWindow window, WindowedSink sink,
         HeightProbe probe) {
@@ -981,6 +1058,9 @@ public final class ComplexPlacer implements ComplexWriter {
             for (int x = Math.max(hx, window.minX()); x <= Math.min(hx + HUT - 1, window.maxX()); x++) {
                 for (int z = Math.max(hz, window.minZ()); z <= Math.min(hz + HUT - 1, window.maxZ()); z++) {
                     int g = probe.landY(x, z);
+                    // Under water the foundation rises from the bed (D354).
+                    if (g == HeightProbe.NONE)
+                        g = probe.waterSurfaceY(x, z) == HeightProbe.NONE ? HeightProbe.NONE : probe.seaFloorY(x, z);
                     if (g == HeightProbe.NONE) continue;
                     ResolvedBlock wall = blocks.named("hutWall", x, groundY, z);
                     ResolvedBlock roof = blocks.named("hutRoof", x, groundY, z);
