@@ -118,8 +118,7 @@ public final class GasGroundShotsScenario implements Scenario {
                     }
                 }
             }
-            MissileShotsScenario
-                .cam(p, cx + 0.5 - d, top[0] + EYE, cz + 0.5 - d, cx + 0.5, top[0] + 2.0, cz + 0.5);
+            MissileShotsScenario.cam(p, cx + 0.5 - d, top[0] + EYE, cz + 0.5 - d, cx + 0.5, top[0] + 2.0, cz + 0.5);
         });
         plan.after(120, () -> {
             ExplosiveDef def = Explosives.get(gas);
@@ -128,9 +127,15 @@ public final class GasGroundShotsScenario implements Scenario {
                 tag + " blast accepted (radius " + def.radius(def.maxFill()) + ")");
         });
         plan.after(60, () -> MissileShotsScenario.signal(p, "shot", "gasground-" + tag + "-eye"));
-        plan.after(40, () -> MissileShotsScenario.cam(p, cx + 0.5 - d, top[0] + 12.0, cz + 0.5 - d, cx + 0.5, top[0] + 2.0, cz + 0.5));
+        plan.after(
+            40,
+            () -> MissileShotsScenario
+                .cam(p, cx + 0.5 - d, top[0] + 12.0, cz + 0.5 - d, cx + 0.5, top[0] + 2.0, cz + 0.5));
         plan.after(50, () -> MissileShotsScenario.signal(p, "shot", "gasground-" + tag + "-high"));
-        plan.after(40, () -> MissileShotsScenario.cam(p, cx + 0.5 - d, top[0] + EYE, cz + 0.5 - d, cx + 0.5, top[0] + 2.0, cz + 0.5));
+        plan.after(
+            40,
+            () -> MissileShotsScenario
+                .cam(p, cx + 0.5 - d, top[0] + EYE, cz + 0.5 - d, cx + 0.5, top[0] + 2.0, cz + 0.5));
         plan.after(160, () -> MissileShotsScenario.signal(p, "shot", "gasground-" + tag + "-late"));
         plan.after(40, () -> {});
     }
