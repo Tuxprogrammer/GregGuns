@@ -34,8 +34,10 @@ import com.gregguns.GregGuns;
  *
  * <p>
  * <b>Is the generator on.</b> The vanilla provider builds structures only when the world has map features on. RWG
- * builds villages when its own {@code ConfigRWG.generateVillages} is true and ignores map features. Any other provider
- * counts as on, which errs toward sinking a complex, never toward a village on top of one.
+ * builds villages when its own {@code ConfigRWG.generateVillages} is true and ignores map features. RWG2 builds no
+ * village generator at all with map features off (so none is found) and otherwise follows its own village switch,
+ * which moved from {@code ConfigRWG} to {@code SettingsConfig} in 2.1.0; both are tried. Any other provider counts as
+ * on, which errs toward sinking a complex, never toward a village on top of one.
  *
  * <p>
  * <b>Per candidate.</b> {@link StartGrid} gives each region's candidate chunk from the generator's own spacing (read
@@ -60,6 +62,12 @@ import com.gregguns.GregGuns;
 // Source:
 // https://github.com/GTNewHorizons/Realistic-World-Gen/blob/alpha-1.5.2/src/main/java/rwg/world/ChunkGeneratorRealistic.java#L120-L123
 // (new MapGenVillage with distance 24) and #L194 (ConfigRWG.generateVillages gates villages).
+// Source:
+// https://github.com/GTNewHorizons/Realistic-World-Gen-2/blob/2.0.6/src/main/java/rwg2/world/ChunkGeneratorRealistic.java#L157-L161
+// (RWG2: MapGenVillage with distance 24, null when map features are off) and #L245 (rwg2.config.ConfigRWG
+// .generateVillages gates villages);
+// https://github.com/GTNewHorizons/Realistic-World-Gen-2/blob/2.1.0/src/main/java/rwg2/config/SettingsConfig.java#L39-L41
+// (2.1.0 moves the switch to rwg2.config.SettingsConfig.generateVillages).
 // Spec: docs/gregguns-icbm-spec/08-worldgen/planets-and-placement.md (Structure starts); D302
 public final class VanillaStarts implements StructureStarts {
 
@@ -215,13 +223,21 @@ public final class VanillaStarts implements StructureStarts {
         return new VanillaStarts(world, village, temple);
     }
 
-    /** @return false only when the provider is RWG's and its config turns villages off */
+    /** @return false only when the provider is RWG's or RWG2's and its config turns villages off */
     private static boolean rwgVillagesOn(IChunkProvider provider) {
-        if (!provider.getClass()
-            .getName()
-            .startsWith("rwg.")) return true;
+        String name = provider.getClass()
+            .getName();
+        if (name.startsWith("rwg.")) return villageSwitch("rwg.config.ConfigRWG");
+        if (name.startsWith("rwg2.")) {
+            return villageSwitch("rwg2.config.SettingsConfig") && villageSwitch("rwg2.config.ConfigRWG");
+        }
+        return true;
+    }
+
+    /** @return the class's static {@code generateVillages}, or true when the class or field is missing */
+    private static boolean villageSwitch(String className) {
         try {
-            Field f = Class.forName("rwg.config.ConfigRWG")
+            Field f = Class.forName(className)
                 .getField("generateVillages");
             return f.getBoolean(null);
         } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {

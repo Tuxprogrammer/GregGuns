@@ -47,48 +47,58 @@ public final class WorldgenGate {
     }
 
     /**
-     * @param worldTypes the configured allow-list of {@code WorldType.getWorldTypeName()} values
-     * @param worldType  the type name of the world; null means unknown
-     * @return true if the name is listed (ignoring case and surrounding blanks); unknown and unlisted types are out
+     * A blacklist, not an allow-list, so a terrain mod the pack adds later gets structures with no config change. GTNH
+     * 2.9.0 added RWG2 next to RWG, and an allow-list naming only RWG left RWG2 worlds with no structures at all.
+     *
+     * @param blacklist the configured blacklist of {@code WorldType.getWorldTypeName()} values; null or empty blocks
+     *                  nothing
+     * @param worldType the type name of the world; null or blank means unknown
+     * @return false if the name is listed (ignoring case and surrounding blanks) or unknown, otherwise true
      */
     // Source: RWG registers its type as new WorldTypeRealistic("RWG"):
-    // https://github.com/GTNewHorizons/Realistic-World-Gen/blob/alpha-1.5.2/src/main/java/rwg/RWG.java#L31
-    public static boolean worldTypeAllowed(String[] worldTypes, String worldType) {
-        if (worldTypes == null || worldType == null) {
+    // https://github.com/GTNewHorizons/Realistic-World-Gen/blob/alpha-1.5.3/src/main/java/rwg/RWG.java#L32
+    // Source: RWG2 registers "RWG2" and "RWG2_CONTINENTS" (the GTNH 2.9.0 default):
+    // https://github.com/GTNewHorizons/Realistic-World-Gen-2/blob/2.0.6/src/main/java/rwg2/RWG.java#L39-L40
+    public static boolean worldTypeAllowed(String[] blacklist, String worldType) {
+        if (worldType == null) {
             return false;
         }
         String wanted = worldType.trim();
         if (wanted.isEmpty()) {
             return false;
         }
-        for (String listed : worldTypes) {
+        if (blacklist == null) {
+            return true;
+        }
+        for (String listed : blacklist) {
             if (listed != null && listed.trim()
                 .equalsIgnoreCase(wanted)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**
-     * @param dimensions the dimension allow-list
-     * @param worldTypes the world-type allow-list
-     * @param dimension  the dimension id of the world
-     * @param worldType  the type name of the world
-     * @return true only if both lists allow it
+     * @param dimensions         the dimension allow-list
+     * @param worldTypeBlacklist the world-type blacklist
+     * @param dimension          the dimension id of the world
+     * @param worldType          the type name of the world
+     * @return true only if the dimension is listed and the world type is not blacklisted
      */
-    public static boolean placementAllowed(int[] dimensions, String[] worldTypes, int dimension, String worldType) {
-        return dimensionAllowed(dimensions, dimension) && worldTypeAllowed(worldTypes, worldType);
+    public static boolean placementAllowed(int[] dimensions, String[] worldTypeBlacklist, int dimension,
+        String worldType) {
+        return dimensionAllowed(dimensions, dimension) && worldTypeAllowed(worldTypeBlacklist, worldType);
     }
 
     /**
      * As {@link #placementAllowed(int[], String[], int, String)}, with the Ross128 dimensions allowed on top of the
      * list when {@code includeRoss128} is set (design record 0019).
      */
-    public static boolean placementAllowed(int[] dimensions, int[] ross128, boolean includeRoss128, String[] worldTypes,
-        int dimension, String worldType) {
+    public static boolean placementAllowed(int[] dimensions, int[] ross128, boolean includeRoss128,
+        String[] worldTypeBlacklist, int dimension, String worldType) {
         return dimensionAllowed(dimensions, ross128, includeRoss128, dimension)
-            && worldTypeAllowed(worldTypes, worldType);
+            && worldTypeAllowed(worldTypeBlacklist, worldType);
     }
 
     /**

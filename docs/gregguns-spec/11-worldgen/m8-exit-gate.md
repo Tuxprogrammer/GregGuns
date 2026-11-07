@@ -25,8 +25,8 @@ Notes on the scenario. A world cannot un-generate terrain, so the control is a s
 | Rule | Evidence | Status |
 |---|---|---|
 | Dimensions 0, -1, 1, 7, 180, 27, 28: only the listed ones pass; no literal in code (GGS-11-12) | `WorldgenGateTest.defaultDimensionListAllowsOnlyTheOverworld`, `dimensionListIsTheOnlyAuthority` | PASS |
-| World types `default`, `RWG`, `largeBiomes`, `amplified` allowed; `flat` and unknown out | `WorldgenGateTest.defaultWorldTypeListMatchesTheDocumentedFour`, `flatAndUnknownWorldTypesAreOut`, `worldTypeMatchIgnoresCaseAndBlanks`, `placementNeedsBothLists` | PASS |
-| A non-listed dimension or world type makes the real generator write nothing; restored lists place structures | scenario `worldgen.dimension_gate` | PASS |
+| Every world type allowed except the blacklisted `flat` and unknown names: `default`, `largeBiomes`, `amplified`, `RWG`, `RWG2`, `RWG2_CONTINENTS` and modded types pass | `WorldgenGateTest.defaultWorldTypeBlacklistIsOnlyFlat`, `everyGtnhOverworldTypeIsAllowedByDefault`, `flatAndUnknownWorldTypesAreOut`, `emptyOrMissingBlacklistBlocksNothing`, `worldTypeMatchIgnoresCaseAndBlanks`, `placementNeedsTheDimensionAndAnUnlistedType` | PASS |
+| A non-listed dimension, or the world's own type on the blacklist, makes the real generator write nothing; restored lists place structures | scenario `worldgen.dimension_gate` | PASS |
 | Config defaults | scenario `worldgen.config_defaults` | PASS |
 | Plan records survive a save | scenario `worldgen.state_persists` | PASS |
 | Real RWG world-type name against `WorldTypeRealistic` | checked when G1 was written; a live RWG world is part of the client session | Pending |

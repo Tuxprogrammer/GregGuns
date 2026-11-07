@@ -120,6 +120,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 - The Minigun's barrels whine as they wind up and down.
 - GregGuns particles no longer draw a patch of the texture sheet with Angelica's shaders on.
 - Abandoned structures no longer show Chisel's ERROR texture on glass panes.
+- **Structures and silo complexes generate on every Overworld world type except flat**, including RWG2 and `RWG2_CONTINENTS` (the GTNH 2.9.0 default), which got none before. Only chunks generated after the update get them.
 - Picking up an Assembly Line item no longer awards an unnamed GT achievement.
 - **Quests:** the Fuel Tanks quest counts only full tanks, the Demolition Charge quest completes, and the Cyberdemon and Alien Bug quests are visible from the start.
 
@@ -128,7 +129,7 @@ Everything under "New: the ICBM module" and "Changed since the alpha" below is n
 Every key is documented in `docs/config.md`.
 
 - **Defaults now on:** `modules.icbm`, `questbook.install`, `npcs.helicopter`, `npcs.alienBug`, `npcs.cyberdemon`, `worldgen.enabledAlienBugNest`, `utility.bioBlobSparesPlayers`. An existing config keeps its old values; set any of them yourself.
-- **New keys:** `compat.vendingTrades`, `compat.lootBags` (and `config/gregguns-lootbags.xml` to replace the bag contents), `compat.roguelikeKeepOutOfComplexes`, `compat.enderioSpawnerBlacklist`, `npcs.infernalSpawnerOptOut` (replaces `npcs.infernalAllowSpawnerNpcs`), `icbm.siloComplexChestTargets`.
+- **New keys:** `compat.vendingTrades`, `compat.lootBags` (and `config/gregguns-lootbags.xml` to replace the bag contents), `compat.roguelikeKeepOutOfComplexes`, `compat.enderioSpawnerBlacklist`, `npcs.infernalSpawnerOptOut` (replaces `npcs.infernalAllowSpawnerNpcs`), `icbm.siloComplexChestTargets`. `worldgen.structureWorldTypeBlacklist` (default `flat`) replaces the `worldgen.structureWorldTypes` allow-list: every world type not on it gets structures, so an old config's allow-list no longer applies.
 - **The `icbm` section** covers blast budgets and radii (`icbm.blastBudgetMs`, `icbm.maxActiveBlasts`, `icbm.maxBlastRadius`, `icbm.maxGridMemoryMb`, `icbm.maxBlastTier`), per-tier terrain damage (`icbm.terrainDamageT1` to `T4`, which replace `explosions.blockDamage` for ICBM blasts), missiles (`icbm.maxMissilesInFlight`, fuel, range, scatter and silo factors, timeout, countdown and door timing), the EMP (`icbm.empMaxDevices`, `icbm.empMaxRadius` and the missile chances), the ender and anti-gravitational limits, and the silo complexes (`icbm.siloComplexEnabled`, `...Dimensions`, `...ChancePercent`, `...ActivityWeights`, `...Ross128Weights`, `...OverworldBiomes`, `...ChestTargets`). Claims and protection mods are always respected.
 - **Commands (ops):** `/gregguns locate <kind> [radius_cells] [generate]` lists and generates GregGuns structures near you, silo complexes included, with their activity level; `/gregguns locate rebuild <cellX> <cellZ>` regenerates one silo complex in place.
 

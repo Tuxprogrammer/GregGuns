@@ -85,7 +85,7 @@ public final class ConfigSettings implements ComplexPlacer.Settings {
 
     @Override
     public boolean worldTypeAllowed(String worldType) {
-        return WorldgenGate.worldTypeAllowed(WorldgenConfig.structureWorldTypes, worldType);
+        return WorldgenGate.worldTypeAllowed(WorldgenConfig.structureWorldTypeBlacklist, worldType);
     }
 
     @Override

@@ -17,7 +17,7 @@ import com.gregguns.core.config.WorldgenConfig;
 class WorldgenGateTest {
 
     private static final int[] DEFAULT_DIMS = { 0 };
-    private static final String[] DEFAULT_TYPES = { "default", "RWG", "largeBiomes", "amplified" };
+    private static final String[] DEFAULT_BLACKLIST = { "flat" };
 
     @Test
     void defaultDimensionListAllowsOnlyTheOverworld() {
@@ -41,38 +41,48 @@ class WorldgenGateTest {
     }
 
     @Test
-    void defaultWorldTypeListMatchesTheDocumentedFour() {
-        assertEquals(Arrays.asList(DEFAULT_TYPES), Arrays.asList(WorldgenConfig.structureWorldTypes));
-        for (String type : DEFAULT_TYPES) {
-            assertTrue(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, type), type);
+    void defaultWorldTypeBlacklistIsOnlyFlat() {
+        assertEquals(Arrays.asList(DEFAULT_BLACKLIST), Arrays.asList(WorldgenConfig.structureWorldTypeBlacklist));
+    }
+
+    @Test
+    void everyGtnhOverworldTypeIsAllowedByDefault() {
+        // Vanilla, RWG and both RWG2 types (RWG2_CONTINENTS is the GTNH 2.9.0 default), plus a type no list names.
+        for (String type : new String[] { "default", "default_1_1", "largeBiomes", "amplified", "RWG", "RWG2",
+            "RWG2_CONTINENTS", "SomeModdedType" }) {
+            assertTrue(WorldgenGate.worldTypeAllowed(DEFAULT_BLACKLIST, type), type);
         }
     }
 
     @Test
     void flatAndUnknownWorldTypesAreOut() {
-        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, "flat"));
-        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, "default_1_1"));
-        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, "SomeModdedType"));
-        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, ""));
-        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, "  "));
-        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, null));
-        assertFalse(WorldgenGate.worldTypeAllowed(null, "default"));
-        assertFalse(WorldgenGate.worldTypeAllowed(new String[0], "default"));
+        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_BLACKLIST, "flat"));
+        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_BLACKLIST, ""));
+        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_BLACKLIST, "  "));
+        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_BLACKLIST, null));
+        assertFalse(WorldgenGate.worldTypeAllowed(null, null));
+    }
+
+    @Test
+    void emptyOrMissingBlacklistBlocksNothing() {
+        assertTrue(WorldgenGate.worldTypeAllowed(null, "flat"));
+        assertTrue(WorldgenGate.worldTypeAllowed(new String[0], "flat"));
+        assertTrue(WorldgenGate.worldTypeAllowed(new String[] { null, "  " }, "default"));
     }
 
     @Test
     void worldTypeMatchIgnoresCaseAndBlanks() {
-        assertTrue(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, "rwg"));
-        assertTrue(WorldgenGate.worldTypeAllowed(DEFAULT_TYPES, " LARGEBIOMES "));
-        assertTrue(WorldgenGate.worldTypeAllowed(new String[] { " flat ", null }, "FLAT"));
+        assertFalse(WorldgenGate.worldTypeAllowed(DEFAULT_BLACKLIST, " FLAT "));
+        assertFalse(WorldgenGate.worldTypeAllowed(new String[] { " rwg2_continents ", null }, "RWG2_CONTINENTS"));
+        assertTrue(WorldgenGate.worldTypeAllowed(new String[] { "RWG2_CONTINENTS" }, "RWG2"));
     }
 
     @Test
-    void placementNeedsBothLists() {
-        assertTrue(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_TYPES, 0, "RWG"));
-        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_TYPES, -1, "RWG"));
-        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_TYPES, 0, "flat"));
-        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_TYPES, 7, "flat"));
+    void placementNeedsTheDimensionAndAnUnlistedType() {
+        assertTrue(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_BLACKLIST, 0, "RWG2_CONTINENTS"));
+        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_BLACKLIST, -1, "RWG"));
+        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_BLACKLIST, 0, "flat"));
+        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, DEFAULT_BLACKLIST, 7, "default"));
     }
 
     @Test
@@ -168,9 +178,8 @@ class WorldgenGateTest {
     @Test
     void placementOnRoss128StillNeedsTheWorldType() {
         int[] ross = { 64, 63 };
-        String[] types = { "default", "RWG" };
-        assertTrue(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, true, types, 64, "default"));
-        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, true, types, 64, "flat"));
-        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, false, types, 64, "default"));
+        assertTrue(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, true, DEFAULT_BLACKLIST, 64, "RWG2_CONTINENTS"));
+        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, true, DEFAULT_BLACKLIST, 64, "flat"));
+        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, false, DEFAULT_BLACKLIST, 64, "default"));
     }
 }

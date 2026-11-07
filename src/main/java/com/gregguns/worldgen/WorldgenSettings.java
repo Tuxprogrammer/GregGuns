@@ -150,7 +150,7 @@ public final class WorldgenSettings {
             WorldgenConfig.structureDimensions,
             WorldgenConfig.structureRoss128 ? Ross128Dimensions.ids() : new int[0],
             WorldgenConfig.structureRoss128,
-            WorldgenConfig.structureWorldTypes,
+            WorldgenConfig.structureWorldTypeBlacklist,
             dimension,
             worldType);
     }

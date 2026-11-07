@@ -95,7 +95,7 @@
 - **GGS-11-09** A populate call never requests (`loadChunk`, `provideChunk`, `getChunkFromChunkCoords`) a chunk other than the one being populated.
 - **GGS-11-10** Structure position, rotation and variant derive only from the world seed, the dimension and the grid cell. Two worlds with the same seed place the same structures.
 - **GGS-11-11** No attempt is made within 8 chunks of chunk `(0, 0)`.
-- **GGS-11-12** The dimension gate is the allow-list `structureDimensions`, default `[0]`. No code compares a dimension ID with a literal.
+- **GGS-11-12** The dimension gate is the allow-list `structureDimensions`, default `[0]`. No code compares a dimension ID with a literal. The world-type gate is the blacklist `structureWorldTypeBlacklist`, default `[flat]`: every other world type, including one a mod adds later, gets structures. GTNH 2.9.0 added RWG2 (`RWG2`, `RWG2_CONTINENTS`, the new-world default) next to RWG, and the earlier allow-list, which named only `RWG` of the two, left RWG2 worlds with no structures. An unknown (null or blank) type name is out.
 - **GGS-11-13** The terrain check runs on the rotated footprint. A ship needs water at its sampled columns, at least as deep as its hull.
 - **GGS-11-14** A footprint that contains village-style blocks not placed by GregGuns is skipped.
 - **GGS-11-12a** On Ross128b and Ross128ba the dimension gate is the BartWorks IDs plus `structureRoss128`; no code compares them with a literal.

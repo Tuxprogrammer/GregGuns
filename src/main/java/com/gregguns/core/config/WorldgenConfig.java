@@ -46,9 +46,11 @@ public class WorldgenConfig {
         "there. Default: 40, 28, 14, 8, 4, 3, 2, 1 (weighted to the low end)." })
     public static int[] ross128CeilingWeights = { 40, 28, 14, 8, 4, 3, 2, 1 };
 
-    @Config.Comment({ "World type names that allow structures (WorldType.getWorldTypeName, compared ignoring case).",
-        "Flat and unknown world types are out unless listed. Default: default, RWG, largeBiomes, amplified." })
-    public static String[] structureWorldTypes = { "default", "RWG", "largeBiomes", "amplified" };
+    @Config.Comment({
+        "World type names in which structures are never placed (WorldType.getWorldTypeName, compared ignoring case).",
+        "Every other world type gets structures: default, largeBiomes, amplified, RWG, RWG2, RWG2_CONTINENTS and any",
+        "type a mod adds. Silo complexes follow the same list. Default: flat." })
+    public static String[] structureWorldTypeBlacklist = { "flat" };
 
     @Config.Comment({ "Place the Small Factory Building. Default: true." })
     public static boolean enabledFactorySmall = true;

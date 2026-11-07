@@ -433,7 +433,7 @@ public final class GeneratorScenarios {
 
         @Override
         public String description() {
-            return "A dimension outside structureDimensions, and a world type outside structureWorldTypes, make the"
+            return "A dimension outside structureDimensions, and a world type on structureWorldTypeBlacklist, make the"
                 + " generator write nothing; with both allowed the same setup places structures (GGS-11-12).";
         }
 
@@ -444,7 +444,7 @@ public final class GeneratorScenarios {
             PaletteKeys keys = PaletteKeys.resolveForPack(s -> {});
             StructureGenerator.setOverride(testPopulator(keys));
             int[] dims = WorldgenConfig.structureDimensions;
-            String[] types = WorldgenConfig.structureWorldTypes;
+            String[] types = WorldgenConfig.structureWorldTypeBlacklist;
             // The ICBM silo complex has its own dimension list and runs the generator where ordinary structures are
             // off; this scenario is about the ordinary gate, so the complex is off while it runs.
             boolean complex = com.gregguns.core.config.IcbmConfig.siloComplexEnabled;
@@ -456,17 +456,19 @@ public final class GeneratorScenarios {
                 runSquare(world, 11, out, "dimension off", false);
 
                 WorldgenConfig.structureDimensions = dims;
-                WorldgenConfig.structureWorldTypes = new String[] { "flat" };
-                out.check(!StructureGenerator.allowed(world), "denied when the world type is not listed");
+                WorldgenConfig.structureWorldTypeBlacklist = new String[] { world.getWorldInfo()
+                    .getTerrainType()
+                    .getWorldTypeName() };
+                out.check(!StructureGenerator.allowed(world), "denied when the world type is blacklisted");
                 runSquare(world, 12, out, "world type off", false);
 
-                WorldgenConfig.structureWorldTypes = types;
+                WorldgenConfig.structureWorldTypeBlacklist = types;
                 out.check(StructureGenerator.allowed(world), "allowed again with the defaults");
                 runSquare(world, 13, out, "control", true);
             } finally {
                 com.gregguns.core.config.IcbmConfig.siloComplexEnabled = complex;
                 WorldgenConfig.structureDimensions = dims;
-                WorldgenConfig.structureWorldTypes = types;
+                WorldgenConfig.structureWorldTypeBlacklist = types;
                 StructureGenerator.setOverride(null);
             }
             return out.build();
