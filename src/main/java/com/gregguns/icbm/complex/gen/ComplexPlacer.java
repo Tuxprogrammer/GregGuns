@@ -57,7 +57,7 @@ public final class ComplexPlacer implements ComplexWriter {
 
         Set<Type> overworldBiomes();
 
-        /** @return whether the world type (for example "default" or "flat") may host a complex (GGS-11-12) */
+        /** @return whether the world type (for example "RWG2_CONTINENTS", or "flat" which is out) may host a complex */
         default boolean worldTypeAllowed(String worldType) {
             return true;
         }

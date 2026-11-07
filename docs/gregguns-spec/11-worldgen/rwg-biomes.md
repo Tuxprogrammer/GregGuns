@@ -2,7 +2,7 @@
 
 - **Techguns baseline:** [structure-system.md § Spawn pipeline](../../techguns-spec/11-worldgen/structure-system.md#1-spawn-pipeline-world-generator), [structure-system.md § Structure base class](../../techguns-spec/11-worldgen/structure-system.md#2-structure-base-class) (color types), [structure-catalog.md § A5](../../techguns-spec/11-worldgen/structure-catalog.md#a5-alien-bug-nest-alienbugneststructure--alienbugnest)
 - **Design records:** [0005](../../design/0005-world-presence.md)
-- **Pack mods:** Realistic-World-Gen (`RWG`, alpha-1.5.2); DefaultWorldGenerator (`defaultworldgenerator`, 0.4.0); Biomes O' Plenty (`BiomesOPlenty`, 2.1.0.2308); Roguelike-Dungeons (`Roguelike`, 1.6.6-GTNH, as precedent)
+- **Pack mods:** Realistic-World-Gen (`RWG`, alpha-1.5.2 in RC-2, alpha-1.5.3 in 2.9.0); Realistic-World-Gen-2 (`rwg2`, 2.0.6 in 2.9.0); DefaultWorldGenerator (`defaultworldgenerator`, 0.4.0); Biomes O' Plenty (`BiomesOPlenty`, 2.1.0.2308); Roguelike-Dungeons (`Roguelike`, 1.6.6-GTNH, as precedent)
 - **Roadmap:** M8
 
 ## What changes from Techguns
@@ -18,7 +18,7 @@ Techguns picks structures by the biome at the chunk corner and tests it with `Bi
 
 ## Integration points
 
-### Realistic-World-Gen: the pack's only Overworld generator
+### Realistic-World-Gen: the pack's only Overworld generator up to 2.9.0-RC-2
 
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/defaultworldgenerator.cfg`, `World Generator` = `RWG`, `Lock World Generator` = `true`. New worlds are RWG and the player cannot change that. `reference/gtnh/2.9.0-RC-2/.minecraft/config/RWG.cfg` has `Generate Villages` = `true` and `Generate Mineshafts` = `true`. Existing saves of another world type can still be loaded, so GregGuns must not assume RWG.
 - **Source:**
@@ -44,6 +44,15 @@ Techguns picks structures by the biome at the chunk corner and tests it with `Bi
 - **Biomes O' Plenty:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/biomesoplenty/biomeweights.cfg` sets `overworld biome weights`. BoP biomes reach RWG only where `SupportBOP` wires them in (many entries are commented out), and BoP registers its own dictionary types. GregGuns neither lists nor reads BoP biomes by name or ID.
 - **GregGuns does:** one `StructureBiomes` helper that takes a `BiomeGenBase` and answers `isWater`, `allowsLand(structure)` and `campColor`. All answers come from `BiomeDictionary`. It reads no biome ID.
 - **Pack-side change:** none.
+
+### Realistic-World-Gen-2: the 2.9.0 default
+
+- **Pack config:** from GTNH 2.9.0, `config/defaultworldgenerator.cfg` sets `World Generator` = `RWG2_CONTINENTS` and whitelists `flat`, `RWG` and `RWG2_CONTINENTS` ([pack commit a019a6204b](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/commit/a019a6204b)). Servers pick it with `level-type=RWG2_CONTINENTS`.
+- **Source:**
+  - [`RWG.java#L39-L40`](https://github.com/GTNewHorizons/Realistic-World-Gen-2/blob/2.0.6/src/main/java/rwg2/RWG.java#L39-L40) registers two world types, `RWG2` and `RWG2_CONTINENTS` (oceans between continents).
+  - [`BaseBiomes#L65-L101`](https://github.com/GTNewHorizons/Realistic-World-Gen-2/blob/2.0.6/src/main/java/rwg2/biomes/base/BaseBiomes.java#L65-L101) registers the same dictionary types as RWG for the same base biomes, and adds hills variants. The table above holds for RWG2.
+  - [`ChunkGeneratorRealistic#L157-L161`](https://github.com/GTNewHorizons/Realistic-World-Gen-2/blob/2.0.6/src/main/java/rwg2/world/ChunkGeneratorRealistic.java#L157-L161) builds a vanilla village generator at distance 24 only when map features are on; `ConfigRWG.generateVillages` (2.0.6) or `SettingsConfig.generateVillages` (2.1.0) gates it.
+- **GregGuns does:** treats RWG2 as it treats RWG. The world-type gate is a blacklist (GGS-11-12), so both RWG2 types get structures and silo complexes. `VanillaStarts` reads RWG2's village switch under either class name.
 
 ## Requirements
 

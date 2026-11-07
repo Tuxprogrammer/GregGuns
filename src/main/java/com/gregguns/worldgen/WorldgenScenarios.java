@@ -49,8 +49,9 @@ public final class WorldgenScenarios {
             out.checkEquals("spacing big", 64, WorldgenConfig.spacingBig);
             out.checkEquals("dimension count", 1, WorldgenConfig.structureDimensions.length);
             out.checkEquals("dimension", 0, WorldgenConfig.structureDimensions[0]);
-            out.checkEquals("world type count", 4, WorldgenConfig.structureWorldTypes.length);
+            out.checkEquals("world type blacklist size", 1, WorldgenConfig.structureWorldTypeBlacklist.length);
             out.check(WorldgenSettings.placementAllowed(0, "RWG"), "dim 0 with RWG allowed");
+            out.check(WorldgenSettings.placementAllowed(0, "RWG2_CONTINENTS"), "dim 0 with RWG2_CONTINENTS allowed");
             out.check(WorldgenSettings.placementAllowed(0, "default"), "dim 0 with default allowed");
             out.check(!WorldgenSettings.placementAllowed(0, "flat"), "flat denied");
             out.check(!WorldgenSettings.placementAllowed(-1, "default"), "Nether denied");
