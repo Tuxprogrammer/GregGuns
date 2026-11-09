@@ -173,7 +173,9 @@ class GuidePagesTest {
                     .split("[ (]")[0];
                 // Only tier headings open a gun list; a section such as "Reloading" holds prose.
                 current = Arrays.stream(Tier.values())
-                    .anyMatch(t -> t.name().equalsIgnoreCase(head)) ? Tier.valueOf(head.toUpperCase()) : null;
+                    .anyMatch(
+                        t -> t.name()
+                            .equalsIgnoreCase(head)) ? Tier.valueOf(head.toUpperCase()) : null;
             } else if (current != null && line.startsWith("- <ItemImage")) {
                 Matcher m = ITEM_TAG.matcher(line);
                 assertTrue(m.find());
