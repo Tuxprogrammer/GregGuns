@@ -102,7 +102,7 @@ Each death draws 0 to 2 slots plus the Looting level from the mob's table, every
 | Skeleton Soldier (MV) | bone 1–2, coal 1–3, Tanned Leather, iron ingot, gunpowder, 9mm bullets 1–4 (2 slots), stone bullets 2–6 | none |
 | Army Soldier (MV) | Tanned Leather, iron ingot, gunpowder, shotgun shells 1–8, rifle bullets 1–3 | none |
 | Bandit (MV) | Tanned Leather, iron ingot, gunpowder, shotgun shells 1–8, rifle bullets 1–3, 9mm bullets 1–4 | none |
-| Commando (MV) | steel ingot, nothing, rubber plate (2), gunpowder (2), rifle bullets 1–3 (2), Explosive Charge, Advanced Explosive Charge | none |
+| Commando (MV) | steel ingot, nothing, rubber plate (2), gunpowder (2), rifle bullets 1–3 (2), Explosive Charge (2) | none |
 | Outcast (LuV) | rifle bullets 8–24 (3), rockets 1–3, a full Fuel Tank, a full Bio Tank, Laser Barrel, Carbon Receiver, Carbon Stock, Mechanical Parts T3, Power Plating, Rhodium-Plated Palladium plates 1–2 (2; `ore:plateRhodium-PlatedPalladium`), HSS-G ingots 1–2 (2), tungstensteel plates 1–3 | none |
 | Stormtrooper (IV) | rubber plate (2), steel ingot (2), redstone (3), an LV circuit (`circuitBasic`), an LV battery (`batteryBasic`), Laser Barrel, Laser Focus, Carbon Receiver, Hardened Receiver, Carbon Stock, tungstensteel plates 1–2 (2), tungstensteel screws 2–4 (2), titanium plates 1–2 | none |
 | Super Mutants, all three (EV) | ghast tear, blaze rod (4), Cybernetic Parts (15), rockets 1–2 (2), rifle bullets 3–9 (3), shotgun shells 2–8 (3) | none |

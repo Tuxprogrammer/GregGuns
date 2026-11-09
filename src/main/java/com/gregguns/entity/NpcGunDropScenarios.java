@@ -22,6 +22,7 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 
 import com.gregguns.armor.ItemGregGunsArmor;
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -216,6 +217,10 @@ final class NpcGunDropScenarios {
                 return out.check(false, "no NPC carries a gun")
                     .build();
             }
+            // The drop rules' shape, uncapped: a gun or ammo above loot.maxTier stays with the body (D364), which
+            // loot.obtain.npc checks; here every gun's own rule must show in full.
+            int savedCap = LootConfig.maxTier;
+            LootConfig.maxTier = 12;
             DropLog log = DropLog.start();
             try {
                 for (String name : guns) {
@@ -269,6 +274,7 @@ final class NpcGunDropScenarios {
                 }
             } finally {
                 log.stop();
+                LootConfig.maxTier = savedCap;
             }
             return out.build();
         }

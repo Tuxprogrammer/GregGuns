@@ -63,6 +63,7 @@ class LootBagGroupsTest {
             "gregtech:gt.metaitem.01:32604", // IV motor: exo armor
             "gregtech:gt.metaitem.01:32607", // ZPM motor: nuke launcher
             "gregtech:gt.metaitem.01:32702", // MV circuit: explosive charge, night vision goggles
+            "gregtech:gt.metaitem.01:32703", // HV circuit: rockets, missile fuzes
             "gregtech:gt.metaitem.01:32704", // EV circuit: laser rifle, missile fuzes
             "gregtech:gt.metaitem.01:32705", // IV circuit: anti-gravity device and others
             "gregtech:gt.metaitem.01:32706", // LuV circuit: alien blaster, missile fuzes

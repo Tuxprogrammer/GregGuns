@@ -204,10 +204,12 @@ public final class ComplexApplier {
                 y,
                 z - FRAME_DZ[p.facing()],
                 p.facing());
+            int loot = ComplexContents.lootTable(ceiling);
             String ref = SiloFrames
-                .gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, ArmoryDisplay.IS_GUN);
+                .gunFor(loot, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, ArmoryDisplay.IS_GUN);
             ItemStack gun = ref == null ? null : com.gregguns.worldgen.loot.LootCategories.stack(ref, 1);
-            if (gun != null) {
+            // A gun above the world-loot cap leaves the frame empty (D364).
+            if (gun != null && com.gregguns.worldgen.loot.ObtainTier.allowed(gun, loot)) {
                 frame.setDisplayedItem(gun);
             }
             sink.spawn(frame, frame.posX, frame.posY, frame.posZ);
@@ -354,7 +356,7 @@ public final class ComplexApplier {
         if (columns != null && !columns.written(x, z)) return;
         if (!com.gregguns.icbm.complex.gen.FurnitureFiller.placed(world.getBlock(x, y, z), p.block())) return;
         net.minecraft.tileentity.TileEntity te = world.getTileEntity(x, y, z);
-        if (FurnitureStocker.fill(te, p, worldSeed, cellX, cellZ, ceiling)) te.markDirty();
+        if (FurnitureStocker.fill(te, p, worldSeed, cellX, cellZ, ComplexContents.lootTable(ceiling))) te.markDirty();
     }
 
     /**

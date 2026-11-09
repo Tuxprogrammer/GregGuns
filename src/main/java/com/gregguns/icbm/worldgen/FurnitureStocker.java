@@ -24,6 +24,8 @@ import com.gregguns.worldgen.loot.LootCategories;
 import com.gregguns.worldgen.loot.LootEntry;
 import com.gregguns.worldgen.loot.LootPending;
 import com.gregguns.worldgen.loot.LootPools;
+import com.gregguns.worldgen.loot.ObtainTier;
+import com.gregguns.worldgen.loot.TierGatedInventory;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -71,7 +73,9 @@ public final class FurnitureStocker {
         String source = p.key();
         if (FurnitureStock.PLANT.equals(source)) return plant(te, state, rand);
         if (!(te instanceof IInventory)) return false;
-        IInventory inv = (IInventory) te;
+        // Every write goes through the tier gate: nothing above the ceiling or loot.maxTier, judged by the item's
+        // whole crafting chain, lands in a piece of furniture, a furnace's output included (D364).
+        IInventory inv = new TierGatedInventory((IInventory) te, ceiling);
         int n = Math.max(0, p.variant());
         switch (source) {
             case FurnitureStock.ROOM:
@@ -162,13 +166,17 @@ public final class FurnitureStocker {
         return any;
     }
 
-    /** @return the lines of a pool at or below the ceiling (ZPM at most, as the tables) */
+    /**
+     * @return the lines of a pool at or below the ceiling (ZPM at most, as the tables) whose item a player at the
+     *         ceiling and {@code loot.maxTier} can make at all (D364)
+     */
     static List<LootEntry> pool(LootPools.Pool pool, int ceiling) {
         int cap = Math.min(ceiling, com.gregguns.api.Tier.ZPM.voltageIndex());
         List<LootEntry> out = new ArrayList<>();
         for (LootEntry e : pool.lines()) {
-            if (e.tier() == null || e.tier()
-                .voltageIndex() <= cap) out.add(e);
+            if (e.tier() != null && e.tier()
+                .voltageIndex() > cap) continue;
+            if (ObtainTier.allowed(LootCategories.stack(e.ref(), 1), ceiling)) out.add(e);
         }
         return out;
     }

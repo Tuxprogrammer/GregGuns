@@ -16,6 +16,7 @@ import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.worldgen.loot.LootCategories;
+import com.gregguns.worldgen.loot.ObtainTier;
 
 /**
  * Builds an NPC's drops from its {@link NpcProfile}. {@link #dropFewItems} is called from the {@code dropFewItems}
@@ -219,7 +220,8 @@ public final class NpcDrops {
     }
 
     private static void drop(EntityLiving npc, ItemStack stack) {
-        if (stack != null && stack.stackSize > 0) {
+        // Nothing above loot.maxTier by its whole crafting chain, nothing of unknown tier (D364).
+        if (stack != null && stack.stackSize > 0 && ObtainTier.allowed(stack)) {
             npc.entityDropItem(stack, 0.0F);
         }
     }

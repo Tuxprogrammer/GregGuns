@@ -682,6 +682,30 @@ public class QuestbookResourcesTest {
         return problems;
     }
 
+    /**
+     * D365: the bag tiers {@code LootBagInjector} gates drops by are the tiers the quests pay the bags at, and no bag
+     * that ships holds an item {@code item_tiers.json} puts above that tier (0.4.0 put a ZPM circuit and a ZPM plate in
+     * the LuV ordnance crate, and EV guns in the HV spoils bag).
+     */
+    @Test
+    void lootBagsHoldNothingAboveTheirQuestTier() throws IOException {
+        List<String> bad = new ArrayList<>();
+        for (LootBagGroups.Group g : LootBagGroups.parse(LootBagGroups.readResource())) {
+            String bagTier = BAG_TIERS.get(g.id);
+            assertEquals(TIERS.indexOf(bagTier), LootBagGroups.questTier(g.id), g.id + " quest tier");
+            for (LootBagGroups.Drop d : g.drops) {
+                String[] p = LootBagGroups.splitItemName(d.itemName);
+                String key = p[0] + ":" + p[1] + (p[2] == null ? "" : "@" + p[2]);
+                String tier = ITEM_TIERS.get(key);
+                if (tier != null && TIERS.indexOf(tier) > TIERS.indexOf(bagTier)) {
+                    bad.add(g.id + " (" + bagTier + ") holds " + key + " (" + tier + ")");
+                }
+            }
+        }
+        assertEquals(new ArrayList<String>(), bad);
+        assertEquals(-1, LootBagGroups.questTier(15), "a pack group has no GregGuns quest tier");
+    }
+
     private static JsonElement rewardsOf(String tier, int bagGroup, int plateDamage) {
         String json = "{\"0:10\":{\"rewards:9\":{\"0:10\":{\"id:8\":\"enhancedlootbags:lootbag\",\"Damage:2\":"
             + bagGroup

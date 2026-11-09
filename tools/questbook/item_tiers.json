@@ -10,7 +10,7 @@
   "gregguns:part_nuclear_warhead": "ZPM",
   "gregguns:cell_nuclear": "ZPM",
   "gregguns:ammo_rocket_nuke": "ZPM",
-  "gregguns:inert_warhead_t3": "LuV",
+  "gregguns:inert_warhead_t3": "ZPM",
   "gregguns:inert_warhead_t4": "UV",
   "gregguns:inert_warhead_t5": "UHV",
   "gregtech:gt.metaitem.01@32706": "LuV",
@@ -32,5 +32,14 @@
   "gregguns:guidance_computer_mk3": "IV",
   "gregguns:part_barrel_laser": "EV",
   "gregtech:gt.metaitem.01@32606": "LuV",
-  "dreamcraft:HeavyDutyPlateTier4@0": "LuV"
+  "dreamcraft:HeavyDutyPlateTier4@0": "LuV",
+  "gregguns:pulse_rifle": "EV",
+  "gregguns:minigun": "EV",
+  "gregguns:mag_advanced": "EV",
+  "gregguns:mag_minigun_drum": "EV",
+  "gregguns:t3_combat_helmet": "EV",
+  "gregguns:t3_combat_chestplate": "EV",
+  "gregguns:t3_combat_leggings": "EV",
+  "gregguns:t3_combat_boots": "EV",
+  "gregtech:gt.metaitem.01@32704": "EV"
 }

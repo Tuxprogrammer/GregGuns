@@ -213,7 +213,7 @@ public final class LootPools {
         b.add("gt:gem.Emerald", 1, 3, 10, Tier.LV);
         // Level 1's two steels are EBF alloys, so they wait for MV.
         b.add("gt:ingot.DamascusSteel", 3, 5, 10, Tier.MV);
-        b.add("gt:ingot.VanadiumSteel", 3, 5, 10, Tier.MV);
+        b.add("gt:ingot.VanadiumSteel", 3, 5, 10, Tier.HV);
         for (Tier t : Tier.values()) {
             if (t.ordinal() >= Tier.MV.ordinal()) {
                 b.add("gt:ingot." + ladder(t), 2, 8, 10, t);

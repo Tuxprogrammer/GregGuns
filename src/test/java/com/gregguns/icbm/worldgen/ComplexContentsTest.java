@@ -9,8 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.LootKeys;
@@ -25,6 +28,23 @@ import com.gregguns.worldgen.spawner.SpawnerKind;
 
 /** The activity and contents pass over real layouts. */
 class ComplexContentsTest {
+
+    private int savedCap;
+
+    /**
+     * These tests read the layout at each ceiling, so the world-loot cap is raised past every ceiling; CeilingSweepTest
+     * covers the cap itself (D364).
+     */
+    @BeforeEach
+    void raiseLootCap() {
+        savedCap = LootConfig.maxTier;
+        LootConfig.maxTier = 12;
+    }
+
+    @AfterEach
+    void restoreLootCap() {
+        LootConfig.maxTier = savedCap;
+    }
 
     private static long count(List<Placement> ps, Kind k) {
         return ps.stream()

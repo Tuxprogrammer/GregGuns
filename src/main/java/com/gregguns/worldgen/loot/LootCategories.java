@@ -65,6 +65,8 @@ public final class LootCategories {
      */
     private static final Map<String, LootEntry> BY_VALUE = new HashMap<>();
     private static final Map<String, Tier> TOP = new HashMap<>();
+    /** Each category's ceiling; {@link #fill} hands out nothing above it or above {@code loot.maxTier} (D364). */
+    private static final Map<String, Tier> CEILING = new HashMap<>();
     private static final List<String> SKIPPED = new ArrayList<>();
     private static boolean registered;
 
@@ -85,6 +87,7 @@ public final class LootCategories {
             info.setMin(cat.minItems());
             info.setMax(cat.maxItems());
             TOP.put(cat.name(), LootDraw.topTier(cat));
+            CEILING.put(cat.name(), cat.ceiling());
             for (LootEntry line : resolvable(cat, LootCategories::present)) {
                 ItemStack stack = stack(line.ref(), 1);
                 WeightedRandomChestContent content = new WeightedRandomChestContent(
@@ -173,11 +176,20 @@ public final class LootCategories {
      */
     public static void fill(IInventory inv, String category, int richness, Random rand) {
         ChestGenHooks info = ChestGenHooks.getInfo(category);
-        WeightedRandomChestContent[] base = info.getItems(rand);
-        WeightedRandomChestContent[] scaled = new WeightedRandomChestContent[base.length];
+        Tier ceilingTier = CEILING.get(category);
+        int ceiling = ceilingTier == null ? Integer.MAX_VALUE - 1 : ceilingTier.voltageIndex();
+        // A content whose whole crafting chain sits above the cap (or that nobody vouched for, such as a line another
+        // mod added) never rolls; it is dropped before the draw so it takes no pick (D364).
+        List<WeightedRandomChestContent> base = new ArrayList<>();
+        for (WeightedRandomChestContent c : info.getItems(rand)) {
+            if (ObtainTier.allowed(c.theItemId, ceiling)) {
+                base.add(c);
+            }
+        }
+        WeightedRandomChestContent[] scaled = new WeightedRandomChestContent[base.size()];
         Tier top = TOP.get(category);
-        for (int i = 0; i < base.length; i++) {
-            WeightedRandomChestContent c = base[i];
+        for (int i = 0; i < scaled.length; i++) {
+            WeightedRandomChestContent c = base.get(i);
             LootEntry line = SOURCE.get(c);
             if (line == null) {
                 line = BY_VALUE.get(valueKey(category, c));
@@ -201,24 +213,39 @@ public final class LootCategories {
         int n = LootDraw.pickCount(info.getMin(), info.getMax(), richness, rand);
         // Forge drops each stack into a random slot and overwrites whatever is there, which loses picks and can
         // separate a gun from its ammo; the wrapper moves such a stack to the next empty slot instead.
-        WeightedRandomChestContent.generateChestContents(rand, scaled, new NoOverwrite(inv), n);
+        if (scaled.length == 0) {
+            return;
+        }
+        WeightedRandomChestContent.generateChestContents(rand, scaled, new NoOverwrite(inv, ceiling), n);
     }
 
     /**
      * An inventory view whose {@link #setInventorySlotContents} never overwrites: a stack aimed at an occupied slot
      * goes to the next empty one (wrapping around), and is dropped only when the chest is full. Deterministic, so the
-     * same seed still gives the same chest. Everything else passes through.
+     * same seed still gives the same chest. A stack above the ceiling or {@code loot.maxTier} (a companion, say) is
+     * dropped (D364). Everything else passes through.
      */
     static final class NoOverwrite implements IInventory {
 
         private final IInventory inv;
+        private final int ceiling;
 
+        /** An ungated view, for the unit test of the slot logic. */
         NoOverwrite(IInventory inv) {
+            this(inv, -1);
+        }
+
+        /** @param ceiling the chest's ceiling (voltage index), or -1 for no tier gate */
+        NoOverwrite(IInventory inv, int ceiling) {
             this.inv = inv;
+            this.ceiling = ceiling;
         }
 
         @Override
         public void setInventorySlotContents(int slot, ItemStack stack) {
+            if (ceiling >= 0 && stack != null && !ObtainTier.allowed(stack, ceiling)) {
+                return;
+            }
             int size = inv.getSizeInventory();
             for (int i = 0; i < size; i++) {
                 int s = (slot + i) % size;

@@ -799,7 +799,8 @@ public final class ComplexLevelScenarios {
                     if (s != null) allowed.add(id(s));
                 }
             }
-            allowed.addAll(SiloChests.allowedIds(p.key(), ceiling)); // lines, junk, spoil (D317)
+            // Lines, junk, spoil (D317), from the table of the ceiling held to loot.maxTier (D364).
+            allowed.addAll(SiloChests.allowedIds(p.key(), ComplexContents.lootTable(ceiling)));
             for (Placement.Bonus b : p.bonuses()) {
                 ItemStack s = SiloBonusItems.stack(b, p);
                 if (s != null) allowed.add(id(s));

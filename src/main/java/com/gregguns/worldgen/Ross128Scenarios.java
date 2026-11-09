@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.gregguns.compat.ModIds;
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.core.config.WorldgenConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -162,7 +163,9 @@ public final class Ross128Scenarios {
                     if (!(t instanceof TileGregChest) || ((TileGregChest) t).pending() == null) continue;
                     checked++;
                     byCeiling.merge(rolled, 1, Integer::sum);
-                    String expect = "gregguns:weaponchest_t" + RolledCeiling.tableTier(Math.max(1, rolled));
+                    // The rolled ceiling, held to loot.maxTier (D364).
+                    String expect = "gregguns:weaponchest_t"
+                        + RolledCeiling.tableTier(Math.min(Math.max(1, rolled), LootConfig.maxTier));
                     out.checkEquals(
                         "chest of plan " + e.getKey() + " (rolled " + rolled + ")",
                         expect,

@@ -144,7 +144,9 @@ public final class ChestLootScenarios {
             Map<String, Map<String, String>> poolsByKey = new HashMap<>();
             Map<String, Set<String>> allowedByKey = new HashMap<>();
             Set<Long> chestCells = new HashSet<>();
-            int cap = Math.min(ceiling, Tier.ZPM.voltageIndex());
+            // The chests draw the table of the ceiling held to loot.maxTier (D364).
+            int table = ComplexContents.lootTable(ceiling);
+            int cap = Math.min(ComplexContents.lootCap(ceiling), Tier.ZPM.voltageIndex());
             for (Placement p : last.values()) {
                 int x = ax + p.x(), y = floor + p.y(), z = az + p.z();
                 Block b = world.getBlock(x, y, z);
@@ -168,8 +170,8 @@ public final class ChestLootScenarios {
                     continue;
                 }
                 IInventory inv = (IInventory) te;
-                Set<String> allowed = allowedByKey.computeIfAbsent(p.key(), k -> SiloChests.allowedIds(k, ceiling));
-                Map<String, String> pools = poolsByKey.computeIfAbsent(p.key(), k -> pools(k, ceiling));
+                Set<String> allowed = allowedByKey.computeIfAbsent(p.key(), k -> SiloChests.allowedIds(k, table));
+                Map<String, String> pools = poolsByKey.computeIfAbsent(p.key(), k -> pools(k, table));
                 Set<String> bonus = new HashSet<>();
                 for (Placement.Bonus bn : p.bonuses()) {
                     ItemStack s = SiloBonusItems.stack(bn, p);
