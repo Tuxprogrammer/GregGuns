@@ -133,6 +133,8 @@ public final class ObtainTierRules {
             "Stibnite",
             "Garnierite",
             "Pentlandite",
+            "Calcite",
+            "CastIron",
             "Coke");
         // LV: what a basic chemical reactor, distillery, wiremill and bender make.
         materials(
@@ -169,7 +171,9 @@ public final class ObtainTierRules {
             "Arsenic",
             "RedSteel",
             "BlackBronze",
-            "BismuthBronze");
+            "BismuthBronze",
+            "TinAlloy",
+            "Mercury");
         // MV: the electric blast furnace's first metals, PTFE, silicon.
         materials(
             2,
@@ -188,7 +192,9 @@ public final class ObtainTierRules {
             "Beryllium",
             "Lithium",
             "Polycaprolactam",
-            "Electrotine");
+            "Electrotine",
+            "DamascusSteel",
+            "Acetone");
         // HV: stainless steel and titanium (the HV and EV hull metals), chrome, epoxy.
         materials(
             3,
@@ -208,7 +214,10 @@ public final class ObtainTierRules {
             "StyreneButadieneRubber",
             "Silicone",
             "Polystyrene",
-            "Polydimethylsiloxane");
+            "Polydimethylsiloxane",
+            // Source: the Haber step runs at 384 EU/t, past MV's 128:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/ChemicalRecipes.java#L4356
+            "Ammonia");
         // EV: tungsten steel and the platinum group's first metals.
         materials(
             4,
@@ -224,6 +233,8 @@ public final class ObtainTierRules {
         // IV and up: never in default loot; listed so the check names them instead of calling them unknown.
         materials(5, "Iridium", "Osmium", "Osmiridium", "HSSG", "Naquadah", "Polybenzimidazole");
         materials(6, "HSSE", "HSSS", "NaquadahEnriched", "Europium", "Rhodium", "Ruthenium");
+        // Bartworks' Rhodium-Plated Palladium, the LuV casing metal, by its ore dictionary spelling.
+        materials(6, "Rhodium-PlatedPalladium", "RhodiumPlatedPalladium");
         // Fissile metals and naquadah alloy follow the questbook's reward tiers (tools/questbook/item_tiers.json).
         materials(7, "Naquadria", "Trinium", "Americium", "Duranium", "NaquadahAlloy", "Uranium235", "Plutonium");
         materials(8, "Neutronium", "Tritanium", "Plutonium241");
@@ -233,7 +244,9 @@ public final class ObtainTierRules {
             "WhiteDwarfMatter",
             "BlackDwarfMatter",
             "Universium",
-            "MagnetohydrodynamicallyConstrainedStarMatter");
+            "MagnetohydrodynamicallyConstrainedStarMatter",
+            "TranscendentMetal",
+            "SpaceTime");
 
         // GT prefixes a material item may have, with the tier the form itself needs (a fine wire needs a wiremill).
         // A prefix not listed (hot ingots, plasma cells, nanites, ...) is unknown.
@@ -329,6 +342,7 @@ public final class ObtainTierRules {
         ITEM_LIST.put("Spray_Empty", 1);
         ITEM_LIST.put("Shape_Empty", 1);
         ITEM_LIST.put("Duct_Tape", 1);
+        ITEM_LIST.put("Component_Filter", 1);
         ITEM_LIST.put("Ingot_IridiumAlloy", 5);
         ITEM_LIST.put("Energy_LapotronicOrb", 5);
         ITEM_LIST.put("QuantumEye", 6);
@@ -366,7 +380,13 @@ public final class ObtainTierRules {
             "SpiceOfLife:lunchbag",
             "Natura:natura.bow.darkwood",
             "Backpack:tannedLeather",
+            "Backpack:backpack",
             "harvestcraft:*");
+        // Tinkers' iron tool parts (meta 2) come off a Part Builder or a smeltery cast, with no voltage.
+        for (String part : new String[] { "toolRod", "binding", "hatchetHead", "shovelHead", "swordBlade", "knifeBlade",
+            "arrowhead" }) {
+            allowed(0, "TConstruct:" + part + "@2");
+        }
         allowed(
             1,
             "IC2:itemScrap",
@@ -377,7 +397,26 @@ public final class ObtainTierRules {
             "IC2:itemArmorRubBoots",
             "IC2:itemArmorHazmatHelmet",
             "IC2:itemArmorHazmatChestplate",
-            "IC2:itemArmorHazmatLeggings");
+            "IC2:itemArmorHazmatLeggings",
+            "GalacticraftCore:item.standardWrench",
+            "GalacticraftCore:item.canister@0",
+            "GalacticraftCore:item.canister@1");
+        // Galacticraft in the pack: the Tier 1 rocket's parts and the oxygen gear are HV, the Tier 2 rocket's EV and
+        // the heavy engine and fins of the Tier 3 and 4 rockets IV (see GalacticraftParts).
+        allowed(
+            3,
+            "GalacticraftCore:item.basicItem@9",
+            "GalacticraftCore:item.heavyPlating",
+            "GalacticraftCore:item.rocketFins",
+            "GalacticraftCore:item.engine",
+            "GalacticraftCore:item.noseCone",
+            "GalacticraftCore:item.airFan",
+            "GalacticraftCore:item.airVent",
+            "GalacticraftCore:item.oxygenMask",
+            "GalacticraftCore:item.oxygenTankLightFull",
+            "GalacticraftCore:item.buggymat");
+        allowed(4, "GalacticraftMars:item.itemBasicAsteroids@6");
+        allowed(5, "GalacticraftMars:item.itemBasicAsteroids@1", "GalacticraftMars:item.itemBasicAsteroids@2");
     }
 
     private ObtainTierRules() {}
@@ -443,6 +482,23 @@ public final class ObtainTierRules {
         Integer form = PREFIXES.get(prefix);
         if (form == null) return UNKNOWN;
         return Math.max(form, material(material));
+    }
+
+    /**
+     * @param oreName an ore dictionary name ({@code ingotSteel}, {@code plateRhodium-PlatedPalladium})
+     * @return the tier of the longest known prefix with a known material after it, or {@link #UNKNOWN}; for another
+     *         mod's copy of a GT material item, which GT did not unify
+     */
+    public static int oreName(String oreName) {
+        String best = null;
+        for (String prefix : PREFIXES.keySet()) {
+            if (oreName.length() > prefix.length() && oreName.startsWith(prefix)
+                && Character.isUpperCase(oreName.charAt(prefix.length()))
+                && (best == null || prefix.length() > best.length())) {
+                best = prefix;
+            }
+        }
+        return best == null ? UNKNOWN : materialItem(best, oreName.substring(best.length()));
     }
 
     /**

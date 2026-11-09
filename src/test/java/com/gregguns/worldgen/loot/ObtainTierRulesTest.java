@@ -99,6 +99,39 @@ class ObtainTierRulesTest {
     }
 
     @Test
+    void anotherModsCopyOfAGtItemTakesItsOreName() {
+        assertEquals(0, ObtainTierRules.oreName("ingotSteel"));
+        assertEquals(6, ObtainTierRules.oreName("plateRhodium-PlatedPalladium"));
+        // The longest prefix wins: a fine wire needs a wiremill.
+        assertEquals(1, ObtainTierRules.oreName("wireFineCopper"));
+        assertEquals(ObtainTierRules.UNKNOWN, ObtainTierRules.oreName("ingotUnobtainium"));
+        assertEquals(ObtainTierRules.UNKNOWN, ObtainTierRules.oreName("ingot"));
+        assertEquals(ObtainTierRules.UNKNOWN, ObtainTierRules.oreName("ingotsteel"));
+        assertEquals(ObtainTierRules.UNKNOWN, ObtainTierRules.oreName("logWood"));
+    }
+
+    @Test
+    void galacticraftPartsFollowTheirRockets() {
+        assertEquals(3, ObtainTierRules.allowed("GalacticraftCore:item.heavyPlating", 0));
+        assertEquals(3, ObtainTierRules.allowed("GalacticraftCore:item.basicItem", 9));
+        assertEquals(ObtainTierRules.UNKNOWN, ObtainTierRules.allowed("GalacticraftCore:item.basicItem", 0));
+        assertEquals(4, ObtainTierRules.allowed("GalacticraftMars:item.itemBasicAsteroids", 6));
+        assertEquals(5, ObtainTierRules.allowed("GalacticraftMars:item.itemBasicAsteroids", 1));
+        assertFalse(atDefaultCap(ObtainTierRules.allowed("GalacticraftMars:item.itemBasicAsteroids", 2)));
+        assertEquals(0, ObtainTierRules.allowed("TConstruct:swordBlade", 2));
+        assertEquals(ObtainTierRules.UNKNOWN, ObtainTierRules.allowed("TConstruct:swordBlade", 1));
+    }
+
+    @Test
+    void chemicalsFollowTheirLongestStep() {
+        // Ammonia's reaction runs at 384 EU/t, which an MV reactor cannot.
+        assertEquals(3, ObtainTierRules.materialItem("cell", "Ammonia"));
+        assertEquals(2, ObtainTierRules.materialItem("cell", "Chlorine"));
+        assertEquals(12, ObtainTierRules.materialItem("ingot", "SpaceTime"));
+        assertEquals(12, ObtainTierRules.materialItem("plate", "TranscendentMetal"));
+    }
+
+    @Test
     void theCeilingAndTheCapBothClamp() {
         assertTrue(ObtainTierRules.allowed(4, 4, 4));
         assertFalse(ObtainTierRules.allowed(5, 12, 4));

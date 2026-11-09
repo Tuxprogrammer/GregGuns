@@ -19,4 +19,4 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 ## Config
 
-- **New keys:** `guns.idleReloadDelayTicks`, the Nether and End spawn tables (`npcs.netherSpawnDimensions`, `npcs.endSpawnDimensions`, `npcs.weightNether*`, `npcs.weightEndCommando`, `npcs.endMinDistance`, `npcs.bossSpacing`), `npcs.outcast` `worldgen.redBaseChanceMilitaryBase` and `loot.maxTier` (default EV, the highest tier of anything world loot holds).
+- **New keys:** `guns.idleReloadDelayTicks`, the Nether and End spawn tables (`npcs.netherSpawnDimensions`, `npcs.endSpawnDimensions`, `npcs.weightNether*`, `npcs.weightEndCommando`, `npcs.endMinDistance`, `npcs.bossSpacing`), `npcs.outcast`, `worldgen.redBaseChanceMilitaryBase` and `loot.maxTier` (default EV, the highest tier of anything world loot holds).

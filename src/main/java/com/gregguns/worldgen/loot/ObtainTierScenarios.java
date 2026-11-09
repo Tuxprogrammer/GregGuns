@@ -19,7 +19,6 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
-import com.gregguns.entity.npc.NpcItems;
 import com.gregguns.entity.npc.NpcLootCapHandler;
 import com.gregguns.entity.npc.loot.InfernalLootTable;
 import com.gregguns.entity.npc.loot.LootDrop;
@@ -61,12 +60,20 @@ public final class ObtainTierScenarios {
         return s == null ? -1 : ObtainTier.of(s);
     }
 
-    private static void reportAll(ScenarioResult.Builder out, List<String> problems, int max) {
-        for (int i = 0; i < problems.size() && i < max; i++) {
-            out.check(false, problems.get(i));
+    /**
+     * Fails the result once per distinct problem, up to {@code max} of them, then once for the rest.
+     *
+     * @param out      the result
+     * @param problems what went wrong, repeats included
+     * @param max      how many distinct problems to name
+     */
+    public static void reportAll(ScenarioResult.Builder out, List<String> problems, int max) {
+        List<String> distinct = new java.util.ArrayList<>(new java.util.LinkedHashSet<>(problems));
+        for (int i = 0; i < distinct.size() && i < max; i++) {
+            out.check(false, distinct.get(i));
         }
-        if (problems.size() > max) {
-            out.check(false, (problems.size() - max) + " more");
+        if (distinct.size() > max) {
+            out.check(false, (distinct.size() - max) + " more");
         }
     }
 
@@ -250,7 +257,10 @@ public final class ObtainTierScenarios {
                     }
                     for (LootDrop d : p.fixedDrops()) {
                         drops++;
-                        checkDrop(out, "npc " + e.getKey() + " fixed", d.ref(), ceiling);
+                        // D349's one accepted exception: the Attack Helicopter's Cybernetic Parts, EV over its HV.
+                        boolean accepted = "AttackHelicopter".equals(e.getKey()) && d.ref()
+                            .equals(GregGuns.MODID + ":part_cybernetic");
+                        checkDrop(out, "npc " + e.getKey() + " fixed", d.ref(), accepted ? 4 : ceiling);
                     }
                 }
                 for (InfernalLootTable.Entry e : InfernalLootTable.entries()) {
@@ -277,9 +287,14 @@ public final class ObtainTierScenarios {
         }
 
         private static void checkDrop(ScenarioResult.Builder out, String where, String ref, int tier) {
-            ItemStack s = NpcItems.stack(ref, 1);
+            // The stack the drop handlers make (NpcDrops): gt: parts and ~full tanks included.
+            ItemStack s = LootCategories.stack(ref, 1);
             if (s == null) {
-                out.note(where + ": " + ref + " is not in this pack");
+                boolean ours = ref.startsWith(GregGuns.MODID + ":") || ref.startsWith("gt:");
+                out.check(!ours, where + ": " + ref + " does not resolve");
+                if (!ours) {
+                    out.note(where + ": " + ref + " is not in this pack");
+                }
                 return;
             }
             int t = ObtainTier.of(s);

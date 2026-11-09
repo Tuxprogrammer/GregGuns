@@ -57,12 +57,7 @@ public final class ComplexObtainScenarios {
     }
 
     private static void reportAll(ScenarioResult.Builder out, List<String> problems) {
-        for (int i = 0; i < problems.size() && i < MAX_REPORTS; i++) {
-            out.check(false, problems.get(i));
-        }
-        if (problems.size() > MAX_REPORTS) {
-            out.check(false, (problems.size() - MAX_REPORTS) + " more");
-        }
+        ObtainTierScenarios.reportAll(out, problems, MAX_REPORTS);
     }
 
     /** The stack checks of one cap: counts what was drawn, keeps the first problems. */

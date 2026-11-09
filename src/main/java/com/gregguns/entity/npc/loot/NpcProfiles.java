@@ -259,8 +259,8 @@ public final class NpcProfiles {
                         .slots(LootDrop.one("ore:plateRubber"), 2)
                         .slots(GUNPOWDER, 2)
                         .slots(RIFLE, 2)
-                        .slot(LootDrop.one(G + "explosive_charge"))
-                        .slot(LootDrop.one(G + "explosive_charge#1"))
+                        // The Explosive Charge only: the Advanced one is HV, past the Commando's MV.
+                        .slots(LootDrop.one(G + "explosive_charge"), 2)
                         .build())
                 .equipment(
                     EquipmentProfile.builder()

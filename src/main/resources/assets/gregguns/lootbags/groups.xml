@@ -307,7 +307,6 @@
         <Loot Identifier="gg_ordnance_3_missile_chip_t3" ItemName="gregguns:missile_chip_t3" Amount="1" NBTTag="" Chance="785" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_missile_schematic_t3" ItemName="gregguns:missile_schematic_t3" Amount="1" NBTTag="" Chance="315" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_launcher_warhead_emp" ItemName="gregguns:launcher_warhead_emp" Amount="4" NBTTag="" Chance="785" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
-        <Loot Identifier="gg_ordnance_3_inert_warhead" ItemName="gregguns:inert_warhead_t3" Amount="1" NBTTag="" Chance="470" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_missile_body_t2" ItemName="gregguns:missile_body_t2" Amount="1" NBTTag="" Chance="235" ItemGroup="" LimitedDropCount="2" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_antidote" ItemName="gregguns:antidote" Amount="16" NBTTag="" Chance="625" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_guidance_computer_mk3" ItemName="gregguns:guidance_computer_mk3" Amount="2" NBTTag="" Chance="785" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>

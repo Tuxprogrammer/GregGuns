@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.api.Tiered;
+import com.gregguns.api.TieredStack;
 import com.gregguns.core.config.LootConfig;
 
 import gregtech.api.GregTechAPI;
@@ -29,10 +30,12 @@ import gregtech.api.util.GTOreDictUnificator;
  * <p>
  * The rules, first match wins:
  * <ol>
- * <li>a GregGuns item (or block) declares its {@link Tiered} tier;</li>
+ * <li>a GregGuns item declares its tier per stack ({@link TieredStack}), or the item (or block) declares its
+ * {@link Tiered} tier;</li>
  * <li>a GT material item (prefix and material) takes the higher of the form and the curated material tier; a circuit
  * takes its circuit tier;</li>
- * <li>an item with a {@code circuit<Tier>} ore name takes that circuit tier;</li>
+ * <li>an item with a {@code circuit<Tier>} ore name takes that circuit tier; an item with material ore names
+ * ({@code ingotSteel} from another mod) takes the highest tier they give;</li>
  * <li>a GT item list entry takes its curated tier or the voltage in its name ({@code Electric_Motor_EV});</li>
  * <li>a GT machine block takes its machine tier;</li>
  * <li>a vanilla item is ULV (save the few a player cannot make); another mod's item needs an allow-list entry.</li>
@@ -97,6 +100,10 @@ public final class ObtainTier {
 
     private static int compute(ItemStack stack) {
         Item item = stack.getItem();
+        if (item instanceof TieredStack && ((TieredStack) item).getTier(stack) != null) {
+            return ((TieredStack) item).getTier(stack)
+                .voltageIndex();
+        }
         if (item instanceof Tiered && ((Tiered) item).getTier() != null) {
             return ((Tiered) item).getTier()
                 .voltageIndex();
@@ -122,6 +129,17 @@ public final class ObtainTier {
             if (t != ObtainTierRules.UNKNOWN) {
                 return t;
             }
+        }
+        // Another mod's copy of a GT material item: the highest tier any of its material ore names gives.
+        int byOre = ObtainTierRules.UNKNOWN;
+        for (int id : OreDictionary.getOreIDs(stack)) {
+            t = ObtainTierRules.oreName(OreDictionary.getOreName(id));
+            if (t != ObtainTierRules.UNKNOWN && (byOre == ObtainTierRules.UNKNOWN || t > byOre)) {
+                byOre = t;
+            }
+        }
+        if (byOre != ObtainTierRules.UNKNOWN) {
+            return byOre;
         }
         if (listed != null) {
             t = ObtainTierRules.itemList(listed);
