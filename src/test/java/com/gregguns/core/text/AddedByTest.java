@@ -31,6 +31,50 @@ class AddedByTest {
         assertTrue(out[2].contains("GregGuns"));
     }
 
+    /** The line comes from our own lang key and reads "Added by: GregGuns" once the color codes are stripped. */
+    @Test
+    void theLineIsOurOwnLangKeyReadingAddedByGregGuns() throws IOException {
+        String value = null;
+        for (String line : Files.readAllLines(
+            Paths.get("src/main/resources/assets/gregguns/lang/en_US.lang"),
+            StandardCharsets.UTF_8)) {
+            if (line.startsWith(AddedBy.KEY + "=")) {
+                value = line.substring(AddedBy.KEY.length() + 1);
+            }
+        }
+        assertEquals("Added by: %s", value);
+        assertEquals(
+            "Added by: GregGuns",
+            String.format(value, AddedBy.NAME)
+                .replaceAll("\u00a7.", ""));
+    }
+
+    /**
+     * GT's lang keys are GT's to rename, and a client without one prints the raw key ("GT5U.MBTT.Mod" on the 0.4.0
+     * tooltips). No Java source of ours may name a {@code GT5U.} key as a string literal; the keys we must spell in
+     * GT's namespace (recipe results) live in our own lang file.
+     */
+    @Test
+    void noSourceBorrowsAGtLangKey() throws IOException {
+        Path root = Paths.get("src/main/java/com/gregguns");
+        List<Path> files;
+        try (Stream<Path> s = Files.walk(root)) {
+            files = s.filter(
+                p -> p.toString()
+                    .endsWith(".java"))
+                .collect(Collectors.toList());
+        }
+        for (Path p : files) {
+            int n = 0;
+            for (String line : Files.readAllLines(p, StandardCharsets.UTF_8)) {
+                n++;
+                String code = line.trim();
+                if (code.startsWith("//") || code.startsWith("*")) continue;
+                assertTrue(!code.contains("\"GT5U."), p + ":" + n + " borrows a GT lang key");
+            }
+        }
+    }
+
     /**
      * MTE objects cannot be built in a unit test (GT only allows construction inside its registration window), so
      * this guards the source instead: every class that extends a GT machine base and is a registered MTE must route

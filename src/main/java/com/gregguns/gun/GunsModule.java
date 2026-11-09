@@ -96,6 +96,8 @@ public final class GunsModule implements GregGunsModule {
             com.gregguns.gun.server.ToolGunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.gun.server.EnergyGunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ComponentScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            com.gregguns.item.part.ConsumableScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ScenarioRegistry.SCENARIOS.register(new com.gregguns.compat.GhostCircuitScenario());
             FrameworkScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GeneratedGunLooks.registerAll(ScenarioRegistry.SCENARIOS);

@@ -26,14 +26,18 @@ public final class AddedBy {
      */
     public static final String NAME = EnumChatFormatting.GOLD + "GregGuns" + EnumChatFormatting.GRAY;
 
-    /** GT's own "Added by" lang key, already translated for every language the pack ships. */
-    private static final String PREFIX_KEY = "GT5U.MBTT.Mod";
+    /**
+     * Our own lang key for the line, "Added by: %s". GT's "Added by" key is GT's to rename, and a client that lacks it
+     * shows the raw key, so single blocks, hatches and items never borrow it. Multiblocks keep GT's own finisher line,
+     * which GT prints from its own key.
+     */
+    public static final String KEY = "gregguns.tooltip.added_by";
 
     private AddedBy() {}
 
     /** The full line for single blocks and hatches: "Added by: GregGuns". */
     public static String line() {
-        return StatCollector.translateToLocal(PREFIX_KEY) + ": " + NAME;
+        return StatCollector.translateToLocalFormatted(KEY, NAME);
     }
 
     /** Returns a copy of {@code lines} with the line appended. */

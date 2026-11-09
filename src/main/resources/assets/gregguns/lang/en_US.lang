@@ -125,6 +125,7 @@ item.gregguns.ammo_rocket_nuke.name=Rocket (Tactical Nuke)
 item.gregguns.golden_round.name=Golden Round
 gregguns.tooltip.ammo.flavor.golden_round=One golden round. One kill.
 gregguns.tooltip.ammo.round=Loose ammunition
+gregguns.tooltip.added_by=Added by: %s
 gregguns.tooltip.magazine.empty=Refill with %s x %s (loose items, not rounds)
 gregguns.tooltip.magazine.sneak=Sneak + Right click to unload: gives back an empty magazine and %s x %s
 gregguns.tooltip.magazine.guns=Used by (rounds per magazine):
@@ -189,6 +190,8 @@ gregguns.ammoPress=Ammo Press
 gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
 gregguns.machine.ammo_press.type=Machine Type: Ammo Press
 gregguns.machine.ammo_press_steam.tooltip=Presses ammunition on steam; vents steam from the front after each run
+gregguns.machine.separate_bus.true=Input buses are separated
+gregguns.machine.separate_bus.false=Input buses aren't separated
 
 # Ammunition Works multiblock: casings and controller
 gregguns.casings.name=Ammunition Works Casing
@@ -592,6 +595,14 @@ item.gregguns.tank_bio.name=Bio Tank
 item.gregguns.cell_nuclear.name=Nuclear Power Cell
 item.gregguns.bandages.name=Bandages
 item.gregguns.medkit.name=Medkit
+gregguns.consumable.tooltip.tier=Tier: %s
+gregguns.consumable.tooltip.summary=Hold right-click while hurt to heal
+gregguns.consumable.tooltip.heal_one=Heals 1 heart at once
+gregguns.consumable.tooltip.heal_many=Heals %s hearts at once
+gregguns.consumable.tooltip.regen=Then Regeneration %s for %s s
+gregguns.consumable.tooltip.use=Takes %s s of holding to use
+gregguns.consumable.tooltip.shift=Press [SHIFT] for detailed tooltip
+gregguns.consumable.full_health=You're at full health, so there is nothing to heal.
 
 # Utility core (M6): turret armor plates
 item.gregguns.turret_armor_iron.name=Iron Turret Armor

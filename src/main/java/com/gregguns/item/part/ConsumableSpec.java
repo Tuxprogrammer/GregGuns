@@ -12,6 +12,13 @@ public final class ConsumableSpec {
     /** Medkit: 50 ticks to use, heal 6 HP, Regeneration II for 400 ticks. */
     public static final ConsumableSpec MEDKIT = new ConsumableSpec(50, 6.0F, 1, 400);
 
+    /** Ticks between the use sound (and the arm swing) while the item is in use. */
+    public static final int FEEDBACK_PERIOD = 7;
+    /** The vanilla sound played every {@link #FEEDBACK_PERIOD} ticks of use. */
+    public static final String USE_SOUND = "random.eat";
+    /** Ticks a player waits between two full-health notices while the button stays held. */
+    public static final int NOTICE_COOLDOWN = 40;
+
     private final int useTicks;
     private final float healHp;
     private final int regenAmplifier;
@@ -51,5 +58,22 @@ public final class ConsumableSpec {
      */
     public static boolean canUse(float health, float maxHealth) {
         return health < maxHealth;
+    }
+
+    /**
+     * @param ticksLeft the use ticks still to go, as {@code onUsingTick} gets them
+     * @return whether this tick plays the use sound and swings the arm
+     */
+    public static boolean isFeedbackTick(int ticksLeft) {
+        return ticksLeft > 0 && ticksLeft % FEEDBACK_PERIOD == 0;
+    }
+
+    /**
+     * @param lastTick the world tick of the player's last full-health notice
+     * @param now      the world tick now
+     * @return whether another notice may go out (also after the world clock went backwards)
+     */
+    public static boolean noticeDue(long lastTick, long now) {
+        return now < lastTick || now - lastTick >= NOTICE_COOLDOWN;
     }
 }

@@ -15,6 +15,8 @@ Notes for the next release. Fold these into that release's changelog when it is 
 - **Every NPC has a home.** Zombie Pigman Soldiers and Super Mutants spawn in the Nether, the mutants tougher the deeper in you go, with a rare Cyberdemon far out; Commando squads roam the End away from the dragon's island; one Military Base in five is a red base, where Dictator Dave holds his post by the red flag; and the Outcast guards silo complexes of LuV and up.
 - Super Mutants stand on the ground; their legs no longer sink into the floor.
 - **Reloading.** A magazine gun with no loaded magazine at hand loads one loose round per reload. The Revolvers, Golden Revolvers, Combat Shotgun and Sawed Off load one chamber at a time, a trigger pull stops the reload and fires what is loaded, and held without firing for 2 seconds they top themselves up (`guns.idleReloadDelayTicks`).
+- **Bandages and the Medkit** swing your arm and make a sound while you hold right-click, tell you when you are at full health, and show their heal, Regeneration and hold time in the tooltip.
+- Items, single blocks and hatches read "Added by: GregGuns" in their tooltips.
 
 ## Config
 
