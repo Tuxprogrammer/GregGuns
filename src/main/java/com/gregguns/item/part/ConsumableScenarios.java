@@ -110,7 +110,9 @@ public final class ConsumableScenarios {
         }
     }
 
-    /** A hurt player holds right-click with the item: it is heard while in use, then heals, regenerates and is used up. */
+    /**
+     * A hurt player holds right-click with the item: it is heard while in use, then heals, regenerates and is used up.
+     */
     static final class Use implements Scenario {
 
         private final String item;

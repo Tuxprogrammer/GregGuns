@@ -51,8 +51,7 @@ class GhostCircuitsTest {
         List<String> offenders = new ArrayList<>();
         for (Path p : files(JAVA)) {
             if (!p.toString()
-                .endsWith(".java")
-                || p.getFileName()
+                .endsWith(".java") || p.getFileName()
                     .toString()
                     .equals("GhostCircuits.java")) {
                 continue;

@@ -31,7 +31,8 @@ public final class GhostCircuits {
     /** @return one of each ghost circuit GT registered (none before GT's items exist) */
     public static List<ItemStack> stacks() {
         List<ItemStack> out = new ArrayList<>();
-        for (ItemList entry : new ItemList[] { ItemList.Circuit_BasicElectronic, ItemList.Circuit_Integrated_Advanced }) {
+        for (ItemList entry : new ItemList[] { ItemList.Circuit_BasicElectronic,
+            ItemList.Circuit_Integrated_Advanced }) {
             if (entry.hasBeenSet()) {
                 out.add(entry.get(1));
             }

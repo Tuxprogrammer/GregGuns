@@ -72,7 +72,9 @@ public final class GhostCircuitScenario implements Scenario {
                 ItemStack ghost = firstGhost(r.mInputs);
                 if (ghost == null) ghost = firstGhost(r.mOutputs);
                 if (ghost != null) {
-                    out.check(false, e.getKey() + " recipe for " + first(r.mOutputs).getDisplayName() + " uses a ghost");
+                    out.check(
+                        false,
+                        e.getKey() + " recipe for " + first(r.mOutputs).getDisplayName() + " uses a ghost");
                 }
             }
         }

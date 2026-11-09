@@ -25,8 +25,8 @@ public final class ConsumableTooltipFormat {
      * @param shift    whether Shift is held
      * @return the tooltip lines
      */
-    public static List<String> lines(String tierLine, String summary, List<String> details, String hint,
-        String addedBy, boolean shift) {
+    public static List<String> lines(String tierLine, String summary, List<String> details, String hint, String addedBy,
+        boolean shift) {
         List<String> out = new ArrayList<>();
         out.add(tierLine);
         out.add(summary);
