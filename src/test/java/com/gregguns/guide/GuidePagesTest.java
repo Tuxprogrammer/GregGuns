@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -170,8 +171,10 @@ class GuidePagesTest {
             if (line.startsWith("## ")) {
                 String head = line.substring(3)
                     .split("[ (]")[0];
-                current = Tier.valueOf(head.toUpperCase());
-            } else if (line.startsWith("- <ItemImage")) {
+                // Only tier headings open a gun list; a section such as "Reloading" holds prose.
+                current = Arrays.stream(Tier.values())
+                    .anyMatch(t -> t.name().equalsIgnoreCase(head)) ? Tier.valueOf(head.toUpperCase()) : null;
+            } else if (current != null && line.startsWith("- <ItemImage")) {
                 Matcher m = ITEM_TAG.matcher(line);
                 assertTrue(m.find());
                 String name = m.group(1)

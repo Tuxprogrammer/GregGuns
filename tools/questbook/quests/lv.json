@@ -557,7 +557,7 @@
       "title": "Revolver",
       "tier": "LV",
       "desc": [
-        "A heavier sidearm with six chambers and a bit more punch per shot than the pistol, at the cost of a longer reload. The Revolver uses loose 9mm bullets instead of a magazine: one bullet reloads all six chambers.",
+        "A heavier sidearm with six chambers and a bit more punch per shot than the pistol, at the cost of a longer reload. The Revolver uses loose 9mm bullets instead of a magazine: one bullet fills all six chambers. It loads one chamber at a time, and a pull of the trigger stops the reload and fires what is loaded.",
         "It is built in the LV Assembler from an Iron Barrel, Mechanical Parts, a Wooden Stock, steel plates and screws, and a spring. Compare its damage and range with the pistol on the tooltips and keep the one you like; two Revolvers combine into Akimbo Revolvers at a crafting table.",
         "[note]The Revolver is the cheapest gun to keep fed, because one loose bullet fills it.[/note]"
       ],
@@ -663,7 +663,7 @@
       "title": "Sawed Off",
       "tier": "LV",
       "desc": [
-        "Two barrels, two shells, and an apology to whatever is in front of you. The Sawed Off fires a spray of pellets: ruinous at point-blank range and nearly useless at a distance. It holds two shells, and a reload tops up only what you have fired.",
+        "Two barrels, two shells, and an apology to whatever is in front of you. The Sawed Off fires a spray of pellets: ruinous at point-blank range and nearly useless at a distance. It holds two shells, and a reload tops up only what you have fired, one shell at a time; pull the trigger to cut it short and fire.",
         "Build it in an LV Assembler from two Iron Barrels, a Wooden Stock, a steel plate, screws and a spring. Its ammo is the Shotgun Shell, which the Ammo Press makes from eight brass foils, twenty-four lead rounds and four gunpowder per batch of eight; the Ammo Logistics chapter walks through it.",
         "[warn]Do not stand in the open with it. Anything that survives the first two shells is already next to you.[/warn]"
       ],
