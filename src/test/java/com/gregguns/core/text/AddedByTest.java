@@ -39,9 +39,8 @@ class AddedByTest {
     @Test
     void theLineIsOurOwnLangKeyReadingAddedByGregGuns() throws IOException {
         String value = null;
-        for (String line : Files.readAllLines(
-            Paths.get("src/main/resources/assets/gregguns/lang/en_US.lang"),
-            StandardCharsets.UTF_8)) {
+        for (String line : Files
+            .readAllLines(Paths.get("src/main/resources/assets/gregguns/lang/en_US.lang"), StandardCharsets.UTF_8)) {
             if (line.startsWith(AddedBy.KEY + "=")) {
                 value = line.substring(AddedBy.KEY.length() + 1);
             }
@@ -74,7 +73,10 @@ class AddedByTest {
                 n++;
                 String code = line.trim();
                 if (code.startsWith("//") || code.startsWith("*")) continue;
-                assertTrue(!GT_KEY.matcher(code).find(), p + ":" + n + " borrows a GT lang key");
+                assertTrue(
+                    !GT_KEY.matcher(code)
+                        .find(),
+                    p + ":" + n + " borrows a GT lang key");
             }
         }
     }
