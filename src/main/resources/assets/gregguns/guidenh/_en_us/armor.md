@@ -62,7 +62,7 @@ Twelve armor sets from the Steam age to IV, plus masks, goggles and back gear fo
 ## Extras
 
 - <ItemLink id="gregguns:ammo_pouch" showIcon="left" />: quiver slot. Holds six stacks of ammo; open it with **]**.
-- <ItemLink id="gregguns:bandages" showIcon="left" /> and <ItemLink id="gregguns:medkit" showIcon="left" />: heal on the spot, with Regeneration. Bandages at LV, the Medkit at MV.
+- <ItemLink id="gregguns:bandages" showIcon="left" /> and <ItemLink id="gregguns:medkit" showIcon="left" />: hold right-click while hurt to heal. Bandages (LV) take 3 seconds and heal 1 heart at once, then Regeneration I for 15 seconds; the Medkit (MV) takes 2.5 seconds and heals 3 hearts, then Regeneration II for 20 seconds. At full health there is nothing to heal.
 - **Camo Bench:** cycles the camo on your gun and all four armor pieces. No power needed.
 
 ## Damage types

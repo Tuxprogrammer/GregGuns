@@ -143,7 +143,7 @@ def armor():
     key_p = '<span class="key" style="min-width:32px;height:32px;font-size:16px">]</span>'
     extras = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:18px">
 <div class="card" style="display:flex;gap:16px;align-items:center">{ico("ammo_pouch", 72)}<div><h3>Ammo Pouch</h3>{muted("Quiver slot. Holds six stacks of ammo; open it with " + key_p)}</div></div>
-<div class="card" style="display:flex;gap:16px;align-items:center">{ico("bandages", 64)}{ico("medkit", 64)}<div><h3>Bandages and Medkit</h3>{muted("Heal on the spot, with Regeneration. Bandages at LV, the Medkit at MV.")}</div></div>
+<div class="card" style="display:flex;gap:16px;align-items:center">{ico("bandages", 64)}{ico("medkit", 64)}<div><h3>Bandages and Medkit</h3>{muted("Hold right-click while hurt. Bandages (LV): 1 heart, then Regeneration I. Medkit (MV): 3 hearts, then Regeneration II.")}</div></div>
 <div class="card" style="display:flex;gap:16px;align-items:center">{img(S.machine_block("camo_bench", "LV"), h=90)}<div><h3>Camo Bench</h3>{muted("Cycles the camo on your gun and all four armor pieces. No power needed.")}</div></div></div>"""
     dmg = "".join(f'<div><b style="font-size:17px">{esc(n)}</b><div class="muted" style="font-size:15px">{esc(d)}</div></div>'
                   for n, d in DAMAGE)
