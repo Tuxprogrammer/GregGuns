@@ -38,7 +38,7 @@ Brass foil, lead rounds and gunpowder become <ItemLink id="gregguns:ammo_9mm_bul
 
 ## 5. Reload and fight
 
-Press **R** to swap in a loaded magazine. The empty one comes back to your inventory, so refill it and go again. Shoot the soldiers, bandits and mutants for loot.
+Press **R** to swap in a loaded magazine. The empty one comes back to your inventory, so refill it and go again. With no loaded magazine to hand, **R** loads one loose round instead, so the rounds a soldier drops are never wasted. Shoot the soldiers, bandits and mutants for loot.
 
 ## 6. Repair, then climb the tiers
 
@@ -53,8 +53,8 @@ Worn armor and guns go back on a Repair Bench of at least their tier, with GregT
 | Left mouse | Fire (hold for auto) |
 | Right mouse | Scope, or charge a beam |
 | R | Reload |
-| N | Night vision |
-| P | Ammo pouch |
-| J | Glider or anti-gravity |
+| M | Night vision |
+| ] | Ammo pouch |
+| ; | Back device: Glider, Anti Gravity Device |
 
 See [Guns by tier](guns.md), [Ammo and magazines](ammo.md) and [Machines](machines.md) next.

@@ -12,7 +12,7 @@
       "tier": "Steam",
       "desc": [
         "Soldiers, bandits and the walking dead share the Overworld with you, and most of them are armed. Some carry real guns, some drop real ammo, and a few drop things you cannot easily make yet. Hunting them is the cheapest way to stock up on rounds and cloth, and every hunt in this chapter pays out.",
-        "Zombies, skeletons, bandits and Psycho Steve spawn on their own in the Overworld. The rest come from structures: camp flags send out soldiers, and a Big Bunker or a silo complex holds ordinary vanilla mob spawners with an NPC spinning inside. A spawner only works while you are within 24 blocks, caps how many of its mob stand around it, and drops nothing when broken. GregTech makes spawners very slow to mine by hand, so treat them as a farm, not a trophy.",
+        "Zombies, skeletons, bandits and Psycho Steve spawn on their own in the Overworld; Zombie Pigman Soldiers and Super Mutants spawn in the Nether, and Commandos in the End. The rest come from structures: camp flags send out soldiers, and a Big Bunker or a silo complex holds ordinary vanilla mob spawners with an NPC spinning inside. A spawner only works while you are within 24 blocks, caps how many of its mob stand around it, and drops nothing when broken. GregTech makes spawners very slow to mine by hand, so treat them as a farm, not a trophy.",
         "Some spawns are Infernal: a glowing name, a boss bar and a pile of modifiers. Elite mobs have up to five, ultra up to ten, infernal more, and each rank drops better GregGuns gear (LV, MV, and MV with a rare HV roll). Structure guards from spawners roll for Infernal too, at the same odds.",
         "[note]Go armed: hold a Hand Cannon and 16 stone bullets to start the chapter.[/note]"
       ],
@@ -253,7 +253,7 @@
       "desc": [
         "Bandits are the first enemies that carry real LV firepower: 9mm pistols, revolvers, sawed-offs, bolt-action rifles and now and then an AK-47 or Thompson. They wear Scout gear.",
         "They drop 9mm rounds, shells and rifle bullets, so they are a free ammo supply. Kill four.",
-        "[note]Outcasts, their heavily armed cousins, appear only from spawn eggs.[/note]"
+        "[note]Outcasts, their heavily armed cousins, command the elite posts of the deepest silo complexes.[/note]"
       ],
       "pre": [
         "gg.npc.skeletons",
@@ -483,7 +483,7 @@
       "title": "Commandos",
       "tier": "MV",
       "desc": [
-        "Commandos are Army elite in T2 Commando armor with M4 rifles. They drop explosive charges, steel ingots and rubber plates. Find them at Aircraft Carriers and silo guard posts.",
+        "Commandos are Army elite in T2 Commando armor with M4 rifles. They drop explosive charges, steel ingots and rubber plates. Find them at Aircraft Carriers, silo guard posts and, in squads of two or three, out on the End's islands.",
         "Armor up and kill three."
       ],
       "pre": [
@@ -640,7 +640,7 @@
       "title": "Dictator Dave",
       "tier": "IV",
       "desc": [
-        "A secret mini-boss with 100 health, Dave fires a Golden Revolver and wears a beret. He does not spawn on his own: he comes from a spawn egg, an admin command or a custom spawner.",
+        "A secret mini-boss with 100 health, Dave fires a Golden Revolver and wears a beret. He holds the post of a red Military Base, beside its red flag, and stays there.",
         "He drops the Golden Revolver and some 9mm rounds."
       ],
       "pre": [
@@ -717,7 +717,7 @@
       "title": "Cyberdemon",
       "tier": "EV",
       "desc": [
-        "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is a Nether mob that also comes from a spawn egg or an admin command. It drops ghast tears, blaze rods and cybernetic parts.",
+        "A fire-immune Nether brute armed with the Nether Blaster, the Cyberdemon is a rare Nether boss. It spawns alone, deep in the Nether, and never within 128 blocks of another. It drops ghast tears, blaze rods and cybernetic parts.",
         "[warn]It hits hard. Bring good armor.[/warn]"
       ],
       "pre": [

@@ -202,7 +202,8 @@ def getting_started():
               f'<div class="stack"><span class="key" style="min-width:64px;height:64px;font-size:30px">R</span>'
               f'<small>Reload</small></div>',
               "Press <b>R</b> to swap in a loaded magazine. The empty one comes back to your inventory, so refill "
-              "it and go again. Shoot the soldiers, bandits and mutants for loot.")
+              "it and go again. With none to hand, <b>R</b> loads one loose round instead. Shoot the soldiers, bandits and "
+              "mutants for loot.")
     s6 = step(6, "Repair, then climb the tiers",
               f'<div class="stack">{gti("plate", "Steel", 46)}<small>Plates</small></div><span class="plus">+</span>'
               f'{img(S.machine_block("repair_bench", "LV"), h=120)}{arrow}'
@@ -212,7 +213,7 @@ def getting_started():
     controls = "".join(
         f'<div class="ctrl"><span class="key">{k}</span><span>{esc(v)}</span></div>'
         for k, v in (("LMB", "Fire (hold for auto)"), ("RMB", "Scope, or charge a beam"), ("R", "Reload"),
-                     ("N", "Night vision"), ("P", "Ammo pouch"), ("J", "Glider or anti-grav")))
+                     ("M", "Night vision"), ("]", "Ammo pouch"), (";", "Glider or anti-grav")))
     body = f"""
 <div style="display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:end;margin-bottom:24px">
   <div class="guide">{img(guide, h=440)}</div>
