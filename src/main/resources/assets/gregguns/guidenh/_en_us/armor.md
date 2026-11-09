@@ -50,18 +50,18 @@ Twelve armor sets from the Steam age to IV, plus masks, goggles and back gear fo
 
 ## Masks, goggles and back gear
 
-- <ItemImage id="gregguns:night_vision_goggles" label="right" /> (MV): Head slot, electric. Toggle with N.
+- <ItemImage id="gregguns:night_vision_goggles" label="right" /> (MV): Head slot, electric. Toggle with M.
 - <ItemImage id="gregguns:gas_mask" label="right" /> (MV): Blocks gas hazards, cures poison while the filter lasts.
 - <ItemImage id="gregguns:tactical_mask" label="right" /> (HV): Gas mask, night vision and oxygen in one.
 - <ItemImage id="gregguns:oxygen_mask" label="right" /> (HV): Breathe in space, together with the Oxygen Tanks. Refill the tanks with compressed air.
 - <ItemImage id="gregguns:oxygen_tanks" label="right" /> (HV): Back slot. Pairs with the Oxygen Mask.
 - <ItemImage id="gregguns:glider" label="right" /> (HV): Back slot. Hold J or sneak while falling to glide.
 - <ItemImage id="gregguns:jump_pack" label="right" /> (HV): Back slot, electric. Big jumps, soft landings.
-- <ItemImage id="gregguns:anti_gravity_device" label="right" /> (IV): Back slot, electric. Press J, then fly.
+- <ItemImage id="gregguns:anti_gravity_device" label="right" /> (IV): Back slot, electric. Press ; then fly.
 
 ## Extras
 
-- <ItemLink id="gregguns:ammo_pouch" showIcon="left" />: quiver slot. Holds six stacks of ammo; open it with **P**.
+- <ItemLink id="gregguns:ammo_pouch" showIcon="left" />: quiver slot. Holds six stacks of ammo; open it with **]**.
 - <ItemLink id="gregguns:bandages" showIcon="left" /> and <ItemLink id="gregguns:medkit" showIcon="left" />: heal on the spot, with Regeneration. Bandages at LV, the Medkit at MV.
 - **Camo Bench:** cycles the camo on your gun and all four armor pieces. No power needed.
 
