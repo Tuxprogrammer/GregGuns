@@ -347,8 +347,8 @@ ROOM_LOOK = {
     "STOCKPILE": "Pallet racks of chests and crate stacks, containers, metal props.",
     "SERVER_ROOM": "Two-high rack pairs, backup batteries, the operator's desk.",
     "BUNKS": "Real beds in head-to-head pairs sharing a locker, a chest at the foot of each bed; rifle racks.",
-    "MESS_GALLEY": "A kitchen line of furnaces, cauldrons and counters; a serving counter; tables with chairs.",
-    "CAFETERIA": "A serving line and rows of tables with chairs.",
+    "MESS_GALLEY": "A kitchen line of furnaces, cauldrons and counters; a serving counter; tables with chairs. A complex's one Vending Machine stands against a wall in one of its dining halls.",
+    "CAFETERIA": "A serving line and rows of tables with chairs. May hold the complex's one Vending Machine.",
     "INFIRMARY": "Bed pairs behind curtains, treatment bays, medicine cabinets, the nurse's station.",
     "DECON_AIRLOCK": "A decon shower, a bench, suits on stands. In the corner between the hub and a hall.",
     "GUARD_POST": "The duty desk, lockers, a rifle rack, a card table and ammo chests. Beside a hall mouth.",
@@ -359,7 +359,7 @@ ROOM_LOOK = {
     "BRIG": "Barred cells with bunks and iron doors, guard desks, evidence lockers, an interrogation table.",
     "CHEM_LAB": "Working Chemical Reactors on the back wall, lab benches, safety showers.",
     "SHOWERS_LAUNDRY": "Shower stalls, lockers and a bench, a laundry corner with wash tubs.",
-    "REC_LOUNGE": "Pool tables, card tables, a bar and a sofa corner facing a screen wall, bookcases.",
+    "REC_LOUNGE": "Pool tables, card tables, a bar and a sofa corner facing a screen wall, bookcases. Holds the Vending Machine when the complex has no dining hall.",
     "INCINERATOR": "A furnace bank with chimney risers, GT recyclers, ash heaps, coal bunkers, sorting stations.",
 }
 _ROOM_ORDER = ["ASSEMBLY_BAY", "LAUNCH_CONTROL", "MISSILE_ASSEMBLY", "COMMS", "COMMANDER_OFFICE", "WARHEAD_MAGAZINE",
@@ -893,6 +893,7 @@ def build_page() -> str:
     soldier = M._enemy_pic("Army Soldier", dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4", armor=None))
     commando = M._enemy_pic("Commando", dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4", armor=None))
     storm = M._enemy_pic("Stormtrooper", dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="blaster_rifle", armor=None))
+    outcast = M._enemy_pic("Outcast", dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="minigun", armor=None))
     guard_post = elite_post = spawner_block()
 
     # ---- machines
@@ -911,8 +912,8 @@ concrete shafts, sometimes a small radar hut, and a trapdoor. Under them is a wh
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">{stats}</div>
 <div class="pt" style="margin-top:14px">A <b>hub</b>, the Assembly Bay ({HUB[0]} &times; {HUB[1]}), sends out three or four <b>major halls</b> {MAJOR_W} wide. They branch and bend, and narrow <b>minor hallways</b> leave their sides. The rooms hang off all of them,
 and one major hall is the <b>silo gallery</b>. Complexes are rare:
-a quarter of the grid squares ({CHANCE_PCT}%), one square per 1,024 &times; 1,024 blocks, and never on water or a steep slope. On the Overworld they keep out of hills and mountains. They generate in the Overworld
-and on every planet with solid ground.</div></div>
+a quarter of the grid squares ({CHANCE_PCT}%), one square per 1,024 &times; 1,024 blocks, and never in an ocean or on a steep slope. On the Overworld they keep out of hills and mountains. They generate in the Overworld
+and on every planet with solid ground. A complex stays whole once it is built: GregTech ore veins, stone layers, lava lakes, dungeons and other mods' generation cannot leave ore, stone or holes in its rooms, halls and shafts. The complex puts back whatever they changed, once. Ore inside the complex is lost; the rock between the rooms keeps its ore.</div></div>
 <div class="card" style="display:flex;flex-direction:column"><div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:6px">{img(hero, h=440, style="max-width:100%")}</div>
 <div class="cap">A generator hall. One block makes the walls, here the <b style="color:var(--txt)">Silo Complex Wall</b>, which joins into one plated mass; the floor is a pattern; lamps sit flush in the ceiling with a light tile in the floor under each; the machines are GregTech
 hulls; a guard post, a monster spawner, waits in the corner. A breach in the wall and a hole in the floor are the marks of a complex that lost its crew long ago.</div></div></div>
@@ -920,10 +921,10 @@ hulls; a guard post, a monster spawner, waits in the corner. A breach in the wal
 <div class="sec"><h2>On the surface</h2>
 <div class="card" style="display:grid;grid-template-columns:1.55fr 1fr;gap:26px">
 <div><div class="pt" style="margin-bottom:6px">Every silo reaches the surface as a <b>shaft</b>: a ring of light concrete around a 3 &times; 3 bore, flush with the ground. Some are open, some half capped and some sealed
-with two air gaps left to climb.</div>
+with two air gaps left to climb. Under a river or lake, the shaft rises through the water to its mouth.</div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;gap:10px">{shafts}</div></div>
-<div class="pt"><b>Radar stations.</b> Up to two stand on the surface, well apart from each other: a small hut of works casing with a radar on its roof. A station is inert until you add an Energy Hatch (see the end of this sheet).
-<div style="margin-top:12px"><b>Escape ladder.</b> The base has no door but one: a 1 &times; 1 ladder shaft at a dead end, with a closed trapdoor level with the ground.</div>
+<div class="pt"><b>Radar stations.</b> Up to two stand on the surface, well apart from each other: a small hut of works casing with a radar on its roof. A station is inert until you add an Energy Hatch (see the end of this sheet). On a river or lake bed it stands on its own foundation.
+<div style="margin-top:12px"><b>Escape ladder.</b> The base has no door but one: a 1 &times; 1 ladder shaft at a dead end, with a closed trapdoor level with the ground. Under a river or lake the ladder climbs inside a concrete riser to a closed trapdoor one block above the water.</div>
 <div style="margin-top:12px"><b>Nothing else</b> marks the place. A player walking past sees a few concrete squares in the grass.</div></div></div></div>
 
 <div class="sec"><h2>The layout</h2>
@@ -942,7 +943,7 @@ with two air gaps left to climb.</div>
 <div class="label" style="margin:12px 0 6px">Halls</div>
 {hall_key}</div></div>
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px">
-<div class="card"><h3>The hub</h3><div class="pt" style="margin-top:6px">The Assembly Bay sits near the middle, {HUB[0]} &times; {HUB[1]} and {HUB_H} high, a container yard with salvage chests, a workbench and guards. Its sign names the complex's <b>class</b>, its loot ceiling, and the sign under it its <b>Activity Level</b>: Alpha, Bravo or Charlie.
+<div class="card"><h3>The hub</h3><div class="pt" style="margin-top:6px">The Assembly Bay sits near the middle, {HUB[0]} &times; {HUB[1]} and {HUB_H} high, a container yard with salvage chests, a workbench and guards. Its sign names the complex's <b>class</b>, its ceiling, and the sign under it its <b>Activity Level</b>: Alpha, Bravo or Charlie.
 A decontamination airlock waits in the corner between the hub and a hall.</div></div>
 <div class="card"><h3>Halls and rooms</h3><div class="pt" style="margin-top:6px">Major halls are {MAJOR_W} wide and {MAJOR_H} high, with a rail down the middle; minor hallways are {MINOR_W} wide and {MINOR_H} high. Rooms are {ROOM_H} high, grow to fill the rock around them and
 can hang off other rooms, so not every room has a straight line to the hub. About {COVERAGE}% of the footprint is built. Each major hall leaves the hub through a <b>blast door</b> and past a sign naming its direction. Three to five small guard rooms stand beside the hall mouths and branches.</div></div>
@@ -954,6 +955,7 @@ can hang off other rooms, so not every room has a straight line to the hub. Abou
 <div class="sec"><h2>The rooms</h2>
 <div class="pt" style="margin-bottom:10px">A complex holds {MIN_ROOMS} to {MAX_ROOMS} rooms besides the hub. Seven kinds are always present: Launch Control, Missile Assembly, Comms, the Commander's Office, the Warhead Magazine, the Generator Hall and the Armory. The rest are dealt like a deck of cards: every kind that fits turns up before any kind repeats. The sign by every door names the room. Every room is laid out to its own plan, in rows and islands between the lamp lines, with a clear way from the door to every chest, machine and door.</div>
 <div class="rooms">{rooms}</div>
+<div class="cap"><b style="color:var(--txt)">The Vending Machine.</b> Each complex has one, the pack's own Vending Machine multiblock, with the GregGuns Coin trades. It works in a Bravo or Charlie complex. In an Alpha ruin its controller stands dark with a casing knocked out; put a casing back (iron plates and foil) and it forms. A caved-in hall leaves it as rubble.</div>
 <div class="cap">Sizes are the room's starting footprint, length &times; depth in blocks; rooms then grow into the rock around them. "Dealt" rooms come from the deck. A whole complex holds exactly {CHEST_TARGETS[0]}, {CHEST_TARGETS[1]} or {CHEST_TARGETS[2]} loot chests (Alpha, Bravo, Charlie), shared out by room size; the chest spots left over are empty wooden crates, and a caved-in room holds none. Each chest draws its room's table, up to the planet's ceiling (see below). The armory's display chests come on top of the count.</div></div>
 
 <div class="sec"><h2>Light and finish</h2>
@@ -980,8 +982,8 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="pt">A monster spawner of <b>Army Soldiers</b> and <b>Commandos</b>. It stands on open floor in the rooms, the hub included. The figure turning in the cage is the guard it sends next.</div></div></div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{soldier}</div><b>Army Soldier</b></div><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div></div></div>
 <div class="card"><div class="post"><div style="text-align:center">{img(elite_post, h=100)}<div class="cap" style="margin-top:0">Inside: Commando or Stormtrooper</div></div><div><h3>Silo Elite Post</h3>
-<div class="pt">A monster spawner of <b>Commandos</b> and <b>Stormtroopers</b>. Two in five spawners in rooms 30 or more blocks from the hub are elite, never in an abandoned complex. A Stormtrooper in the cage marks one.</div></div></div>
-<div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div><div class="mob"><div class="guide" style="padding:0 6px">{storm}</div><b>Stormtrooper</b></div></div></div>
+<div class="pt">A monster spawner of <b>Commandos</b> and <b>Stormtroopers</b>. Two in five spawners in rooms 30 or more blocks from the hub are elite, never in an abandoned complex. A Stormtrooper in the cage marks one. Where the complex's ceiling is LuV or higher, it is a command post that also calls up the <b>Outcast</b>.</div></div></div>
+<div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:12px"><div class="mob"><div class="guide" style="padding:0 6px">{commando}</div><b>Commando</b></div><div class="mob"><div class="guide" style="padding:0 6px">{storm}</div><b>Stormtrooper</b></div><div class="mob"><div class="guide" style="padding:0 6px">{outcast}</div><b>Outcast</b> (LuV+)</div></div></div>
 <div class="card"><h3>How the posts behave</h3>
 <ul class="pt" style="margin:8px 0 0 18px;line-height:1.45">
 <li>Each post is a Minecraft monster spawner with the guards inside. It wakes only when a player is within <b>24 blocks</b>, in lit rooms too.</li>
@@ -991,9 +993,10 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <li>Each room rolls <b>none, one or two</b> spawners for the complex's level (see the table above), set far apart on open floor. Halls hold none.</li></ul></div></div></div>
 
 <div class="sec"><h2>Loot by planet</h2>
-<div class="pt" style="margin-bottom:10px">Nothing in a complex, chest or machine, goes above its planet's <b>ceiling</b>. The Overworld and the Moon sit at EV, and each rocket tier above the Moon lifts the ceiling by one voltage tier, to UMV for Tier 9. Chests fill with a ladder of GregTech metals, and the top rung at the ceiling is the most common. Guns come from the weapon tables and stop at ZPM, so above UHV the loot is GregTech material only.</div>
+<div class="pt" style="margin-bottom:10px">Each planet has a <b>ceiling</b>. The Overworld and the Moon sit at EV, and each rocket tier above the Moon lifts the ceiling by one voltage tier, to UMV for Tier 9. The ceiling sets the guards' danger and which posts call the Outcast. What the chests, furniture, furnaces, stocked machines and item frames hold goes no higher than the ceiling <i>or</i> the server's <b>loot limit</b> (<b>loot.maxTier</b>, EV by default), judged by the whole crafting chain of each item, so a stock of late items needs both a deep planet and a raised limit. Chests fill with a ladder of GregTech metals, and the top rung at the ceiling is the most common. Guns come from the weapon tables and stop at ZPM, so above UHV the loot is GregTech material only.</div>
 <div class="card" style="padding:10px 14px"><table class="t"><tr><th>Rocket</th><th>Planets</th><th style="text-align:center">Ceiling</th><th>Top metal</th><th>Machines</th><th style="text-align:center">LV or MV</th><th style="text-align:center">At the ceiling</th><th>Guns to</th><th>Salvage</th><th style="text-align:center">Danger</th></tr>
 {planet_rows()}</table></div>
+<div class="cap">The columns show what each ceiling allows. At the default loot limit (EV) the contents of every row stop at EV, and the guards and posts still follow the ceiling.</div>
 <div class="card" style="margin-top:14px;display:grid;grid-template-columns:1fr 620px;gap:22px;align-items:center">
 <div><h3>Ross128b and Ross128ba</h3><div class="pt" style="margin-top:6px">The challenge-start planets have no fixed ceiling. <b>Each complex rolls its own</b>, from EV to UMV, weighted to the low end: about half are EV to IV, one in a hundred is UMV. The hall's sign and the blast door frames tell you the class you drew.</div></div>
 <div style="display:flex;align-items:flex-end;justify-content:space-between">{ross_card()}</div></div></div>
@@ -1001,7 +1004,7 @@ On the Moon and Mars, rugged rooms use local rock and brick. All of it mines to 
 <div class="sec"><h2>Real machines, real salvage</h2>
 <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
 <div><div class="pt">The machines in the rooms are <b>real GregTech machines</b>: generators, Battery Buffers, Assemblers, pumps, Chemical Reactors and lab machines, recyclers and furnaces, and machine tools, plus a
-<b>Launch Control</b> and Galacticraft's <b>NASA Workbench</b>. Most are LV or MV, and a machine at the planet's ceiling is a rare find (see the table above); radar and comms consoles sit at the ceiling or one or two tiers under it, never under HV. Air handlers, fuel tanks and consoles are machine hulls. Working machines sit idle, often holding a few batches of finished goods. You can pick up what you find, though a dead machine is only the bare hull: nearly all of them in a ruin and in a partly abandoned complex's dark rooms, a few in its lit rooms. About {pct(PROFILES[0]["absent"])} of a ruin's machine slots are simply gone, so a working machine there is a rare find.</div>
+<b>Launch Control</b> and Galacticraft's <b>NASA Workbench</b>. Most are LV or MV, and a machine at the ceiling (or at the loot limit, if that is lower) is a rare find (see the table above); radar and comms consoles sit at the ceiling or one or two tiers under it, never under HV. Air handlers, fuel tanks and consoles are machine hulls. Working machines sit idle, often holding a few batches of finished goods. You can pick up what you find, though a dead machine is only the bare hull: nearly all of them in a ruin and in a partly abandoned complex's dark rooms, a few in its lit rooms. About {pct(PROFILES[0]["absent"])} of a ruin's machine slots are simply gone, so a working machine there is a rare find.</div>
 <div style="display:flex;justify-content:space-around;align-items:flex-end;margin-top:8px">{hulls}</div></div>
 <div><div class="pt"><b>Nothing live is left behind.</b> The magazine holds inert warheads, fuzes and stainless steel frame boxes, never a live warhead. The hub's chests hold a <b>damaged missile body</b> (too broken to stand; it recycles for its plates), the missile assembly floor now and then a <b>whole missile body</b> (a damaged one in a ruin),
 the fuel depot <b>rocket fuel cells</b>, and the safe, comms and control chests now and then a <b>schematic chip</b>. The <b>Silo Complex Wall</b> mines to itself: a handsome plated block for your own base, though no machine takes it.</div>

@@ -19,6 +19,7 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.layout.Stamper;
@@ -282,17 +283,43 @@ class StructurePopulatorTest {
 
     @Test
     void aRolledCeilingPicksTheChestTablesOfThatTier() {
-        Run r = run(populatorWith(rolling(5)), null, GridColumns.flat(64), PLAINS);
-        assertTrue(r.stamped > 0);
-        assertTrue(!r.marks.orders.isEmpty());
-        assertTables(r, 5, "a rolled IV ceiling uses the IV table");
+        int saved = LootConfig.maxTier;
+        LootConfig.maxTier = 12;
+        try {
+            Run r = run(populatorWith(rolling(5)), null, GridColumns.flat(64), PLAINS);
+            assertTrue(r.stamped > 0);
+            assertTrue(!r.marks.orders.isEmpty());
+            assertTables(r, 5, "a rolled IV ceiling uses the IV table once loot.maxTier allows it");
+        } finally {
+            LootConfig.maxTier = saved;
+        }
     }
 
     @Test
     void aRolledCeilingAboveZpmUsesTheZpmTables() {
-        Run r = run(populatorWith(rolling(9)), null, GridColumns.flat(64), PLAINS);
-        assertTrue(!r.marks.orders.isEmpty());
-        assertTables(r, 7, "UV and UHV use the ZPM tables");
+        int saved = LootConfig.maxTier;
+        LootConfig.maxTier = 12;
+        try {
+            Run r = run(populatorWith(rolling(9)), null, GridColumns.flat(64), PLAINS);
+            assertTrue(!r.marks.orders.isEmpty());
+            assertTables(r, 7, "UV and UHV use the ZPM tables once loot.maxTier allows it");
+        } finally {
+            LootConfig.maxTier = saved;
+        }
+    }
+
+    @Test
+    void aRolledCeilingAboveTheLootCapUsesTheCapsTable() {
+        // D364: the default cap is EV, so a Ross128 roll of UHV picks the EV tables.
+        int saved = LootConfig.maxTier;
+        LootConfig.maxTier = 4;
+        try {
+            Run r = run(populatorWith(rolling(9)), null, GridColumns.flat(64), PLAINS);
+            assertTrue(!r.marks.orders.isEmpty());
+            assertTables(r, 4, "a roll above loot.maxTier uses the cap's table");
+        } finally {
+            LootConfig.maxTier = saved;
+        }
     }
 
     @Test

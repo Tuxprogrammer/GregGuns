@@ -9,7 +9,7 @@ public enum BlockKind {
 
     /** Nothing there. */
     AIR,
-    /** Natural terrain: ground, grass, rock, sand, clay. */
+    /** Natural terrain: ground, grass, rock, sand, clay, snow blocks. */
     GROUND,
     /** Water or lava. Never removed by terrain shaping (WGEN-26). */
     LIQUID,

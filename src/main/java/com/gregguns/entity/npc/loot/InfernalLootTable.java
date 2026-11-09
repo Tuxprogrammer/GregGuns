@@ -33,13 +33,14 @@ public final class InfernalLootTable {
             new Entry(LootDrop.range(G + "ammo_shotgun_shell", 4, 8), Tier.LV),
             new Entry(LootDrop.range(G + "ammo_rifle_bullet", 2, 6), Tier.LV),
             new Entry(LootDrop.one(G + "mag_9mm_pistol"), Tier.LV),
-            new Entry(LootDrop.one(G + "medkit"), Tier.LV),
+            new Entry(LootDrop.one(G + "medkit"), Tier.MV),
             new Entry(LootDrop.one(G + "mag_smg"), Tier.MV),
             new Entry(LootDrop.one(G + "mag_assault_rifle"), Tier.MV),
             new Entry(LootDrop.range(G + "ammo_40mm_grenade", 1, 3), Tier.MV),
             new Entry(LootDrop.one(G + "thompson_smg"), Tier.MV),
             new Entry(LootDrop.one(G + "mag_lmg"), Tier.HV),
-            new Entry(LootDrop.one(G + "mag_advanced"), Tier.HV)));
+            // The rare HV roll is an HV magazine: the Advanced Magazine is EV (D365).
+            new Entry(LootDrop.one(G + "mag_as50"), Tier.HV)));
 
     private InfernalLootTable() {}
 

@@ -25,10 +25,13 @@ class CyberDemonTest {
 
     @Test
     void spawnsOnlyInTheNetherWithTheFlagOn() {
-        assertTrue(CyberDemonRules.canSpawnAt(-1, true));
-        assertFalse(CyberDemonRules.canSpawnAt(-1, false));
-        assertFalse(CyberDemonRules.canSpawnAt(0, true));
-        assertFalse(CyberDemonRules.canSpawnAt(1, true));
+        int[] nether = { -1 };
+        assertTrue(CyberDemonRules.canSpawnAt(-1, nether, true));
+        assertFalse(CyberDemonRules.canSpawnAt(-1, nether, false));
+        assertFalse(CyberDemonRules.canSpawnAt(0, nether, true));
+        assertFalse(CyberDemonRules.canSpawnAt(1, nether, true));
+        assertTrue(CyberDemonRules.canSpawnAt(7, new int[] { -1, 7 }, true), "a listed Nether-like dimension");
+        assertFalse(CyberDemonRules.canSpawnAt(-1, null, true));
     }
 
     @Test

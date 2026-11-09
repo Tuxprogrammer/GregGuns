@@ -19,8 +19,9 @@ import com.gregguns.recipe.SawedOffRecipes;
  * Spec: sheets-rifles-shotguns.md, "Sawed Off", section 3: 4 damage per pellet falling to 1.5 between 1 and 4 blocks,
  * lifetime 10 ticks at 1.5 blocks per tick, spread 0.01, 7 extra pellets at spread 0.2 (8 in all, one round per
  * shot), full-auto every 4 ticks, 2 rounds, 28 tick reload, AI range 12 / attack time 60 / burst 2 / delay 20,
- * recoil 5 ticks and muzzle flash 5 ticks. It loads shell by shell: up to 2 shells per reload, one round each, and
- * the rounds already in the gun stay (so a forced reload tops up).
+ * recoil 5 ticks and muzzle flash 5 ticks. It loads shell by shell, one round each, and the rounds already in the gun
+ * stay. Deviation (design record 0026): each shell takes half the reload time and goes in at the end of it, so a
+ * trigger pull after the first shell fires it.
  *
  * <p>
  * Recipe (recipes.md, LV table): two Iron Barrels, a Wooden Stock, a steel plate, 2 steel screws and a small steel
@@ -41,7 +42,7 @@ public final class SawedOffDef {
         .fire(FireMode.AUTO, 4)
         .magazine(2)
         .ammoType(AmmoIds.SHOTGUN_SHELL)
-        .reloadMode(ReloadMode.INCREMENTAL, 2)
+        .reloadMode(ReloadMode.CHAMBER, 2)
         .reloadTicks(28)
         .projectile(1.5, 10)
         .penetration(0)

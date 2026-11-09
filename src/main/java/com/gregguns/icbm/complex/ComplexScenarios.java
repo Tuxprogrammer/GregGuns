@@ -47,6 +47,8 @@ public final class ComplexScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Places());
         registry.register(new Skips());
+        registry.register(new EscapeTerrain(true));
+        registry.register(new EscapeTerrain(false));
         ComplexDimScenarios.registerAll(registry);
         ComplexStartScenarios.registerAll(registry);
         ComplexShellScenarios.registerAll(registry);
@@ -380,6 +382,235 @@ public final class ComplexScenarios {
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
             out.check(world.getBlock(ex, GROUND, ez) == Blocks.trapdoor, "the escape ladder ends in a trapdoor");
             out.check(world.getBlock(ex, GROUND - 2, ez) == Blocks.ladder, "the escape shaft has a ladder");
+        }
+    }
+
+    /**
+     * D354: the escape column of a complex under a river (its surface frozen over in places, a sand and gravel bed)
+     * or under loose sand over a cave. The terrain round the column is woken once the complex is written, so water
+     * flows and sand falls; once it has settled the hatch must be reachable from the surface and the shaft dry and
+     * open from the hallway to the hatch.
+     */
+    private static final class EscapeTerrain implements Scenario {
+
+        /** Half the side of the prepared square round the escape column. */
+        private static final int REACH = 5;
+        /** Ticks the woken terrain gets to settle. */
+        private static final int SETTLE = 60;
+
+        private final boolean water;
+
+        EscapeTerrain(boolean water) {
+            this.water = water;
+        }
+
+        @Override
+        public String name() {
+            return water ? "icbm.complex.escape_water" : "icbm.complex.escape_sand";
+        }
+
+        @Override
+        public String description() {
+            return water
+                ? "Builds a complex whose escape column lies under a river, iced over on one side, on a sand and gravel"
+                    + " bed: the ladder rises inside a riser to a trapdoor one block over the water, the shaft stays"
+                    + " dry and sealed after the water is woken, and the hatch opens from the surface and the hallway"
+                    + " (D354)."
+                : "Builds a complex whose escape column lies under loose sand over a cave: after the sand is woken"
+                    + " and falls, the trapdoor still tops the shaft on its backed wall, nothing lies on it, and the"
+                    + " shaft is open from the hallway to the hatch (D354).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            final World world = ctx.world();
+            final StructurePlan plan = plan(world);
+            ComplexPlacer placer = new ComplexPlacer(
+                new WorldBlocks(),
+                new GtMachineHook(),
+                MarkFiller.NONE,
+                new ComplexPlacer.Settings() {
+
+                    public boolean dimensionEnabled(String n) {
+                        return true;
+                    }
+
+                    public int chancePercent() {
+                        return 100;
+                    }
+
+                    public java.util.Set<Type> overworldBiomes() {
+                        return Collections.emptySet();
+                    }
+                }).withContents(false)
+                    .withStyles(PaletteStyles.FACTORY);
+            final ComplexPlan cp = placer.rasterOf(plan)
+                .plan();
+            final int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ(), meta = cp.escapeMeta();
+            final int bx = ex + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = ez + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
+            final int bed = GROUND - 5;
+            final int floor;
+            try {
+                load(world, plan);
+                slab(world, plan, false);
+                prepare(world, ex, ez, bed);
+                placer.enabledIn(world);
+                floor = ComplexPlacer.floorY(world, GROUND);
+                int written = 0;
+                for (int[] w : com.gregguns.worldgen.PlacementHarnessAccess.windowsOf(plan, false)) {
+                    PopulateWindow window = new PopulateWindow(w[0], w[1]);
+                    // The windows round the escape column; the rest of the complex plays no part here.
+                    if (window.maxX() < ex - 24 || window.minX() > ex + 24
+                        || window.maxZ() < ez - 24
+                        || window.minZ() > ez + 24) continue;
+                    ClippingSink sink = new ClippingSink(window, new WorldTarget(world));
+                    try (PopulateGuard.Scope ignored = PopulateGuard.enter(w[0], w[1])) {
+                        written += placer.write(
+                            plan,
+                            com.gregguns.worldgen.Decision.placed(GROUND),
+                            window,
+                            sink,
+                            new com.gregguns.worldgen.WindowedHeightProbe(window, new WorldColumnReader(world)));
+                    }
+                }
+                if (written < 1000) {
+                    slab(world, plan, true);
+                    return ScenarioResult
+                        .fail(name(), "the complex round the escape column was not written: " + written);
+                }
+                // Wake the terrain round the column: water starts to flow and sand to fall where it can.
+                for (int x = ex - REACH; x <= ex + REACH; x++) {
+                    for (int z = ez - REACH; z <= ez + REACH; z++) {
+                        for (int y = bed - 4; y <= GROUND + 2; y++)
+                            world.notifyBlocksOfNeighborChange(x, y, z, Blocks.air);
+                    }
+                }
+            } catch (RuntimeException e) {
+                slab(world, plan, true);
+                throw e;
+            }
+            final int base = floor + cp.escapeTop();
+            return ScenarioResult.pending(name(), SETTLE + 200, ticks -> {
+                if (ticks < SETTLE) return null;
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                try {
+                    check(world, out, ex, ez, bx, bz, meta, floor, base, bed);
+                } finally {
+                    clearFalling(world, ex, ez);
+                    slab(world, plan, true);
+                }
+                return out.build();
+            });
+        }
+
+        /**
+         * Water: a river eleven blocks across, its bed of sand over gravel at {@code bed}, water up to one block under
+         * the ground, its top layer ice west of the column (a cold river freezes in places). Sand: loose sand five deep
+         * over a cave three across round the column.
+         */
+        private void prepare(World world, int ex, int ez, int bed) {
+            for (int dx = -REACH; dx <= REACH; dx++) {
+                for (int dz = -REACH; dz <= REACH; dz++) {
+                    int x = ex + dx, z = ez + dz;
+                    if (water) {
+                        world.setBlock(x, bed - 2, z, Blocks.gravel, 0, 2);
+                        world.setBlock(x, bed - 1, z, Blocks.sand, 0, 2);
+                        world.setBlock(x, bed, z, Blocks.sand, 0, 2);
+                        for (int y = bed + 1; y < GROUND; y++) {
+                            boolean ice = y == GROUND - 1 && dx < 0;
+                            world.setBlock(x, y, z, ice ? Blocks.ice : Blocks.water, 0, 2);
+                        }
+                        world.setBlock(x, GROUND, z, Blocks.air, 0, 2);
+                    } else if (Math.abs(dx) <= 3 && Math.abs(dz) <= 3) {
+                        for (int y = GROUND - 4; y <= GROUND; y++) world.setBlock(x, y, z, Blocks.sand, 0, 2);
+                        if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1) {
+                            for (int y = GROUND - 6; y <= GROUND - 5; y++) world.setBlock(x, y, z, Blocks.air, 0, 2);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void check(World world, ScenarioResult.Builder out, int ex, int ez, int bx, int bz, int meta, int floor,
+            int base, int bed) {
+            // The ground is at GROUND: on land the trapdoor replaces the top sand; over the river (water up to
+            // GROUND - 1, iced in places) the riser's top is one block over it, level with the bank.
+            int top = GROUND;
+            out.note(
+                name() + ": escape column "
+                    + ex
+                    + ","
+                    + ez
+                    + " ladder meta "
+                    + meta
+                    + ", floor y "
+                    + floor
+                    + ", shaft"
+                    + " from y "
+                    + base);
+            out.check(world.getBlock(ex, top, ez) == Blocks.trapdoor, "a trapdoor tops the shaft at y " + top);
+            out.checkEquals(
+                "the trapdoor is closed, in the top half, hinged on the ladder's wall",
+                8 | ComplexPlacer.trapdoorHinge(meta),
+                world.getBlockMetadata(ex, top, ez));
+            out.check(
+                world.getBlock(bx, top, bz)
+                    .isNormalCube(),
+                "the trapdoor's hinge side is a full block: " + world.getBlock(bx, top, bz)
+                    .getUnlocalizedName());
+            out.check(world.isAirBlock(ex, top + 1, ez), "nothing lies on the hatch");
+            int ladders = 0;
+            for (int y = floor + 1; y < top; y++) {
+                Block b = world.getBlock(ex, y, ez);
+                if (b == Blocks.ladder) ladders++;
+                out.check(
+                    !b.getMaterial()
+                        .isLiquid() && !(b instanceof net.minecraft.block.BlockFalling),
+                    "the shaft is dry and clear at y " + y + ": " + b.getUnlocalizedName());
+            }
+            out.checkEquals("a ladder from the hallway to the hatch", top - floor - 1, ladders);
+            // From below: the hallway cell in front of the ladder is open to walk up to it (a rail may run there).
+            int fx = 2 * ex - bx, fz = 2 * ez - bz;
+            out.check(
+                !world.getBlock(fx, floor + 1, fz)
+                    .getMaterial()
+                    .blocksMovement()
+                    && !world.getBlock(fx, floor + 2, fz)
+                        .getMaterial()
+                        .blocksMovement(),
+                "the hallway in front of the ladder is open");
+            if (water) {
+                // Sealed: every side of the shaft through the bed and the water is solid, and the riser's top is a
+                // place to stand by the hatch.
+                int walls = 0, stand = 0;
+                for (int[] d : new int[][] { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) {
+                    for (int y = bed; y <= top; y++) {
+                        Block b = world.getBlock(ex + d[0], y, ez + d[1]);
+                        out.check(
+                            !b.getMaterial()
+                                .isLiquid(),
+                            "no water beside the shaft at " + d[0] + "," + d[1] + " y " + y);
+                        if (b == gregtech.api.GregTechAPI.sBlockConcretes) walls++;
+                    }
+                    if (world.getBlock(ex + d[0], top, ez + d[1])
+                        .isNormalCube() && world.isAirBlock(ex + d[0], top + 1, ez + d[1])) stand++;
+                }
+                out.checkEquals(
+                    "the riser's four sides are concrete from the bed to its top",
+                    4 * (top - bed + 1),
+                    walls);
+                out.checkEquals("a riser top to stand on beside the hatch on every side", 4, stand);
+            }
+        }
+
+        /** Falling blocks the settling left in the air are removed with the plot. */
+        private static void clearFalling(World world, int ex, int ez) {
+            for (Object o : world.getEntitiesWithinAABB(
+                net.minecraft.entity.item.EntityFallingBlock.class,
+                net.minecraft.util.AxisAlignedBB
+                    .getBoundingBox(ex - REACH - 2, 0, ez - REACH - 2, ex + REACH + 3, 256, ez + REACH + 3))) {
+                ((net.minecraft.entity.Entity) o).setDead();
+            }
         }
     }
 

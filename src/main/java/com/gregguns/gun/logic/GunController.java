@@ -39,6 +39,8 @@ public final class GunController {
     private final ReloadStateMachine reload = new ReloadStateMachine();
     private final ZoomState zoom = new ZoomState();
     private SpinGate spinGate;
+    private boolean pressedInReload;
+    private int idleTicks;
 
     /** Creates a controller with default buffer and grace windows. */
     public GunController() {
@@ -79,9 +81,39 @@ public final class GunController {
         return stats.hasSpinUp() && spinGate != null ? spinGate.spin() : 0.0;
     }
 
-    /** Validated "trigger down" input. */
+    /** Validated "trigger down" input. A press during a reload may stop a chamber reload (see {@link #tick}). */
     public void triggerPressed() {
         fire.triggerPressed();
+        if (reload.isReloading()) {
+            pressedInReload = true;
+        }
+        idleTicks = 0;
+    }
+
+    /** @return ticks the held gun has been idle: no trigger, no shot, no reload (counted by {@link #tick}) */
+    public int idleTicks() {
+        return idleTicks;
+    }
+
+    /**
+     * The idle reload (design record 0026): a {@link ReloadMode#CHAMBER} gun that has been held idle for
+     * {@code delayTicks} starts a chamber reload by itself. Called by the server after {@link #tick}; the client never
+     * calls it and only animates the reload message. The ammo is counted only when the delay runs out (then the idle
+     * count starts over), so the per-tick cost is a counter.
+     *
+     * @param delayTicks the configured delay; 0 or less turns the idle reload off
+     * @return {@link ReloadStateMachine.Event#STARTED}, or {@code NONE} (also when there is nothing to load)
+     */
+    public ReloadStateMachine.Event idleReload(GunStats stats, GunState state, AmmoInventory ammo, int delayTicks) {
+        if (delayTicks <= 0 || stats.reloadMode() != ReloadMode.CHAMBER || idleTicks < delayTicks) {
+            return ReloadStateMachine.Event.NONE;
+        }
+        idleTicks = 0;
+        if (reload.isReloading() || state.isFull(stats)) {
+            return ReloadStateMachine.Event.NONE;
+        }
+        ReloadStateMachine.Event ev = startReload(stats, state, ammo);
+        return ev == ReloadStateMachine.Event.STARTED ? ev : ReloadStateMachine.Event.NONE;
     }
 
     /** Validated "trigger up" input. */
@@ -171,8 +203,22 @@ public final class GunController {
             zoom.reset();
             fire.clearInput();
             resetSpin();
+            idleTicks = 0;
             return new GunTickResult(ShotResult.none(), ev, false);
         }
+        GunTickResult result = tickHeld(stats, state, ammo, infiniteAmmo);
+        if (reload.isReloading() || fire.isTriggerHeld()
+            || result.shot()
+                .wasFired()
+            || result.reload() != ReloadStateMachine.Event.NONE) {
+            idleTicks = 0;
+        } else if (idleTicks < Integer.MAX_VALUE) {
+            idleTicks++;
+        }
+        return result;
+    }
+
+    private GunTickResult tickHeld(GunStats stats, GunState state, AmmoInventory ammo, boolean infiniteAmmo) {
         ReloadStateMachine.Event ev = ReloadStateMachine.Event.NONE;
         boolean spinReady = true;
         if (stats.hasSpinUp()) {
@@ -186,7 +232,10 @@ public final class GunController {
             spinReady = gate.isReady();
         }
         if (reload.isReloading()) {
-            if (spinReady && fire.wantsShot(stats) && state.canFire(stats)) {
+            // A chamber reload stops only for a pull made during it, so an automatic trigger held since the dry
+            // click lets the chambers fill; any other reload stops for any shot the gun can fire.
+            boolean interrupts = reload.load() != ReloadStateMachine.Load.CHAMBER || pressedInReload;
+            if (spinReady && interrupts && fire.wantsShot(stats) && state.canFire(stats)) {
                 ev = reload.cancel(ReloadStateMachine.CancelReason.FIRE);
             } else {
                 ev = reload.tick(stats, state, ammo);
@@ -226,6 +275,7 @@ public final class GunController {
         zoom.reset();
         fire.clearInput();
         resetSpin();
+        idleTicks = 0;
     }
 
     private SpinGate gateFor(GunStats stats) {
@@ -247,6 +297,7 @@ public final class GunController {
         if (ev == ReloadStateMachine.Event.STARTED) {
             zoom.reset();
             resetSpin();
+            pressedInReload = false;
         }
         return ev;
     }

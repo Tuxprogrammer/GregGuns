@@ -150,5 +150,5 @@ MobRenderers.living(Class<? extends EntityLiving> entity, String model, String t
 ```
 
 `texture` is a name under `assets/gregguns/textures/entity` (without `.png`); overloads take a `ResourceLocation` for other mods or vanilla.
-`scale` scales about the feet (the shadow is unscaled); `gunX/Y/Z` is the held-gun offset in blocks in the right arm's frame, applied only when
+`scale` scales about the feet (the shadow is unscaled), and a biped whose legs end above or below Y = 24 is moved onto the ground from its leg geometry, so no mob needs a hand-tuned lift; `gunX/Y/Z` is the held-gun offset in blocks in the right arm's frame, applied only when
 a gun is held (the gun draws through its own third-person item renderer, in the vanilla hand frame). A bad model file throws at registration.

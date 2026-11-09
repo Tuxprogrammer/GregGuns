@@ -10,12 +10,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.config.CompatConfig;
+import com.gregguns.worldgen.loot.ObtainTier;
+import com.gregguns.worldgen.loot.ObtainTierRules;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -139,7 +142,8 @@ public final class LootBagInjector {
     }
 
     /**
-     * Removes every drop of our groups whose item is not registered, and refreshes each group's weight sum. A group
+     * Removes every drop of our groups whose item is not registered or is above the bag's tier (D365), and refreshes
+     * each group's weight sum. A group
      * left with no drop gets one stack of bread, so its bag still opens. Call in postInit.
      */
     public static synchronized void postInit() {
@@ -155,6 +159,11 @@ public final class LootBagInjector {
                         GregGuns.LOG.info("Loot bag group {}: no item {}, drop removed", elb.id(g), name);
                         drops.remove(i);
                         removed++;
+                    } else if (!withinBagTier(elb.id(g), name)) {
+                        GregGuns.LOG
+                            .warn("Loot bag group {}: {} is above the bag's tier, drop removed", elb.id(g), name);
+                        drops.remove(i);
+                        removed++;
                     }
                 }
                 if (drops.isEmpty()) {
@@ -165,7 +174,32 @@ public final class LootBagInjector {
         } catch (ReflectiveOperationException e) {
             GregGuns.LOG.error("Could not check the GregGuns loot bag drops", e);
         }
-        if (removed > 0) GregGuns.LOG.info("Loot bag groups: {} drops name missing items", removed);
+        if (removed > 0) GregGuns.LOG.info("Loot bag groups: {} drops removed", removed);
+        // Answers computed this early are not kept for world loot.
+        ObtainTier.clearCache();
+    }
+
+    /**
+     * A bag never holds an item above the tier of the quest that pays it (D365). A group no GregGuns quest pays (a
+     * pack's own id in an override file) is held to {@code loot.maxTier}.
+     *
+     * @param id   the group id
+     * @param name the drop's {@code ItemName}, already known to resolve
+     * @return whether the drop's obtain tier is known and at most the bag's tier
+     */
+    public static boolean withinBagTier(int id, String name) {
+        String[] p = LootBagGroups.splitItemName(name);
+        Item item = GameRegistry.findItem(p[0], p[1]);
+        if (item == null) {
+            Block block = GameRegistry.findBlock(p[0], p[1]);
+            item = block == null ? null : Item.getItemFromBlock(block);
+        }
+        if (item == null) {
+            return false;
+        }
+        ItemStack stack = new ItemStack(item, 1, p[2] == null ? 0 : Integer.parseInt(p[2]));
+        int tier = LootBagGroups.questTier(id);
+        return tier < 0 ? ObtainTier.allowed(stack) : ObtainTierRules.allowed(ObtainTier.of(stack), tier, tier);
     }
 
     private static boolean registered(String mod, String name) {

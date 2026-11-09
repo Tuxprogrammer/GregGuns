@@ -15,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
 import com.gregguns.armor.ItemGregGunsArmor;
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -29,6 +30,8 @@ import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.entity.npc.loot.NpcProfiles;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.worldgen.loot.LootCategories;
+import com.gregguns.worldgen.loot.ObtainTier;
+import com.gregguns.worldgen.loot.ObtainTierRules;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -195,13 +198,11 @@ final class NpcLootScenarios {
                 }
             }
             for (LootDrop d : refs) {
-                ItemStack s = NpcItems.stack(d.ref(), 1);
+                ItemStack s = LootCategories.stack(d.ref(), 1);
                 if (s == null) {
-                    // A missing GT or pack item skips that drop; the mod's own and vanilla items must resolve.
-                    out.check(
-                        d.ref()
-                            .startsWith("ore:"),
-                        id + " drop " + d.ref() + " should resolve");
+                    // Every reference resolves, ore dictionary and GT parts included: the dev GregTech is the pack's
+                    // own version, so a name missing here is missing in the pack too (D349).
+                    out.check(false, id + " drop " + d.ref() + " should resolve");
                 } else {
                     allowed.add(s.getItem());
                 }
@@ -238,12 +239,19 @@ final class NpcLootScenarios {
                         }
                     }
                     for (LootDrop fixed : profile.fixedDrops()) {
-                        ItemStack want = NpcItems.stack(fixed.ref(), 1);
+                        ItemStack want = LootCategories.stack(fixed.ref(), 1);
                         boolean found = false;
                         for (ItemStack s : log.kills.get(before)) {
                             found |= want != null && s.getItem() == want.getItem();
                         }
-                        if (want != null && !found) {
+                        // A fixed drop above loot.maxTier by its whole chain stays with the body (D364).
+                        boolean capped = want != null
+                            && !ObtainTierRules.allowed(ObtainTier.of(want), Integer.MAX_VALUE - 1, LootConfig.maxTier);
+                        if (capped && found) {
+                            out.check(false, id + " dropped fixed drop " + fixed.ref() + " above loot.maxTier");
+                            return;
+                        }
+                        if (want != null && !capped && !found) {
                             out.check(false, id + " missed fixed drop " + fixed.ref());
                             return;
                         }
@@ -264,8 +272,16 @@ final class NpcLootScenarios {
                             }
                         }
                     }
-                    // Fixed Golden Revolver for Dave and Chainsaw for Steve: exactly one per kill.
-                    out.checkEquals(id + " fixed weapon drops", KILLS, guns);
+                    // Fixed Golden Revolver for Dave and Chainsaw for Steve: exactly one per kill, or none when the
+                    // gun is above loot.maxTier (D364).
+                    Item weapon = NpcItems.item(
+                        profile.equipment()
+                            .weapons()
+                            .get(0)
+                            .gun());
+                    boolean keeps = weapon != null && ObtainTierRules
+                        .allowed(ObtainTier.of(new ItemStack(weapon)), Integer.MAX_VALUE - 1, LootConfig.maxTier);
+                    out.checkEquals(id + " fixed weapon drops", keeps ? KILLS : 0, guns);
                 }
                 out.note(id + ": " + KILLS + " kills ok");
             } finally {

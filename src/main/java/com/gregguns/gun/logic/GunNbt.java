@@ -23,6 +23,11 @@ public final class GunNbt {
     public static final String KEY_AMMO = "ammo";
     /** Key of the camo index (byte). */
     public static final String KEY_CAMO = "camo";
+    /**
+     * Key of a chamber gun's credit (byte, rounds paid for but not yet loaded; {@link GunState#credit()}). Written only
+     * when above 0 and removed otherwise, so other guns' tags never carry it. A GregGuns addition (design record 0026).
+     */
+    public static final String KEY_CREDIT = "chamber_credit";
 
     private GunNbt() {}
 
@@ -46,13 +51,24 @@ public final class GunNbt {
         if (tag.hasKey(KEY_CAMO, Constants.NBT.TAG_ANY_NUMERIC)) {
             state.setCamo(tag.getByte(KEY_CAMO));
         }
+        if (tag.hasKey(KEY_CREDIT, Constants.NBT.TAG_ANY_NUMERIC)) {
+            state.setCredit(stats, tag.getByte(KEY_CREDIT));
+        }
         return state;
     }
 
-    /** Writes both keys into {@code tag}, replacing existing values and leaving unrelated keys alone. */
+    /**
+     * Writes both keys into {@code tag}, and the chamber credit when there is one, replacing existing values and
+     * leaving unrelated keys alone.
+     */
     public static void write(NBTTagCompound tag, GunState state) {
         tag.setShort(KEY_AMMO, (short) state.loaded());
         tag.setByte(KEY_CAMO, (byte) state.camo());
+        if (state.credit() > 0) {
+            tag.setByte(KEY_CREDIT, (byte) state.credit());
+        } else {
+            tag.removeTag(KEY_CREDIT);
+        }
     }
 
     /**

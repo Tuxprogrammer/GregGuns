@@ -60,6 +60,14 @@ Every gun is built from GregTech parts in an Assembler, and each tier needs its 
 
 Energy guns are their own batteries. Charge them in a GregTech Charger or Battery Buffer of exactly the gun's tier; a wrong-tier charger will not touch them.
 
+## Reloading
+
+- **Magazine guns** swap in a loaded magazine with **R**. With none at hand they load one loose round per reload instead (two on the Akimbo Mac10s), taking the full reload time.
+- **Chamber guns** load one chamber at a time: the Revolver, Golden Revolver, Akimbo Revolvers, Akimbo Golden Revolvers, Combat Shotgun and Sawed Off. The reload time is split across the chambers, so a reload from empty takes as long as ever, and pulling the trigger stops it and fires what is loaded. A revolver bullet fills the whole cylinder: the rounds it holds beyond the chamber being filled wait on the gun for the next chambers.
+- **Top-up when idle.** A chamber gun in your hand that is not full starts reloading by itself after 2 seconds without a shot, if you carry its ammo. `guns.idleReloadDelayTicks` sets the delay in ticks; 0 turns it off.
+- The launchers and the Hand Cannon take loose rounds in a single reload, and energy guns charge instead.
+- Hold **Shift** over a gun for its reload rule.
+
 ## Steam age
 
 Gate material: **Bronze, Wrought Iron**. Power: steam.

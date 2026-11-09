@@ -42,6 +42,35 @@ On the two Ross128 dimensions every structure rolls its own ceiling from MV (2) 
 
 An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The default stays as above. Raising it above the tier that the location implies is the admin's call, not the mod's.
 
+## Loot tier cap
+
+Nothing a world source hands out is above the lower of that source's own ceiling and the config `loot.maxTier` (default EV, 4), and nothing whose tier nobody knows appears at all (D363, D364).
+
+- **What "tier" means here.** An item's tier is the tier a player needs to obtain it at all, judged by its whole crafting chain (`ObtainTier`), never by the voltage of the recipe that outputs it. A Fluid Solidifier that casts white dwarf matter runs at MV, but the white dwarf matter is UMV, so it is never loot under an EV cap. A ZPM circuit is ZPM, by its `circuitUltimate` ore name. GT's ghost circuits are never loot.
+- **Rules, first match wins:** a GregGuns item's per-stack tier where its metas differ (the Explosive Charge MV, the Advanced one HV); a GregGuns item or block's declared tier; a GT material item, the higher of its form and the curated material tier (aligned with `tools/questbook/item_tiers.json`); a `circuit<Tier>` ore name; another mod's copy of a GT material item, by its `<prefix><Material>` ore names; a GT item list entry, curated or by the voltage in its name; a GT machine block's tier; vanilla items ULV (save a short list no player makes); another mod's item only through the allow-list, at the tier of what makes it in this pack (Galacticraft rocket parts at their rocket: T1 HV, T2 EV, the heavy engine and fins IV). Anything else is unknown and never loot.
+- **Ceilings above the cap.** Planet and Ross128 ceilings (D38, design record 0019) still set the spawner and guard danger; the tables, the machine tiers and the items stop at the cap. Raise `loot.maxTier` to let a late planet's chests hold late items again.
+
+### Every source and its verdict
+
+| Source | Where it is gated | Verdict |
+|---|---|---|
+| Structure chests (every GregGuns category, pack-added lines included) | `LootCategories.fill`; companion ammo follows its gun | Capped |
+| Structure chest ceilings | `StructurePopulator` clamps the ceiling to the cap | Capped |
+| Silo room chests and junk | `SiloChests.fillRoom` on the capped ceiling | Capped |
+| Silo bonus items, fuel rungs and display chests | `ComplexContents.lootTable` | Capped |
+| Silo furniture (racks, lockers, shelves) | `FurnitureStocker.pool` and `TierGatedInventory` | Capped |
+| Silo furnaces | the smelted output passes `TierGatedInventory` | Capped |
+| Stocked GT machines in complexes | `GtMachineStock.recipes`: every output allowed at the machine tier and the cap | Capped |
+| Item frames and armory displays | a gun above the cap leaves its frame empty; the display chest holds only allowed ammo | Capped |
+| GregGuns NPC drops (tables, fixed drops, guns, the Attack Helicopter) | each drop, plus `NpcLootCapHandler` at the lowest priority for GregGuns entities | Capped |
+| Infernal Mobs drops of GregGuns NPCs | `InfernalDropsHandler`; the rare HV roll is the AS50 magazine (HV) | Capped |
+| Shipped tables brought within their own tiers | the Commando drops only the Explosive Charge (MV); the Infernal medkit is MV; the silo junk category is LV (the recycler's scrap); the silo data orb, heavy rocket parts and Inert T3 Warhead declare IV, IV and ZPM; bag 1712 drops the Inert T3 Warhead | Fixed (D365) |
+| Quest loot bags | `LootBagInjector`: each bag at most its quest's tier (Steam to UHV) | Quest tier, not the cap |
+| Vending trades | each trade unlocks with its quest and sells at its own tier | Trade tier, not the cap |
+| Complex machine tiers and metal props | `ComplexContents.lootCap` | Capped |
+| Complex spawners, guard posts, NPC equipment | not loot | Planet ceiling (D38) |
+| TooMuchLoot ADD drafts ([pack-loot](../06-items/pack-loot.md#draft-add-files)) | pack-side, not shipped in the jar | Not ours; drafts within HV |
+
 ## Integration points
 
 ### TooMuchLoot: why GregGuns uses its own categories
@@ -59,10 +88,11 @@ An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The 
 - **GGS-11-19** No GregGuns structure fills a chest from a vanilla `ChestGenHooks` category.
 - **GGS-11-20** Every chest a structure places is filled from a GregGuns category, using the structure's seeded `Random`.
 - **GGS-11-21** Each GregGuns loot category declares a maximum tier. Every item in it is at or below that tier by the [0001](../../design/0001-tier-map.md) table.
-- **GGS-11-25** A structure on Ross128b or Ross128ba rolls a ceiling from MV to UHV, seeded by its plan; every chest of it draws from the table of that ceiling (UV and UHV from the ZPM table), and no chest holds an item above it.
+- **GGS-11-25** A structure on Ross128b or Ross128ba rolls a ceiling from MV to UHV, seeded by its plan; every chest of it draws from the table of that ceiling held to `loot.maxTier` (UV and UHV from the ZPM table), and no chest holds an item above it.
 - **GGS-11-22** The default ceiling of every structure in the table above is the tier shown. No default category used by a surface structure holds an item above MV.
 - **GGS-11-23** `lootTier` (0 to 2) changes only the count and weights of a draw. It never adds items above the ceiling.
 - **GGS-11-24** The Alien Bug Nest places no chest.
+- **GGS-11-29** No world source hands out an item whose obtain tier is above the lower of its ceiling and `loot.maxTier`, or whose obtain tier is unknown; a quest loot bag holds nothing above its quest's tier.
 - **GGS-11-26** Every structure chest holds pack loot as well as GregGuns gear, and guns stay rare next to their ammo (GGS-06-10, GGS-06-11): a vanilla chest draws `supplychest_t<n>`, a gun drawn into a chest brings its own ammo, and richness never raises a gun line's weight.
 
 ## Tests
@@ -72,7 +102,9 @@ An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The 
 - GGS-11-24: unit test of the nest placement.
 - GGS-11-26: `ChestTagsTest` (vanilla to supply), `StructurePopulatorTest` (`assertTables`), `ArsenalTest`, `LootMixTest`, `LootResolveTest`; scenarios `worldgen.loot_mix` (200 chests of every category a structure uses) and `worldgen.loot_pack_items`.
 
-- GGS-11-25: `RolledCeilingTest`, `ChestTagsTest`, `StructurePopulatorTest` (rolled categories), `LootCategoriesTest` (tier 4 to 7 tables); scenarios `worldgen.ross128b_structures` and `worldgen.ross128ba_structures` (chest category equals the table of the plan's rolled ceiling), `worldgen.loot_tier_ceiling` (1000 chests per table, including 4 to 7).
+- GGS-11-29: `ObtainTierRulesTest`, `LootBagGroupsTest`, `QuestbookResourcesTest`, `ComplexContentsTest`, `CeilingSweepTest`; scenarios `loot.obtain.helper`, `loot.obtain.structure`, `loot.obtain.npc`, `loot.obtain.vending`, `loot.obtain.lootbags`, `loot.obtain.silo`, `loot.obtain.machines`, `loot.obtain.furniture` and `loot.obtain.frames` (every pool listed and generated stock drawn at the EV and UMV caps).
+
+- GGS-11-25: `RolledCeilingTest`, `ChestTagsTest`, `StructurePopulatorTest` (rolled categories), `LootCategoriesTest` (tier 4 to 7 tables); scenarios `worldgen.ross128b_structures` and `worldgen.ross128ba_structures` (chest category equals the table of the plan's rolled ceiling, held to `loot.maxTier`), `worldgen.loot_tier_ceiling` (1000 chests per table, including 4 to 7).
 
 ## Open questions
 

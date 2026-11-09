@@ -7,7 +7,7 @@ Guns, armor and military tech for [GT New Horizons](https://github.com/GTNewHori
 GregGuns is a from-scratch rewrite inspired by [Techguns](https://github.com/pWn3d1337/Techguns). It is not a port. GTNH has changed 1.7.10 so much that the original code would not carry over cleanly. GregGuns is written against GTNH's own APIs instead, and its weapons, components and recipes are gated by GregTech tiers rather than vanilla-style crafting.
 
 > [!IMPORTANT]
-> **Beta.** [**GregGuns 0.4.0-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-beta) is out for **GTNH 2.9.0-RC-2**. It has everything planned for the first full version: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins, aim down sights, an in-game guide, a questbook tab, and the **ICBM module** with warheads, missiles, silos, air defense and abandoned silo complexes. It has been tested inside the real pack. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-beta) list the known issues, and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
+> **Beta.** [**GregGuns 0.4.1-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.1-beta) is out for **GTNH 2.9.0-RC-2**. It has everything planned for the first full version: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins, aim down sights, an in-game guide, a questbook tab, and the **ICBM module** with warheads, missiles, silos, air defense and abandoned silo complexes. It has been tested inside the real pack. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.1-beta) list the known issues, and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
 
 ## For players
 
@@ -15,7 +15,7 @@ GregGuns adds guns, ammo, armor, turrets, enemy soldiers and ruins to GTNH. It a
 
 ### Install
 
-1. Download `gregguns-0.4.0-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.0-beta).
+1. Download `gregguns-0.4.1-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.4.1-beta).
 2. Put it in the `mods` folder of your **GTNH 2.9.0-RC-2** instance. For multiplayer, the server **and** every player need the same jar.
 3. Start the game. Every module is on by default, ICBM included. You can switch modules off in `config/gregguns.cfg`, and that never stops anyone joining: the server's settings apply to everyone connected.
 
@@ -99,7 +99,7 @@ Strategic weapons on GregTech tiers. Build warheads from HV to UHV, stand missil
 - **On by default.** A server that doesn't want it sets `B:icbm=false` in the `modules` block of `config/gregguns.cfg` and restarts.
 - **Warheads** come in five casing tiers, T1 (HV) to T5 (UHV), and a blast type for every job: craters, fire, gas, push, tunnels, nuclear, EMP, ender, antimatter and red matter.
 - **Missiles** fly 1,000 blocks at T1, 3,000 at T2 and 8,000 at T3, 10,000 from a silo. The silo builds the missile in its shaft, opens its doors and launches it.
-- **Complexes** have three activity levels, from a gutted ruin to a fully staffed base, and their loot ceiling rises with the planet, from EV on the Overworld to UMV.
+- **Complexes** have three activity levels, from a gutted ruin to a fully staffed base, and their ceiling rises with the planet, from EV on the Overworld to UMV; a server setting (`loot.maxTier`, EV by default) caps the loot itself.
 - The ICBM quests are part of the GregGuns questbook tab.
 
 ### ICBM guides

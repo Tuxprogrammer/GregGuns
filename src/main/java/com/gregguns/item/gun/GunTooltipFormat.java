@@ -21,7 +21,40 @@ public final class GunTooltipFormat {
     /** Lang key of the Bio Gun tooltip line shown while blobs are disabled. */
     public static final String BLOB_DISABLED_KEY = "gregguns.gun.tooltip.bio_blob_disabled";
 
+    /** Lang key: a magazine-fed single gun loads loose rounds one per reload without a magazine (design 0026). */
+    public static final String RELOAD_SINGLE_KEY = "gregguns.gun.tooltip.reload_single";
+    /** Lang key: the same for an akimbo pair, which needs two magazines for a full reload. */
+    public static final String RELOAD_SINGLE_PAIR_KEY = "gregguns.gun.tooltip.reload_single_pair";
+    /** Lang key: the same for a pair that spends two rounds per shot (Akimbo Mac10s), so it loads two. */
+    public static final String RELOAD_SINGLE_PAIR_DOUBLE_KEY = "gregguns.gun.tooltip.reload_single_pair_double";
+    /** Lang key: a chamber gun loads one chamber at a time ({@code %s} = seconds per chamber). */
+    public static final String RELOAD_CHAMBER_KEY = "gregguns.gun.tooltip.reload_chamber";
+
     private GunTooltipFormat() {}
+
+    /**
+     * The tooltip line that names how a gun reloads when that differs from a plain swap (design record 0026).
+     *
+     * @param stats the gun
+     * @return the lang key of the line, or {@code null} for a gun with no such line
+     */
+    public static String reloadRuleKey(GunStats stats) {
+        if (stats.reloadMode() == com.gregguns.gun.logic.ReloadMode.CHAMBER) {
+            return RELOAD_CHAMBER_KEY;
+        }
+        if (!stats.loadsSingleRounds()) {
+            return null;
+        }
+        if (stats.ammoItemsPerReload() <= 1) {
+            return RELOAD_SINGLE_KEY;
+        }
+        return stats.ammoPerShot() > 1 ? RELOAD_SINGLE_PAIR_DOUBLE_KEY : RELOAD_SINGLE_PAIR_KEY;
+    }
+
+    /** @return the average time one chamber takes, in seconds with two decimals, for example {@code 0.38} */
+    public static String chamberSeconds(GunStats stats) {
+        return String.format(Locale.ROOT, "%.2f", stats.reloadTicks() * SECONDS_PER_TICK / stats.magazineSize());
+    }
 
     /**
      * @param blockDamage the {@code explosions.blockDamage} setting

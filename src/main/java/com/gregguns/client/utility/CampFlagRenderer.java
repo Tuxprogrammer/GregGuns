@@ -15,7 +15,8 @@ import com.gregguns.client.render.GlStateGuard;
 import com.gregguns.utility.camp.FlagPostGeometry;
 
 /**
- * Draws the Camp Flag post and its waving flag. It reads every number from {@link FlagPostGeometry}, so replacing that
+ * Draws the Camp Flag post and its waving flag, the cloth tinted blue or red by the base's side (the block's
+ * metadata, D353). It reads every number from {@link FlagPostGeometry}, so replacing that
  * data replaces the model; this class only turns boxes into quads. Client only.
  */
 // Spec: docs/techguns-spec/09-machines-utility/misc-tile-entities.md section 2 (Rendering); model notes:
@@ -66,6 +67,9 @@ public final class CampFlagRenderer extends TileEntitySpecialRenderer {
             // The wave steps once per world tick; no partial-tick smoothing (model notes section 7).
             float time = Minecraft.getMinecraft().theWorld == null ? 0.0F
                 : (float) Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+            // The cloth is gray on the sheet; the base's side tints it (D353): metadata 1 is a red base.
+            float[] cloth = FlagPostGeometry.clothColor(tile.getWorldObj() == null ? 0 : tile.getBlockMetadata());
+            GL11.glColor4f(cloth[0], cloth[1], cloth[2], 1.0F);
             // Panels are chained: each hinge sits where the previous panel's hinge plus its own offset lands.
             for (int i = 0; i < panels.length; i++) {
                 FlagPostGeometry.Panel panel = FlagPostGeometry.PANELS.get(i);

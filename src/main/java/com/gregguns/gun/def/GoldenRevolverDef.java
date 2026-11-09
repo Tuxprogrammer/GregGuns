@@ -18,7 +18,8 @@ import com.gregguns.recipe.ProductionTable.Row;
  * lifetime 25 ticks at 1.5 blocks per tick, spread 0.015, no scope, semi-auto every 8 ticks, 6 rounds loaded straight
  * from one 9mm bullet item (no magazine, no empty container), 45 tick reload, recoil 8 ticks and muzzle flash 5 ticks,
  * AI range 24 / attack time 60 / burst 6 / delay 15. One skin. It shares the Revolver's reload sound and plays its own
- * {@code goldenrevolver} shot sounds.
+ * {@code goldenrevolver} shot sounds. Deviation (design record 0026): it loads one chamber at a time, as the
+ * Revolver does.
  *
  * <p>
  * Deviation (design record 0001, GGS-02-40, GUN-15): the upgrade is an Assembler row (GR-51, IV, 30 s, circuit 4)
@@ -40,7 +41,7 @@ public final class GoldenRevolverDef {
         .fire(FireMode.SEMI, 8)
         .magazine(6)
         .ammoType(AmmoIds.NINE_MM)
-        .reloadMode(ReloadMode.MAGAZINE, 1)
+        .reloadMode(ReloadMode.CHAMBER, 1)
         .reloadTicks(45)
         .projectile(1.5, 25)
         .penetration(0)

@@ -57,4 +57,26 @@ class GunTooltipFormatTest {
             .build();
         assertEquals("0", GunTooltipFormat.spread(zero));
     }
+
+    @Test
+    void theReloadRuleLineNamesSingleRoundsAndChambers() {
+        // Design record 0026: one line, present tense, only on the guns it is true for.
+        assertEquals(GunTooltipFormat.RELOAD_SINGLE_KEY, GunTooltipFormat.reloadRuleKey(GunCatalog.PISTOL));
+        assertEquals(
+            GunTooltipFormat.RELOAD_SINGLE_KEY,
+            GunTooltipFormat.reloadRuleKey(com.gregguns.gun.def.ThompsonDef.STATS));
+        assertEquals(
+            GunTooltipFormat.RELOAD_SINGLE_PAIR_KEY,
+            GunTooltipFormat.reloadRuleKey(com.gregguns.gun.def.AkimboPistolsDef.STATS));
+        assertEquals(
+            GunTooltipFormat.RELOAD_SINGLE_PAIR_DOUBLE_KEY,
+            GunTooltipFormat.reloadRuleKey(com.gregguns.gun.def.AkimboMac10sDef.STATS));
+        assertEquals(GunTooltipFormat.RELOAD_CHAMBER_KEY, GunTooltipFormat.reloadRuleKey(GunCatalog.REVOLVER));
+        assertEquals(GunTooltipFormat.RELOAD_CHAMBER_KEY, GunTooltipFormat.reloadRuleKey(GunCatalog.SAWED_OFF));
+        assertNull(GunTooltipFormat.reloadRuleKey(GunCatalog.BOLT_ACTION));
+        assertNull(GunTooltipFormat.reloadRuleKey(GunCatalog.HANDCANNON));
+        assertNull(GunTooltipFormat.reloadRuleKey(com.gregguns.gun.def.FlamethrowerDef.STATS));
+        assertEquals("0.38", GunTooltipFormat.chamberSeconds(GunCatalog.REVOLVER));
+        assertEquals("0.70", GunTooltipFormat.chamberSeconds(GunCatalog.SAWED_OFF));
+    }
 }

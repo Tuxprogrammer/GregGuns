@@ -104,6 +104,7 @@ public final class ComplexLevelScenarios {
         FurnitureFillScenarios.registerAll(registry);
         PropFacingScenarios.registerAll(registry);
         DoorLightScenarios.registerAll(registry);
+        VendingEggScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------
@@ -584,7 +585,8 @@ public final class ComplexLevelScenarios {
                 switch (p.kind()) {
                     case SPAWNER:
                         t.spawners++;
-                        if (p.spawner() == SpawnerKind.SILO_ELITE) t.elite++;
+                        if (p.spawner() != null && p.spawner()
+                            .isEliteSiloPost()) t.elite++;
                         else t.guard++;
                         NBTTagCompound st = VanillaSpawners.read(world.getTileEntity(x, y, z));
                         if (b != Blocks.mob_spawner || st == null
@@ -797,7 +799,8 @@ public final class ComplexLevelScenarios {
                     if (s != null) allowed.add(id(s));
                 }
             }
-            allowed.addAll(SiloChests.allowedIds(p.key(), ceiling)); // lines, junk, spoil (D317)
+            // Lines, junk, spoil (D317), from the table of the ceiling held to loot.maxTier (D364).
+            allowed.addAll(SiloChests.allowedIds(p.key(), ComplexContents.lootTable(ceiling)));
             for (Placement.Bonus b : p.bonuses()) {
                 ItemStack s = SiloBonusItems.stack(b, p);
                 if (s != null) allowed.add(id(s));

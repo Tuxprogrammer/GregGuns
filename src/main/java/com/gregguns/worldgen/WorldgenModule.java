@@ -17,6 +17,7 @@ import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.loot.ChestScenarios;
 import com.gregguns.worldgen.loot.LootCategories;
 import com.gregguns.worldgen.loot.LootScenarios;
+import com.gregguns.worldgen.loot.ObtainTierScenarios;
 import com.gregguns.worldgen.nest.NestBlockRegistration;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -49,6 +50,7 @@ public final class WorldgenModule implements GregGunsModule {
         if (DevEnvironment.testHooksEnabled()) {
             WorldgenScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             LootScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ObtainTierScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ChestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GeneratorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             CascadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
@@ -57,6 +59,7 @@ public final class WorldgenModule implements GregGunsModule {
             SpawnerScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             NestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ShowcaseScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            SiteScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 

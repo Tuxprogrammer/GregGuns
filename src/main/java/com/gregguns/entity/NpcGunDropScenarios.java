@@ -22,6 +22,7 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 
 import com.gregguns.armor.ItemGregGunsArmor;
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -191,7 +192,7 @@ final class NpcGunDropScenarios {
         @Override
         public String description() {
             return "For every NPC-carried gun, 200 kills without a player: ammo, a full tank or recipe salvage on every"
-                + " death, in range; never the gun, never a battery.";
+                + " death, in range and within one stack; never the gun, never a battery.";
         }
 
         @Override
@@ -216,6 +217,10 @@ final class NpcGunDropScenarios {
                 return out.check(false, "no NPC carries a gun")
                     .build();
             }
+            // The drop rules' shape, uncapped: a gun or ammo above loot.maxTier stays with the body (D364), which
+            // loot.obtain.npc checks; here every gun's own rule must show in full.
+            int savedCap = LootConfig.maxTier;
+            LootConfig.maxTier = 12;
             DropLog log = DropLog.start();
             try {
                 for (String name : guns) {
@@ -247,6 +252,10 @@ final class NpcGunDropScenarios {
                                 bad++;
                                 out.check(false, name + " dropped " + s + ", not part of its rule");
                             }
+                            if (s.stackSize > s.getMaxStackSize()) {
+                                bad++;
+                                out.check(false, name + " dropped " + s + ", more than one stack");
+                            }
                             items += s.stackSize;
                             stacks++;
                         }
@@ -265,6 +274,7 @@ final class NpcGunDropScenarios {
                 }
             } finally {
                 log.stop();
+                LootConfig.maxTier = savedCap;
             }
             return out.build();
         }

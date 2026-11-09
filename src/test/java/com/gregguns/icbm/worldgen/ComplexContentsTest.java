@@ -9,8 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
 import com.gregguns.icbm.complex.LootKeys;
@@ -25,6 +28,23 @@ import com.gregguns.worldgen.spawner.SpawnerKind;
 
 /** The activity and contents pass over real layouts. */
 class ComplexContentsTest {
+
+    private int savedCap;
+
+    /**
+     * These tests read the layout at each ceiling, so the world-loot cap is raised past every ceiling; CeilingSweepTest
+     * covers the cap itself (D364).
+     */
+    @BeforeEach
+    void raiseLootCap() {
+        savedCap = LootConfig.maxTier;
+        LootConfig.maxTier = 12;
+    }
+
+    @AfterEach
+    void restoreLootCap() {
+        LootConfig.maxTier = savedCap;
+    }
 
     private static long count(List<Placement> ps, Kind k) {
         return ps.stream()
@@ -266,6 +286,32 @@ class ComplexContentsTest {
                 }
             }
         }
+    }
+
+    @Test
+    void eliteSpawnersBecomeCommandPostsFromLuV() {
+        assertEquals(SpawnerKind.SILO_ELITE, ComplexContents.elitePost(4));
+        assertEquals(SpawnerKind.SILO_ELITE, ComplexContents.elitePost(5));
+        assertEquals(SpawnerKind.SILO_COMMAND, ComplexContents.elitePost(6));
+        assertEquals(SpawnerKind.SILO_COMMAND, ComplexContents.elitePost(12));
+        int ivElite = 0;
+        int luvCommand = 0;
+        for (long s = 0; s < 40; s++) {
+            ComplexPlan plan = ComplexLayout.generate(s, 9, 9);
+            for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 5, null)) {
+                if (p.kind() == Kind.SPAWNER) {
+                    assertTrue(p.spawner() != SpawnerKind.SILO_COMMAND, "no Outcast post below LuV");
+                    ivElite += p.spawner() == SpawnerKind.SILO_ELITE ? 1 : 0;
+                }
+            }
+            for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 6, null)) {
+                if (p.kind() == Kind.SPAWNER) {
+                    assertTrue(p.spawner() != SpawnerKind.SILO_ELITE, "every LuV elite post is a command post");
+                    luvCommand += p.spawner() == SpawnerKind.SILO_COMMAND ? 1 : 0;
+                }
+            }
+        }
+        assertTrue(ivElite > 0 && luvCommand == ivElite, "same posts, other kind: " + ivElite + " " + luvCommand);
     }
 
     @Test

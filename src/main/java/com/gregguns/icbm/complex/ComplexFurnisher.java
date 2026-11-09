@@ -9,11 +9,13 @@ import com.gregguns.icbm.complex.blueprint.Legend;
 import com.gregguns.icbm.complex.blueprint.Opening;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprint;
 import com.gregguns.icbm.complex.blueprint.RoomBlueprints;
+import com.gregguns.icbm.complex.blueprint.VendingSpot;
 import com.gregguns.icbm.complex.blueprint.rooms.Hub;
 
 /**
  * Puts the marks into a grown plan: the lamp grid of every section (D230, D231), each room's furniture and contents in
- * the room's own door-relative frame (D208, D234), two spawner spots per room (D326), signs and damage cells.
+ * the room's own door-relative frame (D208, D234), two spawner spots per room (D326), the Vending Machine (D355), signs
+ * and damage cells.
  * Counts of chests and machines scale with a room's floor area. Pure and
  * deterministic; package-private, run by {@link ComplexLayout#fromSeed}.
  */
@@ -47,11 +49,40 @@ final class ComplexFurnisher {
 
     static void furnish(ComplexPlan plan, Random rnd) {
         ComplexFurnisher f = new ComplexFurnisher(plan, rnd);
+        f.vendingHalls();
         f.zones();
         f.lamps();
         f.hub();
         for (Room r : plan.rooms()) f.room(r);
         f.halls();
+    }
+
+    // --- the Vending Machine (D355) --------------------------------------------------------------------------------
+
+    /** The hall the Vending Machine goes to: the first of {@link VendingSpot#halls}; -1 when there is none. */
+    private int vendingHall = -1;
+    /** Every room that may take the machine, by id. */
+    private final java.util.Set<Integer> vendingCandidates = new java.util.HashSet<Integer>();
+    /** The hall had no spot: the next candidate furnished takes the machine. */
+    private boolean vendingOpen;
+    /** The machine stands. */
+    private boolean vendingDone;
+
+    private void vendingHalls() {
+        List<Room> halls = VendingSpot.halls(plan.rooms(), plan.seed());
+        if (!halls.isEmpty()) vendingHall = halls.get(0)
+            .id();
+        for (Room r : halls) vendingCandidates.add(r.id());
+    }
+
+    /**
+     * Stands the complex's one Vending Machine in its hall, after the room's reachability pass (D355); when the hall
+     * has no spot, the next candidate room furnished after it takes the machine.
+     */
+    private void vending(Room r, Kit k) {
+        if (vendingDone || r.id() != vendingHall && !(vendingOpen && vendingCandidates.contains(r.id()))) return;
+        vendingDone = VendingSpot.place(k) != null;
+        if (!vendingDone && r.id() == vendingHall) vendingOpen = true;
     }
 
     // --- door zones ----------------------------------------------------------------------------------------------
@@ -429,6 +460,7 @@ final class ComplexFurnisher {
         // D322: a floor hole a cell wall or a pool was built over stays whole floor.
         for (int[] t : k.filledHoles()) r.remove(MarkKind.DAMAGE_CELL, f.x(t[0], t[1]), 0, f.z(t[0], t[1]));
         k.reachable();
+        vending(r, k);
         List<int[]> tiles = k.shadowFill();
         if (!tiles.isEmpty()) shadowTiles(r, f, tiles);
         java.util.Map<Integer, Long> anchors = new java.util.HashMap<Integer, Long>();

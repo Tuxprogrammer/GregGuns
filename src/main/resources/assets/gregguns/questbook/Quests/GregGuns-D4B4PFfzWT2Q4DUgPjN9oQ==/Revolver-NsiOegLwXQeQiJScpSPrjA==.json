@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "A heavier sidearm with six chambers and a bit more punch per shot than the pistol, at the cost of a longer reload. The Revolver uses loose 9mm bullets instead of a magazine: one bullet reloads all six chambers.\n\nIt is built in the LV Assembler from an Iron Barrel, Mechanical Parts, a Wooden Stock, steel plates and screws, and a spring. Compare its damage and range with the pistol on the tooltips and keep the one you like; two Revolvers combine into Akimbo Revolvers at a crafting table.\n\n[note]The Revolver is the cheapest gun to keep fed, because one loose bullet fills it.[/note]",
+      "desc:8": "A heavier sidearm with six chambers and a bit more punch per shot than the pistol, at the cost of a longer reload. The Revolver uses loose 9mm bullets instead of a magazine: one bullet fills all six chambers. It loads one chamber at a time, and a pull of the trigger stops the reload and fires what is loaded.\n\nIt is built in the LV Assembler from an Iron Barrel, Mechanical Parts, a Wooden Stock, steel plates and screws, and a spring. Compare its damage and range with the pistol on the tooltips and keep the one you like; two Revolvers combine into Akimbo Revolvers at a crafting table.\n\n[note]The Revolver is the cheapest gun to keep fed, because one loose bullet fills it.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

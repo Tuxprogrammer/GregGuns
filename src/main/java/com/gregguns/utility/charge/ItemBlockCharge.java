@@ -7,12 +7,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import com.gregguns.api.Tier;
+import com.gregguns.api.TieredStack;
+
 /**
  * The item of the explosive charges. On placement it records the clicked face, the owner and the type on the tile, and
- * plays the plant sound on the server. Both sides.
+ * plays the plant sound on the server. Each damage value is its type's tier (MV, then HV). Both sides.
  */
 // Spec: docs/techguns-spec/09-machines-utility/explosive-charges.md (Placement and shape)
-public final class ItemBlockCharge extends ItemBlock {
+public final class ItemBlockCharge extends ItemBlock implements TieredStack {
 
     /**
      * @param block the charge block
@@ -27,6 +30,12 @@ public final class ItemBlockCharge extends ItemBlock {
     public int getMetadata(int damage) {
         return ChargeType.fromMeta(damage)
             .meta();
+    }
+
+    @Override
+    public Tier getTier(ItemStack stack) {
+        return ChargeType.fromMeta(stack.getItemDamage())
+            .tier();
     }
 
     @Override

@@ -117,7 +117,7 @@ public final class GoldenRevolverScenarios {
         }
     }
 
-    /** Empty Golden Revolver and one loose bullet: a 45 tick reload gives 6 rounds, and no container comes back. */
+    /** Empty Golden Revolver and one loose bullet: chamber by chamber, 6 rounds at 45 ticks, no container back. */
     private static final class Reload implements Scenario {
 
         @Override
@@ -127,7 +127,7 @@ public final class GoldenRevolverScenarios {
 
         @Override
         public String description() {
-            return "An empty Golden Revolver reloads 45 ticks after the trigger: 6 rounds from one 9mm bullet, which is consumed, with nothing returned.";
+            return "An empty Golden Revolver loads one chamber at a time after the trigger, the sixth at 45 ticks: 6 rounds from one 9mm bullet, which is consumed at the first chamber, with nothing returned.";
         }
 
         @Override
@@ -153,8 +153,10 @@ public final class GoldenRevolverScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(started, "the dry trigger should have started a reload");
-                out.checkEquals("rounds one tick before the end", 0, loadedAt[reloadTicks - 1]);
-                out.checkEquals("bullet kept until the swap", 1, bulletsAt[reloadTicks - 1]);
+                int first = STATS.chamberTicks(0);
+                out.checkEquals("rounds one tick before the end", 5, loadedAt[reloadTicks - 1]);
+                out.checkEquals("bullet kept until the first chamber", 1, bulletsAt[first - 1]);
+                out.checkEquals("bullet paid at the first chamber", 0, bulletsAt[first]);
                 out.checkEquals("rounds at the 45th tick", 6, loadedAt[reloadTicks]);
                 out.checkEquals("bullets left", 0, rig.count(bullet));
                 out.checkEquals("empty magazines returned", 0, rig.count(AmmoTypes.NINE_MM_PISTOL.emptyItemName()));
@@ -174,7 +176,7 @@ public final class GoldenRevolverScenarios {
 
         @Override
         public String description() {
-            return "The reload key on a Golden Revolver with 5 rounds tops it up to 6 after 45 ticks, consumes the bullet and refunds none: a bullet is worth 6 rounds, so 5 rounds are less than a bullet.";
+            return "The reload key on a Golden Revolver with 5 rounds loads the empty chamber in 8 ticks, consumes the bullet, refunds nothing and keeps the bullet's other 5 rounds as chamber credit.";
         }
 
         @Override
@@ -193,8 +195,13 @@ public final class GoldenRevolverScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(started, "the reload key should start a forced reload");
-                out.checkEquals("rounds after the swap", 6, rig.loaded());
+                out.checkEquals("rounds after the chamber", 6, rig.loaded());
                 out.checkEquals("bullets after (none refunded, none duplicated)", 0, rig.count(bullet));
+                out.checkEquals(
+                    "chamber credit",
+                    5,
+                    com.gregguns.gun.logic.GunNbt.read(rig.gun.getTagCompound(), STATS)
+                        .credit());
                 return out.build();
             });
         }

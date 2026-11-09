@@ -390,7 +390,7 @@ final class ArmorTierScenarios {
 
         @Override
         public String description() {
-            return "Full Advanced Combat: speed x1.4, knockback 0.80; 8 projectile loses 0.96, also at 15% penetration (fully resisted); 8 poison 4.8; three camos.";
+            return "Full Advanced Combat: speed x1.4, knockback 0.80; 8 projectile loses 0.64, also at 15% penetration (fully resisted); 8 poison 4.8; three camos.";
         }
 
         @Override
@@ -403,11 +403,11 @@ final class ArmorTierScenarios {
                 events.update(p);
                 out.check(near(1.4, speedFactor(p)), "speed x1.4, got " + speedFactor(p));
                 out.check(near(0.80, knockback(p)), "knockback 0.80, got " + knockback(p));
-                out.checkEquals("vanilla armor bar 6+7+6+4", 23, p.getTotalArmorValue());
-                checkHit(out, p, DamageType.PROJECTILE, 22.0, 0.0, 0.15);
-                checkHit(out, p, DamageType.PROJECTILE, 22.0, 0.15, 0.15);
+                out.checkEquals("vanilla armor bar 6+7+6+5", 24, p.getTotalArmorValue());
+                checkHit(out, p, DamageType.PROJECTILE, 23.0, 0.0, 0.15);
+                checkHit(out, p, DamageType.PROJECTILE, 23.0, 0.15, 0.15);
                 checkHit(out, p, DamageType.POISON, 10.0, 0.0, 0.15);
-                checkHit(out, p, DamageType.EXPLOSION, 18.0, 0.0, 0.15);
+                checkHit(out, p, DamageType.EXPLOSION, 19.0, 0.0, 0.15);
                 ItemStack boots = p.worn(ArmorSlot.BOOTS);
                 ((ItemGregGunsArmor) boots.getItem()).setCamo(boots, 1);
                 out.check(

@@ -23,6 +23,7 @@
 | Hard-coded dimension 0 check; the dimension list is never consulted (WGEN-28) | One allow-list of dimension IDs from config, default `[0]` | Excludes every pack dimension without naming it |
 | Terrain checked on an unrotated box (WGEN-05, 06, 07, 08) | Terrain checked on the rotated footprint, with a water-depth test for ships | Fixes the listed bugs |
 | The Submarine lies on the sea floor ([A8](../../techguns-spec/11-worldgen/structure-catalog.md#a8-submarine-submarine)) | **Deviation (D291):** the Submarine floats. Like the Aircraft Carrier it is anchored at the lowest water surface of its footprint, so its hull's bottom row replaces the top water block and the conning tower stands above the sea | Owner decision: a player finds it from a boat or the shore without hunting the sea floor ([DECISIONS D291](../../gregguns-icbm-spec/DECISIONS.md)) |
+| Each structure prepares its ground its own way: `cleanUpwards` range 7 and `placeFoundation` range 1 to 4 for the layout structures; for the Military Base `removeJunkInArea`, `flattenArea(…, 4)` with Gaussian smoothing, and each leaf flattened to 0 ([A6](../../techguns-spec/11-worldgen/structure-catalog.md#a6-military-base-militarybasestructure--militarycamp)) | **Deviation (D351):** one rule for every structure on land, [carve and found](#site-preparation-carve-and-found-d351): the footprint is cut and filled level to the recorded ground, every block over it is cleared, a one-to-one bank is cut around it, and a foundation runs down to natural ground | Owner bugs (2026-11-01): parts of a base hung over air on a downhill slope and stood in hillside dirt on an uphill one. The old shaping only clamped each column to within 4 of the recorded ground, then wrote the whole structure at that ground |
 | `SpawnStructures` plus three spacing keys | Keep the keys. Add one `enabled` flag per structure (0005: "each config-gated") | Admin control |
 | Village bunker (dormant) | Not built (0005) | No integration point; see the index |
 
@@ -104,9 +105,43 @@
 ### Generator wiring (M8 G9)
 
 - **Code:** `StructureGenerator` (the `IWorldGenerator`), `StructurePopulator` (the pure pipeline), `StructureCatalog` (size classes, pools), `StructureHooks` (spawner and flag no-ops for G11 and G10). Registered in `WorldgenModule.postInit` after the layouts load, only when `generatorWanted()`.
-- **Order per populate:** gate on dimension and world type, `plansForWindow`, `StructureState.decideOnce` (biome, then land or water check on the rotated footprint from this window's columns, then the village scan), flatten to the recorded Y, stamp at anchor Y = recorded Y + 1 (the layout's `ground` layer sits on top of the ground), then marks. All inside a `PopulateGuard` scope and a `ClippingSink`.
+- **Order per populate:** gate on dimension and world type, `plansForWindow`, `StructureState.decideOnce` (biome, then land or water check on the rotated footprint from this window's columns, then the village scan), carve and found the site at the recorded Y (land structures, [D351](#site-preparation-carve-and-found-d351)), stamp at anchor Y = recorded Y + 1 (the layout's `ground` layer sits on top of the ground), then marks. All inside a `PopulateGuard` scope and a `ClippingSink`.
 - **Mark tags:** `chest.vanilla` (the layout places a vanilla chest; the generator fills it now), `chest.weapon` and `chest.reinforced` (the layout places the GregGuns chest block; the generator attaches a `LootPending`, filled on first access), `spawner*` and `flag` (hooks). Chest category is `weaponchest_t<ceiling>`, `reinforcedchest_t<ceiling>` or, for `chest.vanilla`, `supplychest_t<ceiling>` (Q11; [ChestTags](structure-loot.md#integration-points)), seeded by `StructurePlan.chestSeed(index)` where the index is the chest's place among the layout's chest marks.
 - **Deviation:** a window that sees only a sliver of a multi-window footprint decides from that sliver (after the coarse sample grid finds nothing it samples every column it has), so a slope visible only to other windows is not seen (PLAN-M8 Q3, accepted). Pool weights are equal per structure.
+
+### Site preparation: carve and found (D351)
+
+A general worldgen rule: every GregGuns structure carves its space out of the world and brings its own foundation. A new structure gets it by default; one that is not on land opts out in `StructureCatalog.siteRule` with its reason.
+
+- **Code:** `SitePrep` (pure, window-clipped), called by `StructurePopulator` for every plan whose rule is `CARVE`, after the decision and before the stamp. Every caller of the populator gets it: world generation, the placement scenarios, the showcase.
+- **Level columns** (the footprint, plus the camp's road tails past the fence):
+  - **Foundation:** from the recorded ground Y down, air, liquid, plants, snow, ice and trunks are filled until the first natural solid block: dirt for the first 4 blocks, stone deeper. At most 24 blocks; a deeper gap is a ravine the terrain check did not sample, and stays open.
+  - **Clearance:** every block above the ground Y becomes air, to the top of the column. No hill, tree, overhang or pond is left in a room, on a road or over the flag pad. The structure is then written, so its own blocks and room air win. A dry run of the structure's writer names the cells it writes in the window, and the site prep leaves those to it, so a second pass over a finished structure changes nothing. A vanilla chest, furnace, dispenser or dropper keeps its layout facing (`FacingKeeper`) instead of turning away from a neighbor the next window may carve.
+- **Bank:** the 3 columns around the footprint are cut down to the ground Y plus their distance from it, a one-to-one slope. Only natural terrain is cut. A bank column keeps any liquid or built block and everything under it, so a lake shore keeps its water (WGEN-26) and a neighbor's wall is not sliced. Nothing is filled under the bank, so the downhill edge is a terrace.
+- **Buried floor:** a structure whose lowest layer lies under the ground (the Big Bunker, 9 layers down) also gets a stone foundation under that layer when a cave opens there.
+- **Rules per structure:**
+
+| Structure | Carve | Foundation | Why |
+|---|---|---|---|
+| Small Factory, Train Station, Gas Station, Medium House | Footprint, clearance, bank | To natural ground | Stand on the surface |
+| Military Base | Footprint and road tails, clearance, bank | To natural ground, roads, fence, flag pad and every part included | Stands on the surface; the whole camp is one level pad, its parts at the ground Y |
+| Big Bunker | Footprint, clearance, bank | To natural ground, and under its buried floor | Its top deck and entrances stand at the surface; the bunker below is written cell by cell, its rooms carved by its own air cells |
+| Aircraft Carrier, Submarine | Opt out (`OPEN_WATER`) | None | They float on open water (D291); the water check already demands 6 blocks of sea under every sampled column |
+| Alien Bug Nest | Opt out (`UNDERGROUND`) | None | Underground by design: it carves its own chambers and shaft into rock |
+| ICBM silo complex | Own mechanism, not `SitePrep` | Own (D320) | Its shell writes a foundation under every room, hall and tunnel and solid fill beside them; the bores open to the surface; the keep holds it whole after generation (D356). `populateComplex` never calls `SitePrep`, so nothing is done twice |
+
+- **Windows:** a carved structure's grid apron is the bank's 3 blocks (the camp's reach already covers it), so the windows over the bank visit the plan. A window that sees only the bank cannot decide; if it populates before the deciding window it leaves its strip of bank uncut (accepted, as the camp's road tails).
+- **Cost:** one top-down scan of each level column from its top filled section, and up to 24 reads under it; a bank column stops at its cut height. Measured per structure in the `worldgen.site_slope_` scenarios.
+- **Supersedes** the Techguns-style flatten band (each column clamped to within 4 of the ground Y): with the structure written at one Y it left up to 3 blocks of air under a part and up to 4 of hillside over it.
+
+### Military Base: faction and command post (D353)
+
+Every Military Base belongs to a side, a pure roll on its plan seed (`CampFaction.of`), so every populate window agrees without saved state: red with chance `worldgen.redBaseChanceMilitaryBase` (20%), blue otherwise.
+
+- **The flag.** The Camp Flag block's metadata is the side (0 blue, 1 red), and the flag renderer tints its gray cloth by it. The Aircraft Carrier's flag is blue.
+- **The command pad.** The flag leaf holds no building, so `CommandPost` writes a 5 by 5 pad sunk into the ground under the flag, in camp-local terms and clipped to the leaf: a wool ring around stained clay, blue (11) or red (14). It writes at the column's ground, like the roads, so site preparation's level pad (D351) carries it.
+- **Red standards.** A red base adds four standards 3 out from the flag each way: two fence posts with a red wool block on top.
+- **The commander.** A red base's flag tile holds Dictator Dave and his post, the pad cell 2 east of the flag (camp-local, so it turns with the base). World generation spawns nobody (Q12); the flag's tick places him once, through the camp port, while `npcs.miniBosses` is on and his chunk is loaded. He holds his post (radius 6, saved on him) and is never replaced. Requirement GGS-10-44 in [spawning.md](../10-entities-npcs/spawning.md).
 
 ### Spawner marks
 
@@ -131,6 +166,7 @@
 - GGS-11-08, 09: a unit test that places each structure into a recording world stub and asserts that every write is inside the window and that no foreign chunk is requested.
 - GGS-11-10, 11: unit tests (same seed twice; first 1000 grid cells).
 - GGS-11-13, 14: unit tests with synthetic height maps and block grids.
+- Site preparation (D351): `SitePrepTest` (level, cap, bank, liquid and built blocks kept, buried floor, window), `StructureCatalogTest` (rules and aprons); scenarios `worldgen.site_slope_<structure>`, one per carved structure on a built slope with a step and a wooded hill: no air under the site, no natural block over it but the structure's own, no bank steeper than one to one.
 - M8 exit gate: a dev instance with `logCascadingWorldgen` = `true`; fly 5000 blocks in a new RWG world; the log has no cascade line naming `gregguns`.
 - Manual: with GT ores on, dig around a bunker and check that its walls and chests are intact (first open question).
 

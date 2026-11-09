@@ -22,10 +22,12 @@ public final class NpcScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new ModuleConfigScenario());
         NpcEntityScenarios.registerAll(registry);
+        NpcShotTuningScenarios.registerAll(registry);
         NpcLootScenarios.registerAll(registry);
         NpcGunDropScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
         NpcHoldShowcaseScenario.register(registry);
+        NpcMutantFeetScenario.register(registry);
         NpcSuperMutantScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
         NpcBossScenarios.registerAll(registry);
@@ -38,6 +40,7 @@ public final class NpcScenarios {
         SoldierScenarios.registerAll(registry);
         EnergySoldierScenarios.registerAll(registry);
         NpcSpawnScenarios.registerAll(registry);
+        NpcRealmScenarios.registerAll(registry);
         ZombieScenarios.registerAll(registry);
         BanditScenarios.registerAll(registry);
         UndeadScenarios.registerAll(registry);

@@ -89,14 +89,22 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids where NPCs spawn naturally. |
-| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. `zombies`, `military` and `bandits` gate natural spawning; `miniBosses` and `mutants` also refuse eggs, camps and spawners. |
-| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. `alienBug` and `cyberdemon` refuse the egg, camp and spawner spawns; `helicopter` gates the camp and Camp Flag helicopter. |
+| `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids that use the Overworld spawn table. A dimension in no spawn list has no natural NPC spawns. |
+| `npcs.netherSpawnDimensions` | int list | `[-1]` | any | no | Dimension ids that use the Nether spawn table (Zombie Pigman Soldiers, Super Mutants, the Cyberdemon), in Nether biomes. |
+| `npcs.endSpawnDimensions` | int list | `[1]` | any | no | Dimension ids that use the End spawn table (Commando squads), in End biomes. |
+| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. `zombies` (with the Nether's Pigman Soldier), `military` (with the End's Commandos) and `bandits` gate natural spawning; `miniBosses` (Psycho Steve, and Dictator Dave at red bases) and `mutants` also refuse eggs, camps and spawners. |
+| `npcs.alienBug` / `cyberdemon` / `outcast` / `helicopter` | boolean | `true` | n/a | no | Switches for the special mobs. `alienBug`, `cyberdemon` and `outcast` refuse every spawn of their mob (natural, egg, camp and spawner); `helicopter` gates the camp and Camp Flag helicopter. |
 | `npcs.weightZombieFarmer` / `weightZombieMiner` | int | `100` | 0 to 10000 | no | Spawn weights (half of Techguns). |
 | `npcs.weightZombieSoldier` / `weightSkeletonSoldier` | int | `50` | 0 to 10000 | no | Spawn weights. |
 | `npcs.weightBandit` | int | `25` | 0 to 10000 | no | Spawn weight. |
 | `npcs.weightPsychoSteve` | int | `1` | 0 to 10000 | no | Spawn weight. |
-| `npcs.distanceLevel0` / `1` / `2` | int | `500` / `1000` / `2500` | 0 to 100000 | no | Blocks from world spawn where each distance danger step begins. |
+| `npcs.weightNetherPigmanSoldier` | int | `15` | 0 to 10000 | no | Nether spawn weight of the Zombie Pigman Soldier, anywhere in the Nether. |
+| `npcs.weightNetherMutantBasic` / `Heavy` / `Elite` | int | `6` / `3` / `2` | 0 to 10000 | no | Nether spawn weights of the Super Mutants, from Nether danger 2, 3 and 4. |
+| `npcs.weightNetherCyberdemon` | int | `1` | 0 to 10000 | no | Nether spawn weight of the Cyberdemon, from Nether danger 4, always alone. |
+| `npcs.weightEndCommando` | int | `1` | 0 to 10000 | no | End spawn weight of a Commando squad of 2 to 3. |
+| `npcs.endMinDistance` | int | `256` | 0 to 100000 | no | No natural NPC spawns closer than this to the End's center. |
+| `npcs.bossSpacing` | int | `128` | 0 to 1024 | no | A natural Cyberdemon does not spawn while another is within this many blocks. |
+| `npcs.distanceLevel0` / `1` / `2` | int | `500` / `1000` / `2500` | 0 to 100000 | no | Blocks from world spawn where each distance danger step begins. The Nether counts its distance times 8 and adds 1; the End counts from its center and adds 2. |
 | `npcs.perChunkCap` | int | `4` | 0 to 256 | no | Most NPCs per chunk before natural spawning stops. |
 | `npcs.perPlayerCap` | int | `8` | 0 to 1024 | no | Most NPCs around one player before natural spawning stops. |
 | `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
@@ -116,7 +124,16 @@ Structure placement, gating and loot tuning (M8). Read only while `modules.world
 | `worldgen.enabled<Id>` | boolean | `true` | n/a | no | Place that structure. |
 | `worldgen.biomeBlacklist<Id>` | string list | none | any | no | BiomeDictionary type names in which that structure is never placed. |
 | `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot table of each chest kind (supply, weapon, reinforced), and with it the tier of the guns, ammo, parts and GT metals in it. |
+| `worldgen.redBaseChanceMilitaryBase` | int | `20` | 0 to 100 | no | Percent of Military Bases that are red: red flag, pad and standards, and Dictator Dave at his post. The rest are blue. |
 | `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; adds picks to every chest and weight to the table's top-tier lines. Guns keep their weight, so a richer chest holds more ammo and gear, not more guns. |
+
+## Loot (`loot`)
+
+One cap on the tier of everything GregGuns puts in the world for a player to take. An item's tier is what a player needs to make it at all (its whole crafting chain: circuits by circuit tier, GT material items by their material, GT parts and machines by their own tier), never the voltage of the recipe that outputs it. Server-side only, not synced.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `loot.maxTier` | int | `4` (EV) | 1 to 12 | no | Highest GT tier (voltage index: 1 LV ... 4 EV, 5 IV ... 12 UMV) of anything in structure and silo complex chests, furniture, furnaces, GT machine outputs in complexes, item frames, armories and GregGuns NPC drops. Planet and Ross128 complex ceilings apply up to it. Quest loot bags and Vending trades follow their own quest tier. Items with no known tier never appear. |
 
 ## Damage factors (`damagefactors`)
 
@@ -127,8 +144,42 @@ Techguns' "Damage Factors" category. All keys are synced from server to client (
 | `damagefactors.damagePvP` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a player's shot hits another player. Zero while server PvP is off. |
 | `damagefactors.damageTurretToPlayer` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a turret's shot hits a player. |
 | `damagefactors.damageFactorNPC` | float | `1.0` | 0 to 100 | yes | Damage multiplier for other NPCs hitting players, and for NPC against NPC. |
-| `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of non-player attackers against players. |
+| `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `0.5` | 0 to 1 | yes | Scales the armor penetration of non-player attackers against players. At 0.5 an NPC's armor-piercing share is halved, so the armor you wear counts for more. |
 | `damagefactors.armorPenetrationMultiplierPvP` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of a player's shots against other players. |
+
+## Combat (`combat`)
+
+Hit knockback, and how hard and how accurately hostile NPCs and turrets shoot at you (design [0027](design/0027-combat-difficulty-knobs.md)). All keys are synced from server to client. The NPC keys cover GregGuns NPCs, the hostile NPC turret and the Attack Helicopter; your own Rampart turret and your own guns are not affected.
+
+An NPC shot's damage is its gun's NPC damage, times the difficulty factor (Easy 0.25, Normal 0.3, Hard 0.375), times the tier multiplier of the gun it fires, times `npcEliteDamage` when the shooter is an Infernal Mobs elite, ultra or infernal or a boss, times `damagefactors.damageFactorNPC`. A turret skips the difficulty factor and uses `damagefactors.damageTurretToPlayer` instead. Armor then takes its share, and `damagefactors.armorPenetrationMultiplierNPCtoPlayer` decides how much of the gun's penetration skips it.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `combat.knockback` | boolean | `false` | n/a | yes | Whether GregGuns gun and projectile hits push their target, both ways: your shots pushing mobs and NPC shots pushing you. Includes a rocket's direct hit, shrapnel, beams and the Power Hammer's shockwave. Explosion blasts push whatever this says. |
+| `combat.knockbackMultiplier` | float | `1.0` | 0 to 10 | yes | While knockback is on, the push of a hit is vanilla's times this times the gun's own knockback (3 for the Rocket Launcher, 2 for the Sonic Rifle, 0 for the Chainsaw). |
+| `combat.npcDamageSteam` | float | `1.0` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from Steam-tier guns. |
+| `combat.npcDamageLV` | float | `1.0` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from LV guns. |
+| `combat.npcDamageMV` | float | `1.0` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from MV guns. The NPC turret's AK47 is MV. |
+| `combat.npcDamageHV` | float | `0.85` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from HV guns. The Attack Helicopter counts as HV. |
+| `combat.npcDamageEV` | float | `0.7` | 0 to 10 | yes | Damage multiplier for NPC shots from EV guns. |
+| `combat.npcDamageIV` | float | `0.55` | 0 to 10 | yes | Damage multiplier for NPC shots from IV guns. |
+| `combat.npcDamageLuV` | float | `0.45` | 0 to 10 | yes | Damage multiplier for NPC shots from LuV guns. |
+| `combat.npcDamageZPM` | float | `0.4` | 0 to 10 | yes | Damage multiplier for NPC shots from ZPM guns. |
+| `combat.npcEliteDamage` | float | `0.75` | 0 to 10 | yes | Extra damage multiplier for shots from an elite, ultra or infernal NPC (Infernal Mobs) or a boss such as the Attack Helicopter. |
+| `combat.npcAccuracyRange` | float | `5.0` | 0 to 256 | yes | Blocks within which NPC and turret shots keep their gun's full accuracy. |
+| `combat.npcSpreadPerBlock` | float | `0.12` | 0 to 10 | yes | Degrees of aim error an NPC or turret gains per block beyond `npcAccuracyRange`. One error is drawn per shot, so a shotgun's pellets keep their pattern. 0 turns the distance penalty off. |
+| `combat.npcMaxSpread` | float | `4.0` | 0 to 45 | yes | Largest aim error, in degrees, that distance adds. With the defaults an NPC 10 blocks away still hits a standing player with nearly every shot, and from about 20 blocks on it misses more often than it hits. |
+
+### Make combat harder
+
+The defaults are the gentle end. To make fights harder, raise these keys; each one stands alone, so pick the ones you want.
+
+- **Plain gun damage at every tier:** set every `combat.npcDamage*` key to `1.0` and `combat.npcEliteDamage` to `1.0`.
+- **Armor-piercing NPC guns:** set `damagefactors.armorPenetrationMultiplierNPCtoPlayer` to `1.0`.
+- **Sharpshooting NPCs:** set `combat.npcSpreadPerBlock` to `0` (no distance penalty), or keep it and raise `combat.npcAccuracyRange`.
+- **Getting shoved around:** set `combat.knockback` to `true`; raise `combat.knockbackMultiplier` for stronger pushes.
+- **Plain gun stats:** the four changes above together let every NPC gun hit you with its full stats.
+- **Harder still:** raise `damagefactors.damageFactorNPC` above `1.0` (2.0 doubles every NPC shot), or the `combat.npcDamage*` keys above `1.0`, and play on Hard difficulty.
 
 ## Explosions (`explosions`)
 
@@ -254,6 +305,14 @@ Server side of aim down sights. Read on the server; none is synced.
 |---|---|---|---|---|---|
 | `aim.adsEnabled` | boolean | `true` | n/a | no | Lets sights-only guns aim on a right-click. Off: the server ignores the request and drops a running aim. Scope zoom is unaffected. |
 | `aim.adsSpreadMultiplier` | float | `0.75` | 0.0 to 1.0 | no | Multiplier on spread while aiming a gun with no scope zoom of its own (0.75 is 25 percent tighter). A scoped gun keeps its own zoom multiplier. |
+
+## Guns (`guns`)
+
+Server side of gun handling. Read on the server; none is synced, because the server starts every reload and the client animates its reload message.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `guns.idleReloadDelayTicks` | int | `40` | 0 to 1200 | no | Ticks a held chamber gun (Revolvers, Golden Revolvers, Combat Shotgun, Sawed Off) goes without a shot, a trigger pull or a reload before it loads its empty chambers by itself, when the player carries its ammo. A trigger pull stops it. `0` turns the idle reload off. Design record [0026](design/0026-single-round-and-chamber-reloads.md). |
 
 ## Questbook (`questbook`)
 

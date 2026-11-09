@@ -48,6 +48,13 @@ class NpcSpawnGateTest {
     }
 
     @Test
+    void outcastFlagClosesTheOutcastOnly() {
+        assertFalse(NpcSpawnGate.allowed(NpcMob.OUTCAST, true, true, true, true, false));
+        assertTrue(NpcSpawnGate.allowed(NpcMob.STORMTROOPER, true, true, true, true, false));
+        assertTrue(NpcSpawnGate.allowed(NpcMob.OUTCAST, true, true, true, true), "the short overload leaves it on");
+    }
+
+    @Test
     void theConfigOverloadReadsTheLiveFlags() {
         boolean was = NpcConfig.alienBug;
         try {

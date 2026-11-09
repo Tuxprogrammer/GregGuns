@@ -169,6 +169,9 @@ public final class ComplexApplier {
             case STOCK:
                 stock(p, x, y, z);
                 break;
+            case VENDING:
+                vending(p, x, y, z);
+                break;
             default:
                 break;
         }
@@ -201,10 +204,12 @@ public final class ComplexApplier {
                 y,
                 z - FRAME_DZ[p.facing()],
                 p.facing());
+            int loot = ComplexContents.lootTable(ceiling);
             String ref = SiloFrames
-                .gunFor(ceiling, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, ArmoryDisplay.IS_GUN);
+                .gunFor(loot, worldSeed ^ (cellX * 31L + cellZ), lx, p.y(), lz, ArmoryDisplay.IS_GUN);
             ItemStack gun = ref == null ? null : com.gregguns.worldgen.loot.LootCategories.stack(ref, 1);
-            if (gun != null) {
+            // A gun above the world-loot cap leaves the frame empty (D364).
+            if (gun != null && com.gregguns.worldgen.loot.ObtainTier.allowed(gun, loot)) {
                 frame.setDisplayedItem(gun);
             }
             sink.spawn(frame, frame.posX, frame.posY, frame.posZ);
@@ -325,6 +330,21 @@ public final class ComplexApplier {
     }
 
     /**
+     * A {@link Placement.Kind#VENDING} (D355): the Vending Machine's controller, working or dead, facing into its
+     * hall, owned by the complex like every generated machine; or the knocked-out casing of a gutted hall's machine.
+     * Nothing without the Vending Machine mod: the marks pass then left the style's cabinet, which stays whole.
+     */
+    private void vending(Placement p, int x, int y, int z) {
+        if (!sink.window()
+            .contains(x, z) || !com.gregguns.icbm.complex.gen.VendingMachinePiece.present()) return;
+        if (VendingEgg.GAP.equals(p.key())) {
+            sink.setBlock(x, y, z, Blocks.air, 0);
+            return;
+        }
+        placeMte(x, y, z, com.gregguns.icbm.complex.gen.VendingMachinePiece.controllerId(), p.front(), p);
+    }
+
+    /**
      * A {@link Placement.Kind#STOCK}: what the piece placed in this cell holds (D323), put into its tile entity. Needs
      * the world (the piece's tile is the world's own); a window without one, or a piece whose mod is absent, is left
      * as placed. Only the piece's own block is filled: a cut-off column (D207) never had the piece written, and
@@ -336,7 +356,7 @@ public final class ComplexApplier {
         if (columns != null && !columns.written(x, z)) return;
         if (!com.gregguns.icbm.complex.gen.FurnitureFiller.placed(world.getBlock(x, y, z), p.block())) return;
         net.minecraft.tileentity.TileEntity te = world.getTileEntity(x, y, z);
-        if (FurnitureStocker.fill(te, p, worldSeed, cellX, cellZ, ceiling)) te.markDirty();
+        if (FurnitureStocker.fill(te, p, worldSeed, cellX, cellZ, ComplexContents.lootTable(ceiling))) te.markDirty();
     }
 
     /**

@@ -36,10 +36,12 @@ public final class NpcItems {
             return new ItemStack(item, count, metaOf(ref));
         }
         if (ref.startsWith(ORE)) {
-            java.util.List<ItemStack> ores = OreDictionary.getOres(ref.substring(ORE.length()));
-            if (!ores.isEmpty()) {
-                ItemStack copy = ores.get(0)
-                    .copy();
+            // The first stack of the entry, past GT's unobtainable IC2 circuit replacements (D362).
+            for (ItemStack ore : OreDictionary.getOres(ref.substring(ORE.length()))) {
+                if (com.gregguns.compat.GhostCircuits.isGhost(ore)) {
+                    continue;
+                }
+                ItemStack copy = ore.copy();
                 copy.stackSize = count;
                 if (copy.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                     copy.setItemDamage(0);

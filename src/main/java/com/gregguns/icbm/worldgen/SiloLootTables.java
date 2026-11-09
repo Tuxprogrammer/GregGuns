@@ -193,9 +193,12 @@ public final class SiloLootTables {
         return out;
     }
 
-    /** @return the junk category (no ceiling: junk is junk on every planet) */
+    /**
+     * @return the junk category (no planet ceiling: junk is junk on every planet); LV, so the recycler's scrap stays in
+     *         (D365)
+     */
     public static LootCategory junk() {
-        return LootMix.of(JUNK, Tier.STEAM, 1, 3)
+        return LootMix.of(JUNK, Tier.LV, 1, 3)
             .pool(100, SiloPools.junk())
             .build();
     }

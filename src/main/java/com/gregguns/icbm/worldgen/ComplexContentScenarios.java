@@ -124,7 +124,8 @@ public final class ComplexContentScenarios {
                         "damaged body lacks its flag");
                 }
             }
-            for (SpawnerKind k : new SpawnerKind[] { SpawnerKind.SILO_GUARD, SpawnerKind.SILO_ELITE }) {
+            for (SpawnerKind k : new SpawnerKind[] { SpawnerKind.SILO_GUARD, SpawnerKind.SILO_ELITE,
+                SpawnerKind.SILO_COMMAND }) {
                 out.check(VanillaSpawners.nbt(k, 0, 64, 0, 0) != null, k + " has no registered mob for its spawner");
             }
             return out.build();
@@ -271,7 +272,8 @@ public final class ComplexContentScenarios {
                                     a.add(id(st)); // an armory display chest holds its gun's ammo
                                 }
                             }
-                            a.addAll(SiloChests.allowedIds(p.key(), ceiling)); // lines, junk, spoil (D317)
+                            // lines, junk, spoil (D317), from the table of the ceiling held to loot.maxTier (D364)
+                            a.addAll(SiloChests.allowedIds(p.key(), ComplexContents.lootTable(ceiling)));
                             return a;
                         });
                         Set<String> own = new HashSet<>(allowed);
@@ -286,7 +288,7 @@ public final class ComplexContentScenarios {
                             if (st != null) {
                                 stacks++;
                                 dimStacks++;
-                                String above = materialAbove(st, ceiling);
+                                String above = materialAbove(st, ComplexContents.lootCap(ceiling));
                                 if (above != null) {
                                     bad++;
                                     out.note(dim + "@" + SiloCeiling.name(ceiling) + " " + p.key() + " holds " + above);

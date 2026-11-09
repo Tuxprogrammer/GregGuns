@@ -9,6 +9,7 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 
+import com.gregguns.core.config.CombatConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -46,6 +47,7 @@ public final class FrameworkScenarios {
         registry.register(new Pellets());
         registry.register(new Patterns());
         registry.register(new KnockbackStrength());
+        registry.register(new KnockbackOff());
     }
 
     private static GunStats.Builder base(String id) {
@@ -221,11 +223,16 @@ public final class FrameworkScenarios {
         }
     }
 
-    /** GUN-38: the knockback multiplier changes how hard a target is pushed. */
-    private static final class KnockbackStrength implements Scenario {
+    /**
+     * GUN-38 with D357: while {@code combat.knockback} is on, the gun's knockback multiplier, times the config's, sets
+     * how hard a target is pushed.
+     */
+    private static final class KnockbackStrength extends KnockbackPhases {
 
-        private static final double[] MULTIPLIERS = { 0.0, 1.0, 3.0 };
-        private static final int RANGE = 4;
+        KnockbackStrength() {
+            // gun knockback, combat.knockback, combat.knockbackMultiplier
+            super(new double[][] { { 0.0, 1, 1.0 }, { 1.0, 1, 1.0 }, { 3.0, 1, 1.0 }, { 1.0, 1, 2.0 } });
+        }
 
         @Override
         public String name() {
@@ -234,18 +241,82 @@ public final class FrameworkScenarios {
 
         @Override
         public String description() {
-            return "Three bullets with knockback 0, 1 and 3 hit fresh zombies: the push is none, vanilla's, and three times vanilla's (GUN-38).";
+            return "With combat.knockback on, bullets with knockback 0, 1 and 3 hit fresh zombies: the push is none, vanilla's, and three times vanilla's (GUN-38); a knockbackMultiplier of 2 doubles a knockback-1 push (D357).";
         }
 
         @Override
+        void judge(ScenarioResult.Builder out, double[] pushed) {
+            out.check(Math.abs(pushed[0]) < 0.02, "knockback 0 should not push, but motionX was " + pushed[0]);
+            out.check(pushed[1] > 0.05, "knockback 1 should push the zombie away, but motionX was " + pushed[1]);
+            out.check(
+                Math.abs(pushed[2] - 3.0 * pushed[1]) < 0.2 * Math.abs(3.0 * pushed[1]),
+                "knockback 3 should push three times as hard as 1: " + pushed[2] + " vs " + pushed[1]);
+            out.check(
+                Math.abs(pushed[3] - 2.0 * pushed[1]) < 0.2 * Math.abs(2.0 * pushed[1]),
+                "knockbackMultiplier 2 should push twice as hard as 1: " + pushed[3] + " vs " + pushed[1]);
+        }
+    }
+
+    /**
+     * D357: with {@code combat.knockback} off, the shipped default, a gun hit pushes nothing, whatever the gun says.
+     */
+    private static final class KnockbackOff extends KnockbackPhases {
+
+        KnockbackOff() {
+            // The second row turns the config multiplier up: off still means off.
+            super(new double[][] { { 1.0, 0, 1.0 }, { 3.0, 0, 5.0 } });
+        }
+
+        @Override
+        public String name() {
+            return "gun.knockback_off";
+        }
+
+        @Override
+        public String description() {
+            return "With combat.knockback off, bullets with knockback 1 and 3 hit fresh zombies and hurt them without pushing them (D357).";
+        }
+
+        @Override
+        void judge(ScenarioResult.Builder out, double[] pushed) {
+            out.check(
+                Math.abs(pushed[0]) < 0.02,
+                "knockback off: a knockback-1 bullet should not push, but motionX was " + pushed[0]);
+            out.check(
+                Math.abs(pushed[1]) < 0.02,
+                "knockback off: a knockback-3 bullet should not push, but motionX was " + pushed[1]);
+        }
+    }
+
+    /**
+     * Fires one bullet per phase at a fresh, AI-less zombie and records its motionX after the hit. A phase is
+     * {gun knockback, combat.knockback (1 on, 0 off), combat.knockbackMultiplier}. The combat switches are put back on
+     * every exit; the runner's config snapshot backs that up.
+     */
+    private abstract static class KnockbackPhases implements Scenario {
+
+        private static final int RANGE = 4;
+
+        private final double[][] phases;
+
+        KnockbackPhases(double[][] phases) {
+            this.phases = phases;
+        }
+
+        /** Adds the checks on the recorded pushes, NaN for a bullet that missed. */
+        abstract void judge(ScenarioResult.Builder out, double[] pushed);
+
+        @Override
         public ScenarioResult run(ScenarioContext ctx) {
+            boolean savedOn = CombatConfig.knockback;
+            float savedMultiplier = CombatConfig.knockbackMultiplier;
             GunRig rig = new GunRig(ctx, GunItems.revolver(), 6);
-            double[] pushed = new double[MULTIPLIERS.length];
+            double[] pushed = new double[phases.length];
             EntityZombie[] current = { null };
             int[] phase = { 0 };
             int[] waited = { 0 };
             spawn(ctx, rig, current, phase[0]);
-            return ScenarioResult.pending(name(), 120, ticks -> {
+            return ScenarioResult.pending(name(), 40 * phases.length, ticks -> {
                 EntityZombie z = current[0];
                 waited[0]++;
                 boolean hit = z.getHealth() < z.getMaxHealth();
@@ -256,27 +327,31 @@ public final class FrameworkScenarios {
                 z.setDead();
                 phase[0]++;
                 waited[0] = 0;
-                if (phase[0] < MULTIPLIERS.length) {
+                if (phase[0] < phases.length) {
                     spawn(ctx, rig, current, phase[0]);
                     return null;
                 }
+                CombatConfig.knockback = savedOn;
+                CombatConfig.knockbackMultiplier = savedMultiplier;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                out.check(Math.abs(pushed[0]) < 0.02, "knockback 0 should not push, but motionX was " + pushed[0]);
-                out.check(pushed[1] > 0.05, "knockback 1 should push the zombie away, but motionX was " + pushed[1]);
-                out.check(
-                    Math.abs(pushed[2] - 3.0 * pushed[1]) < 0.2 * Math.abs(3.0 * pushed[1]),
-                    "knockback 3 should push three times as hard as 1: " + pushed[2] + " vs " + pushed[1]);
+                for (int i = 0; i < pushed.length; i++) {
+                    out.check(!Double.isNaN(pushed[i]), "bullet " + i + " should hit its zombie");
+                }
+                judge(out, pushed);
                 return out.build();
             });
         }
 
-        private static void spawn(ScenarioContext ctx, GunRig rig, EntityZombie[] current, int phase) {
+        private void spawn(ScenarioContext ctx, GunRig rig, EntityZombie[] current, int phase) {
             EntityZombie z = GunRig.zombie(ctx, RANGE);
             // No AI: a walking zombie would add its own velocity to the push being measured.
             z.tasks.taskEntries.clear();
             z.targetTasks.taskEntries.clear();
             current[0] = z;
-            GunStats stats = base("knockback_" + phase).knockback(MULTIPLIERS[phase])
+            double[] p = phases[phase];
+            CombatConfig.knockback = p[1] != 0;
+            CombatConfig.knockbackMultiplier = (float) p[2];
+            GunStats stats = base(name().replace('.', '_') + "_" + phase).knockback(p[0])
                 .build();
             launch(ctx, rig.shooter, stats, 5);
         }

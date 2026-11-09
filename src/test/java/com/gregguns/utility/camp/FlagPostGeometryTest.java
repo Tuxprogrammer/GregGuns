@@ -13,6 +13,17 @@ class FlagPostGeometryTest {
     }
 
     @Test
+    void theClothIsRedOnARedBaseAndBlueElsewhere() {
+        float[] red = FlagPostGeometry.clothColor(1);
+        float[] blue = FlagPostGeometry.clothColor(0);
+        assertEquals(true, red[0] > red[2], "red reads red");
+        assertEquals(true, blue[2] > blue[0], "blue reads blue");
+        assertEquals(blue[2], FlagPostGeometry.clothColor(7)[2], 0.0F, "unknown metadata is blue");
+        red[0] = 0;
+        assertEquals(FlagPostGeometry.CLOTH_RED[0], FlagPostGeometry.clothColor(1)[0], 0.0F, "a copy each time");
+    }
+
+    @Test
     void postIsFourBlocksTall() {
         float top = 0;
         for (FlagPostGeometry.Box b : FlagPostGeometry.POST_BOXES) {

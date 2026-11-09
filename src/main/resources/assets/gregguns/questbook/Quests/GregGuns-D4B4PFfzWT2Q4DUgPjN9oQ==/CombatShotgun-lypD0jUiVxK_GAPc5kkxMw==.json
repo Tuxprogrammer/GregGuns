@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The big brother of the Sawed Off. Eight shells in the tube, and one reload tops up every empty spot with the same Shotgun Shells, so your LV shell production keeps it fed. Pellets spread wide, so it is devastating up close and weak at range.\n\nIt is built in an MV Assembler from a Hardened Steel Barrel, a Steel Receiver, a Plastic Gun Stock, steel rods for the pump tube, and aluminum plates, screws and springs.\n\n[note]Reload between fights, not during them. A reload takes two and a half seconds.[/note]",
+      "desc:8": "The big brother of the Sawed Off. Eight shells in the tube, and one reload tops up every empty spot with the same Shotgun Shells, so your LV shell production keeps it fed. Pellets spread wide, so it is devastating up close and weak at range.\n\nIt is built in an MV Assembler from a Hardened Steel Barrel, a Steel Receiver, a Plastic Gun Stock, steel rods for the pump tube, and aluminum plates, screws and springs.\n\n[note]Reload between fights. A full reload takes two and a half seconds, a shell at a time, and a pull of the trigger stops it and fires what is in the tube. Held for two seconds without firing, it tops itself up.[/note]",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

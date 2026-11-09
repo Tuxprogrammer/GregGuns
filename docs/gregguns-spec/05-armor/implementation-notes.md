@@ -155,6 +155,7 @@ Branch `m3/armor-t2-t3`. Sets (all data in `ArmorCatalog`): T2 Combat, T2 Comman
 | ARM-DEV-21 | Techguns adds 5.0 to the speed bonus while aiming a gun | Not carried | It is an item-use slowdown fix owned by the gun branch ([ARM-06](../../techguns-spec/05-armor/index.md#suspected-bugs)) |
 | ARM-DEV-22 | Treated Leather and Steam Armor Plating belong to area 06 | `ArmorParts` registers `part_treated_leather` (RC-22, Chemical Bath, LV, 500 mB sulfuric acid, 2 leather to 2 Treated Leather) and `part_steam_armor_plating` (RC-23, Assembler, EV). When area 06 adds them, delete the two registrations and keep the names | The Riot set and the steam armor need them now | **Update 0022:** Steam Armor Plating (RC-23) was removed; the id stays retired. **Update D292:** Treated Leather (RC-22) was removed too; the Riot set takes the pack's Tanned Leather.
 | ARM-DEV-23 | Armor values never depend on power (kept) | Same; the powered gate covers bonuses and powered hazard flags only | Spec armor-catalog 9 |
+| ARM-DEV-25 | T3 Combat and Exo Suit protect 22 physical and projectile, 18 against explosion, energy, fire, ice and lightning | 23 and 19 (poison 10, radiation 6 and the 15% penetration resistance are unchanged); vanilla bar 6/7/6/5 | [0027](../../design/0027-combat-difficulty-knobs.md), D360: at 22 (88%) the EV set protected less than the HV NanoSuit (90%) a GTNH player already wears; at 23 it absorbs 92% |
 
 ## Decisions where the spec was ambiguous
 
@@ -200,7 +201,7 @@ Branch `m3/power-armor`. Both sets are pure `SetDef` data in `ArmorCatalog` (`T3
 
 Power Armor: material row T3_POWER (physical 24, explosion 22, energy, fire, ice and lightning 20, poison 15, radiation 10, penetration resistance 25%, durability 4,950, vanilla bar 6/7/6/5). Powered, per piece speed +0.05, mining +0.05, jump +0.03 (boots +0.15), knockback resistance 0.20/0.35/0.25/0.20, health 1/2/1/1, boots step assist and fall 0.2/1. Full set: speed +0.20, jump +0.24, knockback 1.00, mining +0.20, +5 health.
 
-Exo Suit: material row T3_EXO (physical 22, other elements 18, poison 10, radiation 6, penetration resistance 15%, durability 4,125, bar 6/7/6/4). Powered, per piece speed +0.20, mining +0.075, jump +0.10 (boots +0.30), knockback 0.15/0.30/0.20/0.15, boots step assist and fall 0.5/5. Full set: speed +0.80, jump +0.60, knockback 0.80, mining +0.30.
+Exo Suit: material row T3_EXO (physical 23, other elements 19, poison 10, radiation 6, penetration resistance 15%, durability 4,125, bar 6/7/6/5; ARM-DEV-25). Powered, per piece speed +0.20, mining +0.075, jump +0.10 (boots +0.30), knockback 0.15/0.30/0.20/0.15, boots step assist and fall 0.5/5. Full set: speed +0.80, jump +0.60, knockback 0.80, mining +0.30.
 
 ## Visual and client checks for the orchestrator
 

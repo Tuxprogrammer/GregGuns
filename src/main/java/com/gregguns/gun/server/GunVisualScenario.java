@@ -17,6 +17,8 @@ import com.gregguns.core.testing.AutotestSignal;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.gun.logic.GunNbt;
+import com.gregguns.gun.logic.GunState;
 import com.gregguns.item.gun.ItemGun;
 
 /**
@@ -94,7 +96,6 @@ public final class GunVisualScenario implements Scenario {
         ItemStack stack = new ItemStack(gun);
         ItemGun.ensureTag(stack, gun.stats());
         a.inventory.mainInventory[0] = stack;
-        a.inventory.mainInventory[1] = new ItemStack((Item) Item.itemRegistry.getObject("gregguns:" + ammoItem), 8);
         a.inventory.currentItem = 0;
         a.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(0));
         a.playerNetServerHandler.setPlayerLocation(ox, oy, oz, -90.0f, 0.0f);
@@ -111,11 +112,26 @@ public final class GunVisualScenario implements Scenario {
                 case 25 -> signal(a, "shot", p + "-first-person-idle");
                 case 30 -> signal(a, "arm", "shot", p + "-first-person-fire", "1");
                 case 32 -> signal(a, "fire", "1");
-                // Late enough for the slowest fire interval (the rifle's 25 ticks plus the client's click lag).
-                case 80 -> {
+                // The ammo comes just before the reload, with the gun emptied, so the reload shot catches a reload
+                // from empty: a chamber gun (design record 0026) would otherwise load its one missing chamber in a few
+                // ticks, by itself while held idle, before the reload key.
+                case 78 -> {
+                    a.inventory.mainInventory[1] = new ItemStack(
+                        (Item) Item.itemRegistry.getObject("gregguns:" + ammoItem),
+                        8);
+                    ItemStack held = a.inventory.mainInventory[0];
+                    if (held != null && held.getItem() == gun) {
+                        GunState empty = GunNbt.read(held.getTagCompound(), gun.stats());
+                        empty.setLoaded(gun.stats(), 0);
+                        GunNbt.write(held.getTagCompound(), empty);
+                    }
+                    a.inventoryContainer.detectAndSendChanges();
+                    // Armed two ticks ahead: a client runs its chat signals at the end of its tick, after the reload
+                    // packet of the same tick, so an arm sent with the key press would wait for the next reload.
                     signal(a, "arm", "reload", p + "-first-person-reload", "22");
-                    ServerGunHandler.onReloadKey(a);
                 }
+                // Late enough for the slowest fire interval (the rifle's 25 ticks plus the client's click lag).
+                case 80 -> ServerGunHandler.onReloadKey(a);
                 case 130 -> signal(a, "view", "1");
                 case 140 -> signal(a, "shot", p + "-third-person-back");
                 case 142 -> signal(a, "arm", "shot", p + "-third-person-back-fire", "1");

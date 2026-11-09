@@ -7,8 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -20,6 +22,9 @@ import com.gregguns.armor.logic.ArmorCatalog;
 import com.gregguns.armor.logic.SetDef;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
+import com.gregguns.item.ammo.AmmoType;
+import com.gregguns.item.ammo.AmmoTypes;
+import com.gregguns.item.part.PartCatalog;
 
 class NpcLootTest {
 
@@ -80,22 +85,121 @@ class NpcLootTest {
         assertTrue(seen.get("ore:plateRubber") > 1700, "rubber fills two slots");
     }
 
+    /** D349: Techguns' nine slots plus ten of energy-gun components, since both its guns are energy guns. */
     @Test
-    void stormtrooperTableIsNineSlotsAndOutcastHasNone() {
+    void stormtrooperTableAddsEnergyGunComponents() {
         LootTable t = NpcProfiles.get("Stormtrooper")
             .table();
         assertNotNull(t);
         assertEquals(
-            9,
+            19,
             t.slots()
                 .size());
-        assertNull(
-            NpcProfiles.get("Outcast")
-                .table());
+        Set<String> refs = refs(t);
+        for (String part : new String[] { "gregguns:part_barrel_laser", "gregguns:part_laser_focus",
+            "gregguns:part_receiver_carbon", "gregguns:part_receiver_hardened", "gregguns:part_stock_carbon",
+            "gt:plate.TungstenSteel", "gt:screw.TungstenSteel", "gt:plate.Titanium" }) {
+            assertTrue(refs.contains(part), part + " in " + refs);
+        }
         Random rand = new Random(9);
         for (int i = 0; i < 2000; i++) {
             assertNotNull(t.pick(rand), "every Stormtrooper slot drops something");
         }
+    }
+
+    /** D349: the Outcast (LuV) has a table: ammo for each of its guns, energy-gun parts and LuV metals. */
+    @Test
+    void outcastTablePaysForEveryGunAndInLuvMetals() {
+        LootTable t = NpcProfiles.get("Outcast")
+            .table();
+        assertNotNull(t);
+        Set<String> refs = refs(t);
+        for (String want : new String[] { "gregguns:ammo_rifle_bullet", "gregguns:ammo_rocket",
+            "gregguns:tank_fuel~full", "gregguns:tank_bio~full", "gregguns:part_barrel_laser",
+            "gregguns:part_power_plating", "ore:plateRhodium-PlatedPalladium", "gt:ingot.HSSG" }) {
+            assertTrue(refs.contains(want), want + " in " + refs);
+        }
+    }
+
+    /**
+     * D349: the Super Mutants keep their cybernetic parts and drop ammo for their Rocket Launcher, AK-47 and shotgun.
+     */
+    @Test
+    void superMutantsKeepCyberneticPartsAndDropTheirAmmo() {
+        for (String id : new String[] { "SuperMutantBasic", "SuperMutantHeavy", "SuperMutantElite" }) {
+            LootTable t = NpcProfiles.get(id)
+                .table();
+            int cybernetic = 0;
+            for (LootDrop d : t.slots()) {
+                cybernetic += d != null && d.ref()
+                    .equals("gregguns:part_cybernetic") ? 1 : 0;
+            }
+            assertEquals(15, cybernetic, id);
+            Set<String> refs = refs(t);
+            assertTrue(refs.contains("gregguns:ammo_rocket"), id + " " + refs);
+            assertTrue(refs.contains("gregguns:ammo_rifle_bullet"), id + " " + refs);
+            assertTrue(refs.contains("gregguns:ammo_shotgun_shell"), id + " " + refs);
+        }
+    }
+
+    /**
+     * D349: every mob that carries a gun with loose rounds or a tank also has that ammo in its table or fixed drops
+     * (the
+     * Cyberdemon's Nether Charge excepted, an owner call), and a mob whose guns are all energy guns has GregGuns
+     * energy-gun components in its table.
+     */
+    @Test
+    void everyGunCarrierDropsItsAmmoOrComponents() {
+        Map<String, GunDefinition> defs = new HashMap<>();
+        for (GunDefinition d : GunDefinitions.ALL) {
+            defs.put(d.name(), d);
+        }
+        for (NpcProfile p : NpcProfiles.all()
+            .values()) {
+            if (p.equipment() == null || p.id()
+                .equals("CyberDemon")) {
+                continue;
+            }
+            Set<String> refs = p.table() == null ? new HashSet<>() : refs(p.table());
+            for (LootDrop d : p.fixedDrops()) {
+                refs.add(d.ref());
+            }
+            Set<String> bare = new HashSet<>();
+            for (String r : refs) {
+                bare.add(r.replace("~full", ""));
+            }
+            boolean allEnergy = true;
+            for (EquipmentProfile.Weapon w : p.equipment()
+                .weapons()) {
+                GunDefinition def = defs.get(w.gun());
+                if (def == null) {
+                    continue;
+                }
+                if (def.stats()
+                    .isEnergy()) {
+                    continue;
+                }
+                allEnergy = false;
+                String ammo = "gregguns:" + def.stats()
+                    .looseAmmoType();
+                assertTrue(bare.contains(ammo), p.id() + " carries " + w.gun() + " but drops no " + ammo);
+            }
+            if (allEnergy) {
+                assertTrue(
+                    refs.contains("gregguns:part_barrel_laser"),
+                    p.id() + " carries only energy guns but drops no components: " + refs);
+            }
+        }
+    }
+
+    private static Set<String> refs(LootTable t) {
+        Set<String> out = new HashSet<>();
+        for (LootDrop d : t.slots()) {
+            if (d != null) {
+                out.add(d.ref());
+            }
+        }
+        return out;
     }
 
     @Test
@@ -265,10 +369,53 @@ class NpcLootTest {
                     }
                 }
             }
-            for (LootDrop d : p.fixedDrops()) {
+            List<LootDrop> drops = new ArrayList<>(p.fixedDrops());
+            if (p.table() != null) {
+                drops.addAll(
+                    p.table()
+                        .slots());
+            }
+            for (LootDrop d : drops) {
+                if (d == null) {
+                    continue;
+                }
                 checkGun(p, d.ref(), gunTiers);
+                Tier t = ownItemTier(d.ref());
+                // The one accepted exception (D349): the Attack Helicopter's Techguns fixed drop of Cybernetic Parts
+                // (per-mob.md section 16), EV over its HV.
+                boolean accepted = p.id()
+                    .equals("AttackHelicopter")
+                    && d.ref()
+                        .equals("gregguns:part_cybernetic");
+                if (t != null && !accepted) {
+                    assertTrue(
+                        t.ordinal() <= p.ceiling()
+                            .ordinal(),
+                        p.id() + " drops " + d.ref() + " (" + t + ") above " + p.ceiling());
+                }
             }
         }
+    }
+
+    /** @return the tier of a GregGuns round, part or tank reference, or null for anything else */
+    private static Tier ownItemTier(String ref) {
+        if (!ref.startsWith("gregguns:")) {
+            return null;
+        }
+        String name = ref.substring("gregguns:".length())
+            .replace("~full", "");
+        int hash = name.indexOf('#');
+        if (hash >= 0) {
+            name = name.substring(0, hash);
+        }
+        for (AmmoType a : AmmoTypes.allAmmo()
+            .values()) {
+            if (a.roundItemName()
+                .equals(name)) {
+                return a.tier();
+            }
+        }
+        return PartCatalog.tierOf(name);
     }
 
     private static void checkGun(NpcProfile p, String ref, Map<String, Tier> gunTiers) {

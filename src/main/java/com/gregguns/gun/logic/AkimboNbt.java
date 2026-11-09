@@ -78,6 +78,9 @@ public final class AkimboNbt {
         GunState sum = new GunState(0);
         sum.setLoaded(akimboStats, a.loaded() + b.loaded());
         sum.setCamo(a.camo());
+        // Chamber credit (design record 0026): the pair loads from the first gun's, and the second gun's waits in its
+        // stored tag, so a combine and a split give every unloaded round back.
+        sum.setCredit(akimboStats, a.credit());
         GunNbt.write(out, sum);
         GunNbt.write(secondCopy, b);
         out.setTag(KEY_SECOND, secondCopy);
@@ -111,6 +114,7 @@ public final class AkimboNbt {
         GunState first = new GunState(0);
         first.setLoaded(singleStats, firstRounds);
         first.setCamo(total.camo());
+        first.setCredit(singleStats, total.credit());
         GunNbt.write(firstTag, first);
 
         GunState second = GunNbt.read(secondTag, singleStats);

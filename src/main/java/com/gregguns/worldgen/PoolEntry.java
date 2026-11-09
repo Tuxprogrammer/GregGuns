@@ -14,6 +14,7 @@ public final class PoolEntry {
     private final int variants;
     private final Footprint footprint;
     private final LongFunction<Footprint> sizer;
+    private final int apron;
 
     /**
      * @param id        structure id, the layout file name
@@ -32,7 +33,20 @@ public final class PoolEntry {
      * @param sizer maps the plan shape seed to its footprint; null for a fixed-size layout
      */
     public PoolEntry(String id, int weight, int variants, Footprint footprint, LongFunction<Footprint> sizer) {
+        this(id, weight, variants, footprint, sizer, sizer == null ? 0 : com.gregguns.worldgen.camp.PlacedCamp.REACH);
+    }
+
+    /**
+     * As above with an explicit apron.
+     *
+     * @param apron blocks past the footprint box the structure may still write: the camp road tails, a land
+     *              structure's cut bank ({@link SitePrep#BANK})
+     */
+    public PoolEntry(String id, int weight, int variants, Footprint footprint, LongFunction<Footprint> sizer,
+        int apron) {
         if (weight < 0) throw new IllegalArgumentException("negative weight for " + id);
+        if (apron < 0) throw new IllegalArgumentException("negative apron for " + id);
+        this.apron = apron;
         this.id = id;
         this.weight = weight;
         this.variants = Math.max(1, variants);
@@ -56,10 +70,9 @@ public final class PoolEntry {
         return footprint;
     }
 
-    /** @return whether the footprint depends on a per-plan shape seed */
-    /** @return blocks past the footprint box that the structure may still write (the camp road tails) */
+    /** @return blocks past the footprint box that the structure may still write (road tails, cut bank) */
     public int apron() {
-        return sizer == null ? 0 : com.gregguns.worldgen.camp.CampPlan.ROAD_TAIL;
+        return apron;
     }
 
     /** @return whether the footprint depends on a per-plan shape seed */

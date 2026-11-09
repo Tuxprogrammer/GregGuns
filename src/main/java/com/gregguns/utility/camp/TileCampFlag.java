@@ -19,6 +19,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * The Camp Flag's tile entity: the NPC spawner of a generated camp. World generation calls {@link #init} once; the
  * server tick then follows {@link CampSpawnPlan} and asks the {@link CampSpawnPorts active port} to count and spawn.
+ * A red base's flag also holds a commander (Dictator Dave, D353), whom the tick places once at his post.
  * An uninitialized flag does nothing (MUTL-39) and the cap is saved (MUTL-38). Server logic; the client only draws the
  * post.
  *
@@ -33,6 +34,8 @@ public class TileCampFlag extends TileEntity {
     private static final int HEIGHT = 20;
     private static final int MARGIN = 8;
     private static final int BELOW = 3;
+    /** How far the commander strays from his post when idle, blocks. */
+    private static final int POST_RADIUS = 6;
 
     private boolean initialized;
     private int sizeX;
@@ -44,6 +47,13 @@ public class TileCampFlag extends TileEntity {
     private final List<String> npcNames = new ArrayList<>();
     private int maxNpcs;
     private CampSpawnPlan plan;
+    /** The commander's entity name (a red base's Dictator Dave, D353), or empty for none. */
+    private String commander = "";
+    /** The commander's post as an offset from the flag. */
+    private int[] commanderPost = new int[3];
+    /** True once the commander stood at his post: he is placed once and never replaced. */
+    private boolean commanderPlaced;
+    private int commanderTimer;
 
     /**
      * Initializes the flag. Server side; world generation calls it right after placing the block.
@@ -74,6 +84,69 @@ public class TileCampFlag extends TileEntity {
         this.initialized = true;
         this.plan = null;
         markDirty();
+    }
+
+    /**
+     * Gives the camp a commander, placed once at his post by the flag's own tick (D353). World generation calls it
+     * right after {@link #init} on a red base.
+     *
+     * @param name the commander's entity name
+     * @param dx   his post, X offset from the flag
+     * @param dy   his post, Y offset from the flag
+     * @param dz   his post, Z offset from the flag
+     */
+    public void setCommander(String name, int dx, int dy, int dz) {
+        this.commander = name == null ? "" : name;
+        this.commanderPost = new int[] { dx, dy, dz };
+        this.commanderPlaced = false;
+        markDirty();
+    }
+
+    /** @return the commander's entity name, or empty when the camp has none */
+    public String commander() {
+        return commander;
+    }
+
+    /** @return the commander's post as {@code {dx, dy, dz}} from the flag */
+    public int[] commanderPost() {
+        return commanderPost.clone();
+    }
+
+    /** @return true once the commander was placed (he is never placed again, alive or dead) */
+    public boolean commanderPlaced() {
+        return commanderPlaced;
+    }
+
+    /** @return true while the camp has a commander who has not been placed yet */
+    public boolean commanderPending() {
+        return initialized && !commander.isEmpty() && !commanderPlaced;
+    }
+
+    /**
+     * Tries to place the commander at his post now, through the {@link CampSpawnPorts active port}, which refuses while
+     * his mob is switched off ({@code npcs.miniBosses}) or his chunk is not loaded; a refused try is repeated on a
+     * later check. Server side. The tick calls it once per {@link CampSpawnPlan#CHECK_INTERVAL}; scenarios call it
+     * directly.
+     *
+     * @return true when he was placed by this call
+     */
+    public boolean placeCommander() {
+        if (worldObj == null || worldObj.isRemote || !commanderPending()) {
+            return false;
+        }
+        boolean placed = CampSpawnPorts.get()
+            .spawnAtPost(
+                worldObj,
+                commander,
+                xCoord + commanderPost[0] + 0.5,
+                yCoord + commanderPost[1],
+                zCoord + commanderPost[2] + 0.5,
+                POST_RADIUS);
+        if (placed) {
+            commanderPlaced = true;
+            markDirty();
+        }
+        return placed;
     }
 
     /** @return whether {@link #init} was called (or the NBT said so) */
@@ -107,6 +180,10 @@ public class TileCampFlag extends TileEntity {
         boolean spawn = plan.tick(initialized, maxNpcs, spawnPoints.length / 3, npcNames.size(), this::countNpcs);
         if (spawn) {
             spawnOne();
+        }
+        if (commanderPending() && --commanderTimer <= 0) {
+            commanderTimer = CampSpawnPlan.CHECK_INTERVAL;
+            placeCommander();
         }
     }
 
@@ -158,6 +235,11 @@ public class TileCampFlag extends TileEntity {
             names.appendTag(new NBTTagString(name));
         }
         tag.setTag("npcNames", names);
+        if (!commander.isEmpty()) {
+            tag.setString("commander", commander);
+            tag.setIntArray("commanderPost", commanderPost);
+            tag.setBoolean("commanderPlaced", commanderPlaced);
+        }
     }
 
     @Override
@@ -182,6 +264,10 @@ public class TileCampFlag extends TileEntity {
         }
         maxNpcs = tag.getInteger("maxNPCs");
         initialized = tag.getBoolean("initialized");
+        commander = tag.getString("commander");
+        int[] post = tag.getIntArray("commanderPost");
+        commanderPost = post.length == 3 ? post : new int[3];
+        commanderPlaced = tag.getBoolean("commanderPlaced");
         plan = null;
     }
 

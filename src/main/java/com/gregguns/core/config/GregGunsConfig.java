@@ -23,9 +23,11 @@ public final class GregGunsConfig {
             ModulesConfig.class,
             DebugConfig.class,
             AimConfig.class,
+            GunsConfig.class,
             BioGunConfig.class,
             ClientConfig.class,
             DamageFactorsConfig.class,
+            CombatConfig.class,
             ExplosionsConfig.class,
             IcbmConfig.class,
             EquipmentConfig.class,
@@ -34,6 +36,7 @@ public final class GregGunsConfig {
             UtilityConfig.class,
             NpcConfig.class,
             WorldgenConfig.class,
+            LootConfig.class,
             QuestbookConfig.class,
             CompatConfig.class));
 

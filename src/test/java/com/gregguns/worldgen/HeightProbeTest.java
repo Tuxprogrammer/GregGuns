@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
@@ -92,14 +90,20 @@ class HeightProbeTest {
 
         TerrainCheck.checkLand(p, big, 10, 4);
         TerrainCheck.checkWater(p, big, 3, 4);
-        List<Flatten.ColumnEdit> edits = Flatten.plan(p, big, 2);
-        Flatten.planToBand(p, big, 62, 2);
         VillageScan.containsVillageBlocks(world.window(), cols, big, 62, 8);
-        for (int x = -40; x < 80; x += 3) {
-            TerrainShaper.junkY(world.window(), cols, x, x);
-        }
         ClippingSink sink = new ClippingSink(world.window(), world);
-        TerrainShaper.apply(sink, edits, STONE_LIKE, 0, AIR_LIKE);
+        SitePrep.apply(
+            sink,
+            cols,
+            big.minX(),
+            big.minZ(),
+            big.maxX(),
+            big.maxZ(),
+            62,
+            (x, z) -> x == z,
+            STONE_LIKE,
+            STONE_LIKE,
+            AIR_LIKE);
 
         assertFalse(cols.reads.isEmpty(), "the pipeline must have read something");
         assertEquals(0, cols.readsOutside(world.window()));

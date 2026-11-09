@@ -151,6 +151,9 @@ final class ComplexRebuild implements LocateGeneration.Run {
     }
 
     private void clearChunk(int[] ch) {
+        // A record from the first write would set the old complex back over the cleared ground (D356).
+        ComplexKeeper.game()
+            .forget(world, ch[0], ch[1]);
         clearColumns(ch);
         // At once, before an item, a creature or a player stuck in the new rock is pushed up out of it.
         sweep((ch[0] << 4), (ch[1] << 4), (ch[0] << 4) + 15, (ch[1] << 4) + 15);
@@ -182,12 +185,14 @@ final class ComplexRebuild implements LocateGeneration.Run {
     /**
      * @return whether the block over the natural surface is one of the complex's surface pieces: a radar hut's casing
      *         (walls, roof, the radar's base), a GT machine on a radar casing (the radar controller, its maintenance
-     *         hatch), or silo concrete just over the ground (a shaft ring or cap)
+     *         hatch), silo concrete just over the ground (a shaft ring or cap, or an escape riser's wall, D354), or the
+     *         trapdoor on top of an escape riser, one block over the water
      */
     private boolean surfacePiece(int x, int y, int z, int top) {
         Block b = world.getBlock(x, y, z);
         if (b == Blocks.air) return false;
         int meta = world.getBlockMetadata(x, y, z);
+        if (b == Blocks.trapdoor) return y == top + 1;
         if (b == GregGunsCasings.INSTANCE) {
             return meta == GregGunsCasings.WORKS_CASING || meta == GregGunsCasings.GANTRY_CASING
                 || meta == GregGunsCasings.RADAR_CASING;

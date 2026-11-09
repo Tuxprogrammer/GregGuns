@@ -170,10 +170,16 @@ public class NpcTurret extends EntityCreature implements HasNpcFaction, TurretAt
     private void fire(ItemGun gun, GunStats stats, double distance) {
         NpcFiring.Scaling scaling = NpcFiring
             .scaling(NpcFiring.Difficulty.fromVanillaId(worldObj.difficultySetting.getDifficultyId()), true);
-        ShotOffset[] offsets = NpcFiring.roll(getRNG(), stats, scaling);
+        // A hostile turret takes the NPC knobs too: distance aim error (D359), tier and elite damage (D358).
+        ShotOffset[] offsets = NpcFiring.roll(getRNG(), stats, scaling, NpcShotTuning.aimError(distance));
+        float damageScale = NpcShotTuning.damageScale(
+            this,
+            gun.definition()
+                .tier(),
+            1.0);
         for (ShotOffset offset : offsets) {
             Projectiles.launcher()
-                .launch(worldObj, this, stats, offset, 1.0F);
+                .launch(worldObj, this, stats, offset, damageScale);
         }
         GunSoundPlayer.playFire(this, gun.fireEvent(), null);
         if (burstLeft <= 0) {

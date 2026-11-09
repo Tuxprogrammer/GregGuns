@@ -111,7 +111,8 @@ public final class StructureGenerator implements IWorldGenerator {
             StructurePopulator.CONFIG_RULES,
             new CampPlacer(keys, new PartLayouts.FromRegistry(layouts)),
             flagBlock,
-            UtilityConfig.campFlagCapFactor).withNests(nestPlacer(keys));
+            UtilityConfig.campFlagCapFactor).withNests(nestPlacer(keys))
+                .withDeepFill(Blocks.stone);
         // Layout structures that carry a camp (the carrier) place their own flag from the layout marks.
         StructureHooks.setFlagHook(new CarrierFlag(layouts, flagBlock));
         // Spawner marks (the Big Bunker's and the Bug Nest's) become vanilla mob spawners with GregGuns NBT (G11).

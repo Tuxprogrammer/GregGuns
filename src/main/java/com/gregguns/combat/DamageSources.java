@@ -8,6 +8,7 @@ import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
+import com.gregguns.core.config.CombatConfig;
 import com.gregguns.core.config.DamageFactorsConfig;
 import com.gregguns.explosion.Annihilation;
 import com.gregguns.explosion.NukeAnnihilation;
@@ -88,6 +89,28 @@ public final class DamageSources {
      */
     public static boolean hit(Entity target, DamageType type, Entity projectile, Entity shooter, float damage,
         double penetration, boolean secondaryEffects) {
+        return hit(target, type, projectile, shooter, damage, penetration, secondaryEffects, 1.0);
+    }
+
+    /**
+     * {@link #hit(Entity, DamageType, Entity, Entity, float, double, boolean)} with the gun's knockback multiplier. The
+     * push vanilla gives inside {@code attackEntityFrom} is measured and rescaled by
+     * {@link Knockback#effective}: with {@code combat.knockback} off (the default) the target's velocity, its
+     * velocity-changed flag and its airborne flag are put back as they were, so neither a mob nor a player moves and no
+     * velocity packet is sent (D357).
+     *
+     * @param target           the entity hit
+     * @param type             the damage type
+     * @param projectile       the projectile entity, may be {@code null}
+     * @param shooter          the shooter, may be {@code null} (counts as an NPC)
+     * @param damage           raw damage before armor, after drop-off
+     * @param penetration      the share of the damage that skips armor, 0..1
+     * @param secondaryEffects false to turn the type's secondary effect off for this hit
+     * @param knockback        the gun's knockback multiplier: 1 is vanilla's push
+     * @return what {@code attackEntityFrom} returned: true when the target took the hit
+     */
+    public static boolean hit(Entity target, DamageType type, Entity projectile, Entity shooter, float damage,
+        double penetration, boolean secondaryEffects, double knockback) {
         boolean targetIsPlayer = target instanceof EntityPlayer;
         DamageFactors.Attacker attacker = attackerOf(shooter);
         DamageFactors.Settings settings = settingsFromConfig();
@@ -100,8 +123,31 @@ public final class DamageSources {
         }
         source.hit()
             .setPenetrationScale(DamageFactors.penetrationScale(settings, attacker, targetIsPlayer));
+        double beforeX = target.motionX;
+        double beforeY = target.motionY;
+        double beforeZ = target.motionZ;
+        boolean beforeChanged = target.velocityChanged;
+        boolean beforeAirBorne = target.isAirBorne;
         boolean taken = target.attackEntityFrom(source, scaled);
         restoreFramesIfRejected(target, source.hit());
+        double multiplier = Knockback.effective(CombatConfig.knockback, CombatConfig.knockbackMultiplier, knockback);
+        if (taken && Knockback.needsAdjustment(multiplier)) {
+            if (multiplier == 0.0) {
+                // Off: undo vanilla's push entirely. Leaving velocityChanged set would send the (stale) server
+                // velocity of a player to their client, which jolts them even though nothing was pushed.
+                target.motionX = beforeX;
+                target.motionY = beforeY;
+                target.motionZ = beforeZ;
+                target.velocityChanged = beforeChanged;
+                target.isAirBorne = beforeAirBorne;
+            } else {
+                target.motionX = Knockback.scale(beforeX, target.motionX, multiplier);
+                target.motionY = Knockback.scale(beforeY, target.motionY, multiplier);
+                target.motionZ = Knockback.scale(beforeZ, target.motionZ, multiplier);
+                // A player's velocity only reaches their client when flagged.
+                target.velocityChanged = true;
+            }
+        }
         return taken;
     }
 

@@ -47,6 +47,8 @@ Bullets are a production line. Feed GregTech parts into an Ammo Press, load maga
 
 Sneak and right-click a magazine to empty it back into loose rounds. Press **R** early to swap out a half-used magazine; the leftover rounds come back too.
 
+A magazine gun with no loaded magazine at hand loads loose rounds instead: one round per reload (two on the Akimbo Mac10s), at the full reload time, one loose round from your inventory per round loaded. A magazine swap is quicker for the rounds, so keep magazines filled. Akimbo pairs load one shot's worth per reload in total. The ammo display shows a "Loose rounds" line for the rounds you carry.
+
 ## Magazines
 
 - <ItemImage id="gregguns:mag_9mm_pistol" label="right" />: made from 3 <ItemLink id="gregguns:ammo_9mm_bullet" />; holds 18 rounds. Used by 9mm Pistol, Akimbo Pistols.
@@ -57,7 +59,7 @@ Sneak and right-click a magazine to empty it back into loose rounds. Press **R**
 - <ItemImage id="gregguns:mag_advanced" label="right" />: made from 3 <ItemLink id="gregguns:ammo_advanced_bullet" />; holds 12 to 20 rounds. Used by PDW, Pulse Rifle.
 - <ItemImage id="gregguns:mag_minigun_drum" label="right" />: made from 16 <ItemLink id="gregguns:ammo_rifle_bullet" />; holds 200 rounds. Used by Minigun.
 
-Revolvers, shotguns, the Bolt Action Rifle and the launchers take loose rounds straight from your inventory. No magazines needed.
+Revolvers, shotguns, the Bolt Action Rifle and the launchers take loose rounds straight from your inventory. No magazines needed. See "Reloading" in Guns by tier for how the chamber guns load.
 
 ## What to stock at each tier
 

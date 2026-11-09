@@ -18,6 +18,7 @@ import com.gregguns.entity.npc.NpcMob;
 import com.gregguns.entity.npc.spawn.NpcSpawnHandler;
 import com.gregguns.entity.npc.spawn.SpawnDanger;
 import com.gregguns.entity.npc.spawn.SpawnGate;
+import com.gregguns.entity.npc.spawn.SpawnRealm;
 import com.gregguns.entity.npc.spawn.SpawnTable;
 import com.gregguns.entity.npc.spawn.WeightedPick;
 
@@ -57,8 +58,9 @@ final class NpcSpawnScenarios {
 
         @Override
         public String description() {
-            return "Natural spawning is denied in dimensions -1, 1, 7, 28 and 180 and allowed in 0 (GGS-10-23); a"
-                + " world whose dimension is not listed is denied by the live handler.";
+            return "Natural spawning of an Overworld kind is denied in dimensions 7, 28 and 180 (no list), denied by"
+                + " realm in -1 and 1, and allowed in 0 (GGS-10-23, GGS-10-41); a world whose dimension is not listed is"
+                + " denied by the live handler.";
         }
 
         @Override
@@ -69,16 +71,26 @@ final class NpcSpawnScenarios {
             try {
                 NpcConfig.spawnDimensions = new int[] { 0 };
                 SpawnTable table = liveTable();
-                for (int dim : new int[] { -1, 1, 7, 28, 180 }) {
+                SpawnRealm.Dimensions dims = SpawnRealm.Dimensions.defaults();
+                SpawnGate.Limits limits = new SpawnGate.Limits(4, 8, 256);
+                for (int dim : new int[] { 7, 28, 180 }) {
                     out.checkEquals(
                         "dimension " + dim,
                         SpawnGate.Decision.DENY_DIMENSION,
-                        SpawnGate.decide(table, NpcMob.ZOMBIE_FARMER, dim, NpcConfig.spawnDimensions, 5, 0, 0, 4, 8));
+                        SpawnGate
+                            .decide(table, NpcMob.ZOMBIE_FARMER, SpawnRealm.of(dim, dims), 5, 1000, 0, 0, 0, limits));
+                }
+                for (int dim : new int[] { -1, 1 }) {
+                    out.checkEquals(
+                        "Overworld kind in dimension " + dim,
+                        SpawnGate.Decision.DENY_REALM,
+                        SpawnGate
+                            .decide(table, NpcMob.ZOMBIE_FARMER, SpawnRealm.of(dim, dims), 5, 1000, 0, 0, 0, limits));
                 }
                 out.checkEquals(
                     "dimension 0",
                     SpawnGate.Decision.ALLOW,
-                    SpawnGate.decide(table, NpcMob.ZOMBIE_FARMER, 0, NpcConfig.spawnDimensions, 0, 0, 0, 4, 8));
+                    SpawnGate.decide(table, NpcMob.ZOMBIE_FARMER, SpawnRealm.of(0, dims), 0, 0, 0, 0, 0, limits));
                 int dim = world.provider.dimensionId;
                 NpcConfig.spawnDimensions = new int[] { dim };
                 out.checkEquals(
@@ -93,11 +105,16 @@ final class NpcSpawnScenarios {
                     SpawnGate.Decision.DENY_DIMENSION,
                     NpcSpawnHandler
                         .decide(table, NpcMob.ZOMBIE_FARMER, world, ctx.originX(), ctx.originY(), ctx.originZ()));
+                NpcConfig.spawnDimensions = new int[] { dim };
                 out.checkEquals(
-                    "Nether-only kind is never managed",
-                    SpawnGate.Decision.NOT_MANAGED,
+                    "a Nether kind has no row in an Overworld-table dimension",
+                    SpawnGate.Decision.DENY_REALM,
                     NpcSpawnHandler
                         .decide(table, NpcMob.CYBER_DEMON, world, ctx.originX(), ctx.originY(), ctx.originZ()));
+                out.checkEquals(
+                    "an egg-only kind is never managed",
+                    SpawnGate.Decision.NOT_MANAGED,
+                    NpcSpawnHandler.decide(table, NpcMob.OUTCAST, world, ctx.originX(), ctx.originY(), ctx.originZ()));
             } finally {
                 NpcConfig.spawnDimensions = saved;
             }

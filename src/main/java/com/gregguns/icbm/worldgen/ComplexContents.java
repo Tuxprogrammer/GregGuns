@@ -3,6 +3,7 @@ package com.gregguns.icbm.worldgen;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.icbm.complex.Box;
 import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.ComplexPlan;
@@ -104,7 +105,7 @@ public final class ComplexContents {
                 c,
                 level);
         }
-        bonuses(plan, p, seed, other, ceiling, chests);
+        bonuses(plan, p, seed, other, lootTable(ceiling), chests);
         List<Placement> all = new ArrayList<>(collapses);
         all.addAll(out);
         return keepFrameWalls(all);
@@ -207,7 +208,7 @@ public final class ComplexContents {
         RoomState state = roomState(seed, r.id(), level);
         // The room's look at its state (D309): worn, lit or cold, grown or bare; whole groups at a time.
         int from = out.size();
-        FurnitureWear.room(plan, r.id(), r.kind(), r.marks(), bounds, state, collapsed, seed, ceiling, out);
+        FurnitureWear.room(plan, r.id(), r.kind(), r.marks(), bounds, state, collapsed, seed, lootCap(ceiling), out);
         if (!collapsed) {
             // What the standing pieces hold, by the same state (D323).
             String table = RoomLoot.table(
@@ -220,7 +221,7 @@ public final class ComplexContents {
                 r.marks(),
                 state,
                 table,
-                SiloLootTables.categoryName(table, ceiling),
+                SiloLootTables.categoryName(table, lootTable(ceiling)),
                 seed,
                 new ArrayList<>(out.subList(from, out.size())),
                 out);
@@ -277,7 +278,7 @@ public final class ComplexContents {
                     }
                     String table = RoomLoot.table(owner, m.key());
                     Placement c = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
-                        .category(SiloLootTables.categoryName(table, ceiling))
+                        .category(SiloLootTables.categoryName(table, lootTable(ceiling)))
                         .key(table)
                         .chest(chests.counter[0]++, state)
                         .front(m.facing())
@@ -290,7 +291,7 @@ public final class ComplexContents {
                     // display frames sit outside the chest budget (owner, alpha 7)
                     out.add(
                         Placement.at(Kind.FRAME_WALL, m.x(), m.y(), m.z())
-                            .category(SiloLootTables.categoryName(m.key(), ceiling))
+                            .category(SiloLootTables.categoryName(m.key(), lootTable(ceiling)))
                             .key(m.key())
                             .frames(m.facing(), m.extent())
                             .build());
@@ -300,7 +301,7 @@ public final class ComplexContents {
                     // 7)
                     if (!collapsed) {
                         Placement chest = Placement.at(Kind.CHEST, m.x(), m.y(), m.z())
-                            .category(SiloLootTables.categoryName(LootKeys.ARMORY_AMMO, ceiling))
+                            .category(SiloLootTables.categoryName(LootKeys.ARMORY_AMMO, lootTable(ceiling)))
                             .key(LootKeys.ARMORY_AMMO)
                             .chest(chests.counter[0]++, state)
                             .build();
@@ -308,7 +309,7 @@ public final class ComplexContents {
                         out.add(chest);
                         out.add(
                             Placement.at(Kind.FRAME_WALL, m.x(), ArmoryDisplay.FRAME_Y, m.z())
-                                .category(SiloLootTables.categoryName(m.key(), ceiling))
+                                .category(SiloLootTables.categoryName(m.key(), lootTable(ceiling)))
                                 .key(m.key())
                                 .frames(m.facing(), 1)
                                 .build());
@@ -341,7 +342,7 @@ public final class ComplexContents {
                 case SPAWNER:
                     break; // a room's spawners are rolled as a set, in spawners()
                 case MACHINE:
-                    machine(m, state, p, seed, ceiling, out);
+                    machine(m, state, p, seed, lootCap(ceiling), out);
                     break;
                 case FURNITURE:
                     break; // a room's furniture wears as a whole, in FurnitureWear.room
@@ -350,7 +351,7 @@ public final class ComplexContents {
             }
         }
         if (roomId >= 0) {
-            spawners(marks, band, collapsed, p, seed, roomId, out);
+            spawners(marks, band, collapsed, p, seed, roomId, ceiling, out);
         }
     }
 
@@ -450,12 +451,45 @@ public final class ComplexContents {
     }
 
     /**
+     * The tier a complex's loot, machines and metal props may reach: its ceiling, capped at {@code loot.maxTier}. The
+     * ceiling itself still sets the guards' danger (D364).
+     *
+     * @param ceiling the complex's ceiling (GT voltage index)
+     * @return the lower of the ceiling and {@code loot.maxTier}
+     */
+    public static int lootCap(int ceiling) {
+        return Math.min(ceiling, LootConfig.maxTier);
+    }
+
+    /**
+     * @param ceiling the complex's ceiling (GT voltage index)
+     * @return the silo loot table tier for it: {@link #lootCap}, never below EV (the lowest table; the item gate still
+     *         holds a lower cap)
+     */
+    public static int lootTable(int ceiling) {
+        return Math.max(SiloCeiling.EV, lootCap(ceiling));
+    }
+
+    /** Lowest ceiling (GT voltage index, LuV) whose elite posts are command posts (D353). */
+    public static final int COMMAND_POST_CEILING = 6;
+
+    /**
+     * @param ceiling the complex's ceiling (GT voltage index)
+     * @return the elite spawner kind at that ceiling: the command post (with the Outcast) from LuV up, else the elite
+     *         post
+     */
+    public static SpawnerKind elitePost(int ceiling) {
+        return ceiling >= COMMAND_POST_CEILING ? SpawnerKind.SILO_COMMAND : SpawnerKind.SILO_ELITE;
+    }
+
+    /**
      * The spawners of one room (D326): the first {@link #spawnersIn} of its spawner spots, in the spots' order (the
      * layout lists the farthest-apart first). A caved-in room holds none. A spot makes an elite spawner at the deeper
-     * bands 40% of the time, never at the abandoned level (D284's weaker holdouts).
+     * bands 40% of the time, never at the abandoned level (D284's weaker holdouts). At a LuV or higher ceiling the
+     * elite spawner is a command post, which adds the Outcast (D353).
      */
     private static void spawners(List<Mark> marks, int band, boolean collapsed, ActivityProfile p, long seed,
-        int roomId, List<Placement> out) {
+        int roomId, int ceiling, List<Placement> out) {
         if (collapsed) {
             return;
         }
@@ -472,7 +506,7 @@ public final class ComplexContents {
                 && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
             out.add(
                 Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
-                    .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
+                    .spawner(elite ? elitePost(ceiling) : SpawnerKind.SILO_GUARD)
                     .build());
         }
     }

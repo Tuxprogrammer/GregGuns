@@ -101,7 +101,7 @@ public final class CombatShotgunScenarios {
 
         @Override
         public String description() {
-            return "An empty Combat Shotgun with 10 shells reloads 50 ticks after the trigger: 8 rounds, 8 shells used, 2 left, and nothing returned.";
+            return "An empty Combat Shotgun with 10 shells loads one shell per chamber after the trigger, the eighth at 50 ticks: 8 rounds, 8 shells used, 2 left, and nothing returned.";
         }
 
         @Override
@@ -124,7 +124,10 @@ public final class CombatShotgunScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(started, "the dry trigger should have started a reload");
-                out.checkEquals("rounds one tick before the end", 0, loadedAt[reloadTicks - 1]);
+                int first = STATS.chamberTicks(0);
+                out.checkEquals("rounds one tick before the first chamber", 0, loadedAt[first - 1]);
+                out.checkEquals("rounds at the first chamber", 1, loadedAt[first]);
+                out.checkEquals("rounds one tick before the end", 7, loadedAt[reloadTicks - 1]);
                 out.checkEquals("rounds at the end of the reload", 8, loadedAt[reloadTicks]);
                 out.checkEquals("shells left (10 - 8)", 2, rig.count(SHELL));
                 out.checkEquals("pellets launched", 0, rig.bullets());
@@ -143,7 +146,7 @@ public final class CombatShotgunScenarios {
 
         @Override
         public String description() {
-            return "The reload key on a Combat Shotgun with 5 rounds and 5 shells tops it up to 8 after 50 ticks using exactly 3 shells; the rounds already loaded are kept.";
+            return "The reload key on a Combat Shotgun with 5 rounds and 5 shells loads the 3 empty chambers one by one using exactly 3 shells; the rounds already loaded are kept.";
         }
 
         @Override

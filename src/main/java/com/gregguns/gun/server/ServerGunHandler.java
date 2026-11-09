@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.core.config.AimConfig;
+import com.gregguns.core.config.GunsConfig;
 import com.gregguns.core.module.ModuleContent;
 import com.gregguns.gun.GunAccuracy;
 import com.gregguns.gun.logic.AdsSupport;
@@ -79,8 +80,10 @@ public final class ServerGunHandler {
         ItemGun.ensureTag(held, stats);
         GunState state = GunNbt.read(held.getTagCompound(), stats);
         int before = state.loaded();
+        int creditBefore = state.credit();
+        AmmoInventory ammo = ammoOf(player, stats, held);
         GunTickResult result = data.controller()
-            .tick(stats, state, ammoOf(player, stats, held), true, player.capabilities.isCreativeMode);
+            .tick(stats, state, ammo, true, player.capabilities.isCreativeMode);
         if (stats.isCharge()) {
             if (data.controller()
                 .reload()
@@ -91,14 +94,22 @@ public final class ServerGunHandler {
             data.charge()
                 .tick(stats);
         }
-        if (state.loaded() != before) {
+        if (state.loaded() != before || state.credit() != creditBefore) {
             GunNbt.write(held.getTagCompound(), state);
         }
         if (result.shot()
             .wasFired()) {
             fire(player, data, gun, result.shot());
         }
-        announceReload(player, gun, result.reload());
+        announceReload(player, data, gun, result.reload());
+        // The idle reload of a chamber gun (design record 0026): the controller counts idle ticks and counts the ammo
+        // only when the delay runs out.
+        announceReload(
+            player,
+            data,
+            gun,
+            data.controller()
+                .idleReload(stats, state, ammo, GunsConfig.idleReloadDelayTicks));
         if (result.outOfAmmo()) {
             GunSoundPlayer.playDryFire(player, player);
         }
@@ -235,12 +246,15 @@ public final class ServerGunHandler {
         ReloadStateMachine.Event event = data.controller()
             .forceReload(stats, state, ammoOf(player, stats, held));
         if (event == ReloadStateMachine.Event.STARTED) {
-            announceReload(player, gun, event);
+            announceReload(player, data, gun, event);
             syncZoom(player, data, stats);
-        } else if (event != ReloadStateMachine.Event.NONE) {
-            // The client may have predicted a reload that the server refused: roll it back.
-            sendTo(player, new PacketGunEvent(player, GunEventKind.RELOAD_ENDED, 0));
-        }
+        } else if (event != ReloadStateMachine.Event.NONE && !data.controller()
+            .reload()
+            .isReloading()) {
+                // The client may have predicted a reload that the server refused: roll it back. A key pressed during a
+                // running reload (a chamber reload's idle start among them) leaves that reload's animation alone.
+                sendTo(player, new PacketGunEvent(player, GunEventKind.RELOAD_ENDED, 0));
+            }
     }
 
     // ----- internals -----------------------------------------------------------------------------------------
@@ -272,17 +286,21 @@ public final class ServerGunHandler {
             .sendToAllTracking(new PacketGunEvent(player, GunEventKind.SHOT_FIRED, shot.attackType()), player);
     }
 
-    private static void announceReload(EntityPlayerMP player, ItemGun gun, ReloadStateMachine.Event event) {
+    private static void announceReload(EntityPlayerMP player, GunPlayerData data, ItemGun gun,
+        ReloadStateMachine.Event event) {
         switch (event) {
             case STARTED:
+                // One sound per reload, a chamber run included (the sounds are final, design record 0017). The
+                // message carries the run's own length: the gun's reload time, or the planned chambers' time.
                 GunSoundPlayer.playReload(player, gun.reloadEvent(), player);
                 GregGunsNetwork.channel()
                     .sendToAllTrackingAndSelf(
                         new PacketGunEvent(
                             player,
                             GunEventKind.RELOAD_STARTED,
-                            gun.stats()
-                                .reloadTicks()),
+                            data.controller()
+                                .reload()
+                                .totalTicks()),
                         player);
                 break;
             case CANCELED:

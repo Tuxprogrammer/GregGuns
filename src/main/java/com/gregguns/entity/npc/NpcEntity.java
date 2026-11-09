@@ -371,11 +371,18 @@ public class NpcEntity extends EntityMob
         aimAt(target);
         NpcFiring.Scaling scaling = NpcFiring
             .scaling(NpcFiring.Difficulty.fromVanillaId(worldObj.difficultySetting.getDifficultyId()), false);
-        ShotOffset[] offsets = NpcFiring.roll(getRNG(), stats, scaling);
-        // Difficulty damage once, here; the NPC-to-player factor is applied at the hit by DamageSources.hit.
+        // The distance aim error (D359) on top of the gun's spread.
+        ShotOffset[] offsets = NpcShotTuning.roll(getRNG(), stats, scaling, this, target);
+        // Difficulty, tier and elite damage once, here (D358); the NPC-to-player factor is applied at the hit by
+        // DamageSources.hit.
+        float damageScale = NpcShotTuning.damageScale(
+            this,
+            gun.definition()
+                .tier(),
+            NpcFiring.damageScale(scaling, NpcConfig.gunDamageEnabled));
         for (ShotOffset offset : offsets) {
             Projectiles.launcher()
-                .launch(worldObj, this, stats, offset, NpcFiring.damageScale(scaling, NpcConfig.gunDamageEnabled));
+                .launch(worldObj, this, stats, offset, damageScale);
         }
         GunSoundPlayer.playFire(this, gun.fireEvent(), null);
         swingItem();

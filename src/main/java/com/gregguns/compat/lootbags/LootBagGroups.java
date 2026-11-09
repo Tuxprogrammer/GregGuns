@@ -7,8 +7,10 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
 
@@ -47,7 +49,32 @@ public final class LootBagGroups {
     /** Prefix of every GregGuns group name, which is also the name's lang key. */
     public static final String NAME_PREFIX = "gregguns.lootbag.group.";
 
+    /**
+     * The GT voltage index of the quest that pays each bag (the {@code BAGS} table in
+     * {@code tools/questbook/build_quests.py}, which a Python test keeps equal to this map). A bag never holds an item
+     * a
+     * player at that quest's tier cannot obtain (D365).
+     */
+    private static final Map<Integer, Integer> QUEST_TIER = new HashMap<>();
+
+    static {
+        int[][] rows = { { 1701, 0 }, { 1702, 1 }, { 1703, 2 }, { 1704, 3 }, { 1705, 4 }, { 1706, 5 }, { 1707, 6 },
+            { 1708, 7 }, { 1709, 3 }, { 1710, 3 }, { 1711, 5 }, { 1712, 6 }, { 1713, 8 }, { 1714, 9 } };
+        for (int[] r : rows) {
+            QUEST_TIER.put(r[0], r[1]);
+        }
+    }
+
     private LootBagGroups() {}
+
+    /**
+     * @param id a group id
+     * @return the voltage index of the quest that pays this bag, or {@code -1} for a group no GregGuns quest pays
+     */
+    public static int questTier(int id) {
+        Integer t = QUEST_TIER.get(id);
+        return t == null ? -1 : t;
+    }
 
     /** One drop of a group: a {@code Loot} element. */
     public static final class Drop {

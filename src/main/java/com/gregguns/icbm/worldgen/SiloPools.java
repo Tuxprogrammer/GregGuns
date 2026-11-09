@@ -35,7 +35,7 @@ import com.gregguns.worldgen.loot.LootPools;
 public final class SiloPools {
 
     private static final Tier S = Tier.STEAM, LV = Tier.LV, MV = Tier.MV, HV = Tier.HV, EV = Tier.EV, IV = Tier.IV,
-        LUV = Tier.LUV;
+        LUV = Tier.LUV, ZPM = Tier.ZPM;
     private static final String MC = "minecraft:";
     private static final String HC = "harvestcraft:";
     private static final String G = "gregguns:";
@@ -446,7 +446,7 @@ public final class SiloPools {
             .add(GT1 + "32710", 2, 6, 2, LV)
             .add(GT3 + "32007", 1, 4, 1, MV)
             .add(GT1 + "32708", 1, 2, 2, HV)
-            .one(GT1 + "32707", 1, EV)
+            .one(GT1 + "32707", 1, IV)
             .one(GT1 + "32518", 1, LV)
             .one(GT1 + "32528", 1, MV)
             .one("IC2:itemFreq", 1, LV)
@@ -551,7 +551,7 @@ public final class SiloPools {
             .one(G + "combat_knife", 1, LV)
             .one("IC2:itemTreetap", 1, S)
             .one("Railcraft:tool.crowbar", 1, S)
-            .one(GCC + "standardWrench", 1, S)
+            .one(GCC + "standardWrench", 1, LV)
             .build();
     }
 
@@ -571,8 +571,8 @@ public final class SiloPools {
             .one(GCC + "engine", 2, HV)
             .add(GCC + "noseCone", 1, 2, 2, HV)
             .add("GalacticraftMars:item.itemBasicAsteroids#6", 1, 4, 2, EV)
-            .add("GalacticraftMars:item.itemBasicAsteroids#2", 1, 2, 1, EV)
-            .one("GalacticraftMars:item.itemBasicAsteroids#1", 1, EV)
+            .add("GalacticraftMars:item.itemBasicAsteroids#2", 1, 2, 1, IV)
+            .one("GalacticraftMars:item.itemBasicAsteroids#1", 1, IV)
             .one(G + "guidance_computer_mk1", 2, HV)
             .one(G + "guidance_computer_mk2", 1, EV);
         if (withBody) {
@@ -616,7 +616,7 @@ public final class SiloPools {
             .add(G + "launcher_warhead_incendiary", 1, 3, 1, HV)
             .add(G + "launcher_warhead_demolition", 1, 2, 1, EV)
             .one(G + "defuser", 1, HV)
-            .one(G + "inert_warhead_t3", 1, LUV)
+            .one(G + "inert_warhead_t3", 1, ZPM)
             .one(G + "fuze_assembly_mk3", 1, LUV)
             .build();
     }
@@ -694,7 +694,7 @@ public final class SiloPools {
             .add("gt:plate.Rubber", 2, 6, 2, LV)
             .add("IC2:itemCellEmpty", 2, 8, 2, LV)
             .add("gt:cell.Water", 2, 8, 2, LV)
-            .add("gt:cell.Chlorine", 1, 4, 1, LV)
+            .add("gt:cell.Chlorine", 1, 4, 1, MV)
             .add("gt:dust.Calcite", 2, 8, 1, S)
             .one(MC + "bucket", 2, S)
             .one(MC + "water_bucket", 1, S)
@@ -710,9 +710,11 @@ public final class SiloPools {
             .add("gt:cell.Acetone", 1, 2, 1, MV)
             .add("gt:cell.Hydrogen", 1, 4, 2, LV)
             .add("gt:cell.Oxygen", 1, 4, 2, LV);
-        for (String m : new String[] { "Nitrogen", "Chlorine", "Methane", "Ammonia", "Mercury" }) {
+        for (String m : new String[] { "Nitrogen", "Methane", "Mercury" }) {
             b.add("gt:cell." + m, 1, 4, 1, LV);
         }
+        b.add("gt:cell.Chlorine", 1, 4, 1, MV)
+            .add("gt:cell.Ammonia", 1, 4, 1, HV);
         b.add("gt:dust.Salt", 4, 16, 2, S)
             .add("gt:dust.Sulfur", 2, 12, 2, S);
         for (String m : new String[] { "Saltpeter", "Calcite", "Carbon", "Phosphorus" }) {
@@ -751,8 +753,8 @@ public final class SiloPools {
     public static LootPools.Pool incinerator() {
         return new B(INCINERATOR).add("gt:dust.Ash", 4, 16, 4, S)
             .add("gt:dustSmall.Ash", 2, 8, 2, S)
-            .add(SCRAP, 4, 16, 4, S)
-            .one("IC2:itemScrapbox", 1, S)
+            .add(SCRAP, 4, 16, 4, LV)
+            .one("IC2:itemScrapbox", 1, LV)
             .add(MC + "coal", 4, 16, 3, S)
             .add(MC + "coal#1", 4, 16, 2, S)
             .add(MC + "bone", 2, 8, 2, S)
@@ -821,7 +823,7 @@ public final class SiloPools {
     /** @return a ruin's junk (abandoned and mothballed rooms only); its own category so a pack can retune it */
     public static LootPools.Pool junk() {
         return new B(JUNK).add(MC + "rotten_flesh", 1, 6, 5, S)
-            .add(SCRAP, 1, 6, 4, S)
+            .add(SCRAP, 1, 6, 4, LV)
             .add(MC + "bone", 1, 4, 3, S)
             .add(MC + "gravel", 1, 8, 3, S)
             .add(MC + "cobblestone", 1, 8, 2, S)

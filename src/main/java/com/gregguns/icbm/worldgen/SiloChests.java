@@ -21,6 +21,7 @@ import com.gregguns.worldgen.loot.LootCategories;
 import com.gregguns.worldgen.loot.LootCategory;
 import com.gregguns.worldgen.loot.LootEntry;
 import com.gregguns.worldgen.loot.LootPending;
+import com.gregguns.worldgen.loot.ObtainTier;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -40,6 +41,8 @@ public final class SiloChests {
     private static boolean registered;
     /** Registered content to the line it came from, for spoil rules and companions. */
     private static final Map<WeightedRandomChestContent, LootEntry> SOURCE = new IdentityHashMap<>();
+    /** Each silo chest category's ceiling (voltage index). */
+    private static final Map<String, Integer> CEILING = new java.util.HashMap<>();
     /** References registration skipped because this pack does not have them. */
     private static final List<String> SKIPPED = new ArrayList<>();
 
@@ -56,10 +59,32 @@ public final class SiloChests {
         registered = true;
         for (String key : SiloLootTables.KEYS) {
             for (int c = SiloCeiling.EV; c <= SiloCeiling.UMV; c++) {
-                register(SiloLootTables.category(key, c));
+                LootCategory cat = SiloLootTables.category(key, c);
+                CEILING.put(cat.name(), c);
+                register(cat);
             }
         }
         register(SiloLootTables.junk());
+    }
+
+    /**
+     * @param category a silo chest category name
+     * @return its ceiling (voltage index) capped at {@code loot.maxTier}; the cap alone for a name no table has
+     */
+    static int ceilingOf(String category) {
+        Integer c = category == null ? null : CEILING.get(category);
+        return ObtainTier.cap(c == null ? Integer.MAX_VALUE - 1 : c);
+    }
+
+    /** @return the contents a chest of the ceiling may hand out (D364); the rest never roll */
+    private static WeightedRandomChestContent[] allowed(WeightedRandomChestContent[] contents, int ceiling) {
+        List<WeightedRandomChestContent> out = new ArrayList<>(contents.length);
+        for (WeightedRandomChestContent c : contents) {
+            if (ObtainTier.allowed(c.theItemId, ceiling)) {
+                out.add(c);
+            }
+        }
+        return out.toArray(new WeightedRandomChestContent[0]);
     }
 
     private static void register(LootCategory cat) {
@@ -116,9 +141,10 @@ public final class SiloChests {
             LootPending.seed(worldSeed, cellX, cellZ, p.chestIndex())).random();
         fillRoom(inv, p, rand);
         List<Integer> free = free(inv);
+        int ceiling = ceilingOf(p.category());
         for (Placement.Bonus b : p.bonuses()) {
             ItemStack s = SiloBonusItems.stack(b, p);
-            if (s == null || free.isEmpty()) {
+            if (s == null || free.isEmpty() || !ObtainTier.allowed(s, ceiling)) {
                 continue;
             }
             inv.setInventorySlotContents(free.remove(rand.nextInt(free.size())), s);
@@ -153,15 +179,22 @@ public final class SiloChests {
      * @param rand     the draw's random
      */
     static void fillRoom(IInventory inv, String category, String key, RoomState state, Random rand) {
-        WeightedRandomChestContent[] table = ChestGenHooks.getInfo(category)
-            .getItems(rand);
-        WeightedRandomChestContent[] junk = ChestGenHooks.getInfo(SiloLootTables.JUNK)
-            .getItems(rand);
+        // Nothing above the chest's ceiling or loot.maxTier, judged by the item's whole crafting chain, and nothing
+        // with no known tier (a line another mod added): such lines are dropped before the draw (D364).
+        int ceiling = ceilingOf(category);
+        WeightedRandomChestContent[] table = allowed(
+            ChestGenHooks.getInfo(category)
+                .getItems(rand),
+            ceiling);
+        WeightedRandomChestContent[] junk = allowed(
+            ChestGenHooks.getInfo(SiloLootTables.JUNK)
+                .getItems(rand),
+            ceiling);
         List<RoomLootDraw.Pick> picks = RoomLootDraw
             .draw(lines(table), lines(junk), state, RoomLoot.pickOffset(key), rand);
         boolean real = false;
         for (RoomLootDraw.Pick pick : picks) {
-            ItemStack s = make(pick, pick.junk() ? junk : table);
+            ItemStack s = make(pick, pick.junk() ? junk : table, ceiling);
             if (s != null && put(inv, s, rand) && pick.real()) {
                 real = true;
             }
@@ -171,7 +204,7 @@ public final class SiloChests {
                 RoomLootDraw.FALLBACK.ref(),
                 RoomLootDraw.FALLBACK.drop()
                     .max());
-            if (torch != null) {
+            if (torch != null && ObtainTier.allowed(torch, ceiling)) {
                 put(inv, torch, rand);
             }
             GregGuns.LOG.debug("Silo chest {} drew nothing real; it holds the fallback", category);
@@ -203,9 +236,9 @@ public final class SiloChests {
 
     /**
      * @return the stack a pick stands for: a companion or a spoil item by its reference, anything else as a copy of
-     *         its registered content; null when it cannot be made this run
+     *         its registered content; null when it cannot be made this run or sits above the ceiling
      */
-    private static ItemStack make(RoomLootDraw.Pick pick, WeightedRandomChestContent[] contents) {
+    private static ItemStack make(RoomLootDraw.Pick pick, WeightedRandomChestContent[] contents, int ceiling) {
         ItemStack s = null;
         if (pick.companion() || pick.spoiled()) {
             s = LootCategories.stack(pick.ref(), 1);
@@ -217,7 +250,7 @@ public final class SiloChests {
         if (s == null && pick.index() < 0) {
             s = LootCategories.stack(pick.ref(), 1);
         }
-        if (s == null) {
+        if (s == null || !ObtainTier.allowed(s, ceiling)) {
             return null;
         }
         s.stackSize = Math.max(1, Math.min(pick.count(), s.getMaxStackSize()));
@@ -264,9 +297,10 @@ public final class SiloChests {
         }
         List<Integer> free = free(inv);
         boolean any = false;
+        int ceiling = ceilingOf(p.category());
         for (ArmoryDisplay.Stock s : stock) {
             Item item = GameRegistry.findItem(GregGuns.MODID, s.item());
-            if (item == null || free.isEmpty()) {
+            if (item == null || free.isEmpty() || !ObtainTier.allowed(new ItemStack(item), ceiling)) {
                 continue;
             }
             int n = s.min() + rand.nextInt(s.max() - s.min() + 1);

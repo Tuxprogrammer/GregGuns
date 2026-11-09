@@ -55,4 +55,28 @@ class KnockbackTest {
         assertEquals(0.0, Knockback.scale(0.0, Double.POSITIVE_INFINITY, 0.0), 1.0E-12);
         assertEquals(0.4, Knockback.scale(0.0, 0.4, Double.NaN), 1.0E-12);
     }
+
+    @Test
+    void offMeansNoPushWhateverTheMultipliers() {
+        // D357: combat.knockback false is the default; no gun multiplier brings the push back.
+        assertEquals(0.0, Knockback.effective(false, 1.0, 1.0), 1e-12);
+        assertEquals(0.0, Knockback.effective(false, 5.0, 3.0), 1e-12);
+        assertTrue(Knockback.needsAdjustment(Knockback.effective(false, 1.0, 1.0)));
+        assertEquals(BEFORE, Knockback.scale(BEFORE, AFTER, Knockback.effective(false, 1.0, 10.0)), 1e-12);
+    }
+
+    @Test
+    void onScalesTheGunMultiplierByTheConfigMultiplier() {
+        assertEquals(1.0, Knockback.effective(true, 1.0, 1.0), 1e-12);
+        assertFalse(Knockback.needsAdjustment(Knockback.effective(true, 1.0, 1.0)));
+        assertEquals(3.0, Knockback.effective(true, 1.0, 3.0), 1e-12);
+        assertEquals(1.5, Knockback.effective(true, 0.5, 3.0), 1e-12);
+        assertEquals(0.0, Knockback.effective(true, 2.0, 0.0), 1e-12, "a no-knockback gun stays at none");
+    }
+
+    @Test
+    void effectiveIsNeverNegativeOrNaN() {
+        assertEquals(0.0, Knockback.effective(true, -1.0, 2.0), 1e-12);
+        assertEquals(0.0, Knockback.effective(true, Double.NaN, 1.0), 1e-12);
+    }
 }

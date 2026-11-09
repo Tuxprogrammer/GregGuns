@@ -2,7 +2,7 @@
 
 ## Overview
 
-This area records how GregGuns hostile NPCs plug into the GTNH 2.9.0-RC-2 pack. The Techguns baseline is [techguns-spec/10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md). Evidence rules are in [INTEGRATION.md](../INTEGRATION.md). [0005](../../design/0005-world-presence.md) governs world presence: Overworld only, config-gated, halved weights.
+This area records how GregGuns hostile NPCs plug into the GTNH 2.9.0-RC-2 pack. The Techguns baseline is [techguns-spec/10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md). Evidence rules are in [INTEGRATION.md](../INTEGRATION.md). [0005](../../design/0005-world-presence.md) governs world presence: Overworld, Nether and End spawn tables, config-gated, halved Overworld weights; every mob has a home ([D353](../../gregguns-icbm-spec/DECISIONS.md#d353-in-detail)).
 
 The main findings:
 
@@ -41,6 +41,7 @@ The main findings:
 | `DamageSystem` re-implementation of damage | Posts `LivingHurtEvent` once and applies the final amount. Ranged sources are `EntityDamageSourceIndirect`. | Infernal Mobs | [infernal-mobs.md](infernal-mobs.md) |
 | Own loot tables | Kept. Infernal NPCs also drop tiered GregGuns items. | Infernal Mobs, [06-items](../06-items/pack-loot.md) | [infernal-mobs.md](infernal-mobs.md) |
 | Held-item drop (8.5% equipment roll plus a 2.5% rare copy) | The held item never drops through the equipment roll; a rare gun copy at 2% plus 1% per Looting level on player kills; every loot-dropping death drops the carried gun's ammo, a full tank, or for an energy gun parts of its recipe (D312) | Mobs Info (`IMobExtraInfoProvider`) | [mob-drops-nei.md](mob-drops-nei.md) GGS-10-38 to GGS-10-40 |
+| Super Mutant render height offset (`getModelHeightOffset`: 0.55, 0.75, 0.95) | No per-mob offset. The renderer scales about the feet, and a biped NPC's lift is measured from its leg geometry (0 for every current model), so all three tiers stand on the floor at their 1.35, 1.5 and 1.65 scales (D352). | Vanilla `RendererLivingEntity` transform order | `MobFooting`, `MobFootingTest`, `npc.mutant_feet` |
 | Armor layers on NPCs posed by vanilla `ModelBiped` math | Every armor model drawn on a GregGuns biped NPC takes the posed body model's part angles and pivots, so sleeves follow the hip carry, the aim, the walk and the death pose (D310). Players are unaffected. | Vanilla `RenderBiped` armor passes, Forge `getArmorModel` | `ArmorPose`, `ArmorPoseTest`, `npc.hold_showcase` |
 | Mob drop code and equipment roll | Simulation-friendly: entity `rand` only, vanilla no-argument `addRandomArmor()`. | Mobs Info 0.6.0 | [mob-drops-nei.md](mob-drops-nei.md) |
 | (none) | Per-class and once-per-player drops through pack XML. | dreamcraft Custom Drops | [mob-drops-nei.md](mob-drops-nei.md) |
@@ -48,6 +49,7 @@ The main findings:
 | `TGDummySpawn` placeholder and `TGSpawnManager` | Recommended: register real classes and gate in `CheckSpawn`. | Infernal Mobs, Mobs Info, EnderZoo | [spawning.md](spawning.md) |
 | Spawn weights and dimension lists | Halved weights. Dimensions default to `[0]`, checked at spawn time. | [0005](../../design/0005-world-presence.md), EnderZoo `SpawnConfig_User.xml` | [spawning.md](spawning.md) |
 | NPC difficulty scaling on gun damage | Applied once, and not on health or melee attack. | EnderZoo global difficulty modifier | [spawning.md](spawning.md) |
+| (none) | NPC gun damage scaled by the gun's tier and by elite or boss status, and an aim error past 5 blocks, all in the `combat` config (D358, D359). | Infernal Mobs (elite check), GTNH armor tiers | [spawning.md](spawning.md), [0027](../../design/0027-combat-difficulty-knobs.md) |
 | Melee kills with TG tools | Pack whitelists `gregguns.` item names against Kamikaze. | AngerMod 1.0.7 | [spawning.md](spawning.md) |
 | NPC targeting of players | Ignores `disableDamage` players. | AngerMod spawn protection | [spawning.md](spawning.md) |
 | `Techguns.<Name>` entity names | `gregguns.<Name>`, one constant per name. | Five pack consumers, one key each | [registry-and-pack-hooks.md](registry-and-pack-hooks.md) |
@@ -79,7 +81,7 @@ The main findings:
 ## Open questions
 
 1. **Spawn architecture.** Keep Techguns' placeholder, or register real classes with a `CheckSpawn` gate. Recommended: real classes. Needs an amendment to [0005](../../design/0005-world-presence.md) ([spawning.md](spawning.md)).
-2. **Nether-only NPCs** (Pigman Soldier, Cyberdemon). Under 0005 they never spawn naturally. Needs a line in 0005 or a Nether record ([spawning.md](spawning.md)).
+2. **Resolved (D353): Nether NPCs** (Pigman Soldier, Cyberdemon). They spawn in the Nether table ([spawning.md](spawning.md#nether-and-end-tables-d353)).
 3. **Tier ceilings for NPC drops.** Psycho Steve's fixed Chainsaw is HV, above the LV-MV surface default, and the infernal bands need a ceiling. Needs a record shared with [06-items](../06-items/pack-loot.md) ([mob-drops-nei.md](mob-drops-nei.md), [infernal-mobs.md](infernal-mobs.md)).
 4. **Ranged damage-source classes.** The `EntityDamageSourceIndirect` rule refines [0004](../../design/0004-damage-model.md). A line in 0004 would stop M1 building the wrong base class ([infernal-mobs.md](infernal-mobs.md)).
 5. **Is Infernal Mobs' health hack effective?** A test settles it, not a record ([infernal-mobs.md](infernal-mobs.md)).

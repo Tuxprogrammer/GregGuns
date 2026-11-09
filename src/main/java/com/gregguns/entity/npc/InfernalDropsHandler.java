@@ -10,6 +10,7 @@ import com.gregguns.core.config.NpcConfig;
 import com.gregguns.entity.npc.loot.InfernalLootTable;
 import com.gregguns.entity.npc.loot.LootDrop;
 import com.gregguns.entity.npc.loot.NpcProfile;
+import com.gregguns.worldgen.loot.ObtainTier;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -45,7 +46,8 @@ public final class InfernalDropsHandler {
         List<LootDrop> picks = InfernalLootTable.roll(npc.getRNG(), size, profile.ceiling());
         for (LootDrop pick : picks) {
             ItemStack stack = NpcItems.stack(pick, npc.getRNG());
-            if (stack != null && stack.stackSize > 0) {
+            // The tier band follows the NPC's ceiling; the world-loot cap still holds over it (D364).
+            if (stack != null && stack.stackSize > 0 && ObtainTier.allowed(stack)) {
                 EntityItem item = new EntityItem(npc.worldObj, npc.posX, npc.posY, npc.posZ, stack);
                 item.delayBeforeCanPickup = 10;
                 event.drops.add(item);
