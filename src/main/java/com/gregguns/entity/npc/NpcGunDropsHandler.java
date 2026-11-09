@@ -17,6 +17,7 @@ import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.worldgen.loot.LootCategories;
+import com.gregguns.worldgen.loot.ObtainTier;
 import com.kuba6000.mobsinfo.api.IMobExtraInfoProvider;
 import com.kuba6000.mobsinfo.api.MobDrop;
 import com.kuba6000.mobsinfo.api.MobRecipe;
@@ -85,7 +86,8 @@ public final class NpcGunDropsHandler implements IMobExtraInfoProvider {
     }
 
     private static void add(LivingDropsEvent event, NpcEntity npc, ItemStack stack) {
-        if (stack == null || stack.stackSize <= 0) {
+        // A gun or ammo above loot.maxTier by its whole crafting chain stays with the body (D364).
+        if (stack == null || stack.stackSize <= 0 || !ObtainTier.allowed(stack)) {
             return;
         }
         EntityItem item = new EntityItem(npc.worldObj, npc.posX, npc.posY, npc.posZ, stack);

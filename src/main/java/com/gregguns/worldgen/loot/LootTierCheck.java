@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -11,9 +12,10 @@ import com.gregguns.api.Tier;
 
 /**
  * The tier self-check for structure loot: no line, and no drawn stack, is above its category's ceiling
- * (GGS-11-21, GGS-11-22). Pure; the in-game side feeds in the real item tier.
+ * (GGS-11-21, GGS-11-22), and no line's whole crafting chain is above the tier it declares (D363). Pure; the in-game
+ * side feeds in the real item tier and the {@link ObtainTier} answer.
  */
-// Spec: docs/gregguns-spec/11-worldgen/structure-loot.md (GGS-11-21, GGS-11-22, Tests)
+// Spec: docs/gregguns-spec/11-worldgen/structure-loot.md (GGS-11-21, GGS-11-22, Loot tier cap, Tests)
 public final class LootTierCheck {
 
     private LootTierCheck() {}
@@ -92,5 +94,78 @@ public final class LootTierCheck {
             }
         }
         return bad;
+    }
+
+    /**
+     * The obtain-tier audit of a table (D363): a line is only as low as the crafting chain of its item.
+     *
+     * @param label      what the lines belong to, for the messages
+     * @param entries    the lines
+     * @param obtainTier a reference's obtain tier (a GT voltage index), {@link ObtainTierRules#UNKNOWN} when nobody
+     *                   vouched for it, or a negative number for a reference this pack does not have (skipped)
+     * @return one message per line, or companion, with no known obtain tier or one above the line's declared tier
+     */
+    public static List<String> obtainViolations(String label, List<LootEntry> entries,
+        ToIntFunction<String> obtainTier) {
+        return obtainViolations(
+            label,
+            entries,
+            e -> e.tier() == null ? Integer.MAX_VALUE
+                : e.tier()
+                    .voltageIndex(),
+            obtainTier);
+    }
+
+    /**
+     * The audit of {@link #obtainViolations(String, List, ToIntFunction)} for a table whose lines declare their tier
+     * some other way (a silo ladder rung above ZPM declares its own voltage).
+     *
+     * @param label        what the lines belong to, for the messages
+     * @param entries      the lines
+     * @param declaredTier a line's declared tier (a GT voltage index)
+     * @param obtainTier   a reference's obtain tier, as for the plain audit
+     * @return one message per line, or companion, with no known obtain tier or one above the line's declared tier
+     */
+    public static List<String> obtainViolations(String label, List<LootEntry> entries,
+        ToIntFunction<LootEntry> declaredTier, ToIntFunction<String> obtainTier) {
+        List<String> bad = new ArrayList<>();
+        for (LootEntry e : entries) {
+            int declared = declaredTier.applyAsInt(e);
+            check(label, e.ref(), declared, obtainTier, bad);
+            if (e.companion() != null) {
+                check(
+                    label,
+                    e.companion()
+                        .ref(),
+                    declared,
+                    obtainTier,
+                    bad);
+            }
+        }
+        return bad;
+    }
+
+    /** @see #obtainViolations(String, List, ToIntFunction) */
+    public static List<String> obtainViolations(LootCategory category, ToIntFunction<String> obtainTier) {
+        return obtainViolations(category.name(), category.entries(), obtainTier);
+    }
+
+    private static void check(String label, String ref, int declared, ToIntFunction<String> obtainTier,
+        List<String> bad) {
+        int t = obtainTier.applyAsInt(ref);
+        if (t < 0) {
+            return;
+        }
+        if (t == ObtainTierRules.UNKNOWN) {
+            bad.add(label + ": " + ref + " has no known obtain tier, so it never rolls");
+        } else if (t > declared) {
+            bad.add(
+                label + ": "
+                    + ref
+                    + " declares "
+                    + ObtainTierRules.name(declared)
+                    + " but its chain needs "
+                    + ObtainTierRules.name(t));
+        }
     }
 }

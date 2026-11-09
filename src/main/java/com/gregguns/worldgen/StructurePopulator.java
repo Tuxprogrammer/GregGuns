@@ -8,6 +8,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
+import com.gregguns.core.config.LootConfig;
 import com.gregguns.worldgen.camp.CampFlags;
 import com.gregguns.worldgen.camp.CampFootprint;
 import com.gregguns.worldgen.camp.CampPlan;
@@ -646,6 +647,8 @@ public final class StructurePopulator {
             int base = Math.max(1, id == null ? 1 : rules.lootCeiling(id));
             // Ross128: the structure's own rolled ceiling, never below the configured one (design record 0019).
             int tier = rolled > 0 ? Math.max(base, rolled) : Math.min(3, base);
+            // One world-loot cap over every ceiling: a Ross128 roll above loot.maxTier picks the cap's table (D364).
+            tier = Math.min(tier, LootConfig.maxTier);
             String category = ChestTags.category(kind, id == StructureId.MILITARY_BASE, tier, rolled > 0);
             if (category == null) return;
             int richness = id == null ? 1 : rules.richness(id);

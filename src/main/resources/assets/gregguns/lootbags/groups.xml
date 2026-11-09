@@ -249,22 +249,14 @@
         <Loot Identifier="gg_spoils_mag_lmg_spoils_lmg" ItemName="gregguns:mag_lmg" Amount="3" NBTTag="" Chance="45" ItemGroup="spoils_lmg" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_rocket_launcher_spoils_rocket" ItemName="gregguns:rocket_launcher" Amount="1" NBTTag="" Chance="45" ItemGroup="spoils_rocket" LimitedDropCount="1" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_ammo_rocket_spoils_rocket" ItemName="gregguns:ammo_rocket" Amount="12" NBTTag="" Chance="45" ItemGroup="spoils_rocket" LimitedDropCount="0" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_pulse_rifle_spoils_pulse" ItemName="gregguns:pulse_rifle" Amount="1" NBTTag="" Chance="40" ItemGroup="spoils_pulse" LimitedDropCount="1" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_mag_advanced_spoils_pulse" ItemName="gregguns:mag_advanced" Amount="4" NBTTag="" Chance="40" ItemGroup="spoils_pulse" LimitedDropCount="0" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_minigun_spoils_minigun" ItemName="gregguns:minigun" Amount="1" NBTTag="" Chance="40" ItemGroup="spoils_minigun" LimitedDropCount="1" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_mag_minigun_drum_spoils_minigun" ItemName="gregguns:mag_minigun_drum" Amount="3" NBTTag="" Chance="40" ItemGroup="spoils_minigun" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_jump_pack_spoils_jump" ItemName="gregguns:jump_pack" Amount="1" NBTTag="" Chance="40" ItemGroup="spoils_jump" LimitedDropCount="1" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_t2_commando_helmet_spoils_commando" ItemName="gregguns:t2_commando_helmet" Amount="1" NBTTag="" Chance="25" ItemGroup="spoils_commando" LimitedDropCount="1" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_t2_commando_chestplate_spoils_commando" ItemName="gregguns:t2_commando_chestplate" Amount="1" NBTTag="" Chance="25" ItemGroup="spoils_commando" LimitedDropCount="1" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_t2_commando_leggings_spoils_commando" ItemName="gregguns:t2_commando_leggings" Amount="1" NBTTag="" Chance="25" ItemGroup="spoils_commando" LimitedDropCount="1" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_t2_commando_boots_spoils_commando" ItemName="gregguns:t2_commando_boots" Amount="1" NBTTag="" Chance="25" ItemGroup="spoils_commando" LimitedDropCount="1" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_t3_combat_helmet_spoils_t3" ItemName="gregguns:t3_combat_helmet" Amount="1" NBTTag="" Chance="15" ItemGroup="spoils_t3" LimitedDropCount="1" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_t3_combat_chestplate_spoils_t3" ItemName="gregguns:t3_combat_chestplate" Amount="1" NBTTag="" Chance="15" ItemGroup="spoils_t3" LimitedDropCount="1" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_t3_combat_leggings_spoils_t3" ItemName="gregguns:t3_combat_leggings" Amount="1" NBTTag="" Chance="15" ItemGroup="spoils_t3" LimitedDropCount="1" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_t3_combat_boots_spoils_t3" ItemName="gregguns:t3_combat_boots" Amount="1" NBTTag="" Chance="15" ItemGroup="spoils_t3" LimitedDropCount="1" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_gt_metaitem_01_32704_spoils_warchest" ItemName="gregtech:gt.metaitem.01:32704" Amount="4" NBTTag="" Chance="40" ItemGroup="spoils_warchest" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_spoils_gt_metaitem_01_32703_spoils_warchest" ItemName="gregtech:gt.metaitem.01:32703" Amount="4" NBTTag="" Chance="40" ItemGroup="spoils_warchest" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_gt_metaitem_01_17028_spoils_warchest" ItemName="gregtech:gt.metaitem.01:17028" Amount="16" NBTTag="" Chance="40" ItemGroup="spoils_warchest" LimitedDropCount="0" RandomAmount="false"/>
-        <Loot Identifier="gg_spoils_mag_advanced_spoils_ammo" ItemName="gregguns:mag_advanced" Amount="8" NBTTag="" Chance="55" ItemGroup="spoils_ammo" LimitedDropCount="0" RandomAmount="false"/>
+        <Loot Identifier="gg_spoils_mag_as50_spoils_ammo" ItemName="gregguns:mag_as50" Amount="4" NBTTag="" Chance="55" ItemGroup="spoils_ammo" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_mag_lmg_spoils_ammo" ItemName="gregguns:mag_lmg" Amount="4" NBTTag="" Chance="55" ItemGroup="spoils_ammo" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_spoils_ammo_rocket_spoils_ammo" ItemName="gregguns:ammo_rocket" Amount="8" NBTTag="" Chance="55" ItemGroup="spoils_ammo" LimitedDropCount="0" RandomAmount="false"/>
     </LootGroup>
@@ -320,9 +312,7 @@
         <Loot Identifier="gg_ordnance_3_antidote" ItemName="gregguns:antidote" Amount="16" NBTTag="" Chance="625" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_guidance_computer_mk3" ItemName="gregguns:guidance_computer_mk3" Amount="2" NBTTag="" Chance="785" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_gt_metaitem_01_32706" ItemName="gregtech:gt.metaitem.01:32706" Amount="4" NBTTag="" Chance="785" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
-        <Loot Identifier="gg_ordnance_3_gt_metaitem_03_32088" ItemName="gregtech:gt.metaitem.03:32088" Amount="2" NBTTag="" Chance="550" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
         <Loot Identifier="gg_ordnance_3_gt_metaitem_01_17372" ItemName="gregtech:gt.metaitem.01:17372" Amount="16" NBTTag="" Chance="625" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
-        <Loot Identifier="gg_ordnance_3_gt_metaitem_01_17325" ItemName="gregtech:gt.metaitem.01:17325" Amount="8" NBTTag="" Chance="550" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>
     </LootGroup>
     <LootGroup GroupMetaID="1713" GroupName="gregguns.lootbag.group.ordnance_4" Rarity="3" MinItems="4" MaxItems="4" CombineTrashGroup="false" TrashGroup="0" LootbagIcon="gregguns:lootbag/ordnance_4">
         <Loot Identifier="gg_ordnance_4_gt_metaitem_01_17327" ItemName="gregtech:gt.metaitem.01:17327" Amount="16" NBTTag="" Chance="900" ItemGroup="" LimitedDropCount="0" RandomAmount="false"/>

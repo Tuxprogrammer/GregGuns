@@ -442,7 +442,7 @@ public class AttackHelicopter extends EntityFlying implements IMob, IBossDisplay
         List<LootDrop> fixed = profile.fixedDrops();
         for (LootDrop drop : fixed) {
             ItemStack stack = NpcItems.stack(drop, getRNG());
-            if (stack != null && stack.stackSize > 0) {
+            if (stack != null && stack.stackSize > 0 && com.gregguns.worldgen.loot.ObtainTier.allowed(stack)) {
                 entityDropItem(stack, 0.0F);
             }
         }

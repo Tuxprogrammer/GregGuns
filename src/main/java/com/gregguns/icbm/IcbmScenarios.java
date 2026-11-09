@@ -40,6 +40,7 @@ final class IcbmScenarios {
         com.gregguns.icbm.worldgen.I6VisualSetups.registerAll(registry);
         com.gregguns.icbm.worldgen.OreAuditSetups.registerAll(registry);
         I7PlayChecks.registerAll(registry);
+        com.gregguns.icbm.worldgen.ComplexObtainScenarios.registerAll(registry);
     }
 
     /**

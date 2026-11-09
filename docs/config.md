@@ -127,6 +127,14 @@ Structure placement, gating and loot tuning (M8). Read only while `modules.world
 | `worldgen.redBaseChanceMilitaryBase` | int | `20` | 0 to 100 | no | Percent of Military Bases that are red: red flag, pad and standards, and Dictator Dave at his post. The rest are blue. |
 | `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; adds picks to every chest and weight to the table's top-tier lines. Guns keep their weight, so a richer chest holds more ammo and gear, not more guns. |
 
+## Loot (`loot`)
+
+One cap on the tier of everything GregGuns puts in the world for a player to take. An item's tier is what a player needs to make it at all (its whole crafting chain: circuits by circuit tier, GT material items by their material, GT parts and machines by their own tier), never the voltage of the recipe that outputs it. Server-side only, not synced.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `loot.maxTier` | int | `4` (EV) | 1 to 12 | no | Highest GT tier (voltage index: 1 LV ... 4 EV, 5 IV ... 12 UMV) of anything in structure and silo complex chests, furniture, furnaces, GT machine outputs in complexes, item frames, armories and GregGuns NPC drops. Planet and Ross128 complex ceilings apply up to it. Quest loot bags and Vending trades follow their own quest tier. Items with no known tier never appear. |
+
 ## Damage factors (`damagefactors`)
 
 Techguns' "Damage Factors" category. All keys are synced from server to client (GGS-01-03). The factor is chosen at the hit from who shoots and who is hit (`DamageFactors`, [damage-interop.md](gregguns-spec/02-guns/damage-interop.md)). Turret and NPC factors take effect with those milestones (M6, M7).
