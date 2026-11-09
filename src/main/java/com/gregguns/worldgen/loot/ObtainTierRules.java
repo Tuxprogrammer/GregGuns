@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.gregguns.compat.GhostCircuits;
+
 /**
  * The pure half of {@link ObtainTier}: what GT tier a player needs to make an item at all, from string facts only
  * (a circuit's ore name, a GT prefix and material, a GT item list name, a registry name). Every answer is a GT voltage
@@ -523,11 +525,10 @@ public final class ObtainTierRules {
     /**
      * @param name a GT {@code ItemList} constant name
      * @return true for an entry no player can make even though it carries a circuit ore name: GT's ghost circuits
-     *         ({@code Circuit_BasicElectronic} under {@code circuitBasic}, {@code Circuit_Integrated_Advanced} under
-     *         {@code circuitAdvanced}), which are never loot whatever their ore name says
+     *         ({@link GhostCircuits#NAMES}), which are never loot whatever their ore name says
      */
     public static boolean neverLoot(String name) {
-        return "Circuit_BasicElectronic".equals(name) || "Circuit_Integrated_Advanced".equals(name);
+        return GhostCircuits.NAMES.contains(name);
     }
 
     /**

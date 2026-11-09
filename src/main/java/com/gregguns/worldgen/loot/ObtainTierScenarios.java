@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
+import com.gregguns.compat.GhostCircuits;
 import com.gregguns.compat.lootbags.LootBagGroups;
 import com.gregguns.compat.lootbags.LootBagInjector;
 import com.gregguns.compat.vending.VendingCatalog;
@@ -109,7 +110,10 @@ public final class ObtainTierScenarios {
                 // Source: get(amount) copies the entry's stack:
                 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L3480
                 ItemStack zpm = ItemList.Circuit_Quantummainframe.get(1);
-                ItemStack ghost = ItemList.Circuit_BasicElectronic.get(1);
+                ItemStack ghost = GhostCircuits.stacks()
+                    .isEmpty() ? null
+                        : GhostCircuits.stacks()
+                            .get(0);
                 ItemStack motor = ItemList.Electric_Motor_EV.get(1);
                 ItemStack data = ItemList.Circuit_Data.get(1);
                 Item knifeItem = GameRegistry.findItem(GregGuns.MODID, "combat_knife");

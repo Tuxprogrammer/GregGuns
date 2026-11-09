@@ -9,9 +9,9 @@ import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import com.gregguns.compat.GhostCircuits;
 import com.gregguns.core.config.LootConfig;
 
-import gregtech.api.enums.ItemList;
 import gregtech.api.objects.ItemData;
 import gregtech.api.util.GTOreDictUnificator;
 
@@ -129,17 +129,7 @@ public final class ObtainAudit {
     }
 
     private static boolean isGhost(ItemStack stack) {
-        return same(stack, ItemList.Circuit_BasicElectronic) || same(stack, ItemList.Circuit_Integrated_Advanced);
-    }
-
-    private static boolean same(ItemStack stack, ItemList entry) {
-        // Source: hasBeenSet and getInternalStack_unsafe read the entry without a copy or a warning:
-        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L3459
-        if (!entry.hasBeenSet()) {
-            return false;
-        }
-        ItemStack s = entry.getInternalStack_unsafe();
-        return s != null && s.getItem() == stack.getItem() && s.getItemDamage() == stack.getItemDamage();
+        return GhostCircuits.isGhost(stack);
     }
 
     /**
