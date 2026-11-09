@@ -48,6 +48,10 @@ import codechicken.nei.api.ItemFilter;
 // (plugins' loadConfig runs before ItemSorter.loadConfig rebuilds the active list from the entries)
 // https://github.com/GTNewHorizons/NotEnoughItems/blob/2.8.155-GTNH/src/main/java/codechicken/nei/api/API.java#L319-L322
 // (addSubset(String, ItemFilter): the dotted name builds the subset menu path)
+// https://github.com/GTNewHorizons/NotEnoughItems/blob/2.8.155-GTNH/src/main/java/codechicken/nei/api/API.java#L151-L156
+// (hideItem(ItemStack)) and
+// https://github.com/GTNewHorizons/NotEnoughItems/blob/2.8.155-GTNH/src/main/java/codechicken/nei/PositionedStack.java#L165-L175
+// (a recipe slot's cycle leaves hidden items out)
 // Spec: docs/gregguns-spec/06-items/nei-order.md, docs/gregguns-spec/06-items/nei-visibility.md
 public class NEIGregGunsConfig implements IConfigureNEI {
 
@@ -82,6 +86,11 @@ public class NEIGregGunsConfig implements IConfigureNEI {
                 return owner == null || (mask & (1 << owner.ordinal())) != 0;
             };
         });
+        // GT's two IC2 circuit replacements no recipe makes (D362): hidden, so NEI's recipe slots for "any LV
+        // circuit" and "any HV circuit" never cycle through them.
+        for (ItemStack ghost : com.gregguns.compat.GhostCircuits.stacks()) {
+            API.hideItem(ghost);
+        }
         // Subsets (NEI's "Item Subsets" menu): the in-code stand-in for the pack's collapsibleitems.cfg, which NEI
         // exposes no API for. The lists build lazily, from the registered items, when the menu is first opened.
         addSubset("Guns", stack -> stack.getItem() instanceof ItemGun);

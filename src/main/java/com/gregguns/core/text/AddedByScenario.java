@@ -23,11 +23,17 @@ public final class AddedByScenario implements Scenario {
 
     @Override
     public String description() {
-        return "Every registered GregGuns machine's tooltip contains 'GregGuns' (NEI search by mod name)";
+        return "Every registered GregGuns machine's tooltip contains 'GregGuns' (NEI search by mod name) and no raw lang key";
     }
 
     @Override
     public ScenarioResult run(ScenarioContext context) {
+        // The line itself, from our own lang key (a raw key here means the lang entry is missing).
+        String own = AddedBy.line()
+            .replaceAll("§.", "");
+        if (!"Added by: GregGuns".equals(own)) {
+            return ScenarioResult.fail(name(), "the Added-by line reads '" + own + "'");
+        }
         int checked = 0;
         StringBuilder missing = new StringBuilder();
         for (int id : GregGunsMTEIDs.all()) {
@@ -44,6 +50,9 @@ public final class AddedByScenario implements Scenario {
                 : mte.getDescription();
             boolean found = false;
             for (String line : lines) {
+                if (line != null && (line.contains("GT5U.") || line.contains(AddedBy.KEY))) {
+                    return ScenarioResult.fail(name(), "a raw lang key in the tooltip of id " + id + ": " + line);
+                }
                 if (line != null && line.toLowerCase(java.util.Locale.ROOT)
                     .replaceAll("§.", "")
                     .contains("gregguns")) {

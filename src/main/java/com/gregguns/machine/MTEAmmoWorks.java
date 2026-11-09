@@ -827,7 +827,7 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
         inputSeparation = !inputSeparation;
         GTUtility.sendChatTrans(
             player,
-            inputSeparation ? "GT5U.machines.separatebus.true" : "GT5U.machines.separatebus.false");
+            inputSeparation ? "gregguns.machine.separate_bus.true" : "gregguns.machine.separate_bus.false");
     }
 
     @SideOnly(Side.CLIENT)
