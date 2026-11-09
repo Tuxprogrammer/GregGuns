@@ -60,7 +60,7 @@ Tiers are the D1 tiers: Steam/ULV, LV, MV, HV, EV and up. D5 says surface struct
 | `gregguns:weaponchest_t1` / `_t2` / `_t3`, and the same for `reinforcedchest` and `supplychest` | LV / MV / HV | T3 only where a structure's config allows it |
 | `gregguns:weaponchest_t4` to `_t7`, `reinforcedchest_t4` to `_t7`, `supplychest_t4` to `_t7` | EV / IV / LuV / ZPM | Ross128b and Ross128ba only, by a structure's rolled ceiling (design record 0019) |
 | Roguelike dungeon levels 0 to 4 | Level 0-1 LV, 2-3 MV, 4 rare HV | Dungeon level rises with depth |
-| Elite / ultra / infernal drops | LV-MV / MV / MV, rare HV | See [Infernal Mobs](#infernal-mobs) |
+| Elite / ultra / infernal drops | LV-MV / MV / MV, rare HV (the AS50 magazine; never above `loot.maxTier`, D364) | See [Infernal Mobs](#infernal-mobs) |
 | GregGuns loot bags (EnhancedLootBags 1701 to 1714) | The bag's own tier | The bag name is the tier; quests never pay a bag above their tier (GGS-12-07) |
 
 ## Integration points
