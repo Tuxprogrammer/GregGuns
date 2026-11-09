@@ -272,8 +272,16 @@ final class NpcLootScenarios {
                             }
                         }
                     }
-                    // Fixed Golden Revolver for Dave and Chainsaw for Steve: exactly one per kill.
-                    out.checkEquals(id + " fixed weapon drops", KILLS, guns);
+                    // Fixed Golden Revolver for Dave and Chainsaw for Steve: exactly one per kill, or none when the
+                    // gun is above loot.maxTier (D364).
+                    Item weapon = NpcItems.item(
+                        profile.equipment()
+                            .weapons()
+                            .get(0)
+                            .gun());
+                    boolean keeps = weapon != null && ObtainTierRules
+                        .allowed(ObtainTier.of(new ItemStack(weapon)), Integer.MAX_VALUE - 1, LootConfig.maxTier);
+                    out.checkEquals(id + " fixed weapon drops", keeps ? KILLS : 0, guns);
                 }
                 out.note(id + ": " + KILLS + " kills ok");
             } finally {

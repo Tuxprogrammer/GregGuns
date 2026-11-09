@@ -205,6 +205,7 @@ public final class ObtainTierRules {
             "VanadiumSteel",
             "BlueSteel",
             "Epoxid",
+            "EpoxidFiberReinforced",
             "Uranium",
             "Uranium238",
             "Vanadium",
@@ -239,13 +240,14 @@ public final class ObtainTierRules {
         materials(7, "Naquadria", "Trinium", "Americium", "Duranium", "NaquadahAlloy", "Uranium235", "Plutonium");
         materials(8, "Neutronium", "Tritanium", "Plutonium241");
         materials(9, "Infinity", "CosmicNeutronium");
+        // Transcendent metal is the UIV hull metal, as the silo tables and their spec sheet have it.
+        materials(11, "TranscendentMetal");
         materials(
             12,
             "WhiteDwarfMatter",
             "BlackDwarfMatter",
             "Universium",
             "MagnetohydrodynamicallyConstrainedStarMatter",
-            "TranscendentMetal",
             "SpaceTime");
 
         // GT prefixes a material item may have, with the tier the form itself needs (a fine wire needs a wiremill).

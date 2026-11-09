@@ -19,11 +19,15 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.entity.npc.GunSalvage;
+import com.gregguns.entity.npc.NpcDrops;
 import com.gregguns.entity.npc.NpcLootCapHandler;
+import com.gregguns.entity.npc.loot.EquipmentProfile;
 import com.gregguns.entity.npc.loot.InfernalLootTable;
 import com.gregguns.entity.npc.loot.LootDrop;
 import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.entity.npc.loot.NpcProfiles;
+import com.gregguns.item.gun.ItemGun;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.ItemList;
@@ -231,8 +235,8 @@ public final class ObtainTierScenarios {
 
         @Override
         public String description() {
-            return "Every NPC profile's table and fixed drops, and every Infernal drop, are known and at most their"
-                + " tier; the NPC cap takes a ZPM circuit at EV and keeps an EV motor (D364).";
+            return "Every NPC profile's table and fixed drops, every carried gun's ammo and salvage, and every Infernal"
+                + " drop are known and at most their tier; the NPC cap takes a ZPM circuit at EV and keeps an EV motor (D364).";
         }
 
         @Override
@@ -272,6 +276,37 @@ public final class ObtainTierScenarios {
                             .ref(),
                         e.tier()
                             .voltageIndex());
+                }
+                // Every carried gun's own drop: its ammo or tank, and each salvage part, known and at most the gun.
+                java.util.Set<String> guns = new java.util.LinkedHashSet<>();
+                for (NpcProfile p : NpcProfiles.all()
+                    .values()) {
+                    if (p.equipment() != null) {
+                        for (EquipmentProfile.Weapon w : p.equipment()
+                            .weapons()) {
+                            guns.add(w.gun());
+                        }
+                    }
+                }
+                for (String name : guns) {
+                    ItemStack gunStack = LootCategories.stack(GregGuns.MODID + ":" + name, 1);
+                    if (gunStack == null || !(gunStack.getItem() instanceof ItemGun)) {
+                        continue;
+                    }
+                    ItemGun gun = (ItemGun) gunStack.getItem();
+                    NpcDrops.GunDrop rule = NpcDrops.gunDrop(name, gun.stats());
+                    if (rule == null) {
+                        continue;
+                    }
+                    int gunTier = ObtainTier.of(gunStack);
+                    if (rule.ref() != null) {
+                        drops++;
+                        checkDrop(out, "gun " + name, rule.ref(), gunTier);
+                    }
+                    for (GunSalvage.Entry part : rule.salvage()) {
+                        drops++;
+                        checkDrop(out, "gun " + name + " salvage", part.ref(), gunTier);
+                    }
                 }
                 out.check(drops > 0, "no NPC drop lines");
                 out.note(drops + " drop lines");

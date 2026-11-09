@@ -128,7 +128,7 @@ class ObtainTierRulesTest {
         assertEquals(3, ObtainTierRules.materialItem("cell", "Ammonia"));
         assertEquals(2, ObtainTierRules.materialItem("cell", "Chlorine"));
         assertEquals(12, ObtainTierRules.materialItem("ingot", "SpaceTime"));
-        assertEquals(12, ObtainTierRules.materialItem("plate", "TranscendentMetal"));
+        assertEquals(11, ObtainTierRules.materialItem("plate", "TranscendentMetal"));
     }
 
     @Test
