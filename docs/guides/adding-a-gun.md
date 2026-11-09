@@ -29,7 +29,7 @@ You do not write firing, reloading, zoom, spread, sync, sound or animation code.
 | `ProjectileKind` | Which projectile entity it fires. `BULLET` (default, `GenericProjectile`) or `GRAVITY_BULLET` (`SimpleProjectile`, the Hand Cannon). Other kinds (`ROCKET`, `GRENADE`, `FLAME`, `LASER`, ...) are reserved. A kind with no factory drops the shot and logs one error. | `GunStats.Builder.projectileKind(...)`; factories in `BulletLauncher.register(kind, ctor)` |
 | Pellets | Extra projectiles per shot, each with its own spread offset from `SpreadModel`, optionally staggered along the path. | `GunStats.Builder.pellets(extra, pelletSpread, inLine)` |
 | Scope | FOV factor and spread multiplier while zoomed, and an overlay texture. | `GunStats.Builder.zoom(fovFactor, spreadMultiplier)`; `GunTransforms.Builder.scope(new ScopeSpec(texture, kickUp, kickSide))` |
-| Knockback | A per-hit push multiplier that really changes strength (GUN-38). | `GunStats.Builder.knockback(m)` (1 vanilla, 0 none) |
+| Knockback | A per-hit push multiplier that really changes strength (GUN-38), applied while `combat.knockback` is on (off by default, D357). | `GunStats.Builder.knockback(m)` (1 vanilla, 0 none) |
 | Rechamber | A second sound with every shot (bolt, pump). | `GunDefinition.Builder.rechambers()`; add `guns.<name>.rechamber` to `sounds.json` |
 | Camos | The Camo Bench cycles the gun's skins; the item is a `CamoChangeable` and the rounds stay. | `GunDefinition.Builder.camos(n)`; textures `<name>.png`, `<name>_camo1.png`, ...; lang `item.gregguns.<name>.camoname.<i>` |
 | Armor accuracy | A worn set's `GUN_ACCURACY` bonus tightens the spread. The server reads it; it is 0 with `modules.armor` off. | `GunAccuracy` (nothing to do per gun) |

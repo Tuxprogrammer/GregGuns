@@ -136,8 +136,42 @@ Techguns' "Damage Factors" category. All keys are synced from server to client (
 | `damagefactors.damagePvP` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a player's shot hits another player. Zero while server PvP is off. |
 | `damagefactors.damageTurretToPlayer` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a turret's shot hits a player. |
 | `damagefactors.damageFactorNPC` | float | `1.0` | 0 to 100 | yes | Damage multiplier for other NPCs hitting players, and for NPC against NPC. |
-| `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of non-player attackers against players. |
+| `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `0.5` | 0 to 1 | yes | Scales the armor penetration of non-player attackers against players. At 0.5 an NPC's armor-piercing share is halved, so the armor you wear counts for more. |
 | `damagefactors.armorPenetrationMultiplierPvP` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of a player's shots against other players. |
+
+## Combat (`combat`)
+
+Hit knockback, and how hard and how accurately hostile NPCs and turrets shoot at you (design [0027](design/0027-combat-difficulty-knobs.md)). All keys are synced from server to client. The NPC keys cover GregGuns NPCs, the hostile NPC turret and the Attack Helicopter; your own Rampart turret and your own guns are not affected.
+
+An NPC shot's damage is its gun's NPC damage, times the difficulty factor (Easy 0.25, Normal 0.3, Hard 0.375), times the tier multiplier of the gun it fires, times `npcEliteDamage` when the shooter is an Infernal Mobs elite, ultra or infernal or a boss, times `damagefactors.damageFactorNPC`. A turret skips the difficulty factor and uses `damagefactors.damageTurretToPlayer` instead. Armor then takes its share, and `damagefactors.armorPenetrationMultiplierNPCtoPlayer` decides how much of the gun's penetration skips it.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `combat.knockback` | boolean | `false` | n/a | yes | Whether GregGuns gun and projectile hits push their target, both ways: your shots pushing mobs and NPC shots pushing you. Includes a rocket's direct hit, shrapnel, beams and the Power Hammer's shockwave. Explosion blasts push whatever this says. |
+| `combat.knockbackMultiplier` | float | `1.0` | 0 to 10 | yes | While knockback is on, the push of a hit is vanilla's times this times the gun's own knockback (3 for the Rocket Launcher, 2 for the Sonic Rifle, 0 for the Chainsaw). |
+| `combat.npcDamageSteam` | float | `1.0` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from Steam-tier guns. |
+| `combat.npcDamageLV` | float | `1.0` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from LV guns. |
+| `combat.npcDamageMV` | float | `1.0` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from MV guns. The NPC turret's AK47 is MV. |
+| `combat.npcDamageHV` | float | `0.85` | 0 to 10 | yes | Damage multiplier for NPC and turret shots from HV guns. The Attack Helicopter counts as HV. |
+| `combat.npcDamageEV` | float | `0.7` | 0 to 10 | yes | Damage multiplier for NPC shots from EV guns. |
+| `combat.npcDamageIV` | float | `0.55` | 0 to 10 | yes | Damage multiplier for NPC shots from IV guns. |
+| `combat.npcDamageLuV` | float | `0.45` | 0 to 10 | yes | Damage multiplier for NPC shots from LuV guns. |
+| `combat.npcDamageZPM` | float | `0.4` | 0 to 10 | yes | Damage multiplier for NPC shots from ZPM guns. |
+| `combat.npcEliteDamage` | float | `0.75` | 0 to 10 | yes | Extra damage multiplier for shots from an elite, ultra or infernal NPC (Infernal Mobs) or a boss such as the Attack Helicopter. |
+| `combat.npcAccuracyRange` | float | `5.0` | 0 to 256 | yes | Blocks within which NPC and turret shots keep their gun's full accuracy. |
+| `combat.npcSpreadPerBlock` | float | `0.12` | 0 to 10 | yes | Degrees of aim error an NPC or turret gains per block beyond `npcAccuracyRange`. One error is drawn per shot, so a shotgun's pellets keep their pattern. 0 turns the distance penalty off. |
+| `combat.npcMaxSpread` | float | `4.0` | 0 to 45 | yes | Largest aim error, in degrees, that distance adds. With the defaults an NPC 10 blocks away still hits a standing player with nearly every shot, and from about 20 blocks on it misses more often than it hits. |
+
+### Make combat harder
+
+The defaults are the gentle end. To make fights harder, raise these keys; each one stands alone, so pick the ones you want.
+
+- **Plain gun damage at every tier:** set every `combat.npcDamage*` key to `1.0` and `combat.npcEliteDamage` to `1.0`.
+- **Armor-piercing NPC guns:** set `damagefactors.armorPenetrationMultiplierNPCtoPlayer` to `1.0`.
+- **Sharpshooting NPCs:** set `combat.npcSpreadPerBlock` to `0` (no distance penalty), or keep it and raise `combat.npcAccuracyRange`.
+- **Getting shoved around:** set `combat.knockback` to `true`; raise `combat.knockbackMultiplier` for stronger pushes.
+- **Plain gun stats:** the four changes above together let every NPC gun hit you with its full stats.
+- **Harder still:** raise `damagefactors.damageFactorNPC` above `1.0` (2.0 doubles every NPC shot), or the `combat.npcDamage*` keys above `1.0`, and play on Hard difficulty.
 
 ## Explosions (`explosions`)
 

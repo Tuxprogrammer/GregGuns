@@ -6,6 +6,7 @@ import net.minecraft.entity.monster.EntityZombie;
 import com.gregguns.armor.slots.ElectricGear;
 import com.gregguns.combat.DamageModel;
 import com.gregguns.combat.DamageType;
+import com.gregguns.core.config.CombatConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -247,7 +248,7 @@ public final class EvEnergyScenarios {
 
         @Override
         public String description() {
-            return "One Sonic Rifle pull launches the 16-projectile ring volley, spends exactly its EU, hurts a sturdy zombie 4 blocks away exactly once (full 25 damage at 25% armor penetration, however many projectiles reach it) and pushes it; holding the trigger fires no second volley (semi-auto).";
+            return "One Sonic Rifle pull launches the 16-projectile ring volley, spends exactly its EU, hurts a sturdy zombie 4 blocks away exactly once (full 25 damage at 25% armor penetration, however many projectiles reach it) and, with combat.knockback on, pushes it; holding the trigger fires no second volley (semi-auto).";
         }
 
         @Override
@@ -259,6 +260,9 @@ public final class EvEnergyScenarios {
                 .setBaseValue(TARGET_HEALTH);
             target.setHealth((float) TARGET_HEALTH);
             long start = stored(rig);
+            // The push is measured with knockback on (it is off by default, D357), restored on the way out.
+            boolean savedKnockback = CombatConfig.knockback;
+            CombatConfig.knockback = true;
             rig.press();
             // The push decays by ground friction every tick, so the scenario keeps the peak it sees, not the value
             // left when the last projectile expires.
@@ -275,6 +279,7 @@ public final class EvEnergyScenarios {
                 if (!rig.bulletsGone()) {
                     return null;
                 }
+                CombatConfig.knockback = savedKnockback;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.checkEquals(
                     "projectiles in the volley",

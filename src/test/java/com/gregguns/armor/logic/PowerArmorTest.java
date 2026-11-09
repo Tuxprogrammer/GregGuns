@@ -67,9 +67,10 @@ class PowerArmorTest {
         assertMaterial(
             ArmorCatalog.T3_EXO,
             4125,
-            new double[] { 22, 22, 18, 18, 18, 18, 18, 10, 6 },
+            // Design record 0027: the EV Combat row, one point over Techguns.
+            new double[] { 23, 23, 19, 19, 19, 19, 19, 10, 6 },
             0.15,
-            new int[] { 6, 7, 6, 4 });
+            new int[] { 6, 7, 6, 5 });
     }
 
     @Test
@@ -171,7 +172,7 @@ class PowerArmorTest {
                 .total(DamageType.PROJECTILE),
             EPS);
         assertEquals(
-            22.0,
+            23.0,
             ArmorCatalog.T3_EXO.material()
                 .total(DamageType.PROJECTILE),
             EPS);

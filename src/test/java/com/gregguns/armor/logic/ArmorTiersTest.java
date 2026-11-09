@@ -79,9 +79,10 @@ class ArmorTiersTest {
         assertMaterial(
             ArmorCatalog.T3_COMBAT,
             3300,
-            new double[] { 22, 22, 18, 18, 18, 18, 18, 10, 6 },
+            // Design record 0027: one point over the Techguns row (22, 18) so the EV set beats HV's NanoSuit.
+            new double[] { 23, 23, 19, 19, 19, 19, 19, 10, 6 },
             0.15,
-            new int[] { 6, 7, 6, 4 });
+            new int[] { 6, 7, 6, 5 });
     }
 
     @Test
