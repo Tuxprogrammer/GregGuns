@@ -11,7 +11,7 @@ item_ids:
 
 # Enemies and loot
 
-Who shoots back, where you will meet them, and what they carry and drop. Every faction can be switched off in the config. They do not fight each other, but they will shoot your turrets, and their guns hit for about a third of what yours do.
+Who shoots back, where you will meet them, and what they carry and drop. Every faction can be switched off in the config. They do not fight each other, but they will shoot your turrets. Their guns hit softer than yours as the gun's tier climbs, and their aim wanders with distance.
 
 ## In the wild: the Overworld
 
@@ -76,3 +76,9 @@ Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only mons
 Up to two picks from their loot list, plus one more per level of Looting. Every NPC that carries a gun also drops rounds for it: a quarter to three quarters of a magazine, loose, one item per round. A Thompson gives 5 to 15 9mm bullets, and no stack is bigger than 64. Flame and bio guns drop one full tank. Energy guns drop the parts of their recipe, never the gun. A player kill has a small chance to drop the gun itself (2%, plus 1% per level of Looting; bosses never) and sometimes the armor they wear. Mobs Info lists the drops.
 
 With Infernal Mobs installed, any of them can spawn with an Elite, Ultra or Infernal rank and better loot: LV items for Elite, MV for Ultra, and a rare HV drop from Infernal. The helicopter and camp turrets never do.
+
+## How hard they hit
+
+An NPC's gun damage follows the tier of the gun it fires: full damage up to MV, 85% at HV (the Attack Helicopter counts as HV), 70% at EV, 55% at IV, 45% at LuV and 40% at ZPM. Elite, Ultra and Infernal NPCs and bosses shoot at 75% on top of that, and NPC guns get half their armor penetration against players. NPCs aim true within 5 blocks; past that their aim error grows with distance, so almost every shot lands at 10 blocks, about half at 20 and about one in ten at 30. Gun and projectile hits do not knock their target back, for players and NPCs alike; explosions still throw. Your own guns and the Rampart turret are unchanged.
+
+For a harder game, set every `combat.npcDamage*` key and `combat.npcEliteDamage` to 1.0, `damagefactors.armorPenetrationMultiplierNPCtoPlayer` to 1.0, `combat.npcSpreadPerBlock` to 0 and `combat.knockback` to true. All four together give every NPC gun its full stats.

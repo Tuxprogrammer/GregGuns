@@ -488,7 +488,7 @@ def enemies():
 <div class="card"><h2>What they drop</h2>{muted("Up to two picks from their loot list, plus one more per level of Looting. Every gunman also drops a quarter to three quarters of a magazine as loose rounds (a Thompson gives 5 to 15 9mm bullets), a full tank for flame and bio guns, or the parts of an energy gun. A player kill has a small chance to drop the gun itself and sometimes the armor.")}</div></div>"""
     body = f"""{battle_scene()}
 {''.join(groups)}{info}
-{guide_row("They don't fight each other, but they will shoot your turrets. Their guns hit for about a third of what yours do, which is little comfort against a Super Mutant with a rocket launcher.", gun="as50")}"""
+{guide_row("They don't fight each other, but they will shoot your turrets. Their guns hit softer as the gun's tier climbs, and their aim wanders past 5 blocks, so distance is your friend.", gun="as50")}"""
     return page_doc("Enemies and <b>loot</b>",
                     "Who shoots back, where you'll meet them, and what they carry and drop. Every faction can be "
                     "switched off in the config.",
