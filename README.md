@@ -99,7 +99,7 @@ Strategic weapons on GregTech tiers. Build warheads from HV to UHV, stand missil
 - **On by default.** A server that doesn't want it sets `B:icbm=false` in the `modules` block of `config/gregguns.cfg` and restarts.
 - **Warheads** come in five casing tiers, T1 (HV) to T5 (UHV), and a blast type for every job: craters, fire, gas, push, tunnels, nuclear, EMP, ender, antimatter and red matter.
 - **Missiles** fly 1,000 blocks at T1, 3,000 at T2 and 8,000 at T3, 10,000 from a silo. The silo builds the missile in its shaft, opens its doors and launches it.
-- **Complexes** have three activity levels, from a gutted ruin to a fully staffed base, and their loot ceiling rises with the planet, from EV on the Overworld to UMV.
+- **Complexes** have three activity levels, from a gutted ruin to a fully staffed base, and their ceiling rises with the planet, from EV on the Overworld to UMV; a server setting (`loot.maxTier`, EV by default) caps the loot itself.
 - The ICBM quests are part of the GregGuns questbook tab.
 
 ### ICBM guides

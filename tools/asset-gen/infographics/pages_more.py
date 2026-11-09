@@ -414,7 +414,7 @@ ENCOUNTERS = [
      ]),
     ("In silo complexes", "#ff5555",
      "Elite spawners in the rooms far from a complex's hub call up Commandos and Stormtroopers. Where the complex's "
-     "loot reaches LuV or higher, those posts are command posts that call up the Outcast too.", 2, [
+     "ceiling is LuV or higher, those posts are command posts that call up the Outcast too.", 2, [
          ("Stormtrooper", "Elite posts", "A silver Hazardous Environment suit and a Blaster or Laser Rifle.",
           "Steel, rubber, redstone, circuits, batteries, and energy-gun parts: Laser Barrels and Focuses, Carbon "
           "Stocks and Receivers, tungstensteel and titanium plates.",
@@ -483,9 +483,9 @@ def enemies():
                       for n, t in (("Small Factory, Train Station, House, Gas Station", "LV"), ("Big Bunker", "MV"),
                                    ("Military Base and camps", "MV"), ("Aircraft Carrier, Submarine", "MV")))
     info = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:22px">
-<div class="card"><h2>Ruins and bases</h2>{muted("Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only monster spawners. The Big Bunker's two spawners call up zombies. Every structure above ground stands on level, solid ground filled down to the natural ground.", 16, 4)}<div style="margin-top:8px">{structs}</div></div>
-<div class="card"><h2>Elite, Ultra, Infernal</h2>{muted("Any of them can spawn with an Infernal Mobs rank and better loot: LV for Elite, MV for Ultra, and a rare HV drop from Infernal. The helicopter and camp turrets never do.")}</div>
-<div class="card"><h2>What they drop</h2>{muted("Up to two picks from their loot list, plus one more per level of Looting. Every gunman also drops a quarter to three quarters of a magazine as loose rounds (a Thompson gives 5 to 15 9mm bullets), a full tank for flame and bio guns, or the parts of an energy gun. A player kill has a small chance to drop the gun itself and sometimes the armor.")}</div></div>"""
+<div class="card"><h2>Ruins and bases</h2>{muted("Chests hold loot up to the tier shown, and never above the server's loot limit (EV by default). Alien Bug Nests have no chests, only monster spawners. The Big Bunker's two spawners call up zombies. Every structure above ground stands on level, solid ground filled down to the natural ground.", 16, 4)}<div style="margin-top:8px">{structs}</div></div>
+<div class="card"><h2>Elite, Ultra, Infernal</h2>{muted("Any of them can spawn with an Infernal Mobs rank and better loot: LV for Elite, MV for Ultra, and a rare HV drop from Infernal (an AS50 magazine). The helicopter and camp turrets never do.")}</div>
+<div class="card"><h2>What they drop</h2>{muted("Up to two picks from their loot list, plus one more per level of Looting. Every gunman also drops a quarter to three quarters of a magazine as loose rounds (a Thompson gives 5 to 15 9mm bullets), a full tank for flame and bio guns, or the parts of an energy gun. A player kill has a small chance to drop the gun itself and sometimes the armor. Nothing an NPC drops goes above the server's loot limit (EV by default); a drop above it stays with the body.")}</div></div>"""
     body = f"""{battle_scene()}
 {''.join(groups)}{info}
 {guide_row("They don't fight each other, but they will shoot your turrets. Their guns hit softer as the gun's tier climbs, and their aim wanders past 5 blocks, so distance is your friend.", gun="as50")}"""

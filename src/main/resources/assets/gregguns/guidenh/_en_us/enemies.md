@@ -55,7 +55,7 @@ Military Camps, Military Bases and Aircraft Carriers fly a <ItemLink id="greggun
 
 ## Silo complexes
 
-The guard spawners of an abandoned silo complex call up Army Soldiers. Rooms far from the hub hold elite spawners that call up Commandos and Stormtroopers. In a complex whose loot reaches LuV or higher, the elite posts are command posts that also call up the Outcast.
+The guard spawners of an abandoned silo complex call up Army Soldiers. Rooms far from the hub hold elite spawners that call up Commandos and Stormtroopers. In a complex whose ceiling is LuV or higher, the elite posts are command posts that also call up the Outcast.
 
 | Enemy | Carries | Drops |
 | --- | --- | --- |
@@ -64,7 +64,7 @@ The guard spawners of an abandoned silo complex call up Army Soldiers. Rooms far
 
 ## Ruins and bases
 
-Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only monster spawners. The Big Bunker's two spawners call up zombies. Every structure above ground stands on level, solid ground that is filled down to the natural ground, and the Military Base is one level pad with its roads, fence, tents and buildings.
+Chests hold loot up to the tier shown, and never above the server's loot limit (`loot.maxTier`, EV by default). Alien Bug Nests have no chests, only monster spawners. The Big Bunker's two spawners call up zombies. Every structure above ground stands on level, solid ground that is filled down to the natural ground, and the Military Base is one level pad with its roads, fence, tents and buildings.
 
 - Small Factory, Train Station, House, Gas Station: LV
 - Big Bunker: MV
@@ -73,9 +73,9 @@ Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only mons
 
 ## What they drop
 
-Up to two picks from their loot list, plus one more per level of Looting. Every NPC that carries a gun also drops rounds for it: a quarter to three quarters of a magazine, loose, one item per round. A Thompson gives 5 to 15 9mm bullets, and no stack is bigger than 64. Flame and bio guns drop one full tank. Energy guns drop the parts of their recipe, never the gun. A player kill has a small chance to drop the gun itself (2%, plus 1% per level of Looting; bosses never) and sometimes the armor they wear. Mobs Info lists the drops.
+Up to two picks from their loot list, plus one more per level of Looting. Every NPC that carries a gun also drops rounds for it: a quarter to three quarters of a magazine, loose, one item per round. A Thompson gives 5 to 15 9mm bullets, and no stack is bigger than 64. Flame and bio guns drop one full tank. Energy guns drop the parts of their recipe, never the gun. A player kill has a small chance to drop the gun itself (2%, plus 1% per level of Looting; bosses never) and sometimes the armor they wear. Mobs Info lists the drops. Nothing an NPC drops goes above the server's loot limit (`loot.maxTier`, EV by default), worn armor included: a drop above it stays with the body. A drop's tier is its whole crafting chain, so a plate of a high-tier metal counts as that tier wherever it comes from.
 
-With Infernal Mobs installed, any of them can spawn with an Elite, Ultra or Infernal rank and better loot: LV items for Elite, MV for Ultra, and a rare HV drop from Infernal. The helicopter and camp turrets never do.
+With Infernal Mobs installed, any of them can spawn with an Elite, Ultra or Infernal rank and better loot: LV items for Elite, MV for Ultra, and a rare HV drop from Infernal (an AS50 magazine). The helicopter and camp turrets never do.
 
 ## How hard they hit
 
