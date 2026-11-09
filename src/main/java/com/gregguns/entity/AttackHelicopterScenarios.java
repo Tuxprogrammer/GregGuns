@@ -12,6 +12,7 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -20,6 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
+import com.gregguns.core.config.NpcConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioPoller;
@@ -56,6 +58,7 @@ final class AttackHelicopterScenarios {
         registry.register(new SpawnStatsScenario());
         registry.register(new AirborneScenario());
         registry.register(new FiresScenario());
+        registry.register(new NoGunDamageScenario());
         registry.register(new CrashScenario());
     }
 
@@ -302,6 +305,78 @@ final class AttackHelicopterScenarios {
                 ctx.despawn(target);
                 return out.build();
             });
+        }
+    }
+
+    /** With {@code npcs.gunDamageEnabled} off, its bullets and rockets carry no damage, like every NPC shooter. */
+    private static final class NoGunDamageScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "npc.attack_helicopter.no_gun_damage";
+        }
+
+        @Override
+        public String description() {
+            return "With npcs.gunDamageEnabled false the helicopter still fires its burst and rocket at a player 30"
+                + " blocks away, and every shot carries zero damage (D358).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            boolean priorEnabled = NpcConfig.gunDamageEnabled;
+            EnumDifficulty prior = allowMobs(ctx.world());
+            AttackHelicopter heli = helicopter(ctx);
+            if (heli == null) {
+                ctx.world().difficultySetting = prior;
+                return ScenarioResult.fail(name(), "the egg path should spawn the helicopter");
+            }
+            NpcConfig.gunDamageEnabled = false;
+            heli.setPosition(ctx.originX() + 0.5, ctx.originY() + 25, ctx.originZ() + 0.5);
+            EntityPlayer target = player(ctx, "heli_quiet_target", 30, 0);
+            ShotLog log = ShotLog.start();
+            return guarded(name(), ctx.world(), prior, 400, ticks -> {
+                boolean done = true;
+                try {
+                    ScenarioResult answer = check(heli, log);
+                    done = answer != null || ticks >= 400;
+                    return answer;
+                } finally {
+                    if (done) {
+                        // Restores the switch and clears the plot on every exit path, a throw included.
+                        NpcConfig.gunDamageEnabled = priorEnabled;
+                        log.stop();
+                        ctx.despawn(heli);
+                        ctx.despawn(target);
+                    }
+                }
+            });
+        }
+
+        /** Answers once a full burst and a rocket are in the air; null until then (the timeout fails it). */
+        private ScenarioResult check(AttackHelicopter heli, ShotLog log) {
+            int rockets = 0;
+            int bullets = 0;
+            float maxDamage = 0.0F;
+            for (GenericProjectile p : log.shots) {
+                if (p.getShooter() != heli) {
+                    continue;
+                }
+                if (p instanceof RocketProjectile) {
+                    rockets++;
+                } else {
+                    bullets++;
+                }
+                NBTTagCompound tag = new NBTTagCompound();
+                p.writeEntityToNBT(tag);
+                maxDamage = Math.max(maxDamage, Math.abs(tag.getFloat("damage")));
+            }
+            if (rockets < 1 || bullets < 7) {
+                return null;
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            out.check(maxDamage == 0.0F, "every helicopter shot should carry 0 damage, saw " + maxDamage);
+            return out.build();
         }
     }
 

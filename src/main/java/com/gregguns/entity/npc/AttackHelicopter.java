@@ -17,6 +17,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
 import com.gregguns.api.Tier;
+import com.gregguns.core.config.NpcConfig;
 import com.gregguns.entity.npc.loot.LootDrop;
 import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.entity.npc.loot.NpcProfiles;
@@ -302,7 +303,9 @@ public class AttackHelicopter extends EntityFlying implements IMob, IBossDisplay
             .scaling(NpcFiring.Difficulty.fromVanillaId(worldObj.difficultySetting.getDifficultyId()), false);
         ShotOffset offset = NpcShotTuning.roll(getRNG(), stats, scaling, this, target)[0];
         // The helicopter carries no gun item; it counts as HV, the tier of its minigun and rockets (D358).
-        float damageScale = NpcShotTuning.damageScale(this, Tier.HV, scaling.damageFactor());
+        // npcs.gunDamageEnabled silences it like every other NPC shooter.
+        float damageScale = NpcShotTuning
+            .damageScale(this, Tier.HV, NpcFiring.damageScale(scaling, NpcConfig.gunDamageEnabled));
         double ox = posX;
         double oy = posY;
         double oz = posZ;
