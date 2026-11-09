@@ -107,7 +107,20 @@ public final class FlagPostGeometry {
             new Panel(new Box(-6, 47.5f, 0, 6, 14, 0, 12, 50), -6, 30f, 50),
             new Panel(new Box(-6, 47.5f, 0, 6, 14, 0, 24, 50), -6, 30f, 40)));
 
+    /** Cloth tint of a blue garrison's flag (block metadata 0), RGB 0 to 1. */
+    public static final float[] CLOTH_BLUE = { 0.40F, 0.55F, 1.00F };
+    /** Cloth tint of a red base's flag (block metadata 1), RGB 0 to 1. */
+    public static final float[] CLOTH_RED = { 1.00F, 0.25F, 0.22F };
+
     private FlagPostGeometry() {}
+
+    /**
+     * @param meta the Camp Flag block's metadata: 1 for a red base, anything else blue
+     * @return a copy of the cloth tint, RGB 0 to 1
+     */
+    public static float[] clothColor(int meta) {
+        return (meta == 1 ? CLOTH_RED : CLOTH_BLUE).clone();
+    }
 
     /**
      * @return the swing angle of one panel

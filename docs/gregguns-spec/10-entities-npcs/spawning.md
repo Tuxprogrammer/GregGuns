@@ -1,15 +1,16 @@
 # Spawning and coexistence with other spawn mods
 
 - **Techguns baseline:** [spawning.md](../../techguns-spec/10-entities-npcs/spawning.md), [ai.md § factions](../../techguns-spec/10-entities-npcs/ai.md#1-factions-tgnpcfaction-tgnpcfactions), [per-mob.md § TGDummySpawn](../../techguns-spec/10-entities-npcs/per-mob.md#18-tgdummyspawn-tgdummyspawn)
-- **Design records:** [0005 World presence](../../design/0005-world-presence.md)
+- **Design records:** [0005 World presence](../../design/0005-world-presence.md); [D353](../../gregguns-icbm-spec/DECISIONS.md#d353-in-detail) (Nether and End tables, red bases, command posts)
 - **Pack mods:**
   - SpecialMobs (`SpecialMobs`, 3.7.8)
   - EnderZoo (`EnderZoo`, 1.3.6)
   - AngerMod (`angermod`, 1.0.7)
   - Mobs Info (`mobsinfo`, 0.6.0) and Infernal Mobs (`InfernalMobs`, 1.10.7-GTNH), for the placeholder problem
+  - Hardcore Ender Expansion (`HardcoreEnderExpansion`, 1.12.28-GTNH), for the End table
 - **Roadmap:** M7 (NPCs and spawning)
 
-[0005](../../design/0005-world-presence.md) fixes the scope: natural spawning in the **Overworld only**, config-gated per faction, Techguns' weights halved as a starting point, caps enforced. This sheet records what in the pack touches that, and what GregGuns must do about it.
+[0005](../../design/0005-world-presence.md) fixes the scope: natural spawning in three realms (the Overworld, the Nether and the End, each with its own table and dimension list), config-gated per faction, Techguns' Overworld weights halved as a starting point, caps enforced. This sheet records what in the pack touches that, and what GregGuns must do about it.
 
 ## What changes from Techguns
 
@@ -18,7 +19,7 @@
 | One placeholder mob (`TGDummySpawn`, an `EntityMob`) is added to vanilla spawning in every non-Nether, non-End biome. Its `EntityJoinWorldEvent` is intercepted and canceled, and a real NPC is spawned in its place ([spawning.md § 1](../../techguns-spec/10-entities-npcs/spawning.md#12-replacement)). | Recommended: register the real NPC classes as spawn entries and apply dimension and danger rules in a `CheckSpawn` handler. No placeholder. | The placeholder is a real `IMob`. Infernal Mobs, Mobs Info and EnderZoo's global modifier all see it. Mobs Info's spawn tab shows only registered classes. See the table below. |
 | Dimension list per spawn is `[0]` by default, and other dimensions print "TotalWeight 0" for every attempt ([NPC-16](../../techguns-spec/10-entities-npcs/index.md#suspected-bugs)). | One config list, default `[0]`, checked at spawn time. Other dimensions are skipped silently. | [0005](../../design/0005-world-presence.md). |
 | Weights: Farmer 200, Miner 200, Soldier 100, Skeleton 100, Bandit 50, Psycho Steve 3, placeholder 600. | Start at half, rounded down, minimum 1: Farmer 100, Miner 100, Soldier 50, Skeleton 50, Bandit 25, Psycho Steve 1. | [0005](../../design/0005-world-presence.md). Final numbers come from the M9 balance pass. |
-| Zombie Pigman Soldier and Cyberdemon spawn only in the Nether. | Not spawned naturally under 0005. | Open question 2. |
+| Zombie Pigman Soldier and Cyberdemon spawn only in the Nether; Super Mutants, Commandos, Dictator Dave and the Outcast have no world presence. | A Nether table (the Pigman Soldier, the Super Mutants by danger, the Cyberdemon as a rare spaced boss), an End table (Commando squads away from the center), red Military Bases under Dictator Dave and Outcast command posts in LuV-and-up silo complexes. See [Nether and End tables](#nether-and-end-tables-d353). | Owner direction, [D353](../../gregguns-icbm-spec/DECISIONS.md#d353-in-detail). |
 
 ## Integration points
 
@@ -79,9 +80,28 @@ Every GregGuns structure spawner (the Big Bunker's, the Alien Bug Nest's and the
 - **The client preview.** The client builds the spinning mob with a null world and reads `SpawnData` into it. The NPC skips all of the above without a world, so the preview has no gear and needs no server state.
 - **Source:** Minecraft 1.7.10 `MobSpawnerBaseLogic#updateSpawner` and `#func_98265_a` (MCP-decompiled with Forge 10.13.4.1614, which does not patch the class); `SpawnerAnimals#findChunksForSpawning` fires `CheckSpawn` before `getCanSpawnHere`.
 
+### Nether and End tables (D353)
+
+Three realms, each a table with a dimension list: `npcs.spawnDimensions` (default `[0]`), `npcs.netherSpawnDimensions` (`[-1]`) and `npcs.endSpawnDimensions` (`[1]`). A dimension in more than one list takes the first, in that order; a dimension in none has no natural NPC spawns. Each realm's rows are registered in its own biomes: Overworld rows in every biome that is neither `NETHER` nor `END`, Nether rows in the `NETHER` biomes, End rows in the `END` biomes. Mobs Info reads those lists, so the new homes show on its spawn tab.
+
+| Realm | Row | Danger from | Weight | Group | Flag |
+|---|---|---|---|---|---|
+| Nether | Zombie Pigman Soldier | 0 (the Nether is never below 1) | 15 | 1 to 2 | `zombies` |
+| Nether | Super Mutant (Basic) | 2 | 6 | 1 to 2 | `mutants` |
+| Nether | Heavy Super Mutant | 3 | 3 | 1 to 2 | `mutants` |
+| Nether | Elite Super Mutant | 4 | 2 | 1 to 2 | `mutants` |
+| Nether | Cyberdemon (boss) | 4 | 1 | 1 | `cyberdemon` |
+| End | Commando squad | 0 (the End is never below 2) | 1 | 2 to 3 | `military` |
+
+- **Danger by realm.** The Nether measures the Overworld distance a spot leads to: its distance from the world spawn's Nether spot, times 8, against `npcs.distanceLevel0..2`, plus 1. The End measures the distance from its center (0, 0), plus 2. The biome part is read in the Overworld only. A dimension in no list keeps the Overworld rule (silo complex guards on planets).
+- **The End keep-out.** No natural NPC spawns closer than `npcs.endMinDistance` (256) to the End's center, so the dragon's island stays clear. Hardcore Ender Expansion's towers start about 350 blocks out and its islands about 1,600 out ([MapGenTower#L23](https://github.com/GTNewHorizons/Hardcore-Ender-Expansion/blob/1.12.28-GTNH/src/main/java/chylex/hee/world/structure/tower/MapGenTower.java#L23), [MapGenIsland#L12-L14](https://github.com/GTNewHorizons/Hardcore-Ender-Expansion/blob/1.12.28-GTNH/src/main/java/chylex/hee/world/structure/island/MapGenIsland.java#L12-L14)), so Commandos meet the player out on the blobs, towers and islands.
+- **Boss spacing.** A boss row (the Cyberdemon) is denied while another of its kind stands within `npcs.bossSpacing` (128) blocks, counted in loaded chunks only (WGEN-27).
+- **Hardcore Ender Expansion.** It replaces the End biome object in preInit ([DimensionOverride#L28-L34](https://github.com/GTNewHorizons/Hardcore-Ender-Expansion/blob/1.12.28-GTNH/src/main/java/chylex/hee/world/DimensionOverride.java#L27-L33)) and clears other mods' rows only with `overrideBiomeMobs=true` ([BiomeGenHardcoreEnd#L29-L43](https://github.com/GTNewHorizons/Hardcore-Ender-Expansion/blob/1.12.28-GTNH/src/main/java/chylex/hee/world/biome/BiomeGenHardcoreEnd.java#L29-L43)); the pack has it off (`config/HardcoreEnderExpansion.cfg`). GregGuns registers in postInit, onto HEE's biome; HEE's chunk provider extends the vanilla End's, so the vanilla spawner reads that list. HEE has no `CheckSpawn` handler.
+- **EnderZoo and Infernal Mobs.** Unchanged: the rows register before EnderZoo's postInit, and Infernal Mobs rolls the new spawns like any NPC.
+
 ### Dimensions
 
-[0005](../../design/0005-world-presence.md) allows the Overworld only, so the default list is `[0]` and every other dimension is excluded without being named. For reference, the pack's own dimension settings:
+[0005](../../design/0005-world-presence.md) names three realms, so the default lists are `[0]`, `[-1]` and `[1]`, and every other dimension is excluded without being named. For reference, the pack's own dimension settings:
 
 | Dimension | ID | Pack config |
 |---|---|---|
@@ -91,7 +111,7 @@ Every GregGuns structure spawner (the Big Bunker's, the Alien Bug Nest's and the
 | Personal Space | 180 and up | `personalspace.cfg`, `firstDimensionId=180` |
 | Infernal Mobs blacklist | 50 | `InfernalMobs.cfg`, `dimensionIDBlackList` |
 
-Hardcore Ender Expansion works in the End (`overrideBiomeMobs=false`, `overpoweredMobs=true`) and has no hook into Overworld NPC spawns. It needs nothing from us.
+Hardcore Ender Expansion works in the End (`overrideBiomeMobs=false`, `overpoweredMobs=true`) and keeps the End table's row; see [Nether and End tables](#nether-and-end-tables-d353). It needs nothing from us.
 
 ## Requirements
 
@@ -109,6 +129,11 @@ Hardcore Ender Expansion works in the End (`overrideBiomeMobs=false`, `overpower
 | GGS-10-35 | The vanilla client preview path (entity with a null world, `SpawnData` read into it) works for every spawner NPC and rolls nothing. |
 | GGS-10-36 | A GregGuns spawner carried off its origin with its NBT is a plain vanilla spawner of its NPCs: the light checks apply and its NPCs start at danger 0. |
 | GGS-10-37 | With EnderIO loaded, breaking a GregGuns spawner drops no Broken Spawner and runs no extra spawn cycles. |
+| GGS-10-41 | Natural spawning has three realms, each a table with its own config dimension list: Overworld `[0]`, Nether `[-1]`, End `[1]`. A row registers in its realm's biomes only, and a kind is denied in a realm where it has no row. |
+| GGS-10-42 | The spawn danger follows the realm: the Overworld rule unchanged; the Nether, its distance times 8 against the distance steps, plus 1; the End, the distance from its center, plus 2. A natural spawn rolls its gear at that danger. |
+| GGS-10-43 | No natural NPC spawns within `npcs.endMinDistance` of the End's center. The Cyberdemon spawns alone and not while another stands within `npcs.bossSpacing`. |
+| GGS-10-44 | A red Military Base (`worldgen.redBaseChanceMilitaryBase`, a pure roll on the plan seed) has a red flag, a red pad and four standards, and its flag places Dictator Dave once at his post when the flag ticks with `npcs.miniBosses` on; he holds the post and persists. A blue base has a blue flag and pad and no commander. World generation spawns nobody. |
+| GGS-10-45 | The elite posts of a silo complex with a LuV or higher ceiling spawn the Commando, the Stormtrooper and the Outcast (`npcs.outcast`); below LuV they keep the Commando and the Stormtrooper. |
 
 ## Tests
 
@@ -126,9 +151,14 @@ Hardcore Ender Expansion works in the End (`overrideBiomeMobs=false`, `overpower
 | GGS-10-35 | Scenario `worldgen.spawner_preview`. |
 | GGS-10-36 | Unit tests `SpawnerDataTest`, `SpawnerNbtTest`. Scenario `worldgen.spawner_moved`. |
 | GGS-10-37 | Unit test `EnderIoSpawnersTest`. Scenario `worldgen.spawner_enderio` (real pack; skips without EnderIO). |
+| GGS-10-41 | Unit tests `SpawnRealmTest`, `SpawnCoreTest`. Scenarios `npc.spawn_dimension_gate`, `npc.spawn_nether`, `npc.spawn_end` (the realm's biome list and the world's own creature picker). |
+| GGS-10-42 | Unit test `SpawnRealmTest`. Scenarios `npc.spawn_nether`, `npc.spawn_end` (the spawned NPC's danger). |
+| GGS-10-43 | Unit test `SpawnRealmTest`. Scenarios `npc.spawn_end` (near the center denied), `npc.spawn_nether` (a second Cyberdemon denied). |
+| GGS-10-44 | Unit tests `CommandPostTest`, `CampFlagsTest`, `TileCampFlagNbtTest`, `FlagPostGeometryTest`. Scenarios `worldgen.camp_red_base`, `worldgen.camp_blue_base`. |
+| GGS-10-45 | Unit tests `SpawnerKindTest`, `ComplexContentsTest`, `NpcSpawnGateTest`. |
 
 ## Open questions
 
 1. **Resolved (0005 amended): real classes, no placeholder.** Spawn architecture was: Placeholder (Techguns) or real classes (GGS-10-26). The recommendation is real classes, because it removes the placeholder's side effects and gives Mobs Info real spawn data. It changes the Techguns design, so [0005](../../design/0005-world-presence.md) needs a short amendment. The danger-level equipment roll then needs a hook that carries the danger from the `CheckSpawn` position to the NPC, which is an M7 implementation choice.
-2. **Resolved (0005 amended): egg, command or camp only.** Nether-only NPCs were: The Pigman Soldier and Cyberdemon exist only in the Nether in Techguns. Under 0005 they never spawn naturally and are reachable only by egg or command. Either say so in 0005, or add a Nether dimension record. 0005 itself says non-Overworld support needs a new record.
+2. **Resolved (0005 amended twice; now D353): a Nether table.** First resolved as egg, command or camp only. Nether-only NPCs were: The Pigman Soldier and Cyberdemon exist only in the Nether in Techguns. Under 0005 they never spawn naturally and are reachable only by egg or command. Either say so in 0005, or add a Nether dimension record. 0005 itself says non-Overworld support needs a new record.
 3. **Order of `before:EnderZoo`.** If other mods' biomes register after GregGuns' `postInit`, a biome list built at that point is incomplete. Check on a pack with Biomes O' Plenty and RWG, and fall back to a late-bound biome lookup if needed.

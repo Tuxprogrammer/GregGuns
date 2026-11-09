@@ -81,7 +81,7 @@ class SpawnCoreTest {
     }
 
     @Test
-    void netherOnlyAndDisabledHaveNoEntry() {
+    void netherKindsAndDisabledHaveNoOverworldEntry() {
         SpawnTable.Settings s = new SpawnTable.Settings();
         s.zombies = false;
         s.weightBandit = 0;
@@ -90,6 +90,7 @@ class SpawnCoreTest {
         assertNull(t.entry(NpcMob.BANDIT));
         assertNull(t.entry(NpcMob.ZOMBIE_PIGMAN_SOLDIER));
         assertNull(t.entry(NpcMob.CYBER_DEMON));
+        assertNull(t.entry(NpcMob.ZOMBIE_PIGMAN_SOLDIER, SpawnRealm.NETHER), "the zombies flag covers the Pigman");
         Random rnd = new Random(2);
         for (int i = 0; i < 1000; i++) {
             NpcMob m = t.pick(5, rnd);
@@ -100,22 +101,20 @@ class SpawnCoreTest {
     @Test
     void gateAppliesRulesInOrder() {
         SpawnTable t = SpawnTable.build(new SpawnTable.Settings(), m -> true);
-        for (int dim : new int[] { -1, 1, 7, 28, 180 }) {
+        SpawnRealm.Dimensions dims = SpawnRealm.Dimensions.defaults();
+        SpawnGate.Limits limits = new SpawnGate.Limits(4, 8, 256);
+        for (int dim : new int[] { 7, 28, 180 }) {
             assertEquals(
                 SpawnGate.Decision.DENY_DIMENSION,
-                SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, dim, OVERWORLD, 5, 0, 0, 4, 8));
+                SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, SpawnRealm.of(dim, dims), 5, 0, 0, 0, 0, limits));
         }
-        assertEquals(SpawnGate.Decision.ALLOW, SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, 0, OVERWORLD, 0, 0, 0, 4, 8));
-        assertEquals(SpawnGate.Decision.DENY_DANGER, SpawnGate.decide(t, NpcMob.BANDIT, 0, OVERWORLD, 1, 0, 0, 4, 8));
-        assertEquals(
-            SpawnGate.Decision.DENY_CAP,
-            SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, 0, OVERWORLD, 0, 4, 0, 4, 8));
-        assertEquals(
-            SpawnGate.Decision.DENY_CAP,
-            SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, 0, OVERWORLD, 0, 0, 8, 4, 8));
-        assertEquals(SpawnGate.Decision.NOT_MANAGED, SpawnGate.decide(t, NpcMob.NPC_TEST, 0, OVERWORLD, 0, 0, 0, 4, 8));
-        assertEquals(
-            SpawnGate.Decision.NOT_MANAGED,
-            SpawnGate.decide(t, NpcMob.CYBER_DEMON, -1, OVERWORLD, 5, 0, 0, 4, 8));
+        SpawnRealm ow = SpawnRealm.OVERWORLD;
+        assertEquals(SpawnGate.Decision.ALLOW, SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, ow, 0, 0, 0, 0, 0, limits));
+        assertEquals(SpawnGate.Decision.DENY_DANGER, SpawnGate.decide(t, NpcMob.BANDIT, ow, 1, 0, 0, 0, 0, limits));
+        assertEquals(SpawnGate.Decision.DENY_CAP, SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, ow, 0, 0, 4, 0, 0, limits));
+        assertEquals(SpawnGate.Decision.DENY_CAP, SpawnGate.decide(t, NpcMob.ZOMBIE_FARMER, ow, 0, 0, 0, 8, 0, limits));
+        assertEquals(SpawnGate.Decision.NOT_MANAGED, SpawnGate.decide(t, NpcMob.NPC_TEST, ow, 0, 0, 0, 0, 0, limits));
+        assertEquals(SpawnGate.Decision.NOT_MANAGED, SpawnGate.decide(t, NpcMob.OUTCAST, ow, 5, 0, 0, 0, 0, limits));
+        assertEquals(SpawnGate.Decision.DENY_REALM, SpawnGate.decide(t, NpcMob.CYBER_DEMON, ow, 5, 0, 0, 0, 0, limits));
     }
 }

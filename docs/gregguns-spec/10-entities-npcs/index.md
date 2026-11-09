@@ -2,7 +2,7 @@
 
 ## Overview
 
-This area records how GregGuns hostile NPCs plug into the GTNH 2.9.0-RC-2 pack. The Techguns baseline is [techguns-spec/10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md). Evidence rules are in [INTEGRATION.md](../INTEGRATION.md). [0005](../../design/0005-world-presence.md) governs world presence: Overworld only, config-gated, halved weights.
+This area records how GregGuns hostile NPCs plug into the GTNH 2.9.0-RC-2 pack. The Techguns baseline is [techguns-spec/10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md). Evidence rules are in [INTEGRATION.md](../INTEGRATION.md). [0005](../../design/0005-world-presence.md) governs world presence: Overworld, Nether and End spawn tables, config-gated, halved Overworld weights; every mob has a home ([D353](../../gregguns-icbm-spec/DECISIONS.md#d353-in-detail)).
 
 The main findings:
 
@@ -80,7 +80,7 @@ The main findings:
 ## Open questions
 
 1. **Spawn architecture.** Keep Techguns' placeholder, or register real classes with a `CheckSpawn` gate. Recommended: real classes. Needs an amendment to [0005](../../design/0005-world-presence.md) ([spawning.md](spawning.md)).
-2. **Nether-only NPCs** (Pigman Soldier, Cyberdemon). Under 0005 they never spawn naturally. Needs a line in 0005 or a Nether record ([spawning.md](spawning.md)).
+2. **Resolved (D353): Nether NPCs** (Pigman Soldier, Cyberdemon). They spawn in the Nether table ([spawning.md](spawning.md#nether-and-end-tables-d353)).
 3. **Tier ceilings for NPC drops.** Psycho Steve's fixed Chainsaw is HV, above the LV-MV surface default, and the infernal bands need a ceiling. Needs a record shared with [06-items](../06-items/pack-loot.md) ([mob-drops-nei.md](mob-drops-nei.md), [infernal-mobs.md](infernal-mobs.md)).
 4. **Ranged damage-source classes.** The `EntityDamageSourceIndirect` rule refines [0004](../../design/0004-damage-model.md). A line in 0004 would stop M1 building the wrong base class ([infernal-mobs.md](infernal-mobs.md)).
 5. **Is Infernal Mobs' health hack effective?** A test settles it, not a record ([infernal-mobs.md](infernal-mobs.md)).

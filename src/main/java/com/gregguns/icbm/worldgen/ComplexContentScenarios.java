@@ -124,7 +124,8 @@ public final class ComplexContentScenarios {
                         "damaged body lacks its flag");
                 }
             }
-            for (SpawnerKind k : new SpawnerKind[] { SpawnerKind.SILO_GUARD, SpawnerKind.SILO_ELITE }) {
+            for (SpawnerKind k : new SpawnerKind[] { SpawnerKind.SILO_GUARD, SpawnerKind.SILO_ELITE,
+                SpawnerKind.SILO_COMMAND }) {
                 out.check(VanillaSpawners.nbt(k, 0, 64, 0, 0) != null, k + " has no registered mob for its spawner");
             }
             return out.build();

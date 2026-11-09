@@ -55,6 +55,14 @@ class SpawnerKindTest {
         assertEquals(Arrays.asList(NpcMob.COMMANDO, NpcMob.STORMTROOPER), SpawnerKind.SILO_ELITE.mobs());
         assertSame(SpawnerKind.SILO_GUARD, SpawnerKind.byLayoutTag("spawner.silo_guard"));
         assertSame(SpawnerKind.SILO_ELITE, SpawnerKind.byLayoutTag("spawner.silo_elite"));
+        assertEquals(
+            Arrays.asList(NpcMob.COMMANDO, NpcMob.STORMTROOPER, NpcMob.OUTCAST),
+            SpawnerKind.SILO_COMMAND.mobs());
+        assertSame(SpawnerKind.SILO_COMMAND, SpawnerKind.byLayoutTag("spawner.silo_command"));
+        assertTrue(SpawnerKind.SILO_COMMAND.isSiloPost());
+        assertTrue(SpawnerKind.SILO_COMMAND.isEliteSiloPost());
+        assertTrue(SpawnerKind.SILO_ELITE.isEliteSiloPost());
+        assertEquals(false, SpawnerKind.SILO_GUARD.isEliteSiloPost());
         assertTrue(SpawnerKind.SILO_GUARD.isSiloPost());
         assertEquals(false, SpawnerKind.ZOMBIE.isSiloPost());
     }

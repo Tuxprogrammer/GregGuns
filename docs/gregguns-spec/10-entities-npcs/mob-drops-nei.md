@@ -76,14 +76,14 @@ The class name and package above are a placeholder until M7 fixes them.
 | Skeleton Soldier | Overworld, danger 1 | Revolver (LV), Thompson (MV), Hand Cannon (Steam) | T1 Combat or Scout (LV, Steam) | none | MV |
 | Bandit | Overworld, danger 2 | 9mm Pistol, Revolver, Sawed Off, Bolt Action (LV), AK47, Thompson (MV) | T1 Scout (Steam) | none | MV |
 | Psycho Steve | Overworld, danger 1, weight 3 | Chainsaw (**HV**) | T1 Miner (Steam) | Chainsaw (**HV**), Fuel Tank | HV: **exceeds the 0005 default** |
-| Army Soldier | camp flags | M4, Combat Shotgun (MV), Bolt Action (LV) | T2 Combat (MV) | none | MV |
-| Commando | camp flags | silenced M4 (MV) | T2 Commando (MV) | none | MV |
-| Zombie Pigman Soldier | Nether only | up to Rocket Launcher, LMG, Flamethrower (HV) | T2 Combat (MV) | none | HV, and not natural under 0005 |
-| Cyberdemon | Nether only | Cyberdemon Blaster (not in 0001) | none | none | not in 0001 |
-| Outcast | egg only | Laser, Minigun, Bio, Tesla (EV), Flamethrower, LMG (HV), Grim Reaper (LuV) | Power Armor (IV) | none | LuV |
-| Stormtrooper | egg only | Blaster Rifle (IV), Laser (EV) | T3 Miner HEV suit (not in 0001) | none | IV |
-| Super Mutants | egg only | Rocket Launcher (HV), AK47, Combat Shotgun (MV), Laser (EV) | none | none | EV |
-| Dictator Dave | egg only | Golden Revolver (IV) | T2 Beret and T1 mix | Golden Revolver (IV), 9mm rounds | IV |
+| Army Soldier | camp and carrier flags, silo guard posts | M4, Combat Shotgun (MV), Bolt Action (LV) | T2 Combat (MV) | none | MV |
+| Commando | carrier flags, silo posts, End squads (D353) | silenced M4 (MV) | T2 Commando (MV) | none | MV |
+| Zombie Pigman Soldier | Nether, natural (D353) | up to Rocket Launcher, LMG, Flamethrower (HV) | T2 Combat (MV) | none | HV |
+| Cyberdemon | deep Nether, rare boss (D353) | Cyberdemon Blaster (not in 0001) | none | none | not in 0001 |
+| Outcast | silo command posts, LuV and up (D353) | Laser, Minigun, Bio, Tesla (EV), Flamethrower, LMG (HV), Grim Reaper (LuV) | Power Armor (IV) | none | LuV |
+| Stormtrooper | silo elite and command posts | Blaster Rifle (IV), Laser (EV) | T3 Miner HEV suit (not in 0001) | none | IV |
+| Super Mutants | Nether by danger (D353) | Rocket Launcher (HV), AK47, Combat Shotgun (MV), Laser (EV) | none | none | EV |
+| Dictator Dave | red Military Bases, one per base (D353) | Golden Revolver (IV) | T2 Beret and T1 mix | Golden Revolver (IV), 9mm rounds | IV |
 
 Held-gun and armor tiers come from [0001](../../design/0001-tier-map.md). Rosters come from [per-mob.md](../../techguns-spec/10-entities-npcs/per-mob.md). Egg-only NPCs are not a progression problem while only eggs, commands and creative tools spawn them. They become one the moment a spawner block or camp flag places them.
 
@@ -146,6 +146,6 @@ Every mob that carries a gun with loose rounds or a tank has that ammo in its ta
 ## Open questions
 
 1. **Psycho Steve** drops a Chainsaw, an HV item under [0001](../../design/0001-tier-map.md), as a fixed drop from a surface danger-1 mini-boss. [0005](../../design/0005-world-presence.md) says surface loot defaults to LV-MV. Options: cap his held weapon and drop at MV, or accept HV for this one NPC. It needs a one-line record.
-2. **Nether-only NPCs.** The Zombie Pigman Soldier and Cyberdemon spawn only in the Nether in Techguns, and 0005 limits natural spawning to the Overworld. Under 0005 they never spawn naturally. See [spawning.md](spawning.md).
+2. **Resolved (D353): Nether NPCs.** The Zombie Pigman Soldier and the Cyberdemon spawn naturally in the Nether table, with the Super Mutants. See [spawning.md](spawning.md#nether-and-end-tables-d353).
 3. **T3 Miner (HEV suit) and the Cyberdemon Blaster** have no row in 0001. The ceiling check cannot cover them until a tier is assigned.
 4. **Infernal Drops in NEI.** GregGuns tiered drops cannot appear on that page without joining the global lists. See [infernal-mobs.md](infernal-mobs.md), open question 3.

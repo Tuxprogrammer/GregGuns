@@ -56,6 +56,22 @@ public interface CampSpawnPort {
     boolean spawn(World world, String npcName, double x, double y, double z);
 
     /**
+     * Spawns a camp's commander at his post (a red base's Dictator Dave, D353). The real port keeps him near the post
+     * when he is not fighting. The default spawns nothing.
+     *
+     * @param world   the world
+     * @param npcName the entity name
+     * @param x       block-centered X of the post
+     * @param y       Y of the post
+     * @param z       block-centered Z of the post
+     * @param radius  how far he strays from the post when idle, blocks
+     * @return true when he was spawned
+     */
+    default boolean spawnAtPost(World world, String npcName, double x, double y, double z, int radius) {
+        return false;
+    }
+
+    /**
      * Called when a flag is broken, after the block is gone. The real port sends a helicopter against the player; it
      * only acts when {@code UtilityConfig.campFlagBreakHelicopter} is on, which the caller checks.
      *

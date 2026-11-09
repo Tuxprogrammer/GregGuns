@@ -547,7 +547,8 @@ public final class ComplexDimScenarios {
                     cut++;
                 } else if (p.kind() == Placement.Kind.SPAWNER) {
                     TileEntity t = w.getTileEntity(x, y, z);
-                    boolean deep = p.spawner() == com.gregguns.worldgen.spawner.SpawnerKind.SILO_ELITE;
+                    boolean deep = p.spawner() != null && p.spawner()
+                        .isEliteSiloPost();
                     if (deep) {
                         deepWanted++;
                         if (t instanceof net.minecraft.tileentity.TileEntityMobSpawner) deepFound++;

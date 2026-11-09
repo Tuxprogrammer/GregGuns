@@ -39,7 +39,7 @@ class CampFlagsTest {
 
         @Override
         public void setBlock(int x, int y, int z, Block block, int meta) {
-            blocks.add(new int[] { x, y, z });
+            blocks.add(new int[] { x, y, z, meta });
         }
 
         @Override
@@ -97,6 +97,36 @@ class CampFlagsTest {
                     .flags());
             assertEquals(0, cap.spawns, "worldgen never spawns an NPC (Q12)");
         }
+    }
+
+    @Test
+    void aRedFlagCarriesItsClothAndItsCommander() {
+        PlacedCamp camp = CampPlan.generate(21, 48, 36)
+            .place(300, 70, -200, 1);
+        PopulateWindow w = windowOf(camp);
+        int[] post = CommandPost.post(camp);
+        Capture cap = new Capture();
+        assertTrue(
+            CampFlags.place(
+                new ClippingSink(w, cap),
+                w,
+                FLAG,
+                camp.flagSpec(0.75F)
+                    .withCommand(CampFaction.RED, CommandPost.COMMANDER, post),
+                TileCampFlag::new,
+                p -> {}));
+        assertEquals(CampFaction.RED.flagMeta(), cap.blocks.get(0)[3], "the cloth is in the block's metadata");
+        TileCampFlag tile = (TileCampFlag) cap.tiles.get(0);
+        assertEquals("DictatorDave", tile.commander());
+        assertTrue(tile.commanderPending(), "placed later by the flag's tick, never by worldgen");
+        assertEquals(Arrays.toString(post), Arrays.toString(tile.commanderPost()));
+        assertEquals(0, cap.spawns);
+
+        Capture blue = new Capture();
+        assertTrue(
+            CampFlags.place(new ClippingSink(w, blue), w, FLAG, camp.flagSpec(0.75F), TileCampFlag::new, p -> {}));
+        assertEquals(CampFaction.BLUE.flagMeta(), blue.blocks.get(0)[3]);
+        assertFalse(((TileCampFlag) blue.tiles.get(0)).commanderPending(), "a blue base has no commander");
     }
 
     @Test

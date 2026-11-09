@@ -134,6 +134,15 @@ A general worldgen rule: every GregGuns structure carves its space out of the wo
 - **Cost:** one top-down scan of each level column from its top filled section, and up to 24 reads under it; a bank column stops at its cut height. Measured per structure in the `worldgen.site_slope_` scenarios.
 - **Supersedes** the Techguns-style flatten band (each column clamped to within 4 of the ground Y): with the structure written at one Y it left up to 3 blocks of air under a part and up to 4 of hillside over it.
 
+### Military Base: faction and command post (D353)
+
+Every Military Base belongs to a side, a pure roll on its plan seed (`CampFaction.of`), so every populate window agrees without saved state: red with chance `worldgen.redBaseChanceMilitaryBase` (20%), blue otherwise.
+
+- **The flag.** The Camp Flag block's metadata is the side (0 blue, 1 red), and the flag renderer tints its gray cloth by it. The Aircraft Carrier's flag is blue.
+- **The command pad.** The flag leaf holds no building, so `CommandPost` writes a 5 by 5 pad sunk into the ground under the flag, in camp-local terms and clipped to the leaf: a wool ring around stained clay, blue (11) or red (14). It writes at the column's ground, like the roads, so site preparation's level pad (D351) carries it.
+- **Red standards.** A red base adds four standards 3 out from the flag each way: two fence posts with a red wool block on top.
+- **The commander.** A red base's flag tile holds Dictator Dave and his post, the pad cell 2 east of the flag (camp-local, so it turns with the base). World generation spawns nobody (Q12); the flag's tick places him once, through the camp port, while `npcs.miniBosses` is on and his chunk is loaded. He holds his post (radius 6, saved on him) and is never replaced. Requirement GGS-10-44 in [spawning.md](../10-entities-npcs/spawning.md).
+
 ### Spawner marks
 
 - **What a mark becomes.** A `spawner.<kind>` mark (`spawner.zombie_hole` in the Big Bunker, `spawner.bug_hole` in the Alien Bug Nest, `spawner.silo_guard` and `spawner.silo_elite` in ICBM complexes) becomes the vanilla `minecraft:mob_spawner`. `VanillaSpawners` is the spawner hook; it writes the block and a `TileEntityMobSpawner` through the clipped sink. GregGuns has no spawner block of its own ([design record 0024](../../design/0024-vanilla-spawners.md)).

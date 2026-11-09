@@ -350,7 +350,7 @@ public final class ComplexContents {
             }
         }
         if (roomId >= 0) {
-            spawners(marks, band, collapsed, p, seed, roomId, out);
+            spawners(marks, band, collapsed, p, seed, roomId, ceiling, out);
         }
     }
 
@@ -449,13 +449,26 @@ public final class ComplexContents {
         return w.length - 1;
     }
 
+    /** Lowest ceiling (GT voltage index, LuV) whose elite posts are command posts (D353). */
+    public static final int COMMAND_POST_CEILING = 6;
+
+    /**
+     * @param ceiling the complex's ceiling (GT voltage index)
+     * @return the elite spawner kind at that ceiling: the command post (with the Outcast) from LuV up, else the elite
+     *         post
+     */
+    public static SpawnerKind elitePost(int ceiling) {
+        return ceiling >= COMMAND_POST_CEILING ? SpawnerKind.SILO_COMMAND : SpawnerKind.SILO_ELITE;
+    }
+
     /**
      * The spawners of one room (D326): the first {@link #spawnersIn} of its spawner spots, in the spots' order (the
      * layout lists the farthest-apart first). A caved-in room holds none. A spot makes an elite spawner at the deeper
-     * bands 40% of the time, never at the abandoned level (D284's weaker holdouts).
+     * bands 40% of the time, never at the abandoned level (D284's weaker holdouts). At a LuV or higher ceiling the
+     * elite spawner is a command post, which adds the Outcast (D353).
      */
     private static void spawners(List<Mark> marks, int band, boolean collapsed, ActivityProfile p, long seed,
-        int roomId, List<Placement> out) {
+        int roomId, int ceiling, List<Placement> out) {
         if (collapsed) {
             return;
         }
@@ -472,7 +485,7 @@ public final class ComplexContents {
                 && Mix.unit(Mix.of(seed, S_ELITE, m.x() * 4096L + m.z(), m.y())) < 0.4;
             out.add(
                 Placement.at(Kind.SPAWNER, m.x(), m.y(), m.z())
-                    .spawner(elite ? SpawnerKind.SILO_ELITE : SpawnerKind.SILO_GUARD)
+                    .spawner(elite ? elitePost(ceiling) : SpawnerKind.SILO_GUARD)
                     .build());
         }
     }

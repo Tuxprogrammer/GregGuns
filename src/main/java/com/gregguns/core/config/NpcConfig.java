@@ -11,26 +11,38 @@ import com.gtnewhorizon.gtnhlib.config.Config;
 @Config(modid = "gregguns", category = "npcs")
 public class NpcConfig {
 
-    @Config.Comment({ "Dimension ids in which NPCs may spawn naturally. Other dimensions are skipped silently.",
-        "Default: 0 (the Overworld)." })
+    @Config.Comment({
+        "Dimension ids that use the Overworld spawn table (zombies, Skeleton Soldiers, bandits, Psycho Steve).",
+        "A dimension in no spawn list has no natural NPC spawns, silently.", "Default: 0 (the Overworld)." })
     public static int[] spawnDimensions = { 0 };
 
-    @Config.Comment({ "Zombie Soldier, Zombie Farmer and Zombie Miner spawn naturally.", "Default: true." })
+    @Config.Comment({
+        "Dimension ids that use the Nether spawn table (Zombie Pigman Soldiers, Super Mutants, the Cyberdemon).",
+        "Only biomes of the NETHER type hold these spawns.", "Default: -1 (the Nether)." })
+    public static int[] netherSpawnDimensions = { -1 };
+
+    @Config.Comment({ "Dimension ids that use the End spawn table (Commando squads).",
+        "Only biomes of the END type hold these spawns.", "Default: 1 (the End)." })
+    public static int[] endSpawnDimensions = { 1 };
+
+    @Config.Comment({ "Zombie Soldier, Zombie Farmer and Zombie Miner spawn naturally in the Overworld,",
+        "and the Zombie Pigman Soldier in the Nether.", "Default: true." })
     public static boolean zombies = true;
 
-    @Config.Comment({ "Skeleton Soldier spawns naturally. Army Soldier and Commando come from camps and eggs only.",
-        "Default: true." })
+    @Config.Comment({ "Skeleton Soldier spawns naturally in the Overworld and Commando squads in the End.",
+        "Army Soldiers come from camps, carriers and silo complexes.", "Default: true." })
     public static boolean military = true;
 
     @Config.Comment({ "Bandits spawn naturally.", "Default: true." })
     public static boolean bandits = true;
 
     @Config.Comment({
-        "Mini-bosses (Psycho Steve, Dictator Dave) may spawn: naturally, from eggs and from camps. Off, none does.",
-        "Default: true." })
+        "Mini-bosses may spawn: Psycho Steve naturally, Dictator Dave at the post of a red Military Base,",
+        "and both from eggs. Off, none does.", "Default: true." })
     public static boolean miniBosses = true;
 
-    @Config.Comment({ "Super Mutants may spawn (camps, eggs and spawners). Off, none does.", "Default: true." })
+    @Config.Comment({ "Super Mutants may spawn (naturally in the Nether, and from eggs). Off, none does.",
+        "Default: true." })
     public static boolean mutants = true;
 
     @Config.Comment({
@@ -38,8 +50,14 @@ public class NpcConfig {
         "Default: true." })
     public static boolean alienBug = true;
 
-    @Config.Comment({ "The Cyberdemon may spawn (egg and command only). Off, the egg does nothing.", "Default: true." })
+    @Config.Comment({ "The Cyberdemon may spawn (a rare boss deep in the Nether, and from eggs). Off, none does.",
+        "Default: true." })
     public static boolean cyberdemon = true;
+
+    @Config.Comment({
+        "The Outcast may spawn (the elite posts of silo complexes with a LuV or higher ceiling, and eggs).",
+        "Off, none does.", "Default: true." })
+    public static boolean outcast = true;
 
     @Config.Comment({ "The Attack Helicopter may spawn (camps, and when a Camp Flag breaks).", "Default: true." })
     public static boolean helicopter = true;
@@ -68,6 +86,44 @@ public class NpcConfig {
     @Config.Comment({ "Spawn weight of Psycho Steve. 0 disables it.", "Default: 1." })
     @Config.RangeInt(min = 0, max = 10000)
     public static int weightPsychoSteve = 1;
+
+    @Config.Comment({ "Nether spawn weight of the Zombie Pigman Soldier. 0 disables it.", "Default: 15." })
+    @Config.RangeInt(min = 0, max = 10000)
+    public static int weightNetherPigmanSoldier = 15;
+
+    @Config.Comment({ "Nether spawn weight of the Super Mutant (Basic), from Nether danger 2. 0 disables it.",
+        "Default: 6." })
+    @Config.RangeInt(min = 0, max = 10000)
+    public static int weightNetherMutantBasic = 6;
+
+    @Config.Comment({ "Nether spawn weight of the Heavy Super Mutant, from Nether danger 3. 0 disables it.",
+        "Default: 3." })
+    @Config.RangeInt(min = 0, max = 10000)
+    public static int weightNetherMutantHeavy = 3;
+
+    @Config.Comment({ "Nether spawn weight of the Elite Super Mutant, from Nether danger 4. 0 disables it.",
+        "Default: 2." })
+    @Config.RangeInt(min = 0, max = 10000)
+    public static int weightNetherMutantElite = 2;
+
+    @Config.Comment({ "Nether spawn weight of the Cyberdemon, from Nether danger 4, one at a time. 0 disables it.",
+        "Default: 1." })
+    @Config.RangeInt(min = 0, max = 10000)
+    public static int weightNetherCyberdemon = 1;
+
+    @Config.Comment({ "End spawn weight of a Commando squad (2 to 3). 0 disables it.", "Default: 1." })
+    @Config.RangeInt(min = 0, max = 10000)
+    public static int weightEndCommando = 1;
+
+    @Config.Comment({ "No NPC spawns naturally in the End closer than this to its center (0, 0), in blocks,",
+        "so the dragon's island stays clear.", "Default: 256." })
+    @Config.RangeInt(min = 0, max = 100000)
+    public static int endMinDistance = 256;
+
+    @Config.Comment({ "A natural boss (the Cyberdemon) does not spawn while another of its kind is within this many",
+        "blocks (a square, full height, loaded chunks only).", "Default: 128." })
+    @Config.RangeInt(min = 0, max = 1024)
+    public static int bossSpacing = 128;
 
     @Config.Comment({ "Distance from the world spawn (blocks) at which spawn danger level 0 ends and level 1 begins.",
         "Default: 500." })

@@ -39,24 +39,43 @@ public final class NpcCampPort implements CampSpawnPort {
 
     @Override
     public boolean spawn(World world, String npcName, double x, double y, double z) {
+        return place(world, npcName, x, y, z) != null;
+    }
+
+    /**
+     * Places a red base's commander and gives him his post (D353): a {@link PostedNpc} keeps to it when idle. Refused
+     * like any camp spawn: an unknown or switched-off kind ({@code npcs.miniBosses} for Dictator Dave) or an unloaded
+     * chunk.
+     */
+    @Override
+    public boolean spawnAtPost(World world, String npcName, double x, double y, double z, int radius) {
+        EntityLiving living = place(world, npcName, x, y, z);
+        if (living instanceof PostedNpc) {
+            ((PostedNpc) living).setPost((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z), radius);
+        }
+        return living != null;
+    }
+
+    /** Creates, places and rolls one NPC; null when refused. */
+    private static EntityLiving place(World world, String npcName, double x, double y, double z) {
         NpcMob mob = NpcMob.byName(npcName);
         if (world.isRemote || mob == null || !NpcRegistry.isRegistered(mob) || !NpcSpawnGate.allowed(mob)) {
-            return false;
+            return null;
         }
         int cx = (int) Math.floor(x) >> 4;
         int cz = (int) Math.floor(z) >> 4;
         if (!world.getChunkProvider()
             .chunkExists(cx, cz)) {
-            return false;
+            return null;
         }
         Entity e = EntityList.createEntityByName(mob.fullName(), world);
         if (!(e instanceof EntityLiving)) {
-            return false;
+            return null;
         }
         EntityLiving living = (EntityLiving) e;
         living.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
         living.onSpawnWithEgg(null);
-        return world.spawnEntityInWorld(living);
+        return world.spawnEntityInWorld(living) ? living : null;
     }
 
     @Override

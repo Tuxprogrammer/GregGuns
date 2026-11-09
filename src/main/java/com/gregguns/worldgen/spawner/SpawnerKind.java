@@ -15,7 +15,8 @@ import com.gregguns.entity.npc.NpcMob;
  *
  * <p>
  * The zombie spawner of the Big Bunker spawns the three zombie NPCs and the bug spawner of the Alien Bug Nest spawns
- * the Alien Bug (PLAN-M8 G11). The two silo posts spawn the ICBM complex guards (D36).
+ * the Alien Bug (PLAN-M8 G11). The silo posts spawn the ICBM complex guards (D36); a complex with a LuV or higher
+ * ceiling makes its elite posts command posts, which add the Outcast (D353).
  *
  * <p>
  * Usage: {@code SpawnerKind.byLayoutTag("spawner.zombie_hole")}, then
@@ -31,7 +32,12 @@ public enum SpawnerKind {
     /** Silo guard post (ICBM complexes, D36): the Army Soldier and the Commando. */
     SILO_GUARD("silo_guard", NpcMob.ARMY_SOLDIER, NpcMob.COMMANDO),
     /** Silo elite post (ICBM complexes, D36): the Commando and, deeper in, the Stormtrooper. */
-    SILO_ELITE("silo_elite", NpcMob.COMMANDO, NpcMob.STORMTROOPER);
+    SILO_ELITE("silo_elite", NpcMob.COMMANDO, NpcMob.STORMTROOPER),
+    /**
+     * Silo command post: the elite post of a complex whose ceiling is LuV or higher (D353). The Outcast, a LuV mob,
+     * joins the Commando and the Stormtrooper.
+     */
+    SILO_COMMAND("silo_command", NpcMob.COMMANDO, NpcMob.STORMTROOPER, NpcMob.OUTCAST);
 
     /** Prefix of every spawner layout mark. */
     public static final String TAG_PREFIX = "spawner.";
@@ -51,7 +57,12 @@ public enum SpawnerKind {
 
     /** @return true for the silo posts of ICBM complexes (D36) */
     public boolean isSiloPost() {
-        return this == SILO_GUARD || this == SILO_ELITE;
+        return this == SILO_GUARD || isEliteSiloPost();
+    }
+
+    /** @return true for the deeper silo posts: the elite post and the command post (D353) */
+    public boolean isEliteSiloPost() {
+        return this == SILO_ELITE || this == SILO_COMMAND;
     }
 
     /** @return the layout mark tag, for example {@code spawner.zombie_hole} */
