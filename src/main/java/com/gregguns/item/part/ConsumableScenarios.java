@@ -26,6 +26,7 @@ import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 /**
  * In-game checks of Bandages and the Medkit with a real server player: the right click reaches the server the way the
@@ -70,6 +71,16 @@ public final class ConsumableScenarios {
         // onUpdateEntity opens the player's statistics file every 20th tick of its life; this player has none to open.
         p.ticksExisted = 1;
         p.onUpdateEntity();
+    }
+
+    /**
+     * Ticks left on the player's current item use. The getter is client-only in 1.7.10, so the server reads the field
+     * (MCP {@code itemInUseCount}, SRG {@code field_71072_f}).
+     */
+    private static int useCount(EntityPlayerMP p) {
+        Integer count = ReflectionHelper
+            .getPrivateValue(net.minecraft.entity.player.EntityPlayer.class, p, "itemInUseCount", "field_71072_f");
+        return count == null ? -1 : count;
     }
 
     /** Right-clicks the air with {@code stack} in slot 0, as the server handles the click packet. */
@@ -148,7 +159,7 @@ public final class ConsumableScenarios {
             try {
                 rightClick(p, stack);
                 out.check(p.isUsingItem(), "the right click starts using it");
-                out.checkEquals("use time in ticks", spec.useTicks(), p.getItemInUseCount());
+                out.checkEquals("use time in ticks", spec.useTicks(), useCount(p));
                 int ticks = 0;
                 while (p.isUsingItem() && ticks < spec.useTicks() + 10) {
                     tick(p);
