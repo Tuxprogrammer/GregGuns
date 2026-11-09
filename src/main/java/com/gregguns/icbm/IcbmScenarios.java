@@ -34,9 +34,11 @@ final class IcbmScenarios {
         com.gregguns.icbm.worldgen.ComplexLevelScenarios.registerAll(complex);
         com.gregguns.icbm.worldgen.FixtureScenarios.registerAll(complex);
         com.gregguns.icbm.complex.gen.MachineFacingScenarios.registerAll(complex);
+        com.gregguns.icbm.complex.gen.ComplexKeepScenarios.registerAll(complex);
         com.gregguns.icbm.complex.gen.RoleAuditScenarios.registerAudited(complex, registry);
         com.gregguns.icbm.complex.palette.PaletteScenarios.registerAll(registry);
         com.gregguns.icbm.worldgen.I6VisualSetups.registerAll(registry);
+        com.gregguns.icbm.worldgen.OreAuditSetups.registerAll(registry);
         I7PlayChecks.registerAll(registry);
     }
 

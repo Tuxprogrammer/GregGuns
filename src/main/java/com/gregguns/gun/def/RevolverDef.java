@@ -19,7 +19,9 @@ import com.gregguns.recipe.RevolverRecipes;
  * Spec: sheets-handguns-smgs.md, "Revolver", section 3: damage 8 falling to 6 between 12 and 20 blocks, lifetime 25
  * ticks at 1.5 blocks per tick, spread 0.025, no scope, semi-auto every 6 ticks, 6 rounds loaded straight from one 9mm
  * bullet item (no magazine, no empty container), 45 tick reload, AI range 18 / attack time 90 / burst 6 / delay 20,
- * recoil 6 ticks and muzzle flash 5 ticks.
+ * recoil 6 ticks and muzzle flash 5 ticks. Deviation (design record 0026): it loads one chamber at a time
+ * ({@code ReloadMode.CHAMBER}, 45 / 6 ticks each); the bullet is paid for when its first round goes in and the other
+ * five wait on the gun as chamber credit.
  *
  * <p>
  * Recipe (recipes.md, LV table): Iron Barrel, Mechanical Parts, Wooden Stock, 2 steel plates, 4 steel screws and a
@@ -40,7 +42,7 @@ public final class RevolverDef {
         .fire(FireMode.SEMI, 6)
         .magazine(6)
         .ammoType(AmmoIds.NINE_MM)
-        .reloadMode(ReloadMode.MAGAZINE, 1)
+        .reloadMode(ReloadMode.CHAMBER, 1)
         .reloadTicks(45)
         .projectile(1.5, 25)
         .penetration(0)

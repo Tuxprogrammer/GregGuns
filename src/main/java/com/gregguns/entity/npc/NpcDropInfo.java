@@ -19,8 +19,9 @@ import com.gregguns.entity.npc.loot.EquipmentProfile;
  * Looting; none for a profile without the rare drop;</li>
  * <li>the gun's ammo, tank or salvage, at its average count per death times the roll chance.</li>
  * </ul>
- * Rows for the same item and type are merged. Pure: no Minecraft or Mobs Info types, so it is unit-tested without
- * Mobs Info.
+ * Rows for the same item, type and gun are merged; the same ammo from two guns stays two rows, each with its own
+ * gun's count range on its info line (D349). Pure: no Minecraft or Mobs Info types, so it is unit-tested without Mobs
+ * Info.
  */
 // Spec: docs/gregguns-spec/10-entities-npcs/mob-drops-nei.md (Mobs Info)
 public final class NpcDropInfo {
@@ -172,7 +173,7 @@ public final class NpcDropInfo {
     }
 
     private static void add(Map<String, Row> out, Row row) {
-        String key = row.type() + " " + row.ref();
+        String key = row.type() + " " + row.ref() + " " + row.gun();
         Row had = out.get(key);
         if (had == null) {
             out.put(key, row);

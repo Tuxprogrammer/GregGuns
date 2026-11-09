@@ -104,6 +104,7 @@ public final class ComplexLevelScenarios {
         FurnitureFillScenarios.registerAll(registry);
         PropFacingScenarios.registerAll(registry);
         DoorLightScenarios.registerAll(registry);
+        VendingEggScenarios.registerAll(registry);
     }
 
     // --- shared rig (the complex slab; the layout scenarios keep their own copies private) ---------------------

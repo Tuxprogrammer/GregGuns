@@ -53,6 +53,13 @@ public enum FurniturePiece {
     /** A GT Locker (it holds a suit of armor); the style's shelf without GT. */
     LOCKER(Cell.FURN_SHELF, Wear.NORMAL, 0),
     /**
+     * One cell of the pack's Vending Machine (D355), a 2 x 3 x 1 GT multiblock: every cell of both columns, three
+     * layers each, against a wall of one dining hall per complex ({@code VendingSpot}). The marks pass writes the
+     * machine's casing in all six; the contents pass sets the controller (or the gutted gap) by the room's state. The
+     * style's shelf, a tall cabinet, without the Vending Machine mod.
+     */
+    VENDING_MACHINE(Cell.FURN_SHELF, Wear.STATEFUL, 0),
+    /**
      * A BiblioCraft dinner plate on a mess table (the layer above it, D323), food on it by the room's state; nothing
      * without BiblioCraft. Its front faces a chair.
      */

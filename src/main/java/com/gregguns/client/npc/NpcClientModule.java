@@ -51,13 +51,11 @@ public final class NpcClientModule implements ClientModule {
             .biped(PsychoSteve.class, "biped", MobRenderers.texture("army_soldier"), 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
         MobRenderers.biped(DictatorDave.class, "biped", MobRenderers.texture("dictator"), 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
         MinecraftForge.EVENT_BUS.register(new BossBarHandler());
-        // Super Mutants: Basic, Heavy, Elite (M7-ASSETS: scale, shadow, gun offset, yOffset per tier).
-        MobRenderers
-            .biped(SuperMutantBasic.class, "super_mutant", "super_mutant_1", 1.35F, 0.6F, -0.10F, 0.30F, 0.0F, 0.55F);
-        MobRenderers
-            .biped(SuperMutantHeavy.class, "super_mutant", "super_mutant_2", 1.50F, 0.65F, -0.15F, 0.30F, 0.0F, 0.75F);
-        MobRenderers
-            .biped(SuperMutantElite.class, "super_mutant", "super_mutant_3", 1.65F, 0.7F, -0.20F, 0.40F, 0.0F, 0.95F);
+        // Super Mutants: Basic, Heavy, Elite (M7-ASSETS: scale, shadow, gun offset per tier). The scale is about the
+        // feet, so no tier needs a lift (Techguns' model height offset compensates a scale about the model origin).
+        MobRenderers.biped(SuperMutantBasic.class, "super_mutant", "super_mutant_1", 1.35F, 0.6F, -0.10F, 0.30F, 0.0F);
+        MobRenderers.biped(SuperMutantHeavy.class, "super_mutant", "super_mutant_2", 1.50F, 0.65F, -0.15F, 0.30F, 0.0F);
+        MobRenderers.biped(SuperMutantElite.class, "super_mutant", "super_mutant_3", 1.65F, 0.7F, -0.20F, 0.40F, 0.0F);
         MobRenderers.biped(
             CyberDemon.class,
             "cyberdemon",

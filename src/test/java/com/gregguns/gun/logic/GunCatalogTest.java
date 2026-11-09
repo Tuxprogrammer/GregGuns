@@ -125,7 +125,7 @@ class GunCatalogTest {
         GunStats s = GunCatalog.SAWED_OFF;
         assertEquals(GunCatalog.AmmoIds.SHOTGUN_SHELL, s.ammoType());
         assertNull(s.emptyContainerType());
-        assertEquals(ReloadMode.INCREMENTAL, s.reloadMode());
+        assertEquals(ReloadMode.CHAMBER, s.reloadMode());
         assertEquals(2, s.ammoItemsPerReload());
         assertEquals(1, s.roundsPerItem());
     }

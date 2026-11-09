@@ -105,7 +105,7 @@ public final class SawedOffScenarios {
         }
     }
 
-    /** Empty gun and three shells: 28 ticks later two are loaded and one is left. */
+    /** Empty gun and three shells: one shell per chamber, at 14 and 28 ticks; one shell is left. */
     private static final class Reload implements Scenario {
 
         @Override
@@ -115,7 +115,7 @@ public final class SawedOffScenarios {
 
         @Override
         public String description() {
-            return "An empty Sawed Off with 3 shells reloads 28 ticks after the trigger: 2 rounds, 2 shells used, 1 left, and nothing returned.";
+            return "An empty Sawed Off with 3 shells loads one shell per chamber after the trigger, at 14 and 28 ticks: 2 rounds, 2 shells used, 1 left, and nothing returned.";
         }
 
         @Override
@@ -138,7 +138,10 @@ public final class SawedOffScenarios {
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(started, "the dry trigger should have started a reload");
-                out.checkEquals("rounds one tick before the end", 0, loadedAt[reloadTicks - 1]);
+                int first = STATS.chamberTicks(0);
+                out.checkEquals("rounds one tick before the first chamber", 0, loadedAt[first - 1]);
+                out.checkEquals("rounds at the first chamber (14th tick)", 1, loadedAt[first]);
+                out.checkEquals("rounds one tick before the end", 1, loadedAt[reloadTicks - 1]);
                 out.checkEquals("rounds at the 28th tick", 2, loadedAt[reloadTicks]);
                 out.checkEquals("shells left (3 - 2)", 1, rig.count(SHELL));
                 out.checkEquals("pellets launched", 0, rig.bullets());
@@ -157,7 +160,7 @@ public final class SawedOffScenarios {
 
         @Override
         public String description() {
-            return "The reload key on a Sawed Off with 1 round and 2 shells tops it up to 2 rounds after 28 ticks using exactly 1 shell; the round already loaded is kept.";
+            return "The reload key on a Sawed Off with 1 round and 2 shells loads the empty chamber in 14 ticks using exactly 1 shell; the round already loaded is kept.";
         }
 
         @Override

@@ -69,6 +69,8 @@ Each room has one state, `ComplexContents.roomState(seed, room, level)`, and eve
 
 A collapsed room is filled as before, and its pieces are crushed to rubble.
 
+**The Vending Machine (D355).** The one dining hall that holds the pack's Vending Machine (see [silo layout](silo-layout.md#furnishing-d208-d305-d306)) shows it by state (`VendingEgg`): staffed, in service and mothballed rooms (Charlie and Bravo) get a working machine that GregTech forms on its own first structure check, its screen glowing even in a dark hall; a gutted room (Alpha) gets a dead one, the controller standing dark and the top casing of the other column knocked out, so it never forms until a player puts a casing back. A caved-in hall crushes it to rubble. The machine holds nothing of its own: its trades are the pack's database, priced in coins.
+
 ## Furniture stock (D323 to D325)
 
 Owner, play session 3: the furniture stood empty. Every piece that holds things holds them, by the room's state, so the levels read as Alpha a gutted ruin, Bravo half-staffed and Charlie fully staffed. `FurnitureStock` decides it (pure, one `STOCK` placement per stocked piece) and `FurnitureStocker` makes the items in the piece's own tile, after the piece is written. The stock goes only into the piece's own block (its BiblioCraft block, its prop block, a furnace of either state) in a column the level was written in, never into a container the terrain or another mod left in a cut-off column (D207, D345).
@@ -135,6 +137,8 @@ The service runs (D336) follow their hall's state the same way: whole unless gut
 ## Tests
 
 Furniture stock (D323 to D325): `FurnitureStockTest` (a staffed room stocks every piece, the share falls with the state, nothing in a caved-in room or on a removed piece, counts in range, every cauldron holds water, only working machines hold work, a staffed farm at mixed stages), `RoomDressingTest`, `ComplexWritingTest` (every text fits its medium, every state and group has text) and the real-pack scenario `icbm.complex.furniture_fill` (each level written and every stocked piece opened: it holds the right kind of thing, Charlie's furniture is full and the share falls to Bravo and Alpha, stocked machines hold outputs and none holds an input or a job, every cauldron has water, every notice is written, crops at mixed stages).
+
+Vending Machine (D355): `VendingSpotTest` (the spot in every dining hall and lounge at many sizes and door places: against a wall, facing in, bare walked floor in front, no counter beside it, no walk, chest or aisle cut), `VendingHallTest` (one machine per complex with a hall, in the seed's hall, a dining hall before a lounge, against the wall), `VendingEggTest` (the controller on the viewer's right for every facing; working, dead or crushed by state, over real plans at each level) and scenario `icbm.complex.vending_machine` (Alpha dead with its gap, Bravo formed, Charlie through the complex keep: the record holds the controller's tile, a replaced controller and casing come back, and GregTech forms the machine on its own tick; skipped without the Vending Machine mod).
 
 Fixtures (D335 to D337): `ComplexFixturesTest` (a door per hall mouth in the hall's wall layer, shut, open or gutted by state with a way through, rubble and fallen trays only on open floor no mark claims, Ross casings in the door's plane, runs in open air and only thinner when gutted); scenario `icbm.complex.fixtures` reads every piece back in the world.
 

@@ -2,6 +2,7 @@ package com.gregguns.worldgen.camp;
 
 import com.gregguns.worldgen.FlagPos;
 import com.gregguns.worldgen.PopulateWindow;
+import com.gregguns.worldgen.SitePrep;
 import com.gregguns.worldgen.layout.Rotations;
 
 /**
@@ -135,21 +136,34 @@ public final class PlacedCamp {
             CampCap.cap(footprintX(), footprintZ(), capFactor));
     }
 
-    /** Smallest world x any write of this camp can touch (the road tails reach past the fence). */
+    /** True when the world column lies on a road strip, road tails past the fence included. */
+    public boolean isRoad(int wx, int wz) {
+        int lx = localX(wx, wz);
+        int lz = localZ(wx, wz);
+        for (CampRoad r : plan.roads()) {
+            if (r.contains(lx, lz)) return true;
+        }
+        return false;
+    }
+
+    /** Blocks past the footprint any write of this camp can reach: the road tails and the site's cut bank. */
+    public static final int REACH = Math.max(CampPlan.ROAD_TAIL, SitePrep.BANK);
+
+    /** Smallest world x any write of this camp can touch (the road tails and the bank reach past the fence). */
     public int boundsMinX() {
-        return anchorX - CampPlan.ROAD_TAIL;
+        return anchorX - REACH;
     }
 
     public int boundsMinZ() {
-        return anchorZ - CampPlan.ROAD_TAIL;
+        return anchorZ - REACH;
     }
 
     public int boundsMaxX() {
-        return anchorX + footprintX() - 1 + CampPlan.ROAD_TAIL;
+        return anchorX + footprintX() - 1 + REACH;
     }
 
     public int boundsMaxZ() {
-        return anchorZ + footprintZ() - 1 + CampPlan.ROAD_TAIL;
+        return anchorZ + footprintZ() - 1 + REACH;
     }
 
     /** True when any write of this camp can land in the window. */
