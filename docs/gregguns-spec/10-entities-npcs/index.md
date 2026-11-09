@@ -49,6 +49,7 @@ The main findings:
 | `TGDummySpawn` placeholder and `TGSpawnManager` | Recommended: register real classes and gate in `CheckSpawn`. | Infernal Mobs, Mobs Info, EnderZoo | [spawning.md](spawning.md) |
 | Spawn weights and dimension lists | Halved weights. Dimensions default to `[0]`, checked at spawn time. | [0005](../../design/0005-world-presence.md), EnderZoo `SpawnConfig_User.xml` | [spawning.md](spawning.md) |
 | NPC difficulty scaling on gun damage | Applied once, and not on health or melee attack. | EnderZoo global difficulty modifier | [spawning.md](spawning.md) |
+| (none) | NPC gun damage scaled by the gun's tier and by elite or boss status, and an aim error past 5 blocks, all in the `combat` config (D358, D359). | Infernal Mobs (elite check), GTNH armor tiers | [spawning.md](spawning.md), [0027](../../design/0027-combat-difficulty-knobs.md) |
 | Melee kills with TG tools | Pack whitelists `gregguns.` item names against Kamikaze. | AngerMod 1.0.7 | [spawning.md](spawning.md) |
 | NPC targeting of players | Ignores `disableDamage` players. | AngerMod spawn protection | [spawning.md](spawning.md) |
 | `Techguns.<Name>` entity names | `gregguns.<Name>`, one constant per name. | Five pack consumers, one key each | [registry-and-pack-hooks.md](registry-and-pack-hooks.md) |

@@ -27,6 +27,7 @@ public final class GregGunsConfig {
             BioGunConfig.class,
             ClientConfig.class,
             DamageFactorsConfig.class,
+            CombatConfig.class,
             ExplosionsConfig.class,
             IcbmConfig.class,
             EquipmentConfig.class,

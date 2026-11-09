@@ -167,12 +167,14 @@ public final class ArmorCatalog {
         .with(DamageType.RADIATION, 16.0)
         .withPenetrationResistance(0.10);
     private static final ArmorMaterialDef T2_BERET_MATERIAL = ArmorMaterialDef.uniform("t2_beret", 60, 8.0);
-    private static final ArmorMaterialDef T3_COMBAT_MATERIAL = ArmorMaterialDef.uniform("t3_combat", 240, 22.0)
-        .with(DamageType.EXPLOSION, 18.0)
-        .with(DamageType.ENERGY, 18.0)
-        .with(DamageType.FIRE, 18.0)
-        .with(DamageType.ICE, 18.0)
-        .with(DamageType.LIGHTNING, 18.0)
+    // Design record 0027: one point over the Techguns row (22 physical, 18 typed), so the EV set absorbs 92% and beats
+    // the HV NanoSuit's 90% a GTNH player already wears. The IV Exo Suit gets the same row.
+    private static final ArmorMaterialDef T3_COMBAT_MATERIAL = ArmorMaterialDef.uniform("t3_combat", 240, 23.0)
+        .with(DamageType.EXPLOSION, 19.0)
+        .with(DamageType.ENERGY, 19.0)
+        .with(DamageType.FIRE, 19.0)
+        .with(DamageType.ICE, 19.0)
+        .with(DamageType.LIGHTNING, 19.0)
         .with(DamageType.POISON, 10.0)
         .with(DamageType.RADIATION, 6.0)
         .withPenetrationResistance(0.15);
@@ -444,12 +446,12 @@ public final class ArmorCatalog {
         .with(DamageType.POISON, 15.0)
         .with(DamageType.RADIATION, 10.0)
         .withPenetrationResistance(0.25);
-    private static final ArmorMaterialDef T3_EXO_MATERIAL = ArmorMaterialDef.uniform("t3_exo", 300, 22.0)
-        .with(DamageType.EXPLOSION, 18.0)
-        .with(DamageType.ENERGY, 18.0)
-        .with(DamageType.FIRE, 18.0)
-        .with(DamageType.ICE, 18.0)
-        .with(DamageType.LIGHTNING, 18.0)
+    private static final ArmorMaterialDef T3_EXO_MATERIAL = ArmorMaterialDef.uniform("t3_exo", 300, 23.0)
+        .with(DamageType.EXPLOSION, 19.0)
+        .with(DamageType.ENERGY, 19.0)
+        .with(DamageType.FIRE, 19.0)
+        .with(DamageType.ICE, 19.0)
+        .with(DamageType.LIGHTNING, 19.0)
         .with(DamageType.POISON, 10.0)
         .with(DamageType.RADIATION, 6.0)
         .withPenetrationResistance(0.15);

@@ -16,6 +16,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
+import com.gregguns.api.Tier;
 import com.gregguns.entity.npc.loot.LootDrop;
 import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.entity.npc.loot.NpcProfiles;
@@ -299,7 +300,9 @@ public class AttackHelicopter extends EntityFlying implements IMob, IBossDisplay
         float yaw = AimAngles.yaw(target.posX - mx, 0.0, target.posZ - mz);
         NpcFiring.Scaling scaling = NpcFiring
             .scaling(NpcFiring.Difficulty.fromVanillaId(worldObj.difficultySetting.getDifficultyId()), false);
-        ShotOffset offset = NpcFiring.roll(getRNG(), stats, scaling)[0];
+        ShotOffset offset = NpcShotTuning.roll(getRNG(), stats, scaling, this, target)[0];
+        // The helicopter carries no gun item; it counts as HV, the tier of its minigun and rockets (D358).
+        float damageScale = NpcShotTuning.damageScale(this, Tier.HV, scaling.damageFactor());
         double ox = posX;
         double oy = posY;
         double oz = posZ;
@@ -311,7 +314,7 @@ public class AttackHelicopter extends EntityFlying implements IMob, IBossDisplay
             posZ = mz;
             rotationYawHead = yaw;
             rotationPitch = pitch;
-            shot.fire(this, stats, offset, (float) scaling.damageFactor());
+            shot.fire(this, stats, offset, damageScale);
         } finally {
             posX = ox;
             posY = oy;

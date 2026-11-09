@@ -9,7 +9,6 @@ import net.minecraft.world.World;
 
 import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
-import com.gregguns.combat.Knockback;
 import com.gregguns.core.config.ExplosionsConfig;
 import com.gregguns.explosion.BlastFxSelector;
 import com.gregguns.explosion.ExplosionRules;
@@ -28,7 +27,8 @@ import com.gregguns.gun.sound.GunSoundEvents;
  * <p>
  * Direct hit versus splash: an entity the rocket hits takes {@link LauncherMath#directDamage the full damage} once,
  * with
- * the gun's knockback multiplier, and is then left out of the blast, so the direct hit is not counted twice. Everything
+ * the gun's knockback multiplier while {@code combat.knockback} is on, and is then left out of the blast, so the direct
+ * hit is not counted twice. Everything
  * else within one and a half radii takes the blast's {@link LauncherMath#splashDamage ramp}. The blast goes through
  * {@link ProjectileExplosion}, so {@code explosions.blockDamage}, {@code explosions.selfDamage}, the Forge explosion
  * events and the per-block break checks all apply: the shooter is not immune to their own rocket (PFX-25), nothing is
@@ -114,14 +114,9 @@ public class RocketProjectile extends GenericProjectile {
             explode(null);
             return;
         }
-        double beforeX = target.motionX;
-        double beforeY = target.motionY;
-        double beforeZ = target.motionZ;
         float direct = (float) LauncherMath.directDamage(damage);
-        boolean taken = DamageSources.hit(target, DamageType.EXPLOSION, this, shooter, direct, 0.0);
-        if (taken && Knockback.needsAdjustment(knockback)) {
-            scaleKnockback(target, beforeX, beforeY, beforeZ);
-        }
+        // The direct hit is a gun hit: it takes the knockback switch (D357). The blast that follows pushes as a blast.
+        DamageSources.hit(target, DamageType.EXPLOSION, this, shooter, direct, 0.0, true, knockback);
         setPosition(hitX, hitY, hitZ);
         explode(target);
     }

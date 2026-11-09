@@ -30,9 +30,9 @@ public class DamageFactorsConfig {
     public static float damageFactorNPC = 1.0F;
 
     @Config.Comment({ "Scales the armor penetration of non-player attackers against players. 0 makes armor",
-        "fully effective against them. Range 0 to 1. Default: 1.0." })
+        "fully effective against them; 1 gives their guns full penetration. Range 0 to 1. Default: 0.5." })
     @Config.RangeFloat(min = 0.0F, max = 1.0F)
-    public static float armorPenetrationMultiplierNPCtoPlayer = 1.0F;
+    public static float armorPenetrationMultiplierNPCtoPlayer = 0.5F;
 
     @Config.Comment({ "Scales the armor penetration of a player's shots against other players. Range 0 to 1.",
         "Default: 1.0." })

@@ -2,6 +2,8 @@ package com.gregguns.gun.logic;
 
 import java.util.Random;
 
+import com.gregguns.api.Tier;
+
 /**
  * The NPC and turret hooks: difficulty scaling and the ranged-AI timing. NPCs never use ammo, never reload and
  * never zoom, so they bypass {@link GunController}: the glue asks {@link #scaling} for the factors, rolls the
@@ -11,6 +13,11 @@ import java.util.Random;
  * Deviations: the difficulty accuracy factor is applied once (Techguns applies it twice, GUN-06) and NPCs do not get
  * the zoomed-spread bonus (GUN-07). The damage factor is exposed for the combat module to apply; this class does no
  * damage maths.
+ *
+ * <p>
+ * GregGuns adds two difficulty knobs on top (design 0027): a per-tier damage multiplier with an extra one for elite
+ * shooters ({@link #shotDamageScale}, D358), and an aim error that grows with distance past a free range
+ * ({@link #distanceAimError}, D359). Both apply to hostile NPCs and turrets only; a player's own spread is untouched.
  *
  * <p>
  * Spec: gun-lifecycle.md section 6.
@@ -95,6 +102,80 @@ public final class NpcFiring {
     /** Rolls the projectile offsets for one NPC shot (hand 0). */
     public static ShotOffset[] roll(Random random, GunStats stats, Scaling scaling) {
         return SpreadModel.roll(random, stats, scaling.context(), 0);
+    }
+
+    /**
+     * Rolls one NPC shot with a distance aim error on top of the gun's spread. The error is one draw, uniform within
+     * {@code +-aimErrorDegrees} on each axis, shared by every projectile of the shot: the NPC misjudges where the
+     * target is, so a shotgun's pellets or a ring volley move together and keep their own pattern.
+     *
+     * @param aimErrorDegrees the largest aim error, from {@link #distanceAimError}; 0 or less adds none and draws
+     *                        nothing extra from {@code random}
+     */
+    public static ShotOffset[] roll(Random random, GunStats stats, Scaling scaling, double aimErrorDegrees) {
+        ShotOffset[] offsets = roll(random, stats, scaling);
+        if (!(aimErrorDegrees > 0.0)) {
+            return offsets;
+        }
+        double yaw = (random.nextDouble() * 2.0 - 1.0) * aimErrorDegrees;
+        double pitch = (random.nextDouble() * 2.0 - 1.0) * aimErrorDegrees;
+        for (int i = 0; i < offsets.length; i++) {
+            ShotOffset o = offsets[i];
+            offsets[i] = new ShotOffset(
+                o.yawDegrees() + yaw,
+                o.pitchDegrees() + pitch,
+                o.forwardTickFraction(),
+                o.leftHand(),
+                o.volley());
+        }
+        return offsets;
+    }
+
+    /**
+     * The largest aim error distance adds to an NPC shot (D359): none within {@code freeRange}, then
+     * {@code degreesPerBlock} more for each block beyond it, capped at {@code maxDegrees}.
+     *
+     * @param distance        distance to the target in blocks
+     * @param freeRange       {@code combat.npcAccuracyRange}
+     * @param degreesPerBlock {@code combat.npcSpreadPerBlock}
+     * @param maxDegrees      {@code combat.npcMaxSpread}
+     * @return degrees, at least 0; 0 for any non-finite input
+     */
+    public static double distanceAimError(double distance, double freeRange, double degreesPerBlock,
+        double maxDegrees) {
+        double error = Math.min(Math.max(0.0, distance - freeRange) * degreesPerBlock, maxDegrees);
+        return Double.isNaN(error) || Double.isInfinite(error) || error < 0.0 ? 0.0 : error;
+    }
+
+    /**
+     * The tier multiplier for a shot from a gun of this tier (D358).
+     *
+     * @param tier    the gun's tier; null counts as the lowest
+     * @param perTier one multiplier per {@link Tier}, in enum order; a missing entry is 1
+     * @return the multiplier, at least 0
+     */
+    public static double tierDamage(Tier tier, double[] perTier) {
+        int i = tier == null ? 0 : tier.ordinal();
+        if (perTier == null || i >= perTier.length) {
+            return 1.0;
+        }
+        double m = perTier[i];
+        return Double.isNaN(m) || m < 0.0 ? 0.0 : m;
+    }
+
+    /**
+     * The damage scale an NPC or turret passes to the launcher (D358): the difficulty scale times the tier multiplier,
+     * times the elite multiplier for an infernal NPC or a boss.
+     *
+     * @param base            the difficulty scale, {@link #damageScale} (0 when NPC gun damage is off)
+     * @param tierMultiplier  {@link #tierDamage}
+     * @param elite           true for an Infernal Mobs elite, ultra or infernal, or a boss
+     * @param eliteMultiplier {@code combat.npcEliteDamage}
+     * @return the scale, at least 0
+     */
+    public static float shotDamageScale(double base, double tierMultiplier, boolean elite, double eliteMultiplier) {
+        double scale = base * tierMultiplier * (elite ? eliteMultiplier : 1.0);
+        return Double.isNaN(scale) || scale < 0.0 ? 0.0F : (float) scale;
     }
 
     /**

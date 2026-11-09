@@ -211,7 +211,7 @@ final class PowerArmorScenarios {
 
         @Override
         public String description() {
-            return "Exo Suit: empty gives only protection (physical 22, 15% penetration resistance); charged gives speed x1.8, knockback 0.80, jump 0.60, mining +0.30, step assist, full HEAT, FROST and ELECTRICAL cover; walking, jump and fall cost units; no extra health; discharged ends it.";
+            return "Exo Suit: empty gives only protection (physical 23, 15% penetration resistance); charged gives speed x1.8, knockback 0.80, jump 0.60, mining +0.30, step assist, full HEAT, FROST and ELECTRICAL cover; walking, jump and fall cost units; no extra health; discharged ends it.";
         }
 
         @Override
@@ -225,9 +225,9 @@ final class PowerArmorScenarios {
                 p.wearAll(set);
                 events.update(p);
                 out.check(near(1.0, ArmorTierScenarios.speedFactor(p)), "empty: no speed bonus");
-                out.checkEquals("vanilla armor bar 6+7+6+4", 23, p.getTotalArmorValue());
-                ArmorTierScenarios.checkHit(out, p, DamageType.PROJECTILE, 22.0, 0.0, 0.15);
-                ArmorTierScenarios.checkHit(out, p, DamageType.ENERGY, 18.0, 0.0, 0.15);
+                out.checkEquals("vanilla armor bar 6+7+6+5", 24, p.getTotalArmorValue());
+                ArmorTierScenarios.checkHit(out, p, DamageType.PROJECTILE, 23.0, 0.0, 0.15);
+                ArmorTierScenarios.checkHit(out, p, DamageType.ENERGY, 19.0, 0.0, 0.15);
                 ArmorTierScenarios.checkHit(out, p, DamageType.POISON, 10.0, 0.0, 0.15);
                 ArmorTierScenarios.checkHit(out, p, DamageType.RADIATION, 6.0, 0.0, 0.15);
 
@@ -246,7 +246,7 @@ final class PowerArmorScenarios {
                     out.check(HazardProtection.isWearingFullHazmatAgainst(p, h), "charged: full cover against " + h);
                 }
                 out.check(!HazardProtection.isWearingFullHazmatAgainst(p, Hazard.SPACE), "never SPACE");
-                ArmorTierScenarios.checkHit(out, p, DamageType.PROJECTILE, 22.0, 0.0, 0.15);
+                ArmorTierScenarios.checkHit(out, p, DamageType.PROJECTILE, 23.0, 0.0, 0.15);
                 BreakSpeed dig = new BreakSpeed(p, Blocks.stone, 0, 4.0F, 0, 0, 0);
                 MinecraftForge.EVENT_BUS.post(dig);
                 out.check(near(4.0 * 1.3, dig.newSpeed), "charged: mining x1.3, got " + dig.newSpeed);
@@ -281,7 +281,7 @@ final class PowerArmorScenarios {
                 out.check(
                     !HazardProtection.isWearingFullHazmatAgainst(p, Hazard.ELECTRICAL),
                     "discharged: ELECTRICAL cover is gone");
-                ArmorTierScenarios.checkHit(out, p, DamageType.PROJECTILE, 22.0, 0.0, 0.15);
+                ArmorTierScenarios.checkHit(out, p, DamageType.PROJECTILE, 23.0, 0.0, 0.15);
                 ArmorTierScenarios.checkUnequipped(out, p, events);
             } finally {
                 ArmorTierScenarios.finish(p);

@@ -56,3 +56,4 @@ The other options, and why each was not chosen.
 | [0024](0024-vanilla-spawners.md) | Structure spawners are vanilla mob spawners with GregGuns NBT; the four GregGuns spawner blocks are retired (amends 0005) | D5 | Accepted |
 | [0025](0025-structure-palettes.md) | Structure palettes: each role is a look with a fallback chain, one family per weighted mix, no signs or overlays as building blocks, no GT-replaceable blocks in the pack (owner report) | D6 | Accepted (by default) |
 | [0026](0026-single-round-and-chamber-reloads.md) | Single loose rounds for magazine guns, chamber-by-chamber reloads and the idle reload for revolvers and shotguns (owner, beta) | — | Accepted (by default) |
+| [0027](0027-combat-difficulty-knobs.md) | Combat difficulty knobs: gun-hit knockback off by default, NPC gun damage by the gun's tier with an elite multiplier and halved penetration, NPC aim error past 5 blocks, EV and IV armor at 23 (owner, beta) | — | Accepted (by default) |

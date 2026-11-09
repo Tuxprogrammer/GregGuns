@@ -18,7 +18,6 @@ import net.minecraft.world.World;
 import com.gregguns.combat.DamageFalloff;
 import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
-import com.gregguns.combat.Knockback;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotOffset;
 import com.gregguns.gun.sound.GunSoundPlayer;
@@ -358,29 +357,11 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
             dropEnd,
             Ballistics.distance(startX, startY, startZ, hitX, hitY, hitZ));
         if (dealt > 0) {
-            double beforeX = target.motionX;
-            double beforeY = target.motionY;
-            double beforeZ = target.motionZ;
-            // A fresh source per hit: sources carry per-hit state.
-            boolean taken = DamageSources
-                .hit(target, getDamageType(), this, shooter, (float) dealt, penetration, secondaryEffects());
-            if (taken && Knockback.needsAdjustment(knockback)) {
-                scaleKnockback(target, beforeX, beforeY, beforeZ);
-            }
+            // A fresh source per hit: sources carry per-hit state. The hit applies the knockback switch (D357).
+            DamageSources
+                .hit(target, getDamageType(), this, shooter, (float) dealt, penetration, secondaryEffects(), knockback);
         }
         onHitEffect(target);
-    }
-
-    /**
-     * Rescales the push vanilla gave the target in this hit by the gun's multiplier (GUN-38). Vanilla's
-     * {@code knockBack} ignores the strength it is given, so the velocity change is measured and scaled here.
-     */
-    protected final void scaleKnockback(Entity target, double beforeX, double beforeY, double beforeZ) {
-        target.motionX = Knockback.scale(beforeX, target.motionX, knockback);
-        target.motionY = Knockback.scale(beforeY, target.motionY, knockback);
-        target.motionZ = Knockback.scale(beforeZ, target.motionZ, knockback);
-        // A player's velocity only reaches their client when flagged.
-        target.velocityChanged = true;
     }
 
     /**
