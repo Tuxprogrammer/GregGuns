@@ -10,7 +10,6 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 ## Everything else
 
-- **Combat is gentler by default, and every part of it is a config key.** Gun and projectile hits no longer knock their target back (`combat.knockback`); explosions still throw. NPC guns from HV up hit for less (0.85 at HV down to 0.4 at ZPM), elite, ultra, infernal and boss NPCs shoot 25% softer, and NPC guns get half their armor penetration against players. NPCs aim true within 5 blocks and lose accuracy beyond that. The EV T3 Combat set and the IV Exo Suit protect 23 (19 against energy, fire, ice, lightning and explosions). docs/config.md, "Make combat harder", lists the values for a harder game.
 - **Structures carve their own site and bring their own foundation.** Every surface structure, the Military Base with all its tents, buildings, roads, fence and flag pad included, stands on solid ground filled down to the natural ground, with no hillside, tree or overhang left inside or over it, and a cut bank around it on slopes. The Big Bunker also gets a foundation under its buried floor.
 - **NPC drops.** Every NPC drops a quarter to three quarters of a magazine of loose rounds for its gun (a Thompson gives 5 to 15 9mm bullets), a full tank, or parts of an energy gun. Zombie Farmers and Miners, Skeleton Soldiers, Zombie Pigman Soldiers and Super Mutants also drop ammo for their guns, Stormtroopers drop energy-weapon parts, and the Outcast has a full loot table. Mobs Info lists the drops.
 - **Every NPC has a home.** Zombie Pigman Soldiers and Super Mutants spawn in the Nether, the mutants tougher the deeper in you go, with a rare Cyberdemon far out; Commando squads roam the End away from the dragon's island; one Military Base in five is a red base, where Dictator Dave holds his post by the red flag; and the Outcast guards silo complexes of LuV and up.
@@ -19,6 +18,4 @@ Notes for the next release. Fold these into that release's changelog when it is 
 
 ## Config
 
-- **New `combat` category:** `combat.knockback` (false), `combat.knockbackMultiplier` (1.0), `combat.npcDamageSteam`, `combat.npcDamageLV`, `combat.npcDamageMV` (1.0), `combat.npcDamageHV` (0.85), `combat.npcDamageEV` (0.7), `combat.npcDamageIV` (0.55), `combat.npcDamageLuV` (0.45), `combat.npcDamageZPM` (0.4), `combat.npcEliteDamage` (0.75), `combat.npcAccuracyRange` (5.0), `combat.npcSpreadPerBlock` (0.12), `combat.npcMaxSpread` (4.0).
-- **Changed default:** `damagefactors.armorPenetrationMultiplierNPCtoPlayer` 1.0 → 0.5.
 - **New keys:** `guns.idleReloadDelayTicks`, the Nether and End spawn tables (`npcs.netherSpawnDimensions`, `npcs.endSpawnDimensions`, `npcs.weightNether*`, `npcs.weightEndCommando`, `npcs.endMinDistance`, `npcs.bossSpacing`), `npcs.outcast` and `worldgen.redBaseChanceMilitaryBase`.
