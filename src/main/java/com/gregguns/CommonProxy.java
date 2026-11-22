@@ -107,6 +107,9 @@ public class CommonProxy {
         modules.postInit(event);
         applyPackFit();
         com.gregguns.compat.lootbags.LootBagInjector.postInit();
+        // Is the GregGuns Coin a Vending Machine wallet coin kind (the late mixins took)? Prices and the tooltip
+        // follow.
+        com.gregguns.compat.vending.VendingCoin.check();
     }
 
     /**

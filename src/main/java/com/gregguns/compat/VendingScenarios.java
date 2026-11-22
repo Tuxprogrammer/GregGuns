@@ -13,6 +13,8 @@ import net.minecraftforge.common.util.Constants;
 
 import com.gregguns.api.Tier;
 import com.gregguns.compat.vending.QuestGate;
+import com.gregguns.compat.vending.VendingCoin;
+import com.gregguns.compat.vending.VendingCurrency;
 import com.gregguns.compat.vending.VendingTradeNbt;
 import com.gregguns.core.config.CompatConfig;
 import com.gregguns.core.testing.Scenario;
@@ -49,6 +51,7 @@ public final class VendingScenarios {
         registry.register(SkipUnless.of(new TradesScenario(), VendingScenarios::loaded, NEEDS));
         registry.register(SkipUnless.of(new ReloadScenario(), VendingScenarios::loaded, NEEDS));
         registry.register(SkipUnless.of(new PurchaseScenario(), VendingScenarios::loaded, NEEDS));
+        registry.register(SkipUnless.of(new WalletScenario(), VendingScenarios::loaded, NEEDS));
     }
 
     private static final String VM = "com.cubefury.vendingmachine.";
@@ -87,12 +90,16 @@ public final class VendingScenarios {
         return get.invoke(db, VendingTradeNbt.groupId(offerKey));
     }
 
+    /** The first trade of a parsed trade group. */
+    static Object firstTrade(Object group) throws ReflectiveOperationException {
+        return ((List<?>) group.getClass()
+            .getMethod("getTrades")
+            .invoke(group)).get(0);
+    }
+
     /** The base stack of the first entry of a parsed trade's list field ({@code fromItems} or {@code toItems}). */
     static ItemStack firstStack(Object group, String listField) throws ReflectiveOperationException {
-        List<?> trades = (List<?>) group.getClass()
-            .getMethod("getTrades")
-            .invoke(group);
-        Object trade = trades.get(0);
+        Object trade = firstTrade(group);
         Field f = trade.getClass()
             .getField(listField);
         Object big = ((List<?>) f.get(trade)).get(0);
@@ -117,8 +124,9 @@ public final class VendingScenarios {
         @Override
         public String description() {
             return "The Vending Machine holds one GregGuns group per registered catalog offer; the machine parsed the"
-                + " 9mm Pistol (6 x Coin 10 -> 1 pistol) and the Cyberdemon egg (2 x Coin 1000); merging again adds no"
-                + " duplicates and keeps the database version; compat.vendingTrades=false removes them all.";
+                + " 9mm Pistol (60 in coins -> 1 pistol) and the Cyberdemon egg (2,000), as a wallet price when the coin"
+                + " is a wallet coin kind and as coin items (6 x Coin 10, 2 x Coin 1000) otherwise; merging again adds"
+                + " no duplicates and keeps the database version; compat.vendingTrades=false removes them all.";
         }
 
         @Override
@@ -134,24 +142,43 @@ public final class VendingScenarios {
                 Object pistol = parsedGroup("item:pistol_9mm");
                 out.check(pistol != null, "the machine should have parsed the 9mm Pistol group");
                 if (pistol != null) {
-                    ItemStack price = firstStack(pistol, "fromItems");
                     ItemStack goods = firstStack(pistol, "toItems");
-                    out.check(price.getItem() == CoinItems.coin(), "the pistol is paid in GregGuns Coins: " + price);
-                    out.checkEquals("pistol price denomination", CoinDenomination.TEN.meta(), price.getItemDamage());
-                    out.checkEquals("pistol price coins", 6, price.stackSize);
+                    if (VendingCoin.inWallet()) {
+                        out.checkEquals(
+                            "pistol wallet price",
+                            VendingCoin.CURRENCY_ID + ":60",
+                            VendingCurrency.currencyPrice(firstTrade(pistol)));
+                    } else {
+                        ItemStack price = firstStack(pistol, "fromItems");
+                        out.check(
+                            price.getItem() == CoinItems.coin(),
+                            "the pistol is paid in GregGuns Coins: " + price);
+                        out.checkEquals(
+                            "pistol price denomination",
+                            CoinDenomination.TEN.meta(),
+                            price.getItemDamage());
+                        out.checkEquals("pistol price coins", 6, price.stackSize);
+                    }
                     out.checkEquals("pistols per trade", 1, goods.stackSize);
                 }
                 Object demon = parsedGroup("egg:" + NpcMob.CYBER_DEMON.registryName());
                 out.check(demon != null, "the machine should have parsed the Cyberdemon egg group");
                 if (demon != null) {
-                    ItemStack price = firstStack(demon, "fromItems");
                     ItemStack egg = firstStack(demon, "toItems");
                     out.checkEquals("Cyberdemon egg damage", NpcMob.CYBER_DEMON.entityId(), egg.getItemDamage());
-                    out.checkEquals(
-                        "Cyberdemon price denomination",
-                        CoinDenomination.THOUSAND.meta(),
-                        price.getItemDamage());
-                    out.checkEquals("Cyberdemon price coins", 2, price.stackSize);
+                    if (VendingCoin.inWallet()) {
+                        out.checkEquals(
+                            "Cyberdemon wallet price",
+                            VendingCoin.CURRENCY_ID + ":2000",
+                            VendingCurrency.currencyPrice(firstTrade(demon)));
+                    } else {
+                        ItemStack price = firstStack(demon, "fromItems");
+                        out.checkEquals(
+                            "Cyberdemon price denomination",
+                            CoinDenomination.THOUSAND.meta(),
+                            price.getItemDamage());
+                        out.checkEquals("Cyberdemon price coins", 2, price.stackSize);
+                    }
                 }
 
                 int version = live().getInteger(VendingTradeNbt.VERSION);
@@ -258,9 +285,11 @@ public final class VendingScenarios {
 
         @Override
         public String description() {
-            return "A Vending Machine controller sells the 9mm Pistol for 6 x GregGuns Coin 10 from its input slots: 5"
-                + " coins or 60 x Coin 1 are refused, 10 x Coin 10 pays and leaves 4; the trade waits for the pack's LV"
-                + " quest when BetterQuesting is loaded and is open otherwise.";
+            return "A Vending Machine controller sells the 9mm Pistol for 60 in GregGuns Coins. With the coin as a wallet"
+                + " coin kind: 5 x Coin 10 in the wallet is refused, adding 10 x Coin 1 pays and empties it, and an"
+                + " online player's own wallet pays through the full trade check. Without it: 6 x Coin 10 from the"
+                + " input slots, 5 coins or 60 x Coin 1 refused, 10 x Coin 10 pays and leaves 4. The trade waits for"
+                + " the pack's LV quest when BetterQuesting is loaded and is open otherwise.";
         }
 
         @Override
@@ -315,6 +344,10 @@ public final class VendingScenarios {
                 Object machine = newMachine();
                 out.check(machine != null, "the Vending Machine controller should be registered with GT");
                 if (machine == null) {
+                    return out.build();
+                }
+                if (VendingCoin.inWallet()) {
+                    walletPurchase(out, machine, trade);
                     return out.build();
                 }
                 Object inputs = machine.getClass()
@@ -385,6 +418,70 @@ public final class VendingScenarios {
             return out.build();
         }
 
+        /**
+         * The wallet path: the price is 60 of the GregGuns coin kind, paid from a wallet that coins went into the way
+         * the coin slot puts them. Then, if a player is online, through the machine's whole trade check with that
+         * player's own wallet, whose balance is put back afterwards.
+         */
+        private static void walletPurchase(ScenarioResult.Builder out, Object machine, Object trade) {
+            out.checkEquals("pistol price", VendingCoin.CURRENCY_ID + ":60", VendingCurrency.currencyPrice(trade));
+            Object wallet = VendingCurrency.newWallet();
+            out.check(
+                VendingCurrency.deposit(
+                    wallet,
+                    CoinItems.coin()
+                        .stack(CoinDenomination.TEN, 5)),
+                "the coin slot should take 5 x Coin 10");
+            out.checkEquals("balance after 5 x Coin 10", 50, VendingCurrency.balance(wallet));
+            out.check(!VendingCurrency.pay(machine, trade, wallet, true), "a balance of 50 should not pay 60");
+            out.checkEquals("balance after a refused trade", 50, VendingCurrency.balance(wallet));
+            out.check(
+                VendingCurrency.deposit(
+                    wallet,
+                    CoinItems.coin()
+                        .stack(CoinDenomination.ONE, 10)),
+                "the coin slot should take 10 x Coin 1");
+            out.check(VendingCurrency.pay(machine, trade, wallet, true), "a balance of 60 should pay (simulated)");
+            out.checkEquals("balance after a simulated trade", 60, VendingCurrency.balance(wallet));
+            out.check(VendingCurrency.pay(machine, trade, wallet, false), "a balance of 60 should pay the pistol");
+            out.checkEquals("balance after the trade", 0, VendingCurrency.balance(wallet));
+
+            MinecraftServer server = MinecraftServer.getServer();
+            List<?> players = server == null ? java.util.Collections.emptyList()
+                : server.getConfigurationManager().playerEntityList;
+            if (players.isEmpty()) {
+                out.note("no player online, so the full trade check with a real wallet was not run");
+                return;
+            }
+            net.minecraft.entity.player.EntityPlayerMP player = (net.minecraft.entity.player.EntityPlayerMP) players
+                .get(0);
+            String who = player.getCommandSenderName();
+            UUID id = player.getUniqueID();
+            Object own = VendingCurrency.personalWallet(id);
+            out.check(own != null, who + " should have a personal wallet");
+            if (own == null) {
+                return;
+            }
+            int saved = VendingCurrency.balance(own);
+            try {
+                VendingCurrency.setBalance(own, 59);
+                out.check(
+                    !VendingCurrency.checkTrade(machine, trade, id, true),
+                    "59 in " + who + "'s wallet should not pay 60");
+                VendingCurrency.setBalance(own, 60);
+                out.check(
+                    VendingCurrency.checkTrade(machine, trade, id, true),
+                    "60 in " + who + "'s wallet should pay (simulated)");
+                out.checkEquals("wallet after a simulated trade", 60, VendingCurrency.balance(own));
+                out.check(
+                    VendingCurrency.checkTrade(machine, trade, id, false),
+                    "60 in " + who + "'s wallet should pay the pistol");
+                out.checkEquals("wallet after the trade", 0, VendingCurrency.balance(own));
+            } finally {
+                VendingCurrency.setBalance(own, saved);
+            }
+        }
+
         /** @return a fresh Vending Machine controller, unplaced, or null if GT has none registered */
         private static Object newMachine() throws ReflectiveOperationException {
             int id = Class.forName(VM + "VendingMachine")
@@ -392,6 +489,54 @@ public final class VendingScenarios {
                 .getInt(null);
             IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
             return prototype == null ? null : prototype.newMetaEntity(null);
+        }
+    }
+
+    /** The GregGuns Coin is a wallet coin kind: the late mixins applied and the self-test passed. */
+    private static final class WalletScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "compat.vending.wallet";
+        }
+
+        @Override
+        public String description() {
+            return "The GregGuns Coin is a Vending Machine wallet coin kind: the late mixins added it and the machine"
+                + " reads every denomination at its value, pays a balance back in GregGuns denominations, keeps a"
+                + " saved balance, and leaves the pack's own coins alone.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            try {
+                out.check(VendingCoin.inWallet(), "the coin should have joined the wallet at postInit");
+                String failure = VendingCurrency.selfTest();
+                out.check(failure == null, "the self-test should pass: " + failure);
+                for (CoinDenomination d : CoinDenomination.values()) {
+                    Object wallet = VendingCurrency.newWallet();
+                    out.check(
+                        VendingCurrency.deposit(
+                            wallet,
+                            CoinItems.coin()
+                                .stack(d, 7)),
+                        "the coin slot should take 7 x Coin " + d.label());
+                    out.checkEquals("7 x Coin " + d.label(), 7 * d.value(), VendingCurrency.balance(wallet));
+                }
+                Object item = net.minecraft.item.Item.itemRegistry.getObject("dreamcraft:CoinTechnicianI");
+                if (item instanceof net.minecraft.item.Item) {
+                    out.check(
+                        !VendingCurrency
+                            .deposit(VendingCurrency.newWallet(), new ItemStack((net.minecraft.item.Item) item, 3)),
+                        "a pack Technician Coin should not count as GregGuns Coin");
+                } else {
+                    out.note("the pack core mod's coins are not loaded here");
+                }
+            } catch (RuntimeException | LinkageError e) {
+                out.check(false, "the wallet check failed: " + e);
+            }
+            return out.build();
         }
     }
 }

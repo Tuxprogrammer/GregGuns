@@ -14,15 +14,19 @@ import com.gregguns.item.coin.CoinDenomination;
 /**
  * Writes {@link VendingCatalog} offers in the Vending Machine's trade-database NBT, the same tree its
  * {@code tradeDatabase.json} holds, so the machine reads them with its own loader. One trade group per offer: a fixed
- * UUID, a tab, no cooldown, no trade cap, one trade (coins in the input slots for the item) and, when the gate quest is
- * known, a BetterQuesting requirement. Every GregGuns group's UUID has {@link #ID_HIGH} as its high half, which is how
+ * UUID, a tab, no cooldown, no trade cap, one trade (the price for the item) and, when the gate quest is known, a
+ * BetterQuesting requirement. The price is a sum of the GregGuns coin kind, paid from the wallet, when the coin is a
+ * wallet coin kind ({@link VendingCoin#inWallet()}); otherwise one stack of coin items, paid from the input slots.
+ * Every GregGuns group's UUID has {@link #ID_HIGH} as its high half, which is how
  * GregGuns finds its own groups in a live database. Both sides; Minecraft NBT types only.
  */
 // Spec: docs/gregguns-spec/06-items/coins-and-vending.md (Mechanism)
 // Source (group keys id/category/cooldown/maxTrades/trades/requirements; UUID as <prefix>High/Low longs):
 // https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/TradeGroup.java#L55-L111
 // https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/util/NBTConverter.java#L46-L75
-// Source (trade keys fromItems/toItems; an item is id/Count/Damage/OreDict, id by registry name):
+// Source (trade keys fromCurrency/fromItems/toItems; a currency is type/value; an item is id/Count/Damage/OreDict, id
+// by
+// registry name):
 // https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/Trade.java#L68-L97
 // https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/util/BigItemStack.java#L165-L190
 // Source (requirement {name: betterquesting, quest: {questIDHigh, questIDLow}}):
@@ -56,32 +60,35 @@ public final class VendingTradeNbt {
     /**
      * Builds a database tree holding only the given offers, for a merge into the live database.
      *
-     * @param offers  the offers to write
-     * @param version the live database's version, copied so the merge leaves it unchanged
-     * @param coinId  the coin's registry id ({@code gregguns:coin})
-     * @param gates   gate key to BetterQuesting quest ID, for the gate quests that exist; an offer whose gate quest
-     *                is missing gets no requirement and is open to everyone
+     * @param offers     the offers to write
+     * @param version    the live database's version, copied so the merge leaves it unchanged
+     * @param coinId     the coin's registry id ({@code gregguns:coin}), for item prices
+     * @param currencyId the GregGuns coin kind's id ({@link VendingCoin#CURRENCY_ID}) to price in the wallet, or
+     *                   {@code null} to price in coin items
+     * @param gates      gate key to BetterQuesting quest ID, for the gate quests that exist; an offer whose gate quest
+     *                   is missing gets no requirement and is open to everyone
      * @return the tree
      */
     public static NBTTagCompound database(List<VendingCatalog.Offer> offers, int version, String coinId,
-        Map<String, UUID> gates) {
+        String currencyId, Map<String, UUID> gates) {
         NBTTagCompound db = new NBTTagCompound();
         db.setInteger(VERSION, version);
         NBTTagList groups = new NBTTagList();
         for (VendingCatalog.Offer offer : offers) {
-            groups.appendTag(group(offer, coinId, gates.get(offer.gateKey())));
+            groups.appendTag(group(offer, coinId, currencyId, gates.get(offer.gateKey())));
         }
         db.setTag(GROUPS, groups);
         return db;
     }
 
     /**
-     * @param offer  the offer
-     * @param coinId the coin's registry id
-     * @param gate   the gate quest's ID, or {@code null} for an open trade
+     * @param offer      the offer
+     * @param coinId     the coin's registry id, for an item price
+     * @param currencyId the coin kind's id for a wallet price, or {@code null} for an item price
+     * @param gate       the gate quest's ID, or {@code null} for an open trade
      * @return one trade group
      */
-    static NBTTagCompound group(VendingCatalog.Offer offer, String coinId, UUID gate) {
+    static NBTTagCompound group(VendingCatalog.Offer offer, String coinId, String currencyId, UUID gate) {
         NBTTagCompound group = new NBTTagCompound();
         UUID id = groupId(offer.key());
         NBTTagCompound idTag = new NBTTagCompound();
@@ -96,15 +103,24 @@ public final class VendingTradeNbt {
         group.setInteger("maxTrades", -1);
 
         NBTTagCompound trade = new NBTTagCompound();
-        NBTTagList from = new NBTTagList();
         CoinDenomination.Stack price = offer.price();
-        from.appendTag(
-            stack(
-                coinId,
-                price.denomination()
-                    .meta(),
-                price.count()));
-        trade.setTag("fromItems", from);
+        if (currencyId != null) {
+            NBTTagList currency = new NBTTagList();
+            NBTTagCompound sum = new NBTTagCompound();
+            sum.setString("type", currencyId);
+            sum.setInteger("value", (int) price.value());
+            currency.appendTag(sum);
+            trade.setTag("fromCurrency", currency);
+        } else {
+            NBTTagList from = new NBTTagList();
+            from.appendTag(
+                stack(
+                    coinId,
+                    price.denomination()
+                        .meta(),
+                    price.count()));
+            trade.setTag("fromItems", from);
+        }
         NBTTagList to = new NBTTagList();
         to.appendTag(stack("gregguns:" + offer.item(), offer.meta(), offer.count()));
         trade.setTag("toItems", to);
