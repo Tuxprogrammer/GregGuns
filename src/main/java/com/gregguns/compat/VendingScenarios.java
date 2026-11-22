@@ -330,20 +330,29 @@ public final class VendingScenarios {
                 Method check = machine.getClass()
                     .getMethod("checkTrade", trade.getClass(), UUID.class, walletMode, boolean.class);
 
-                setSlot.invoke(inputs, 0, CoinItems.coin()
-                    .stack(CoinDenomination.TEN, 5));
+                setSlot.invoke(
+                    inputs,
+                    0,
+                    CoinItems.coin()
+                        .stack(CoinDenomination.TEN, 5));
                 out.check(
                     !(Boolean) check.invoke(machine, trade, PLAYER, personal, true),
                     "5 x Coin 10 should not pay a 6 x Coin 10 price");
 
-                setSlot.invoke(inputs, 0, CoinItems.coin()
-                    .stack(CoinDenomination.ONE, 60));
+                setSlot.invoke(
+                    inputs,
+                    0,
+                    CoinItems.coin()
+                        .stack(CoinDenomination.ONE, 60));
                 out.check(
                     !(Boolean) check.invoke(machine, trade, PLAYER, personal, true),
                     "the machine matches the coin value exactly, so 60 x Coin 1 should not pay 6 x Coin 10");
 
-                setSlot.invoke(inputs, 0, CoinItems.coin()
-                    .stack(CoinDenomination.TEN, 10));
+                setSlot.invoke(
+                    inputs,
+                    0,
+                    CoinItems.coin()
+                        .stack(CoinDenomination.TEN, 10));
                 out.check(
                     (Boolean) check.invoke(machine, trade, PLAYER, personal, true),
                     "10 x Coin 10 should pay the pistol (simulated)");
