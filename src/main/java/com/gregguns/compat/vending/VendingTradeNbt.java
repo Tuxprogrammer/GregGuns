@@ -59,7 +59,7 @@ public final class VendingTradeNbt {
      * @param offers  the offers to write
      * @param version the live database's version, copied so the merge leaves it unchanged
      * @param coinId  the coin's registry id ({@code gregguns:coin})
-     * @param gates   quest key to BetterQuesting quest ID, for the gate quests that exist; an offer whose gate quest
+     * @param gates   gate key to BetterQuesting quest ID, for the gate quests that exist; an offer whose gate quest
      *                is missing gets no requirement and is open to everyone
      * @return the tree
      */
@@ -69,7 +69,7 @@ public final class VendingTradeNbt {
         db.setInteger(VERSION, version);
         NBTTagList groups = new NBTTagList();
         for (VendingCatalog.Offer offer : offers) {
-            groups.appendTag(group(offer, coinId, gates.get(offer.questKey())));
+            groups.appendTag(group(offer, coinId, gates.get(offer.gateKey())));
         }
         db.setTag(GROUPS, groups);
         return db;

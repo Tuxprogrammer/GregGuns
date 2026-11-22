@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -19,13 +20,18 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * The GregGuns Coin: one item, five denominations in the item damage ({@link CoinDenomination}). The name is the lang
  * name plus the value ("GregGuns Coin 100"), as the pack names its coins. Quests pay it and the pack's Vending Machine
- * takes it as the price of GregGuns trades. No NBT. Both sides.
+ * takes it as the price of GregGuns trades. The machine's coin wallet holds only the pack's own coin kinds (a closed
+ * enum), so the GregGuns Coin pays the way an item price does: from the machine's input slots, or from ME through its
+ * Uplink Hatch. The tooltip says so. No NBT. Both sides.
  */
 // Spec: docs/gregguns-spec/06-items/coins-and-vending.md
 public final class ItemCoin extends Item implements Tiered {
 
     /** The registry name: {@code gregguns:coin}. */
     public static final String NAME = "coin";
+
+    /** The lang key of the tooltip line. */
+    static final String TOOLTIP = "gregguns.tooltip.coin.vending";
 
     @SideOnly(Side.CLIENT)
     private IIcon[] icons;
@@ -59,6 +65,14 @@ public final class ItemCoin extends Item implements Tiered {
             .trim();
         CoinDenomination d = CoinDenomination.byMeta(stack.getItemDamage());
         return d == null ? name : name + " " + d.label();
+    }
+
+    /** Where the coin goes: the Vending Machine's input slots, since its wallet takes only the pack's coins. */
+    @Override
+    @SideOnly(Side.CLIENT)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
+        tooltip.add(StatCollector.translateToLocal(TOOLTIP));
     }
 
     @Override
