@@ -4,16 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,54 +20,77 @@ import com.gregguns.api.Tier;
 
 class QuestGateTest {
 
-    /** The shipped quest files are named {@code <title>-<url-safe base64 of the quest UUID>.json}. */
-    private static final Path QUESTS = Paths.get("src/main/resources/assets/gregguns/questbook/Quests");
-
     @Test
-    void uuid5MatchesPythonsUuid5() {
-        // Python: uuid.uuid5(uuid.UUID('6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8'), key)
-        assertEquals(UUID.fromString("98947aed-29d1-500c-a3ed-dfad40ff65a3"), QuestGate.questId("gg.lv.pistol"));
-        assertEquals(UUID.fromString("85851e39-3edc-5e33-a809-3e4b32292e64"), QuestGate.questId("gg.lv.intro"));
-        assertEquals(UUID.fromString("21de8ba9-7b65-5582-8d36-2fcb877359b9"), QuestGate.questId("gg.steam.intro"));
-        assertEquals(UUID.fromString("1aaa7078-f215-57a1-9e0d-187ec8c93393"), QuestGate.questId("gg.zpm.intro"));
+    void theGatesAreThePacksTierQuests() {
+        assertEquals(44, QuestGate.packQuest(Tier.STEAM));
+        assertEquals(88, QuestGate.packQuest(Tier.LV));
+        assertEquals(1148, QuestGate.packQuest(Tier.MV));
+        assertEquals(160, QuestGate.packQuest(Tier.HV));
+        assertEquals(176, QuestGate.packQuest(Tier.EV));
+        assertEquals(213, QuestGate.packQuest(Tier.IV));
+        assertEquals(1493, QuestGate.packQuest(Tier.LUV));
+        assertEquals(2610, QuestGate.packQuest(Tier.ZPM));
     }
 
     @Test
-    void introKeysFollowTheChapterNames() {
-        assertEquals("gg.steam.intro", QuestGate.introKey(Tier.STEAM));
-        assertEquals("gg.luv.intro", QuestGate.introKey(Tier.LUV));
-        assertEquals("gg.zpm.intro", QuestGate.introKey(Tier.ZPM));
+    void aPackQuestIdHasAZeroHighHalf() {
+        // BetterQuesting keeps the pack's legacy numeric quest IDs as questIDHigh 0, questIDLow <number>.
+        assertEquals(new UUID(0L, 88L), QuestGate.questId(Tier.LV));
+        assertEquals(new UUID(0L, 2610L), QuestGate.questId(Tier.ZPM));
     }
 
     @Test
-    void theNamespaceIsTheQuestLines() throws IOException {
-        Path source = Paths.get("tools/questbook/quests/_line.json");
-        String text = new String(Files.readAllBytes(source), StandardCharsets.UTF_8);
-        Matcher m = Pattern.compile("\"namespace\"\\s*:\\s*\"([0-9a-f-]+)\"")
-            .matcher(text);
-        assertTrue(m.find(), "no namespace in " + source);
-        assertEquals(QuestGate.NAMESPACE, UUID.fromString(m.group(1)), "QuestGate.NAMESPACE must match " + source);
-    }
-
-    @Test
-    void everyGateQuestShipsInTheJar() throws IOException {
+    void everyTierHasItsOwnGate() {
+        Set<Integer> quests = new HashSet<>();
+        Set<String> keys = new HashSet<>();
         for (Tier tier : Tier.values()) {
-            UUID id = QuestGate.questId(QuestGate.introKey(tier));
-            String suffix = "-" + Base64.getUrlEncoder()
-                .encodeToString(
-                    ByteBuffer.allocate(16)
-                        .putLong(id.getMostSignificantBits())
-                        .putLong(id.getLeastSignificantBits())
-                        .array())
-                + ".json";
-            try (Stream<Path> files = Files.walk(QUESTS)) {
-                assertTrue(
-                    files.anyMatch(
-                        p -> p.getFileName()
-                            .toString()
-                            .endsWith(suffix)),
-                    "the gate quest " + QuestGate.introKey(tier) + " (" + id + ") is not in " + QUESTS);
-            }
+            quests.add(QuestGate.packQuest(tier));
+            keys.add(QuestGate.gateKey(tier));
+        }
+        assertEquals(Tier.values().length, quests.size(), "two tiers share a gate quest");
+        assertEquals(Tier.values().length, keys.size(), "two tiers share a gate key");
+        assertEquals("pack.luv", QuestGate.gateKey(Tier.LUV));
+    }
+
+    /**
+     * The quest line's tier-skip triggers already rely on these pack quests. Each gate from LV up is the first
+     * prerequisite of the matching {@code gg.skip.<tier>} trigger, so the shop opens at the same point the GregGuns tab
+     * lets a player skip ahead.
+     */
+    @Test
+    void eachGateIsThatTiersSkipTriggerPrerequisite() throws IOException {
+        String text = new String(
+            Files.readAllBytes(Paths.get("tools/questbook/quests/skip.json")),
+            StandardCharsets.UTF_8);
+        Matcher m = Pattern.compile("\"key\"\\s*:\\s*\"gg\\.skip\\.([a-z]+)\"[^{}]*?\"pre\"\\s*:\\s*\\[\\s*(\\d+)")
+            .matcher(text);
+        int checked = 0;
+        while (m.find()) {
+            Tier tier = Tier.valueOf(
+                m.group(1)
+                    .toUpperCase(Locale.ROOT));
+            assertEquals(
+                Integer.parseInt(m.group(2)),
+                QuestGate.packQuest(tier),
+                "gate of " + tier + " vs the first prerequisite of gg.skip." + m.group(1));
+            checked++;
+        }
+        assertEquals(Tier.values().length - 1, checked, "one skip trigger per tier from LV to ZPM");
+    }
+
+    /** The questbook spec lists every pack quest GregGuns depends on; the shop's gates are among them. */
+    @Test
+    void everyGateIsAReferencedPackQuest() throws IOException {
+        String index = new String(
+            Files.readAllBytes(Paths.get("docs/gregguns-spec/12-questbook/index.md")),
+            StandardCharsets.UTF_8);
+        for (Tier tier : Tier.values()) {
+            int id = QuestGate.packQuest(tier);
+            assertTrue(
+                Pattern.compile("(?m)^\\| " + id + " \\|")
+                    .matcher(index)
+                    .find(),
+                "pack quest " + id + " (" + tier + ") is not in the Referenced pack quests table");
         }
     }
 }

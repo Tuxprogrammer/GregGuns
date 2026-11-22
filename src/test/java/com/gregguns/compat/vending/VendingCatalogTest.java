@@ -100,7 +100,7 @@ class VendingCatalogTest {
         expect(m, "item:part_mechanical_1", 4, CoinDenomination.TEN, 1);
         expect(m, "item:t1_scout_helmet", 1, CoinDenomination.TEN, 2);
         for (VendingCatalog.Offer o : OFFERS) {
-            assertEquals(QuestGate.introKey(o.tier()), o.questKey());
+            assertEquals(QuestGate.gateKey(o.tier()), o.gateKey());
         }
     }
 

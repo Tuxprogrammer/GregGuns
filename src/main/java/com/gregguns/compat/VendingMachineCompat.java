@@ -122,7 +122,7 @@ public final class VendingMachineCompat {
                 read.invoke(db, ours, true, false);
                 added = offers.size();
                 GregGuns.LOG.info(
-                    "Added {} GregGuns trades to the Vending Machine ({} behind GregGuns quests{})",
+                    "Added {} GregGuns trades to the Vending Machine ({} behind the pack's tier quests{})",
                     added,
                     countGated(offers, gates),
                     removed > 0 ? ", replacing " + removed + " saved copies" : "");
@@ -158,12 +158,12 @@ public final class VendingMachineCompat {
     }
 
     /**
-     * @return gate quest key to quest ID, for the gate quests BetterQuesting's database holds; empty without it
+     * @return gate key to quest ID, for the pack tier quests BetterQuesting's database holds; empty without it
      */
-    private static Map<String, UUID> gates() {
+    static Map<String, UUID> gates() {
         Map<String, UUID> wanted = new HashMap<>();
         for (Tier tier : Tier.values()) {
-            wanted.put(QuestGate.introKey(tier), QuestGate.questId(QuestGate.introKey(tier)));
+            wanted.put(QuestGate.gateKey(tier), QuestGate.questId(tier));
         }
         if (!Loader.isModLoaded(BQ_MOD_ID)) {
             return new HashMap<>();
@@ -174,7 +174,7 @@ public final class VendingMachineCompat {
     private static int countGated(List<VendingCatalog.Offer> offers, Map<String, UUID> gates) {
         int n = 0;
         for (VendingCatalog.Offer offer : offers) {
-            if (gates.containsKey(offer.questKey())) {
+            if (gates.containsKey(offer.gateKey())) {
                 n++;
             }
         }

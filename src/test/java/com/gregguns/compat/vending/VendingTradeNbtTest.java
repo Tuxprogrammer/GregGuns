@@ -42,7 +42,7 @@ class VendingTradeNbtTest {
 
     @Test
     void aGroupHasTheMachinesShape() {
-        UUID gate = QuestGate.questId("gg.lv.intro");
+        UUID gate = QuestGate.questId(Tier.LV);
         NBTTagCompound g = VendingTradeNbt.group(PISTOL, "gregguns:coin", gate);
         NBTTagCompound id = g.getCompoundTag("id");
         assertEquals(Constants.NBT.TAG_LONG, id.func_150299_b("tradeGroupIDHigh"));
@@ -97,7 +97,7 @@ class VendingTradeNbtTest {
     @Test
     void theDatabaseCopiesTheVersionAndGatesOnlyKnownQuests() {
         Map<String, UUID> gates = new HashMap<>();
-        gates.put("gg.lv.intro", QuestGate.questId("gg.lv.intro"));
+        gates.put(QuestGate.gateKey(Tier.LV), QuestGate.questId(Tier.LV));
         NBTTagCompound db = VendingTradeNbt.database(Arrays.asList(PISTOL, EGG), 7, "gregguns:coin", gates);
         assertEquals(7, db.getInteger(VendingTradeNbt.VERSION));
         NBTTagList groups = db.getTagList(VendingTradeNbt.GROUPS, Constants.NBT.TAG_COMPOUND);
@@ -112,7 +112,7 @@ class VendingTradeNbtTest {
             groups.getCompoundTagAt(1)
                 .getTagList("requirements", Constants.NBT.TAG_COMPOUND)
                 .tagCount(),
-            "the EV intro is not in the database, so the egg is open");
+            "the EV pack quest is not in the database, so the egg is open");
     }
 
     @Test

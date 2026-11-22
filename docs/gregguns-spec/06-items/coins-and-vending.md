@@ -3,7 +3,7 @@
 GregGuns has its own currency, the **GregGuns Coin**. The quest line pays it, and the pack's Vending Machine sells GregGuns guns, ammo, parts, armor, gear and NPC spawn eggs for it.
 
 - **Techguns baseline:** none. Techguns has no currency or shop. This is a GregGuns decision (owner request 2026-10-29: "coins and vending machine integration", then "GregGuns gets its own coin").
-- **Code:** `com.gregguns.item.coin` (`CoinDenomination`, `ItemCoin`, `CoinItems`, `CoinRecipes`), `com.gregguns.compat.vending` (`VendingCatalog`, `QuestGate`, `VendingTradeNbt`), `com.gregguns.compat.VendingMachineCompat`, `BetterQuestingQuests`. Tests: `CoinDenominationTest`, `QuestGateTest`, `VendingCatalogTest`, `VendingTradeNbtTest`; scenarios `compat.vending.trades`, `compat.vending.reload`, `npc.egg_every_mob`.
+- **Code:** `com.gregguns.item.coin` (`CoinDenomination`, `ItemCoin`, `CoinItems`, `CoinRecipes`), `com.gregguns.compat.vending` (`VendingCatalog`, `QuestGate`, `VendingTradeNbt`), `com.gregguns.compat.VendingMachineCompat`, `BetterQuestingQuests`. Tests: `CoinDenominationTest`, `QuestGateTest`, `VendingCatalogTest`, `VendingTradeNbtTest`; scenarios `compat.vending.trades`, `compat.vending.reload`, `compat.vending.purchase`, `npc.egg_every_mob`.
 - **Pack mods:** VendingMachine 0.4.101 (MIT), NewHorizonsCoreMod 2.9.84 (`dreamcraft`, the pack coins), BetterQuesting 3.8.89-GTNH.
 - **Config:** `compat.vendingTrades` ([config.md](../../config.md#compat-compat)).
 
@@ -78,11 +78,34 @@ With every module on there are 176 trades: 139 on the Misc tab and 37 on the Com
 
 ## Gates
 
-Each trade waits for its tier's chapter intro quest, `gg.<tier>.intro` (Steam `gg.steam.intro` to ZPM `gg.zpm.intro`). The tier skip triggers complete the intros as well, so a player who skips ahead also unlocks the shop. The quest ID is the version 5 UUID of the key in the quest line's namespace, the same ID the quest line builder writes (`QuestGate`, checked against the shipped quest files by `QuestGateTest`).
+Each trade waits for the pack's own quest for its tier. Every pack player completes these quests on the way through the tiers, so the shop opens up to the tier a player has reached, even for a player who added GregGuns mid-game and has done no GregGuns quest. That follows the quest book's rule that a tier gate is a pack quest ([unlock design](../12-questbook/index.md#unlock-design)).
 
-A gate is written only when BetterQuesting is loaded and the gate quest is in its database when the server starts. Without our quest line (`questbook.install` off and no pack copy), or without BetterQuesting, every GregGuns trade is open. The Vending Machine opens a gated trade when BetterQuesting reports the quest done ([VmAdapter](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/integration/vendingmachine/VmAdapter.java)).
+| Tier | Pack quest |
+|---|---|
+| Steam | 44, Welcome to Tier 0.5, Steam! |
+| LV | 88, Welcome to Tier 1, LV |
+| MV | 1148, Tier 2 (MV) |
+| HV | 160, Tier 3 (HV) |
+| EV | 176, Tier 4 (EV) |
+| IV | 213, Tier 5 (IV) |
+| LuV | 1493, Tier 6 (LuV) |
+| ZPM | 2610, Tier 7 (ZPM) |
+
+- **The quest IDs.** BetterQuesting stores the pack's numeric quest IDs with a zero high half, so the LV gate is quest `(0, 88)` (`QuestGate`).
+- **The same quests as the skip triggers.** From LV up, each gate is the first prerequisite of that tier's `gg.skip.<tier>` trigger. So the shop opens where the GregGuns tab lets a player skip ahead. `QuestGateTest` checks both lists.
+- **When a gate is written.** A gate is written only when BetterQuesting is loaded and the quest is in its database when the server starts. Without BetterQuesting, or without the pack's quest book, every GregGuns trade is open.
+- **When a trade opens.** BetterQuesting refreshes each online player's quest cache every 10 seconds and passes the completed quests to the Vending Machine. A tier the player passed long ago opens within seconds of logging in ([QuestCache#L168-L193](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/api2/cache/QuestCache.java#L168-L193), [VmAdapter](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/integration/vendingmachine/VmAdapter.java)).
+- **Locked trades are hidden.** The machine lists only the trades a player has unlocked.
 
 No GregGuns trade has a cooldown or a trade cap. Coins are the only limit.
+
+## Paying
+
+The machine's coin wallet takes only the pack's 14 coin kinds (see above). A GregGuns Coin pays the way any item price does. The player places the coins in the machine's input slots, or the machine pulls them from ME through its Uplink Hatch. The coin's tooltip says so.
+
+- **Exact value.** The machine matches item and damage, so a price of 6 x Coin 10 takes Coin 10 only. A player with larger coins breaks them in a crafting grid first.
+- **Only the price is taken.** The rest stays in the slot.
+- **Scenario check.** `compat.vending.purchase` pays a real controller this way ([MTEVendingMachine#L620-L670](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/blocks/MTEVendingMachine.java#L620-L670)).
 
 ## Mechanism
 

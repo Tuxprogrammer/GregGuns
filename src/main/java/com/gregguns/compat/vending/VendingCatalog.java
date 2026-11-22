@@ -25,7 +25,7 @@ import com.gregguns.utility.UtilityItemOrder;
  * item order classes ({@link GunsItemOrder}, {@link ArmorItemOrder}, {@link UtilityItemOrder}) and the spawn egg roster
  * ({@link NpcEggOrder}), so a new gun, armor piece or NPC is on sale without a hand-kept list. A price is a multiple of
  * the tier's unit ({@link #unit}) by item kind, paid as one stack of one coin denomination
- * ({@link CoinDenomination#exact}); every trade waits for its tier's chapter intro quest ({@link QuestGate}).
+ * ({@link CoinDenomination#exact}); every trade waits for the pack's quest of its tier ({@link QuestGate}).
  *
  * <p>
  * Items a module or a missing mod leaves unregistered are dropped later, when the trades are built against the live
@@ -98,7 +98,7 @@ public final class VendingCatalog {
             return count;
         }
 
-        /** @return the tier whose intro quest unlocks the trade */
+        /** @return the tier whose pack quest unlocks the trade */
         public Tier tier() {
             return tier;
         }
@@ -113,9 +113,9 @@ public final class VendingCatalog {
             return price;
         }
 
-        /** @return the key of the quest that unlocks the trade */
-        public String questKey() {
-            return QuestGate.introKey(tier);
+        /** @return the key of the pack quest that unlocks the trade ({@link QuestGate#gateKey}) */
+        public String gateKey() {
+            return QuestGate.gateKey(tier);
         }
 
         @Override

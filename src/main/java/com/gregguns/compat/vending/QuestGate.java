@@ -1,82 +1,68 @@
 package com.gregguns.compat.vending;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.EnumMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import com.gregguns.api.Tier;
 
 /**
- * The GregGuns quest a trade waits for, by quest key, and its BetterQuesting quest ID. The quest line builder gives
- * every quest the name-based UUID (version 5, SHA-1) of its key in the line's namespace, so the ID follows from the
- * key alone. A tier's trades wait for the tier's chapter intro ({@code gg.<tier>.intro}); the tier skip triggers
- * complete the intros too, so a player who skips ahead unlocks the shop as well. Pure logic, both sides.
+ * The quest a tier's Vending Machine trades wait for: the GTNH pack's own tier quest ("Welcome to Tier 0.5, Steam!",
+ * "Welcome to Tier 1, LV", "Tier 2 (MV)" ... "Tier 7 (ZPM)"). Every pack player completes these on the way through the
+ * tiers, so a player who adds GregGuns mid-game finds the shop open up to the tier they have reached, and no GregGuns
+ * quest has to be done first. That is the quest book's own rule: a tier gate is a pack quest, never GregGuns' chapter
+ * order. Pack quests have legacy numeric IDs, which BetterQuesting stores as the UUID {@code (0, id)}. Pure logic, both
+ * sides.
  */
-// Spec: docs/gregguns-spec/06-items/coins-and-vending.md (Gates); tools/questbook/build_quests.py (qid: uuid5 of the
-// key)
+// Spec: docs/gregguns-spec/06-items/coins-and-vending.md (Gates); docs/gregguns-spec/12-questbook/index.md (Referenced
+// pack quests: 44, 88, 1148, 160, 176, 213, 1493, 2610)
+// Source (the pack's tier quests, questIDHigh 0, in the shipped quest database; LV to ZPM are also the first
+// prerequisite of the matching gg.skip.<tier> trigger in tools/questbook/quests/skip.json):
+// reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/DefaultQuests/Quests/Tier*/
 public final class QuestGate {
 
-    /** The GregGuns quest line's UUID namespace (tools/questbook, {@code namespace}). A unit test keeps them equal. */
-    public static final UUID NAMESPACE = UUID.fromString("6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8");
+    private static final Map<Tier, Integer> PACK_TIER_QUEST = new EnumMap<>(Tier.class);
+
+    static {
+        PACK_TIER_QUEST.put(Tier.STEAM, 44); // Welcome to Tier 0.5, Steam!
+        PACK_TIER_QUEST.put(Tier.LV, 88); // Welcome to Tier 1, LV
+        PACK_TIER_QUEST.put(Tier.MV, 1148); // Tier 2 (MV)
+        PACK_TIER_QUEST.put(Tier.HV, 160); // Tier 3 (HV)
+        PACK_TIER_QUEST.put(Tier.EV, 176); // Tier 4 (EV)
+        PACK_TIER_QUEST.put(Tier.IV, 213); // Tier 5 (IV)
+        PACK_TIER_QUEST.put(Tier.LUV, 1493); // Tier 6 (LuV)
+        PACK_TIER_QUEST.put(Tier.ZPM, 2610); // Tier 7 (ZPM)
+    }
 
     private QuestGate() {}
 
     /**
      * @param tier a tier
-     * @return the key of the tier's chapter intro quest, e.g. {@code gg.lv.intro}
+     * @return the pack's legacy quest number of the tier's quest
      */
-    public static String introKey(Tier tier) {
-        return "gg." + tier.name()
-            .toLowerCase(Locale.ROOT) + ".intro";
+    public static int packQuest(Tier tier) {
+        Integer id = PACK_TIER_QUEST.get(tier);
+        if (id == null) {
+            throw new IllegalArgumentException("no pack tier quest for " + tier);
+        }
+        return id;
     }
 
     /**
-     * @param key a quest key
-     * @return the quest's BetterQuesting ID: the version 5 UUID of {@code key} in {@link #NAMESPACE}
+     * @param tier a tier
+     * @return the key the trade builder looks the gate up by, e.g. {@code pack.lv}
      */
-    public static UUID questId(String key) {
-        return uuid5(NAMESPACE, key);
+    public static String gateKey(Tier tier) {
+        return "pack." + tier.name()
+            .toLowerCase(Locale.ROOT);
     }
 
     /**
-     * RFC 4122 name-based UUID, version 5 (SHA-1), the same as Python's {@code uuid.uuid5}.
-     *
-     * @param namespace the namespace UUID
-     * @param name      the name, encoded as UTF-8
-     * @return the UUID
+     * @param tier a tier
+     * @return the BetterQuesting ID of the tier's pack quest: the legacy number as the low half, zero as the high half
      */
-    static UUID uuid5(UUID namespace, String name) {
-        MessageDigest sha1;
-        try {
-            sha1 = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-1 is required by every Java runtime", e);
-        }
-        sha1.update(toBytes(namespace.getMostSignificantBits()));
-        sha1.update(toBytes(namespace.getLeastSignificantBits()));
-        sha1.update(name.getBytes(StandardCharsets.UTF_8));
-        byte[] h = sha1.digest();
-        h[6] = (byte) ((h[6] & 0x0F) | 0x50);
-        h[8] = (byte) ((h[8] & 0x3F) | 0x80);
-        return new UUID(toLong(h, 0), toLong(h, 8));
-    }
-
-    private static byte[] toBytes(long v) {
-        byte[] b = new byte[8];
-        for (int i = 7; i >= 0; i--) {
-            b[i] = (byte) v;
-            v >>>= 8;
-        }
-        return b;
-    }
-
-    private static long toLong(byte[] b, int off) {
-        long v = 0;
-        for (int i = 0; i < 8; i++) {
-            v = (v << 8) | (b[off + i] & 0xFF);
-        }
-        return v;
+    public static UUID questId(Tier tier) {
+        return new UUID(0L, packQuest(tier));
     }
 }
