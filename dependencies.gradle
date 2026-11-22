@@ -65,9 +65,11 @@ dependencies {
     }
 
     // The pack's Vending Machine, so dev runs and the compat.vending scenarios have the trade database that the GregGuns
-    // trades are merged into (com.gregguns.compat.VendingMachineCompat). Runtime only: GregGuns reaches it by reflection.
-    // Version is the pack's (MOD-INDEX.md).
-    runtimeOnlyNonPublishable("com.cubefury.vendingmachine:VendingMachine:0.4.101:dev") { transitive = false }
+    // trades are merged into (com.gregguns.compat.VendingMachineCompat). Compiled against only by the late mixins that
+    // make the GregGuns Coin a wallet coin kind and by VendingCurrency, which loads only when the mod is present; the
+    // trade merge still reaches it by reflection. Version is the pack's (MOD-INDEX.md); the mixin targets are unchanged
+    // from 0.4.101 through 0.5.1.
+    devOnlyNonPublishable("com.cubefury.vendingmachine:VendingMachine:0.4.101:dev") { transitive = false }
 
     // Optional integration (D312): Mobs Info's NEI mob page shows the NPC gun drops through IMobExtraInfoProvider on our
     // LivingDropsEvent handler (com.gregguns.entity.npc.NpcGunDropsHandler). compileOnly, so the mod is absent from the

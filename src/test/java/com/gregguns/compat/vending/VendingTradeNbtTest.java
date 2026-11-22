@@ -43,7 +43,7 @@ class VendingTradeNbtTest {
     @Test
     void aGroupHasTheMachinesShape() {
         UUID gate = QuestGate.questId(Tier.LV);
-        NBTTagCompound g = VendingTradeNbt.group(PISTOL, "gregguns:coin", gate);
+        NBTTagCompound g = VendingTradeNbt.group(PISTOL, "gregguns:coin", null, gate);
         NBTTagCompound id = g.getCompoundTag("id");
         assertEquals(Constants.NBT.TAG_LONG, id.func_150299_b("tradeGroupIDHigh"));
         assertEquals(VendingTradeNbt.ID_HIGH, id.getLong("tradeGroupIDHigh"));
@@ -57,7 +57,7 @@ class VendingTradeNbtTest {
         NBTTagList trades = g.getTagList("trades", Constants.NBT.TAG_COMPOUND);
         assertEquals(1, trades.tagCount());
         NBTTagCompound trade = trades.getCompoundTagAt(0);
-        assertFalse(trade.hasKey("fromCurrency"), "GregGuns trades take coins as items, not wallet currency");
+        assertFalse(trade.hasKey("fromCurrency"), "without the wallet, GregGuns trades take coins as items");
         NBTTagCompound coin = trade.getTagList("fromItems", Constants.NBT.TAG_COMPOUND)
             .getCompoundTagAt(0);
         assertEquals("gregguns:coin", coin.getString("id"));
@@ -80,8 +80,30 @@ class VendingTradeNbtTest {
     }
 
     @Test
+    void aWalletPriceIsTheSumInTheGregGunsCoinKind() {
+        NBTTagCompound trade = VendingTradeNbt.group(PISTOL, "gregguns:coin", VendingCoin.CURRENCY_ID, null)
+            .getTagList("trades", Constants.NBT.TAG_COMPOUND)
+            .getCompoundTagAt(0);
+        assertFalse(trade.hasKey("fromItems"), "a wallet price takes no coin items");
+        NBTTagList currency = trade.getTagList("fromCurrency", Constants.NBT.TAG_COMPOUND);
+        assertEquals(1, currency.tagCount());
+        NBTTagCompound sum = currency.getCompoundTagAt(0);
+        assertEquals("gregguns", sum.getString("type"));
+        assertEquals(Constants.NBT.TAG_INT, sum.func_150299_b("value"), "value is an int, as CurrencyItem reads it");
+        assertEquals(60, sum.getInteger("value"), "6 x Coin 10 is 60");
+        assertEquals(
+            2000,
+            VendingTradeNbt.group(EGG, "gregguns:coin", VendingCoin.CURRENCY_ID, null)
+                .getTagList("trades", Constants.NBT.TAG_COMPOUND)
+                .getCompoundTagAt(0)
+                .getTagList("fromCurrency", Constants.NBT.TAG_COMPOUND)
+                .getCompoundTagAt(0)
+                .getInteger("value"));
+    }
+
+    @Test
     void anUngatedGroupIsOpen() {
-        NBTTagCompound g = VendingTradeNbt.group(EGG, "gregguns:coin", null);
+        NBTTagCompound g = VendingTradeNbt.group(EGG, "gregguns:coin", null, null);
         assertEquals(
             0,
             g.getTagList("requirements", Constants.NBT.TAG_COMPOUND)
@@ -98,7 +120,7 @@ class VendingTradeNbtTest {
     void theDatabaseCopiesTheVersionAndGatesOnlyKnownQuests() {
         Map<String, UUID> gates = new HashMap<>();
         gates.put(QuestGate.gateKey(Tier.LV), QuestGate.questId(Tier.LV));
-        NBTTagCompound db = VendingTradeNbt.database(Arrays.asList(PISTOL, EGG), 7, "gregguns:coin", gates);
+        NBTTagCompound db = VendingTradeNbt.database(Arrays.asList(PISTOL, EGG), 7, "gregguns:coin", null, gates);
         assertEquals(7, db.getInteger(VendingTradeNbt.VERSION));
         NBTTagList groups = db.getTagList(VendingTradeNbt.GROUPS, Constants.NBT.TAG_COMPOUND);
         assertEquals(2, groups.tagCount());
@@ -118,7 +140,7 @@ class VendingTradeNbtTest {
     @Test
     void removeOursKeepsThePacksGroups() {
         NBTTagCompound db = VendingTradeNbt
-            .database(Arrays.asList(PISTOL, EGG), 1, "gregguns:coin", Collections.<String, UUID>emptyMap());
+            .database(Arrays.asList(PISTOL, EGG), 1, "gregguns:coin", null, Collections.<String, UUID>emptyMap());
         NBTTagCompound pack = new NBTTagCompound();
         NBTTagCompound packId = new NBTTagCompound();
         packId.setLong("tradeGroupIDHigh", -9178793868474562574L);
@@ -145,7 +167,8 @@ class VendingTradeNbtTest {
     @Test
     void theWholeCatalogMaps() {
         List<VendingCatalog.Offer> all = VendingCatalog.build();
-        NBTTagCompound db = VendingTradeNbt.database(all, 1, "gregguns:coin", Collections.<String, UUID>emptyMap());
+        NBTTagCompound db = VendingTradeNbt
+            .database(all, 1, "gregguns:coin", null, Collections.<String, UUID>emptyMap());
         NBTBase list = db.getTag(VendingTradeNbt.GROUPS);
         assertEquals(all.size(), ((NBTTagList) list).tagCount());
     }

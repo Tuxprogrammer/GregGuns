@@ -63,6 +63,40 @@ class CoinDenominationTest {
     }
 
     @Test
+    void changePaysASumLargestFirstInWholeStacks() {
+        assertEquals(
+            "[1 x 1000, 2 x 100, 3 x 10, 4 x 1]",
+            CoinDenomination.change(1234)
+                .toString());
+        assertEquals(
+            "[1 x 10K, 2 x 1000, 3 x 100, 4 x 10, 5 x 1]",
+            CoinDenomination.change(12345)
+                .toString());
+        assertEquals(
+            "[6 x 10]",
+            CoinDenomination.change(60)
+                .toString());
+        assertEquals(
+            "[64 x 10K, 36 x 10K]",
+            CoinDenomination.change(1_000_000)
+                .toString(),
+            "64 coins a stack");
+        assertTrue(
+            CoinDenomination.change(0)
+                .isEmpty());
+        assertTrue(
+            CoinDenomination.change(-5)
+                .isEmpty());
+        for (long v : new long[] { 1, 9, 99, 640_001, 1_234_567 }) {
+            long sum = 0;
+            for (CoinDenomination.Stack s : CoinDenomination.change(v)) {
+                sum += s.value();
+            }
+            assertEquals(v, sum, "change(" + v + ") adds up");
+        }
+    }
+
+    @Test
     void stacksRejectBadCounts() {
         assertThrows(IllegalArgumentException.class, () -> new CoinDenomination.Stack(CoinDenomination.ONE, 0));
         assertThrows(IllegalArgumentException.class, () -> new CoinDenomination.Stack(CoinDenomination.ONE, 65));

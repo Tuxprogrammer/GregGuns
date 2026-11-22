@@ -20,9 +20,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * The GregGuns Coin: one item, five denominations in the item damage ({@link CoinDenomination}). The name is the lang
  * name plus the value ("GregGuns Coin 100"), as the pack names its coins. Quests pay it and the pack's Vending Machine
- * takes it as the price of GregGuns trades. The machine's coin wallet holds only the pack's own coin kinds (a closed
- * enum), so the GregGuns Coin pays the way an item price does: from the machine's input slots, or from ME through its
- * Uplink Hatch. The tooltip says so. No NBT. Both sides.
+ * takes it as the price of GregGuns trades: GregGuns makes it one of the machine's wallet coin kinds
+ * ({@link com.gregguns.compat.vending.VendingCoin}), so it goes in the machine's coin slot like the pack's coins. If
+ * that patch did not apply, the coin pays from the input slots instead. The tooltip says which. No NBT. Both sides.
  */
 // Spec: docs/gregguns-spec/06-items/coins-and-vending.md
 public final class ItemCoin extends Item implements Tiered {
@@ -30,8 +30,11 @@ public final class ItemCoin extends Item implements Tiered {
     /** The registry name: {@code gregguns:coin}. */
     public static final String NAME = "coin";
 
-    /** The lang key of the tooltip line. */
+    /** The lang key of the tooltip line when the coin is a wallet coin kind. */
     static final String TOOLTIP = "gregguns.tooltip.coin.vending";
+
+    /** The lang key of the tooltip line when it is not (it pays from the input slots). */
+    static final String TOOLTIP_ITEMS = "gregguns.tooltip.coin.vending.items";
 
     @SideOnly(Side.CLIENT)
     private IIcon[] icons;
@@ -67,12 +70,14 @@ public final class ItemCoin extends Item implements Tiered {
         return d == null ? name : name + " " + d.label();
     }
 
-    /** Where the coin goes: the Vending Machine's input slots, since its wallet takes only the pack's coins. */
+    /** Where the coin goes at the Vending Machine: its coin slot, or the input slots if the wallet patch is off. */
     @Override
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
-        tooltip.add(StatCollector.translateToLocal(TOOLTIP));
+        tooltip.add(
+            StatCollector
+                .translateToLocal(com.gregguns.compat.vending.VendingCoin.inWallet() ? TOOLTIP : TOOLTIP_ITEMS));
     }
 
     @Override

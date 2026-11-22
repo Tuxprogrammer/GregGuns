@@ -30,7 +30,9 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 
 /**
- * Puts the GregGuns trades ({@link VendingCatalog}) into the pack's Vending Machine, priced in GregGuns Coins. The
+ * Puts the GregGuns trades ({@link VendingCatalog}) into the pack's Vending Machine, priced in GregGuns Coins: from
+ * the wallet when the coin is a wallet coin kind ({@link com.gregguns.compat.vending.VendingCoin}), else as coin items
+ * in the input slots. The
  * machine has no registration API: it reads {@code config/vendingmachine/tradeDatabase.json} in its own
  * server-starting handler. So once the server has started, GregGuns merges its trade groups into the machine's live
  * database through the machine's own public loader ({@code TradeDatabase.readFromNBT}, merge mode), by reflection, so
@@ -117,14 +119,20 @@ public final class VendingMachineCompat {
             if (CompatConfig.vendingTrades && coin != null) {
                 List<VendingCatalog.Offer> offers = registeredOffers();
                 Map<String, UUID> gates = gates();
-                NBTTagCompound ours = VendingTradeNbt
-                    .database(offers, version, Item.itemRegistry.getNameForObject(coin), gates);
+                boolean wallet = com.gregguns.compat.vending.VendingCoin.inWallet();
+                NBTTagCompound ours = VendingTradeNbt.database(
+                    offers,
+                    version,
+                    Item.itemRegistry.getNameForObject(coin),
+                    wallet ? com.gregguns.compat.vending.VendingCoin.CURRENCY_ID : null,
+                    gates);
                 read.invoke(db, ours, true, false);
                 added = offers.size();
                 GregGuns.LOG.info(
-                    "Added {} GregGuns trades to the Vending Machine ({} behind the pack's tier quests{})",
+                    "Added {} GregGuns trades to the Vending Machine ({} behind the pack's tier quests, paid {}{})",
                     added,
                     countGated(offers, gates),
+                    wallet ? "from the wallet" : "with coins in the input slots",
                     removed > 0 ? ", replacing " + removed + " saved copies" : "");
             } else if (removed > 0) {
                 GregGuns.LOG

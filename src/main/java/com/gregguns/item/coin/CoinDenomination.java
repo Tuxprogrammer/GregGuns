@@ -1,5 +1,8 @@
 package com.gregguns.item.coin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The five GregGuns Coin denominations. The item damage is the ordinal, so the order is world data and never changes.
  * Values and the five-step ladder follow the GTNH pack's coins ({@code dreamcraft:Coin<Kind>} to {@code ...IV}), so a
@@ -95,6 +98,30 @@ public enum CoinDenomination {
             }
         }
         return null;
+    }
+
+    /**
+     * A sum as coins, largest denomination first, in stacks of at most {@link #MAX_STACK}: how the Vending Machine pays
+     * a
+     * wallet balance back out. 1,234 is one 1000, two 100, three 10 and four 1.
+     *
+     * @param value a sum in single coins
+     * @return the stacks, largest first; empty for zero or less
+     */
+    public static List<Stack> change(long value) {
+        List<Stack> out = new ArrayList<>();
+        long left = value;
+        for (int i = BY_META.length - 1; i >= 0 && left > 0; i--) {
+            CoinDenomination d = BY_META[i];
+            long coins = left / d.value;
+            left -= coins * d.value;
+            while (coins > 0) {
+                int count = (int) Math.min(coins, MAX_STACK);
+                out.add(new Stack(d, count));
+                coins -= count;
+            }
+        }
+        return out;
     }
 
     /** A number of coins of one denomination. Immutable. */

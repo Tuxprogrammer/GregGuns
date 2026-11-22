@@ -3,7 +3,7 @@
 GregGuns has its own currency, the **GregGuns Coin**. The quest line pays it, and the pack's Vending Machine sells GregGuns guns, ammo, parts, armor, gear and NPC spawn eggs for it.
 
 - **Techguns baseline:** none. Techguns has no currency or shop. This is a GregGuns decision (owner request 2026-10-29: "coins and vending machine integration", then "GregGuns gets its own coin").
-- **Code:** `com.gregguns.item.coin` (`CoinDenomination`, `ItemCoin`, `CoinItems`, `CoinRecipes`), `com.gregguns.compat.vending` (`VendingCatalog`, `QuestGate`, `VendingTradeNbt`), `com.gregguns.compat.VendingMachineCompat`, `BetterQuestingQuests`. Tests: `CoinDenominationTest`, `QuestGateTest`, `VendingCatalogTest`, `VendingTradeNbtTest`; scenarios `compat.vending.trades`, `compat.vending.reload`, `compat.vending.purchase`, `npc.egg_every_mob`.
+- **Code:** `com.gregguns.item.coin` (`CoinDenomination`, `ItemCoin`, `CoinItems`, `CoinRecipes`), `com.gregguns.compat.vending` (`VendingCatalog`, `QuestGate`, `VendingTradeNbt`, `VendingCoin`, `VendingCurrency`), `com.gregguns.compat.VendingMachineCompat`, `BetterQuestingQuests`, and the late mixins `com.gregguns.mixins.LateMixins` and `com.gregguns.mixins.late.vending`. Tests: `CoinDenominationTest`, `QuestGateTest`, `VendingCatalogTest`, `VendingTradeNbtTest`, `VendingCoinTest`; scenarios `compat.vending.trades`, `compat.vending.reload`, `compat.vending.purchase`, `compat.vending.wallet`, `npc.egg_every_mob`.
 - **Pack mods:** VendingMachine 0.4.101 (MIT), NewHorizonsCoreMod 2.9.84 (`dreamcraft`, the pack coins), BetterQuesting 3.8.89-GTNH.
 - **Config:** `compat.vendingTrades` ([config.md](../../config.md#compat-compat)).
 
@@ -11,7 +11,7 @@ GregGuns has its own currency, the **GregGuns Coin**. The quest line pays it, an
 
 The pack has 14 themed coin kinds, each five separate items: `dreamcraft:Coin<Kind>` worth 1, then `I`, `II`, `III` and `IV` worth 10, 100, 1,000 and 10,000 ([NHItemList#L99-L178](https://github.com/GTNewHorizons/NewHorizonsCoreMod/blob/2.9.84/src/main/java/com/dreammaster/item/NHItemList.java#L99-L178)). The rim color names the value: gold, green, blue, orange, black. Ten coins and programmed circuit 10 make one of the next value in the GT Assembler, at LV to EV ([AssemblerRecipes#L7794](https://github.com/GTNewHorizons/NewHorizonsCoreMod/blob/2.9.84/src/main/java/com/dreammaster/gthandler/recipes/AssemblerRecipes.java#L7794-L7811)). There is no recipe the other way: the machine's wallet makes change.
 
-The Vending Machine's currencies are a closed Java enum keyed to those item names ([CurrencyType#L139-L156](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/CurrencyType.java#L139-L156)). Another mod cannot add a coin kind to the wallet. A trade can also ask for plain items, which the machine takes from its input slots, and 72 of the pack's trades do. GregGuns uses that: its coin is an ordinary item, and its trades list the coins as item inputs.
+The Vending Machine's currencies are a closed Java enum keyed to those item names ([CurrencyType#L12-L29](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/CurrencyType.java#L12-L29)), with no API for another mod's coin. GregGuns adds its coin as a 15th coin kind with late mixins ([Wallet](#wallet)), so the GregGuns Coin goes in the machine's coin slot like the pack's coins.
 
 ## The coin
 
@@ -31,7 +31,7 @@ The Vending Machine's currencies are a closed Java enum keyed to those item name
 
 ## The shop
 
-`VendingCatalog` derives the trades from the item order classes and the spawn egg roster, so new content is on sale without a hand-kept list. A price is a multiple of the tier's **unit** U by item kind, paid as **one stack of one coin value**: the largest value that divides the price with at most 64 coins (`CoinDenomination.exact`).
+`VendingCatalog` derives the trades from the item order classes and the spawn egg roster, so new content is on sale without a hand-kept list. A price is a multiple of the tier's **unit** U by item kind, and always fits **one stack of one coin value**: the largest value that divides the price with at most 64 coins (`CoinDenomination.exact`). The wallet takes the sum in any coins; the stack form is the price when trades fall back to coin items ([Paying](#paying)).
 
 | Tier | Steam | LV | MV | HV | EV | IV | LuV | ZPM |
 |---|---|---|---|---|---|---|---|---|
@@ -101,17 +101,36 @@ No GregGuns trade has a cooldown or a trade cap. Coins are the only limit.
 
 ## Paying
 
-The machine's coin wallet takes only the pack's 14 coin kinds (see above). A GregGuns Coin pays the way any item price does. The player places the coins in the machine's input slots, or the machine pulls them from ME through its Uplink Hatch. The coin's tooltip says so.
+The GregGuns Coin is one of the machine's wallet coin kinds, `gregguns`. A player puts coins in the machine's coin slot, or right-clicks the machine holding them, and the wallet keeps the sum. A GregGuns trade's price is a sum of that kind: the pistol costs 60. The machine takes it from the wallet, then from ME through its Uplink Hatch.
 
-- **Exact value.** The machine matches item and damage, so a price of 6 x Coin 10 takes Coin 10 only. A player with larger coins breaks them in a crafting grid first.
-- **Only the price is taken.** The rest stays in the slot.
-- **Scenario check.** `compat.vending.purchase` pays a real controller this way ([MTEVendingMachine#L620-L670](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/blocks/MTEVendingMachine.java#L620-L670)).
+- **Any denomination.** The wallet holds a sum, so 60 x Coin 1, 6 x Coin 10 or a mix all pay 60.
+- **Change.** Ejecting the balance pays it out in GregGuns Coins, largest first (1,234 is one Coin 1000, two Coin 100, three Coin 10 and four Coin 1).
+- **Its own kind.** GregGuns Coins never pay a price in the pack's coin kinds, nor the reverse. The wallet display shows the GregGuns balance with the coin's own icons.
+- **Fallback.** If the wallet patch did not apply ([Wallet](#wallet)), the trades are priced as coin items instead, paid from the machine's input slots or from ME. Then the price is one stack of one value (6 x Coin 10 takes Coin 10 only), and only the price is taken. The coin's tooltip names the coin slot or the input slots, whichever applies.
+- **Scenario check.** `compat.vending.purchase` pays a real controller's trade from a wallet the coin slot's way filled, and, with a player online, through the machine's whole trade check with that player's own wallet ([MTEVendingMachine#L642-L670](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/blocks/MTEVendingMachine.java#L642-L670)). Without the wallet it pays from the input slots.
+
+## Wallet
+
+The machine has no API for another mod's coin (owner 2026-11-22: mixins inside GregGuns are the only route; no fork, no upstream change). Two late mixins, applied only when the Vending Machine is loaded, make the GregGuns Coin a coin kind:
+
+| Mixin | Target | What it does |
+|---|---|---|
+| `CurrencyTypeMixin` (with `CurrencyTypeInvoker`) | `CurrencyType` static initializer | Appends the constant `GREGGUNS` (id `gregguns`, item prefix `gregguns:coin`) to the enum's values, before anything can read them. |
+| `CurrencyTypeMixin` | `CurrencyType.createCoinUITexture` | Points the coin display's `icons/gregguns0` to `icons/gregguns4` at the coin's own 16 x 16 item textures. The shared backgrounds stay the pack's. |
+| `CurrencyItemMixin` | `CurrencyItem.fromItemStack` | Reads a GregGuns Coin stack's value from its damage. The machine reads value from a registry-name suffix, which would count every GregGuns Coin as 1. |
+| `CurrencyItemMixin` | `CurrencyItem.itemize` | Pays a GregGuns balance out in GregGuns denominations (`CoinDenomination.change`). |
+
+Everything else in the machine follows from those: the wallet is an `EnumMap` over all values, the coin display loops over them (4 x 4 slots, 14 used before), wallets save the id string, and nothing reads an ordinal or switches on the enum. The uplink's `isMatchingType` and the NEI and quest-book price icon (`getItemRepresentation`) work from the item prefix as they are. The lang key `vendingmachine.coin.gregguns` names the kind. All targets are identical in VendingMachine 0.4.101 (dev), 0.4.103 (the owner's server), 0.4.104 and 0.5.1 ([CurrencyType](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/CurrencyType.java), [CurrencyItem](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/CurrencyItem.java)).
+
+- **Not required.** The mixin config is not required, so a target that moves in a later Vending Machine is logged and skipped, never a crash.
+- **Self-test.** At postInit, on both sides, `VendingCoin.check()` runs `VendingCurrency.selfTest()`: the kind exists and is listed, 3 x Coin 10 reads as 30, a balance of 1,234 pays out as the right coins, and a wallet keeps a saved GregGuns balance. Only when it passes are trades priced in the wallet; otherwise the log says why and trades fall back to coin items. A wallet that holds a GregGuns balance while the patch is off keeps it: the machine saves unknown coin kinds unchanged.
+- **Scenario check.** `compat.vending.wallet` (self-test, every denomination at its value, a pack coin is not read as ours).
 
 ## Mechanism
 
 The Vending Machine has no registration API. It reads `config/vendingmachine/tradeDatabase.json` in its own server-starting handler ([CommonProxy#L41-L53](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/CommonProxy.java#L41-L53)). GregGuns does not edit that file. Instead:
 
-1. **On `FMLServerStartedEvent`**, after every mod has started, `VendingMachineCompat` writes the trades in the machine's own database form (`VendingTradeNbt`). It merges them through the machine's public loader, `TradeDatabase.readFromNBT(tree, merge=true, isFileLoad=false)` ([TradeDatabase#L74-L120](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/TradeDatabase.java#L74-L120)). It calls the loader by reflection, so GregGuns has no compile-time or class-loading link to the mod. With `isFileLoad=false`, the merge never marks the file for a rewrite. The database version is copied, so it does not change.
+1. **On `FMLServerStartedEvent`**, after every mod has started, `VendingMachineCompat` writes the trades in the machine's own database form (`VendingTradeNbt`). It merges them through the machine's public loader, `TradeDatabase.readFromNBT(tree, merge=true, isFileLoad=false)` ([TradeDatabase#L74-L120](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/trade/TradeDatabase.java#L74-L120)). It calls the loader by reflection. Only the wallet mixins and `VendingCurrency`, which loads only when the mod is present, are compiled against it. With `isFileLoad=false`, the merge never marks the file for a rewrite. The database version is copied, so it does not change.
 2. **Every GregGuns trade group** has a fixed UUID whose high half is `0x4772656747756E73` ("GregGuns"). Before merging, GregGuns takes out any groups with that prefix and reloads the rest in place. That covers an admin's `/vending add`, which saves the whole database to the file, GregGuns groups included. So the jar's table always wins, and turning `compat.vendingTrades` off removes the trades at the next start.
 3. **Clients** get the merged database through the machine's own login sync ([NetBulkSync#L38-L58](https://github.com/GTNewHorizons/VendingMachine/blob/0.4.101/src/main/java/com/cubefury/vendingmachine/network/handlers/NetBulkSync.java#L38-L58)). Single player shares the server's copy.
 4. **`/vending reload database`** clears the machine's database and reloads the file, which drops the GregGuns trades. A `CommandEvent` hook merges them again 20 ticks later and resends the database to every player.
